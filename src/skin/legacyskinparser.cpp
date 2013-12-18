@@ -220,7 +220,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode attributes_node = manifest_node.namedItem("attributes");
     if (!attributes_node.isNull() && attributes_node.isElement()) {
         QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
-        for (unsigned int i = 0; i < attribute_nodes.length(); ++i) {
+        for (int i = 0; i < attribute_nodes.length(); ++i) {
             QDomNode attribute_node = attribute_nodes.item(i);
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
@@ -239,17 +239,6 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
     }
-    /*
-     * Long explaination because this took too long to figure:
-     * Parent all the mixxx widgets (subclasses of wwidget) to
-     * some anonymous QWidget (this was MixxxView in <=1.8, MixxxView
-     * was a subclass of QWidget), and then feed its parent to the background
-     * tag parser. The background tag parser does stuff to the anon widget, as
-     * everything else does, but then it colors the parent widget with some
-     * color that shows itself in fullscreen. Having all these mixxx widgets
-     * with their own means they're easy to move to boot -- bkgood
-     */
-    m_pParent = new QWidget; // this'll get deleted with pParent
     QDomElement skinDocument = openSkin(skinPath);
 
     if (skinDocument.isNull()) {
@@ -286,12 +275,11 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // I'm disregarding this return value because I want to return the
     // created parent so MixxxApp can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
-    parseNode(skinDocument, pParent);
-    m_pParent->setParent(pParent);
-    return m_pParent;
+    m_pParent = pParent;
+    return parseNode(skinDocument);
 }
 
-QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
+QWidget* LegacySkinParser::parseNode(QDomElement node) {
     QString nodeName = node.nodeName();
     //qDebug() << "parseNode" << node.nodeName();
 
@@ -299,19 +287,40 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
 
     // Root of the document
     if (nodeName == "skin") {
-        // Descend children, should only happen for the root node
+        // Parent all the skin widgets to an inner QWidget (this was MixxxView
+        // in <=1.8, MixxxView was a subclass of QWidget), and then wrap it in
+        // an outer widget. The Background parser parents the background image
+        // to the inner widget but then sets the fill color of the outer widget
+        // so that fullscreen will expand with the right color to fill in the
+        // non-background areas. We put the inner widget in a layout inside the
+        // outer widget so that it stays centered in fullscreen mode.
+        QWidget* pOuterWidget = new QWidget(m_pParent);
+        QWidget* pInnerWidget = new QWidget(pOuterWidget);
+
+        // Background is only valid at the top level.
+        QDomElement background = XmlParse::selectElement(node, "Background");
+        if (!background.isNull()) {
+            parseBackground(background, pOuterWidget, pInnerWidget);
+        }
+
+        m_pParent = pInnerWidget;
+
+        // Descend children, should only happen for the root node.
         QDomNodeList children = node.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                parseNode(node.toElement(), pGrandparent);
+                parseNode(node.toElement());
             }
         }
-        return pGrandparent;
-    } else if (nodeName == "Background") {
-        return parseBackground(node, pGrandparent);
+
+        // Keep innerWidget centered (for fullscreen).
+        pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
+        pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
+        pOuterWidget->layout()->addWidget(pInnerWidget);
+        return pOuterWidget;
     } else if (nodeName == "SliderComposed") {
         return parseSliderComposed(node);
     } else if (nodeName == "PushButton") {
@@ -398,7 +407,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement(), pSplitter);
+                QWidget* pChild = parseNode(node.toElement());
 
                 if (pChild == NULL)
                     continue;
@@ -452,7 +461,12 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement(), pGroup);
+                QWidget* pChild = parseNode(node.toElement());
+
+                if (pChild == NULL) {
+                    continue;
+                }
+
                 pGroup->addWidget(pChild);
             }
         }
@@ -509,7 +523,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             }
             QDomElement element = node.toElement();
 
-            QWidget* pChild = parseNode(element, pStack);
+            QWidget* pChild = parseNode(element);
             if (pChild == NULL)
                 continue;
 
@@ -532,8 +546,10 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     return pStack;
 }
 
-QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandparent) {
-    QLabel* bg = new QLabel(m_pParent);
+QWidget* LegacySkinParser::parseBackground(QDomElement node,
+                                           QWidget* pOuterWidget,
+                                           QWidget* pInnerWidget) {
+    QLabel* bg = new QLabel(pInnerWidget);
 
     QString filename = XmlParse::selectNodeQString(node, "Path");
     QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
@@ -545,23 +561,24 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
 
     bg->lower();
 
-    // yes, this is confusing. Sorry. See ::parseSkin.
-    m_pParent->move(0,0);
+    pInnerWidget->move(0,0);
     if (background != NULL && !background->isNull()) {
-        m_pParent->setFixedSize(background->width(), background->height());
-        pGrandparent->setMinimumSize(background->width(), background->height());
+        pInnerWidget->setFixedSize(background->width(), background->height());
+        pOuterWidget->setMinimumSize(background->width(), background->height());
     }
 
-    QColor c(0,0,0); // Default background color is now black, if people want to do <invert/> filters they'll have to figure something out for this.
+    // Default background color is now black, if people want to do <invert/>
+    // filters they'll have to figure something out for this.
+    QColor c(0,0,0);
     if (!XmlParse::selectNode(node, "BgColor").isNull()) {
         c.setNamedColor(XmlParse::selectNodeQString(node, "BgColor"));
     }
 
     QPalette palette;
     palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
-    pGrandparent->setBackgroundRole(QPalette::Window);
-    pGrandparent->setPalette(palette);
-    pGrandparent->setAutoFillBackground(true);
+    pOuterWidget->setBackgroundRole(QPalette::Window);
+    pOuterWidget->setPalette(palette);
+    pOuterWidget->setAutoFillBackground(true);
 
     // WPixmapStore::getPixmapNoCache() allocated background and gave us
     // ownership. QLabel::setPixmap makes a copy, so we have to delete this.
@@ -1199,7 +1216,10 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
 QWidget* LegacySkinParser::parseStyle(QDomElement node) {
     QString style = node.text();
     m_pParent->setStyleSheet(style);
-    return m_pParent;
+    // This doesn't actually create a widget. If you return m_pParent then you
+    // risk creating loops in the widget hierarchy if someone makes <Style> in
+    // e.g. a WidgetGroup <Children> block.
+    return NULL;
 }
 
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
@@ -1211,44 +1231,127 @@ void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
     }
 }
 
+bool parseSizePolicy(QString* input, QSizePolicy::Policy* policy) {
+    if (input->endsWith("me")) {
+        *policy = QSizePolicy::MinimumExpanding;
+        *input = input->left(input->size()-2);
+    } else if (input->endsWith("e")) {
+        *policy = QSizePolicy::Expanding;
+        *input = input->left(input->size()-1);
+    } else if (input->endsWith("i")) {
+        *policy = QSizePolicy::Ignored;
+        *input = input->left(input->size()-1);
+    } else if (input->endsWith("min")) {
+        *policy = QSizePolicy::Minimum;
+        *input = input->left(input->size()-3);
+    } else if (input->endsWith("max")) {
+        *policy = QSizePolicy::Maximum;
+        *input = input->left(input->size()-3);
+    } else if (input->endsWith("p")) {
+        *policy = QSizePolicy::Preferred;
+        *input = input->left(input->size()-1);
+    } else if (input->endsWith("f")) {
+        *policy = QSizePolicy::Fixed;
+        *input = input->left(input->size()-1);
+    } else {
+        return false;
+    }
+    return true;
+}
+
 void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
+    if (!XmlParse::selectNode(node, "MinimumSize").isNull()) {
+        QString size = XmlParse::selectNodeQString(node, "MinimumSize");
+        int comma = size.indexOf(",");
+        QString xs = size.left(comma);
+        QString ys = size.mid(comma+1);
+
+        bool widthOk = false;
+        int x = xs.toInt(&widthOk);
+
+        bool heightOk = false;
+        int y = ys.toInt(&heightOk);
+
+        if (widthOk && heightOk) {
+            pWidget->setMinimumSize(x, y);
+        } else {
+            qDebug() << "Could not parse widget MinimumSize:" << size;
+        }
+    }
+
+    if (!XmlParse::selectNode(node, "MaximumSize").isNull()) {
+        QString size = XmlParse::selectNodeQString(node, "MaximumSize");
+        int comma = size.indexOf(",");
+        QString xs = size.left(comma);
+        QString ys = size.mid(comma+1);
+
+        bool widthOk = false;
+        int x = xs.toInt(&widthOk);
+
+        bool heightOk = false;
+        int y = ys.toInt(&heightOk);
+
+        if (widthOk && heightOk) {
+            pWidget->setMaximumSize(x, y);
+        } else {
+            qDebug() << "Could not parse widget MaximumSize:" << size;
+        }
+    }
+
+    bool hasSizePolicyNode = false;
+    if (!XmlParse::selectNode(node, "SizePolicy").isNull()) {
+        QString size = XmlParse::selectNodeQString(node, "SizePolicy");
+        int comma = size.indexOf(",");
+        QString xs = size.left(comma);
+        QString ys = size.mid(comma+1);
+
+        QSizePolicy sizePolicy = pWidget->sizePolicy();
+
+        QSizePolicy::Policy horizontalPolicy;
+        if (parseSizePolicy(&xs, &horizontalPolicy)) {
+            sizePolicy.setHorizontalPolicy(horizontalPolicy);
+        } else {
+            qDebug() << "Could not parse horizontal size policy:" << xs;
+        }
+
+        QSizePolicy::Policy verticalPolicy;
+        if (parseSizePolicy(&ys, &verticalPolicy)) {
+            sizePolicy.setVerticalPolicy(verticalPolicy);
+        } else {
+            qDebug() << "Could not parse vertical size policy:" << ys;
+        }
+
+        hasSizePolicyNode = true;
+        pWidget->setSizePolicy(sizePolicy);
+    }
+
     if (!XmlParse::selectNode(node, "Size").isNull()) {
         QString size = XmlParse::selectNodeQString(node, "Size");
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
-        QSizePolicy sizePolicy;
-        bool shouldSetWidthFixed = false;
 
-        if (xs.endsWith("me")) {
-            //qDebug() << "horizontal minimum expanding";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
-            xs = xs.left(xs.size()-2);
-        } else if (xs.endsWith("e")) {
-            //qDebug() << "horizontal expanding";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
-            xs = xs.left(xs.size()-1);
-        } else if (xs.endsWith("i")) {
-            //qDebug() << "horizontal ignored";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Ignored);
-            xs = xs.left(xs.size()-1);
-        } else if (xs.endsWith("p")) {
-            //qDebug() << "horizontal preferred";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
-            xs = xs.left(xs.size()-1);
-        } else if (xs.endsWith("f")) {
-            //qDebug() << "horizontal fixed";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
-            xs = xs.left(xs.size()-1);
-            shouldSetWidthFixed = true;
-        } else {
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
+        QSizePolicy sizePolicy = pWidget->sizePolicy();
+
+        bool hasHorizontalPolicy = false;
+        QSizePolicy::Policy horizontalPolicy;
+        if (parseSizePolicy(&xs, &horizontalPolicy)) {
+            sizePolicy.setHorizontalPolicy(horizontalPolicy);
+            hasHorizontalPolicy = true;
+        }
+
+        bool hasVerticalPolicy = false;
+        QSizePolicy::Policy verticalPolicy;
+        if (parseSizePolicy(&ys, &verticalPolicy)) {
+            sizePolicy.setVerticalPolicy(verticalPolicy);
+            hasVerticalPolicy = true;
         }
 
         bool widthOk = false;
         int x = xs.toInt(&widthOk);
         if (widthOk) {
-            if (shouldSetWidthFixed) {
+            if (hasHorizontalPolicy &&
+                    sizePolicy.horizontalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting width fixed to" << x;
                 pWidget->setFixedWidth(x);
             } else {
@@ -1257,36 +1360,11 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             }
         }
 
-        bool shouldSetHeightFixed = false;
-        if (ys.endsWith("me")) {
-            //qDebug() << "vertical minimum expanding";
-            sizePolicy.setVerticalPolicy(QSizePolicy::MinimumExpanding);
-            ys = ys.left(ys.size()-2);
-        } else if (ys.endsWith("e")) {
-            //qDebug() << "vertical expanding";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
-            ys = ys.left(ys.size()-1);
-        } else if (ys.endsWith("i")) {
-            //qDebug() << "vertical ignored";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Ignored);
-            ys = ys.left(ys.size()-1);
-        } else if (ys.endsWith("p")) {
-            //qDebug() << "vertical preferred";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Preferred);
-            ys = ys.left(ys.size()-1);
-        } else if (ys.endsWith("f")) {
-            //qDebug() << "vertical fixed";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
-            ys = ys.left(ys.size()-1);
-            shouldSetHeightFixed = true;
-        } else {
-            sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
-        }
-
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
         if (heightOk) {
-            if (shouldSetHeightFixed) {
+            if (hasVerticalPolicy &&
+                    sizePolicy.verticalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting height fixed to" << x;
                 pWidget->setFixedHeight(y);
             } else {
@@ -1295,7 +1373,9 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             }
         }
 
-        pWidget->setSizePolicy(sizePolicy);
+        if (!hasSizePolicyNode) {
+            pWidget->setSizePolicy(sizePolicy);
+        }
     }
 }
 

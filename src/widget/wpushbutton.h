@@ -38,6 +38,9 @@ class WPushButton : public WWidget
     Q_OBJECT
   public:
     WPushButton(QWidget *parent=0);
+    // Used by WPushButtonTest.
+    WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+                ControlPushButton::ButtonMode rightButtonMode);
     ~WPushButton();
     void setup(QDomNode node);
 
@@ -69,11 +72,12 @@ class WPushButton : public WWidget
     // Number of states associated with this button
     int m_iNoStates;
     // Array of associated pixmaps
-    QPixmap **m_pPixmaps;
+    QPixmap** m_pPixmaps;
     // Associated background pixmap
-    QPixmap *m_pPixmapBack;
-    /** short click toggle button long click push button **/
-    ControlPushButton::ButtonMode m_leftButtonMode, m_rightButtonMode;
+    QPixmap* m_pPixmapBack;
+    // short click toggle button long click push button
+    ControlPushButton::ButtonMode m_leftButtonMode;
+    ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
 };
 

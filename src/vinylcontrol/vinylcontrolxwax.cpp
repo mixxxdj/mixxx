@@ -85,8 +85,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
         timecode = (char*)"traktor_b";
     }
     else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
-    	timecode = (char*)"mixvibes_v2";
-   	}
+        timecode = (char*)"mixvibes_v2";
+    }
     else {
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";

@@ -71,7 +71,7 @@ double EngineControl::getTotalSamples() const {
     return m_dTotalSamples;
 }
 
-const char* EngineControl::getGroup() {
+const char* EngineControl::getGroup() const {
     return m_pGroup;
 }
 

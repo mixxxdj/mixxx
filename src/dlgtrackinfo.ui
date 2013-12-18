@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
+    <width>546</width>
     <height>635</height>
    </rect>
   </property>
@@ -578,6 +578,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string extracomment="&quot;Previous&quot; button">Move to the previous item.</string>
+       </property>
        <property name="text">
         <string>&amp;Previous</string>
        </property>
@@ -590,6 +593,9 @@
          <width>100</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string extracomment="&quot;Next&quot; button">Move to the next item.</string>
        </property>
        <property name="text">
         <string>&amp;Next</string>
@@ -617,6 +623,9 @@
          <height>0</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string extracomment="&quot;Cancel&quot; button">Discard changes and close the window.</string>
+       </property>
        <property name="text">
         <string>&amp;Cancel</string>
        </property>
@@ -633,11 +642,33 @@
          <height>0</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string extracomment="&quot;Apply&quot; button">Save changes and keep the window open.</string>
+       </property>
        <property name="text">
         <string>&amp;Apply</string>
        </property>
        <property name="default">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnOK">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string extracomment="&quot;OK&quot; button">Save changes and close the window.</string>
+       </property>
+       <property name="text">
+        <string>&amp;OK</string>
+       </property>
+       <property name="default">
+        <bool>false</bool>
        </property>
       </widget>
      </item>

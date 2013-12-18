@@ -31,7 +31,7 @@ class SoundManager;
 class DlgPrefSound;
 class DlgPrefController;
 class DlgPrefControllers;
-class DlgPrefPlaylist;
+class DlgPrefLibrary;
 class DlgPrefSelector;
 class DlgPrefControls;
 class DlgPrefEQ;
@@ -83,7 +83,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void onHide();
 
     DlgPrefSound* m_wsound;
-    DlgPrefPlaylist* m_wplaylist;
+    DlgPrefLibrary* m_wlibrary;
     DlgPrefControllers *m_wcontrollers;
     DlgPrefSelector* m_wselector;
     DlgPrefControls* m_wcontrols;
@@ -102,7 +102,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 #endif
 
     QTreeWidgetItem* m_pSoundButton;
-    QTreeWidgetItem* m_pPlaylistButton;
+    QTreeWidgetItem* m_pLibraryButton;
     QTreeWidgetItem* m_pControlsButton;
     QTreeWidgetItem* m_pEqButton;
     QTreeWidgetItem* m_pCrossfaderButton;

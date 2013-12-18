@@ -204,7 +204,7 @@ void EngineShoutcast::updateFromPreferences() {
 
     // Dynamic Ogg metadata update
     m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
-	        ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+            ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
