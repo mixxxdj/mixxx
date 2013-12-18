@@ -96,7 +96,7 @@
 
         <!-- EffectRack1_EffectChain1 -->
         <WidgetGroup>
-          <Pos>20,305</Pos>
+          <Pos>20,295</Pos>
           <Size>350,43</Size>
           <Layout>horizontal</Layout>
           <Style> QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -144,12 +144,29 @@
 	        </PushButton>
               </Children>
             </WidgetGroup>
-            <EffectChainName>
-              <Pos>20,5</Pos>
-              <Size>70,25</Size>
-              <EffectChain>1</EffectChain>
-              <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
-            </EffectChainName>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Children>
+                <EffectChainName>
+                  <Size>70,15</Size>
+                  <EffectChain>1</EffectChain>
+                  <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+                </EffectChainName>
+                <EffectName>
+                  <Size>70,15</Size>
+                  <EffectChain>1</EffectChain>
+                  <Effect>1</Effect>
+                  <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+                </EffectName>
+                <EffectParameterName>
+                  <Size>70,15</Size>
+                  <EffectChain>1</EffectChain>
+                  <Effect>1</Effect>
+                  <EffectParameter>1</EffectParameter>
+                  <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+                </EffectParameterName>
+              </Children>
+            </WidgetGroup>
             <PushButton>
               <Pos>70,5</Pos>
 	      <NumberStates>2</NumberStates>
@@ -248,7 +265,7 @@
 
         <!-- EffectRack1_EffectChain2 -->
         <WidgetGroup>
-          <Pos>875,305</Pos>
+          <Pos>875,295</Pos>
           <Size>350,43</Size>
           <Layout>horizontal</Layout>
           <Style> QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -296,12 +313,29 @@
 	        </PushButton>
               </Children>
             </WidgetGroup>
-            <EffectChainName>
-              <Pos>20,5</Pos>
-              <Size>70,25</Size>
-              <EffectChain>2</EffectChain>
-              <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
-            </EffectChainName>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Children>
+                <EffectChainName>
+                  <Size>70,15</Size>
+                  <EffectChain>2</EffectChain>
+                  <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+                </EffectChainName>
+                <EffectName>
+                  <Size>70,15</Size>
+                  <EffectChain>2</EffectChain>
+                  <Effect>1</Effect>
+                  <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+                </EffectName>
+                <EffectParameterName>
+                  <Size>70,15</Size>
+                  <EffectChain>2</EffectChain>
+                  <Effect>1</Effect>
+                  <EffectParameter>1</EffectParameter>
+                  <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+                </EffectParameterName>
+              </Children>
+            </WidgetGroup>
             <PushButton>
               <Pos>70,5</Pos>
 	      <NumberStates>2</NumberStates>
