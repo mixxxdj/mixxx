@@ -46,6 +46,8 @@
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
 #include "widget/weffectchain.h"
+#include "widget/weffect.h"
+#include "widget/weffectparameter.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/wspinny.h"
@@ -409,6 +411,10 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         return parseWidgetStack(node);
     } else if (nodeName == "EffectChainName") {
         return parseEffectChainName(node);
+    } else if (nodeName == "EffectName") {
+        return parseEffectName(node);
+    } else if (nodeName == "EffectParameterName") {
+        return parseEffectParameterName(node);
     } else if (nodeName == "Spinny") {
         return parseSpinny(node);
     } else if (nodeName == "Time") {
@@ -1264,24 +1270,137 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
 QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
     WEffectChain* pEffectChain = new WEffectChain(m_pParent);
 
-    EffectRackPointer pRack = m_pEffectsManager->getDefaultEffectRack();
+    bool rackOk = false;
+    int rackNumber = XmlParse::selectNodeInt(node, "EffectRack", &rackOk) - 1;
+    bool chainOk = false;
+    int chainNumber = XmlParse::selectNodeInt(node, "EffectChain", &chainOk) - 1;
+
+    // Tolerate no <EffectRack>. Use the default one.
+    if (!rackOk) {
+        rackNumber = 0;
+    }
+
+    if (!chainOk) {
+        qDebug() << "EffectChainName node had invalid EffectChain number:" << chainNumber;
+    }
+
+    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
     if (pRack) {
-        // To Mixxx users, EffectChains are 1-indexed, but code-wise the chains are
-        // 0-indexed.
-        unsigned int chainNumber = XmlParse::selectNodeInt(node, "EffectChain") - 1;
-
-
         EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
-
         if (pChainSlot) {
             pEffectChain->setEffectChainSlot(pChainSlot);
         } else {
-            qDebug() << "EffectChainName node had invalid EffectChainSlot number.";
+            qDebug() << "EffectChainName node had invalid EffectChain number:" << chainNumber;
         }
+    } else {
+        qDebug() << "EffectChainName node had invalid EffectRack number:" << rackNumber;
     }
+
     setupWidget(node, pEffectChain);
     pEffectChain->installEventFilter(m_pKeyboard);
     return pEffectChain;
+}
+
+QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
+    WEffect* pEffect = new WEffect(m_pParent);
+
+    bool rackOk = false;
+    int rackNumber = XmlParse::selectNodeInt(node, "EffectRack", &rackOk) - 1;
+    bool chainOk = false;
+    int chainNumber = XmlParse::selectNodeInt(node, "EffectChain", &chainOk) - 1;
+    bool effectOk = false;
+    int effectNumber = XmlParse::selectNodeInt(node, "Effect", &effectOk) - 1;
+
+    // Tolerate no <EffectRack>. Use the default one.
+    if (!rackOk) {
+        rackNumber = 0;
+    }
+
+    if (!chainOk) {
+        qDebug() << "EffectName node had invalid EffectChain number:" << chainNumber;
+    }
+
+    if (!effectOk) {
+        qDebug() << "EffectName node had invalid Effect number:" << effectNumber;
+    }
+
+    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
+    if (pRack) {
+        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
+        if (pChainSlot) {
+            EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
+            if (pEffectSlot) {
+                pEffect->setEffectSlot(pEffectSlot);
+            } else {
+                qDebug() << "EffectName node had invalid Effect number:" << effectNumber;
+            }
+        } else {
+            qDebug() << "EffectName node had invalid EffectChain number:" << chainNumber;
+        }
+    } else {
+        qDebug() << "EffectName node had invalid EffectRack number:" << rackNumber;
+    }
+
+    setupWidget(node, pEffect);
+    pEffect->installEventFilter(m_pKeyboard);
+    return pEffect;
+}
+
+QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
+    WEffectParameter* pEffectParameter = new WEffectParameter(m_pParent);
+
+    bool rackOk = false;
+    int rackNumber = XmlParse::selectNodeInt(node, "EffectRack", &rackOk) - 1;
+    bool chainOk = false;
+    int chainNumber = XmlParse::selectNodeInt(node, "EffectChain", &chainOk) - 1;
+    bool effectOk = false;
+    int effectNumber = XmlParse::selectNodeInt(node, "Effect", &effectOk) - 1;
+    bool parameterOk = false;
+    int parameterNumber = XmlParse::selectNodeInt(node, "EffectParameter", &parameterOk) - 1;
+
+    // Tolerate no <EffectRack>. Use the default one.
+    if (!rackOk) {
+        rackNumber = 0;
+    }
+
+    if (!chainOk) {
+        qDebug() << "EffectParameterName node had invalid EffectChain number:" << chainNumber;
+    }
+
+    if (!effectOk) {
+        qDebug() << "EffectParameterName node had invalid Effect number:" << effectNumber;
+    }
+
+    if (!parameterOk) {
+        qDebug() << "EffectParameterName node had invalid Parameter number:" << parameterNumber;
+    }
+
+    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
+    if (pRack) {
+        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
+        if (pChainSlot) {
+            EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
+            if (pEffectSlot) {
+                EffectParameterSlotPointer pParameterSlot =
+                        pEffectSlot->getEffectParameterSlot(parameterNumber);
+                if (pParameterSlot) {
+                    pEffectParameter->setEffectParameterSlot(pParameterSlot);
+                } else {
+                    qDebug() << "EffectParameterName node had invalid Parameter number:" << parameterNumber;
+                }
+            } else {
+                qDebug() << "EffectParameterName node had invalid Effect number:" << effectNumber;
+            }
+        } else {
+            qDebug() << "EffectParameterName node had invalid EffectChain number:" << chainNumber;
+        }
+    } else {
+        qDebug() << "EffectParameterName node had invalid EffectRack number:" << rackNumber;
+    }
+
+    setupWidget(node, pEffectParameter);
+    pEffectParameter->installEventFilter(m_pKeyboard);
+    return pEffectParameter;
 }
 
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {

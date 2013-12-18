@@ -43,6 +43,19 @@ EffectPointer EffectSlot::getEffect() const {
     return m_pEffect;
 }
 
+unsigned int EffectSlot::numParameterSlots() const {
+    return m_parameters.size();
+}
+
+EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
+    qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
+    if (slotNumber >= m_parameters.size()) {
+        qDebug() << "WARNING: slotNumber out of range";
+        return EffectParameterSlotPointer();
+    }
+    return m_parameters[slotNumber];
+}
+
 void EffectSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect"
              << (pEffect ? pEffect->getManifest().name() : "(null)");

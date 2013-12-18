@@ -36,6 +36,9 @@ class EffectSlot : public QObject {
     // returns a null EffectPointer.
     EffectPointer getEffect() const;
 
+    unsigned int numParameterSlots() const;
+    EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
+
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);

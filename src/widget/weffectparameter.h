@@ -4,7 +4,7 @@
 #include "widget/wlabel.h"
 #include "effects/effectparameterslot.h"
 
-class WEffectParameter : WLabel {
+class WEffectParameter : public WLabel {
     Q_OBJECT
   public:
     WEffectParameter(QWidget* pParent=NULL);
