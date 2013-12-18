@@ -234,24 +234,30 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setYear(txtYear->text());
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
-    
+
     if (!m_pLoadedTrack->hasBpmLock()) {
         m_pLoadedTrack->setBpm(spinBpm->value());
     }
-    
-    QHash<int, Cue*> cueMap;
+
+    QSet<int> updatedRows;
     for (int row = 0; row < cueTable->rowCount(); ++row) {
-        
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
         QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
         QTableWidgetItem* labelItem = cueTable->item(row, 3);
-        
+
         if (!rowItem || !hotcueItem || !labelItem)
             continue;
-        
+
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
-        Cue* pCue = m_cueMap.take(oldRow);
-        
+        Cue* pCue = m_cueMap.value(oldRow, NULL);
+
+
+        if (pCue == NULL) {
+            continue;
+        }
+
+        updatedRows.insert(oldRow);
+
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
         if (vHotcue.canConvert<int>()) {
             int iTableHotcue = vHotcue.toInt();
@@ -261,15 +267,22 @@ void DlgTrackInfo::saveTrack() {
         } else {
             pCue->setHotCue(-1);
         }
-        
+
         QString label = labelItem->data(Qt::DisplayRole).toString();
         pCue->setLabel(label);
     }
-    
+
     QMutableHashIterator<int,Cue*> it(m_cueMap);
-    // Everything remaining in m_cueMap must have been deleted.
+    // Everything that was not processed above was removed.
     while (it.hasNext()) {
         it.next();
+        int oldRow = it.key();
+
+        // If cue's old row is not in updatedRows then it must have been
+        // deleted.
+        if (updatedRows.contains(oldRow)) {
+            continue;
+        }
         Cue* pCue = it.value();
         it.remove();
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
@@ -285,6 +298,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
         saveTrack();
     }
 
+    m_cueMap.clear();
     m_pLoadedTrack.clear();
     clear();
 }
