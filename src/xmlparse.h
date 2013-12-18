@@ -31,8 +31,8 @@ public:
 
     static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
     static QDomElement selectElement(const QDomNode &nodeHeader, const QString& sNode);
-    static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
-    static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
+    static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode, bool* ok=NULL);
+    static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode, bool* ok=NULL);
     static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
     static QVector<long> *selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode);
     static QVector<char> *selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode);

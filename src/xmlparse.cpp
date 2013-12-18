@@ -22,12 +22,12 @@ XmlParse::XmlParse() {
 XmlParse::~XmlParse() {
 }
 
-int XmlParse::selectNodeInt(const QDomNode &nodeHeader, const QString sNode) {
-    return selectNode(nodeHeader, sNode).toElement().text().toInt();
+int XmlParse::selectNodeInt(const QDomNode &nodeHeader, const QString sNode, bool* ok) {
+    return selectNode(nodeHeader, sNode).toElement().text().toInt(ok);
 }
 
-float XmlParse::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode) {
-    return selectNode(nodeHeader, sNode).toElement().text().toFloat();
+float XmlParse::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode, bool* ok) {
+    return selectNode(nodeHeader, sNode).toElement().text().toFloat(ok);
 }
 
 QDomNode XmlParse::selectNode(const QDomNode& nodeHeader, const QString sNode) {
