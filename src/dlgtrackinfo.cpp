@@ -250,8 +250,6 @@ void DlgTrackInfo::saveTrack() {
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
         Cue* pCue = m_cueMap.value(oldRow, NULL);
-
-
         if (pCue == NULL) {
             continue;
         }
@@ -298,9 +296,8 @@ void DlgTrackInfo::unloadTrack(bool save) {
         saveTrack();
     }
 
-    m_cueMap.clear();
-    m_pLoadedTrack.clear();
     clear();
+    m_pLoadedTrack.clear();
 }
 
 void DlgTrackInfo::clear() {
