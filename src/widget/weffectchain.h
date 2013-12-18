@@ -5,8 +5,9 @@
 #include <QLabel>
 
 #include "effects/effectchainslot.h"
+#include "widget/wlabel.h"
 
-class WEffectChain : public QLabel {
+class WEffectChain : public WLabel {
     Q_OBJECT
   public:
     WEffectChain(QWidget* pParent=NULL);

@@ -30,18 +30,13 @@ EffectSlot::~EffectSlot() {
 
     delete m_pControlEnabled;
     delete m_pControlNumParameters;
-
-    while (!m_parameters.isEmpty()) {
-        EffectParameterSlot* pParameter = m_parameters.takeLast();
-        delete pParameter;
-    }
 }
 
 void EffectSlot::addEffectParameterSlot() {
     EffectParameterSlot* pParameter = new EffectParameterSlot(
         this, m_iRackNumber, m_iChainNumber, m_iSlotNumber,
         m_parameters.size());
-    m_parameters.append(pParameter);
+    m_parameters.append(EffectParameterSlotPointer(pParameter));
 }
 
 EffectPointer EffectSlot::getEffect() const {
@@ -60,7 +55,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             addEffectParameterSlot();
         }
 
-        foreach (EffectParameterSlot* pParameter, m_parameters) {
+        foreach (EffectParameterSlotPointer pParameter, m_parameters) {
             pParameter->loadEffect(m_pEffect);
         }
 
@@ -76,7 +71,7 @@ void EffectSlot::clear() {
     m_pEffect.clear();
     m_pControlEnabled->set(0.0f);
     m_pControlNumParameters->set(0.0f);
-    foreach (EffectParameterSlot* pParameter, m_parameters) {
+    foreach (EffectParameterSlotPointer pParameter, m_parameters) {
         pParameter->loadEffect(EffectPointer());
     }
 }

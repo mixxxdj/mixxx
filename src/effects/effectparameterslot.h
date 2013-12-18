@@ -9,7 +9,10 @@
 #include "controlobject.h"
 #include "effects/effect.h"
 
-class EffectParameterSlot : QObject {
+class EffectParameterSlot;
+typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
+
+class EffectParameterSlot : public QObject {
     Q_OBJECT
   public:
     EffectParameterSlot(QObject* pParent,
@@ -32,6 +35,12 @@ class EffectParameterSlot : QObject {
 
     // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
+
+    QString name() const;
+
+  signals:
+    // Signal that indicates that the EffectParameterSlot has been updated.
+    void updated();
 
   private slots:
     // Solely for handling control changes

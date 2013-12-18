@@ -1,23 +1,28 @@
 #include "widget/weffectchain.h"
 
 WEffectChain::WEffectChain(QWidget* pParent)
-        : QLabel(pParent) {
+        : WLabel(pParent) {
 }
 
 WEffectChain::~WEffectChain() {
 }
 
-void WEffectChain::setEffectChainSlot(EffectChainSlotPointer effectChainSlot) {
-    if (effectChainSlot) {
-        m_pEffectChainSlot = effectChainSlot;
-        connect(effectChainSlot.data(), SIGNAL(updated()),
+void WEffectChain::setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot) {
+    if (pEffectChainSlot) {
+        m_pEffectChainSlot = pEffectChainSlot;
+        connect(pEffectChainSlot.data(), SIGNAL(updated()),
                 this, SLOT(chainUpdated()));
         chainUpdated();
     }
 }
 
 void WEffectChain::chainUpdated() {
+    QString name = tr("None");
     if (m_pEffectChainSlot) {
-        setText(m_pEffectChainSlot->name());
+        EffectChainPointer pChain = m_pEffectChainSlot->getEffectChain();
+        if (pChain) {
+            name = pChain->name();
+        }
     }
+    m_pLabel->setText(name);
 }

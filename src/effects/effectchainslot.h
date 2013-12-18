@@ -31,9 +31,6 @@ class EffectChainSlot : public QObject {
     // Get the ID of the loaded EffectChain
     QString id() const;
 
-    // Get the human-readable name of the loaded EffectChain
-    QString name() const;
-
     unsigned int numSlots() const;
     void addEffectSlot();
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);

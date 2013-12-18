@@ -65,7 +65,7 @@ class EffectSlot : public QObject {
 
     ControlObject* m_pControlEnabled;
     ControlObject* m_pControlNumParameters;
-    QList<EffectParameterSlot*> m_parameters;
+    QList<EffectParameterSlotPointer> m_parameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };

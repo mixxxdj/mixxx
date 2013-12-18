@@ -69,12 +69,6 @@ QString EffectChainSlot::id() const {
     return "";
 }
 
-QString EffectChainSlot::name() const {
-    if (m_pEffectChain)
-        return m_pEffectChain->name();
-    return tr("None");
-}
-
 void EffectChainSlot::slotChainNameChanged(const QString&) {
     emit(updated());
 }

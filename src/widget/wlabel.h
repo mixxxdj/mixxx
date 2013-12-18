@@ -35,7 +35,7 @@ class WLabel : public WWidget {
     virtual QWidget* getComposedWidget() { return m_pLabel; }
 
   protected:
-    QLabel *m_pLabel;
+    QLabel* m_pLabel;
     QString m_qsText;
     /** Foreground and background colors */
     QColor m_qFgColor, m_qBgColor;

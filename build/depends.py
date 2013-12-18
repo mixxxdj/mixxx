@@ -662,6 +662,8 @@ class MixxxCore(Feature):
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
                    "widget/weffectchain.cpp",
+                   "widget/weffect.cpp",
+                   "widget/weffectparameter.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
 

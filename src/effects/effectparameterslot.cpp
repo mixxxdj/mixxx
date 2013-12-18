@@ -78,6 +78,13 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pControlValueMinimumLimit;
 }
 
+QString EffectParameterSlot::name() const {
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->name();
+    }
+    return QString();
+}
+
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
@@ -119,6 +126,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     } else {
         clear();
     }
+    emit(updated());
 }
 
 void EffectParameterSlot::clear() {
