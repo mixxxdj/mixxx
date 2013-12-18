@@ -4,20 +4,17 @@
  * @date April 15, 2011
  */
 
-#include "vinylcontrol/vinylcontrolmanager.h"
-
+#include "controlobject.h"
+#include "controlobjectslave.h"
+#include "playermanager.h"
+#include "soundmanager.h"
+#include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
-#include "controlobject.h"
-#include "util/timer.h"
-#include "soundmanager.h"
 
-const int kNumberOfDecks = 4; // set to 4 because it will ideally not be more
-// or less than the number of vinyl-controlled decks but will probably be
-// forgotten in any 2->4 deck switchover. Only real consequence is
-// sizeof(void*)*2 bytes of wasted memory if we're only using 2 decks -bkgood
+#include "vinylcontrol/vinylcontrolmanager.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          ConfigObject<ConfigValue>* pConfig,
@@ -26,10 +23,12 @@ VinylControlManager::VinylControlManager(QObject* pParent,
           m_pConfig(pConfig),
           m_pProcessor(new VinylControlProcessor(this, pConfig)),
           m_iTimerId(-1),
-          m_pVcEnabled1(NULL),
-          m_pVcEnabled2(NULL) {
+          m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
+    for (int i = 0; i < kMaxNumberOfDecks; ++i) {
+        m_pVcEnabled[i] = NULL;
+    }
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, i), m_pProcessor);
@@ -41,32 +40,44 @@ VinylControlManager::~VinylControlManager() {
 
     // save a bunch of stuff to config
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
-    m_pConfig->set(ConfigKey("[Channel1]","vinylcontrol_enabled"), false);
-    m_pConfig->set(ConfigKey("[Channel2]","vinylcontrol_enabled"), false);
-    m_pConfig->set(ConfigKey(VINYL_PREF_KEY,"cueing_ch1"),
-        ConfigValue((int)ControlObject::get(
-            ConfigKey("[Channel1]","vinylcontrol_cueing"))));
-    m_pConfig->set(ConfigKey(VINYL_PREF_KEY,"cueing_ch2"),
-        ConfigValue((int)ControlObject::get(
-            ConfigKey("[Channel2]","vinylcontrol_cueing"))));
+    for (int i = 0; i < kMaxNumberOfDecks; ++i) {
+        QString group = PlayerManager::groupForDeck(i);
+        m_pConfig->set(ConfigKey(group, "vinylcontrol_enabled"), false);
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i)),
+            ConfigValue((int)ControlObject::get(
+                ConfigKey(group, "vinylcontrol_cueing"))));
+    }
 }
 
 void VinylControlManager::init() {
-    // Load saved preferences now that the objects exist
-    m_pVcEnabled1 = new ControlObjectThread("[Channel1]", "vinylcontrol_enabled", this);
-    m_pVcEnabled1->set(0);
-    m_pVcEnabled2 = new ControlObjectThread("[Channel2]", "vinylcontrol_enabled", this);
-    m_pVcEnabled2->set(0);
+    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::DirectConnection);
+    slotNumDecksChanged(m_pNumDecks->get());
+}
 
-    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_mode"),
-            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());
-    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_mode"),
-            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());
+void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
+    int num_decks = static_cast<int>(dNumDecks);
+    if (num_decks <= m_iNumConfiguredDecks) {
+        // TODO(owilliams): If we implement deck deletion, shrink the size of configured decks.
+        return;
+    }
 
-    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_cueing"),
-            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "cueing_ch1")).toDouble());
-    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_cueing"),
-            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "cueing_ch2")).toDouble());
+    // Complain very very loudly if we try to break out of the array.
+    Q_ASSERT(num_decks <= kMaxNumberOfDecks);
+
+    for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
+        QString group = PlayerManager::groupForDeck(i);
+        m_pVcEnabled[i] = new ControlObjectThread(group, "vinylcontrol_enabled", this);
+        m_pVcEnabled[i]->set(0);
+
+        ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
+                           m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());
+
+        ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
+                           m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,
+                                                               "cueing_ch1")).toDouble());
+    }
+    m_iNumConfiguredDecks = num_decks;
 }
 
 void VinylControlManager::requestReloadConfig() {
@@ -74,14 +85,10 @@ void VinylControlManager::requestReloadConfig() {
 }
 
 bool VinylControlManager::vinylInputEnabled(int deck) {
-    switch (deck) {
-    case 1:
-        return m_pVcEnabled1->get() != 0;
-    case 2:
-        return m_pVcEnabled2->get() != 0;
-    default:
+    if (deck < 0 || deck >= kMaxNumberOfDecks) {
         return false;
     }
+    return m_pVcEnabled[deck]->get() != 0;
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {
