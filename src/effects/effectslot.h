@@ -50,6 +50,8 @@ class EffectSlot : public QObject {
     // loaded effect was removed from the slot.
     void effectLoaded(EffectPointer pEffect, unsigned int slotNumber);
 
+    void updated();
+
   private:
     QString debugString() const {
         return QString("EffectSlot(%1,%2)").arg(m_iChainNumber).arg(m_iSlotNumber);

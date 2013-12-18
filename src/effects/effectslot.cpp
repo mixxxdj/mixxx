@@ -78,6 +78,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         // Broadcasts a null effect pointer
         emit(effectLoaded(m_pEffect, m_iSlotNumber));
     }
+    emit(updated());
 }
 
 void EffectSlot::clear() {
