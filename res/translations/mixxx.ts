@@ -1929,151 +1929,151 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>DlgPrefControls</name>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="81"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="68"/>
         <source>Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="82"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="69"/>
         <source>Remaining</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="142"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="127"/>
         <source>Don&apos;t load tracks into a playing deck</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="194"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="179"/>
         <source>CDJ Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="195"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="180"/>
         <source>Simple</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="202"/>
-        <location filename="../../src/dlgprefcontrols.cpp" line="210"/>
-        <location filename="../../src/dlgprefcontrols.cpp" line="294"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="187"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="195"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="279"/>
         <source>On</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="203"/>
-        <location filename="../../src/dlgprefcontrols.cpp" line="209"/>
-        <location filename="../../src/dlgprefcontrols.cpp" line="296"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="188"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="194"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="281"/>
         <source>Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="371"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="356"/>
         <source>6%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="372"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="357"/>
         <source>8% (Technics SL-1210)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="396"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="381"/>
         <source>Down increases speed (Technics SL-1210)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="373"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="358"/>
         <source>10%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="143"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="128"/>
         <source>Load tracks into a playing deck</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="257"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="242"/>
         <source>The selected skin is bigger than your screen resolution.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="295"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="280"/>
         <source>On (only in Library)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="354"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="339"/>
         <source>This skin does not support color schemes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="374"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="359"/>
         <source>20%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="375"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="360"/>
         <source>30%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="376"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="361"/>
         <source>40%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="377"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="362"/>
         <source>50%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="378"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="363"/>
         <source>60%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="379"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="364"/>
         <source>70%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="380"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="365"/>
         <source>80%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="381"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="366"/>
         <source>90%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="395"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="380"/>
         <source>Up increases speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="499"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="484"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="500"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="485"/>
         <source>Mixxx must be restarted before the changes will take effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="675"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="660"/>
         <source>OpenGL not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="731"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="716"/>
         <source>Filtered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="732"/>
+        <location filename="../../src/dlgprefcontrols.cpp" line="717"/>
         <source>HSV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4632,7 +4632,7 @@ Apply settings and continue?</source>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="931"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="973"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayd. Please keep 
@@ -4640,57 +4640,57 @@ support.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1505"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1554"/>
         <source>activate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1510"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1559"/>
         <source>toggle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1520"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1569"/>
         <source>right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1525"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1574"/>
         <source>left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1530"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1579"/>
         <source>right small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1535"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1584"/>
         <source>left small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1540"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1589"/>
         <source>up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1545"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1594"/>
         <source>down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1550"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1599"/>
         <source>up small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1555"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1604"/>
         <source>down small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1580"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1629"/>
         <source>Shortcut</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5762,7 +5762,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="51"/>
-        <location filename="../../src/skin/tooltips.cpp" line="230"/>
+        <location filename="../../src/skin/tooltips.cpp" line="231"/>
         <source>Spinning Vinyl</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6113,266 +6113,262 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="216"/>
-        <source>Key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/skin/tooltips.cpp" line="217"/>
-        <source>Displays the harmonic key of the loaded track.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="220"/>
-        <source>BPM Tap</source>
+        <source>Key</source>
+        <extracomment>The musical key of a track</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="221"/>
-        <location filename="../../src/skin/tooltips.cpp" line="227"/>
+        <source>BPM Tap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="222"/>
+        <location filename="../../src/skin/tooltips.cpp" line="228"/>
         <source>When tapped repeatedly, adjusts the BPM to match the tapped BPM.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="225"/>
+        <location filename="../../src/skin/tooltips.cpp" line="226"/>
         <source>Tempo and BPM Tap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="231"/>
+        <location filename="../../src/skin/tooltips.cpp" line="232"/>
         <source>Show/hide the spinning vinyl section.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="234"/>
+        <location filename="../../src/skin/tooltips.cpp" line="235"/>
         <source>Adjust Beatgrid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="235"/>
+        <location filename="../../src/skin/tooltips.cpp" line="236"/>
         <source>Adjust beatgrid so the closest beat is aligned with the current play position.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="238"/>
+        <location filename="../../src/skin/tooltips.cpp" line="239"/>
         <source>Key-Lock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="239"/>
+        <location filename="../../src/skin/tooltips.cpp" line="240"/>
         <source>Prevents the pitch from from changing when the rate changes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="240"/>
+        <location filename="../../src/skin/tooltips.cpp" line="241"/>
         <source>Toggling key-lock during playback may result in a momentary audio glitch.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="243"/>
+        <location filename="../../src/skin/tooltips.cpp" line="244"/>
         <source>If quantize is enabled, snaps to the nearest beat.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="245"/>
+        <location filename="../../src/skin/tooltips.cpp" line="246"/>
         <source>Quantize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="246"/>
+        <location filename="../../src/skin/tooltips.cpp" line="247"/>
         <source>Toggles quantization.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="247"/>
+        <location filename="../../src/skin/tooltips.cpp" line="248"/>
         <source>Loops and cues snap to the nearest beat when quantization is enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="251"/>
+        <location filename="../../src/skin/tooltips.cpp" line="252"/>
         <source>Reverse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="252"/>
+        <location filename="../../src/skin/tooltips.cpp" line="253"/>
         <source>Reverses track playback during regular playback.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="253"/>
+        <location filename="../../src/skin/tooltips.cpp" line="254"/>
         <source>Puts a track into reverse while being held (Censor).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="254"/>
+        <location filename="../../src/skin/tooltips.cpp" line="255"/>
         <source>Playback continues where the track would have been if it had not been temporarily reversed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="258"/>
-        <location filename="../../src/skin/tooltips.cpp" line="265"/>
+        <location filename="../../src/skin/tooltips.cpp" line="259"/>
+        <location filename="../../src/skin/tooltips.cpp" line="266"/>
         <source>Play/Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="259"/>
+        <location filename="../../src/skin/tooltips.cpp" line="260"/>
         <source>Toggles playing or pausing the track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="260"/>
-        <location filename="../../src/skin/tooltips.cpp" line="287"/>
+        <location filename="../../src/skin/tooltips.cpp" line="261"/>
+        <location filename="../../src/skin/tooltips.cpp" line="288"/>
         <source>Jumps to the beginning of the track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="263"/>
+        <location filename="../../src/skin/tooltips.cpp" line="264"/>
         <source>Places a cue-point at the current position on the waveform.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="266"/>
+        <location filename="../../src/skin/tooltips.cpp" line="267"/>
         <source>Plays or pauses the track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="269"/>
+        <location filename="../../src/skin/tooltips.cpp" line="270"/>
         <source>(while playing)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="270"/>
+        <location filename="../../src/skin/tooltips.cpp" line="271"/>
         <source>(while stopped)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="272"/>
+        <location filename="../../src/skin/tooltips.cpp" line="273"/>
         <source>Cue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="273"/>
+        <location filename="../../src/skin/tooltips.cpp" line="274"/>
         <source>Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="277"/>
+        <location filename="../../src/skin/tooltips.cpp" line="278"/>
         <source>Seeks the track to the cue-point and stops.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="280"/>
+        <location filename="../../src/skin/tooltips.cpp" line="281"/>
         <source>Headphone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="301"/>
+        <location filename="../../src/skin/tooltips.cpp" line="302"/>
         <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="302"/>
+        <location filename="../../src/skin/tooltips.cpp" line="303"/>
         <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="303"/>
+        <location filename="../../src/skin/tooltips.cpp" line="304"/>
         <source>Decks can&apos;t sync to samplers and samplers can only sync to decks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="306"/>
+        <location filename="../../src/skin/tooltips.cpp" line="307"/>
         <source>Speed Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="307"/>
+        <location filename="../../src/skin/tooltips.cpp" line="308"/>
         <source>Changes the track playback speed (affects both the tempo and the pitch). If key-lock is enabled, only the tempo is affected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="312"/>
+        <location filename="../../src/skin/tooltips.cpp" line="313"/>
         <source>Changes the track pitch independent of the tempo.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="369"/>
+        <location filename="../../src/skin/tooltips.cpp" line="370"/>
         <source>Setup a loop over the set number of beats.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="371"/>
+        <location filename="../../src/skin/tooltips.cpp" line="372"/>
         <source>Temporarily setup a rolling loop over the set number of beats.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="372"/>
+        <location filename="../../src/skin/tooltips.cpp" line="373"/>
         <source>Playback will resume where the track would have been if it had not entered the loop.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="375"/>
+        <location filename="../../src/skin/tooltips.cpp" line="376"/>
         <source>Loop Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="376"/>
+        <location filename="../../src/skin/tooltips.cpp" line="377"/>
         <source>Turns the current loop off.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="385"/>
+        <location filename="../../src/skin/tooltips.cpp" line="386"/>
         <source>Slip Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="386"/>
+        <location filename="../../src/skin/tooltips.cpp" line="387"/>
         <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="387"/>
+        <location filename="../../src/skin/tooltips.cpp" line="388"/>
         <source>Once disabled, the audible playback will resume where the track would have been.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="423"/>
+        <location filename="../../src/skin/tooltips.cpp" line="424"/>
         <source>Track Key</source>
         <extracomment>The musical key of a track</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="424"/>
+        <location filename="../../src/skin/tooltips.cpp" line="425"/>
         <source>Displays the musical key of the loaded track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="452"/>
+        <location filename="../../src/skin/tooltips.cpp" line="453"/>
         <source>Filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="453"/>
+        <location filename="../../src/skin/tooltips.cpp" line="454"/>
         <source>Toggles the filter effect. Use the depth knobs to adjust.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="456"/>
+        <location filename="../../src/skin/tooltips.cpp" line="457"/>
         <source>Filter Depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="457"/>
+        <location filename="../../src/skin/tooltips.cpp" line="458"/>
         <source>Adjusts the intensity of the filter effect (when active).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="460"/>
+        <location filename="../../src/skin/tooltips.cpp" line="461"/>
         <source>Clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="461"/>
+        <location filename="../../src/skin/tooltips.cpp" line="462"/>
         <source>Displays the current time.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6402,364 +6398,369 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="274"/>
+        <location filename="../../src/skin/tooltips.cpp" line="218"/>
+        <source>Displays the current musical key of the loaded track after pitch shifting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="275"/>
         <source>Change the default cue behavior in Preferences -&gt; Interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="281"/>
+        <location filename="../../src/skin/tooltips.cpp" line="282"/>
         <source>Sends the selected channel&apos;s audio to the headphone output,</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="282"/>
+        <location filename="../../src/skin/tooltips.cpp" line="283"/>
         <source>selected in Preferences -&gt; Sound Hardware.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="285"/>
+        <location filename="../../src/skin/tooltips.cpp" line="286"/>
         <source>Fast Rewind</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="286"/>
+        <location filename="../../src/skin/tooltips.cpp" line="287"/>
         <source>Fast rewind through the track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="290"/>
+        <location filename="../../src/skin/tooltips.cpp" line="291"/>
         <source>Fast Forward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="291"/>
+        <location filename="../../src/skin/tooltips.cpp" line="292"/>
         <source>Fast forward through the track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="292"/>
+        <location filename="../../src/skin/tooltips.cpp" line="293"/>
         <source>Jumps to the end of the track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="296"/>
+        <location filename="../../src/skin/tooltips.cpp" line="297"/>
         <source>Synchronize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="297"/>
+        <location filename="../../src/skin/tooltips.cpp" line="298"/>
         <source>Syncs the tempo (BPM) and phase to that of the other track, </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="298"/>
-        <location filename="../../src/skin/tooltips.cpp" line="300"/>
+        <location filename="../../src/skin/tooltips.cpp" line="299"/>
+        <location filename="../../src/skin/tooltips.cpp" line="301"/>
         <source>if BPM is detected on both.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="299"/>
+        <location filename="../../src/skin/tooltips.cpp" line="300"/>
         <source>Syncs the tempo (BPM) to that of the other track,</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="311"/>
+        <location filename="../../src/skin/tooltips.cpp" line="312"/>
         <source>Pitch Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="316"/>
+        <location filename="../../src/skin/tooltips.cpp" line="317"/>
         <source>Pitch Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="317"/>
+        <location filename="../../src/skin/tooltips.cpp" line="318"/>
         <source>Displays the current playback rate of the track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="320"/>
+        <location filename="../../src/skin/tooltips.cpp" line="321"/>
         <source>Repeat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="321"/>
+        <location filename="../../src/skin/tooltips.cpp" line="322"/>
         <source>When active the track will repeat if you go past the end or reverse before the start.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="324"/>
+        <location filename="../../src/skin/tooltips.cpp" line="325"/>
         <source>Eject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="325"/>
+        <location filename="../../src/skin/tooltips.cpp" line="326"/>
         <source>Ejects track from the player.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="328"/>
+        <location filename="../../src/skin/tooltips.cpp" line="329"/>
         <source>Hotcue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="329"/>
+        <location filename="../../src/skin/tooltips.cpp" line="330"/>
         <source>If hotcue is set, jumps to the hotcue.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="330"/>
+        <location filename="../../src/skin/tooltips.cpp" line="331"/>
         <source>If hotcue is not set, sets the hotcue to the current play position.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="332"/>
+        <location filename="../../src/skin/tooltips.cpp" line="333"/>
         <source>If hotcue is set, clears the hotcue.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="335"/>
+        <location filename="../../src/skin/tooltips.cpp" line="336"/>
         <source>Vinyl Control Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="336"/>
+        <location filename="../../src/skin/tooltips.cpp" line="337"/>
         <source>Absolute mode - track position equals needle position and speed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="337"/>
+        <location filename="../../src/skin/tooltips.cpp" line="338"/>
         <source>Relative mode - track speed equals needle speed regardless of needle position.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="338"/>
+        <location filename="../../src/skin/tooltips.cpp" line="339"/>
         <source>Constant mode - track speed equals last known-steady speed regardless of needle input.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="341"/>
+        <location filename="../../src/skin/tooltips.cpp" line="342"/>
         <source>Vinyl Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="342"/>
+        <location filename="../../src/skin/tooltips.cpp" line="343"/>
         <source>Provides visual feedback for vinyl control status:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="343"/>
+        <location filename="../../src/skin/tooltips.cpp" line="344"/>
         <source>Green for control enabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="344"/>
+        <location filename="../../src/skin/tooltips.cpp" line="345"/>
         <source>Blinking yellow for when the needle reaches the end of the record.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="345"/>
+        <location filename="../../src/skin/tooltips.cpp" line="346"/>
         <source>Red for needle skip detected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="348"/>
+        <location filename="../../src/skin/tooltips.cpp" line="349"/>
         <source>Loop-In Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="349"/>
+        <location filename="../../src/skin/tooltips.cpp" line="350"/>
         <source>Sets the deck loop-in position to the current play position.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="353"/>
+        <location filename="../../src/skin/tooltips.cpp" line="354"/>
         <source>Loop-Out Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="354"/>
+        <location filename="../../src/skin/tooltips.cpp" line="355"/>
         <source>Sets the deck loop-out position to the current play position.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="358"/>
+        <location filename="../../src/skin/tooltips.cpp" line="359"/>
         <source>Loop Halve</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="359"/>
+        <location filename="../../src/skin/tooltips.cpp" line="360"/>
         <source>Halves the current loop&apos;s length by moving the end marker.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="360"/>
+        <location filename="../../src/skin/tooltips.cpp" line="361"/>
         <source>Deck immediately loops if past the new endpoint.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="363"/>
+        <location filename="../../src/skin/tooltips.cpp" line="364"/>
         <source>Loop Double</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="364"/>
+        <location filename="../../src/skin/tooltips.cpp" line="365"/>
         <source>Doubles the current loop&apos;s length by moving the end marker.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="368"/>
+        <location filename="../../src/skin/tooltips.cpp" line="369"/>
         <source>Beatloop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="380"/>
+        <location filename="../../src/skin/tooltips.cpp" line="381"/>
         <source>Reloop/Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="381"/>
+        <location filename="../../src/skin/tooltips.cpp" line="382"/>
         <source>Toggles the current loop on or off.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="377"/>
-        <location filename="../../src/skin/tooltips.cpp" line="382"/>
+        <location filename="../../src/skin/tooltips.cpp" line="378"/>
+        <location filename="../../src/skin/tooltips.cpp" line="383"/>
         <source>Works only if Loop-In and Loop-Out marker are set.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="390"/>
+        <location filename="../../src/skin/tooltips.cpp" line="391"/>
         <source>Vinyl Cueing Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="391"/>
+        <location filename="../../src/skin/tooltips.cpp" line="392"/>
         <source>Determines how cue points are treated in vinyl control Relative mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="392"/>
+        <location filename="../../src/skin/tooltips.cpp" line="393"/>
         <source>Off - Cue points ignored.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="393"/>
+        <location filename="../../src/skin/tooltips.cpp" line="394"/>
         <source>One Cue - If needle is dropped after the cue point, track will seek to that cue point.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="394"/>
+        <location filename="../../src/skin/tooltips.cpp" line="395"/>
         <source>Hot Cue - Track will seek to nearest previous hot cue point.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="397"/>
+        <location filename="../../src/skin/tooltips.cpp" line="398"/>
         <source>Track Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="398"/>
+        <location filename="../../src/skin/tooltips.cpp" line="399"/>
         <source>Displays the elapsed or remaining time of the track loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="399"/>
+        <location filename="../../src/skin/tooltips.cpp" line="400"/>
         <source>Click to toggle between time elapsed/remaining time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="402"/>
+        <location filename="../../src/skin/tooltips.cpp" line="403"/>
         <source>Track Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="403"/>
+        <location filename="../../src/skin/tooltips.cpp" line="404"/>
         <source>Displays the duration of the loaded track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="405"/>
+        <location filename="../../src/skin/tooltips.cpp" line="406"/>
         <source>Information is loaded from the track&apos;s metadata tags.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="407"/>
+        <location filename="../../src/skin/tooltips.cpp" line="408"/>
         <source>Track Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="408"/>
+        <location filename="../../src/skin/tooltips.cpp" line="409"/>
         <source>Displays the artist of the loaded track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="412"/>
+        <location filename="../../src/skin/tooltips.cpp" line="413"/>
         <source>Track Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="413"/>
+        <location filename="../../src/skin/tooltips.cpp" line="414"/>
         <source>Displays the title of the loaded track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="417"/>
+        <location filename="../../src/skin/tooltips.cpp" line="418"/>
         <source>Track Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="418"/>
+        <location filename="../../src/skin/tooltips.cpp" line="419"/>
         <source>Displays the album name of the loaded track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="428"/>
+        <location filename="../../src/skin/tooltips.cpp" line="429"/>
         <source>Track Artist/Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="429"/>
+        <location filename="../../src/skin/tooltips.cpp" line="430"/>
         <source>Displays the artist and title of the loaded track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="433"/>
+        <location filename="../../src/skin/tooltips.cpp" line="434"/>
         <source>Flanger</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="434"/>
+        <location filename="../../src/skin/tooltips.cpp" line="435"/>
         <source>Toggles the flange effect. Use the depth/delay/lfo knobs to adjust.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="437"/>
+        <location filename="../../src/skin/tooltips.cpp" line="438"/>
         <source>Flanger Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="438"/>
+        <location filename="../../src/skin/tooltips.cpp" line="439"/>
         <source>Adjusts the phase delay of the flange effect (when active).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="442"/>
+        <location filename="../../src/skin/tooltips.cpp" line="443"/>
         <source>Flanger Depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="443"/>
+        <location filename="../../src/skin/tooltips.cpp" line="444"/>
         <source>Adjusts the intensity of the flange effect (when active).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="447"/>
+        <location filename="../../src/skin/tooltips.cpp" line="448"/>
         <source>Flanger LFO Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="448"/>
+        <location filename="../../src/skin/tooltips.cpp" line="449"/>
         <source>Adjusts the wavelength of the flange effect (when active).</source>
         <translation type="unfinished"></translation>
     </message>

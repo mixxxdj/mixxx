@@ -1106,7 +1106,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 }
 
 QString LegacySkinParser::getLibraryStyle(QDomNode node) {
-    QString style = XmlParse::selectNodeQString(node, "Style");
+    QString style = getStyleFromNode(node);
 
     // Workaround to support legacy color styling
     QColor color(0,0,0);
@@ -1570,6 +1570,29 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
     }
 }
 
+QString LegacySkinParser::getStyleFromNode(QDomNode node) {
+    QDomElement styleElement = XmlParse::selectElement(node, "Style");
+
+    if (styleElement.isNull()) {
+        return QString();
+    }
+
+    if (styleElement.hasAttribute("src")) {
+        QString styleSrc = styleElement.attribute("src");
+
+        QFile file(styleSrc);
+        if (file.open(QIODevice::ReadOnly)) {
+            QByteArray fileBytes = file.readAll();
+
+            return QString::fromLocal8Bit(fileBytes.constData(),
+                                          fileBytes.length());
+        }
+    }
+
+    // If no src attribute, return the node data as text.
+    return styleElement.text();
+}
+
 void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosition) {
     // Override the widget object name.
     QString objectName = XmlParse::selectNodeQString(node, "ObjectName");
@@ -1597,7 +1620,7 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosi
         }
     }
 
-    QString style = XmlParse::selectNodeQString(node, "Style");
+    QString style = getStyleFromNode(node);
     // Check if we should apply legacy library styling to this node.
     if (XmlParse::selectNodeQString(node, "LegacyTableViewStyle")
         .contains("true", Qt::CaseInsensitive)) {
