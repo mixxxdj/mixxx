@@ -79,6 +79,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupConnections(QDomNode node, QWidget* pWidget);
     void addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString getLibraryStyle(QDomNode node);
+    QString getStyleFromNode(QDomNode node);
 
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);
