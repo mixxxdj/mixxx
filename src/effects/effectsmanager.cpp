@@ -33,6 +33,8 @@ EffectsManager::~EffectsManager() {
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
     Q_ASSERT(pBackend);
     m_effectsBackends.append(pBackend);
+    connect(pBackend, SIGNAL(effectRegistered()),
+            this, SIGNAL(availableEffectsUpdated()));
 }
 
 void EffectsManager::registerGroup(const QString& group) {

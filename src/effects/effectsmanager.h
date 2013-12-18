@@ -49,6 +49,9 @@ class EffectsManager : public QObject {
     // ownership of request and deletes it once a response is received.
     bool writeRequest(EffectsRequest* request);
 
+  signals:
+    void availableEffectsUpdated();
+
   private:
     QString debugString() const {
         return "EffectsManager";

@@ -30,6 +30,9 @@ class EffectsBackend : public QObject {
     virtual EffectPointer instantiateEffect(
         EffectsManager* pEffectsManager, const QString& effectId);
 
+  signals:
+    void effectRegistered();
+
   protected:
     void registerEffect(const QString& id,
                         const EffectManifest& manifest,
