@@ -187,15 +187,29 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 }
 
 
-void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
-{
+void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     ScopedTimer t("VinylControlXwax::analyzeSamples");
+    CSAMPLE gain = m_pVinylControlInputGain->get();
+    const int kChannels = 2;
+
+    // Convert CSAMPLE samples to shorts, preventing overflow.
+    for (int i = 0; i < nFrames * kChannels; ++i) {
+        double sample = pSamples[i] * gain * SHRT_MAX;
+
+        if (sample > SHRT_MAX) {
+            m_pWorkBuffer[i] = SHRT_MAX;
+        } else if (sample < SHRT_MIN) {
+            m_pWorkBuffer[i] = SHRT_MIN;
+        } else {
+            m_pWorkBuffer[i] = static_cast<short>(sample);
+        }
+    }
 
     // Submit the samples to the xwax timecode processor. The size argument is
     // in stereo frames.
-    timecoder_submit(&timecoder, samples, nFrames);
+    timecoder_submit(&timecoder, m_pWorkBuffer, nFrames);
 
-    bool bHaveSignal = fabs((float)samples[0]) + fabs((float)samples[1]) > MIN_SIGNAL;
+    bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > MIN_SIGNAL;
     //qDebug() << "signal?" << bHaveSignal;
 
     //TODO: Move all these config object get*() calls to an "updatePrefs()" function,

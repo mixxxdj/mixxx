@@ -10,6 +10,13 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
 
     // Get Control objects
+    m_pVinylControlInputGain = new ControlObjectThread(VINYL_PREF_KEY, "gain");
+
+    bool gainOk = false;
+    double gain = m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "gain"))
+            .toDouble(&gainOk);
+    m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
+
     playPos             = new ControlObjectThread(group, "playposition");    //Range: -.14 to 1.14
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
@@ -48,10 +55,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
 
     //Enabled or not -- load from saved value in case vinyl control is restarting
     bIsEnabled = wantenabled->get();
-
-    //Gain
-    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"),
-        m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 }
 
 bool VinylControl::isEnabled() {
@@ -86,6 +89,7 @@ VinylControl::~VinylControl()
         wantenabled->slotSet(true);
     }
 
+    delete m_pVinylControlInputGain;
     delete playPos;
     delete trackSamples;
     delete trackSampleRate;
@@ -111,4 +115,3 @@ float VinylControl::getSpeed()
 {
     return dVinylScratch;
 }
-

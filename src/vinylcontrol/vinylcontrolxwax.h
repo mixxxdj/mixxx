@@ -26,7 +26,7 @@ class VinylControlXwax : public VinylControl {
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
-    void analyzeSamples(const short* samples, size_t nFrames);
+    void analyzeSamples(CSAMPLE* pSamples, size_t nFrames);
 
     virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo);
 
@@ -51,6 +51,8 @@ class VinylControlXwax : public VinylControl {
 
     double dOldPos; // The position read last time it was polled.
 
+    // Scratch buffer for CSAMPLE -> short conversions.
+    short m_pWorkBuffer[MAX_BUFFER_LEN];
     bool bQualityRing[QUALITY_RING_SIZE];
     int iQualPos;
     int iQualFilled;

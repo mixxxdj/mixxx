@@ -177,8 +177,10 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
             dieflag = true;
         }
 
+        // Normalize the samples from [SHRT_MIN, SHRT_MAX] to [-1.0, 1.0].
+        // TODO(rryan): Change the SoundSource API to do this for us.
         for (int i = 0; i < read; ++i) {
-            samples[i] = ((float)data16[i])/32767.0f;
+            samples[i] = static_cast<CSAMPLE>(data16[i]) / SHRT_MAX;
         }
 
         QListIterator<Analyser*> it(m_aq);

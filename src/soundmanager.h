@@ -96,7 +96,7 @@ class SoundManager : public QObject {
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
-    void pushBuffer(const QList<AudioInputBuffer>& inputs, short* inputBuffer,
+    void pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* inputBuffer,
                     const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
                     SoundDevice* pDevice);
 
@@ -124,7 +124,7 @@ class SoundManager : public QObject {
 #endif
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
-    QHash<AudioInput, short*> m_inputBuffers;
+    QHash<AudioInput, CSAMPLE*> m_inputBuffers;
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;
