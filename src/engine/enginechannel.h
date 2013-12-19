@@ -18,7 +18,7 @@
 #ifndef ENGINECHANNEL_H
 #define ENGINECHANNEL_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "configobject.h"
 
 class ControlObject;
@@ -39,7 +39,7 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(const char *pGroup, ChannelOrientation defaultOrientation = CENTER);
+    EngineChannel(const char* pGroup, ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
@@ -49,7 +49,7 @@ class EngineChannel : public EngineObject {
     virtual bool isPFL();
     virtual bool isMaster();
 
-    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize) = 0;
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer() {

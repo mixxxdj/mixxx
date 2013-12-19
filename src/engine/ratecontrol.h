@@ -119,7 +119,7 @@ public:
     ControlObject* m_pVCScratching;
     Rotary* m_pJogFilter;
 
-    ControlObject *m_pSampleRate;
+    ControlObject* m_pSampleRate;
 
     TrackPointer m_pTrack;
 

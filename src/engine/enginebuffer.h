@@ -92,8 +92,8 @@ const int ENGINE_RAMP_UP = 1;
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
-public:
-    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config,
+  public:
+    EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
     bool getPitchIndpTimeStretch(void);
@@ -118,7 +118,7 @@ public:
     // while holding the pause mutex
     void setNewPlaypos(double playpos);
 
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
     void processSlip(int iBufferSize);
 

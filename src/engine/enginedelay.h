@@ -17,21 +17,23 @@
 #ifndef ENGINEDELAY_H
 #define ENGINEDELAY_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 
 class ControlPotmeter;
 
-const int kiMaxDelay = 20000; 
+const int kiMaxDelay = 20000;
 
-class EngineDelay : public EngineObject
-{
-public:
-    EngineDelay(const char *group);
-    ~EngineDelay();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-private:
-    ControlPotmeter *m_pPotmeter;
-    CSAMPLE *m_pDelayBuffer;
+class EngineDelay : public EngineObject {
+    Q_OBJECT
+  public:
+    EngineDelay(const char* group);
+    virtual ~EngineDelay();
+
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+  private:
+    ControlPotmeter* m_pPotmeter;
+    CSAMPLE* m_pDelayBuffer;
     int m_iDelay, m_iDelayPos;
 };
 

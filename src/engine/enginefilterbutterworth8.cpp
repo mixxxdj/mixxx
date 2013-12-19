@@ -158,10 +158,9 @@ void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1) {
     initBuffers();
 }
 
-void EngineFilterButterworth8Low::process(const CSAMPLE *pIn,
-        const CSAMPLE *ppOut, const int iBufferSize) {
-    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
-
+void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
+                                          CSAMPLE* pOutput,
+                                          const int iBufferSize) {
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
@@ -186,10 +185,9 @@ void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
     initBuffers();
 }
 
-void EngineFilterButterworth8Band::process(const CSAMPLE *pIn,
-        const CSAMPLE *ppOut, const int iBufferSize) {
-    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
-
+void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
+                                           CSAMPLE* pOutput,
+                                           const int iBufferSize) {
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
@@ -216,11 +214,9 @@ void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
     initBuffers();
 }
 
-void EngineFilterButterworth8High::process(const CSAMPLE *pIn,
-                                           const CSAMPLE *ppOut,
+void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
+                                           CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
-
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);

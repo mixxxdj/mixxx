@@ -23,15 +23,15 @@
 #include "configobject.h"
 #include "controllogpotmeter.h"
 #include "controlpotmeter.h"
-#include "enginebuffer.h"
-#include "enginemaster.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
-#include "enginebuffer.h"
-#include "enginechannel.h"
 #include "engine/enginedeck.h"
-#include "engineclipping.h"
-#include "enginevumeter.h"
-#include "enginexfader.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginechannel.h"
+#include "engine/engineclipping.h"
+#include "engine/enginevumeter.h"
+#include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
 #include "sampleutil.h"
@@ -42,11 +42,11 @@
 #include "engine/channelmixer.h"
 
 #ifdef __LADSPA__
-#include "engineladspa.h"
+#include "engine/engineladspa.h"
 #endif
 
-EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
-                           const char * group,
+EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
+                           const char* group,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
                            bool bRampingGain)
@@ -278,7 +278,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     }
 }
 
-void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
+void EngineMaster::process(const int iBufferSize) {
     static bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
@@ -292,9 +292,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
-
-    CSAMPLE **pOutput = (CSAMPLE**)pOut;
-    Q_UNUSED(pOutput);
 
     // Bitvector of enabled channels
     const unsigned int maxChannels = 32;

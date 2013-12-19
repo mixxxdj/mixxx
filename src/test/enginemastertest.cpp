@@ -27,7 +27,7 @@ class EngineChannelMock : public EngineChannel {
     MOCK_METHOD0(isActive, bool());
     MOCK_METHOD0(isMaster, bool());
     MOCK_METHOD0(isPFL, bool());
-    MOCK_METHOD3(process, void(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize));
+    MOCK_METHOD3(process, void(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize));
 };
 
 class EngineMasterTest : public MixxxTest {
@@ -90,7 +90,7 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
@@ -145,7 +145,7 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
@@ -200,7 +200,7 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
@@ -273,7 +273,7 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
@@ -346,7 +346,7 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
@@ -382,7 +382,7 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output is empty.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();

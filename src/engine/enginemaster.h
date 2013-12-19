@@ -18,6 +18,8 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
+#include <QObject>
+
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
@@ -43,7 +45,7 @@ class EngineEffectsManager;
 class SyncWorker;
 class EngineSync;
 
-class EngineMaster : public EngineObject, public AudioSource {
+class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
@@ -65,7 +67,7 @@ class EngineMaster : public EngineObject, public AudioSource {
         return QString("[Headphone]");
     }
 
-    void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
+    void process(const int iBufferSize);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.

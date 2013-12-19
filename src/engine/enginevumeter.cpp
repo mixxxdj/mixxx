@@ -22,7 +22,7 @@
 #include "controlpotmeter.h"
 #include "sampleutil.h"
 
-EngineVuMeter::EngineVuMeter(const char * group) {
+EngineVuMeter::EngineVuMeter(const char* group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
@@ -49,9 +49,7 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlVuMeterR;
 }
 
-void EngineVuMeter::process(const CSAMPLE * pIn, const CSAMPLE *, const int iBufferSize)
-{
-
+void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
     SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
