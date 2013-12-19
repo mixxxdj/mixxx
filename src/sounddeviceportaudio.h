@@ -67,7 +67,7 @@ class SoundDevicePortAudio : public SoundDevice {
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
     ControlObject* m_pMasterUnderflowCount;
-    int m_undeflowUpdateCount;
+    int m_underflowUpdateCount;
 };
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,

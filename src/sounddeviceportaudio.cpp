@@ -44,7 +44,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_bSetThreadPriority(false),
           m_pMasterUnderflowCount(ControlObject::getControl(
               ConfigKey("[Master]", "underflow_count"))),
-          m_undeflowUpdateCount(0) {
+          m_underflowUpdateCount(0) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -299,16 +299,16 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         VisualPlayPosition::setTimeInfo(timeInfo);
     }
 
-    if (!m_undeflowUpdateCount) {
+    if (!m_underflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
             if (m_pMasterUnderflowCount) {
                 m_pMasterUnderflowCount->set(
                     m_pMasterUnderflowCount->get() + 1);
             }
-            m_undeflowUpdateCount = 40;
+            m_underflowUpdateCount = 40;
         }
     } else {
-        m_undeflowUpdateCount--;
+        m_underflowUpdateCount--;
     }
 
     //Note: Input is processed first so that any ControlObject changes made in
