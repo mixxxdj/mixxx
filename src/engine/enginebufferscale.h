@@ -70,7 +70,7 @@ class EngineBufferScale : public QObject {
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
     /** Scale buffer */
-    virtual CSAMPLE *getScaled(unsigned long buf_size) = 0;
+    virtual CSAMPLE* getScaled(unsigned long buf_size) = 0;
 
   protected:
     int m_iSampleRate;
@@ -78,7 +78,7 @@ class EngineBufferScale : public QObject {
     double m_dTempoAdjust;
     double m_dPitchAdjust;
     /** Pointer to internal buffer */
-    CSAMPLE *m_buffer;
+    CSAMPLE* m_buffer;
     /** New playpos after call to scale */
     double m_samplesRead;
 };

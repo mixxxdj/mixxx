@@ -353,7 +353,7 @@ double EngineBuffer::getFileBpm() {
     return m_pBpmControl->getFileBpm();
 }
 
-void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster) {
+void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     m_engineLock.lock();
     foreach (EngineControl* pControl, m_engineControls) {
         pControl->setEngineMaster(pEngineMaster);
@@ -399,7 +399,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_engineLock.unlock();
 }
 
-const char * EngineBuffer::getGroup()
+const char* EngineBuffer::getGroup()
 {
     return m_group;
 }
@@ -581,7 +581,7 @@ void EngineBuffer::slotControlSlip(double v)
 }
 
 
-void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
+void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSize)
 {
     Q_ASSERT(even(iBufferSize));
     m_pReader->process();
@@ -595,7 +595,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
-    CSAMPLE * pOutput = (CSAMPLE *)pOut; // strip const attribute TODO(XXX): avoid this hack
     bool bCurBufferPaused = false;
     double rate = 0;
 

@@ -29,7 +29,7 @@ ControlPotmeter* EngineFilterBlock::s_loEqFreq = NULL;
 ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;
 ControlPushButton* EngineFilterBlock::s_lofiEq = NULL;
 
-EngineFilterBlock::EngineFilterBlock(const char * group)
+EngineFilterBlock::EngineFilterBlock(const char* group)
 {
     ilowFreq = 0;
     ihighFreq = 0;
@@ -149,12 +149,8 @@ void EngineFilterBlock::setFilters(bool forceSetting)
     }
 }
 
-void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
-{
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
     float fLow=0.f, fMid=0.f, fHigh=0.f;
-
-
     if (filterKillLow->get()==0.)
         fLow = filterpotLow->get(); //*0.7;
     if (filterKillMid->get()==0.)

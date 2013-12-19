@@ -16,16 +16,16 @@
 ***************************************************************************/
 
 #include "controlpushbutton.h"
-#include "enginebuffer.h"
-#include "enginevinylsoundemu.h"
-#include "enginedeck.h"
-#include "engineclipping.h"
-#include "enginepregain.h"
-#include "engineflanger.h"
-#include "enginefiltereffect.h"
-#include "enginefilterblock.h"
-#include "enginevumeter.h"
-#include "enginefilteriir.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginevinylsoundemu.h"
+#include "engine/enginedeck.h"
+#include "engine/engineclipping.h"
+#include "engine/enginepregain.h"
+#include "engine/engineflanger.h"
+#include "engine/enginefiltereffect.h"
+#include "engine/enginefilterblock.h"
+#include "engine/enginevumeter.h"
+#include "engine/enginefilteriir.h"
 
 #include "sampleutil.h"
 
@@ -76,9 +76,7 @@ EngineDeck::~EngineDeck() {
     delete m_pVUMeter;
 }
 
-void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBufferSize) {
-    CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
-
+void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
     // Feed the incoming audio through if passthrough is active
     if (isPassthroughActive()) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);

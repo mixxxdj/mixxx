@@ -27,13 +27,15 @@
 #define PREDEF_BP 2
 #define PREDEF_LP 3
 
-class EngineFilter : public EngineObject
-{
-public:
-    EngineFilter( char *conf, int predefinedType = 0);
-    ~EngineFilter();
-    void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
-protected:
+class EngineFilter : public EngineObject {
+    Q_OBJECT
+  public:
+    EngineFilter(char* conf, int predefinedType = 0);
+    virtual ~EngineFilter();
+
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+  protected:
     const double *coefs;
     double iir;
     double fir;
@@ -41,7 +43,8 @@ protected:
 #define FILTER_BUF_SIZE 16
     double buf1[FILTER_BUF_SIZE];
     double buf2[FILTER_BUF_SIZE];
-private:
+
+  private:
     double (*processSample)(void *buf, const double sample);
 
     FidFilter *ff;

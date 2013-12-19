@@ -434,7 +434,7 @@ void SoundManager::requestBuffer(
 
         // Produce a block of samples for output. EngineMaster expects stereo
         // samples so multiply iFramesPerBuffer by 2.
-        m_pMaster->process(0, 0, iFramesPerBuffer*2);
+        m_pMaster->process(iFramesPerBuffer*2);
 
         m_requestBufferMutex.unlock();
     }

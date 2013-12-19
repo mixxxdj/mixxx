@@ -41,11 +41,11 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const char *group, ConfigObject<ConfigValue>* pConfig, EngineMaster* pMixingEngine,
+    EngineDeck(const char* group, ConfigObject<ConfigValue>* pConfig, EngineMaster* pMixingEngine,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 
-    virtual void process(const CSAMPLE *pInput, const CSAMPLE *pOutput, const int iBufferSize);
+    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();

@@ -26,7 +26,7 @@ void EngineBufferScaleDummy::clear()
 }
 
 
-CSAMPLE *EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
+CSAMPLE* EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
     double rate = m_dRateAdjust * m_dTempoAdjust * m_dPitchAdjust;
     if (rate == 0.0f) {
