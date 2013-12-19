@@ -198,7 +198,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     }
 
     // Convert CSAMPLE samples to shorts, preventing overflow.
-    for (int i = 0; i < nFrames * kChannels; ++i) {
+    for (int i = 0; i < static_cast<int>(nFrames * kChannels); ++i) {
         double sample = pSamples[i] * gain * SHRT_MAX;
 
         if (sample > SHRT_MAX) {
