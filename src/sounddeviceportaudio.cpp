@@ -284,7 +284,6 @@ QString SoundDevicePortAudio::getError() const {
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         float *output, short *in, const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
-    Q_UNUSED(timeInfo);
     ScopedTimer t("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();

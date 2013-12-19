@@ -55,12 +55,9 @@ void EngineClipping::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBu
     else {
         m_duration--;
     }
-
-
 }
 
 //returns true if the last buffer processed clipped
-bool EngineClipping::hasClipped()
-{
+bool EngineClipping::hasClipped() {
     return clipped;
 }

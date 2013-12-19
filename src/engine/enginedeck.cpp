@@ -30,9 +30,9 @@
 #include "sampleutil.h"
 
 EngineDeck::EngineDeck(const char* group,
-                             ConfigObject<ConfigValue>* pConfig,
-                             EngineMaster* pMixingEngine,
-                             EngineChannel::ChannelOrientation defaultOrientation)
+                       ConfigObject<ConfigValue>* pConfig,
+                       EngineMaster* pMixingEngine,
+                       EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
