@@ -192,6 +192,11 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     CSAMPLE gain = m_pVinylControlInputGain->get();
     const int kChannels = 2;
 
+    // We only support amplifying with the VC pre-amp.
+    if (gain < 1.0f) {
+        gain = 1.0f;
+    }
+
     // Convert CSAMPLE samples to shorts, preventing overflow.
     for (int i = 0; i < nFrames * kChannels; ++i) {
         double sample = pSamples[i] * gain * SHRT_MAX;
