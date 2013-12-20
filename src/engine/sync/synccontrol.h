@@ -104,6 +104,7 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pVCEnabled;
     QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
     QScopedPointer<ControlObjectSlave> m_pEjectButton;
+    QScopedPointer<ControlObjectSlave> m_pSyncPhaseButton;
 };
 
 
