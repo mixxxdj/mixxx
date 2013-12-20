@@ -84,6 +84,8 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pRateRange->connectValueChanged(this, SLOT(slotRateChanged()),
                                       Qt::DirectConnection);
 
+    m_pSyncPhaseButton.reset(new ControlObjectSlave(getGroup(), "beatsync_phase", this));
+
 #ifdef __VINYLCONTROL__
     m_pVCEnabled.reset(new ControlObjectSlave(
         getGroup(), "vinylcontrol_enabled", this));
@@ -104,9 +106,14 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
-    if (mode == SYNC_FOLLOWER && m_pVCEnabled->get()) {
-        // If follower mode is enabled, disable vinyl control.
-        m_pVCEnabled->set(0.0);
+    if (mode == SYNC_FOLLOWER) {
+        if (m_pVCEnabled->get()) {
+            // If follower mode is enabled, disable vinyl control.
+            m_pVCEnabled->set(0.0);
+        }
+        // Tell bpmcontrol to sync phase.
+        m_pSyncPhaseButton->set(1.0);
+        m_pSyncPhaseButton->set(0.0);
     }
     if (mode != SYNC_NONE && m_pPassthroughEnabled->get()) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
