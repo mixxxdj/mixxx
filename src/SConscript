@@ -80,7 +80,12 @@ def build_tests():
         env.Append(LIBPATH="#lib/gmock-1.5.0/lib")
         env.Append(LIBS = 'gmock')
 
-        env.Program(target='mixxx-test', source=test_sources)
+        if build.platform_is_windows:
+                env.Program('mixxx-test',
+                            [test_sources, env.RES('#src/mixxx.rc')],
+                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+        else:
+                env.Program(target='mixxx-test', source=test_sources)
 
         Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
 
