@@ -81,11 +81,13 @@ def build_tests():
         env.Append(LIBS = 'gmock')
 
         if build.platform_is_windows:
-                env.Program('mixxx-test',
-                            [test_sources, env.RES('#src/mixxx.rc')],
-                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+                test_bin = env.Program(
+                        'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
+                        LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
         else:
-                env.Program(target='mixxx-test', source=test_sources)
+                test_bin = env.Program(target='mixxx-test', source=test_sources)
+
+        env.Alias('mixxx-test', test_bin)
 
         Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
 
