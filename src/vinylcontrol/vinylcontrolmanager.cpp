@@ -85,7 +85,11 @@ void VinylControlManager::requestReloadConfig() {
 }
 
 bool VinylControlManager::vinylInputEnabled(int deck) {
-    if (deck < 0 || deck >= kMaxNumberOfDecks) {
+    if (deck < 0 || deck >= m_iNumConfiguredDecks) {
+        return false;
+    }
+    if (m_pVcEnabled[deck] == NULL) {
+        qDebug() << "WARNING, tried to get vinyl enabled status for NULL deck " << deck;
         return false;
     }
     return m_pVcEnabled[deck]->get() != 0;
