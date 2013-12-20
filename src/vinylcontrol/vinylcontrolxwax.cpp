@@ -44,6 +44,8 @@ QMutex VinylControlXwax::s_xwaxLUTMutex;
 VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString group)
         : VinylControl(pConfig, group) {
     dOldPos                 = 0.0f;
+    m_pWorkBuffer = new short[MAX_BUFFER_LEN];
+    m_workBufferSize = MAX_BUFFER_LEN;
     char * timecode  =  NULL;
     bForceResync    = false;
     iOldMode        = MIXXX_VCMODE_ABSOLUTE;
@@ -155,6 +157,7 @@ VinylControlXwax::~VinylControlXwax()
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
     delete [] m_pPitchRing;
+    delete [] m_pWorkBuffer;
 
     //Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);
@@ -197,9 +200,17 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         gain = 1.0f;
     }
 
+    size_t samplesSize = nFrames * kChannels;
+
+    if (samplesSize > m_workBufferSize) {
+        delete [] m_pWorkBuffer;
+        m_pWorkBuffer = new short[samplesSize];
+        m_workBufferSize = samplesSize;
+    }
+
     // Convert CSAMPLE samples to shorts, preventing overflow.
-    for (int i = 0; i < static_cast<int>(nFrames * kChannels); ++i) {
-        double sample = pSamples[i] * gain * SHRT_MAX;
+    for (int i = 0; i < static_cast<int>(samplesSize); ++i) {
+        CSAMPLE sample = pSamples[i] * gain * SHRT_MAX;
 
         if (sample > SHRT_MAX) {
             m_pWorkBuffer[i] = SHRT_MAX;

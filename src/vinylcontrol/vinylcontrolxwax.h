@@ -52,7 +52,8 @@ class VinylControlXwax : public VinylControl {
     double dOldPos; // The position read last time it was polled.
 
     // Scratch buffer for CSAMPLE -> short conversions.
-    short m_pWorkBuffer[MAX_BUFFER_LEN];
+    short* m_pWorkBuffer;
+    size_t m_workBufferSize;
     bool bQualityRing[QUALITY_RING_SIZE];
     int iQualPos;
     int iQualFilled;
