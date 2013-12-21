@@ -180,7 +180,6 @@ class PlayerManager : public QObject {
     void slotNumDecksControlChanged(double v);
     void slotNumSamplersControlChanged(double v);
     void slotNumPreviewDecksControlChanged(double v);
-    void slotSkinNumDecksControlChanged(double v);
 
   signals:
     void loadLocationToPlayer(QString location, QString group);
@@ -210,9 +209,6 @@ class PlayerManager : public QObject {
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
-    ControlObject* m_pCOSkinNumDecks;
-    ControlObject* m_pCOSkinNumSamplers;
-    ControlObject* m_pCOSkinNumPreviewDecks;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

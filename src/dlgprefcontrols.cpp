@@ -197,11 +197,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
 
     // Ordering of decks, if configurable
-    ControlObject* skin_num_decks = ControlObject::getControl(ConfigKey("[Skin]", "num_decks"));
-    int deck_count = static_cast<int>(skin_num_decks->get());
+    ControlObject* num_decks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
+    int deck_count = static_cast<int>(num_decks->get());
     updateDeckOrderCombo(deck_count);
     connect(ComboBoxDeckOrder, SIGNAL(activated(int)), this, SLOT(slotSetDeckOrder(int)));
-    connect(skin_num_decks, SIGNAL(valueChanged(double)),
+    connect(num_decks, SIGNAL(valueChanged(double)),
             this, SLOT(slotSkinNumDecksControlChanged(double)),
             Qt::DirectConnection);
 
@@ -462,7 +462,6 @@ void DlgPrefControls::slotSetDeckOrder(int)
 {
     QString deckorder = ComboBoxDeckOrder->currentText();
     m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(deckorder));
-    m_pPlayerManager->slotSkinNumDecksControlChanged(deckorder.length());
 }
 
 void DlgPrefControls::slotSetAutoDjMinimumAvailable(int a_iValue) {
@@ -514,7 +513,7 @@ void DlgPrefControls::slotSetSkin(int)
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
     slotUpdateSchemes();
-    const int deck_count = ControlObject::get(ConfigKey("[Skin]", "num_decks"));
+    const int deck_count = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     updateDeckOrderCombo(deck_count);
 }
 

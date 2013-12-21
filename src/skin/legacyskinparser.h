@@ -83,12 +83,6 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);
 
-    // Older skins used to directly set the [Master] config keys, but skins shouldn't
-    // have direct access to Mixxx internals.  Instead change these to [Skin] and
-    // print a warning.
-    static bool isLegacyAttribute(QString configKey);
-    static QString convertLegacyAttribute(QString configkey);
-
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
