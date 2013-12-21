@@ -1060,10 +1060,11 @@ class Optimize(Feature):
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             build.env.Append(CCFLAGS='/fp:fast')
 
-            # Do link-time code generation (and show a progress indicator)
-            # Should we turn on PGO ?
+            # Do link-time code generation (and don't show a progress indicator
+            # -- this relies on aNSI control characters and tends to overwhelm
+            # Jenkins logs) Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-            build.env.Append(LINKFLAGS='/LTCG:STATUS')
+            build.env.Append(LINKFLAGS='/LTCG:NOSTATUS')
 
             # Suggested for unused code removal
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx

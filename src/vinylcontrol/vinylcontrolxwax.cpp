@@ -109,8 +109,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
 
     double latency = ControlObject::getControl(
             ConfigKey("[Master]", "latency"))->get();
-    if (latency == 0) {
-        qDebug() << "Failed to get master latency, assuming 20 as a reasonable value";
+    if (latency <= 0 || latency > 200) {
+        qDebug() << "Failed to get sane latency, assuming 20 as a reasonable value";
         latency = 20;
     }
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds too much stickiness
