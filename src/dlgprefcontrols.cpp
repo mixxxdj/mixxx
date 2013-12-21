@@ -197,13 +197,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
 
     // Ordering of decks, if configurable
-    ControlObject* num_decks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
-    int deck_count = static_cast<int>(num_decks->get());
+    int deck_count = static_cast<int>(m_pNumDecks->get());
     updateDeckOrderCombo(deck_count);
     connect(ComboBoxDeckOrder, SIGNAL(activated(int)), this, SLOT(slotSetDeckOrder(int)));
-    connect(num_decks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSkinNumDecksControlChanged(double)),
-            Qt::DirectConnection);
 
 #ifdef __AUTODJCRATES__
 
@@ -248,7 +244,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Skin configurations
     //
     QString warningString = "<img src=\":/images/preferences/ic_preferences_warning.png\") width=16 height=16 />"
-        + tr("The minimum size of the selected skin is bigger than your screen resolution.");
+        + tr("The selected skin is bigger than your screen resolution.");
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
@@ -265,7 +261,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
         if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
         {
             checkSkinResolution(list.at(i).fileName())
-                    ? ComboBoxSkinconf->insertItem(i, list.at(i).fileName())
+                    ? ComboBoxSkinconf->insertItem(i, QIcon(":/trolltech/styles/commonstyle/images/standardbutton-apply-32.png"), list.at(i).fileName())
                     : ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
 
             if (list.at(i).filePath() == configuredSkinPath) {
@@ -462,6 +458,8 @@ void DlgPrefControls::slotSetDeckOrder(int)
 {
     QString deckorder = ComboBoxDeckOrder->currentText();
     m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(deckorder));
+    updateDeckOrderCombo(static_cast<int>(m_pNumDecks->get()));
+    m_pPlayerManager->setDeckOrder(deckorder);
 }
 
 void DlgPrefControls::slotSetAutoDjMinimumAvailable(int a_iValue) {
@@ -513,7 +511,7 @@ void DlgPrefControls::slotSetSkin(int)
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
     slotUpdateSchemes();
-    const int deck_count = ControlObject::get(ConfigKey("[Master]", "num_decks"));
+    const int deck_count = static_cast<int>(m_pNumDecks->get());
     updateDeckOrderCombo(deck_count);
 }
 
@@ -614,6 +612,7 @@ void DlgPrefControls::slotApply()
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
 
+    slotSetDeckOrder(ComboBoxDeckOrder->currentIndex());
 }
 
 void DlgPrefControls::slotSetFrameRate(int frameRate) {
@@ -755,36 +754,6 @@ bool DlgPrefControls::checkSkinResolution(QString skin)
     return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
 }
 
-void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
-    // We always try to find the configured order because the skin deckcount value isn't set
-    // at construction time. We'll receive a signal when that value changes, this function
-    // will get called, and then we'll set the proper ordering. Since we update the config
-    // every time they change the value, this shouldn't cause weird overwrites.
-
-    QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
-    //textDeckOrder->setVisible(deck_count != 0);
-    //ComboBoxDeckOrder->setVisible(deck_count != 0);
-    ComboBoxDeckOrder->clear();
-    if (deck_count == 0) {
-        return;
-    }
-
-    int deckorder_index = 0;
-    int i = 0;
-    foreach(const PlayerManager::DeckOrderingManager::deck_order_t& order,
-            PlayerManager::getDeckOrderings(deck_count)) {
-        ComboBoxDeckOrder->addItem(order.label);
-        if (order.label == config_order) {
-            deckorder_index = i;
-        }
-        ++i;
-    }
-    ComboBoxDeckOrder->setCurrentIndex(deckorder_index);
-    if (ComboBoxDeckOrder->currentText() != config_order) {
-        m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentText()));
-    }
-}
-
 void DlgPrefControls::slotNumDecksChanged(double new_count) {
     int numdecks = static_cast<int>(new_count);
     if (numdecks <= m_iNumConfiguredDecks) {
@@ -807,6 +776,7 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
     m_iNumConfiguredDecks = numdecks;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+    updateDeckOrderCombo(numdecks);
 }
 
 void DlgPrefControls::slotNumSamplersChanged(double new_count) {
@@ -831,3 +801,37 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
 }
+
+void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
+    // We always try to find the configured order because the skin deckcount value isn't set
+    // at construction time. We'll receive a signal when that value changes, this function
+    // will get called, and then we'll set the proper ordering. Since we update the config
+    // every time they change the value, this shouldn't cause weird overwrites.
+
+    QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
+    //textDeckOrder->setVisible(deck_count != 0);
+    //ComboBoxDeckOrder->setVisible(deck_count != 0);
+    ComboBoxDeckOrder->clear();
+    if (deck_count == 0) {
+        return;
+    }
+
+    int deckorder_index = -1;
+    int i = 0;
+    foreach(const PlayerManager::DeckOrderingManager::deck_order_t& order,
+            PlayerManager::getDeckOrderings(deck_count)) {
+        ComboBoxDeckOrder->addItem(order.label);
+        if (order.label == config_order) {
+            deckorder_index = i;
+        }
+        ++i;
+    }
+    if (deckorder_index >= 0) {
+        ComboBoxDeckOrder->setCurrentIndex(deckorder_index);
+        if (ComboBoxDeckOrder->currentText() != config_order) {
+            m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"),
+                           ConfigValue(ComboBoxDeckOrder->currentText()));
+        }
+    }
+}
+

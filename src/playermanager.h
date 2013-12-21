@@ -160,6 +160,8 @@ class PlayerManager : public QObject {
         return s_deckOrderingManager.getDeckOrderings(deck_count);
     }
 
+    void setDeckOrder(QString order);
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);

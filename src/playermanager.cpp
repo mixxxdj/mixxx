@@ -173,6 +173,7 @@ unsigned int PlayerManager::numPreviewDecks() {
 
 void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
+
     int num = (int)v;
     if (num < m_decks.size()) {
         // The request was invalid -- reset the value.
@@ -184,6 +185,22 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
     while (m_decks.size() < num) {
         addDeckInner();
     }
+}
+
+void PlayerManager::setDeckOrder(QString deckorder) {
+    int num_decks = m_pCONumDecks->get();
+    bool found_valid = false;
+    foreach(const PlayerManager::DeckOrderingManager::deck_order_t& order,
+            PlayerManager::getDeckOrderings(num_decks)) {
+        if (order.label == deckorder) {
+            found_valid = true;
+            s_currentDeckOrder = order;
+        }
+    }
+    if (!found_valid) {
+        s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(num_decks);
+    }
+    reorientDecks();
 }
 
 void PlayerManager::reorientDecks() {
