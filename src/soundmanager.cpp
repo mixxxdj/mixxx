@@ -131,20 +131,16 @@ void SoundManager::closeDevices() {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
 
-    //m_requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
-                                 //Note: if we're using Pa_StopStream() (like now), we don't need
-                                 //      to lock. PortAudio stops the threads nicely.
-    while (dev_it.hasNext())
-    {
-        //qDebug() << "closing a device...";
+    // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
+    // while callbacks are active. No need to lock m_requestBufferMutex here.
+    while (dev_it.hasNext()) {
         dev_it.next()->close();
     }
-    //m_requestBufferMutex.unlock();
 
-    //m_requestBufferMutex.lock();
     m_pClkRefDevice = NULL;
-    //m_requestBufferMutex.unlock();
+    m_pErrorDevice = NULL;
 
+    // TODO(rryan): Should we do this before SoundDevice::close()?
     foreach (AudioInput in, m_inputBuffers.keys()) {
         // Need to tell all registered AudioDestinations for this AudioInput
         // that the input was disconnected.
@@ -169,12 +165,11 @@ void SoundManager::closeDevices() {
 void SoundManager::clearDeviceList() {
     //qDebug() << "SoundManager::clearDeviceList()";
 
-    //Close the devices first.
+    // Close the devices first.
     closeDevices();
 
-    //Empty out the list of devices we currently have.
-    while (!m_devices.empty())
-    {
+    // Empty out the list of devices we currently have.
+    while (!m_devices.empty()) {
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
@@ -259,10 +254,18 @@ void SoundManager::queryDevices() {
 }
 
 int SoundManager::setupDevices() {
+    // NOTE(rryan): Big warning: This function is concurrent with calls to
+    // pushBuffer and requestBuffer until closeDevices() below.
+
     qDebug() << "SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
     int err = 0;
-    m_pClkRefDevice = NULL;
+    // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
+    // SoundDevice that is the clock reference, then it is safe to leave it as
+    // it was. Clearing it causes the engine to stop being processed which
+    // results in a stuttering noise (sometimes a loud buzz noise at low
+    // latencies) when changing devices.
+    //m_pClkRefDevice = NULL;
     m_pErrorDevice = NULL;
     int devicesAttempted = 0;
     int devicesOpened = 0;
@@ -273,8 +276,14 @@ int SoundManager::setupDevices() {
     m_config.filterOutputs(this);
     m_config.filterInputs(this);
 
-    // close open devices, close running vinyl control proxies
+    // Close open devices. After this call we will not get any more
+    // requestBuffer() or pushBuffer() calls because all the SoundDevices are
+    // closed. closeDevices() blocks and can take a while.
     closeDevices();
+
+    // Instead of clearing m_pClkRefDevice and then assigning it directly,
+    // compute the new one then atomically hand off below.
+    SoundDevice* pNewMasterClockRef = NULL;
 
     // pair is isInput, isOutput
     QHash<SoundDevice*, QPair<bool, bool> > toOpen;
@@ -318,11 +327,11 @@ int SoundManager::setupDevices() {
             err = device->addOutput(aob);
             if (err != OK) goto closeAndError;
             if (out.getType() == AudioOutput::MASTER) {
-                m_pClkRefDevice = device;
+                pNewMasterClockRef = device;
             } else if ((out.getType() == AudioOutput::DECK ||
                         out.getType() == AudioOutput::BUS)
-                    && !m_pClkRefDevice) {
-                m_pClkRefDevice = device;
+                    && !pNewMasterClockRef) {
+                pNewMasterClockRef = device;
             }
         }
         if (isInput || isOutput) {
@@ -350,13 +359,21 @@ int SoundManager::setupDevices() {
 
             // If we have no yet set a clock source then we use the first
             // successfully opened SoundDevice.
-            if (!m_pClkRefDevice) {
-                m_pClkRefDevice = device;
+            if (pNewMasterClockRef == NULL) {
+                pNewMasterClockRef = device;
                 qWarning() << "Output sound device clock reference not set! Using"
                            << device->getDisplayName();
             }
         }
     }
+
+    // NOTE(rryan): Atomically hand-off between the old master and the new
+    // one. Previously we set m_pClkRefDevice to NULL first and then picked a
+    // new master. Due to long time lags caused by SoundDevice::close() this
+    // lead to dozens, if not hundreds of callbacks where there was no
+    // m_pClkRefDevice so the engine was not processed and we buffer under-ran
+    // (causing stuttering / bleeps).
+    m_pClkRefDevice = pNewMasterClockRef;
 
     if (m_pClkRefDevice) {
         qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
@@ -423,9 +440,9 @@ void SoundManager::checkConfig() {
 void SoundManager::requestBuffer(
     const QList<AudioOutputBuffer>& outputs, float* outputBuffer,
     const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-    SoundDevice* device, double streamTime /* = 0 */) {
-    Q_UNUSED(streamTime);
-    //qDebug() << "SoundManager::requestBuffer()";
+    SoundDevice* device) {
+    // qDebug() << "SoundManager::requestBuffer()" << device->getInternalName()
+    //          << iFramesPerBuffer << iFrameSize;
 
     // When the clock reference device requests a buffer...
     if (device == m_pClkRefDevice && m_requestBufferMutex.tryLock()) {
@@ -479,7 +496,11 @@ void SoundManager::requestBuffer(
 }
 
 void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, short* inputBuffer,
-                              const unsigned long iFramesPerBuffer, const unsigned int iFrameSize) {
+                              const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
+                              SoundDevice* pDevice) {
+    Q_UNUSED(pDevice);
+    // qDebug() << "SoundManager::pushBuffer" << pDevice->getInternalName()
+    //          << iFramesPerBuffer << iFrameSize;
     //This function is called a *lot* and is a big source of CPU usage.
     //It needs to be very fast.
 
@@ -598,5 +619,5 @@ void SoundManager::setJACKName() const {
 }
 
 bool SoundManager::isDeviceClkRef(SoundDevice* device) {
-    return (device == m_pClkRefDevice);
+    return device == m_pClkRefDevice;
 }

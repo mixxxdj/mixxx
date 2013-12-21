@@ -332,7 +332,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         }
 
         m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
-                                    m_inputParams.channelCount);
+                                    m_inputParams.channelCount, this);
     }
 
     if (output && framesPerBuffer > 0) {
