@@ -65,7 +65,7 @@ class VinylControlManager : public QObject {
     QSet<VinylSignalQualityListener*> m_listeners;
     VinylControlProcessor* m_pProcessor;
     int m_iTimerId;
-    ControlObjectThread* m_pVcEnabled[kMaxNumberOfDecks];
+    QList<ControlObjectThread*> m_pVcEnabled;
     ControlObjectSlave* m_pNumDecks;
     int m_iNumConfiguredDecks;
 };

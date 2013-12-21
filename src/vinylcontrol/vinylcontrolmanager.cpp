@@ -26,9 +26,6 @@ VinylControlManager::VinylControlManager(QObject* pParent,
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
-    for (int i = 0; i < kMaxNumberOfDecks; ++i) {
-        m_pVcEnabled[i] = NULL;
-    }
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, i), m_pProcessor);
@@ -51,24 +48,30 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::init() {
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::DirectConnection);
+    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::AutoConnection);
     slotNumDecksChanged(m_pNumDecks->get());
 }
 
 void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
     int num_decks = static_cast<int>(dNumDecks);
+
+    // Complain if we try to create more decks than we can handle.
+    if (num_decks > kMaxNumberOfDecks) {
+        qWarning() << "Number of decks increased to " << num_decks << ", but Mixxx only supports "
+                   << kMaxNumberOfDecks << " vinyl inputs.  Decks above the maximum will not have "
+                   << " vinyl control";
+        num_decks = kMaxNumberOfDecks;
+    }
+
     if (num_decks <= m_iNumConfiguredDecks) {
         // TODO(owilliams): If we implement deck deletion, shrink the size of configured decks.
         return;
     }
 
-    // Complain very very loudly if we try to break out of the array.
-    Q_ASSERT(num_decks <= kMaxNumberOfDecks);
-
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pVcEnabled[i] = new ControlObjectThread(group, "vinylcontrol_enabled", this);
-        m_pVcEnabled[i]->set(0);
+        m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
+        m_pVcEnabled.back()->set(0);
 
         ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
                            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());
@@ -88,11 +91,11 @@ bool VinylControlManager::vinylInputEnabled(int deck) {
     if (deck < 0 || deck >= m_iNumConfiguredDecks) {
         return false;
     }
-    if (m_pVcEnabled[deck] == NULL) {
-        qDebug() << "WARNING, tried to get vinyl enabled status for NULL deck " << deck;
+    if (deck < 0 || deck >= m_pVcEnabled.length()) {
+        qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck " << deck;
         return false;
     }
-    return m_pVcEnabled[deck]->get() != 0;
+    return m_pVcEnabled.at(deck)->get() != 0;
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {
