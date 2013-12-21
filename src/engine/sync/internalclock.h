@@ -27,6 +27,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     void notifySyncModeChanged(SyncMode mode);
+    void notifySyncPhase();
     SyncMode getSyncMode() const {
         return m_mode;
     }

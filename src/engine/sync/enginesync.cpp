@@ -95,6 +95,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     }
 
     if (bEnabled) {
+        int playing_decks = playingSyncDeckCount();
         if (m_pMasterSyncable == NULL) {
             // There is no master. If any other deck is playing we will match
             // the first available bpm -- sync won't be enabled on these decks,
@@ -133,14 +134,18 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
             }
-        } else if (m_pMasterSyncable == m_pInternalClock &&
-                   playingSyncDeckCount() == 0) {
+        } else if (m_pMasterSyncable == m_pInternalClock && playing_decks == 0) {
             // If there are no active followers, reset the internal clock bpm
             // and beat distance.
             setMasterBpm(pSyncable, pSyncable->getBpm());
             setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
         }
         activateFollower(pSyncable);
+
+        if (m_pMasterSyncable == m_pInternalClock && playing_decks > 0) {
+            // If there are active followers, also synchronize phase
+            pSyncable->notifySyncPhase();
+        }
     } else {
         deactivateSync(pSyncable);
     }

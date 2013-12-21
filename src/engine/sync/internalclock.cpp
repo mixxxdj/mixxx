@@ -43,6 +43,10 @@ void InternalClock::notifySyncModeChanged(SyncMode mode) {
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
 }
 
+void InternalClock::notifySyncPhase() {
+    // TODO(owilliams): This should probably be how we reset the internal beat distance.
+}
+
 void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
     bool currentlyMaster = getSyncMode() == SYNC_MASTER;
 
