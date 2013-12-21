@@ -281,6 +281,19 @@ int SoundManager::setupDevices() {
     // closed. closeDevices() blocks and can take a while.
     closeDevices();
 
+    // NOTE(rryan): Documenting for future people touching this class. If you
+    // would like to remove the fact that we close all the devices first and
+    // then re-open them, I'm with you! The problem is that SoundDevicePortAudio
+    // and SoundManager are not thread safe and the way that mutual exclusion
+    // between the Qt main thread and the PortAudio callback thread is acheived
+    // is that we shut off the PortAudio callbacks for all devices by closing
+    // every device first. We then update all the SoundDevice settings
+    // (configured AudioInputs/AudioOutputs) and then we re-open them.
+    //
+    // If you want to solve this issue, you should start by separating the PA
+    // callback from the logic in SoundDevicePortAudio. They should communicate
+    // via message passing over a request/response FIFO.
+
     // Instead of clearing m_pClkRefDevice and then assigning it directly,
     // compute the new one then atomically hand off below.
     SoundDevice* pNewMasterClockRef = NULL;
