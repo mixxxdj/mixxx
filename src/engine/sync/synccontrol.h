@@ -54,6 +54,12 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired by changes in vinyl control status.
     void slotVinylControlChanged(double v);
 
+    // Fired when passthrough mode is enabled or disabled.
+    void slotPassthroughChanged(double v);
+
+    // Fired when a track is ejected.
+    void slotEjectPushed(double v);
+
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
 
@@ -92,6 +98,8 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pRateDirection;
     QScopedPointer<ControlObjectSlave> m_pRateRange;
     QScopedPointer<ControlObjectSlave> m_pVCEnabled;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
+    QScopedPointer<ControlObjectSlave> m_pEjectButton;
 };
 
 
