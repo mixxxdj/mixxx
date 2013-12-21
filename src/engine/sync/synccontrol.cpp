@@ -111,9 +111,6 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
             // If follower mode is enabled, disable vinyl control.
             m_pVCEnabled->set(0.0);
         }
-        // Tell bpmcontrol to sync phase.
-        m_pSyncPhaseButton->set(1.0);
-        m_pSyncPhaseButton->set(0.0);
     }
     if (mode != SYNC_NONE && m_pPassthroughEnabled->get()) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
@@ -122,6 +119,11 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
                       "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
+}
+
+void SyncControl::notifySyncPhase() {
+    m_pSyncPhaseButton->set(1.0);
+    m_pSyncPhaseButton->set(0.0);
 }
 
 double SyncControl::getBeatDistance() const {
