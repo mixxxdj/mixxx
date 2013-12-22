@@ -239,7 +239,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Skin configurations
     //
     QString warningString = "<img src=\":/images/preferences/ic_preferences_warning.png\") width=16 height=16 />"
-        + tr("The selected skin is bigger than your screen resolution.");
+        + tr("The minimum size of the selected skin is bigger than your screen resolution.");
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
