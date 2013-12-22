@@ -256,7 +256,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
         if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
         {
             checkSkinResolution(list.at(i).fileName())
-                    ? ComboBoxSkinconf->insertItem(i, QIcon(":/trolltech/styles/commonstyle/images/standardbutton-apply-32.png"), list.at(i).fileName())
+                    ? ComboBoxSkinconf->insertItem(i, list.at(i).fileName())
                     : ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
 
             if (list.at(i).filePath() == configuredSkinPath) {
