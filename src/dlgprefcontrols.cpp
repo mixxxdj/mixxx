@@ -832,6 +832,7 @@ void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
             m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"),
                            ConfigValue(ComboBoxDeckOrder->currentText()));
         }
+        m_pPlayerManager->setDeckOrder(config_order);
     }
 }
 
