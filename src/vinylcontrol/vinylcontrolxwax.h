@@ -51,7 +51,7 @@ class VinylControlXwax : public VinylControl {
     unsigned int m_uiSafeZone;
 
     // The position read last time it was polled.
-    double m_dOldPos;
+    double m_dVinylPositionOld;
 
     // Signal quality ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic
@@ -72,6 +72,9 @@ class VinylControlXwax : public VinylControl {
     // The Vinyl Control mode and the previous mode.
     int m_iVCMode;
     int m_iOldVCMode;
+
+    // The file position from the last run of analyzeSamples.
+    double m_dOldFilePos;
 
     // The loaded track duration from the last run of analyzeSamples.
     double m_dOldDuration;
@@ -102,6 +105,9 @@ class VinylControlXwax : public VinylControl {
     // Whether the needle-skip prevention user-preference is enabled.
     bool m_bNeedleSkipPrevention;
 
+    // Whether track select mode is enabled.
+    bool m_bTrackSelectMode;
+
     // Controls for manipulating the library.
     ControlObjectThread* m_pControlTrackSelector;
     ControlObjectThread* m_pControlTrackLoader;
@@ -111,12 +117,13 @@ class VinylControlXwax : public VinylControl {
     double m_dLastTrackSelectPos;
     double m_dCurTrackSelectPos;
 
+    // The drift between the vinyl position and the file position from the most
+    // recent run of analyzeSamples.
+    double m_dDriftAmt;
 
-    // Local variables copied from run(). TODO(XXX): Rename and prefix.
-    double dDriftAmt;
-    double dOldFilePos;
-    double dUiUpdateTime;
-    bool bTrackSelectMode;
+    // Records the time of the last UI update. Used to prevent hammering the GUI
+    // with updates.
+    double m_dUiUpdateTime;
 
     // Contains information that xwax's code needs internally about the timecode
     // and how to process it.
