@@ -34,7 +34,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
           config(_config),
           m_iConfiguredDecks(0) {
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::DirectConnection);
+    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
 
     setupUi(this);
 
