@@ -312,7 +312,8 @@ bool EngineRecord::openFile() {
         props->setType(DLG_WARNING);
         props->setTitle(tr("Recording"));
         props->setText("<html>"+tr("Could not create audio file for recording!")
-                       +"<p><br>"+tr("Maybe you do not have enough free disk space or file permissions.")+"</p></html>");
+                       +"<p>"+tr("Check the disk to ensure there is enough free disk space and you have write permission for the Recordings folder.")
+                       +"<br>"+tr("You can change the location of the Recordings folder in Preferences > Recording.")+"</p></html>");
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return false;
     }
