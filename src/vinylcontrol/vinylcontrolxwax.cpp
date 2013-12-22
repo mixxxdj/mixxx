@@ -226,23 +226,6 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames) {
 
     double dVinylPitch = timecoder_get_pitch(&timecoder);
 
-    // if no track loaded, let track selection work but that's it
-    // TODO(rryan): This is dead code since duration is always non-NULL.
-    if (duration == NULL)
-    {
-        //until I can figure out how to detect "track 2" on serato CD,
-        //don't try track selection
-        if (!m_bCDControl)
-        {
-            bTrackSelectMode = true;
-            doTrackSelection(false, dVinylPitch, m_iPosition);
-        }
-        return;
-    }
-    //qDebug() << m_group << id << m_iPosition << when << dVinylPitch;
-
-
-
     // Has a new track been loaded? Currently we use track duration which is
     // integer seconds in the song. However, for calculations we need the
     // higher-accuracy duration found by dividing the track samples by the
