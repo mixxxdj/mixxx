@@ -43,29 +43,25 @@ bool VinylControl::isEnabled() {
     return m_bIsEnabled;
 }
 
-void VinylControl::toggleVinylControl(bool enable)
-{
+void VinylControl::toggleVinylControl(bool enable) {
     m_bIsEnabled = enable;
-    if (m_pConfig)
-    {
+    if (m_pConfig) {
         m_pConfig->set(ConfigKey(m_group,"vinylcontrol_enabled"), ConfigValue((int)enable));
     }
 
     enabled->slotSet(enable);
 
-    //Reset the scratch control to make sure we don't get stuck moving forwards or backwards.
-    //actually that might be a good thing
+    // Reset the scratch control to make sure we don't get stuck moving forwards or backwards.
+    // actually that might be a good thing
     //if (!enable)
     //    controlScratch->slotSet(0.0f);
 }
 
-VinylControl::~VinylControl()
-{
+VinylControl::~VinylControl() {
     bool wasEnabled = m_bIsEnabled;
     enabled->slotSet(false);
     vinylStatus->slotSet(VINYL_STATUS_DISABLED);
-    if (wasEnabled)
-    {
+    if (wasEnabled) {
         //if vinyl control is just restarting, indicate that it should
         //be enabled
         wantenabled->slotSet(true);
