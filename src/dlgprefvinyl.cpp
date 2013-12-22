@@ -282,25 +282,37 @@ void DlgPrefVinyl::VinylTypeSlotApply()
 
     //Save the vinylcontrol_speed_type in ControlObjects as well so it can be retrieved quickly
     //on the fly. (eg. WSpinny needs to know how fast to spin)
-    if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_33) {
-        m_COSpeeds[0]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
-    } else if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_45) {
-        m_COSpeeds[0]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
-    }
-    if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_33) {
-        m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
-    } else if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_45) {
-        m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
-    }
-    if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_33) {
-        m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
-    } else if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_45) {
-        m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
-    }
-    if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_33) {
-        m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
-    } else if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_45) {
-        m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
+
+    switch (m_COSpeeds.length()) {
+    case 4:
+        if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_33) {
+            m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
+        } else if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_45) {
+            m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
+        }
+        // fallthrough intended
+    case 3:
+        if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_33) {
+            m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
+        } else if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_45) {
+            m_COSpeeds[2]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
+        }
+        // fallthrough intended
+    case 2:
+        if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_33) {
+            m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
+        } else if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_45) {
+            m_COSpeeds[1]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
+        }
+        // fallthrough intended
+    case 1:
+        if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_33) {
+            m_COSpeeds[0]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
+        } else if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_45) {
+            m_COSpeeds[0]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
+        }
+    default:
+        qWarning() << "Unexpected number of vinyl speed preference items";
     }
 }
 
