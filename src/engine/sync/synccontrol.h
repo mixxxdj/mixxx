@@ -47,6 +47,10 @@ class SyncControl : public EngineControl, public Syncable {
     void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
 
+  public slots:
+    virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
+
   private slots:
     // Fired by changes in play.
     void slotControlPlay(double v);

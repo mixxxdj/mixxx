@@ -170,6 +170,22 @@ bool SyncControl::isPlaying() const {
     return m_pPlayButton->get() > 0.0;
 }
 
+void SyncControl::trackLoaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
+    if (getSyncMode() == SYNC_MASTER) {
+        // If we loaded a new track while master, hand off.
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+    }
+}
+
+void SyncControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
+    if (getSyncMode() == SYNC_MASTER) {
+        // If we unloaded a new track while master, hand off.
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+    }
+}
+
 void SyncControl::slotControlPlay(double play) {
     m_pEngineSync->notifyPlaying(this, play > 0.0);
 }
@@ -189,10 +205,11 @@ void SyncControl::slotPassthroughChanged(double enabled) {
 }
 
 void SyncControl::slotEjectPushed(double enabled) {
-    if (enabled && getSyncMode() == SYNC_MASTER) {
-        // If we ejected the track while master, hand off.
-        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
-    }
+    Q_UNUSED(enabled);
+    // We can't eject tracks if the decks is playing back, so if we are master
+    // and eject was pushed the deck must be stopped.  Handing off in this case
+    // actually causes the other decks to start playing, so not doing anything
+    // is preferred.
 }
 
 void SyncControl::slotSyncModeChangeRequest(double state) {
