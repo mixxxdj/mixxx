@@ -47,12 +47,22 @@ class SyncControl : public EngineControl, public Syncable {
     void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
 
+  public slots:
+    virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
+
   private slots:
     // Fired by changes in play.
     void slotControlPlay(double v);
 
     // Fired by changes in vinyl control status.
     void slotVinylControlChanged(double v);
+
+    // Fired when passthrough mode is enabled or disabled.
+    void slotPassthroughChanged(double v);
+
+    // Fired when a track is ejected.
+    void slotEjectPushed(double v);
 
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
@@ -92,6 +102,8 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pRateDirection;
     QScopedPointer<ControlObjectSlave> m_pRateRange;
     QScopedPointer<ControlObjectSlave> m_pVCEnabled;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
+    QScopedPointer<ControlObjectSlave> m_pEjectButton;
 };
 
 

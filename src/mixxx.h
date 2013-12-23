@@ -64,8 +64,6 @@ class MixxxApp : public QMainWindow {
     // initMenuBar creates the menu_bar and inserts the menuitems
     void initMenuBar();
 
-    void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
-
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();

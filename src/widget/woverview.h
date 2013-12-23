@@ -119,7 +119,8 @@ class WOverview : public WWidget {
     float m_a;
     float m_b;
 
-    int m_analyserProgress; // In 0.1%
+    double m_dAnalyserProgress;
+    bool m_bAnalyserFinalizing;
     bool m_trackLoaded;
 };
 

@@ -24,13 +24,13 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-#include "widget/wabstractcontrol.h"
+#include "widget/wwidget.h"
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class WKnob : public WAbstractControl  {
+class WKnob : public WWidget {
    Q_OBJECT
 public:
     WKnob(QWidget *parent=0);
@@ -50,6 +50,8 @@ private:
     void mouseReleaseEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
 
+    // True if right mouse button is pressed.
+    bool m_bRightButtonPressed;
     /** Current position */
     int m_iPos;
     /** Number of positions associated with this knob */

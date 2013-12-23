@@ -444,7 +444,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSampleRate->set(iTrackSampleRate);
     m_pause.unlock();
 
-    // All EngingeControls are connected directly
+    // All EngineControls are connected directly
     emit(trackLoaded(pTrack));
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
@@ -643,7 +643,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
             setNewPlaypos(m_dQueuedPosition);
         }
 
-        // If the baserate, rate, or pitch has changed, we need to update the
+        // If the baserate, speed, or pitch has changed, we need to update the
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
@@ -663,34 +663,31 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
                 }
             }
 
-            // At this point, rate is baserate multiplied by the speed
-            // adjustment, or the speed above normal that the engine should play
-            // the track. Baserate accounts for re-sampling the source audio to
-            // match our output sample rate (file_samplerate /
-            // master_samplerate).
-            //
-            // The rate adjustment in percentage of rate (1.0 being normal
-            // rate).
-            double rate_adjust = speed * baserate;
-            // The tempo adjustment in percentage of tempo (1.0 being normal
-            // tempo).
-            double tempo_adjust = 1.0;
+
+            // Now we need to update the scaler with the master sample rate, the
+            // base rate (ratio between sample rate of the source audio and the
+            // master samplerate), the deck speed, the pitch shift, and whether
+            // the deck speed should affect the pitch.
+
+            // The speed adjustment for the deck as calculated by
+            // RateControl. This is the ratio between track-time and real-time
+            // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
+            // pass for every 1 real second)
+            double speed_adjust = speed;
+
             // The pitch adjustment in percentage of octaves (0.0 being normal
             // pitch. 1.0 is a full octave shift up).
             double pitch_adjust = pitch;
 
-            if (keylock_enabled && !is_scratching) {
-                // If keylock is enabled, then we need to take the speed
-                // adjustment that is currently built into the rate and instead
-                // control the tempo by that amount.
-                rate_adjust = baserate;
-                // Protect against division by 0.
-                tempo_adjust = speed;
-            }
+            // Whether or not the speed change calculated by RateControl should
+            // affect the pitch of the song (e.g. as a traditional style pitch
+            // fader does) or whether the pitch change should purely affect the
+            // tempo.
+            bool speed_affects_pitch = is_scratching || !keylock_enabled;
 
             m_pScale->setScaleParameters(m_pSampleRate->get(),
-                                         &rate_adjust,
-                                         &tempo_adjust,
+                                         baserate, speed_affects_pitch,
+                                         &speed_adjust,
                                          &pitch_adjust);
 
             m_baserate_old = baserate;
@@ -702,7 +699,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
             // consumed relative to playing back the track at its native sample
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
-            m_rate_old = rate = rate_adjust * tempo_adjust;
+            m_rate_old = rate = baserate * speed_adjust;
 
             // Scaler is up to date now.
             m_bScalerChanged = false;

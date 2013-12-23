@@ -46,7 +46,8 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
-        m_analyserProgress(-1),
+        m_dAnalyserProgress(-1.0),
+        m_bAnalyserFinalizing(false),
         m_trackLoaded(false) {
     m_endOfTrackControl = new ControlObjectThread(
             m_group, "end_of_track");
@@ -76,10 +77,6 @@ void WOverview::setup(QDomNode node) {
     m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
-        if (m_backgroundPixmap.size() != size()) {
-            qDebug() << "WOverview: BgPixmap does not fit. Widget size:" << size()
-                     << "BgPixmap size: << m_backgroundPixmap.size()";
-        }
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
@@ -155,18 +152,14 @@ void WOverview::slotAnalyserProgress(int progress) {
         return;
     }
 
-    int analyserProgress;
-    if (progress == 999) {
-        // Finalize
-        analyserProgress = width() - 1;
-    } else {
-        analyserProgress = width() * progress / 1000;
-    }
+    double analyserProgress = progress / 1000.0;
+    bool finalizing = progress == 999;
 
     bool updateNeeded = drawNextPixmapPart();
     // progress 0 .. 1000
-    if (updateNeeded || (m_analyserProgress != analyserProgress)) {
-        m_analyserProgress = analyserProgress;
+    if (updateNeeded || (m_dAnalyserProgress != analyserProgress)) {
+        m_dAnalyserProgress = analyserProgress;
+        m_bAnalyserFinalizing = finalizing;
         update();
     }
 }
@@ -185,7 +178,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         m_pWaveformSourceImage = NULL;
     }
 
-    m_analyserProgress = -1;
+    m_dAnalyserProgress = -1;
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -321,13 +314,14 @@ void WOverview::paintEvent(QPaintEvent *) {
             painter.drawImage(rect(), m_waveformImageScaled);
         }
 
-        if (m_analyserProgress + 1 < width()) {
+        if (m_dAnalyserProgress != 1.0) {
             // Paint analyzer Progress
             painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
-            painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
+            painter.drawLine(m_dAnalyserProgress * width(), height()/2,
+                             width(), height()/2);
         }
 
-        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable
+        if (m_dAnalyserProgress <= 0.5) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is cached from source
                 paintText(tr("Ready to play, analyzing .."), &painter);
@@ -335,7 +329,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                 //: Text on waveform overview when file is playable but no waveform is visible
                 paintText(tr("Loading track .."), &painter);
             }
-        } else if (m_analyserProgress == width() - 1) {
+        } else if (m_bAnalyserFinalizing) {
             //: Text on waveform overview during finalizing of waveform analysis
             paintText(tr("Finalizing .."), &painter);
         }

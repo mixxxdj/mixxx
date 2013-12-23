@@ -25,7 +25,7 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 
-#include "widget/wabstractcontrol.h"
+#include "widget/wwidget.h"
 
 /**
   * A widget for a slider composed of a background pixmap and a handle.
@@ -33,7 +33,7 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WSliderComposed : public WAbstractControl  {
+class WSliderComposed : public WWidget  {
     Q_OBJECT
 public:
     WSliderComposed(QWidget *parent=0);
@@ -51,6 +51,8 @@ public slots:
 private:
     void unsetPixmaps();
 
+    // True if right mouse button is pressed.
+    bool m_bRightButtonPressed;
     /** Internal storage of slider position in pixels */
     int m_iPos, m_iStartHandlePos, m_iStartMousePos;
     /** Length of slider in pixels */
