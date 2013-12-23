@@ -105,6 +105,20 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
         m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
     }
 
+    if (m_pRubberBand->getInputIncrement() == 0) {
+        qWarning() << "EngineBufferScaleRubberBand inputIncrement is 0."
+                   << "On RubberBand <=1.8.1 a SIGFPE is imminent despite"
+                   << "our workaround. Taking evasive action."
+                   << "Please report this message to mixxx-devel@lists.sourceforge.net.";
+
+        // This is much slower than the minimum seek speed workaround above.
+        while (m_pRubberBand->getInputIncrement() == 0) {
+            timeRatioInverse += 0.001;
+            m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
+        }
+        speed_abs = *speed_adjust = timeRatioInverse / base_rate;
+    }
+
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = base_rate;
     m_bSpeedAffectsPitch = speed_affects_pitch;
