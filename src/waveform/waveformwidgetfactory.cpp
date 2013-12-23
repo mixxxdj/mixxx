@@ -14,6 +14,7 @@
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
@@ -562,6 +563,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = GLVSyncTestWidget::useOpenGLShaders();
             developerOnly = GLVSyncTestWidget::developerOnly();
             break;
+        case WaveformWidgetType::GLRGBWaveform:
+            widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLRGBWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = GLRGBWaveformWidget::developerOnly();
+            break;
         default:
             continue;
         }
@@ -619,6 +626,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::GLWaveform:
             widget = new GLWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLRGBWaveform:
+            widget = new GLRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::GLSLWaveform:
             widget = new GLSLWaveformWidget(viewer->getGroup(), viewer);

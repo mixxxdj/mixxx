@@ -754,6 +754,7 @@ class MixxxCore(Feature):
                    "waveform/renderers/glwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glslwaveformrenderersignal.cpp",
                    "waveform/renderers/glvsynctestrenderer.cpp",
+                   "waveform/renderers/glwaveformrendererrgb.cpp",
 
                    "waveform/renderers/waveformsignalcolors.cpp",
 
@@ -774,6 +775,8 @@ class MixxxCore(Feature):
                    "waveform/widgets/glvsynctestwidget.cpp",
 
                    "waveform/widgets/glslwaveformwidget.cpp",
+
+                   "waveform/widgets/glrgbwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
