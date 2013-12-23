@@ -116,7 +116,8 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
             timeRatioInverse += 0.001;
             m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
         }
-        speed_abs = *speed_adjust = timeRatioInverse / base_rate;
+        speed_abs = timeRatioInverse / base_rate;
+        *speed_adjust = m_bBackwards ? -speed_abs : speed_abs;
     }
 
     // Used by other methods so we need to keep them up to date.
