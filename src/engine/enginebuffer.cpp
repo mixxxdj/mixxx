@@ -441,7 +441,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSampleRate->set(iTrackSampleRate);
     m_pause.unlock();
 
-    // All EngingeControls are connected directly
+    // All EngineControls are connected directly
     emit(trackLoaded(pTrack));
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
