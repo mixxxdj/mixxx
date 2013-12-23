@@ -625,7 +625,6 @@ class MixxxCore(Feature):
                    "widget/wvumeter.cpp",
                    "widget/wpushbutton.cpp",
                    "widget/wslidercomposed.cpp",
-                   "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
                    "widget/woverviewlmh.cpp",
