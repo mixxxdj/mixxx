@@ -16,7 +16,6 @@
 class Library;
 class MixxxKeyboard;
 class PlayerManager;
-class WAbstractControl;
 class ControllerManager;
 
 class LegacySkinParser : public QObject, public SkinParser {

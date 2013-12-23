@@ -28,7 +28,8 @@
 #include "widget/wpixmapstore.h"
 
 WKnob::WKnob(QWidget * parent)
-        : WAbstractControl(parent),
+        : WWidget(parent),
+          m_bRightButtonPressed(false),
           m_iPos(0),
           m_iNoPos(0),
           m_pPixmaps(NULL),
