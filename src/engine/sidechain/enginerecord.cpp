@@ -64,7 +64,7 @@ void EngineRecord::updateFromPreferences() {
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
 
-    // Delete m_pEncoder if it has been initalized (with maybe) different bitrate.
+    // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
         delete m_pEncoder;
         m_pEncoder = NULL;
@@ -252,7 +252,7 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
 }
 
 bool EngineRecord::fileOpen() {
-    // Both encoder and file must be initalized.
+    // Both encoder and file must be initialized.
     if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
         return (m_pSndfile != NULL);
     } else {
@@ -312,8 +312,9 @@ bool EngineRecord::openFile() {
         props->setType(DLG_WARNING);
         props->setTitle(tr("Recording"));
         props->setText("<html>"+tr("Could not create audio file for recording!")
-                       +"<p>"+tr("Check the disk to ensure there is enough free disk space and you have write permission for the Recordings folder.")
-                       +"<br>"+tr("You can change the location of the Recordings folder in Preferences > Recording.")+"</p></html>");
+                       +"<p>"+tr("Ensure there is enough free disk space and you have write permission for the Recordings folder.")
+                       +"<p>"+tr("You can change the location of the Recordings folder in Preferences > Recording.")
+                       +"</p></html>");
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return false;
     }
