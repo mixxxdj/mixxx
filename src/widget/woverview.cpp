@@ -77,10 +77,6 @@ void WOverview::setup(QDomNode node) {
     m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
-        if (m_backgroundPixmap.size() != size()) {
-            qDebug() << "WOverview: BgPixmap does not fit. Widget size:" << size()
-                     << "BgPixmap size: << m_backgroundPixmap.size()";
-        }
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
