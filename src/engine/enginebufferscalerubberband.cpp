@@ -66,6 +66,20 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
     // the playback direction.
     m_bBackwards = *speed_adjust < 0;
 
+    // Due to a bug in RubberBand, setting the timeRatio to a large value can
+    // cause division-by-zero SIGFPEs. We limit the minimum seek speed to
+    // prevent exceeding RubberBand's limits.
+    //
+    // References:
+    // https://bugs.launchpad.net/ubuntu/+bug/1263233
+    // https://bitbucket.org/breakfastquay/rubberband/issue/4/sigfpe-zero-division-with-high-time-ratios
+    const double kMinSeekSpeed = 1.0 / 128.0;
+    double speed_abs = fabs(*speed_adjust);
+    if (speed_abs < kMinSeekSpeed) {
+        // Let the caller know we ignored their speed.
+        speed_abs = *speed_adjust = 0;
+    }
+
     // RubberBand handles checking for whether the change in pitchScale is a
     // no-op.
     double pitchScale = base_rate * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
