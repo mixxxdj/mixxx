@@ -33,18 +33,38 @@ class WDisplay : public WWidget  {
 
     void setup(QDomNode node);
 
-    void setPixmap(int iPos, const QString& filename);
+  protected:
+    void paintEvent(QPaintEvent*);
+
+    int numPixmaps() const {
+        return m_pixmaps.size();
+    }
 
   private:
+
+    void setPixmap(QVector<QPixmap*>* pPixmaps, int iPos,
+                   const QString& filename);
+
+    void setPixmapBackground(const QString& filename);
+
     void setPositions(int iNoPos);
+
+    virtual int getActivePixmapIndex() const;
 
     // Free existing pixmaps.
     void resetPositions();
 
-    void paintEvent(QPaintEvent*);
+    // Associated background pixmap
+    QPixmap* m_pPixmapBack;
 
     // List of associated pixmaps.
     QVector<QPixmap*> m_pixmaps;
+
+    // Whether disabled pixmaps are loaded.
+    bool m_bDisabledLoaded;
+
+    // List of disabled pixmaps.
+    QVector<QPixmap*> m_disabledPixmaps;
 };
 
 #endif
