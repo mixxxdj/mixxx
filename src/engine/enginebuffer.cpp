@@ -102,10 +102,10 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_iCrossFadeSamples(0),
     m_iLastBufferSize(0) {
 
-    // Generate dither values. Before engine samples were normalized between
-    // [-1.0, 1.0], dithering values were in the range [-0.5, 0.5]. Now that we
-    // normalize to [-1.0, 1.0] from [SHRT_MIN, SHRT_MAX], we divide once more
-    // by SHRT_MAX to get the equivalent dithering amount.
+    // Generate dither values. When engine samples used to be within [SHRT_MIN,
+    // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
+    // normalize engine samples to the range [-1.0, 1.0] we divide by SHRT_MAX
+    // to preserve the previous behavior.
     for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
         m_pDitherBuffer[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SHRT_MAX;
     }
