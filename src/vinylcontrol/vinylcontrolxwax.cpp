@@ -38,6 +38,9 @@
 
  ********************/
 
+// Sample threshold below which we consider there to be no signal.
+const double kMinSignal = 75.0 / SHRT_MAX;
+
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
 
@@ -231,7 +234,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // in stereo frames.
     timecoder_submit(&timecoder, m_pWorkBuffer, nFrames);
 
-    const double kMinSignal = 75.0 / SHRT_MAX;
     bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > kMinSignal;
     //qDebug() << "signal?" << bHaveSignal;
 
