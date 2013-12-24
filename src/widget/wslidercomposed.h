@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 
 #include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
 
 /**
   * A widget for a slider composed of a background pixmap and a handle.
@@ -66,9 +67,9 @@ private:
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Pointer to pixmap of the slider */
-    QPixmap *m_pSlider;
+    QPixmapPointer m_pSlider;
     /** Pointer to pixmap of the handle */
-    QPixmap *m_pHandle;
+    QPixmapPointer m_pHandle;
 };
 
 #endif

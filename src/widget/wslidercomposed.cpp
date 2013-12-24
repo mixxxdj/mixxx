@@ -93,14 +93,8 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
 }
 
 void WSliderComposed::unsetPixmaps() {
-    if (m_pSlider) {
-        WPixmapStore::deletePixmap(m_pSlider);
-        m_pSlider = NULL;
-    }
-    if (m_pHandle) {
-        WPixmapStore::deletePixmap(m_pHandle);
-        m_pHandle = NULL;
-    }
+    m_pSlider.clear();
+    m_pHandle.clear();
 }
 
 void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {

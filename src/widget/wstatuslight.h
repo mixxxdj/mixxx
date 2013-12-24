@@ -27,22 +27,22 @@
 #include <QPixmap>
 
 #include "widget/wwidget.h"
-
-/**
-  *@author John Sully
-  */
+#include "widget/wpixmapstore.h"
 
 class WStatusLight : public WWidget  {
    Q_OBJECT
-public:
+  public:
     WStatusLight(QWidget *parent=0);
-    ~WStatusLight();
+    virtual ~WStatusLight();
+
     void setup(QDomNode node);
     void setPixmap(int iState, const QString &filename);
     void setNoPos(int iNoPos);
-public slots:
+
+  public slots:
     void setValue(double v);
-private:
+
+  private:
     void paintEvent(QPaintEvent *);
 
     /** Current position */
@@ -50,7 +50,7 @@ private:
     /** Number of positions associated with this light */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmap **m_pPixmapSLs;
+    QPixmapPointer* m_pPixmapSLs;
 };
 
 #endif

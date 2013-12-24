@@ -76,49 +76,28 @@ void WDisplay::setPositions(int iNoPos) {
 }
 
 void WDisplay::resetPositions() {
-    for (int i = 0; i < m_pixmaps.size(); ++i) {
-        QPixmap* pPixmap = m_pixmaps[i];
-        if (pPixmap) {
-            WPixmapStore::deletePixmap(pPixmap);
-        }
-    }
-    for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
-        QPixmap* pPixmap = m_disabledPixmaps[i];
-        if (pPixmap) {
-            WPixmapStore::deletePixmap(pPixmap);
-        }
-    }
-    if (m_pPixmapBack) {
-        WPixmapStore::deletePixmap(m_pPixmapBack);
-        m_pPixmapBack = NULL;
-    }
+    m_pPixmapBack.clear();
     m_pixmaps.resize(0);
     m_disabledPixmaps.resize(0);
 }
 
 void WDisplay::setPixmapBackground(const QString& filename) {
-    // Free the pixmap if it is already allocated.
-    if (m_pPixmapBack) {
-        WPixmapStore::deletePixmap(m_pPixmapBack);
-        m_pPixmapBack = NULL;
-    }
-
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
-    if (m_pPixmapBack == NULL || m_pPixmapBack->isNull()) {
+    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << filename;
     }
 }
 
-void WDisplay::setPixmap(QVector<QPixmap*>* pPixmaps, int iPos,
+void WDisplay::setPixmap(QVector<QPixmapPointer>* pPixmaps, int iPos,
                          const QString& filename) {
     if (iPos < 0 || iPos >= pPixmaps->size()) {
         return;
     }
 
-    QPixmap* pPixmap = WPixmapStore::getPixmap(filename);
+    QPixmapPointer pPixmap = WPixmapStore::getPixmap(filename);
 
-    if (pPixmap == NULL || pPixmap->isNull()) {
+    if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading pixmap:" << filename;
     } else {
@@ -141,7 +120,7 @@ void WDisplay::paintEvent(QPaintEvent* ) {
 
     // If we are disabled, use the disabled pixmaps. If not, use the regular
     // pixmaps.
-    const QVector<QPixmap*>& pixmaps = (m_bOff && m_bDisabledLoaded) ?
+    const QVector<QPixmapPointer>& pixmaps = (m_bOff && m_bDisabledLoaded) ?
             m_disabledPixmaps : m_pixmaps;
 
     if (pixmaps.empty()) {
@@ -157,7 +136,7 @@ void WDisplay::paintEvent(QPaintEvent* ) {
         idx = pixmaps.size() - 1;
     }
 
-    QPixmap* pPixmap = pixmaps[idx];
+    QPixmapPointer pPixmap = pixmaps[idx];
     if (pPixmap) {
         p.drawPixmap(0, 0, *pPixmap);
     }

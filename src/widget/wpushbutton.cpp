@@ -36,7 +36,6 @@ WPushButton::WPushButton(QWidget* parent)
           m_bLeftClickForcePush(false),
           m_bRightClickForcePush(false),
           m_pPixmaps(NULL),
-          m_pPixmapBack(NULL),
           m_leftButtonMode(ControlPushButton::PUSH),
           m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
@@ -49,20 +48,13 @@ WPushButton::WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButt
           m_bLeftClickForcePush(false),
           m_bRightClickForcePush(false),
           m_pPixmaps(NULL),
-          m_pPixmapBack(NULL),
           m_leftButtonMode(leftButtonMode),
           m_rightButtonMode(rightButtonMode) {
     setStates(0);
 }
 
 WPushButton::~WPushButton() {
-    for (int i = 0; i < 2 * m_iNoStates; i++) {
-        WPixmapStore::deletePixmap(m_pPixmaps[i]);
-    }
-
     delete [] m_pPixmaps;
-
-    WPixmapStore::deletePixmap(m_pPixmapBack);
 }
 
 void WPushButton::setup(QDomNode node) {
@@ -141,10 +133,9 @@ void WPushButton::setStates(int iStates) {
     m_pPixmaps = NULL;
 
     if (iStates > 0) {
-        m_pPixmaps = new QPixmap*[2 * m_iNoStates];
-        for (int i = 0; i < (2 * m_iNoStates); ++i) {
-            m_pPixmaps[i] = NULL;
-        }
+        m_pPixmaps = new QPixmapPointer[2 * m_iNoStates];
+        // No need to clear each pointer since the QSharedPointer constructor
+        // clears them.
     }
 }
 
@@ -184,11 +175,11 @@ void WPushButton::setValue(double v) {
 
 void WPushButton::paintEvent(QPaintEvent *) {
     double value = m_value;
-    if (m_iNoStates > 0)     {
+    if (m_iNoStates > 0) {
         int idx = (((int)value % m_iNoStates) * 2) + m_bPressed;
         if (m_pPixmaps[idx]) {
             QPainter p(this);
-            if(m_pPixmapBack) {
+            if (m_pPixmapBack) {
                 p.drawPixmap(0, 0, *m_pPixmapBack);
             }
             p.drawPixmap(0, 0, *m_pPixmaps[idx]);

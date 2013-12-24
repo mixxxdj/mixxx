@@ -24,11 +24,12 @@
 #include <QString>
 
 #include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
 
 class WDisplay : public WWidget  {
    Q_OBJECT
   public:
-    WDisplay(QWidget *parent=0);
+    WDisplay(QWidget *parent=NULL);
     virtual ~WDisplay();
 
     void setup(QDomNode node);
@@ -42,7 +43,7 @@ class WDisplay : public WWidget  {
 
   private:
 
-    void setPixmap(QVector<QPixmap*>* pPixmaps, int iPos,
+    void setPixmap(QVector<QPixmapPointer>* pPixmaps, int iPos,
                    const QString& filename);
 
     void setPixmapBackground(const QString& filename);
@@ -55,16 +56,16 @@ class WDisplay : public WWidget  {
     void resetPositions();
 
     // Associated background pixmap
-    QPixmap* m_pPixmapBack;
+    QPixmapPointer m_pPixmapBack;
 
     // List of associated pixmaps.
-    QVector<QPixmap*> m_pixmaps;
+    QVector<QPixmapPointer> m_pixmaps;
 
     // Whether disabled pixmaps are loaded.
     bool m_bDisabledLoaded;
 
     // List of disabled pixmaps.
-    QVector<QPixmap*> m_disabledPixmaps;
+    QVector<QPixmapPointer> m_disabledPixmaps;
 };
 
 #endif
