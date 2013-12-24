@@ -18,36 +18,33 @@
 #ifndef WDISPLAY_H
 #define WDISPLAY_H
 
+#include <QVector>
 #include <QPixmap>
 #include <QPaintEvent>
 #include <QString>
 
 #include "widget/wwidget.h"
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class WDisplay : public WWidget  {
    Q_OBJECT
-public:
+  public:
     WDisplay(QWidget *parent=0);
-    ~WDisplay();
+    virtual ~WDisplay();
+
     void setup(QDomNode node);
+
+    void setPixmap(int iPos, const QString& filename);
+
+  private:
     void setPositions(int iNoPos);
-    void setPixmap(int iPos, const QString &filename);
 
-private:
-    /** Set position number to zero and deallocate pixmaps */
+    // Free existing pixmaps.
     void resetPositions();
-    void paintEvent(QPaintEvent *);
 
-    /** Current position */
-    int m_iPos;
-    /** Number of positions associated with this knob */
-    int m_iNoPos;
-    /** Array of associated pixmaps */
-    QPixmap **m_pPixmaps;
-    };
+    void paintEvent(QPaintEvent*);
+
+    // List of associated pixmaps.
+    QVector<QPixmap*> m_pixmaps;
+};
 
 #endif
