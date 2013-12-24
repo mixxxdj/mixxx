@@ -31,30 +31,27 @@
 
 const int PB_SHORTKLICKTIME = 200;
 
-WPushButton::WPushButton(QWidget* parent)
-        : WWidget(parent),
+WPushButton::WPushButton(QWidget* pParent)
+        : WWidget(pParent),
           m_bLeftClickForcePush(false),
           m_bRightClickForcePush(false),
-          m_pPixmaps(NULL),
+          m_bPressed(false),
           m_leftButtonMode(ControlPushButton::PUSH),
           m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
-    //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }
 
-WPushButton::WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
                          ControlPushButton::ButtonMode rightButtonMode)
-        : WWidget(parent),
+        : WWidget(pParent),
           m_bLeftClickForcePush(false),
           m_bRightClickForcePush(false),
-          m_pPixmaps(NULL),
           m_leftButtonMode(leftButtonMode),
           m_rightButtonMode(rightButtonMode) {
     setStates(0);
 }
 
 WPushButton::~WPushButton() {
-    delete [] m_pPixmaps;
 }
 
 void WPushButton::setup(QDomNode node) {
@@ -71,8 +68,10 @@ void WPushButton::setup(QDomNode node) {
     QDomNode state = selectNode(node, "State");
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
-            setPixmap(selectNodeInt(state, "Number"), true, getPath(selectNodeQString(state, "Pressed")));
-            setPixmap(selectNodeInt(state, "Number"), false, getPath(selectNodeQString(state, "Unpressed")));
+            setPixmap(selectNodeInt(state, "Number"), true,
+                      getPath(selectNodeQString(state, "Pressed")));
+            setPixmap(selectNodeInt(state, "Number"), false,
+                      getPath(selectNodeQString(state, "Unpressed")));
         }
         state = state.nextSibling();
     }
@@ -82,7 +81,6 @@ void WPushButton::setup(QDomNode node) {
 
     m_bRightClickForcePush = selectNodeQString(node, "RightClickIsPushButton")
             .contains("true", Qt::CaseInsensitive);
-
 
     QDomNode con = selectNode(node, "Connection");
     while (!con.isNull()) {
@@ -124,38 +122,46 @@ void WPushButton::setup(QDomNode node) {
 }
 
 void WPushButton::setStates(int iStates) {
-    m_iNoStates = iStates;
     m_value = 0.;
     m_bPressed = false;
+    m_iNoStates = 0;
 
-    // If pixmap array is already allocated, delete it
-    delete [] m_pPixmaps;
-    m_pPixmaps = NULL;
+    // Clear existing pixmaps.
+    m_pressedPixmaps.resize(0);
+    m_unpressedPixmaps.resize(0);
 
     if (iStates > 0) {
-        m_pPixmaps = new QPixmapPointer[2 * m_iNoStates];
-        // No need to clear each pointer since the QSharedPointer constructor
-        // clears them.
+        m_iNoStates = iStates;
+        m_pressedPixmaps.resize(iStates);
+        m_unpressedPixmaps.resize(iStates);
     }
 }
 
 void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) {
-    int pixIdx = (iState * 2) + (bPressed ? 1 : 0);
-    if (pixIdx < 2 * m_iNoStates) {
-        m_pPixmaps[pixIdx] = WPixmapStore::getPixmap(filename);
-        if (!m_pPixmaps[pixIdx]) {
-            qDebug() << "WPushButton: Error loading pixmap:" << filename;
-        } else {
-            // Set size of widget equal to pixmap size
-            setFixedSize(m_pPixmaps[pixIdx]->size());
-        }
+
+    QVector<QPixmapPointer>& pixmaps = bPressed ?
+            m_pressedPixmaps : m_unpressedPixmaps;
+
+    if (iState < 0 || iState >= pixmaps.size()) {
+        return;
+    }
+
+    QPixmapPointer pPixmap = WPixmapStore::getPixmap(filename);
+
+    if (pPixmap.isNull() || pPixmap->isNull()) {
+        qDebug() << "WPushButton: Error loading pixmap:" << filename;
+    } else {
+        pixmaps[iState] = pPixmap;
+
+        // Set size of widget equal to pixmap size
+        setFixedSize(pPixmap->size());
     }
 }
 
 void WPushButton::setPixmapBackground(const QString &filename) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
-    if (!m_pPixmapBack) {
+    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << "WPushButton: Error loading background pixmap:" << filename;
     }
 }
@@ -164,7 +170,7 @@ void WPushButton::setValue(double v) {
     m_value = v;
 
     if (m_iNoStates == 1) {
-        if (m_value == 1.) {
+        if (m_value == 1.0) {
             m_bPressed = true;
         } else {
             m_bPressed = false;
@@ -175,15 +181,28 @@ void WPushButton::setValue(double v) {
 
 void WPushButton::paintEvent(QPaintEvent *) {
     double value = m_value;
-    if (m_iNoStates > 0) {
-        int idx = (((int)value % m_iNoStates) * 2) + m_bPressed;
-        if (m_pPixmaps[idx]) {
-            QPainter p(this);
-            if (m_pPixmapBack) {
-                p.drawPixmap(0, 0, *m_pPixmapBack);
-            }
-            p.drawPixmap(0, 0, *m_pPixmaps[idx]);
-        }
+    if (m_iNoStates == 0) {
+        return;
+    }
+
+    const QVector<QPixmapPointer>& pixmaps = m_bPressed ?
+            m_pressedPixmaps : m_unpressedPixmaps;
+
+    int idx = static_cast<int>(value) % m_iNoStates;
+
+    // Just in case m_iNoStates is somehow different from pixmaps.size().
+    if (idx < 0 || idx >= pixmaps.size()) {
+        return;
+    }
+
+    QPainter p(this);
+    if (m_pPixmapBack) {
+        p.drawPixmap(0, 0, *m_pPixmapBack);
+    }
+
+    QPixmapPointer pPixmap = pixmaps[idx];
+    if (!pPixmap.isNull() && !pPixmap->isNull()) {
+        p.drawPixmap(0, 0, *pPixmap);
     }
 }
 
