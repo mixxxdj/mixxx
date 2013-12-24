@@ -18,7 +18,6 @@ extern "C" {
 #define XWAX_DEVICE_FRAME 32
 #define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
 #define QUALITY_RING_SIZE 100
-#define MIN_SIGNAL 75
 
 class VinylControlXwax : public VinylControl {
   public:
@@ -26,7 +25,7 @@ class VinylControlXwax : public VinylControl {
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
-    void analyzeSamples(const short* samples, size_t nFrames);
+    void analyzeSamples(CSAMPLE* pSamples, size_t nFrames);
 
     virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo);
 
@@ -52,6 +51,10 @@ class VinylControlXwax : public VinylControl {
 
     // The position read last time it was polled.
     double m_dVinylPositionOld;
+
+    // Scratch buffer for CSAMPLE -> short conversions.
+    short* m_pWorkBuffer;
+    size_t m_workBufferSize;
 
     // Signal quality ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic

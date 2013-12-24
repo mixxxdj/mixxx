@@ -102,9 +102,12 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_iCrossFadeSamples(0),
     m_iLastBufferSize(0) {
 
-    // Generate dither values
+    // Generate dither values. When engine samples used to be within [SHRT_MIN,
+    // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
+    // normalize engine samples to the range [-1.0, 1.0] we divide by SHRT_MAX
+    // to preserve the previous behavior.
     for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
-        m_pDitherBuffer[i] = static_cast<float>(rand() % 32768) / 32768.0 - 0.5;
+        m_pDitherBuffer[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SHRT_MAX;
     }
 
     // zero out crossfade buffer

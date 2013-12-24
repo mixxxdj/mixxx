@@ -38,12 +38,17 @@
 
  ********************/
 
+// Sample threshold below which we consider there to be no signal.
+const double kMinSignal = 75.0 / SHRT_MAX;
+
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
 
 VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString group)
         : VinylControl(pConfig, group),
           m_dVinylPositionOld(0.0),
+          m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
+          m_workBufferSize(MAX_BUFFER_LEN),
           m_iQualPos(0),
           m_iQualFilled(0),
           m_iPosition(-1),
@@ -84,6 +89,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     // libxwax indexes by C-strings so we pass libxwax string literals so we
     // don't have to deal with freeing the strings later
     char* timecode = NULL;
+
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
         timecode = (char*)"serato_2a";
@@ -158,6 +164,7 @@ VinylControlXwax::~VinylControlXwax() {
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
     delete [] m_pPitchRing;
+    delete [] m_pWorkBuffer;
 
     // Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);
@@ -192,14 +199,42 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 }
 
 
-void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames) {
+void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     ScopedTimer t("VinylControlXwax::analyzeSamples");
+    CSAMPLE gain = m_pVinylControlInputGain->get();
+    const int kChannels = 2;
+
+    // We only support amplifying with the VC pre-amp.
+    if (gain < 1.0f) {
+        gain = 1.0f;
+    }
+
+    size_t samplesSize = nFrames * kChannels;
+
+    if (samplesSize > m_workBufferSize) {
+        delete [] m_pWorkBuffer;
+        m_pWorkBuffer = new short[samplesSize];
+        m_workBufferSize = samplesSize;
+    }
+
+    // Convert CSAMPLE samples to shorts, preventing overflow.
+    for (int i = 0; i < static_cast<int>(samplesSize); ++i) {
+        CSAMPLE sample = pSamples[i] * gain * SHRT_MAX;
+
+        if (sample > SHRT_MAX) {
+            m_pWorkBuffer[i] = SHRT_MAX;
+        } else if (sample < SHRT_MIN) {
+            m_pWorkBuffer[i] = SHRT_MIN;
+        } else {
+            m_pWorkBuffer[i] = static_cast<short>(sample);
+        }
+    }
 
     // Submit the samples to the xwax timecode processor. The size argument is
     // in stereo frames.
-    timecoder_submit(&timecoder, samples, nFrames);
+    timecoder_submit(&timecoder, m_pWorkBuffer, nFrames);
 
-    bool bHaveSignal = fabs((float)samples[0]) + fabs((float)samples[1]) > MIN_SIGNAL;
+    bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > kMinSignal;
     //qDebug() << "signal?" << bHaveSignal;
 
     //TODO: Move all these config object get*() calls to an "updatePrefs()" function,
