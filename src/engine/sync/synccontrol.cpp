@@ -49,7 +49,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
                                                Qt::DirectConnection);
 
     m_pEjectButton.reset(new ControlObjectSlave(pGroup, "eject", this));
-    m_pEjectButton->connectValueChanged(this, SLOT(slotEjectPushed()), Qt::DirectConnection);
+    m_pEjectButton->connectValueChanged(this, SLOT(slotEjectPushed(double)),
+                                        Qt::DirectConnection);
 
     // BPMControl and RateControl will be initialized later.
 }
