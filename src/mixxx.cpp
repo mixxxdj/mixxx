@@ -242,8 +242,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
           m_runtime_timer("MixxxApp::runtime"),
           m_cmdLineArgs(args),
-          m_pVinylcontrol1Enabled(NULL),
-          m_pVinylcontrol2Enabled(NULL) {
+          m_iNumConfiguredDecks(0) {
     logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
@@ -352,6 +351,11 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
 #endif
+
+    m_pNumDecks = new ControlObjectThread(ConfigKey("[Master]", "num_decks"),
+                                          this);
+    connect(m_pNumDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumDecksChanged(double)));
 
 #ifdef __MODPLUG__
     // restore the configuration for the modplug library before trying to load a module
@@ -546,6 +550,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     if (rescan || hasChanged_MusicDir) {
         m_pLibraryScanner->scan(this);
     }
+    slotNumDecksChanged(m_pNumDecks->get());
 }
 
 MixxxApp::~MixxxApp() {
@@ -581,8 +586,9 @@ MixxxApp::~MixxxApp() {
     // (vinylcontrol_enabled in VinylControlControl)
     qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
     delete m_pVCManager;
-    delete m_pVinylcontrol1Enabled;
-    delete m_pVinylcontrol2Enabled;
+    qDeleteAll(m_pVinylControlEnabled);
+    delete m_VCControlMapper;
+    delete m_VCCheckboxMapper;
 #endif
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
@@ -1001,46 +1007,63 @@ void MixxxApp::initActions()
     connect(m_pHelpTranslation, SIGNAL(triggered()), this, SLOT(slotHelpTranslation()));
 
 #ifdef __VINYLCONTROL__
-    QString vinylControlText = tr("Use timecoded vinyls on external turntables to control Mixxx");
-    QString vinylControlTitle1 = tr("Enable Vinyl Control &1");
-    QString vinylControlTitle2 = tr("Enable Vinyl Control &2");
+    QString vinylControlText = tr(
+            "Use timecoded vinyls on external turntables to control Mixxx");
+    QList<QString> vinylControlTitle;
+    m_VCCheckboxMapper = new QSignalMapper(this);
+    connect(m_VCCheckboxMapper, SIGNAL(mapped(int)),
+            this, SLOT(slotCheckboxVinylControl(int)));
+    m_VCControlMapper = new QSignalMapper(this);
+    connect(m_VCControlMapper, SIGNAL(mapped(int)),
+            this, SLOT(slotControlVinylControl(int)));
 
-    m_pOptionsVinylControl = new QAction(vinylControlTitle1, this);
-    m_pOptionsVinylControl->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "OptionsMenu_EnableVinyl1"),
-                                                  tr("Ctrl+y"))));
-    m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
-    // Either check or uncheck the vinyl control menu item depending on what
-    // it was saved as.
-    m_pOptionsVinylControl->setCheckable(true);
-    m_pOptionsVinylControl->setChecked(false);
-    m_pOptionsVinylControl->setStatusTip(vinylControlText);
-    m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
-    connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
-            SLOT(slotCheckboxVinylControl(bool)));
-    m_pVinylcontrol1Enabled = new ControlObjectThread(
-            "[Channel1]", "vinylcontrol_enabled");
-    connect(m_pVinylcontrol1Enabled, SIGNAL(valueChanged(double)), this,
-            SLOT(slotControlVinylControl(double)));
+    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+        vinylControlTitle.push_back(
+                tr("Enable Vinyl Control &%1").arg(i + 1));
 
-    m_pOptionsVinylControl2 = new QAction(vinylControlTitle2, this);
-    m_pOptionsVinylControl2->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "OptionsMenu_EnableVinyl2"),
-                                                  tr("Ctrl+U"))));
-    m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
-    m_pOptionsVinylControl2->setCheckable(true);
-    m_pOptionsVinylControl2->setChecked(false);
-    m_pOptionsVinylControl2->setStatusTip(vinylControlText);
-    m_pOptionsVinylControl2->setWhatsThis(buildWhatsThis(vinylControlTitle2, vinylControlText));
-    connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
-            SLOT(slotCheckboxVinylControl2(bool)));
+        m_pOptionsVinylControl.push_back(
+                new QAction(vinylControlTitle.back(), this));
+        QAction* vc_checkbox = m_pOptionsVinylControl.back();
 
-    m_pVinylcontrol2Enabled = new ControlObjectThread(
-            "[Channel2]", "vinylcontrol_enabled");
-    connect(m_pVinylcontrol2Enabled, SIGNAL(valueChanged(double)), this,
-            SLOT(slotControlVinylControl2(double)));
+        QString binding;
+        switch (i) {
+        case 0:
+            binding = tr("Ctrl+t");
+            break;
+        case 1:
+            binding = tr("Ctrl+y");
+            break;
+        case 2:
+            binding = tr("Ctrl+u");
+            break;
+        case 3:
+            binding = tr("Ctrl+i");
+            break;
+        default:
+            qCritical() << "Programming error: bindings need to be defined for "
+                        "vinyl control enabling";
+        }
+
+        vc_checkbox->setShortcut(
+                QKeySequence(m_pKbdConfig->getValueString(ConfigKey(
+                        "[KeyboardShortcuts]",
+                        QString("OptionsMenu_EnableVinyl%1").arg(i + 1)),
+                                                         binding)));
+        vc_checkbox->setShortcutContext(Qt::ApplicationShortcut);
+
+        // Either check or uncheck the vinyl control menu item depending on what
+        // it was saved as.
+        vc_checkbox->setCheckable(true);
+        vc_checkbox->setChecked(false);
+        vc_checkbox->setStatusTip(vinylControlText);
+        vc_checkbox->setWhatsThis(
+                buildWhatsThis(vinylControlTitle.back(), vinylControlText));
+
+        m_VCCheckboxMapper->setMapping(vc_checkbox, i);
+        connect(vc_checkbox, SIGNAL(toggled(bool)),
+                m_VCCheckboxMapper, SLOT(map()));
+    }
+
 #endif
 
 #ifdef __SHOUTCAST__
@@ -1170,8 +1193,9 @@ void MixxxApp::initMenuBar()
     //optionsMenu->setCheckable(true);
 #ifdef __VINYLCONTROL__
     m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
-    m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
-    m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
+    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+        m_pVinylControlMenu->addAction(m_pOptionsVinylControl[i]);
+    }
 
     m_pOptionsMenu->addMenu(m_pVinylControlMenu);
     m_pOptionsMenu->addSeparator();
@@ -1347,64 +1371,72 @@ void MixxxApp::slotOptionsPreferences()
     m_pPrefDlg->activateWindow();
 }
 
-void MixxxApp::slotControlVinylControl(double toggle)
-{
+void MixxxApp::slotControlVinylControl(int deck) {
 #ifdef __VINYLCONTROL__
-    if (m_pPlayerManager->hasVinylInput(0)) {
-        m_pOptionsVinylControl->setChecked((bool)toggle);
+    if (deck >= m_iNumConfiguredDecks) {
+        qWarning() << "Tried to activate vinyl control on a deck that we "
+                      "haven't configured -- ignoring request.";
+        m_pVinylControlEnabled[deck]->set(0.0);
+        return;
+    }
+    bool toggle = m_pVinylControlEnabled[deck]->get();
+    if (m_pPlayerManager->hasVinylInput(deck)) {
+        m_pOptionsVinylControl[deck]->setChecked((bool) toggle);
     } else {
-        m_pOptionsVinylControl->setChecked(false);
+        m_pOptionsVinylControl[deck]->setChecked(false);
         if (toggle) {
-            QMessageBox::warning(this, tr("Mixxx"),
-                tr("No input device(s) select.\nPlease select your soundcard(s) "
-                    "in the sound hardware preferences."),
-                QMessageBox::Ok,
-                QMessageBox::Ok);
+            QMessageBox::warning(
+                    this,
+                    tr("Mixxx"),
+                    tr("No input device(s) select.\nPlease select your soundcard(s) "
+                       "in the sound hardware preferences."),
+                    QMessageBox::Ok, QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::set(ConfigKey(
-                    "[Channel1]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            m_pVinylcontrol1Enabled->set(0.0);
+            ControlObject::set(ConfigKey(PlayerManager::groupForDeck(deck),
+                                         "vinylcontrol_status"),
+                               (double) VINYL_STATUS_DISABLED);
+            m_pVinylControlEnabled[deck]->set(0.0);
         }
     }
 #endif
 }
 
-void MixxxApp::slotCheckboxVinylControl(bool toggle)
-{
+void MixxxApp::slotCheckboxVinylControl(int deck) {
 #ifdef __VINYLCONTROL__
-    m_pVinylcontrol1Enabled->set((double)toggle);
-#endif
-}
-
-void MixxxApp::slotControlVinylControl2(double toggle)
-{
-#ifdef __VINYLCONTROL__
-    if (m_pPlayerManager->hasVinylInput(1)) {
-        m_pOptionsVinylControl2->setChecked((bool)toggle);
-    } else {
-        m_pOptionsVinylControl2->setChecked(false);
-        if (toggle) {
-            QMessageBox::warning(this, tr("Mixxx"),
-                tr("No input device(s) select.\nPlease select your soundcard(s) "
-                    "in the sound hardware preferences."),
-                QMessageBox::Ok,
-                QMessageBox::Ok);
-            m_pPrefDlg->show();
-            m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::set(ConfigKey(
-                    "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            m_pVinylcontrol2Enabled->set(0.0);
-        }
+    if (deck >= m_iNumConfiguredDecks) {
+        qWarning() << "Tried to activate vinyl control on a deck that we "
+                      "haven't configured -- ignoring request.";
+        m_pOptionsVinylControl[deck]->setChecked(false);
+        return;
     }
+    bool toggle = m_pOptionsVinylControl[deck]->isChecked();
+    m_pVinylControlEnabled[deck]->set((double) toggle);
+    slotControlVinylControl(deck);
 #endif
 }
 
-void MixxxApp::slotCheckboxVinylControl2(bool toggle)
-{
-#ifdef __VINYLCONTROL__
-    m_pVinylcontrol2Enabled->set((double)toggle);
-#endif
+void MixxxApp::slotNumDecksChanged(double dNumDecks) {
+    int num_decks =
+            static_cast<int>(math_min(dNumDecks, kMaximumVinylControlInputs));
+
+    // Only show menu items to activate vinyl inputs that exist.
+    for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
+        m_pOptionsVinylControl[i]->setVisible(true);
+        m_pVinylControlEnabled.push_back(
+                new ControlObjectThread(PlayerManager::groupForDeck(i),
+                                        "vinylcontrol_enabled"));
+
+        ControlObjectThread* vc_enabled = m_pVinylControlEnabled.back();
+        m_VCControlMapper->setMapping(vc_enabled, i);
+        connect(vc_enabled, SIGNAL(valueChanged(double)),
+                m_VCControlMapper, SLOT(map()));
+
+    }
+    for (int i = num_decks; i < kMaximumVinylControlInputs; ++i) {
+        m_pOptionsVinylControl[i]->setVisible(false);
+    }
+    m_iNumConfiguredDecks = num_decks;
 }
 
 void MixxxApp::slotHelpAbout() {
