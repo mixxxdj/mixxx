@@ -18,7 +18,6 @@ extern "C" {
 #define XWAX_DEVICE_FRAME 32
 #define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
 #define QUALITY_RING_SIZE 100
-#define MIN_SIGNAL 75
 
 class VinylControlXwax : public VinylControl {
   public:

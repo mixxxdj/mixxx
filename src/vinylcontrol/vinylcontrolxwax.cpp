@@ -231,7 +231,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // in stereo frames.
     timecoder_submit(&timecoder, m_pWorkBuffer, nFrames);
 
-    bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > MIN_SIGNAL;
+    const double kMinSignal = 75.0 / SHRT_MAX;
+    bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > kMinSignal;
     //qDebug() << "signal?" << bHaveSignal;
 
     //TODO: Move all these config object get*() calls to an "updatePrefs()" function,
