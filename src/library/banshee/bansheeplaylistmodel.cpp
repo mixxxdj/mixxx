@@ -147,7 +147,8 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         beginInsertRows(QModelIndex(), 0, list.size() - 1);
 
         foreach (struct BansheeDbConnection::PlaylistEntry entry, list){
-            query.bindValue(":" CLM_ARTIST, QVariant(entry.pArtist->name));
+            query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
+            query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
             query.bindValue(":" CLM_TITLE, entry.pTrack->title);
             query.bindValue(":" CLM_DURATION, entry.pTrack->duration);
             query.bindValue(":" CLM_URI, entry.pTrack->uri);
