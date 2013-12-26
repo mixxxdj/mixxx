@@ -150,7 +150,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
             query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
             query.bindValue(":" CLM_TITLE, entry.pTrack->title);
-            query.bindValue(":" CLM_DURATION, entry.pTrack->duration);
+            query.bindValue(":" CLM_DURATION, entry.pTrack->duration / 1000);
             query.bindValue(":" CLM_URI, entry.pTrack->uri);
             query.bindValue(":" CLM_ALBUM, entry.pAlbum->title);
             query.bindValue(":" CLM_ALBUM_ARTIST, entry.pAlbumArtist->name);
