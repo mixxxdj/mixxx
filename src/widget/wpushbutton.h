@@ -77,6 +77,7 @@ class WPushButton : public WWidget {
 
     // Array of associated pixmaps
     int m_iNoStates;
+    QVector<QString> m_text;
     QVector<QPixmapPointer> m_pressedPixmaps;
     QVector<QPixmapPointer> m_unpressedPixmaps;
 
