@@ -482,9 +482,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         case Qt::ToolTipRole:
         case Qt::DisplayRole:
             if (column == fieldIndex(LIBRARYTABLE_DURATION)) {
-                if (qVariantCanConvert<int>(value)) {
-                    value = MixxxUtils::secondsToMinutes(
-                        qVariantValue<int>(value));
+                int duration = value.toInt();
+                if (duration > 0) {
+                    value = MixxxUtils::secondsToMinutes(duration);
+                } else {
+                    value = QString();
                 }
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
                 if (qVariantCanConvert<int>(value))
@@ -520,11 +522,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         case Qt::CheckStateRole:
             if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
                 bool played = index.sibling(
-                    row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+                        row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
                 value = played ? Qt::Checked : Qt::Unchecked;
             } else if (column == fieldIndex(LIBRARYTABLE_BPM)) {
                 bool locked = index.sibling(
-                    row, fieldIndex(LIBRARYTABLE_BPM_LOCK)).data().toBool();
+                        row, fieldIndex(LIBRARYTABLE_BPM_LOCK)).data().toBool();
                 value = locked ? Qt::Checked : Qt::Unchecked;
             }
             break;
