@@ -40,10 +40,6 @@ void LibraryTableModel::setTableModel(int id) {
     tableColumns << "preview";
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource("default"));
-
-    // BaseSqlTabelModel will setup the header info
-    initHeaderData();
-
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }

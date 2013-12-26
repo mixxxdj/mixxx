@@ -4,6 +4,7 @@
 
 #include "library/banshee/bansheeplaylistmodel.h"
 #include "library/banshee/bansheedbconnection.h"
+#include "library/queryutil.h"
 #include "mixxxutils.cpp"
 #include "library/starrating.h"
 #include "library/previewbuttondelegate.h"
@@ -11,260 +12,200 @@
 #include "track/beats.h"
 #include "playermanager.h"
 
+#define BANSHEE_TABLE "banshee"
+#define CLM_VIEW_ORDER "position"
+#define CLM_ARTIST "artist"
+#define CLM_TITLE "title"
+#define CLM_DURATION "duration"
+#define CLM_URI "location"
+#define CLM_ALBUM "album"
+#define CLM_ALBUM_ARTIST "album_artist"
+#define CLM_YEAR "year"
+#define CLM_RATING "rating"
+#define CLM_GENRE "genre"
+#define CLM_GROUPING "grouping"
+#define CLM_TRACKNUMBER "tracknumber"
+#define CLM_DATEADDED "datetime_added"
+#define CLM_BPM "bpm"
+#define CLM_BITRATE "bitrate"
+#define CLM_COMMENT "comment"
+#define CLM_PLAYCOUNT "timesplayed"
+#define CLM_COMPOSER "composer"
+#define CLM_PREVIEW "preview"
+
 
 const bool sDebug = false;
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
-        :  TrackModel(pTrackCollection->getDatabase(),
-                "mixxx.db.model.banshee_playlist"),
-           QAbstractTableModel(pParent),
-           m_iSortColumn(0),
-           m_eSortOrder(Qt::AscendingOrder),
-           m_currentSearch(""),
-           m_pTrackCollection(pTrackCollection),
-           m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_pConnection(pConnection),
-           m_playlistId(-1) {
-    initHeaderData();
+        : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
+         // m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
+         //   m_iPlaylistId(-1),
+         //                   m_showAll(showAll)
+          m_iSortColumn(0),
+          m_eSortOrder(Qt::AscendingOrder),
+          m_currentSearch(""),
+          m_pTrackCollection(pTrackCollection),
+          m_trackDAO(m_pTrackCollection->getTrackDAO()),
+          m_pConnection(pConnection),
+          m_playlistId(-1) {
 }
 
 BansheePlaylistModel::~BansheePlaylistModel() {
-
 }
 
-void BansheePlaylistModel::appendColumnsInfo(
-        enum Columns id,
-        QString lable,
-        bool (*lessThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2),
-        bool (*greaterThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2)
-        ) {
-
-    struct ColumnsInfo info;
-
-    info.id = id;
-    info.lable = lable;
-    info.lessThen =lessThen;
-    info.greaterThen = greaterThen;
-
-    m_headerList.append(info);
-}
-
-void BansheePlaylistModel::initHeaderData() {
-
-    appendColumnsInfo(VIEW_ORDER, tr("#"),
-            &BansheeDbConnection::viewOrderLessThen, &BansheeDbConnection::viewOrderGreaterThen);
-    appendColumnsInfo(ARTIST, tr("Artist"),
-            &BansheeDbConnection::artistLessThen, &BansheeDbConnection::artistGreaterThen);
-    appendColumnsInfo(TITLE, tr("Title"),
-            &BansheeDbConnection::titleLessThen, &BansheeDbConnection::titleGreaterThen);
-    appendColumnsInfo(DURATION, tr("Duration"),
-            &BansheeDbConnection::durationLessThen, &BansheeDbConnection::durationGreaterThen);
-    appendColumnsInfo(ALBUM, tr("Album"),
-            &BansheeDbConnection::albumLessThen, &BansheeDbConnection::albumGreaterThen);
-    appendColumnsInfo(ALBUM_ARTIST, tr("Album Artist"),
-            &BansheeDbConnection::albumArtistLessThen, &BansheeDbConnection::albumArtistGreaterThen);
-    appendColumnsInfo(YEAR, tr("Year"),
-            &BansheeDbConnection::yearLessThen, &BansheeDbConnection::yearGreaterThen);
-    appendColumnsInfo(RATING, tr("Rating"),
-            &BansheeDbConnection::ratingLessThen, &BansheeDbConnection::ratingGreaterThen);
-    appendColumnsInfo(GENRE, tr("Genre"),
-            &BansheeDbConnection::genreLessThen, &BansheeDbConnection::genreGreaterThen);
-    appendColumnsInfo(GROUPING, tr("Grouping"),
-            &BansheeDbConnection::groupingLessThen, &BansheeDbConnection::groupingGreaterThen);
-    appendColumnsInfo(COMPOSER, tr("Composer"),
-            &BansheeDbConnection::composerLessThen, &BansheeDbConnection::composerGreaterThen);
-    appendColumnsInfo(TRACKNUMBER, tr("Track #"),
-            &BansheeDbConnection::tracknumberLessThen,
-            &BansheeDbConnection::tracknumberGreaterThen);
-    appendColumnsInfo(DATEADDED, tr("Date Added"),
-            &BansheeDbConnection::dateaddedLessThen, &BansheeDbConnection::dateaddedGreaterThen);
-    appendColumnsInfo(BPM, tr("BPM"),
-            &BansheeDbConnection::bpmLessThen, &BansheeDbConnection::bpmGreaterThen);
-    appendColumnsInfo(BITRATE, tr("Bitrate"),
-            &BansheeDbConnection::bitrateLessThen, &BansheeDbConnection::bitrateGreaterThen);
-    appendColumnsInfo(COMMENT, tr("Comment"),
-            &BansheeDbConnection::commentLessThen, &BansheeDbConnection::commentGreaterThen);
-    appendColumnsInfo(PLAYCOUNT, tr("Played"),
-            &BansheeDbConnection::playcountLessThen, &BansheeDbConnection::playcountGreaterThen);
-    appendColumnsInfo(URI, tr("Uri"),
-            &BansheeDbConnection::uriLessThen, &BansheeDbConnection::uriGreaterThen);
-}
-
-QVariant BansheePlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    if (role != Qt::DisplayRole) {
-        return QAbstractTableModel::headerData(section, orientation, role);
+void BansheePlaylistModel::setTableModel(int playlistId) {
+    //qDebug() << "BansheePlaylistModel::setTableModel" << playlistId;
+    if (m_playlistId == playlistId) {
+        qDebug() << "Already focused on playlist " << playlistId;
+        return;
     }
 
-    if (orientation == Qt::Horizontal &&
-            role == Qt::DisplayRole &&
-            section < m_headerList.size()) {
-        return QVariant(m_headerList.at(section).lable);
+    if (m_playlistId >= 0) {
+        // Clear old playlist
+        beginRemoveRows(QModelIndex(), 0, m_sortedPlaylist.size() - 1);
+        m_playlistId = -1;
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QString strQuery("DELETE FROM " BANSHEE_TABLE);
+        if (!query.exec(strQuery)) {
+            LOG_FAILED_QUERY(query);
+        }
+        endRemoveRows();
     }
-    return QAbstractTableModel::headerData(section, orientation, role);
-}
 
+    if (playlistId >= 0) {
+        // setup new playlist
+        m_playlistId = playlistId;
+
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QString strQuery("CREATE TEMP TABLE IF NOT EXISTS " BANSHEE_TABLE
+            " (" CLM_VIEW_ORDER " INTEGER, "
+                 CLM_ARTIST " TEXT, "
+                 CLM_TITLE " TEXT, "
+                 CLM_DURATION " INTEGER, "
+                 CLM_URI " TEXT, "
+                 CLM_ALBUM " TEXT, "
+                 CLM_ALBUM_ARTIST " TEXT, "
+                 CLM_YEAR " INTEGER, "
+                 CLM_RATING " INTEGER, "
+                 CLM_GENRE " TEXT, "
+                 CLM_GROUPING " TEXT, "
+                 CLM_TRACKNUMBER " INTEGER, "
+                 CLM_DATEADDED " INTEGER, "
+                 CLM_BPM " INTEGER, "
+                 CLM_BITRATE " INTEGER, "
+                 CLM_COMMENT " TEXT, "
+                 CLM_PLAYCOUNT" INTEGER, "
+                 CLM_COMPOSER " TEXT, "
+                 CLM_PREVIEW " TEXT)");
+        if (!query.exec(strQuery)) {
+            LOG_FAILED_QUERY(query);
+        }
+
+        query.prepare("INSERT INTO " BANSHEE_TABLE
+                " (" CLM_VIEW_ORDER ", "
+                     CLM_ARTIST ", "
+                     CLM_TITLE ", "
+                     CLM_DURATION ", "
+                     CLM_URI ", "
+                     CLM_ALBUM ", "
+                     CLM_ALBUM_ARTIST ", "
+                     CLM_YEAR ", "
+                     CLM_RATING ", "
+                     CLM_GENRE ", "
+                     CLM_GROUPING ", "
+                     CLM_TRACKNUMBER ", "
+                     CLM_DATEADDED ", "
+                     CLM_BPM ", "
+                     CLM_BITRATE ", "
+                     CLM_COMMENT ", "
+                     CLM_PLAYCOUNT ", "
+                     CLM_COMPOSER ") "
+                     "VALUES (:"
+                     CLM_VIEW_ORDER ", :"
+                     CLM_ARTIST ", :"
+                     CLM_TITLE ", :"
+                     CLM_DURATION ", :"
+                     CLM_URI ", :"
+                     CLM_ALBUM ", :"
+                     CLM_ALBUM_ARTIST ", :"
+                     CLM_YEAR ", :"
+                     CLM_RATING ", :"
+                     CLM_GENRE ", :"
+                     CLM_GROUPING ", :"
+                     CLM_TRACKNUMBER ", :"
+                     CLM_DATEADDED ", :"
+                     CLM_BPM ", :"
+                     CLM_BITRATE ", :"
+                     CLM_COMMENT ", :"
+                     CLM_PLAYCOUNT ", :"
+                     CLM_COMPOSER ") ");
+
+
+        QList<struct BansheeDbConnection::PlaylistEntry> list =
+                m_pConnection->getPlaylistEntries(playlistId);
+
+        beginInsertRows(QModelIndex(), 0, list.size() - 1);
+
+        foreach (struct BansheeDbConnection::PlaylistEntry entry, list){
+            query.bindValue(":" CLM_ARTIST, QVariant(entry.pArtist->name));
+            query.bindValue(":" CLM_TITLE, entry.pTrack->title);
+            query.bindValue(":" CLM_DURATION, entry.pTrack->duration);
+            query.bindValue(":" CLM_URI, entry.pTrack->uri);
+            query.bindValue(":" CLM_ALBUM, entry.pAlbum->title);
+            query.bindValue(":" CLM_ALBUM_ARTIST, entry.pAlbumArtist->name);
+            query.bindValue(":" CLM_YEAR, entry.pTrack->year);
+            query.bindValue(":" CLM_RATING, entry.pTrack->rating);
+            query.bindValue(":" CLM_GENRE, entry.pTrack->genre);
+            query.bindValue(":" CLM_GROUPING, entry.pTrack->grouping);
+            query.bindValue(":" CLM_TRACKNUMBER, entry.pTrack->tracknumber);
+            query.bindValue(":" CLM_DATEADDED, entry.pTrack->dateadded);
+            query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
+            query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);
+            query.bindValue(":" CLM_COMMENT, entry.pTrack->comment);
+            query.bindValue(":" CLM_PLAYCOUNT, entry.pTrack->playcount);
+            query.bindValue(":" CLM_COMPOSER, entry.pTrack->composer);
+
+            if (!query.exec()) {
+                LOG_FAILED_QUERY(query);
+            }
+            // qDebug() << "-----" << entry.pTrack->title << query.executedQuery();
+        }
+
+        endInsertRows();
+    }
+
+    QStringList columns;
+    columns << CLM_VIEW_ORDER // 0
+         << CLM_ARTIST
+         << CLM_TITLE
+         << CLM_DURATION
+         << CLM_URI
+         << CLM_ALBUM
+         << CLM_ALBUM_ARTIST
+         << CLM_YEAR
+         << CLM_RATING
+         << CLM_GENRE
+         << CLM_GROUPING
+         << CLM_TRACKNUMBER
+         << CLM_DATEADDED
+         << CLM_BPM
+         << CLM_BITRATE
+         << CLM_COMMENT
+         << CLM_PLAYCOUNT
+         << CLM_COMPOSER
+         << CLM_PREVIEW;
+
+    setTable(BANSHEE_TABLE, columns[0], columns, QSharedPointer<BaseTrackCache>());
+    setSearch("");
+    setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    setSort(defaultSortColumn(), defaultSortOrder());
+}
 
 void BansheePlaylistModel::initDefaultSearchColumns() {
 }
 
 const QString BansheePlaylistModel::currentSearch() const {
     return m_currentSearch;
-}
-
-void BansheePlaylistModel::setSort(int column, Qt::SortOrder order) {
-    if (sDebug) {
-        qDebug() << this << "setSort()";
-    }
-
-    m_iSortColumn = column;
-    m_eSortOrder = order;
-}
-
-void BansheePlaylistModel::sort(int column, Qt::SortOrder order) {
-    if (sDebug) {
-        qDebug() << this << "sort()" << column << order;
-    }
-
-    m_iSortColumn = column;
-    m_eSortOrder = order;
-
-    if (m_iSortColumn >= 0 && m_iSortColumn < m_headerList.size()) {
-        emit layoutAboutToBeChanged();
-        if (m_eSortOrder != Qt::AscendingOrder) {
-            qSort(m_sortedPlaylist.begin(), m_sortedPlaylist.end(), m_headerList.at(m_iSortColumn).greaterThen);
-        } else {
-            qSort(m_sortedPlaylist.begin(), m_sortedPlaylist.end(), m_headerList.at(m_iSortColumn).lessThen);
-        }
-        emit layoutChanged();
-    }
-}
-
-int BansheePlaylistModel::rowCount(const QModelIndex& parent) const {
-    if (!parent.isValid()) {
-        return m_sortedPlaylist.size();
-    }
-    return 0;
-}
-
-int BansheePlaylistModel::columnCount(const QModelIndex& parent) const {
-    return parent.isValid() ? 0 : m_headerList.size();
-}
-
-QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
-    // qDebug() << this << "data()";
-
-    QVariant value = QVariant();
-
-    if (role != Qt::DisplayRole &&
-            role != Qt::EditRole &&
-            role != Qt::CheckStateRole &&
-            role != Qt::ToolTipRole) {
-        return value;
-    }
-
-    int ivalue;
-    QDateTime timeAdded;
-
-    int row = index.row();
-    if (row < m_sortedPlaylist.size()) {
-        switch (m_headerList.at(index.column()).id) {
-        case VIEW_ORDER:
-            value = m_sortedPlaylist.at(row).viewOrder;
-            break;
-        case ARTIST:
-            value = m_sortedPlaylist.at(row).pArtist->name;
-            break;
-        case ALBUM_ARTIST:
-            value = m_sortedPlaylist.at(row).pAlbumArtist->name;
-            break;
-        case TITLE:
-            value = m_sortedPlaylist.at(row).pTrack->title;
-            break;
-        case DURATION:
-            {
-                int duration = m_sortedPlaylist.at(row).pTrack->duration;
-                if (duration) {
-                    value = MixxxUtils::millisecondsToMinutes(duration, true);
-                }
-            }
-            break;
-        case URI:
-            value = m_sortedPlaylist.at(row).pTrack->uri;
-            break;
-        case ALBUM:
-            value = m_sortedPlaylist.at(row).pAlbum->title;
-            break;
-        case YEAR:
-            ivalue = m_sortedPlaylist.at(row).pTrack->year;
-            if (ivalue) {
-                value = ivalue;
-            }
-            break;
-        case RATING:
-            ivalue = m_sortedPlaylist.at(row).pTrack->rating;
-            value = qVariantFromValue(StarRating(ivalue));
-            break;
-        case GENRE:
-            value = m_sortedPlaylist.at(row).pTrack->genre;
-            break;
-        case GROUPING:
-            value = m_sortedPlaylist.at(row).pTrack->grouping;
-            break;
-        case TRACKNUMBER:
-            ivalue = m_sortedPlaylist.at(row).pTrack->tracknumber;
-            if (ivalue) {
-                value = ivalue;
-            }
-            break;
-        case DATEADDED:
-            ivalue = m_sortedPlaylist.at(row).pTrack->dateadded;
-            if (ivalue) {
-                timeAdded.setTime_t(ivalue);
-                timeAdded.toString(Qt::ISODate);
-                value = QVariant(timeAdded.toString(Qt::ISODate));
-            }
-            break;
-        case BPM:
-            ivalue = m_sortedPlaylist.at(row).pTrack->bpm;
-            if (ivalue) {
-                value = ivalue;
-            }
-            break;
-        case BITRATE:
-            ivalue = m_sortedPlaylist.at(row).pTrack->bitrate;
-            if (ivalue) {
-                value = ivalue;
-            }
-            break;
-        case COMMENT:
-            value = m_sortedPlaylist.at(row).pTrack->comment;
-            break;
-        case PLAYCOUNT:
-            value = m_sortedPlaylist.at(row).pTrack->playcount;
-            break;
-        case COMPOSER:
-            value = m_sortedPlaylist.at(row).pTrack->composer;
-            break;
-        default:
-            break; // Not supported
-        }
-    }
-
-    // Format the value based on whether we are in a tooltip, display, or edit
-    // role
-    switch (role) {
-    case Qt::ToolTipRole:
-    case Qt::DisplayRole:
-        break;
-    case Qt::EditRole:
-        break;
-    case Qt::CheckStateRole:
-        value = QVariant();
-        break;
-    default:
-        break;
-    }
-    return value;
 }
 
 bool BansheePlaylistModel::setData(const QModelIndex& index, const QVariant& value, int role) {
@@ -317,50 +258,6 @@ Qt::ItemFlags BansheePlaylistModel::readOnlyFlags(const QModelIndex &index) cons
 void BansheePlaylistModel::trackChanged(int trackId) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackId;
-    }
-}
-
-void BansheePlaylistModel::setPlaylist(int playlistId) {
-
-    if (m_playlistId >= 0) {
-        beginRemoveRows(QModelIndex(), 0, m_sortedPlaylist.size()-1);
-        m_playlistId = -1;
-        m_sortedPlaylist.clear();
-        endRemoveRows();
-    }
-
-    if (playlistId >= 0) {
-        QList<struct BansheeDbConnection::PlaylistEntry> list;
-
-        m_playlistId = playlistId;
-
-        list = m_pConnection->getPlaylistEntries(playlistId);
-
-        beginInsertRows(QModelIndex(), 0, list.size()-1);
-
-        foreach (struct BansheeDbConnection::PlaylistEntry entry, list) {
-            bool found = true;
-            QStringList search = m_currentSearch.split(" ", QString::SkipEmptyParts);
-            foreach (const QString &str, search) {
-                if (!entry.pArtist->name.contains(str, Qt::CaseInsensitive) &&
-                        !entry.pTrack->title.contains(str, Qt::CaseInsensitive) &&
-                        !entry.pAlbum->title.contains(str, Qt::CaseInsensitive) &&
-                        !entry.pTrack->comment.contains(str, Qt::CaseInsensitive) &&
-                        !entry.pTrack->genre.contains(str, Qt::CaseInsensitive)) {
-                    // search String part not found, don't add entry to m_sortedPlaylist
-                    found = false;
-                    break;
-                }
-            }
-
-            if (found) {
-                m_sortedPlaylist.append(entry);
-            }
-        }
-
-        endInsertRows();
-
-        sort(m_iSortColumn, m_eSortOrder);
     }
 }
 
@@ -423,13 +320,11 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
 
 // Gets the on-disk location of the track at the given location.
 QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
-    int row = index.row();
-
-    if (row >= m_sortedPlaylist.size()) {
-        return QString();
+    if (!index.isValid()) {
+        return "";
     }
-
-    QUrl url = m_sortedPlaylist.at(row).pTrack->uri;
+    QUrl url = index.sibling(
+            index.row(), fieldIndex("location")).data().toString();
 
     QString location;
     location = url.toLocalFile();
@@ -461,6 +356,7 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
     return QString();
 }
 
+/*
 // Gets a significant hint of the track at the given QModelIndex
 // This is used to restore the selection after WTrackTableView::doSortByColumn
 // We user here the view Order because a track might be more than one time in a playlist
@@ -473,7 +369,9 @@ int BansheePlaylistModel::getTrackId(const QModelIndex& index) const {
         return 0;
     }
 }
+*/
 
+/*
 const QLinkedList<int> BansheePlaylistModel::getTrackRows(int trackId) const {
     // In this case we get the position as trackId, returned from getTrackId above.
     QLinkedList<int> ret;
@@ -485,7 +383,8 @@ const QLinkedList<int> BansheePlaylistModel::getTrackRows(int trackId) const {
     }
     return ret;
 }
-
+*/
+/*
 void BansheePlaylistModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
@@ -497,6 +396,7 @@ void BansheePlaylistModel::search(const QString& searchText, const QString& extr
         setPlaylist(m_playlistId);
     }
 }
+*/
 
 const QString BansheePlaylistModel::currentSearch() {
     return m_currentSearch;
@@ -511,13 +411,4 @@ bool BansheePlaylistModel::isColumnInternal(int column) {
 bool BansheePlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
-}
-
-QAbstractItemDelegate* BansheePlaylistModel::delegateForColumn(const int i, QObject* pParent) {
-    if (m_headerList.at(i).id == RATING) {
-        return new StarDelegate(pParent);
-    //} else if (PlayerManager::numPreviewDecks() > 0 && m_headerList.at(i).id == PREVIEW) {
-    //    return new PreviewButtonDelegate(pParent, i);
-    }
-    return NULL;
 }

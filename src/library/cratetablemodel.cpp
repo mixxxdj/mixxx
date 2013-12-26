@@ -61,8 +61,6 @@ void CrateTableModel::setTableModel(int crateId) {
     columns[1] = "preview";
     setTable(tableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
-    // BaseSqlTableModel sets up the header names
-    initHeaderData();
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }

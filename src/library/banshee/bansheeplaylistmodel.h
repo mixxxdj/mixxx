@@ -11,9 +11,9 @@
 #include "library/dao/trackdao.h"
 #include "library/banshee/bansheedbconnection.h"
 #include "library/stardelegate.h"
+#include "library/basesqltablemodel.h"
 
-class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackModel
-{
+class BansheePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     enum Columns {
@@ -51,36 +51,35 @@ class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackMo
     // Methods implemented from QAbstractItemModel
     ////////////////////////////////////////////////////////////////////////////
 
+    virtual void setTableModel(int id = -1);
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual int getTrackId(const QModelIndex& index) const;
-    virtual const QLinkedList<int> getTrackRows(int trackId) const;
-    virtual void search(const QString& searchText, const QString& extraFilter = QString());
+//    virtual int getTrackId(const QModelIndex& index) const;
+//    virtual const QLinkedList<int> getTrackRows(int trackId) const;
+//    virtual void search(const QString& searchText, const QString& extraFilter = QString());
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
+//    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
-    virtual void sort(int column, Qt::SortOrder order);
-    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+   // virtual void sort(int column, Qt::SortOrder order);
+    //virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
-    virtual int columnCount(const QModelIndex& parent=QModelIndex()) const;
-    virtual int rowCount(const QModelIndex& parent=QModelIndex()) const;
-    virtual QVariant headerData(int section, Qt::Orientation orientation,
-                                int role=Qt::DisplayRole) const;
-
-    void setPlaylist(int playlistId);
+//    virtual int columnCount(const QModelIndex& parent=QModelIndex()) const;
+//    virtual int rowCount(const QModelIndex& parent=QModelIndex()) const;
+//    virtual QVariant headerData(int section, Qt::Orientation orientation,
+//                                int role=Qt::DisplayRole) const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Other public methods
     ////////////////////////////////////////////////////////////////////////////
 
     virtual const QString currentSearch() const;
-    virtual void setSort(int column, Qt::SortOrder order);
+    // virtual void setSort(int column, Qt::SortOrder order);
 
   protected:
     // Use this if you want a model that is read-only.
@@ -91,7 +90,6 @@ class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackMo
     // Set the columns used for searching. Names must correspond to the column
     // names in the table provided to setTable. Must be called after setTable is
     // called.
-    virtual void initHeaderData();
     virtual void initDefaultSearchColumns();
 
   private slots:

@@ -15,19 +15,19 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 
-const bool sDebug = false;
+const bool sDebug = true; //false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      QString settingsNamespace)
-        :  QAbstractTableModel(pParent),
-           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
-           m_pTrackCollection(pTrackCollection),
-           m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_database(pTrackCollection->getDatabase()),
-           m_currentSearch(""),
-           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-           m_iPreviewDeckTrackId(-1) {
+        : QAbstractTableModel(pParent),
+          TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
+          m_pTrackCollection(pTrackCollection),
+          m_trackDAO(pTrackCollection->getTrackDAO()),
+          m_database(pTrackCollection->getDatabase()),
+          m_currentSearch(""),
+          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+          m_iPreviewDeckTrackId(-1) {
     m_bInitialized = false;
     m_bDirty = true;
     m_iSortColumn = 0;
@@ -90,6 +90,29 @@ void BaseSqlTableModel::initHeaderData() {
 
     setHeaderData(fieldIndex("preview"),
                   Qt::Horizontal, tr("Preview"));
+
+
+#define CLM_VIEW_ORDER "view_order"
+#define CLM_ARTIST "artist"
+#define CLM_TITLE "title"
+#define CLM_DURATION "duration"
+#define CLM_URI "uri"
+#define CLM_ALBUM "album"
+#define CLM_ALBUM_ARTIST "album_artist"
+#define CLM_YEAR "year"
+#define CLM_RATING "rating"
+#define CLM_GENRE "genre"
+#define CLM_GROUPING "grouping"
+#define CLM_TRACKNUMBER "tracknumber"
+#define CLM_DATEADDED "dateadded"
+#define CLM_BPM "bpm"
+#define CLM_BITRATE "bitrate"
+#define CLM_COMMENT "comment"
+#define CLM_PLAYCOUNT "playcount"
+#define CLM_COMPOSER "composer"
+#define CLM_PREVIEW "preview"
+
+
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -254,25 +277,27 @@ void BaseSqlTableModel::select() {
         sortColumn = 0;
     }
 
-    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
-    // we should look into being able to drop the secondary sort to save time
-    // but going for correctness first.
-    m_trackSource->filterAndSort(trackIds, m_currentSearch,
-                                 m_currentSearchFilter,
-                                 sortColumn, m_eSortOrder,
-                                 &m_trackSortOrder);
+    if (m_trackSource) {
+        // If we were sorting a table column, then secondary sort by id. TODO(rryan)
+        // we should look into being able to drop the secondary sort to save time
+        // but going for correctness first.
+        m_trackSource->filterAndSort(trackIds, m_currentSearch,
+                                     m_currentSearchFilter,
+                                     sortColumn, m_eSortOrder,
+                                     &m_trackSortOrder);
 
-    // Re-sort the track IDs since filterAndSort can change their order or mark
-    // them for removal (by setting their row to -1).
-    for (QVector<RowInfo>::iterator it = rowInfo.begin();
-         it != rowInfo.end(); ++it) {
-        // If the sort column is not a track column then we will sort only to
-        // separate removed tracks (order == -1) from present tracks (order ==
-        // 0). Otherwise we sort by the order that filterAndSort returned to us.
-        if (sortColumn == 0) {
-            it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
-        } else {
-            it->order = m_trackSortOrder.value(it->trackId, -1);
+        // Re-sort the track IDs since filterAndSort can change their order or mark
+        // them for removal (by setting their row to -1).
+        for (QVector<RowInfo>::iterator it = rowInfo.begin();
+             it != rowInfo.end(); ++it) {
+            // If the sort column is not a track column then we will sort only to
+            // separate removed tracks (order == -1) from present tracks (order ==
+            // 0). Otherwise we sort by the order that filterAndSort returned to us.
+            if (sortColumn == 0) {
+                it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
+            } else {
+                it->order = m_trackSortOrder.value(it->trackId, -1);
+            }
         }
     }
 
@@ -303,14 +328,13 @@ void BaseSqlTableModel::select() {
     endInsertRows();
 
     int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms";
+    qDebug() << this << "select() took" << elapsed << "ms" << rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,
                                  const QString& idColumn,
                                  const QStringList& tableColumns,
                                  QSharedPointer<BaseTrackCache> trackSource) {
-    Q_ASSERT(trackSource);
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
@@ -324,14 +348,18 @@ void BaseSqlTableModel::setTable(const QString& tableName,
                    this, SLOT(tracksChanged(QSet<int>)));
     }
     m_trackSource = trackSource;
-    connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
-            this, SLOT(tracksChanged(QSet<int>)));
+    if (m_trackSource) {
+        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
+                this, SLOT(tracksChanged(QSet<int>)));
+    }
 
     // Build a map from the column names to their indices, used by fieldIndex()
     m_tableColumnIndex.clear();
     for (int i = 0; i < m_tableColumns.size(); ++i) {
         m_tableColumnIndex[m_tableColumns[i]] = i;
     }
+
+    initHeaderData();
 
     m_bInitialized = true;
     m_bDirty = true;

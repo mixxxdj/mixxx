@@ -37,8 +37,6 @@ void HiddenTableModel::setTableModel(int id){
     tableColumns << LIBRARYTABLE_ID;
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource("default"));
-
-    initHeaderData();
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 }

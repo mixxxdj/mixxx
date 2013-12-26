@@ -29,7 +29,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     //  This class also has protected variables that should be used in childs
     //  m_database, m_pTrackCollection, m_trackDAO
 
-    virtual void setTableModel(int id=-1) = 0;
+    virtual void setTableModel(int id = -1) = 0;
     virtual bool isColumnInternal(int column) = 0;
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const = 0;

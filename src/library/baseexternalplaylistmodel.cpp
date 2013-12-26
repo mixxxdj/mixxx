@@ -135,7 +135,6 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     setTable(playlistViewTable, columns[0], columns,
              m_pTrackCollection->getTrackSource(m_trackSource));
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
-    initHeaderData();
     setSearch("");
 }
 

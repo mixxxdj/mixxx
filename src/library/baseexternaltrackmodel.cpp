@@ -21,7 +21,6 @@ void BaseExternalTrackModel::setTableModel(int id) {
     setTable(m_trackTable, columns[0], columns,
              m_pTrackCollection->getTrackSource(m_trackSource));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
-    initHeaderData();
 }
 
 BaseExternalTrackModel::~BaseExternalTrackModel() {
