@@ -135,8 +135,9 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             }
         } else if (m_pMasterSyncable == m_pInternalClock &&
                    playingSyncDeckCount() == 0) {
-            // If there are no active followers, reset the internal clock beat
-            // distance.
+            // If there are no active followers, reset the internal clock bpm
+            // and beat distance.
+            setMasterBpm(pSyncable, pSyncable->getBpm());
             setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
         }
         activateFollower(pSyncable);
