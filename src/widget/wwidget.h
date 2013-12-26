@@ -49,10 +49,21 @@ public:
 
     // Given a filename of a pixmap, returns its path
     static const QString getPath(QString location);
-    double getValue();
+
     // Sometimes WWidget's compose a QWidget (like a label). This is used during
     // skin parsing to style and size the composed widget.
     virtual QWidget* getComposedWidget() { return NULL; }
+
+    Q_PROPERTY(bool disabled READ isDisabled);
+    Q_PROPERTY(double value READ getValue);
+
+    bool isDisabled() const {
+        return m_bOff;
+    }
+
+    double getValue() const {
+        return m_value;
+    }
 
   public slots:
     virtual void setValue(double value);
