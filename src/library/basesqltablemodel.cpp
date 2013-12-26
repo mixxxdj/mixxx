@@ -506,7 +506,26 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
+            } else if (column == fieldIndex(LIBRARYTABLE_YEAR)) {
+                int year = value.toInt();
+                if (year <= 0) {
+                    // clear invalid values
+                    value = QString();
+                }
+            } else if (column == fieldIndex(LIBRARYTABLE_TRACKNUMBER)) {
+                int track_number = value.toInt();
+                if (track_number <= 0) {
+                    // clear invalid values
+                    value = QString();
+                }
+            } else if (column == fieldIndex(LIBRARYTABLE_BITRATE)) {
+                int bitrate = value.toInt();
+                if (bitrate <= 0) {
+                    // clear invalid values
+                    value = QString();
+                }
             }
+
             break;
         case Qt::EditRole:
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
