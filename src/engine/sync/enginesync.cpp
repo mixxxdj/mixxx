@@ -141,11 +141,13 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             // and beat distance.
             setMasterBpm(pSyncable, pSyncable->getBpm());
             setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+        } else if (m_pMasterSyncable != NULL) {
+            foundPlayingDeck = true;
         }
         activateFollower(pSyncable);
         if (foundPlayingDeck) {
             // Users also expect phase to be aligned when they press the sync button.
-            pSyncable->notifySyncPhase();
+            pSyncable->requestSyncPhase();
         }
     } else {
         deactivateSync(pSyncable);

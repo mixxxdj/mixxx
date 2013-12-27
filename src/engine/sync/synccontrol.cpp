@@ -3,8 +3,10 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
-#include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginechannel.h"
+#include "engine/ratecontrol.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
 
@@ -121,9 +123,8 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
 }
 
-void SyncControl::notifySyncPhase() {
-    m_pSyncPhaseButton->set(1.0);
-    m_pSyncPhaseButton->set(0.0);
+void SyncControl::requestSyncPhase() {
+    m_pChannel->getEngineBuffer()->requestSyncPhase();
 }
 
 double SyncControl::getBeatDistance() const {

@@ -90,6 +90,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_bScalerChanged(false),
     m_bScalerOverride(false),
     m_bSeekQueued(0),
+    m_bSyncPhaseQueued(0),
     m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
     m_iTrackLoading(0),
@@ -371,6 +372,13 @@ void EngineBuffer::queueNewPlaypos(double newpos) {
     m_bSeekQueued.fetchAndStoreRelease(1);
 }
 
+void EngineBuffer::requestSyncPhase() {
+    if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
+        // Only honor phase syncing if quantize is on and playing.
+        m_bSyncPhaseQueued.fetchAndStoreRelease(1);
+    }
+}
+
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
@@ -641,6 +649,18 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
                 m_dQueuedPosition += offset;
             }
             setNewPlaypos(m_dQueuedPosition);
+        }
+        if (m_bSyncPhaseQueued.testAndSetAcquire(1, 0)) {
+            // XXX: syncPhase is private in bpmcontrol, so we seek directly.
+            double dThisPosition = m_pBpmControl->getCurrentSample();
+            double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
+            if (offset != 0.0) {
+                double dNewPlaypos = round(dThisPosition + offset);
+                if (!even(dNewPlaypos)) {
+                    dNewPlaypos--;
+                }
+                setNewPlaypos(dNewPlaypos);
+            }
         }
 
         // If the baserate, speed, or pitch has changed, we need to update the
