@@ -32,7 +32,7 @@ class Syncable {
     virtual void notifySyncModeChanged(SyncMode mode) = 0;
 
     // Notify a Synacable that they should sync phase.
-    virtual void notifySyncPhase() = 0;
+    virtual void requestSyncPhase() = 0;
 
     // Must NEVER return a mode that was not set directly via
     // notifySyncModeChanged.
