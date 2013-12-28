@@ -29,7 +29,6 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_iPreviewDeckTrackId(-1) {
     m_bInitialized = false;
-    m_bDirty = true;
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
@@ -324,7 +323,6 @@ void BaseSqlTableModel::select() {
     // We're done! Issue the update signals and replace the master maps.
     beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
     m_rowInfo = rowInfo;
-    m_bDirty = false;
     endInsertRows();
 
     int elapsed = time.elapsed();
@@ -362,7 +360,6 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     initHeaderData();
 
     m_bInitialized = true;
-    m_bDirty = true;
 }
 
 const QString BaseSqlTableModel::currentSearch() const {
@@ -385,7 +382,6 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
 
     m_currentSearch = searchText;
     m_currentSearchFilter = extraFilter;
-    m_bDirty = true;
 }
 
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
@@ -414,7 +410,6 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     m_iSortColumn = column;
     m_eSortOrder = order;
-    m_bDirty = true;
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {

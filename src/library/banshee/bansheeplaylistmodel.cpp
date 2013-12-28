@@ -43,7 +43,6 @@ BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pT
          //                   m_showAll(showAll)
           m_iSortColumn(0),
           m_eSortOrder(Qt::AscendingOrder),
-          m_currentSearch(""),
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
           m_pConnection(pConnection),
@@ -205,10 +204,6 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 }
 
 void BansheePlaylistModel::initDefaultSearchColumns() {
-}
-
-const QString BansheePlaylistModel::currentSearch() const {
-    return m_currentSearch;
 }
 
 bool BansheePlaylistModel::setData(const QModelIndex& index, const QVariant& value, int role) {
@@ -400,10 +395,6 @@ void BansheePlaylistModel::search(const QString& searchText, const QString& extr
     }
 }
 */
-
-const QString BansheePlaylistModel::currentSearch() {
-    return m_currentSearch;
-}
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
     Q_UNUSED(column);

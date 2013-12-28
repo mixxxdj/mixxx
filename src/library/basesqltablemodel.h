@@ -129,7 +129,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
     bool m_bInitialized;
-    bool m_bDirty;
     QSqlRecord m_queryRecord;
     QHash<int, int> m_trackSortOrder;
     QHash<int, QLinkedList<int> > m_trackIdToRows;
