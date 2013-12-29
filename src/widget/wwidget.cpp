@@ -107,10 +107,6 @@ void WWidget::setPixmapPath(QString qPath) {
     m_qPath = qPath;
 }
 
-double WWidget::getValue() {
-   return m_value;
-}
-
 void WWidget::updateValue(double value) {
     setValue(value);
     emit(valueChangedUp(value));
