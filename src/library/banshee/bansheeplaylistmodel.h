@@ -16,34 +16,6 @@
 class BansheePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    enum Columns {
-        VIEW_ORDER,
-        ARTIST,
-        TITLE,
-        DURATION,
-        URI,
-        ALBUM,
-        ALBUM_ARTIST,
-        YEAR,
-        RATING,
-        GENRE,
-        GROUPING,
-        TRACKNUMBER,
-        DATEADDED,
-        BPM,
-        BITRATE,
-        COMMENT,
-        PLAYCOUNT,
-        COMPOSER
-    };
-
-    struct ColumnsInfo {
-        enum Columns id;
-        QString lable;
-        bool (*lessThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2);
-        bool (*greaterThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2);
-    };
-
     BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection);
     virtual ~BansheePlaylistModel();
 
@@ -66,38 +38,13 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     // Use this if you want a model that can be changed
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
-    // Set the columns used for searching. Names must correspond to the column
-    // names in the table provided to setTable. Must be called after setTable is
-    // called.
-    virtual void initDefaultSearchColumns();
-
   private slots:
-    void trackChanged(int trackId);
+      void tracksChanged(QSet<int> trackIds);
 
   private:
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
 
-    QString m_tableName;
-    QStringList m_columnNames;
-    QString m_columnNamesJoined;
-    QSet<QString> m_tableColumns;
-    QString m_tableColumnsJoined;
-    QSet<int> m_tableColumnIndices;
-
-    int m_iSortColumn;
-    Qt::SortOrder m_eSortOrder;
-
-    bool m_bIndexBuilt;
-    QSqlRecord m_queryRecord;
-    QHash<int, QVector<QVariant> > m_recordCache;
-    QVector<QPair<int, QHash<int, QVariant> > > m_rowInfo;
-    QHash<int, QLinkedList<int> > m_trackIdToRows;
-    QSet<int> m_trackOverrides;
-    QList<struct ColumnsInfo> m_headerList;
-
     TrackCollection* m_pTrackCollection;
-    TrackDAO& m_trackDAO;
-
     BansheeDbConnection* m_pConnection;
     int m_playlistId;
 };

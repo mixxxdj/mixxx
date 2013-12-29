@@ -38,13 +38,7 @@ const bool sDebug = false;
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
-         // m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
-         //   m_iPlaylistId(-1),
-         //                   m_showAll(showAll)
-          m_iSortColumn(0),
-          m_eSortOrder(Qt::AscendingOrder),
           m_pTrackCollection(pTrackCollection),
-          m_trackDAO(m_pTrackCollection->getTrackDAO()),
           m_pConnection(pConnection),
           m_playlistId(-1) {
 }
@@ -208,9 +202,6 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
-void BansheePlaylistModel::initDefaultSearchColumns() {
-}
-
 bool BansheePlaylistModel::setData(const QModelIndex& index, const QVariant& value, int role) {
     Q_UNUSED(index);
     Q_UNUSED(value);
@@ -258,10 +249,8 @@ Qt::ItemFlags BansheePlaylistModel::readOnlyFlags(const QModelIndex &index) cons
     return defaultFlags;
 }
 
-void BansheePlaylistModel::trackChanged(int trackId) {
-    if (sDebug) {
-        qDebug() << this << "trackChanged" << trackId;
-    }
+void BansheePlaylistModel::tracksChanged(QSet<int> trackIds) {
+    Q_UNUSED(trackIds);
 }
 
 QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
