@@ -18,7 +18,8 @@
 #include "widget/wslidercomposed.h"
 
 #include <QtDebug>
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 
 #include "defs.h"
 #include "widget/wpixmapstore.h"
@@ -183,20 +184,18 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
 }
 
 void WSliderComposed::paintEvent(QPaintEvent *) {
-    if (m_pSlider && m_pHandle) {
-        QPainter p(this);
-        int posx;
-        int posy;
-        if (m_bHorizontal) {
-            posx = m_iPos;
-            posy = 0;
-        } else {
-            posx = 0;
-            posy = m_iPos;
-        }
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
 
-        // Draw slider followed by handle
+    if (!m_pSlider.isNull() && !m_pSlider->isNull()) {
         p.drawPixmap(0, 0, *m_pSlider);
+    }
+
+    if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
+        int posx = m_bHorizontal ? m_iPos : 0;
+        int posy = m_bHorizontal ? 0 : m_iPos;
         p.drawPixmap(posx, posy, *m_pHandle);
     }
 }
