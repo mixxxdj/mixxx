@@ -19,7 +19,8 @@
 #include "widget/wstatuslight.h"
 
 #include <QPaintEvent>
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QtDebug>
 #include <QPixmap>
 
@@ -106,6 +107,11 @@ void WStatusLight::setValue(double v) {
 }
 
 void WStatusLight::paintEvent(QPaintEvent *) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
+
     if (m_iPos < 0 || m_iPos >= m_pixmaps.size()) {
         return;
     }
@@ -116,6 +122,5 @@ void WStatusLight::paintEvent(QPaintEvent *) {
         return;
     }
 
-    QPainter p(this);
     p.drawPixmap(0, 0, *pPixmap);
 }

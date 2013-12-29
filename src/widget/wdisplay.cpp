@@ -17,7 +17,8 @@
 
 #include "widget/wdisplay.h"
 
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QPaintEvent>
 #include <QtDebug>
 #include <QPixmap>
@@ -112,7 +113,10 @@ int WDisplay::getActivePixmapIndex() const {
 }
 
 void WDisplay::paintEvent(QPaintEvent* ) {
-    QPainter p(this);
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pPixmapBack) {
         p.drawPixmap(0, 0, *m_pPixmapBack);
