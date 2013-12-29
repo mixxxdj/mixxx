@@ -20,18 +20,6 @@ BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
-    QString artist = index.sibling(
-            index.row(), fieldIndex("artist")).data().toString();
-    QString title = index.sibling(
-            index.row(), fieldIndex("title")).data().toString();
-    QString album = index.sibling(
-            index.row(), fieldIndex("album")).data().toString();
-    QString year = index.sibling(
-            index.row(), fieldIndex("year")).data().toString();
-    QString genre = index.sibling(
-            index.row(), fieldIndex("genre")).data().toString();
-    float bpm = index.sibling(
-            index.row(), fieldIndex("bpm")).data().toString().toFloat();
     QString location = index.sibling(
             index.row(), fieldIndex("location")).data().toString();
 
@@ -60,11 +48,28 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     // saved with the metadata from iTunes. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
     if (!track_already_in_library) {
+        QString artist = index.sibling(
+                index.row(), fieldIndex("artist")).data().toString();
         pTrack->setArtist(artist);
+
+        QString title = index.sibling(
+                index.row(), fieldIndex("title")).data().toString();
         pTrack->setTitle(title);
+
+        QString album = index.sibling(
+                index.row(), fieldIndex("album")).data().toString();
         pTrack->setAlbum(album);
+
+        QString year = index.sibling(
+                index.row(), fieldIndex("year")).data().toString();
         pTrack->setYear(year);
+
+        QString genre = index.sibling(
+                index.row(), fieldIndex("genre")).data().toString();
         pTrack->setGenre(genre);
+
+        float bpm = index.sibling(
+                index.row(), fieldIndex("bpm")).data().toString().toFloat();
         pTrack->setBpm(bpm);
     }
     return pTrack;

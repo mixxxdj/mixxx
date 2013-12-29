@@ -75,14 +75,7 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     void trackChanged(int trackId);
 
   private:
-    inline TrackPointer lookupCachedTrack(int trackId) const;
-    inline QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
-
-    void appendColumnsInfo(
-            enum Columns id,
-            QString lable,
-            bool (*lessThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2),
-            bool (*greaterThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2));
+    QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
 
     QString m_tableName;
     QStringList m_columnNames;
@@ -101,8 +94,6 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     QHash<int, QLinkedList<int> > m_trackIdToRows;
     QSet<int> m_trackOverrides;
     QList<struct ColumnsInfo> m_headerList;
-
-    QList<struct BansheeDbConnection::PlaylistEntry> m_sortedPlaylist;
 
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;

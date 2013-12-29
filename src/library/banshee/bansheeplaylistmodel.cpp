@@ -61,14 +61,12 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 
     if (m_playlistId >= 0) {
         // Clear old playlist
-        beginRemoveRows(QModelIndex(), 0, m_sortedPlaylist.size() - 1);
         m_playlistId = -1;
         QSqlQuery query(m_pTrackCollection->getDatabase());
         QString strQuery("DELETE FROM " BANSHEE_TABLE);
         if (!query.exec(strQuery)) {
             LOG_FAILED_QUERY(query);
         }
-        endRemoveRows();
     }
 
     if (playlistId >= 0) {
@@ -176,8 +174,12 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         endInsertRows();
     }
 
-    QStringList columns;
-    columns << CLM_VIEW_ORDER // 0
+    QStringList tableColumns;
+    tableColumns << CLM_VIEW_ORDER // 0
+         << CLM_PREVIEW;
+
+    QStringList trackSourceColumns;
+    trackSourceColumns << CLM_VIEW_ORDER // 0
          << CLM_ARTIST
          << CLM_TITLE
          << CLM_DURATION
@@ -194,10 +196,13 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
          << CLM_BITRATE
          << CLM_COMMENT
          << CLM_PLAYCOUNT
-         << CLM_COMPOSER
-         << CLM_PREVIEW;
+         << CLM_COMPOSER;
 
-    setTable(BANSHEE_TABLE, columns[0], columns, QSharedPointer<BaseTrackCache>());
+    QSharedPointer<BaseTrackCache> trackSource(
+            new BaseTrackCache(m_pTrackCollection, BANSHEE_TABLE, CLM_VIEW_ORDER,
+                    trackSourceColumns, false));
+
+    setTable(BANSHEE_TABLE, CLM_VIEW_ORDER, tableColumns, trackSource);
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
@@ -259,17 +264,20 @@ void BansheePlaylistModel::trackChanged(int trackId) {
     }
 }
 
+QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
+        const QString& fieldName) const {
+    return index.sibling(
+            index.row(), fieldIndex(fieldName)
+            ).data().toString();
+}
+
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
-
-    QString location;
-
-    location = getTrackLocation(index);
+    QString location = getTrackLocation(index);
 
     if (location.isEmpty()) {
+        // Track is lost
         return TrackPointer();
     }
-
-    int row = index.row();
 
     TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
     int track_id = track_dao.getTrackId(location);
@@ -280,7 +288,6 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     }
 
     TrackPointer pTrack;
-
     if (track_id < 0) {
         // Add Track to library failed, create a transient TrackInfoObject
         pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
@@ -289,29 +296,30 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     }
 
     // If this track was not in the Mixxx library it is now added and will be
-    // saved with the metadata from Banshee. If it was already in the library
+    // saved with the metadata from iTunes. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
     if (!track_already_in_library) {
-        pTrack->setArtist(m_sortedPlaylist.at(row).pArtist->name);
-        pTrack->setTitle(m_sortedPlaylist.at(row).pTrack->title);
-        pTrack->setDuration(m_sortedPlaylist.at(row).pTrack->duration);
-        pTrack->setAlbum(m_sortedPlaylist.at(row).pAlbum->title);
-        pTrack->setAlbumArtist(m_sortedPlaylist.at(row).pAlbumArtist->name);
-        pTrack->setYear(QString::number(m_sortedPlaylist.at(row).pTrack->year));
-        pTrack->setGenre(m_sortedPlaylist.at(row).pTrack->genre);
-        pTrack->setGrouping(m_sortedPlaylist.at(row).pTrack->grouping);
-        pTrack->setRating(m_sortedPlaylist.at(row).pTrack->rating);
-        pTrack->setTrackNumber(QString::number(m_sortedPlaylist.at(row).pTrack->tracknumber));
-        double bpm = ((double)m_sortedPlaylist.at(row).pTrack->bpm);
+        pTrack->setArtist(getFieldString(index, CLM_ARTIST));
+        pTrack->setTitle(getFieldString(index, CLM_TITLE));
+        pTrack->setDuration(getFieldString(index, CLM_DURATION).toInt());
+        pTrack->setAlbum(getFieldString(index, CLM_ALBUM));
+        pTrack->setAlbumArtist(getFieldString(index, CLM_ALBUM_ARTIST));
+        pTrack->setYear(getFieldString(index, CLM_YEAR));
+        pTrack->setGenre(getFieldString(index, CLM_GENRE));
+        pTrack->setGrouping(getFieldString(index, CLM_GROUPING));
+        pTrack->setRating(getFieldString(index, CLM_RATING).toInt());
+        pTrack->setTrackNumber(getFieldString(index, CLM_TRACKNUMBER));
+        double bpm = getFieldString(index, CLM_BPM).toDouble();
         pTrack->setBpm(bpm);
-        pTrack->setBitrate(m_sortedPlaylist.at(row).pTrack->bitrate);
-        pTrack->setComment(m_sortedPlaylist.at(row).pTrack->comment);
-        pTrack->setComposer(m_sortedPlaylist.at(row).pTrack->composer);
+        pTrack->setBitrate(getFieldString(index, CLM_BITRATE).toInt());
+        pTrack->setComment(getFieldString(index, CLM_COMMENT));
+        pTrack->setComposer(getFieldString(index, CLM_COMPOSER));
         // If the track has a BPM, then give it a static beatgrid.
         if (bpm > 0) {
             BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0f);
             pTrack->setBeats(pBeats);
         }
+
     }
     return pTrack;
 }
@@ -321,8 +329,7 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
         return "";
     }
-    QUrl url = index.sibling(
-            index.row(), fieldIndex("location")).data().toString();
+    QUrl url(getFieldString(index, CLM_URI));
 
     QString location;
     location = url.toLocalFile();
@@ -353,48 +360,6 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
 
     return QString();
 }
-
-/*
-// Gets a significant hint of the track at the given QModelIndex
-// This is used to restore the selection after WTrackTableView::doSortByColumn
-// We user here the view Order because a track might be more than one time in a playlist
-int BansheePlaylistModel::getTrackId(const QModelIndex& index) const {
-    // in our case the position in the playlist is a significant hint
-    int row = index.row();
-    if (row < m_sortedPlaylist.size()) {
-        return m_sortedPlaylist.at(index.row()).viewOrder;
-    } else {
-        return 0;
-    }
-}
-*/
-
-/*
-const QLinkedList<int> BansheePlaylistModel::getTrackRows(int trackId) const {
-    // In this case we get the position as trackId, returned from getTrackId above.
-    QLinkedList<int> ret;
-    for (int i = 0; i < m_sortedPlaylist.size(); ++i) {
-        if (m_sortedPlaylist.at(i).viewOrder == trackId) {
-            ret.push_back(i);
-            break;
-        }
-    }
-    return ret;
-}
-*/
-/*
-void BansheePlaylistModel::search(const QString& searchText, const QString& extraFilter) {
-    if (sDebug) {
-        qDebug() << this << "search" << searchText;
-    }
-
-    if (m_currentSearch != searchText || m_currentSearchFilter != extraFilter) {
-        m_currentSearch = searchText;
-        m_currentSearchFilter = extraFilter;
-        setPlaylist(m_playlistId);
-    }
-}
-*/
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
     Q_UNUSED(column);
