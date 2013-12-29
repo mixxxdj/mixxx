@@ -17,7 +17,8 @@
 
 #include "widget/wpushbutton.h"
 
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
@@ -183,7 +184,12 @@ void WPushButton::setValue(double v) {
     update();
 }
 
-void WPushButton::paintEvent(QPaintEvent *) {
+void WPushButton::paintEvent(QPaintEvent* e) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
+
     double value = m_value;
     if (m_iNoStates == 0) {
         return;
@@ -199,7 +205,6 @@ void WPushButton::paintEvent(QPaintEvent *) {
         return;
     }
 
-    QPainter p(this);
     if (m_pPixmapBack) {
         p.drawPixmap(0, 0, *m_pPixmapBack);
     }
