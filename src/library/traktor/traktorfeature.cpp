@@ -17,11 +17,12 @@
 #include "library/treeitem.h"
 
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
-                                     TrackCollection* pTrackCollection)
+                                     TrackCollection* pTrackCollection,
+                                     QSharedPointer<BaseTrackCache> trackSource)
         : BaseExternalTrackModel(parent, pTrackCollection,
                                  "mixxx.db.model.traktor_tablemodel",
                                  "traktor_library",
-                                 "traktor") {
+                                 trackSource) {
 }
 
 bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
@@ -33,12 +34,13 @@ bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
-                                           TrackCollection* pTrackCollection)
+                                           TrackCollection* pTrackCollection,
+                                           QSharedPointer<BaseTrackCache> trackSource)
         : BaseExternalPlaylistModel(parent, pTrackCollection,
                                     "mixxx.db.model.traktor.playlistmodel",
                                     "traktor_playlists",
                                     "traktor_playlist_tracks",
-                                    "traktor") {
+                                    trackSource) {
 }
 
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
@@ -70,13 +72,13 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
             << "bitrate"
             << "bpm"
             << "key";
-    pTrackCollection->addTrackSource(QString("traktor"), QSharedPointer<BaseTrackCache>(
+    m_trackSource = QSharedPointer<BaseTrackCache>(
         new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
-                           columns, false)));
+                           columns, false));
 
     m_isActivated = false;
-    m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection);
-    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
+    m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection, m_trackSource);
+    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
 
     m_title = tr("Traktor");
 
@@ -101,7 +103,7 @@ TraktorFeature::~TraktorFeature() {
 }
 
 BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(QString playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection);
+    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -596,7 +598,7 @@ void TraktorFeature::onTrackCollectionLoaded() {
     if (root) {
         m_childModel.setRootItem(root);
         // Tell the rhythmbox track source that it should re-build its index.
-        m_pTrackCollection->getTrackSource("traktor")->buildIndex();
+        m_trackSource->buildIndex();
 
         //m_pTraktorTableModel->select();
         emit(showTrackModel(m_pTraktorTableModel));

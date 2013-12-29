@@ -59,8 +59,8 @@ class TrackCollection : public QObject
     CrateDAO& getCrateDAO();
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
-    QSharedPointer<BaseTrackCache> getTrackSource(const QString& name);
-    void addTrackSource(const QString& name, QSharedPointer<BaseTrackCache> trackSource);
+    QSharedPointer<BaseTrackCache> getTrackSource();
+    void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();
 
     ConfigObject<ConfigValue>* getConfig() {
@@ -75,7 +75,7 @@ class TrackCollection : public QObject
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;
-    QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;
+    QSharedPointer<BaseTrackCache> m_defaultTrackSource;
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
     CueDAO m_cueDao;

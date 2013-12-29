@@ -47,21 +47,21 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "bitrate"
             << "bpm"
             << "rating";
-    pTrackCollection->addTrackSource(
-        QString("itunes"), QSharedPointer<BaseTrackCache>(
+
+    m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
-                               columns, false)));
+                               columns, false));
     m_pITunesTrackModel = new BaseExternalTrackModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes",
         "itunes_library",
-        "itunes");
+        m_trackSource);
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
-        "itunes");
+        m_trackSource);
     m_isActivated = false;
     m_title = tr("iTunes");
 
@@ -88,7 +88,7 @@ BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) 
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
-        "itunes");
+        m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -696,7 +696,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
         m_childModel.setRootItem(root);
 
         // Tell the rhythmbox track source that it should re-build its index.
-        m_pTrackCollection->getTrackSource("itunes")->buildIndex();
+        m_trackSource->buildIndex();
 
         //m_pITunesTrackModel->select();
         emit(showTrackModel(m_pITunesTrackModel));

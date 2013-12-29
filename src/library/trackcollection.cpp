@@ -184,13 +184,11 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
     return m_playlistDao;
 }
 
-QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
-        const QString& name) {
-    return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
+QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
+    return m_defaultTrackSource;
 }
 
-void TrackCollection::addTrackSource(const QString& name,
-        QSharedPointer<BaseTrackCache> trackSource) {
-    Q_ASSERT(!m_trackSources.contains(name));
-    m_trackSources[name] = trackSource;
+void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
+    Q_ASSERT(m_defaultTrackSource.isNull());
+    m_defaultTrackSource = trackSource;
 }

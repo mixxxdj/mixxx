@@ -5,10 +5,10 @@
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
                                                      TrackCollection* pTrackCollection,
-                                                     QString settingsNamespace,
-                                                     QString playlistsTable,
-                                                     QString playlistTracksTable,
-                                                     QString trackSource)
+                                                     const char* settingsNamespace,
+                                                     const QString& playlistsTable,
+                                                     const QString& playlistTracksTable,
+                                                     QSharedPointer<BaseTrackCache> trackSource)
         : BaseSqlTableModel(parent, pTrackCollection,
                             settingsNamespace),
           m_playlistsTable(playlistsTable),
@@ -17,10 +17,6 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
-}
-
-void BaseExternalPlaylistModel::setTableModel(int id){
-    Q_UNUSED(id);
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
@@ -132,8 +128,7 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
         return;
     }
 
-    setTable(playlistViewTable, columns[0], columns,
-             m_pTrackCollection->getTrackSource(m_trackSource));
+    setTable(playlistViewTable, columns[0], columns, m_trackSource);
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     setSearch("");
 }

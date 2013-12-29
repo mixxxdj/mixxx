@@ -47,11 +47,8 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection);
     virtual ~BansheePlaylistModel();
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Methods implemented from QAbstractItemModel
-    ////////////////////////////////////////////////////////////////////////////
+    void setTableModel(int playlistId);
 
-    virtual void setTableModel(int id = -1);
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual bool isColumnInternal(int column);

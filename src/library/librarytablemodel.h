@@ -7,7 +7,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
-                      QString settingsNamespace="mixxx.db.model.library");
+                      const char* settingsNamespace);
     virtual ~LibraryTableModel();
     void setTableModel(int id =-1);
     bool isColumnInternal(int column);

@@ -19,7 +19,7 @@ const bool sDebug = true; //false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
-                                     QString settingsNamespace)
+                                     const char* settingsNamespace)
         : QAbstractTableModel(pParent),
           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
           m_pTrackCollection(pTrackCollection),

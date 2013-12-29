@@ -9,7 +9,7 @@ const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
-                                     QString settingsNamespace)
+                                     const char* settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace){
     setTableModel();
 }
@@ -39,7 +39,7 @@ void LibraryTableModel::setTableModel(int id) {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << "preview";
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollection->getTrackSource("default"));
+             m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }

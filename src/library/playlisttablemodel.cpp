@@ -5,7 +5,7 @@
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
-                                       QString settingsNamespace,
+                                       const char* settingsNamespace,
                                        bool showAll)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
@@ -56,7 +56,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = "preview";
     setTable(playlistTableName, columns[0], columns,
-            m_pTrackCollection->getTrackSource("default"));
+            m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());

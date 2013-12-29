@@ -20,16 +20,15 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   public:
     BaseSqlTableModel(QObject* pParent,
                       TrackCollection* pTrackCollection,
-                      QString settingsNamespace);
+                      const char* settingsNamespace);
     virtual ~BaseSqlTableModel();
 
     ///////////////////////////////////////////////////////////////////////////
     //  Functions that have to/can be reimplemented
     ///////////////////////////////////////////////////////////////////////////
-    //  This class also has protected variables that should be used in childs
+    //  This class also has protected variables that should be used in children
     //  m_database, m_pTrackCollection, m_trackDAO
 
-    virtual void setTableModel(int id = -1) = 0;
     virtual bool isColumnInternal(int column) = 0;
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const = 0;
