@@ -15,16 +15,20 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wdisplay.h"
-#include "wpixmapstore.h"
+#include "widget/wdisplay.h"
 
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QPaintEvent>
 #include <QtDebug>
 #include <QPixmap>
 
-WDisplay::WDisplay(QWidget * parent) : WWidget(parent) {
-    m_pPixmaps = 0;
+#include "widget/wpixmapstore.h"
+
+WDisplay::WDisplay(QWidget * parent)
+        : WWidget(parent),
+          m_pPixmapBack(NULL),
+          m_bDisabledLoaded(false) {
     setPositions(0);
 }
 
@@ -33,59 +37,111 @@ WDisplay::~WDisplay() {
 }
 
 void WDisplay::setup(QDomNode node) {
+    // Set background pixmap if available
+    if (!selectNode(node, "BackPath").isNull()) {
+        setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
+    }
+
     // Number of states
     setPositions(selectNodeInt(node, "NumberStates"));
 
-    // Load knob  pixmaps
+
+    // Load knob pixmaps
     QString path = selectNodeQString(node, "Path");
-    for (int i=0; i<m_iNoPos; ++i) {
-        setPixmap(i, getPath(path.arg(i)));
+    for (int i = 0; i < m_pixmaps.size(); ++i) {
+        setPixmap(&m_pixmaps, i, getPath(path.arg(i)));
+    }
+
+    // See if disabled images is defined, and load them...
+    if (!selectNode(node, "DisabledPath").isNull()) {
+        QString disabledPath = selectNodeQString(node, "DisabledPath");
+        for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
+            setPixmap(&m_disabledPixmaps, i,
+                      getPath(disabledPath.arg(i)));
+        }
+        m_bDisabledLoaded = true;
     }
 }
 
 void WDisplay::setPositions(int iNoPos) {
-    m_iNoPos = iNoPos;
-    m_iPos = 0;
-
     resetPositions();
 
-    if (m_iNoPos>0) {
-        m_pPixmaps = new QPixmap*[m_iNoPos];
-        for (int i=0; i<m_iNoPos; i++)
-            m_pPixmaps[i] = 0;
+    if (iNoPos < 0) {
+        qWarning() << "Negative NumberStates for Display.";
+        iNoPos = 0;
     }
+
+    // QVector inserts NULLs for the new pixmaps.
+    m_pixmaps.resize(iNoPos);
+    m_disabledPixmaps.resize(iNoPos);
 }
 
 void WDisplay::resetPositions() {
-    if (m_pPixmaps) {
-        for (int i=0; i<m_iNoPos; i++)
-            if (m_pPixmaps[i])
-                WPixmapStore::deletePixmap(m_pPixmaps[i]);
+    m_pPixmapBack.clear();
+    m_pixmaps.resize(0);
+    m_disabledPixmaps.resize(0);
+}
 
-        //WPixmapStore::deletePixmap(m_pPixmaps);
-        m_pPixmaps = 0;
+void WDisplay::setPixmapBackground(const QString& filename) {
+    m_pPixmapBack = WPixmapStore::getPixmap(filename);
+    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+        qDebug() << metaObject()->className()
+                 << "Error loading background pixmap:" << filename;
     }
 }
 
-void WDisplay::setPixmap(int iPos, const QString &filename) {
-    m_pPixmaps[iPos] = WPixmapStore::getPixmap(filename);
-    if (!m_pPixmaps[iPos])
-        qDebug() << "WDisplay: Error loading pixmap" << filename;
-    else
-        setFixedSize(m_pPixmaps[iPos]->size());
+void WDisplay::setPixmap(QVector<QPixmapPointer>* pPixmaps, int iPos,
+                         const QString& filename) {
+    if (iPos < 0 || iPos >= pPixmaps->size()) {
+        return;
+    }
+
+    QPixmapPointer pPixmap = WPixmapStore::getPixmap(filename);
+
+    if (pPixmap.isNull() || pPixmap->isNull()) {
+        qDebug() << metaObject()->className()
+                 << "Error loading pixmap:" << filename;
+    } else {
+        (*pPixmaps)[iPos] = pPixmap;
+        setFixedSize(pPixmap->size());
+    }
 }
 
-void WDisplay::paintEvent(QPaintEvent *) {
-    if (m_pPixmaps) {
-        int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
-        // Range check
-        if (idx>(m_iNoPos-1))
-            idx = m_iNoPos-1;
-        else if (idx<0)
-            idx = 0;
-        if (m_pPixmaps[idx]) {
-            QPainter p(this);
-            p.drawPixmap(0, 0, *m_pPixmaps[idx]);
-        }
+int WDisplay::getActivePixmapIndex() const {
+    return static_cast<int>(
+        m_value * static_cast<double>(m_pixmaps.size()) / 128.0);
+}
+
+void WDisplay::paintEvent(QPaintEvent* ) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
+
+    if (m_pPixmapBack) {
+        p.drawPixmap(0, 0, *m_pPixmapBack);
+    }
+
+    // If we are disabled, use the disabled pixmaps. If not, use the regular
+    // pixmaps.
+    const QVector<QPixmapPointer>& pixmaps = (m_bOff && m_bDisabledLoaded) ?
+            m_disabledPixmaps : m_pixmaps;
+
+    if (pixmaps.empty()) {
+        return;
+    }
+
+    int idx = getActivePixmapIndex();
+
+    // Clamp active pixmap index to valid ranges.
+    if (idx < 0) {
+        idx = 0;
+    } else if (idx >= pixmaps.size()) {
+        idx = pixmaps.size() - 1;
+    }
+
+    QPixmapPointer pPixmap = pixmaps[idx];
+    if (pPixmap) {
+        p.drawPixmap(0, 0, *pPixmap);
     }
 }

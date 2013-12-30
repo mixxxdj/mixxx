@@ -1,8 +1,12 @@
 #ifndef MIXXXCONTROL_H
 #define MIXXXCONTROL_H
 
-#include <QDebug>
+#include <QtDebug>
 #include <QVariant>
+#include <QString>
+#include <QDomElement>
+#include <QHash>
+
 #include "controlobject.h"
 
 class MixxxControl {

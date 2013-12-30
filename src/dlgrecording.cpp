@@ -10,8 +10,6 @@
 
 #include "dlgrecording.h"
 
-
-
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
@@ -55,7 +53,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 }
 
 DlgRecording::~DlgRecording() {
-
 }
 
 void DlgRecording::onShow() {
@@ -117,7 +114,8 @@ void DlgRecording::slotBytesRecorded(long bytes) {
     double megabytes = bytes / 1048575.0f;
     QString byteStr = QString::number(megabytes,'f',2);
     QString text = (tr("Recording to file: ")) +m_pRecordingManager->getRecordingFile();
-    /* TRANSLATOR: The size of the file which has been stored during the current recording in megabytes (MB) */
+    /* TRANSLATOR RecordingsView 
+    The size of the file which has been stored during the current recording in megabytes (MB) */
     text.append(" ( " +byteStr+ (tr("MB written")) +" )");
     label->setText(text);
 }

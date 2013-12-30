@@ -33,3 +33,20 @@ TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
     EXPECT_STREQ(qPrintable(QString("'foobar''s'")),
                  qPrintable(f.escapeString("foobar's")));
 }
+
+TEST_F(QueryUtilTest, FieldEscaperEscapesForLike) {
+    QTemporaryFile databaseFile("mixxxdb.sqlite");
+    Q_ASSERT(databaseFile.open());
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setHostName("localhost");
+    db.setUserName("mixxx");
+    db.setPassword("mixxx");
+    qDebug() << "Temp file is" << databaseFile.fileName();
+    db.setDatabaseName(databaseFile.fileName());
+    Q_ASSERT(db.open());
+    FieldEscaper f(db);
+
+    EXPECT_STREQ(qPrintable(QString("xx44xx4%yy4_yy")),
+                 qPrintable(f.escapeStringForLike("xx4xx%yy_yy", '4')));
+}

@@ -5,8 +5,7 @@
 * @brief Configuration dialog for a DJ controller
 */
 
-#include <QtGui>
-#include <QDebug>
+#include <QtDebug>
 #include <QFileInfo>
 
 #include "controllers/dlgprefcontroller.h"
@@ -15,10 +14,10 @@
 #include "controllers/defs_controllers.h"
 #include "configobject.h"
 
-DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
+DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
                                      ConfigObject<ConfigValue> *pConfig)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControllerManager(controllerManager),
           m_pController(controller),

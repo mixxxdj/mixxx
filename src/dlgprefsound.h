@@ -16,10 +16,10 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
-#include <QtCore>
 #include "ui_dlgprefsounddlg.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
+#include "preferences/dlgpreferencepage.h"
 
 class SoundManager;
 class PlayerManager;
@@ -37,43 +37,30 @@ class ControlObjectThread;
 /**
  * Class representing a preferences pane to configure sound devices for Mixxx.
  */
-class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
+class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
-public:
+  public:
     DlgPrefSound(QWidget *parent, SoundManager *soundManager,
                  PlayerManager* pPlayerManager,
                  ConfigObject<ConfigValue> *config);
-    ~DlgPrefSound();
-signals:
+    virtual ~DlgPrefSound();
+
+  signals:
     void loadPaths(const SoundManagerConfig &config);
     void writePaths(SoundManagerConfig *config);
     void refreshOutputDevices(const QList<SoundDevice*> &devices);
     void refreshInputDevices(const QList<SoundDevice*> &devices);
     void updatingAPI();
     void updatedAPI();
-public slots:
+
+  public slots:
     void slotUpdate(); // called on show
     void slotApply();  // called on ok button
     void forceApply(); // called by DlgPrefVinyl to make slotApply call setupDevices
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
-private:
-    void initializePaths();
-    void connectSoundItem(DlgPrefSoundItem *item);
-    void loadSettings(const SoundManagerConfig &config);
-    void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
-    SoundManager *m_pSoundManager;
-    PlayerManager *m_pPlayerManager;
-    ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectThread* m_pMasterUnderflowCount;
-    ControlObjectThread* m_pMasterLatency;
-    QList<SoundDevice*> m_inputDevices;
-    QList<SoundDevice*> m_outputDevices;
-    bool m_settingsModified;
-    SoundManagerConfig m_config;
-    bool m_loading;
-    bool m_forceApply;
-private slots:
+
+  private slots:
     void addPath(AudioOutput output);
     void addPath(AudioInput input);
     void loadSettings();
@@ -86,6 +73,24 @@ private slots:
     void settingChanged();
     void queryClicked();
     void resetClicked();
+
+  private:
+    void initializePaths();
+    void connectSoundItem(DlgPrefSoundItem *item);
+    void loadSettings(const SoundManagerConfig &config);
+    void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
+
+    SoundManager *m_pSoundManager;
+    PlayerManager *m_pPlayerManager;
+    ConfigObject<ConfigValue> *m_pConfig;
+    ControlObjectThread* m_pMasterUnderflowCount;
+    ControlObjectThread* m_pMasterLatency;
+    QList<SoundDevice*> m_inputDevices;
+    QList<SoundDevice*> m_outputDevices;
+    bool m_settingsModified;
+    SoundManagerConfig m_config;
+    bool m_loading;
+    bool m_forceApply;
 };
 
 #endif

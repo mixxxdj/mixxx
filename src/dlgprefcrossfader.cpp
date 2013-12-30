@@ -15,40 +15,29 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtDebug>
+
 #include "dlgprefcrossfader.h"
 #include "engine/enginefilteriir.h"
 #include "controlobject.h"
 #include "engine/enginexfader.h"
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qslider.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qgraphicsscene.h>
-#include <QtDebug>
-
-#include <assert.h>
 
 #define CONFIG_KEY "[Mixer Profile]"
 
 DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
+          config(_config),
+          m_pxfScene(NULL),
+          m_xFaderMode(MIXXX_XFADER_ADDITIVE),
+          m_transform(0.0),
+          m_cal(0.0),
           m_COTMode(CONFIG_KEY, "xFaderMode"),
           m_COTCurve(CONFIG_KEY, "xFaderCurve"),
           m_COTCalibration(CONFIG_KEY, "xFaderCalibration"),
           m_COTReverse(CONFIG_KEY, "xFaderReverse") {
-    config = _config;
-    m_pxfScene = NULL;
-
-    m_transform = 0;
-    m_cal = 0;
-    m_xFaderMode = MIXXX_XFADER_ADDITIVE;
-
     setupUi(this);
 
-    connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
+    connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
 
     QButtonGroup crossfaderModes;
     crossfaderModes.addButton(radioButtonAdditive);
@@ -56,18 +45,18 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
 
     loadSettings();
 
-    connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
-    connect(SliderXFader,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateXFader()));
-    connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
-    connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
+    connect(SliderXFader, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
+    connect(SliderXFader, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateXFader()));
+    connect(SliderXFader, SIGNAL(sliderReleased()), this, SLOT(slotUpdateXFader()));
+    connect(SliderXFader, SIGNAL(sliderReleased()), this, SLOT(slotApply()));
 
     //Update the crossfader curve graph and other setings when the crossfader mode is changed.
-    connect(radioButtonAdditive,        SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
-    connect(radioButtonConstantPower,   SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
+    connect(radioButtonAdditive, SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
+    connect(radioButtonConstantPower, SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
 }
 
 DlgPrefCrossfader::~DlgPrefCrossfader() {
-   delete m_pxfScene;
+    delete m_pxfScene;
 }
 
 /** Loads the config keys and sets the widgets in the dialog to match */

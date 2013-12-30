@@ -8,6 +8,7 @@
 #include "controlpushbutton.h"
 #include "defs.h"
 #include "util/timer.h"
+#include "sampleutil.h"
 
 #define SIGNAL_QUALITY_FIFO_SIZE 256
 #define SAMPLE_PIPE_FIFO_SIZE 65536
@@ -16,7 +17,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
         : QThread(pParent),
           m_pConfig(pConfig),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
-          m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
+          m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_processorsLock(QMutex::Recursive),
           m_processors(kMaximumVinylControlInputs, NULL),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
@@ -28,7 +29,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
             Qt::DirectConnection);
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        m_samplePipes[i] = new FIFO<short>(SAMPLE_PIPE_FIFO_SIZE);
+        m_samplePipes[i] = new FIFO<CSAMPLE>(SAMPLE_PIPE_FIFO_SIZE);
     }
 
     start();
@@ -40,7 +41,7 @@ VinylControlProcessor::~VinylControlProcessor() {
     wait();
 
     delete m_pToggle;
-    delete [] m_pWorkBuffer;
+    SampleUtil::free(m_pWorkBuffer);
 
     {
         QMutexLocker locker(&m_processorsLock);
@@ -87,7 +88,7 @@ void VinylControlProcessor::run() {
             QMutexLocker locker(&m_processorsLock);
             VinylControl* pProcessor = m_processors[i];
             locker.unlock();
-            FIFO<short>* pSamplePipe = m_samplePipes[i];
+            FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[i];
 
             if (pSamplePipe->readAvailable() > 0) {
                 int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
@@ -197,14 +198,13 @@ void VinylControlProcessor::onInputDisconnected(AudioInput input) {
 
 
 void VinylControlProcessor::receiveBuffer(AudioInput input,
-                                          const short *pBuffer,
+                                          const CSAMPLE* pBuffer,
                                           unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
         return;
     }
-
 
     unsigned char vcIndex = input.getIndex();
 
@@ -213,14 +213,15 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
         return;
     }
 
-    FIFO<short>* pSamplePipe = m_samplePipes[vcIndex];
+    FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[vcIndex];
 
     if (pSamplePipe == NULL) {
         // Should not be possible.
         return;
     }
 
-    const int nSamples = nFrames * 2;
+    const int kChannels = 2;
+    const int nSamples = nFrames * kChannels;
     int samplesWritten = pSamplePipe->write(pBuffer, nSamples);
 
     if (samplesWritten < nSamples) {
@@ -243,7 +244,7 @@ void VinylControlProcessor::toggleDeck(double value) {
      * For case 1, we'll just enable vinyl control on the first deck. Case 2
      * is the most common one, we'll just turn off the vinyl control on the
      * deck currently using it and turn it on on the next one (sequentially,
-     * wrapping as needed). Behaviour in case 3 is totally non-obvious and
+     * wrapping as needed). Behavior in case 3 is totally non-obvious and
      * will be ignored.
      */
 

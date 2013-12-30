@@ -18,35 +18,26 @@
 #ifndef WNUMBER_H
 #define WNUMBER_H
 
-#include "wwidget.h"
-#include <qlabel.h>
-#include <qevent.h>
+#include <QLabel>
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
+#include "widget/wlabel.h"
 
-class WNumber : public WWidget  {
+class WNumber : public WLabel  {
     Q_OBJECT
   public:
-    WNumber(QWidget *parent=0);
+    WNumber(QWidget* pParent=NULL);
     virtual ~WNumber();
 
-    void setup(QDomNode node);
-    void setNumDigits(int);
-    void setConstFactor(double);
-    virtual QWidget* getComposedWidget() { return m_pLabel; }
+    virtual void setup(QDomNode node);
 
   public slots:
     void setValue(double dValue);
 
   protected:
-    QLabel* m_pLabel;
-    QString m_qsText;
+    // Number of digits to round to.
     int m_iNoDigits;
-    /** Foreground and background colors */
-    QColor m_qFgColor, m_qBgColor;
-    /** Constant factor added to value */
+
+    // Constant factor added to value.
     double m_dConstFactor;
 };
 

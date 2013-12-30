@@ -549,6 +549,5 @@ void MidiController::receive(QByteArray data) {
 void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
     unsigned int word = (((unsigned int)byte2) << 16) |
             (((unsigned int)byte1) << 8) | status;
-    send(word);
+    sendWord(word);
 }
-

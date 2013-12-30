@@ -6,55 +6,47 @@
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "defs.h"
+#include "visualplayposition.h"
 #include "mathstuff.h"
+
+#include "util/performancetimer.h"
+
+#include <QPainter>
 
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
-WaveformWidgetRenderer::WaveformWidgetRenderer()
-    : m_pPlayPosControlObject(NULL),
+WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) 
+    : m_group(group),
+      m_trackInfoObject(0),
+      m_height(-1),
+      m_width(-1),
+
+      m_firstDisplayedPosition(0.0),
+      m_lastDisplayedPosition(0.0),
+      m_trackPixelCount(0.0),
+
+      m_zoomFactor(1.0),
+      m_rateAdjust(0.0),
+      m_visualSamplePerPixel(1.0),
+      m_audioSamplePerPixel(1.0),
+
+      // Really create some to manage those;
+      m_visualPlayPosition(NULL),
+      m_playPos(-1),
+      m_playPosVSample(0),
       m_pRateControlObject(NULL),
+      m_rate(0.0),
       m_pRateRangeControlObject(NULL),
+      m_rateRange(0.0),
       m_pRateDirControlObject(NULL),
+      m_rateDir(0.0),
       m_pGainControlObject(NULL),
-      m_pTrackSamplesControlObject(NULL)
-#ifdef WAVEFORMWIDGETRENDERER_DEBUG
-      , m_timer(NULL)
-#endif
-{
-}
+      m_gain(1.0),
+      m_pTrackSamplesControlObject(NULL),
+      m_trackSamples(0.0) {
 
-WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
-    m_group(group),
-    m_trackInfoObject(0),
-    m_height(-1),
-    m_width(-1) {
     //qDebug() << "WaveformWidgetRenderer";
-
-    m_firstDisplayedPosition = 0.0;
-    m_lastDisplayedPosition = 0.0;
-    m_rendererTransformationOffset = 0.0;
-    m_rendererTransformationGain = 0.0;
-
-    m_zoomFactor = 1.0;
-    m_rateAdjust = 0.0;
-    m_visualSamplePerPixel = 1.0;
-    m_audioSamplePerPixel = 1.0;
-
-    // Really create some to manage those
-    m_pPlayPosControlObject = NULL;
-    m_playPos = 0.0;
-    m_pRateControlObject = NULL;
-    m_rate = 0.0;
-    m_pRateRangeControlObject = NULL;
-    m_rateRange = 0.0;
-    m_pRateDirControlObject = NULL;
-    m_rateDir = 0.0;
-    m_pGainControlObject = NULL;
-    m_gain = 1.0;
-    m_pTrackSamplesControlObject = NULL;
-    m_trackSamples = -1.0;
-
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_timer = new QTime();
@@ -74,7 +66,6 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     for( int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
-    delete m_pPlayPosControlObject;
     delete m_pRateControlObject;
     delete m_pRateRangeControlObject;
     delete m_pRateDirControlObject;
@@ -89,9 +80,8 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 bool WaveformWidgetRenderer::init() {
 
     //qDebug() << "WaveformWidgetRenderer::init";
+    m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pPlayPosControlObject = new ControlObjectThread(
-            m_group, "visual_playposition");
     m_pRateControlObject = new ControlObjectThread(
             m_group, "rate");
     m_pRateRangeControlObject = new ControlObjectThread(
@@ -111,7 +101,7 @@ bool WaveformWidgetRenderer::init() {
     return true;
 }
 
-void WaveformWidgetRenderer::onPreRender() {
+void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     // For a valid track to render we need
     m_trackSamples = m_pTrackSamplesControlObject->get();
     if (m_trackSamples <= 0.0) {
@@ -141,25 +131,23 @@ void WaveformWidgetRenderer::onPreRender() {
         m_audioSamplePerPixel = 0.0;
     }
 
-    m_playPos = m_pPlayPosControlObject->get();
+    m_playPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
     if (m_audioSamplePerPixel && m_playPos != -1) {
         // Track length in pixels.
-        double trackPixel = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
+        m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
 
         // Ratio of half the width of the renderer to the track length in
         // pixels. Percent of the track shown in half the waveform widget.
-        double displayedLengthHalf = static_cast<double>(m_width) / trackPixel / 2.0;
+        double displayedLengthHalf = static_cast<double>(m_width) / m_trackPixelCount / 2.0;
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
-        m_playPos = round(m_pPlayPosControlObject->get() * trackPixel) / trackPixel;
+        m_playPos = round(m_playPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
+        m_playPosVSample = m_playPos * m_trackInfoObject->getWaveform()->getDataSize();
+
         m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
         m_lastDisplayedPosition = m_playPos + displayedLengthHalf;
-        m_rendererTransformationOffset = - m_firstDisplayedPosition;
-        // This expression just reduces to trackPixel
-        //m_rendererTransformationGain = m_width / (m_lastDisplayedPosition - m_firstDisplayedPosition);
-        m_rendererTransformationGain = trackPixel;
     } else {
         m_playPos = -1; // disable renderers
     }
@@ -181,8 +169,11 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     m_lastSystemFrameTime = m_timer->restart();
 #endif
 
-    //not ready to display need to wait until track initialization is done
-    //draw only first is stack (background)
+    //PerformanceTimer timer;
+    //timer.start();
+
+    // not ready to display need to wait until track initialization is done
+    // draw only first is stack (background)
     int stackSize = m_rendererStack.size();
     if (m_trackSamples <= 0.0 || m_playPos == -1) {
         if (stackSize) {
@@ -191,7 +182,9 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
         return;
     } else {
         for (int i = 0; i < stackSize; i++) {
+            // qDebug() << i << " a  " << timer.restart();
             m_rendererStack.at(i)->draw(painter, event);
+            // qDebug() << i << " e " << timer.restart();
         }
 
         painter->setPen(m_colors.getPlayPosColor());
@@ -215,7 +208,8 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
                       QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
                       QString::number(frameMax).rightJustified(2,'0') + ")" +
                       QString::number(m_lastSystemFrameTime) + "(" +
-                      QString::number(systemMax) + ")");
+                      QString::number(systemMax) + ")" +
+                      QString::number(realtimeError));
 
     painter->drawText(1,m_height-1,
                       QString::number(m_playPos) + " [" +
@@ -234,6 +228,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
 #endif
 
+    //qDebug() << "draw() ende" << timer.restart();
 }
 
 void WaveformWidgetRenderer::resize( int width, int height) {
@@ -258,20 +253,13 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
     m_zoomFactor = math_max( s_waveformMinZoom, math_min( m_zoomFactor, s_waveformMaxZoom));
 }
 
-void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {
-    if( m_visualSamplePerPixel < 1.0)
-        return;
-
-    sampleIndex -= sampleIndex%(2*int(m_visualSamplePerPixel));
-}
-
-double WaveformWidgetRenderer::transformSampleIndexInRendererWorld( int sampleIndex) const {
+double WaveformWidgetRenderer::transformSampleIndexInRendererWorld(int sampleIndex) const {
     const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
     return transformPositionInRendererWorld(relativePosition);
 }
 
-double WaveformWidgetRenderer::transformPositionInRendererWorld( double position) const {
-    return m_rendererTransformationGain * ( position + m_rendererTransformationOffset);
+double WaveformWidgetRenderer::transformPositionInRendererWorld(double position) const {
+    return m_trackPixelCount * (position - m_firstDisplayedPosition);
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {

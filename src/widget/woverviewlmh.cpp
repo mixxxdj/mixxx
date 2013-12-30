@@ -1,18 +1,19 @@
-#include "woverviewlmh.h"
+#include "widget/woverviewlmh.h"
+
+#include <QPen>
+#include <QPainter>
+#include <QColor>
 
 #include "util/timer.h"
-
 #include "waveform/waveform.h"
 
-
 WOverviewLMH::WOverviewLMH(const char *pGroup,
-        ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-    : WOverview(pGroup, pConfig, parent)  {
+                           ConfigObject<ConfigValue>* pConfig, QWidget * parent)
+        : WOverview(pGroup, pConfig, parent)  {
 }
 
 
-bool WOverviewLMH::drawNextPixmapPart()
-{
+bool WOverviewLMH::drawNextPixmapPart() {
     ScopedTimer t("WOverviewLMH::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;

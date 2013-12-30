@@ -21,8 +21,15 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "encoder/encoder.h"
+
+#ifdef __FFMPEGFILE__
+#include "encoder/encoderffmpegmp3.h"
+#include "encoder/encoderffmpegvorbis.h"
+#else
 #include "encoder/encodermp3.h"
 #include "encoder/encodervorbis.h"
+#endif
+
 #include "errordialoghandler.h"
 #include "playerinfo.h"
 #include "recording/defs_recording.h"
@@ -57,31 +64,47 @@ void EngineRecord::updateFromPreferences() {
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
 
-    // Delete m_pEncoder if it has been initalized (with maybe) different bitrate.
+    // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
         delete m_pEncoder;
         m_pEncoder = NULL;
     }
 
     if (m_encoding == ENCODING_MP3) {
+#ifdef __FFMPEGFILE__
+        m_pEncoder = new EncoderFfmpegMp3(this);
+#else
         m_pEncoder = new EncoderMp3(this);
-        m_pEncoder->updateMetaData(m_baAuthor.data(), m_baTitle.data(), m_baAlbum.data());
+#endif
+        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if(m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
                                   m_pSamplerate->get()) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
+#ifdef __FFMPEGFILE__
+            qDebug() << "MP3 recording is not supported. FFMPEG mp3 could not be initialized";
+#else
             qDebug() << "MP3 recording is not supported. Lame could not be initialized";
+#endif
         }
     } else if (m_encoding == ENCODING_OGG) {
+#ifdef __FFMPEGFILE__
+        m_pEncoder = new EncoderFfmpegVorbis(this);
+#else
         m_pEncoder = new EncoderVorbis(this);
-        m_pEncoder->updateMetaData(m_baAuthor.data(), m_baTitle.data(), m_baAlbum.data());
+#endif
+        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
                                    m_pSamplerate->get()) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
+#ifdef __FFMPEGFILE__
+            qDebug() << "OGG recording is not supported. FFMPEG OGG/Vorbis could not be initialized";
+#else
             qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
+#endif
         }
     }
     // If we use WAVE OR AIFF the encoder will be NULL at all times.
@@ -171,7 +194,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             }
             m_cueSamplePos += iBufferSize;
         }
-  	}
+    }
 }
 
 void EngineRecord::writeCueLine() {
@@ -229,7 +252,7 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
 }
 
 bool EngineRecord::fileOpen() {
-    // Both encoder and file must be initalized.
+    // Both encoder and file must be initialized.
     if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
         return (m_pSndfile != NULL);
     } else {
@@ -288,7 +311,10 @@ bool EngineRecord::openFile() {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(tr("Recording"));
-        props->setText(tr("<html>Could not create audio file for recording!<p><br>Maybe you do not have enough free disk space or file permissions.</html>"));
+        props->setText("<html>"+tr("Could not create audio file for recording!")
+                       +"<p>"+tr("Ensure there is enough free disk space and you have write permission for the Recordings folder.")
+                       +"<p>"+tr("You can change the location of the Recordings folder in Preferences > Recording.")
+                       +"</p></html>");
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return false;
     }

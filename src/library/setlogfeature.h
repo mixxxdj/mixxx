@@ -40,7 +40,6 @@ public:
     void slotPlayingDeckChanged(int deck);
     void slotPlaylistTableChanged(int playlistId);
 
-
   private:
     QString getRootViewHtml() const;
 

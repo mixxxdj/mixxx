@@ -16,24 +16,27 @@
 ***************************************************************************/
 
 #include "widget/wlabel.h"
+
+#include <QFont>
+#include <QVBoxLayout>
+
 #include "widget/wskincolor.h"
 
-WLabel::WLabel(QWidget * parent) : WWidget(parent)
-{
-    m_pLabel = new QLabel(this);
+WLabel::WLabel(QWidget* pParent)
+        : WWidget(pParent),
+          m_pLabel(new QLabel(this)),
+          m_qsText("") {
     QLayout* pLayout = new QVBoxLayout(this);
     pLayout->setContentsMargins(0, 0, 0, 0);
     pLayout->addWidget(m_pLabel);
     setLayout(pLayout);
-    m_qsText = "";
 }
 
 WLabel::~WLabel() {
     delete m_pLabel;
 }
 
-void WLabel::setup(QDomNode node)
-{
+void WLabel::setup(QDomNode node) {
     // Colors
     QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
     if (!WWidget::selectNode(node, "BgColor").isNull()) {
@@ -50,13 +53,19 @@ void WLabel::setup(QDomNode node)
         m_qsText = selectNodeQString(node, "Text");
     m_pLabel->setText(m_qsText);
 
+    // Font size
+    if (!selectNode(node, "FontSize").isNull()) {
+        int fontsize = 9;
+        fontsize = selectNodeQString(node, "FontSize").toInt();
+        m_pLabel->setFont( QFont("Helvetica",fontsize,QFont::Normal) );
+    }
+
     // Alignment
     if (!selectNode(node, "Alignment").isNull()) {
-        if (selectNodeQString(node, "Alignment")=="right")
+        if (selectNodeQString(node, "Alignment")=="right") {
             m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-        // FWI: Begin of font alignment patch
-        else if (selectNodeQString(node, "Alignment")=="center")
+        } else if (selectNodeQString(node, "Alignment")=="center") {
             m_pLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-        // FWI: End of font alignment patch
+        }
     }
 }

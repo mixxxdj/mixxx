@@ -1,7 +1,10 @@
-/***************************************************************************
-                   wabstractcontrol.h  -  Abstract Control Widget
+/****************************************************************************
+                   encoderffmpegvorbis.cpp  -  FFMPEG OGG/Vorbis encoder for mixxx
                              -------------------
-    copyright            : (C) 2007 by Wesley Stessens
+    copyright            : (C) 2012-2013 by Tuukka Pasanen
+                           (C) 2007 by Wesley Stessens
+                           (C) 1994 by Xiph.org (encoder example)
+                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -13,20 +16,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef WABSTRACTCONTROL_H
-#define WABSTRACTCONTROL_H
+#ifndef ENCODERFFMPEGVORBIS_H
+#define ENCODERFFMPEGVORBIS_H
 
-#include <QObject>
-#include "wwidget.h"
+#include "encoderffmpegcore.h"
 
-class WAbstractControl : public WWidget {
-   Q_OBJECT
+class EncoderFfmpegCore;
+
+class EncoderFfmpegVorbis : public EncoderFfmpegCore {
 public:
-    WAbstractControl(QWidget *parent=0);
-    ~WAbstractControl();
-protected:
-    /** True if right mouse button is pressed */
-    bool m_bRightButtonPressed;
+    EncoderFfmpegVorbis(EncoderCallback* pCallback=NULL);
 };
 
 #endif

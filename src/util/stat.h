@@ -5,7 +5,7 @@
 #include <QVector>
 #include <QString>
 
-class StatReport;
+struct StatReport;
 
 class Stat {
   public:

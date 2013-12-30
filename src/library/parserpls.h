@@ -9,25 +9,24 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-
-
 #ifndef PARSERPLS_H
 #define PARSERPLS_H
 
-#include "parser.h"
+#include "library/parser.h"
 
-class QTextStream;
+#include <QTextStream>
+#include <QList>
+#include <QString>
 
-class ParserPls : public Parser
-{
+class ParserPls : public Parser {
     Q_OBJECT
 public:
     ParserPls();
-    ~ParserPls();
+    virtual ~ParserPls();
     /**Can be called to parse a pls file**/
     QList<QString> parse(QString);
     //Playlist Export
-    static bool writePLSFile(QString &file, QList<QString> &items, bool useRelativePath);
+    static bool writePLSFile(const QString &file, QList<QString> &items, bool useRelativePath);
 
 private:
     /**Returns the Number of entries in the pls file**/

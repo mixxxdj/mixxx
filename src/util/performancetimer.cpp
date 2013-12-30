@@ -289,6 +289,3 @@ qint64 PerformanceTimer::difference(PerformanceTimer* timer)
 }
 
 #endif
-
-
-

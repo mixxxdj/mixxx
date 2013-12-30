@@ -20,35 +20,41 @@
 #ifndef WSTATUSLIGHT_H
 #define WSTATUSLIGHT_H
 
-#include "wwidget.h"
-#include <qpixmap.h>
-#include <qstring.h>
-//Added by qt3to4:
 #include <QPaintEvent>
+#include <QWidget>
+#include <QString>
+#include <QDomNode>
+#include <QPixmap>
+#include <QVector>
 
-/**
-  *@author John Sully
-  */
+#include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
 
 class WStatusLight : public WWidget  {
    Q_OBJECT
-public:
+  public:
     WStatusLight(QWidget *parent=0);
-    ~WStatusLight();
+    virtual ~WStatusLight();
+
     void setup(QDomNode node);
-    void setPixmap(int iState, const QString &filename);
-    void setNoPos(int iNoPos);
-public slots:
+
+  public slots:
     void setValue(double v);
-private:
+
+  protected:
     void paintEvent(QPaintEvent *);
 
-    /** Current position */
+  private:
+    void setPixmap(int iState, const QString &filename);
+    void setNoPos(int iNoPos);
+
+    // Current position
     int m_iPos;
-    /** Number of positions associated with this light */
-    int m_iNoPos;
-    /** Associated pixmaps */
-    QPixmap **m_pPixmapSLs;
+
+    QPixmapPointer m_pPixmapBackground;
+
+    // Associated pixmaps
+    QVector<QPixmapPointer> m_pixmaps;
 };
 
 #endif

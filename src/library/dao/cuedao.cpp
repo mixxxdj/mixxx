@@ -15,7 +15,6 @@ CueDAO::CueDAO(QSqlDatabase& database)
 }
 
 CueDAO::~CueDAO() {
-
 }
 
 void CueDAO::initialize() {

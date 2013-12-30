@@ -5,8 +5,6 @@
  *      Author: Albert Santoni
  */
 
-#include <QtCore>
-#include <QtGui>
 #include "configobject.h"
 #include "controlgroupdelegate.h" //Need to get CONTROLGROUP_CHANNEL1_STRING, etc.
 #include "controlvaluedelegate.h"
@@ -42,6 +40,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("fwd");
         m_channelControlValues.append("back");
         m_channelControlValues.append("reverse");
+        m_channelControlValues.append("reverseroll");
         m_channelControlValues.append("playposition");
         m_channelControlValues.append("pregain");
         m_channelControlValues.append("PrevTrack");
@@ -68,6 +67,8 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("beatloop_4_toggle");
         m_channelControlValues.append("loop_halve");
         m_channelControlValues.append("loop_double");
+        m_channelControlValues.append("sync_master");
+        m_channelControlValues.append("sync_enabled");
         m_channelControlValues.append("hotcue_1_activate");
         m_channelControlValues.append("hotcue_2_activate");
         m_channelControlValues.append("hotcue_3_activate");

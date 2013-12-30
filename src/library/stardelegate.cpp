@@ -2,7 +2,7 @@
                            stardelegate.cpp
                               -------------------
     copyright            : (C) 2010 Tobias Rafreider
-	copyright            : (C) 2009 Nokia Corporation
+    copyright            : (C) 2009 Nokia Corporation
 
 ***************************************************************************/
 
@@ -17,7 +17,6 @@
 
 
 #include <QtDebug>
-#include <QtGui>
 
 #include "stardelegate.h"
 #include "stareditor.h"
@@ -123,4 +122,3 @@ void StarDelegate::cellEntered(const QModelIndex &index) {
         m_currentEditedCellIndex = QModelIndex();
     }
 }
-

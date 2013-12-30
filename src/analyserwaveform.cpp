@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QTime>
 #include <QMutexLocker>
-#include <QDebug>
+#include <QtDebug>
 #include <time.h>
 
 #include "analyserwaveform.h"
@@ -187,7 +187,7 @@ void AnalyserWaveform::destroyFilters() {
     }
 }
 
-void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
+void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
     if (m_skipProcessing || !m_waveform || !m_waveformSummary)
         return;
 

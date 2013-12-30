@@ -13,31 +13,27 @@
 #include <QDomNode>
 #include <QDir>
 #include <QFile>
-#include <QDebug>
+#include <QtDebug>
 #include "trackinfoobject.h" //needed for importing 1.7.x library
 #include "xmlparse.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"
 
-struct LegacyPlaylist
-{
+struct LegacyPlaylist {
     QString name;
     QList<int> indexes;
 };
 
 void doNothing(TrackInfoObject*) {
-
 }
 
 LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
                                              PlaylistDAO& playlistDao) : QObject(),
     m_trackDao(trackDao),
-    m_playlistDao(playlistDao)
-{
+    m_playlistDao(playlistDao) {
 }
 
 /** Upgrade from <= 1.7 library to 1.8 DB format */
-void LegacyLibraryImporter::import()
-{
+void LegacyLibraryImporter::import() {
     // TODO(XXX) SETTINGS_PATH may change in new Mixxx Versions. Here we need
     // the SETTINGS_PATH from Mixxx V <= 1.7
     QString settingPath17 = QDir::homePath().append("/").append(SETTINGS_PATH);
@@ -64,8 +60,7 @@ void LegacyLibraryImporter::import()
 
         QDomNodeList playlistList = doc.elementsByTagName("Playlist");
         QDomNode playlist;
-        for (int i = 0; i < playlistList.size(); i++)
-        {
+        for (int i = 0; i < playlistList.size(); i++) {
             LegacyPlaylist legPlaylist;
             playlist = playlistList.at(i);
 
@@ -77,8 +72,7 @@ void LegacyLibraryImporter::import()
             //and also store them in-order in a temporary playlist struct.
             QDomElement listNode = playlist.firstChildElement("List").toElement();
             QDomNodeList trackIDs = listNode.elementsByTagName("Id");
-            for (int j = 0; j < trackIDs.size(); j++)
-            {
+            for (int j = 0; j < trackIDs.size(); j++) {
                 int id = trackIDs.at(j).toElement().text().toInt();
                 if (!playlistHashTable.contains(id))
                     playlistHashTable.insert(id, "");
@@ -116,7 +110,7 @@ void LegacyLibraryImporter::import()
                 trackInfo17.setYear(trackInfoNew.getYear());
                 trackInfo17.setType(trackInfoNew.getType());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
-                trackInfo17.setKey(trackInfoNew.getKey());
+                trackInfo17.setKeys(trackInfoNew.getKeys());
                 trackInfo17.setHeaderParsed(true);
 
                 // Import the track's saved cue point if it is non-zero.
@@ -144,8 +138,7 @@ void LegacyLibraryImporter::import()
         //Create the imported playlists
         QListIterator<LegacyPlaylist> it(legacyPlaylists);
         LegacyPlaylist current;
-        while (it.hasNext())
-        {
+        while (it.hasNext()) {
             current = it.next();
             emit(progress("Upgrading Mixxx 1.7 Playlists: " + current.name));
 

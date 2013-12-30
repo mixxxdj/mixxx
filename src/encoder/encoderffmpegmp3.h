@@ -1,7 +1,10 @@
-/***************************************************************************
-                 wabstractcontrol.cpp  -  Abstract Control Widget
+/****************************************************************************
+                   encoderffmpegmp3.cpp  -  FFMPEG MP3 encoder for mixxx
                              -------------------
-    copyright            : (C) 2007 by Wesley Stessens
+    copyright            : (C) 2012-2013 by Tuukka Pasanen
+                           (C) 2007 by Wesley Stessens
+                           (C) 1994 by Xiph.org (encoder example)
+                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -13,12 +16,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "wabstractcontrol.h"
+#ifndef ENCODERFFMPEGMP3_H
+#define ENCODERFFMPEGMP3_H
 
-WAbstractControl::WAbstractControl(QWidget *parent)
-    : WWidget(parent) {
-    m_bRightButtonPressed = false;
-}
+#include "encoderffmpegcore.h"
 
-WAbstractControl::~WAbstractControl() {
-}
+class EncoderFfmpegCore;
+
+class EncoderFfmpegMp3 : public EncoderFfmpegCore {
+public:
+    EncoderFfmpegMp3(EncoderCallback* pCallback=NULL);
+};
+
+#endif

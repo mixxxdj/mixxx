@@ -31,6 +31,8 @@ void DlgTrackInfo::init(){
             this, SLOT(slotPrev()));
     connect(btnApply, SIGNAL(clicked()),
             this, SLOT(apply()));
+    connect(btnOK, SIGNAL(clicked()),
+            this, SLOT(OK()));
     connect(btnCancel, SIGNAL(clicked()),
             this, SLOT(cancel()));
 
@@ -60,9 +62,13 @@ void DlgTrackInfo::init(){
     }
 }
 
-void DlgTrackInfo::apply() {
+void DlgTrackInfo::OK() {
     unloadTrack(true);
     accept();
+}
+
+void DlgTrackInfo::apply() {
+    saveTrack();
 }
 
 void DlgTrackInfo::cancel() {
@@ -113,13 +119,14 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtTrackName->setText(pTrack->getTitle());
     txtArtist->setText(pTrack->getArtist());
     txtAlbum->setText(pTrack->getAlbum());
+    txtAlbumArtist->setText(pTrack->getAlbumArtist());
     txtGenre->setText(pTrack->getGenre());
     txtComposer->setText(pTrack->getComposer());
+    txtGrouping->setText(pTrack->getGrouping());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
     txtComment->setText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
-
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
     txtFilepath->setText(pTrack->getFilename());
@@ -127,7 +134,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
-
+    txtKey->setText(pTrack->getKeyText());
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
@@ -213,64 +220,84 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     cueTable->setSortingEnabled(true);
 }
 
+void DlgTrackInfo::saveTrack() {
+    if (!m_pLoadedTrack)
+        return;
+
+    m_pLoadedTrack->setTitle(txtTrackName->text());
+    m_pLoadedTrack->setArtist(txtArtist->text());
+    m_pLoadedTrack->setAlbum(txtAlbum->text());
+    m_pLoadedTrack->setAlbumArtist(txtAlbumArtist->text());
+    m_pLoadedTrack->setGenre(txtGenre->text());
+    m_pLoadedTrack->setComposer(txtComposer->text());
+    m_pLoadedTrack->setGrouping(txtGrouping->text());
+    m_pLoadedTrack->setYear(txtYear->text());
+    m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
+    m_pLoadedTrack->setComment(txtComment->toPlainText());
+
+    if (!m_pLoadedTrack->hasBpmLock()) {
+        m_pLoadedTrack->setBpm(spinBpm->value());
+    }
+
+    QSet<int> updatedRows;
+    for (int row = 0; row < cueTable->rowCount(); ++row) {
+        QTableWidgetItem* rowItem = cueTable->item(row, 0);
+        QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
+        QTableWidgetItem* labelItem = cueTable->item(row, 3);
+
+        if (!rowItem || !hotcueItem || !labelItem)
+            continue;
+
+        int oldRow = rowItem->data(Qt::DisplayRole).toInt();
+        Cue* pCue = m_cueMap.value(oldRow, NULL);
+        if (pCue == NULL) {
+            continue;
+        }
+
+        updatedRows.insert(oldRow);
+
+        QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
+        if (vHotcue.canConvert<int>()) {
+            int iTableHotcue = vHotcue.toInt();
+            // The GUI shows hotcues as 1-indexed, but they are actually
+            // 0-indexed, so subtract 1
+            pCue->setHotCue(iTableHotcue-1);
+        } else {
+            pCue->setHotCue(-1);
+        }
+
+        QString label = labelItem->data(Qt::DisplayRole).toString();
+        pCue->setLabel(label);
+    }
+
+    QMutableHashIterator<int,Cue*> it(m_cueMap);
+    // Everything that was not processed above was removed.
+    while (it.hasNext()) {
+        it.next();
+        int oldRow = it.key();
+
+        // If cue's old row is not in updatedRows then it must have been
+        // deleted.
+        if (updatedRows.contains(oldRow)) {
+            continue;
+        }
+        Cue* pCue = it.value();
+        it.remove();
+        qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
+        m_pLoadedTrack->removeCue(pCue);
+    }
+}
+
 void DlgTrackInfo::unloadTrack(bool save) {
     if (!m_pLoadedTrack)
         return;
 
     if (save) {
-        m_pLoadedTrack->setTitle(txtTrackName->text());
-        m_pLoadedTrack->setArtist(txtArtist->text());
-        m_pLoadedTrack->setAlbum(txtAlbum->text());
-        m_pLoadedTrack->setGenre(txtGenre->text());
-        m_pLoadedTrack->setComposer(txtComposer->text());
-        m_pLoadedTrack->setYear(txtYear->text());
-        m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
-        m_pLoadedTrack->setComment(txtComment->toPlainText());
-
-        if (!m_pLoadedTrack->hasBpmLock()) {
-            m_pLoadedTrack->setBpm(spinBpm->value());
-        }
-
-        QHash<int, Cue*> cueMap;
-        for (int row = 0; row < cueTable->rowCount(); ++row) {
-
-            QTableWidgetItem* rowItem = cueTable->item(row, 0);
-            QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
-            QTableWidgetItem* labelItem = cueTable->item(row, 3);
-
-            if (!rowItem || !hotcueItem || !labelItem)
-                continue;
-
-            int oldRow = rowItem->data(Qt::DisplayRole).toInt();
-            Cue* pCue = m_cueMap.take(oldRow);
-
-            QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-            if (vHotcue.canConvert<int>()) {
-                int iTableHotcue = vHotcue.toInt();
-                // The GUI shows hotcues as 1-indexed, but they are actually
-                // 0-indexed, so subtract 1
-                pCue->setHotCue(iTableHotcue-1);
-            } else {
-                pCue->setHotCue(-1);
-            }
-
-            QString label = labelItem->data(Qt::DisplayRole).toString();
-            pCue->setLabel(label);
-        }
-
-        QMutableHashIterator<int,Cue*> it(m_cueMap);
-        // Everything remaining in m_cueMap must have been deleted.
-        while (it.hasNext()) {
-            it.next();
-            Cue* pCue = it.value();
-            it.remove();
-            qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
-            m_pLoadedTrack->removeCue(pCue);
-        }
+        saveTrack();
     }
 
-    m_pLoadedTrack.clear();
     clear();
+    m_pLoadedTrack.clear();
 }
 
 void DlgTrackInfo::clear() {
@@ -278,8 +305,10 @@ void DlgTrackInfo::clear() {
     txtTrackName->setText("");
     txtArtist->setText("");
     txtAlbum->setText("");
+    txtAlbumArtist->setText("");
     txtGenre->setText("");
     txtComposer->setText("");
+    txtGrouping->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
     txtComment->setText("");

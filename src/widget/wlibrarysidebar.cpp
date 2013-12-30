@@ -1,8 +1,11 @@
-#include <QtCore>
-#include <QtGui>
+#include "widget/wlibrarysidebar.h"
+
+#include <QHeaderView>
+#include <QUrl>
+#include <QtDebug>
+#include <QMimeData>
 
 #include "library/sidebarmodel.h"
-#include "widget/wlibrarysidebar.h"
 
 const int expand_time = 250;
 
@@ -33,8 +36,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 // Drag enter event, happens when a dragged item enters the track sources view
-void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
-{
+void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         event->acceptProposedAction();
@@ -43,8 +45,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 }
 
 // Drag move event, happens when a dragged item hovers over the track sources view...
-void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
-{
+void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     // Start a timer to auto-expand sections the user hovers on.
     QPoint pos = event->pos();
@@ -138,8 +139,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
     }
 }
 
-void WLibrarySidebar::keyPressEvent(QKeyEvent* event)
-{
+void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Return)
     {
         QModelIndexList selectedIndices = this->selectionModel()->selectedRows();

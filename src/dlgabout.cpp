@@ -135,6 +135,8 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
 "Florian Kiekh&auml;fer<br>"
 "Michael Sawyer<br>"
 "Nicu Badescu<br>"
+"Tuukka Pasanen<br>"
+"Uwe Klotz<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"

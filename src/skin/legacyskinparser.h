@@ -16,7 +16,6 @@
 class Library;
 class MixxxKeyboard;
 class PlayerManager;
-class WAbstractControl;
 class ControllerManager;
 
 class LegacySkinParser : public QObject, public SkinParser {
@@ -39,7 +38,7 @@ class LegacySkinParser : public QObject, public SkinParser {
   private:
     static QDomElement openSkin(QString skinPath);
 
-    QWidget* parseNode(QDomElement node, QWidget* pGrandparent);
+    QWidget* parseNode(QDomElement node);
 
     // Support for various legacy behavior
     void parseColorSchemes(QDomElement node);
@@ -48,7 +47,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Parsers for each node
     QWidget* parseWidgetGroup(QDomElement node);
     QWidget* parseWidgetStack(QDomElement node);
-    QWidget* parseBackground(QDomElement node, QWidget* pGrandparent);
+    QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget, QWidget* pInnerWidget);
     QWidget* parsePushButton(QDomElement node);
     QWidget* parseSliderComposed(QDomElement node);
     QWidget* parseVisual(QDomElement node);
@@ -66,12 +65,12 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLabel(QDomElement node);
     QWidget* parseKnob(QDomElement node);
     QWidget* parseTableView(QDomElement node);
-    QWidget* parseStyle(QDomElement node);
     QWidget* parseSpinny(QDomElement node);
     QWidget* parseSearchBox(QDomElement node);
     QWidget* parseSplitter(QDomElement node);
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
+    QWidget* parseKey(QDomElement node);
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
@@ -79,6 +78,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupConnections(QDomNode node, QWidget* pWidget);
     void addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString getLibraryStyle(QDomNode node);
+    QString getStyleFromNode(QDomNode node);
 
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);

@@ -18,9 +18,11 @@
 #ifndef IMGSOURCE_H
 #define IMGSOURCE_H
 
-#include <qimage.h>
-#include <qcolor.h>
-#include <QDebug>
+#include <QImage>
+#include <QColor>
+#include <QString>
+#include <QRgb>
+#include <QtDebug>
 
 class ImgSource {
   public:
@@ -42,7 +44,7 @@ class ImgProcessor : public ImgSource {
     virtual void correctImageColors(QImage* p) { (void)p; };
 
   protected:
-	ImgSource* m_parent;
+    ImgSource* m_parent;
 };
 
 class ImgColorProcessor : public ImgProcessor {
@@ -132,4 +134,3 @@ public:
 };
 
 #endif
-

@@ -36,6 +36,7 @@ class WLibrary : public QStackedWidget {
     void switchToView(const QString& name);
 
     void search(const QString&);
+
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;

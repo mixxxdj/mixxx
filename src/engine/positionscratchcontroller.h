@@ -15,7 +15,7 @@ class PositionScratchController : public QObject {
     virtual ~PositionScratchController();
 
     void process(double currentSample, double releaseRate,
-            int iBufferSize, double baserate);
+                 int iBufferSize, double baserate);
     bool isEnabled();
     double getRate();
     void notifySeek(double currentSample);
@@ -36,7 +36,6 @@ class PositionScratchController : public QObject {
     double m_dRate;
     double m_dMoveDelay;
     double m_dMouseSampeTime;
-    double m_scratchPosition;
 };
 
 #endif /* POSITIONSCRATCHCONTROLLER_H */

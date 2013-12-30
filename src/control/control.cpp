@@ -91,6 +91,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 // static
 void ControlDoublePrivate::getControls(QList<ControlDoublePrivate*>* pControlList) {
     m_sqCOHashMutex.lock();
+    pControlList->clear();
     for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.begin();
          it != m_sqCOHash.end(); ++it) {
         pControlList->push_back(it.value().data());
@@ -142,7 +143,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
 }
 
 void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
-    // This marks the old mpBehaviour for deletion. It is deleted once it is not
+    // This marks the old mpBehavior for deletion. It is deleted once it is not
     // used in any other function
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }

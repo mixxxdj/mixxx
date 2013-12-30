@@ -15,21 +15,20 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wvumeter.h"
-#include "wpixmapstore.h"
-//Added by qt3to4:
+#include "widget/wvumeter.h"
+
 #include <QPaintEvent>
-#include <QtGui>
-#include <QtCore>
+#include <QPainter>
 #include <QtDebug>
 #include <QPixmap>
+
+#include "widget/wpixmapstore.h"
+#include "util/timer.h"
 
 #define DEFAULT_FALLTIME 20
 #define DEFAULT_FALLSTEP 1
 #define DEFAULT_HOLDTIME 400
 #define DEFAULT_HOLDSIZE 5
-
-#include "util/timer.h"
 
 WVuMeter::WVuMeter(QWidget * parent) :
         WWidget(parent),
@@ -74,12 +73,9 @@ void WVuMeter::setup(QDomNode node)
         m_iPeakFallTime = DEFAULT_FALLTIME;
 }
 
-void WVuMeter::resetPositions()
-{
-    WPixmapStore::deletePixmap(m_pPixmapBack);
-    m_pPixmapBack = NULL;
-    WPixmapStore::deletePixmap(m_pPixmapVu);
-    m_pPixmapVu = NULL;
+void WVuMeter::resetPositions() {
+    m_pPixmapBack.clear();
+    m_pPixmapVu.clear();
 }
 
 void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal)
@@ -114,7 +110,7 @@ void WVuMeter::setValue(double fValue)
         idx = 0;
 
     setPeak(idx);
-    m_fValue = fValue;
+    m_value = fValue;
 
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
@@ -157,7 +153,7 @@ void WVuMeter::paintEvent(QPaintEvent *)
 {
     ScopedTimer t("WVuMeter::paintEvent");
     if (m_pPixmapBack && m_pPixmapVu) {
-        int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
+        int idx = (int)(m_value*(float)(m_iNoPos)/128.);
 
         // Range check
         if (idx>m_iNoPos)
@@ -193,6 +189,3 @@ void WVuMeter::paintEvent(QPaintEvent *)
         }
     }
 }
-
-
-

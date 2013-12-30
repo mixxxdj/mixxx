@@ -29,14 +29,12 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     if (!track) {
         return;
     }
-    const Waveform* waveform = track->getWaveform();
     double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     double numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
 
     // TODO (vRince) not really accurate since waveform size une visual reasampling and
     // have two mores samples to hold the complete visual data
-    int currentPosition = m_waveformRenderer->getPlayPos() * waveform->getDataSize();
-    m_waveformRenderer->regulateVisualSample(currentPosition);
+    int currentPosition = m_waveformRenderer->getPlayPosVSample();
 
     // Some of the pre-roll is on screen. Draw little triangles to indicate
     // where the pre-roll is located.
@@ -47,6 +45,9 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         const float halfPolyHeight = m_waveformRenderer->getHeight()/5.0;
 
         painter->save();
+        painter->setRenderHint(QPainter::Antialiasing);
+        //painter->setRenderHint(QPainter::HighQualityAntialiasing);
+        //painter->setBackgroundMode(Qt::TransparentMode);
         painter->setWorldMatrixEnabled(false);
         painter->setPen(QPen(QBrush(m_color), 1));
         QPolygonF polygon;

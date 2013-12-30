@@ -15,89 +15,60 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wpixmapstore.h"
+#include "widget/wpixmapstore.h"
 
-#include <QPixmap>
 #include <QtDebug>
 
 // static
-QHash<QString, WPixmapStore::PixmapInfoType*> WPixmapStore::m_dictionary;
+QHash<QString, QWeakPixmapPointer> WPixmapStore::m_pixmapCache;
 QSharedPointer<ImgSource> WPixmapStore::m_loader = QSharedPointer<ImgSource>();
 
 // static
-QPixmap * WPixmapStore::getPixmap(const QString &fileName) {
-    // Search for pixmap in list
-    PixmapInfoType* info = NULL;
-
-    QHash<QString, PixmapInfoType*>::iterator it = m_dictionary.find(fileName);
-    if (it != m_dictionary.end()) {
-        info = it.value();
-        info->instCount++;
-        //qDebug() << "WPixmapStore returning cached pixmap for:" << fileName;
-        return info->pixmap;
+QPixmapPointer WPixmapStore::getPixmap(const QString& fileName) {
+    // See if we have a cached value for the pixmap.
+    QPixmapPointer pPixmap = m_pixmapCache.value(fileName, QPixmapPointer());
+    if (pPixmap) {
+        return pPixmap;
     }
 
-    // Pixmap wasn't found, construct it
+    // Otherwise, construct it with the pixmap loader.
     //qDebug() << "WPixmapStore Loading pixmap from file" << fileName;
-    
     QPixmap* loadedPixmap = getPixmapNoCache(fileName);
 
     if (loadedPixmap == NULL || loadedPixmap->isNull()) {
-        qDebug() << "WPixmapStore couldn't load:" << fileName << (loadedPixmap == NULL);
-        delete loadedPixmap;
-        return NULL;
+        qDebug() << "WPixmapStore couldn't load:" << fileName
+                 << (loadedPixmap == NULL);
+        return QPixmapPointer();
     }
 
-    info = new PixmapInfoType;
-    info->pixmap = loadedPixmap;
-    info->instCount = 1;
-    m_dictionary.insert(fileName, info);
-    return info->pixmap;
+    QPixmapPointer pixmapPointer = QPixmapPointer(loadedPixmap);
+    m_pixmapCache[fileName] = pixmapPointer;
+    return pixmapPointer;
 }
 
 // static
-QPixmap * WPixmapStore::getPixmapNoCache(const QString& fileName) {
-    QPixmap* pPixmap;
+QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {
+    QPixmap* pPixmap = NULL;
     if (m_loader) {
-        QImage * img = m_loader->getImage(fileName);
+        QImage* img = m_loader->getImage(fileName);
 #if QT_VERSION >= 0x040700
-        pPixmap = new QPixmap(); 
-        pPixmap->convertFromImage(*img); 
-#else 
-        pPixmap = new QPixmap(QPixmap::fromImage(*img));        
-#endif 
+        pPixmap = new QPixmap();
+        pPixmap->convertFromImage(*img);
+#else
+        pPixmap = new QPixmap(QPixmap::fromImage(*img));
+#endif
         delete img;
     } else {
         pPixmap = new QPixmap(fileName);
     }
-    return pPixmap; 
-}
-
-// static 
-void WPixmapStore::deletePixmap(QPixmap * p)
-{
-    // Search for pixmap in list
-    PixmapInfoType *info = NULL;
-    QMutableHashIterator<QString, PixmapInfoType*> it(m_dictionary);
-
-    while (it.hasNext())
-    {
-        info = it.next().value();
-        if (p == info->pixmap)
-        {
-            info->instCount--;
-            if (info->instCount<1)
-            {
-                it.remove();
-                delete info->pixmap;
-                delete info;
-            }
-
-            break;
-        }
-    }
+    return pPixmap;
 }
 
 void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
     m_loader = ld;
+
+    // We shouldn't hand out pointers to existing pixmaps anymore since our
+    // loader has changed. The pixmaps will get freed once all the widgets
+    // referring to them are destroyed.
+    m_pixmapCache.clear();
 }

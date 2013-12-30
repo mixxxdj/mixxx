@@ -15,19 +15,18 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wslidercomposed.h"
-#include <qpixmap.h>
+#include "widget/wslidercomposed.h"
+
 #include <QtDebug>
-#include <qpainter.h>
-//Added by qt3to4:
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
+
 #include "defs.h"
-#include "wpixmapstore.h"
+#include "widget/wpixmapstore.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
-    : WAbstractControl(parent),
+    : WWidget(parent),
+      m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),
       m_iStartMousePos(0),
@@ -88,21 +87,15 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
             setFixedSize(m_pSlider->size());
         }
 
-        setValue(m_fValue);
+        setValue(m_value);
 
         repaint();
     }
 }
 
 void WSliderComposed::unsetPixmaps() {
-    if (m_pSlider) {
-        WPixmapStore::deletePixmap(m_pSlider);
-        m_pSlider = NULL;
-    }
-    if (m_pHandle) {
-        WPixmapStore::deletePixmap(m_pHandle);
-        m_pHandle = NULL;
-    }
+    m_pSlider.clear();
+    m_pHandle.clear();
 }
 
 void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
@@ -123,17 +116,17 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         }
 
         // value ranges from 0 to 127
-        m_fValue = (double)m_iPos * (127. / (double)(m_iSliderLength - m_iHandleLength));
+        m_value = (double)m_iPos * (127. / (double)(m_iSliderLength - m_iHandleLength));
         if (!m_bHorizontal) {
-            m_fValue = 127. - m_fValue;
+            m_value = 127. - m_value;
         }
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
             if (e->button() == Qt::RightButton) {
-                emit(valueChangedRightUp(m_fValue));
+                emit(valueChangedRightUp(m_value));
             } else {
-                emit(valueChangedLeftUp(m_fValue));
+                emit(valueChangedLeftUp(m_value));
             }
         }
 
@@ -157,9 +150,9 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
         mouseMoveEvent(e);
 
         if (e->button() == Qt::RightButton) {
-            emit(valueChangedRightUp(m_fValue));
+            emit(valueChangedRightUp(m_value));
         } else {
-            emit(valueChangedLeftUp(m_fValue));
+            emit(valueChangedLeftUp(m_value));
         }
 
         m_bDrag = false;
@@ -191,29 +184,27 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
 }
 
 void WSliderComposed::paintEvent(QPaintEvent *) {
-    if (m_pSlider && m_pHandle) {
-        QPainter p(this);
-        int posx;
-        int posy;
-        if (m_bHorizontal) {
-            posx = m_iPos;
-            posy = 0;
-        } else {
-            posx = 0;
-            posy = m_iPos;
-        }
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
 
-        // Draw slider followed by handle
+    if (!m_pSlider.isNull() && !m_pSlider->isNull()) {
         p.drawPixmap(0, 0, *m_pSlider);
+    }
+
+    if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
+        int posx = m_bHorizontal ? m_iPos : 0;
+        int posy = m_bHorizontal ? 0 : m_iPos;
         p.drawPixmap(posx, posy, *m_pHandle);
     }
 }
 
 void WSliderComposed::setValue(double fValue) {
-    if (!m_bDrag && m_fValue != fValue) {
+    if (!m_bDrag && m_value != fValue) {
         // Set value without emitting a valueChanged signal
         // and force display update
-        m_fValue = fValue;
+        m_value = fValue;
 
         // Calculate handle position
         if (!m_bHorizontal) {

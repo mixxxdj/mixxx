@@ -1,4 +1,3 @@
-#include <QtCore>
 #include <QMessageBox>
 
 #include "basetrackplayer.h"
@@ -34,7 +33,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
     m_pChannel = new EngineDeck(pSafeGroupName,
-                                pConfig, defaultOrientation);
+                                pConfig, pMixingEngine, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
@@ -79,6 +78,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 
     //BPM of the current song
     m_pBPM = new ControlObjectThread(group, "file_bpm");
+    m_pKey = new ControlObjectThread(group, "file_key");
     m_pReplayGain = new ControlObjectThread(group, "replaygain");
     m_pPlay = new ControlObjectThread(group, "play");
 }
@@ -96,6 +96,7 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
     delete m_pBPM;
+    delete m_pKey;
     delete m_pReplayGain;
     delete m_pPlay;
 }
@@ -133,6 +134,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
         // m_pLoadedTrack->disconnect();
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
         m_pReplayGain->slotSet(0);
 
@@ -145,6 +147,9 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
     // Listen for updates to the file's BPM
     connect(m_pLoadedTrack.data(), SIGNAL(bpmUpdated(double)),
             m_pBPM, SLOT(slotSet(double)));
+
+    connect(m_pLoadedTrack.data(), SIGNAL(keyUpdated(double)),
+            m_pKey, SLOT(slotSet(double)));
 
     // Listen for updates to the file's Replay Gain
     connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(double)),
@@ -173,6 +178,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
         // m_pLoadedTrack->disconnect();
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to unload the track and blank themselves.
@@ -180,6 +186,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
     }
     m_pDuration->set(0);
     m_pBPM->slotSet(0);
+    m_pKey->slotSet(0);
     m_pReplayGain->slotSet(0);
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
@@ -201,6 +208,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     // Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
+    m_pKey->slotSet(m_pLoadedTrack->getKey());
     m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
