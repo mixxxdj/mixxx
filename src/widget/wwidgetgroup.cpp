@@ -1,7 +1,7 @@
 #include "widget/wwidgetgroup.h"
 
 #include <QLayout>
-#include <QPainter>
+#include <QStylePainter>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -93,15 +93,15 @@ void WWidgetGroup::addWidget(QWidget* pChild) {
 }
 
 void WWidgetGroup::paintEvent(QPaintEvent* pe) {
-    if(m_pPixmapBack) {
+    QGroupBox::paintEvent(pe);
+
+    if (m_pPixmapBack) {
         if (m_pixmapBackScaled.isNull()) {
             m_pixmapBackScaled = m_pPixmapBack->scaled(size());
         }
-        QPainter p(this);
+        QStylePainter p(this);
         p.drawPixmap(0, 0, m_pixmapBackScaled);
     }
-    // Paint things styled by style sheet
-    QGroupBox::paintEvent(pe);
 }
 
 void WWidgetGroup::resizeEvent(QResizeEvent* re) {
