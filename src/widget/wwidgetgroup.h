@@ -17,6 +17,22 @@ class WWidgetGroup : public QGroupBox {
     WWidgetGroup(QWidget* pParent=NULL);
     virtual ~WWidgetGroup();
 
+    // QLayouts are not stylable using Qt style sheets. These properties let us
+    // style the layout properties using the QProperty support in Qt style
+    // sheets:
+    //
+    // WWidgetGroup {
+    //  qproperty-spacing: 10;
+    //  qproperty-contentsMargins: rect(1 1 1 1);
+    //}
+    //
+    // The property must be DESIGNABLE to style it with Qt CSS.
+    Q_PROPERTY(int spacing WRITE setLayoutSpacing DESIGNABLE true);
+    Q_PROPERTY(QRect contentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
+
+    void setLayoutSpacing(int spacing);
+    void setLayoutContentsMargins(QRect margins);
+
     void setup(QDomNode node);
     void setPixmapBackground(const QString &filename);
     void addWidget(QWidget* pChild);
