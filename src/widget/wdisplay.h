@@ -26,7 +26,7 @@
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 
-class WDisplay : public WWidget  {
+class WDisplay : public WWidget {
    Q_OBJECT
   public:
     WDisplay(QWidget *parent=NULL);

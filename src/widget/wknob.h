@@ -25,6 +25,7 @@
 #include <QWheelEvent>
 
 #include "widget/wdisplay.h"
+#include "widget/knobeventhandler.h"
 
 class WKnob : public WDisplay {
    Q_OBJECT
@@ -41,11 +42,8 @@ class WKnob : public WDisplay {
   private:
     int getActivePixmapIndex() const;
 
-    // True if right mouse button is pressed.
-    bool m_bRightButtonPressed;
-
-    // Starting point when left mouse button is pressed
-    QPoint m_startPos;
+    KnobEventHandler<WKnob> m_handler;
+    friend class KnobEventHandler<WKnob>;
 };
 
 #endif

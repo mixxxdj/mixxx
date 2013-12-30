@@ -30,6 +30,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
+#include "widget/wknobcomposed.h"
 #include "widget/wslidercomposed.h"
 #include "widget/wpushbutton.h"
 #include "widget/wdisplay.h"
@@ -393,6 +394,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         return parseLabel(node);
     } else if (nodeName == "Knob") {
         return parseKnob(node);
+    } else if (nodeName == "KnobComposed") {
+        return parseKnobComposed(node);
     } else if (nodeName == "TableView") {
         return parseTableView(node);
     } else if (nodeName == "SearchBox") {
@@ -953,6 +956,16 @@ QWidget* LegacySkinParser::parseTime(QDomElement node) {
 
 QWidget* LegacySkinParser::parseKnob(QDomElement node) {
     WKnob * p = new WKnob(m_pParent);
+    setupWidget(node, p);
+    p->setup(node);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseKnobComposed(QDomElement node) {
+    WKnobComposed* p = new WKnobComposed(m_pParent);
     setupWidget(node, p);
     p->setup(node);
     setupConnections(node, p);
