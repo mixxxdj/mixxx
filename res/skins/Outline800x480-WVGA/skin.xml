@@ -52,9 +52,9 @@
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
 	<attributes>
-		<attribute config_key="[Skin],num_decks">2</attribute>
-		<attribute config_key="[Skin],num_samplers">3</attribute>
-		<attribute config_key="[Skin],num_preview_decks">0</attribute>
+		<attribute config_key="[Master],num_decks">2</attribute>
+		<attribute config_key="[Master],num_samplers">3</attribute>
+		<attribute config_key="[Master],num_preview_decks">0</attribute>
 		<!--Optionally, make elements visible on skin load-->
 		<attribute config_key="[Spinny1],show_spinny">1</attribute>
 		<attribute config_key="[Spinny2],show_spinny">1</attribute>
@@ -898,7 +898,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1431,7 +1431,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1964,7 +1964,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;

@@ -16,7 +16,7 @@
 	Under the following conditions:
 	Attribution - You must attribute the work in the manner specified by the author or licensor
 	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
+	A attribution should include the following: The name of the author and/or licensor, 
 	the title of the work, the URL that is associated with the work.
 
 	Share Alike - If you alter, transform, or build upon this work, you may distribute
@@ -58,9 +58,9 @@
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 	<attributes>
-		<attribute config_key="[Skin],num_decks">2</attribute>
-		<attribute config_key="[Skin],num_samplers">4</attribute>
-		<attribute config_key="[Skin],num_preview_decks">1</attribute>
+		<attribute config_key="[Master],num_decks">2</attribute>
+		<attribute config_key="[Master],num_samplers">4</attribute>
+		<attribute config_key="[Master],num_preview_decks">1</attribute>
 		<!--Optionally, make elements visible on skin load-->
 		<attribute config_key="[Spinny1],show_spinny">1</attribute>
 		<attribute config_key="[Spinny2],show_spinny">1</attribute>
@@ -2243,7 +2243,7 @@
 
 				<!--Spacing between treeview and searchbar-->
 				QTreeView { margin: 6px 0px 0px 0px; }
-
+				
 				<!--triangle for closed/opened branches in treeview-->
 				QTreeView { show-decoration-selected: 0; } <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
 				QTreeView::branch:has-children:!has-siblings:closed,
@@ -2299,7 +2299,7 @@
 													-->
 													<Text>
 														<TooltipId>text</TooltipId>
-														<Style>QLabel {
+														<Style>QLabel { 
 														font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 														background-color: transparent;
 														color: #ACACAC;
@@ -2425,7 +2425,7 @@
 												border-bottom: 1px solid #656565;
 												background: transparent;
 												}
-												</Style>
+												</Style>												
 												<Children>
 												<!--
 												**********************************************
@@ -2442,7 +2442,7 @@
 														<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 													</Connection>
 												</StatusLight>
-
+					
 												<!--
 												**********************************************
 												Visual - Volume level display
