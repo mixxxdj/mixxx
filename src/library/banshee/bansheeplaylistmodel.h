@@ -39,7 +39,8 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
   private slots:
-      void tracksChanged(QSet<int> trackIds);
+    virtual void tracksChanged(QSet<int> trackIds);
+    virtual void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;

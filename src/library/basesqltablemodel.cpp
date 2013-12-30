@@ -25,9 +25,9 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(pTrackCollection->getTrackDAO()),
           m_database(pTrackCollection->getDatabase()),
-          m_currentSearch(""),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-          m_iPreviewDeckTrackId(-1) {
+          m_iPreviewDeckTrackId(-1),
+          m_currentSearch("") {
     m_bInitialized = false;
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;

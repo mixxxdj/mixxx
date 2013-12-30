@@ -253,6 +253,31 @@ void BansheePlaylistModel::tracksChanged(QSet<int> trackIds) {
     Q_UNUSED(trackIds);
 }
 
+void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
+    if (group == m_previewDeckGroup) {
+        // If there was a previously loaded track, refresh its rows so the
+        // preview state will update.
+        if (m_iPreviewDeckTrackId > -1) {
+            const int numColumns = columnCount();
+            QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
+            foreach (int row, rows) {
+                QModelIndex left = index(row, 0);
+                QModelIndex right = index(row, numColumns);
+                emit(dataChanged(left, right));
+            }
+        }
+        if (pTrack) {
+            for (int row = 0; row < rowCount(); ++row ) {
+                QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
+                if (rowUrl.toLocalFile() == pTrack->getLocation()) {
+                    m_iPreviewDeckTrackId = getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
+                    break;
+                }
+            }
+        }
+    }
+}
+
 QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
         const QString& fieldName) const {
     return index.sibling(
