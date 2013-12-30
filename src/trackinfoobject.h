@@ -52,7 +52,7 @@ class TrackInfoObject : public QObject
 {
     Q_OBJECT
 public:
-    /** Initialize a new track with the filename. */
+    // Initialize a new track with the filename.
     TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
     TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
@@ -60,15 +60,15 @@ public:
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
-    /** Returns true if the object contains valid information */
+    // Returns true if the object contains valid information 
     bool isValid() const;
     int parse();
 
-    /** Returns the duration in seconds */
+    // Returns the duration in seconds 
     int getDuration() const;
-    /** Set duration in seconds */
+    // Set duration in seconds 
     void setDuration(int);
-    /** Returns the duration as a string: H:MM:SS */
+    // Returns the duration as a string: H:MM:SS 
     QString getDurationStr() const;
 
     // Accessors for various stats of the file on disk. These are auto-populated
@@ -106,17 +106,15 @@ public:
     // the TrackInfoObject is created, or when setLocation() is called.
     bool exists() const;
 
-
-
-    /** Returns ReplayGain*/
+    // Returns ReplayGain
     float getReplayGain() const;
-    /** Set ReplayGain*/
+    // Set ReplayGain
     void setReplayGain(float);
-    /** Returns BPM */
+    // Returns BPM 
     double getBpm() const;
-    /** Set BPM */
+    // Set BPM 
     void setBpm(double);
-    /** Returns BPM as a string */
+    // Returns BPM as a string 
     QString getBpmStr() const;
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.
@@ -124,94 +122,94 @@ public:
     bool hasBpmLock() const;
     bool getHeaderParsed() const;
     void setHeaderParsed(bool parsed = true);
-    /** Returns the user comment */
+    // Returns the user comment 
     QString getComment() const;
-    /** Sets the user commnet */
+    // Sets the user commnet
     void setComment(QString);
-    /** Returns the file type */
+    // Returns the file type
     QString getType() const;
-    /** Sets the type of the string */
+    // Sets the type of the string
     void setType(QString);
-    /** Returns the bitrate */
+    // Returns the bitrate
     int getBitrate() const;
-    /** Returns the bitrate as a string */
+    // Returns the bitrate as a string
     QString getBitrateStr() const;
-    /** Sets the bitrate */
+    // Sets the bitrate
     void setBitrate(int);
-    /** Set sample rate */
+    // Set sample rate
     void setSampleRate(int iSampleRate);
-    /** Get sample rate */
+    // Get sample rate
     int getSampleRate() const;
-    /** Set number of channels */
+    // Set number of channels
     void setChannels(int iChannels);
-    /** Get number of channels */
+    // Get number of channels
     int getChannels() const;
-    /** Output a formatted string with all the info */
+    // Output a formatted string with all the info
     QString getInfo() const;
 
     QDateTime getDateAdded() const;
     void setDateAdded(QDateTime dateAdded);
 
-    /** Getter/Setter methods for metadata */
-    /** Return title */
+    // Getter/Setter methods for metadata 
+    // Return title 
     QString getTitle() const;
-    /** Set title */
+    // Set title
     void setTitle(QString);
-    /** Return artist */
+    // Return artist
     QString getArtist() const;
-    /** Set artist */
+    // Set artist
     void setArtist(QString);
-    /** Return album */
+    // Return album
     QString getAlbum() const;
-    /** Set album */
+    // Set album
     void setAlbum(QString);
-    /** Return album artist */
+    // Return album artist
     QString getAlbumArtist() const;
-    /** Set album artist */
+    // Set album artist
     void setAlbumArtist(QString);
-    /** Return Year */
+    // Return Year
     QString getYear() const;
-    /** Set year */
+    // Set year
     void setYear(QString);
-    /** Return genre */
+    // Return genre
     QString getGenre() const;
-    /** Set genre */
+    // Set genre
     void setGenre(QString);
-    /** Return composer */
+    // Return composer
     QString getComposer() const;
-    /** Set composer */
+    // Set composer
     void setComposer(QString);
-    /** Return grouping */
+    // Return grouping
     QString getGrouping() const;
-    /** Set grouping */
+    // Set grouping
     void setGrouping(QString);
-    /** Return Track Number */
+    // Return Track Number
     QString getTrackNumber() const;
-    /** Set Track Number */
+    // Set Track Number
     void setTrackNumber(QString);
-    /** Return number of times the track has been played */
+    // Return number of times the track has been played
     int getTimesPlayed() const;
-    /** Set number of times the track has been played */
+    // Set number of times the track has been played
     void setTimesPlayed(int t);
-    /** Increment times played with one */
+    // Increment times played with one
     void incTimesPlayed();
-    /** Returns true if track has been played this instance*/
+    // Returns true if track has been played this instance
     bool getPlayed() const;
-    /** Set played status and increment or decrement playcount. */
+    // Set played status and increment or decrement playcount.
     void setPlayedAndUpdatePlaycount(bool);
-    /** Set played status without affecting the playcount */
+    // Set played status without affecting the playcount
     void setPlayed(bool bPlayed);
 
     int getId() const;
 
-    /** Returns rating */
+    // Returns rating
     int getRating() const;
-    /** Sets rating */
+    // Sets rating
     void setRating(int);
 
-    /** Get URL for track */
+    // Get URL for track
     QString getURL();
-    /** Set URL for track */
+    // Set URL for track
     void setURL(QString url);
 
     Waveform* getWaveform();
@@ -226,7 +224,7 @@ public:
 
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
-    /** Get saved the cue point */
+    // Get saved the cue point
     float getCuePoint();
 
     // Calls for managing the track's cue points
@@ -244,7 +242,7 @@ public:
     // Returns true if the track location has changed
     bool locationChanged();
 
-    /** Set the track's full file path */
+    // Set the track's full file path
     void setLocation(QString location);
 
     // Get the track's Beats list
@@ -320,72 +318,71 @@ public:
     // Length of track in bytes
     int m_iLength;
 
-    /** Metadata */
-    /** Album */
+    // Metadata 
+    // Album
     QString m_sAlbum;
-    /** Artist */
+    // Artist 
     QString m_sArtist;
-    /** Album Artist */
+    // Album Artist
     QString m_sAlbumArtist;
-    /** Title */
+    // Title
     QString m_sTitle;
-    /** Genre */
+    // Genre
     QString m_sGenre;
-    /** Composer */
+    // Composer
     QString m_sComposer;
-    /** Grouping */
+    // Grouping
     QString m_sGrouping;
-    /** Year */
+    // Year
     QString m_sYear;
-    /** Track Number */
+    // Track Number
     QString m_sTrackNumber;
 
-    /** File type */
+    // File type
     QString m_sType;
-    /** User comment */
+    // User comment
     QString m_sComment;
-    /** URL (used in promo track) */
+    // URL (used in promo track)
     QString m_sURL;
-    /** Duration of track in seconds */
+    // Duration of track in seconds
     int m_iDuration;
-    /** Sample rate */
+    // Sample rate
     int m_iSampleRate;
-    /** Number of channels */
+    // Number of channels
     int m_iChannels;
-    /**Track rating */
+    // Track rating
     int m_Rating;
-    /** Bitrate, number of kilobits per second of audio in the track*/
+    // Bitrate, number of kilobits per second of audio in the track
     int m_iBitrate;
-    /** Number of times the track has been played */
+    // Number of times the track has been played
     int m_iTimesPlayed;
-    /** Replay Gain volume */
+    // Replay Gain volume
     float m_fReplayGain;
-    /** Has this track been played this sessions? */
+    // Has this track been played this sessions? 
     bool m_bPlayed;
-    /** True if header was parsed */
+    // True if header was parsed
     bool m_bHeaderParsed;
-    /** Id. Unique ID of track */
+    // Id. Unique ID of track
     int m_iId;
-    /** Cue point in samples or something */
+    // Cue point in samples or something
     float m_fCuePoint;
-    /** Date. creation date of file */
+    // Date. creation date of file
     QDateTime m_dCreateDate;
     // Date the track was added to the library
     QDateTime m_dateAdded;
 
     Keys m_keys;
 
-    /** BPM lock **/
+    // BPM lock
     bool m_bBpmLock;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
 
-
-    /** Mutex protecting access to object */
+    // Mutex protecting access to object 
     mutable QMutex m_qMutex;
 
-    /** True if object contains valid information */
+    // True if object contains valid information 
     bool m_bIsValid;
 
     // Storage for the track's beats
