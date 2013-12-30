@@ -22,16 +22,19 @@ class WWidgetGroup : public QGroupBox {
     // sheets:
     //
     // WWidgetGroup {
-    //  qproperty-spacing: 10;
-    //  qproperty-contentsMargins: rect(1 1 1 1);
+    //  qproperty-layoutSpacing: 10;
+    //  qproperty-layoutContentsMargins: rect(1 1 1 1);
+    //  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
     //}
     //
     // The property must be DESIGNABLE to style it with Qt CSS.
-    Q_PROPERTY(int spacing WRITE setLayoutSpacing DESIGNABLE true);
-    Q_PROPERTY(QRect contentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
+    Q_PROPERTY(int layoutSpacing WRITE setLayoutSpacing DESIGNABLE true);
+    Q_PROPERTY(QRect layoutContentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
+    Q_PROPERTY(Qt::Alignment layoutAlignment WRITE setLayoutAlignment DESIGNABLE true);
 
     void setLayoutSpacing(int spacing);
     void setLayoutContentsMargins(QRect margins);
+    void setLayoutAlignment(int alignment);
 
     void setup(QDomNode node);
     void setPixmapBackground(const QString &filename);

@@ -48,6 +48,15 @@ void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
     }
 }
 
+void WWidgetGroup::setLayoutAlignment(int alignment) {
+    //qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
+
+    QLayout* pLayout = layout();
+    if (pLayout) {
+        pLayout->setAlignment(static_cast<Qt::Alignment>(alignment));
+    }
+}
+
 void WWidgetGroup::setup(QDomNode node) {
     setContentsMargins(0, 0, 0, 0);
 
