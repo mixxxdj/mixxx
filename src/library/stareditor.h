@@ -2,7 +2,7 @@
                            stareditor.h
                               -------------------
      copyright            : (C) 2010 Tobias Rafreider
-	 copyright            : (C) 2009 Nokia Corporation
+     copyright            : (C) 2009 Nokia Corporation
 
 ***************************************************************************/
 
@@ -19,7 +19,7 @@
  *                                                                         *
  * StarEditor inherits QWidget and is used by StarDelegate to let the user *
  * edit a star rating in the library using the mouse.                      *
- *																		   *
+ *                                                                         *
  * The class has been adapted from the official "Star Delegate Example",   *
  * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
  ***************************************************************************/
@@ -28,6 +28,11 @@
 #define STAREDITOR_H
 
 #include <QWidget>
+#include <QMouseEvent>
+#include <QEvent>
+#include <QStyle>
+#include <QSize>
+#include <QPaintEvent>
 
 #include "starrating.h"
 

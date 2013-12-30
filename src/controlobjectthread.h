@@ -18,11 +18,7 @@
 #ifndef CONTROLOBJECTTHREAD_H
 #define CONTROLOBJECTTHREAD_H
 
-#include <qmutex.h>
-#include <qobject.h>
-#include <qmutex.h>
-#include <qwaitcondition.h>
-#include <QQueue>
+#include <QObject>
 
 #include "configobject.h"
 

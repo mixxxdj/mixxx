@@ -1,10 +1,5 @@
 #include <QMessageBox>
 #include <QtDebug>
-#include <QXmlStreamReader>
-#include <QDesktopServices>
-#include <QFileDialog>
-#include <QMenu>
-#include <QAction>
 #include <QList>
 
 #include "library/banshee/bansheefeature.h"
@@ -164,6 +159,3 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QSt
         }
     }
 }
-
-
-

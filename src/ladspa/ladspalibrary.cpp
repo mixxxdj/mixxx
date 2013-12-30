@@ -7,8 +7,6 @@
 *                                                                         *
 ***************************************************************************/
 
-
-#include <QtCore>
 #include "ladspalibrary.h"
 
 LADSPALibrary::LADSPALibrary(QString file)
@@ -25,10 +23,10 @@ LADSPALibrary::LADSPALibrary(QString file)
     {
         m_descriptorFunction = (LADSPA_Descriptor_Function) m_pLibrary->resolve("ladspa_descriptor");
 
-		if (m_descriptorFunction == NULL) {
-			QString error("The file " + file + " is not a LADSPA plugin");
-			throw error;
-		}
+        if (m_descriptorFunction == NULL) {
+            QString error("The file " + file + " is not a LADSPA plugin");
+            throw error;
+        }
 
         const LADSPA_Descriptor * descriptor;
 

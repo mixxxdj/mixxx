@@ -14,11 +14,7 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#include <qapplication.h>
 #include "configobject.h"
-#include <qdir.h>
-#include <QtDebug>
-#include "widget/wwidget.h"
 
 #ifdef __WINDOWS__
 #include <windows.h>
@@ -28,11 +24,16 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#include <qiodevice.h>
-#include <QTextStream>
 #include <math.h>
 
-#include "mixxx.h"
+#include <QIODevice>
+#include <QTextStream>
+#include <QApplication>
+#include <QDir>
+#include <QtDebug>
+
+#include "widget/wwidget.h"
+#include "util/cmdlineargs.h"
 
 ConfigKey::ConfigKey() {
 }
@@ -336,7 +337,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
         }
         file.close();
         if (file.error()!=QFile::NoError) //could be better... should actually say what the error was..
-	  qDebug() << "Error while writing configuration file:" << file.errorString();
+      qDebug() << "Error while writing configuration file:" << file.errorString();
     }
 }
 
@@ -386,11 +387,24 @@ QString ConfigObject<ValueType>::getResourcePath() {
         }
         qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
         */
-        QString mixxxPath = QCoreApplication::applicationDirPath();
-        if (mixxxPath.endsWith("osx_build"))   //Development configuration
-            qResourcePath = mixxxPath + "/../res";
-        else //Release configuraton
-            qResourcePath = mixxxPath + "/../Resources";
+        QDir mixxxDir(QCoreApplication::applicationDirPath());
+
+        if (mixxxDir.absolutePath().endsWith("_build")) {
+            // We are running out of the osxXX_build folder.
+            if (mixxxDir.cdUp() && mixxxDir.cd("res")) {
+                qResourcePath = mixxxDir.absolutePath();
+            } else {
+                // TODO(rryan): What should we do here?
+            }
+        } else if (mixxxDir.cd("res")) {
+            // We are running out of the repository root.
+            qResourcePath = mixxxDir.absolutePath();
+        } else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+            // Release configuraton
+            qResourcePath = mixxxDir.absolutePath();
+        } else {
+            // TODO(rryan): What should we do here?
+        }
 #endif
     } else {
         qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
@@ -436,4 +450,3 @@ template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() co
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;
-

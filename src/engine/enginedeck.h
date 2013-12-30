@@ -33,6 +33,7 @@ class EngineFilterBlock;
 class EngineClipping;
 class EngineFlanger;
 class EngineFilterEffect;
+class EngineMaster;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
@@ -40,11 +41,11 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const char *group, ConfigObject<ConfigValue>* pConfig,
+    EngineDeck(const char* group, ConfigObject<ConfigValue>* pConfig, EngineMaster* pMixingEngine,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 
-    virtual void process(const CSAMPLE *pInput, const CSAMPLE *pOutput, const int iBufferSize);
+    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
@@ -53,7 +54,8 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     // This is called by SoundManager whenever there are new samples from the
     // deck to be processed.
-    virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int nFrames);
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.

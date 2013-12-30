@@ -1,7 +1,6 @@
 // schemamanager.cpp
 // Created 12/29/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtCore>
 #include <QtDebug>
 
 #include "library/schemamanager.h"

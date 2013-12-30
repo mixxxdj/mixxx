@@ -30,8 +30,9 @@
 #include "controlobject.h"
 #include "waveform/waveform.h"
 #include "track/beatfactory.h"
+#include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "util/compatibility.h"
-
 #include "mixxxutils.cpp"
 
 
@@ -136,7 +137,6 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_fCuePoint = 0.0f;
     m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
-    m_key = "";
     m_bBpmLock = false;
     m_sGrouping = "";
     m_sAlbumArtist = "";
@@ -168,7 +168,7 @@ int TrackInfoObject::parse() {
     // Add basic information derived from the filename:
     parseFilename();
 
-    // Parse the using information stored in the sound file
+    // Parse the information stored in the sound file
     int result = SoundSourceProxy::ParseHeader(this);
     m_bIsValid = result == OK;
     return result;
@@ -178,21 +178,19 @@ int TrackInfoObject::parse() {
 void TrackInfoObject::parseFilename() {
     QMutexLocker lock(&m_qMutex);
 
-    if (m_sFilename.indexOf('-') != -1)
-    {
+    // If the file name has the following form: "Artist - Title.type", extract
+    // Artist, Title and type fields
+    if (m_sFilename.count('-') == 1) {
         m_sArtist = m_sFilename.section('-',0,0).trimmed(); // Get the first part
         m_sTitle = m_sFilename.section('-',1,1); // Get the second part
         m_sTitle = m_sTitle.section('.',0,-2).trimmed(); // Remove the ending
-    }
-    else
-    {
+    } else {
         m_sTitle = m_sFilename.section('.',0,-2).trimmed(); // Remove the ending;
-        m_sType = m_sFilename.section('.',-1).trimmed(); // Get the ending
     }
 
-    if (m_sTitle.length() == 0) {
-        m_sTitle = m_sFilename.section('.',0,-2).trimmed();
-    }
+    // Replace underscores with spaces for Artist and Title
+    m_sArtist = m_sArtist.replace("_", " ");
+    m_sTitle = m_sTitle.replace("_", " ");
 
     // Add no comment
     m_sComment = QString("");
@@ -754,6 +752,7 @@ Cue* TrackInfoObject::addCue() {
 void TrackInfoObject::removeCue(Cue* cue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(cue, 0, this, 0);
+    // TODO(XXX): Delete the cue point.
     m_cuePoints.removeOne(cue);
     setDirty(true);
     lock.unlock();
@@ -830,17 +829,86 @@ void TrackInfoObject::setRating (int rating) {
         setDirty(true);
 }
 
-QString TrackInfoObject::getKey() const {
+void TrackInfoObject::setKeys(Keys keys) {
     QMutexLocker lock(&m_qMutex);
-    return m_key;
+    setDirty(true);
+    m_keys = keys;
+    // Might be INVALID. We don't care.
+    mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
+    lock.unlock();
+    emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
+    emit(keysUpdated());
 }
 
-void TrackInfoObject::setKey(QString key) {
+const Keys& TrackInfoObject::getKeys() const {
     QMutexLocker lock(&m_qMutex);
-    bool dirty = key != m_key;
-    m_key = key;
-    if (dirty)
+    return m_keys;
+}
+
+mixxx::track::io::key::ChromaticKey TrackInfoObject::getKey() const {
+    QMutexLocker lock(&m_qMutex);
+    if (!m_keys.isValid()) {
+        return mixxx::track::io::key::INVALID;
+    }
+    return m_keys.getGlobalKey();
+}
+
+void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
+                             mixxx::track::io::key::Source source) {
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = false;
+    if (key == mixxx::track::io::key::INVALID) {
+        m_keys = Keys();
+        dirty = true;
+    } else if (m_keys.getGlobalKey() != key) {
+        m_keys = KeyFactory::makeBasicKeys(key, source);
+    }
+
+    if (dirty) {
         setDirty(true);
+    }
+
+    // Might be INVALID. We don't care.
+    mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
+    lock.unlock();
+    emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
+    emit(keysUpdated());
+}
+
+void TrackInfoObject::setKeyText(QString key,
+                                 mixxx::track::io::key::Source source) {
+    QMutexLocker lock(&m_qMutex);
+
+    Keys newKeys = KeyFactory::makeBasicKeysFromText(key, source);
+
+    // We treat this as dirtying if it is parsed to a different key or if we
+    // fail to parse the key, if the text value is different from the current
+    // text value.
+    bool dirty = newKeys.getGlobalKey() != m_keys.getGlobalKey() ||
+            (newKeys.getGlobalKey() == mixxx::track::io::key::INVALID &&
+             newKeys.getGlobalKeyText() != m_keys.getGlobalKeyText());
+    if (dirty) {
+        m_keys = newKeys;
+        setDirty(true);
+        // Might be INVALID. We don't care.
+        mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
+        lock.unlock();
+        emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
+        emit(keysUpdated());
+    }
+}
+
+QString TrackInfoObject::getKeyText() const {
+    QMutexLocker lock(&m_qMutex);
+
+    mixxx::track::io::key::ChromaticKey key = m_keys.getGlobalKey();
+    if (key != mixxx::track::io::key::INVALID) {
+        return KeyUtils::keyToString(key);
+    }
+
+    // Fall back on text global name.
+    QString keyText = m_keys.getGlobalKeyText();
+    return keyText;
 }
 
 void TrackInfoObject::setBpmLock(bool bpmLock) {

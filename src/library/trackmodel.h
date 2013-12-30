@@ -82,7 +82,7 @@ class TrackModel {
     virtual void purgeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
-    virtual int addTracks(const QModelIndex& index, QList<QString> locations) {
+    virtual int addTracks(const QModelIndex& index, const QList<QString>& locations) {
         Q_UNUSED(index);
         Q_UNUSED(locations);
         return 0;
@@ -127,7 +127,7 @@ class TrackModel {
         m_iDefaultSortColumn = sortColumn;
         m_eDefaultSortOrder = sortOrder;
     }
-    
+
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);
         return -1;

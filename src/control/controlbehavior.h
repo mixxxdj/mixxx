@@ -51,7 +51,7 @@ class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
     ControlLogpotmeterBehavior(double dMaxValue);
     virtual ~ControlLogpotmeterBehavior();
 
-    virtual double defaultValue(double dDefault);
+    virtual double defaultValue(double dDefault) const;
     virtual double valueToWidgetParameter(double dValue);
     virtual double widgetParameterToValue(double dParam);
 
@@ -78,13 +78,15 @@ class ControlTTRotaryBehavior : public ControlNumericBehavior {
 class ControlPushButtonBehavior : public ControlNumericBehavior {
   public:
     static const int kPowerWindowTimeMillis;
+    static const int kLongPressLatchingTimeMillis;
 
     // TODO(XXX) Duplicated from ControlPushButton. It's complicated and
     // annoying to share them so I just copied them.
     enum ButtonMode {
          PUSH = 0,
          TOGGLE,
-         POWERWINDOW
+         POWERWINDOW,
+         LONGPRESSLATCHING,
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);

@@ -3,7 +3,9 @@
 
 #include <QtSql>
 #include <QItemDelegate>
-#include <QtCore>
+#include <QString>
+#include <QObject>
+#include <QModelIndex>
 
 #include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"

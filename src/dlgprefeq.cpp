@@ -15,14 +15,8 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qslider.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qgraphicsscene.h>
+#include <QWidget>
+#include <QString>
 
 #include "dlgprefeq.h"
 #include "engine/enginefilteriir.h"

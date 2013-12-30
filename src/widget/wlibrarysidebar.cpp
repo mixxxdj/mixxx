@@ -1,9 +1,11 @@
-#include <QtCore>
-#include <QtGui>
+#include "widget/wlibrarysidebar.h"
+
 #include <QHeaderView>
+#include <QUrl>
+#include <QtDebug>
+#include <QMimeData>
 
 #include "library/sidebarmodel.h"
-#include "widget/wlibrarysidebar.h"
 
 const int expand_time = 250;
 

@@ -16,22 +16,23 @@
 ***************************************************************************/
 
 #include "controlpushbutton.h"
-#include "enginebuffer.h"
-#include "enginevinylsoundemu.h"
-#include "enginedeck.h"
-#include "engineclipping.h"
-#include "enginepregain.h"
-#include "engineflanger.h"
-#include "enginefiltereffect.h"
-#include "enginefilterblock.h"
-#include "enginevumeter.h"
-#include "enginefilteriir.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginevinylsoundemu.h"
+#include "engine/enginedeck.h"
+#include "engine/engineclipping.h"
+#include "engine/enginepregain.h"
+#include "engine/engineflanger.h"
+#include "engine/enginefiltereffect.h"
+#include "engine/enginefilterblock.h"
+#include "engine/enginevumeter.h"
+#include "engine/enginefilteriir.h"
 
 #include "sampleutil.h"
 
 EngineDeck::EngineDeck(const char* group,
-                             ConfigObject<ConfigValue>* pConfig,
-                             EngineChannel::ChannelOrientation defaultOrientation)
+                       ConfigObject<ConfigValue>* pConfig,
+                       EngineMaster* pMixingEngine,
+                       EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
@@ -56,7 +57,7 @@ EngineDeck::EngineDeck(const char* group,
     m_pFlanger = new EngineFlanger(group);
     m_pFilterEffect = new EngineFilterEffect(group);
     m_pClipping = new EngineClipping(group);
-    m_pBuffer = new EngineBuffer(group, pConfig);
+    m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
     m_pVUMeter = new EngineVuMeter(group);
 }
@@ -75,9 +76,7 @@ EngineDeck::~EngineDeck() {
     delete m_pVUMeter;
 }
 
-void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBufferSize) {
-    CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
-
+void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
     // Feed the incoming audio through if passthrough is active
     if (isPassthroughActive()) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
@@ -130,7 +129,7 @@ bool EngineDeck::isActive() {
     return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
 }
 
-void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
+void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {
     // Skip receiving audio input if passthrough is not active
     if (!m_bPassthroughIsActive) {
         return;
@@ -151,29 +150,36 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
         nFrames = MAX_BUFFER_LEN / iChannels;
     }
 
+    const CSAMPLE* pWriteBuffer = NULL;
+    unsigned int samplesToWrite = 0;
+
     if (iChannels == 1) {
-        // Do mono -> stereo conversion. There isn't a suitable SampleUtil
-        // method that can do mono->stereo and short->float in one pass.
+        // Do mono -> stereo conversion.
         for (unsigned int i = 0; i < nFrames; ++i) {
             m_pConversionBuffer[i*2 + 0] = pBuffer[i];
             m_pConversionBuffer[i*2 + 1] = pBuffer[i];
         }
+        pWriteBuffer = m_pConversionBuffer;
+        samplesToWrite = nFrames * 2;
     } else if (iChannels == 2) {
-        // Use the conversion buffer to both convert from short and double.
-        SampleUtil::convert(m_pConversionBuffer, pBuffer, nFrames*iChannels);
+        // Already in stereo. Use pBuffer as-is.
+        pWriteBuffer = pBuffer;
+        samplesToWrite = nFrames * iChannels;
     } else {
         qWarning() << "EnginePassthrough got greater than stereo input. Not currently handled.";
     }
 
-    const unsigned int samplesToWrite = nFrames * iChannels;
-
-    // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
-    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, samplesToWrite);
-    if (samplesWritten < samplesToWrite) {
-        // Buffer overflow. We aren't processing samples fast enough. This
-        // shouldn't happen since the deck spits out samples just as fast as they
-        // come in, right?
-        qWarning() << "ERROR: Buffer overflow in EngineMicrophone. Dropping samples on the floor.";
+    if (pWriteBuffer != NULL) {
+        // TODO(rryan) do we need to verify the input is the one we asked for?
+        // Oh well.
+        unsigned int samplesWritten = m_sampleBuffer.write(pWriteBuffer,
+                                                           samplesToWrite);
+        if (samplesWritten < samplesToWrite) {
+            // Buffer overflow. We aren't processing samples fast enough. This
+            // shouldn't happen since the deck spits out samples just as fast as
+            // they come in, right?
+            qWarning() << "ERROR: Buffer overflow in EngineMicrophone. Dropping samples on the floor.";
+        }
     }
 }
 
@@ -202,4 +208,3 @@ bool EngineDeck::isPassthroughActive() {
 void EngineDeck::slotPassingToggle(double v) {
     m_bPassthroughIsActive = v > 0;
 }
-

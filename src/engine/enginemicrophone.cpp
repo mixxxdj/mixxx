@@ -64,49 +64,58 @@ void EngineMicrophone::onInputDisconnected(AudioInput input) {
     m_pEnabled->set(0.0f);
 }
 
-void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
-
-    if (input.getType() != AudioPath::MICROPHONE ||
-        AudioInput::channelsNeededForType(input.getType()) != 1) {
+void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                                     unsigned int nFrames) {
+    if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type or a non-mono buffer!";
         return;
     }
 
-    // Use the conversion buffer to both convert from short and double into
-    // stereo.
+    const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
 
     // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
-    if (nFrames > MAX_BUFFER_LEN / 2) {
+    if (nFrames > MAX_BUFFER_LEN / iChannels) {
         qWarning() << "Dropping microphone samples because the input buffer is too large.";
-        nFrames = MAX_BUFFER_LEN / 2;
+        nFrames = MAX_BUFFER_LEN / iChannels;
     }
 
-    // There isn't a suitable SampleUtil method that can do mono->stereo and
-    // short->float in one pass.
-    // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
-    for (unsigned int i = 0; i < nFrames; ++i) {
-        m_pConversionBuffer[i*2 + 0] = pBuffer[i];
-        m_pConversionBuffer[i*2 + 1] = pBuffer[i];
+    const CSAMPLE* pWriteBuffer = NULL;
+    unsigned int samplesToWrite = 0;
+
+    if (iChannels == 1) {
+        // Do mono -> stereo conversion.
+        for (unsigned int i = 0; i < nFrames; ++i) {
+            m_pConversionBuffer[i*2 + 0] = pBuffer[i];
+            m_pConversionBuffer[i*2 + 1] = pBuffer[i];
+        }
+        pWriteBuffer = m_pConversionBuffer;
+        samplesToWrite = nFrames * 2;
+    } else if (iChannels == 2) {
+        // Already in stereo. Use pBuffer as-is.
+        pWriteBuffer = pBuffer;
+        samplesToWrite = nFrames * iChannels;
+    } else {
+        qWarning() << "EngineMicrophone got greater than stereo input. Not currently handled.";
     }
 
-    // m_pConversionBuffer is now stereo, so double the number of samples
-    const unsigned int iNumSamples = nFrames * 2;
-
-    // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
-    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, iNumSamples);
-    if (samplesWritten < iNumSamples) {
-        // Buffer overflow. We aren't processing samples fast enough. This
-        // shouldn't happen since the mic spits out samples just as fast as they
-        // come in, right?
-        qWarning() << "ERROR: Buffer overflow in EngineMicrophone. Dropping samples on the floor.";
+    if (pWriteBuffer != NULL) {
+        // TODO(rryan) do we need to verify the input is the one we asked for?
+        // Oh well.
+        unsigned int samplesWritten = m_sampleBuffer.write(pWriteBuffer,
+                                                           samplesToWrite);
+        if (samplesWritten < samplesToWrite) {
+            // Buffer overflow. We aren't processing samples fast enough. This
+            // shouldn't happen since the mic spits out samples just as fast as they
+            // come in, right?
+            qWarning() << "ERROR: Buffer overflow in EngineMicrophone. Dropping samples on the floor.";
+        }
     }
 }
 
-void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
+void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferSize) {
     Q_UNUSED(pInput);
-    CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.

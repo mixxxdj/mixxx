@@ -45,7 +45,8 @@ void LibraryTableModel::setTableModel(int id) {
 }
 
 
-int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int LibraryTableModel::addTracks(const QModelIndex& index,
+                                 const QList<QString>& locations) {
     Q_UNUSED(index);
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
@@ -77,9 +78,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 bool LibraryTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    }
+    Q_UNUSED(column);
     return false;
 }
 

@@ -18,32 +18,23 @@
 #ifndef WPIXMAPSTORE_H
 #define WPIXMAPSTORE_H
 
+#include <QPixmap>
 #include <QHash>
 #include <QSharedPointer>
 
 #include "skin/imgsource.h"
 
-/**
-  *
-  *@author Tue & Ken Haste Andersen
-  */
-
-class QPixmap;
+typedef QSharedPointer<QPixmap> QPixmapPointer;
+typedef QWeakPointer<QPixmap> QWeakPixmapPointer;
 
 class WPixmapStore {
   public:
-    static QPixmap *getPixmap(const QString &fileName);
-    static QPixmap *getPixmapNoCache(const QString &fileName);
-    static void deletePixmap(QPixmap *p);
+    static QPixmapPointer getPixmap(const QString &fileName);
+    static QPixmap* getPixmapNoCache(const QString &fileName);
     static void setLoader(QSharedPointer<ImgSource> ld);
-  private:
-    struct PixmapInfoType {
-        QPixmap *pixmap;
-        int instCount;
-    };
 
-    /** Dictionary of pixmaps already instantiated */
-    static QHash<QString, PixmapInfoType*> m_dictionary;
+  private:
+    static QHash<QString, QWeakPixmapPointer> m_pixmapCache;
     static QSharedPointer<ImgSource> m_loader;
 };
 

@@ -8,12 +8,14 @@
 #ifndef CONTROLGROUPDELEGATE_H_
 #define CONTROLGROUPDELEGATE_H_
 
+#include <QAbstractItemModel>
 #include <QItemDelegate>
 #include <QModelIndex>
 #include <QObject>
-#include <QSize>
-#include <QComboBox>
-#include <QLabel>
+#include <QPainter>
+#include <QStringList>
+#include <QStyleOptionViewItem>
+#include <QWidget>
 
 #define CONTROLGROUP_CHANNEL1_STRING "[Channel1]"
 #define CONTROLGROUP_CHANNEL2_STRING "[Channel2]"

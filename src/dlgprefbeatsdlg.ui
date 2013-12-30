@@ -172,7 +172,7 @@ by analyzing the beats to discard outliers.</string>
          <number>50</number>
         </property>
         <property name="maximum">
-         <number>200</number>
+         <number>300</number>
         </property>
        </widget>
       </item>

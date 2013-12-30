@@ -18,8 +18,6 @@
 #ifndef ROTARY_H
 #define ROTARY_H
 
-#include <qstring.h>
-
 /**
   * Virtual class for handling the PowerMate. This is implemented as a separate thread.
   * Also handles the Hercules...

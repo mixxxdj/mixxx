@@ -14,7 +14,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     bool isColumnHiddenByDefault(int column);
     // Takes a list of locations and add the tracks to the library. Returns the
     // number of successful additions.
-    int addTracks(const QModelIndex& index, QList<QString> locations);
+    int addTracks(const QModelIndex& index, const QList<QString>& locations);
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
 };

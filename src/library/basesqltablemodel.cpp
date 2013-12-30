@@ -3,6 +3,7 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 #include <QTime>
+#include <QUrl>
 
 #include "library/basesqltablemodel.h"
 
@@ -14,6 +15,7 @@
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 #include "playerinfo.h"
+#include "track/keyutils.h"
 
 const bool sDebug = false;
 
@@ -519,18 +521,36 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     // clear invalid values
                     value = QString();
                 }
+            } else if (column == fieldIndex(LIBRARYTABLE_KEY)) {
+                // If we know the semantic key via the LIBRARYTABLE_KEY_ID
+                // column (as opposed to the string representation of the key
+                // currently stored in the DB) then lookup the key and render it
+                // using the user's selected notation.
+                int keyIdColumn = fieldIndex(LIBRARYTABLE_KEY_ID);
+                if (keyIdColumn != -1) {
+                    mixxx::track::io::key::ChromaticKey key =
+                            KeyUtils::keyFromNumericValue(
+                                index.sibling(row, keyIdColumn).data().toInt());
+
+                    if (key != mixxx::track::io::key::INVALID) {
+                        // Render this key with the user-provided notation.
+                        value = KeyUtils::keyToString(key);
+                    }
+                }
+                // Otherwise, just use the column value.
             }
 
             break;
         case Qt::EditRole:
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
-                return value.toDouble();
+                value = value.toDouble();
             } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                return index.sibling(
+                value = index.sibling(
                     row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
+                if (qVariantCanConvert<int>(value)) {
                     value = qVariantFromValue(StarRating(value.toInt()));
+                }
             }
             break;
         case Qt::CheckStateRole:
@@ -760,7 +780,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
-        pTrack->setKey(value.toString());
+        pTrack->setKeyText(value.toString(),
+                           mixxx::track::io::key::USER);
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLock(value.toBool());
     }

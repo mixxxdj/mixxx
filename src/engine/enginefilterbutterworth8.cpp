@@ -1,6 +1,6 @@
 /***************************************************************************
- *      enginefilter.cpp - Wrapper for FidLib Filter Library	           *
- *			----------------------                             *
+ *      enginefilter.cpp - Wrapper for FidLib Filter Library               *
+ *          ----------------------                             *
  *   copyright      : (C) 2007 by John Sully                               *
  *   email          : jsully@scs.ryerson.ca                                *
  *                                                                         *
@@ -25,8 +25,8 @@ inline double _processBandpass(double *coef, double *buf, register double val);
 double inline _processHighpass(double *coef, double *buf, register double val);
 
 inline void zap_buffer_denormals(double *buf, int bufSize) {
-	for(int i=0; i < bufSize; i++)
-		buf[i] = zap_denormal(buf[i]);
+    for(int i=0; i < bufSize; i++)
+        buf[i] = zap_denormal(buf[i]);
 }
 
 EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate, int bufSize)
@@ -158,10 +158,9 @@ void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1) {
     initBuffers();
 }
 
-void EngineFilterButterworth8Low::process(const CSAMPLE *pIn,
-        const CSAMPLE *ppOut, const int iBufferSize) {
-    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
-
+void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
+                                          CSAMPLE* pOutput,
+                                          const int iBufferSize) {
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
@@ -186,16 +185,15 @@ void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
     initBuffers();
 }
 
-void EngineFilterButterworth8Band::process(const CSAMPLE *pIn,
-        const CSAMPLE *ppOut, const int iBufferSize) {
-    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
-
+void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
+                                           CSAMPLE* pOutput,
+                                           const int iBufferSize) {
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
-        if(pOutput[i] != pOutput[i])	//Check for NaN
+        if(pOutput[i] != pOutput[i])    //Check for NaN
             pOutput[i] = 0;
-        if(pOutput[i+1] != pOutput[i+1])	//Check for NaN
+        if(pOutput[i+1] != pOutput[i+1])    //Check for NaN
             pOutput[i+1] = 0;
     }
 
@@ -216,11 +214,9 @@ void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
     initBuffers();
 }
 
-void EngineFilterButterworth8High::process(const CSAMPLE *pIn,
-                                           const CSAMPLE *ppOut,
+void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
+                                           CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
-
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);

@@ -17,38 +17,22 @@
 #ifndef ENGINECLIPPING_H
 #define ENGINECLIPPING_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "controlpotmeter.h"
 
-class EngineClipping : public EngineObject 
-{
-private:
+class EngineClipping : public EngineObject {
+    Q_OBJECT
+  public:
+    EngineClipping(const char* group);
+    virtual ~EngineClipping();
+
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    bool hasClipped();
+
+  private:
     bool clipped;
     ControlPotmeter *m_ctrlClipping;
     int m_duration;
-public:
-    EngineClipping(const char *group);
-    ~EngineClipping();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    bool hasClipped();
 };
 
 #endif // ENGINECLIPPING_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

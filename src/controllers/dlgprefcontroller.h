@@ -8,7 +8,6 @@
 #ifndef DLGPREFCONTROLLER_H_
 #define DLGPREFCONTROLLER_H_
 
-#include <QtGui>
 #include <QHash>
 
 #include "controllers/controllerpreset.h"

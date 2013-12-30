@@ -64,8 +64,6 @@ class MixxxApp : public QMainWindow {
     // initMenuBar creates the menu_bar and inserts the menuitems
     void initMenuBar();
 
-    void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
-
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
@@ -82,10 +80,8 @@ class MixxxApp : public QMainWindow {
     void slotFileQuit();
 
     // toggle vinyl control - Don't #ifdef this because MOC is dumb
-    void slotControlVinylControl(double toggle);
-    void slotCheckboxVinylControl(bool toggle);
-    void slotControlVinylControl2(double toggle);
-    void slotCheckboxVinylControl2(bool toggle);
+    void slotControlVinylControl(int);
+    void slotCheckboxVinylControl(int);
     // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
@@ -120,6 +116,9 @@ class MixxxApp : public QMainWindow {
 
     void onNewSkinLoaded();
 
+    // Activated when the number of decks changed, so we can update the UI.
+    void slotNumDecksChanged(double);
+
   signals:
     void newSkinLoaded();
 
@@ -137,7 +136,6 @@ class MixxxApp : public QMainWindow {
     bool confirmExit();
 
     // Pointer to the root GUI widget
-    QWidget* m_pView;
     QWidget* m_pWidgetParent;
 
     // The mixing engine.
@@ -191,8 +189,7 @@ class MixxxApp : public QMainWindow {
     QAction* m_pLibraryRescan;
 #ifdef __VINYLCONTROL__
     QMenu* m_pVinylControlMenu;
-    QAction* m_pOptionsVinylControl;
-    QAction* m_pOptionsVinylControl2;
+    QList<QAction*> m_pOptionsVinylControl;
 #endif
     QAction* m_pOptionsRecord;
     QAction* m_pOptionsKeyboard;
@@ -234,9 +231,11 @@ class MixxxApp : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
-    ControlObjectThread* m_pVinylcontrol1Enabled;
-    ControlObjectThread* m_pVinylcontrol2Enabled;
+    QList<ControlObjectThread*> m_pVinylControlEnabled;
+    ControlObjectThread* m_pNumDecks;
+    int m_iNumConfiguredDecks;
+    QSignalMapper* m_VCControlMapper;
+    QSignalMapper* m_VCCheckboxMapper;
 };
 
 #endif
-

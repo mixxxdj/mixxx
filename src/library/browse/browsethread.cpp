@@ -2,9 +2,9 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
+#include <QtDebug>
 #include <QStringList>
 #include <QDirIterator>
-#include <QtCore>
 
 #include "library/browse/browsethread.h"
 #include "library/browse/browsetablemodel.h"
@@ -26,8 +26,8 @@ static QMutex s_Mutex;
  * signals to BrowseModel objects. It does not
  * make sense to use this class in non-GUI threads
  */
-BrowseThread::BrowseThread(QObject *parent): QThread(parent)
-{
+BrowseThread::BrowseThread(QObject *parent)
+        : QThread(parent) {
     m_bStopThread = false;
     m_model_observer = NULL;
     //start Thread
@@ -180,7 +180,7 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_BPM, item);
 
-        item = new QStandardItem(tio.getKey());
+        item = new QStandardItem(tio.getKeyText());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_KEY, item);
 

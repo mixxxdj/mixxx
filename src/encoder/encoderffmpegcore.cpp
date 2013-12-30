@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include <QDebug>
+#include <QtDebug>
 
 #include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
@@ -137,12 +137,13 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     unsigned int l_iBufPos = 0;
     unsigned int l_iPos = 0;
 
+    // TODO(XXX): Get rid of repeated malloc here!
     float *l_fNormalizedSamples = (float *)malloc(size * sizeof(float));
 
-    // Because of normalization to SHORT_MAX = 0x7FFF we have to make this not to clip!
-    // Comments also: https://bugs.launchpad.net/mixxx/+bug/1204039
+    // We use normalized floats in the engine [-1.0, 1.0] and FFMPEG expects
+    // samples in the range [-1.0, 1.0] so no conversion is required.
     for (j = 0; j < size; j++) {
-        l_fNormalizedSamples[j] = samples[j] / 0x7FFF;
+        l_fNormalizedSamples[j] = samples[j];
     }
 
     // In MP3 this writes Header same In ogg
@@ -155,7 +156,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
             qDebug() << "EncoderFfmpegCore::encodeBuffer: failed to write a header.";
             return;
         }
-    
+
         l_iBufferLen = avio_close_dyn_buf(m_pEncodeFormatCtx->pb,
                                           (uint8_t**)(&l_strBuffer));
         m_pCallback->write(NULL, l_strBuffer, 0, l_iBufferLen);
@@ -253,7 +254,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec M4A";
 #ifdef avformat_alloc_output_context2
         avformat_alloc_output_context2(&m_pEncodeFormatCtx, NULL, NULL, "output.m4a");
-#else 
+#else
         m_pEncoderFormat = av_guess_format(NULL, "output.m4a", NULL);
 #endif // avformat_alloc_output_context2
 

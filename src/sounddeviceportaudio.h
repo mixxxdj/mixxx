@@ -20,6 +20,8 @@
 
 #include <portaudio.h>
 
+#include <QString>
+
 #include "sounddevice.h"
 
 class SoundManager;
@@ -40,7 +42,7 @@ class SoundDevicePortAudio : public SoundDevice {
     int close();
     QString getError() const;
     int callbackProcess(unsigned long framesPerBuffer,
-                        float *output, short *in,
+                        float *output, float* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
     virtual unsigned int getDefaultSampleRate() const {
@@ -65,13 +67,13 @@ class SoundDevicePortAudio : public SoundDevice {
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
     ControlObject* m_pMasterUnderflowCount;
-    int m_undeflowUpdateCount;
+    int m_underflowUpdateCount;
 };
 
-int paV19Callback(const void *inputBuffer, void *outputBuffer,
-                        unsigned long framesPerBuffer,
-                        const PaStreamCallbackTimeInfo* timeInfo,
-                        PaStreamCallbackFlags statusFlags,
-                        void *soundDevice);
+int paV19Callback(const void* inputBuffer, void* outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo* timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void* soundDevice);
 
 #endif

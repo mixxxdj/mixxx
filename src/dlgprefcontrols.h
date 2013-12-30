@@ -24,6 +24,7 @@
 #include "configobject.h"
 #include "preferences/dlgpreferencepage.h"
 
+class ControlObjectSlave;
 class ControlObjectThread;
 class ControlPotmeter;
 class SkinLoader;
@@ -46,8 +47,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
   public slots:
     void slotUpdate();
     void slotApply();
-    void slotShow();
-    void slotHide();
 
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
@@ -83,9 +82,10 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
     void slotSetNormalizeOverview( bool normalize);
+    void slotWaveformMeasured(float frameRate, int rtErrorCnt);
 
-  protected:
-    void timerEvent(QTimerEvent *);
+    void slotNumDecksChanged(double);
+    void slotNumSamplersChanged(double);
 
   private:
     void initWaveformControl();
@@ -93,8 +93,9 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool checkSkinResolution(QString skin);
 
     ConfigObject<ConfigValue>* m_pConfig;
-    int m_timer;
     ControlObject* m_pControlPositionDisplay;
+    ControlObjectSlave* m_pNumDecks;
+    ControlObjectSlave* m_pNumSamplers;
     QList<ControlObjectThread*> m_cueControls;
     QList<ControlObjectThread*> m_rateControls;
     QList<ControlObjectThread*> m_rateDirControls;
@@ -102,6 +103,9 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     MixxxApp *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
+
+    int m_iNumConfiguredDecks;
+    int m_iNumConfiguredSamplers;
 };
 
 #endif

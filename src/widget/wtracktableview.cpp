@@ -1,9 +1,8 @@
-#include <QItemDelegate>
-#include <QtCore>
-#include <QtGui>
-#include <QtXml>
 #include <QModelIndex>
 #include <QInputDialog>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QDrag>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"

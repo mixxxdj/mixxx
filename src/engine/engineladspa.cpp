@@ -7,9 +7,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QtCore>
-
-#include "engineladspa.h"
+#include "engine/engineladspa.h"
 
 #include "controlpotmeter.h"
 #include "ladspa/ladspacontrol.h"
@@ -29,7 +27,7 @@ EngineLADSPA::~EngineLADSPA()
 {
 }
 
-void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
+void EngineLADSPA::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize)
 {
     if (iBufferSize != m_bufferSize)
     {
@@ -106,7 +104,6 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         }
     }
 
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
     SampleUtil::interleaveBuffer(pOutput,
                                  m_pBufferLeft[0], m_pBufferRight[0],
                                  m_monoBufferSize);
@@ -117,9 +114,9 @@ void EngineLADSPA::addInstance(LADSPAInstance * instance)
     m_Instances.append(instance);
 }
 
-EngineLADSPAControlConnection * EngineLADSPA::addControl(ControlObject * potmeter, LADSPAControl * control)
+EngineLADSPAControlConnection* EngineLADSPA::addControl(ControlObject* potmeter, LADSPAControl* control)
 {
-    EngineLADSPAControlConnection * connection = new EngineLADSPAControlConnection;
+    EngineLADSPAControlConnection* connection = new EngineLADSPAControlConnection;
     connection->potmeter = potmeter;
     connection->control = control;
     connection->remove = 0;
@@ -127,7 +124,7 @@ EngineLADSPAControlConnection * EngineLADSPA::addControl(ControlObject * potmete
     return connection;
 }
 
-EngineLADSPA * EngineLADSPA::getEngine()
+EngineLADSPA* EngineLADSPA::getEngine()
 {
     return m_pEngine;
 }
