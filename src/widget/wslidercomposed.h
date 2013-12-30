@@ -56,8 +56,6 @@ private:
     bool m_bRightButtonPressed;
     /** Internal storage of slider position in pixels */
     int m_iPos, m_iStartHandlePos, m_iStartMousePos;
-    /** Length of slider in pixels */
-    int m_iSliderLength;
     /** Length of handle in pixels */
     int m_iHandleLength;
     /** True if it's a horizontal slider */
