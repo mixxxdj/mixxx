@@ -173,7 +173,6 @@ unsigned int PlayerManager::numPreviewDecks() {
 
 void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
-
     int num = (int)v;
     if (num < m_decks.size()) {
         // The request was invalid -- reset the value.
