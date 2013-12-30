@@ -94,8 +94,6 @@ void BansheeFeature::activate() {
 
         m_isActivated =  true;
 
-        qDebug() << "BansheeFeature::importLibrary() ";
-
         TreeItem* playlist_root = new TreeItem();
 
         QList<struct BansheeDbConnection::Playlist> list = m_connection.getPlaylists();

@@ -15,7 +15,7 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 
-const bool sDebug = true; //false;
+const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
