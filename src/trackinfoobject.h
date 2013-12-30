@@ -125,11 +125,11 @@ public:
     // Returns the user comment 
     QString getComment() const;
     // Sets the user commnet
-    void setComment(QString);
+    void setComment(const QString&);
     // Returns the file type
     QString getType() const;
     // Sets the type of the string
-    void setType(QString);
+    void setType(const QString&);
     // Returns the bitrate
     int getBitrate() const;
     // Returns the bitrate as a string
@@ -148,45 +148,45 @@ public:
     QString getInfo() const;
 
     QDateTime getDateAdded() const;
-    void setDateAdded(QDateTime dateAdded);
+    void setDateAdded(const QDateTime& dateAdded);
 
     // Getter/Setter methods for metadata 
     // Return title 
     QString getTitle() const;
     // Set title
-    void setTitle(QString);
+    void setTitle(const QString&);
     // Return artist
     QString getArtist() const;
     // Set artist
-    void setArtist(QString);
-    // Return album
+    void setArtist(const QString&);
+    // Return album 
     QString getAlbum() const;
     // Set album
-    void setAlbum(QString);
+    void setAlbum(const QString&);
     // Return album artist
     QString getAlbumArtist() const;
     // Set album artist
-    void setAlbumArtist(QString);
+    void setAlbumArtist(const QString&);
     // Return Year
     QString getYear() const;
     // Set year
-    void setYear(QString);
-    // Return genre
+    void setYear(const QString&);
+    // Return genre 
     QString getGenre() const;
     // Set genre
-    void setGenre(QString);
+    void setGenre(const QString&);
     // Return composer
     QString getComposer() const;
     // Set composer
-    void setComposer(QString);
+    void setComposer(const QString&);
     // Return grouping
     QString getGrouping() const;
     // Set grouping
-    void setGrouping(QString);
+    void setGrouping(const QString&);
     // Return Track Number
     QString getTrackNumber() const;
     // Set Track Number
-    void setTrackNumber(QString);
+    void setTrackNumber(const QString&);
     // Return number of times the track has been played
     int getTimesPlayed() const;
     // Set number of times the track has been played
@@ -210,7 +210,7 @@ public:
     // Get URL for track
     QString getURL();
     // Set URL for track
-    void setURL(QString url);
+    void setURL(const QString& url);
 
     Waveform* getWaveform();
     void waveformNew();
@@ -243,7 +243,7 @@ public:
     bool locationChanged();
 
     // Set the track's full file path
-    void setLocation(QString location);
+    void setLocation(const QString& location);
 
     // Get the track's Beats list
     BeatsPointer getBeats() const;
