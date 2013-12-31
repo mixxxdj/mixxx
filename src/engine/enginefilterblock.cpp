@@ -25,6 +25,7 @@
 #include "engine/enginefilter.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
+#include "util/timer.h"
 
 ControlPotmeter* EngineFilterBlock::s_loEqFreq = NULL;
 ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;
@@ -153,6 +154,7 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
 }
 
 void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+    ScopedTimer t("EngineFilterBlock::process");
     float fLow=0.f, fMid=0.f, fHigh=0.f;
     if (filterKillLow->get()==0.)
         fLow = filterpotLow->get(); //*0.7;
