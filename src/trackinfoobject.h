@@ -52,8 +52,8 @@ class TrackInfoObject : public QObject
 {
     Q_OBJECT
 public:
-    // Initialize a new track with the filename.
-    TrackInfoObject(const QString sLocation="", bool parseHeader=true);
+    // Initialize a new track with the filename. 
+    TrackInfoObject(const QString& file="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
     TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
     // Creates a new track given information from the xml file.
@@ -308,6 +308,9 @@ public:
 
     // Special flag for telling if the track location was changed.
     bool m_bLocationChanged;
+
+    // The file
+    QFileInfo m_fileInfo;
 
     // The filename
     QString m_sFilename;

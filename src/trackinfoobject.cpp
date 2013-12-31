@@ -36,18 +36,19 @@
 #include "mixxxutils.cpp"
 
 
-TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
-        : m_qMutex(QMutex::Recursive),
+TrackInfoObject::TrackInfoObject(const QString& file, bool parseHeader)
+        : m_fileInfo(file),
+          m_qMutex(QMutex::Recursive),
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    QFileInfo fileInfo(sLocation);
-    populateLocation(fileInfo);
+    populateLocation(m_fileInfo);
     initialize(parseHeader);
 }
 
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader)
-        : m_qMutex(QMutex::Recursive),
+        : m_fileInfo(fileInfo),
+          m_qMutex(QMutex::Recursive),
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
@@ -62,7 +63,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
           m_analyserProgress(-1) {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
-    QString create_date;
+    m_fileInfo = QFileInfo(m_sLocation);
 
     // We don't call initialize() here because it would end up calling parse()
     // on the file. Plus those initializations weren't done before, so it might
@@ -71,7 +72,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     // Check the status of the file on disk.
     QFileInfo fileInfo(m_sLocation);
-    populateLocation(fileInfo);
+    populateLocation(m_fileInfo);
 
     m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
     m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
@@ -85,7 +86,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
     m_bHeaderParsed = false;
-    create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
+    QString create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
     if (create_date == "")
         m_dCreateDate = fileInfo.created();
     else
@@ -176,15 +177,15 @@ int TrackInfoObject::parse() {
 
 void TrackInfoObject::parseFilename() {
     QMutexLocker lock(&m_qMutex);
-
+    QString filename = m_fileInfo.fileName();
     // If the file name has the following form: "Artist - Title.type", extract
     // Artist, Title and type fields
-    if (m_sFilename.count('-') == 1) {
-        m_sArtist = m_sFilename.section('-',0,0).trimmed(); // Get the first part
-        m_sTitle = m_sFilename.section('-',1,1); // Get the second part
+    if (filename.count('-') == 1) {
+        m_sArtist = filename.section('-',0,0).trimmed(); // Get the first part
+        m_sTitle = filename.section('-',1,1); // Get the second part
         m_sTitle = m_sTitle.section('.',0,-2).trimmed(); // Remove the ending
     } else {
-        m_sTitle = m_sFilename.section('.',0,-2).trimmed(); // Remove the ending;
+        m_sTitle = filename.section('.',0,-2).trimmed(); // Remove the ending;
     }
 
     // Replace underscores with spaces for Artist and Title
@@ -195,7 +196,7 @@ void TrackInfoObject::parseFilename() {
     m_sComment.clear();
 
     // Find the type
-    m_sType = m_sFilename.section(".",-1).toLower().trimmed();
+    m_sType = filename.section(".",-1).toLower().trimmed();
     setDirty(true);
 }
 
@@ -209,13 +210,9 @@ QString TrackInfoObject::getDurationStr() const {
 
 void TrackInfoObject::setLocation(const QString& location) {
     QMutexLocker lock(&m_qMutex);
-    QFileInfo fileInfo(location);
-    // TODO(XXX) Can the file name change without m_sLocation changing?? The
-    // extra test seems pointless.
-    QString fileName = fileInfo.fileName();
-    bool dirty = m_sLocation != location || fileName != m_sFilename;
-    populateLocation(fileInfo);
-    if (dirty) {
+    QFileInfo newFileInfo(location);
+    if (newFileInfo != m_fileInfo) {
+        m_fileInfo = newFileInfo; 
         m_bLocationChanged = true;
         setDirty(true);
     }
@@ -223,17 +220,17 @@ void TrackInfoObject::setLocation(const QString& location) {
 
 QString TrackInfoObject::getLocation() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sLocation;
+    return m_fileInfo.absoluteFilePath();
 }
 
 QString TrackInfoObject::getDirectory() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sDirectory;
+    return m_fileInfo.absolutePath();
 }
 
-QString TrackInfoObject::getFilename()  const {
+QString TrackInfoObject::getFilename() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sFilename;
+    return m_fileInfo.fileName();
 }
 
 QDateTime TrackInfoObject::getCreateDate() const {
@@ -629,7 +626,7 @@ int TrackInfoObject::getChannels() const {
 
 int TrackInfoObject::getLength() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iLength;
+    return m_fileInfo.size();
 }
 
 int TrackInfoObject::getBitrate() const {
@@ -804,7 +801,7 @@ void TrackInfoObject::setDirty(bool bDirty) {
         emit(changed(this));
     }
 
-    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(QString::number(m_iId), m_sLocation, m_bDirty ? "dirty" : "clean");
+    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(QString::number(m_iId), m_fileInfo.absoluteFilePath(), m_bDirty ? "dirty" : "clean");
 }
 
 bool TrackInfoObject::isDirty() {
