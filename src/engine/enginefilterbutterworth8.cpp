@@ -24,11 +24,6 @@ inline double _processLowpass(double *coef, double *buf, register double val);
 inline double _processBandpass(double *coef, double *buf, register double val);
 double inline _processHighpass(double *coef, double *buf, register double val);
 
-inline void zap_buffer_denormals(double *buf, int bufSize) {
-    for(int i=0; i < bufSize; i++)
-        buf[i] = zap_denormal(buf[i]);
-}
-
 EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate, int bufSize)
         : m_sampleRate(sampleRate),
           m_bufSize(bufSize) {
@@ -165,9 +160,6 @@ void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
         pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
     }
-
-    zap_buffer_denormals(m_buf1, m_bufSize);
-    zap_buffer_denormals(m_buf2, m_bufSize);
 }
 
 
@@ -196,9 +188,6 @@ void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
         if(pOutput[i+1] != pOutput[i+1])    //Check for NaN
             pOutput[i+1] = 0;
     }
-
-    zap_buffer_denormals(m_buf1, m_bufSize);
-    zap_buffer_denormals(m_buf2, m_bufSize);
 }
 
 
@@ -221,7 +210,4 @@ void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
         pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
     }
-
-    zap_buffer_denormals(m_buf1, m_bufSize);
-    zap_buffer_denormals(m_buf2, m_bufSize);
 }
