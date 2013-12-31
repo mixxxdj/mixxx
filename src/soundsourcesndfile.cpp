@@ -55,13 +55,15 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions()
     return list;
 }
 
-int SoundSourceSndFile::open() {
+int SoundSourceSndFile::open() 
+{
 #ifdef __WINDOWS__
-    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
+    LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16(); //Pointer valid until string changed
+    fh = sf_wchar_open( lpcwFilename, SFM_READ, info );
 #else
     QByteArray qbaFilename = m_qFilename.toUtf8();
-#endif
     fh = sf_open( qbaFilename.data(), SFM_READ, info );
+#endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
         qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
