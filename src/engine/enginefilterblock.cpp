@@ -40,13 +40,6 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
     m_iOldSampleRate = 0;
 
-#ifdef __LOFI__
-    low = new EngineFilterIIR(bessel_lowpass4_DJM800,4);
-    band = new EngineFilterIIR(bessel_bandpass8_DJM800,8);
-    high = new EngineFilterIIR(bessel_highpass4_DJM800,4);
-    qDebug() << "Using LoFi EQs";
-#else
-
     //Setup Filter Controls
 
     if (s_loEqFreq == NULL) {
@@ -60,7 +53,6 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     //Load Defaults
     setFilters(true);
 
-#endif
     /*
        lowrbj = new EngineFilterRBJ();
        lowrbj->calc_filter_coeffs(6, 100., 44100., 0.3, 0., true);
@@ -163,9 +155,7 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
     if (filterKillHigh->get()==0.)
         fHigh = filterpotHigh->get(); //*1.2;
 
-#ifndef __LOFI__
     setFilters();
-#endif
 
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);

@@ -398,25 +398,6 @@ class MSVCDebug(Feature):
             build.env.Append(CCFLAGS='/MD')
 
 
-class HifiEq(Feature):
-    def description(self):
-        return "High quality EQs"
-
-    def enabled(self, build):
-        build.flags['hifieq'] = util.get_flags(build.env, 'hifieq', 1)
-        if int(build.flags['hifieq']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            # Enables old crappy EQs
-            build.env.Append(CPPDEFINES=['__LOFI__', '__NO_INTTYPES__'])
-
-
 class VinylControl(Feature):
     def description(self):
         return "Vinyl Control"
