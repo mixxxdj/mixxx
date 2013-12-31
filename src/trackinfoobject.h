@@ -286,9 +286,6 @@ public:
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);
 
-    // Initialize all the location variables.
-    void populateLocation(const QFileInfo& fileInfo);
-
     // Method for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
     void parseFilename();
@@ -311,15 +308,6 @@ public:
 
     // The file
     QFileInfo m_fileInfo;
-
-    // The filename
-    QString m_sFilename;
-    // The full path to the file, including the filename.
-    QString m_sLocation;
-    // The full path to the directory containing the file.
-    QString m_sDirectory;
-    // Length of track in bytes
-    int m_iLength;
 
     // Metadata 
     // Album

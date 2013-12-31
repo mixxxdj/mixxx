@@ -42,7 +42,6 @@ TrackInfoObject::TrackInfoObject(const QString& file, bool parseHeader)
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    populateLocation(m_fileInfo);
     initialize(parseHeader);
 }
 
@@ -52,7 +51,6 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader)
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    populateLocation(fileInfo);
     initialize(parseHeader);
 }
 
@@ -61,18 +59,14 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
-    m_fileInfo = QFileInfo(m_sLocation);
+    QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
+    QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;    
+    m_fileInfo = QFileInfo(location);
 
     // We don't call initialize() here because it would end up calling parse()
     // on the file. Plus those initializations weren't done before, so it might
     // cause subtle bugs. This constructor is only used for legacy importing so
     // I'm not going to do it. rryan 6/2010
-
-    // Check the status of the file on disk.
-    QFileInfo fileInfo(m_sLocation);
-    populateLocation(m_fileInfo);
 
     m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
     m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
@@ -82,13 +76,12 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iSampleRate = XmlParse::selectNodeQString(nodeHeader, "SampleRate").toInt();
     m_iChannels = XmlParse::selectNodeQString(nodeHeader, "Channels").toInt();
     m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
-    m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
     m_bHeaderParsed = false;
     QString create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
     if (create_date == "")
-        m_dCreateDate = fileInfo.created();
+        m_dCreateDate = m_fileInfo.created();
     else
         m_dCreateDate = QDateTime::fromString(create_date);
 
@@ -106,13 +99,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_bDirty = false;
     m_bLocationChanged = false;
-}
-
-void TrackInfoObject::populateLocation(const QFileInfo& fileInfo) {
-    m_sFilename = fileInfo.fileName();
-    m_sLocation = fileInfo.absoluteFilePath();
-    m_sDirectory = fileInfo.absolutePath();
-    m_iLength = fileInfo.size();
 }
 
 void TrackInfoObject::initialize(bool parseHeader) {
@@ -244,7 +230,7 @@ bool TrackInfoObject::exists() const {
     // return here a fresh calculated value to be sure
     // the file is not deleted or gone with an USB-Stick
     // because it will probably stop the Auto-DJ
-    return QFile::exists(m_sLocation);
+    return QFile::exists(m_fileInfo.absoluteFilePath());
 }
 
 float TrackInfoObject::getReplayGain() const {
