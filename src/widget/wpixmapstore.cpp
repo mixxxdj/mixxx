@@ -80,6 +80,10 @@ int Paintable::height() const {
 }
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
+    if (!targetRect.isValid()) {
+        return;
+    }
+
     if (!m_pPixmap.isNull() && !m_pPixmap->isNull()) {
         pPainter->drawPixmap(targetRect, *m_pPixmap, m_pPixmap->rect());
     } else if (!m_pSvg.isNull() && m_pSvg->isValid()) {
@@ -89,13 +93,19 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
 
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
                      const QRectF& sourceRect) {
+    if (!targetRect.isValid() || !sourceRect.isValid()) {
+        return;
+    }
+
     if (m_pPixmap && !m_pPixmap->isNull()) {
         pPainter->drawPixmap(targetRect, *m_pPixmap, sourceRect);
     } else if (m_pSvg && m_pSvg->isValid()) {
-        if (sourceRect.isValid()) {
-            qWarning() << "Paintable::draw -- sourceRect is not supported for SVGs.";
-        }
-        m_pSvg->render(pPainter, targetRect);
+        resizeSvgPixmap(targetRect, sourceRect);
+
+        QRectF newSource(m_pPixmapSvg->width() * sourceRect.x() / sourceRect.width(),
+                         m_pPixmapSvg->height() * sourceRect.y() / sourceRect.height(),
+                         targetRect.width(), targetRect.height());
+        pPainter->drawPixmap(targetRect, *m_pPixmapSvg, newSource);
     }
 }
 
@@ -103,20 +113,32 @@ void Paintable::draw(int x, int y, QPainter* pPainter) {
     if (m_pPixmap && !m_pPixmap->isNull()) {
         pPainter->drawPixmap(x, y, *m_pPixmap);
     } else if (m_pSvg && m_pSvg->isValid()) {
-        QRectF targetRect(QPointF(x, y), size());
+        QRectF targetRect(QPointF(x, y), m_pSvg->defaultSize());
         m_pSvg->render(pPainter, targetRect);
     }
 }
 
 void Paintable::draw(const QPointF& point, QPainter* pPainter, const QRectF& sourceRect) {
-    if (m_pPixmap && !m_pPixmap->isNull()) {
-        pPainter->drawPixmap(point, *m_pPixmap, sourceRect);
-    } else if (m_pSvg && m_pSvg->isValid()) {
-        if (sourceRect.isValid()) {
-            qWarning() << "Paintable::draw -- sourceRect is not supported for SVGs.";
-        }
-        QRectF targetRect(point, size());
-        m_pSvg->render(pPainter, targetRect);
+    return draw(QRectF(point, sourceRect.size()), pPainter, sourceRect);
+}
+
+void Paintable::resizeSvgPixmap(const QRectF& targetRect,
+                                const QRectF& sourceRect) {
+    if (m_pSvg.isNull() || !m_pSvg->isValid()) {
+        return;
+    }
+
+    double sx = targetRect.width() / sourceRect.width();
+    double sy = targetRect.height() / sourceRect.height();
+
+    QSize originalSize = m_pSvg->defaultSize();
+    QSize projectedSize(originalSize.width() * sx,
+                        originalSize.height() * sy);
+
+    if (m_pPixmapSvg.isNull() || m_pPixmapSvg->size() != projectedSize) {
+        m_pPixmapSvg.reset(new QPixmap(projectedSize));
+        QPainter pixmapPainter(m_pPixmapSvg.data());
+        m_pSvg->render(&pixmapPainter);
     }
 }
 

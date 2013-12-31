@@ -50,8 +50,11 @@ class Paintable {
     bool isNull() const;
 
   private:
+    void resizeSvgPixmap(const QRectF& targetRect, const QRectF& sourceRect);
+
     QScopedPointer<QPixmap> m_pPixmap;
     QScopedPointer<QSvgRenderer> m_pSvg;
+    QScopedPointer<QPixmap> m_pPixmapSvg;
 };
 
 typedef QSharedPointer<Paintable> PaintablePointer;
