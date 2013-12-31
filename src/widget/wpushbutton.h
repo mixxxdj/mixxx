@@ -78,11 +78,11 @@ class WPushButton : public WWidget {
     // Array of associated pixmaps
     int m_iNoStates;
     QVector<QString> m_text;
-    QVector<QPixmapPointer> m_pressedPixmaps;
-    QVector<QPixmapPointer> m_unpressedPixmaps;
+    QVector<PaintablePointer> m_pressedPixmaps;
+    QVector<PaintablePointer> m_unpressedPixmaps;
 
     // Associated background pixmap
-    QPixmapPointer m_pPixmapBack;
+    PaintablePointer m_pPixmapBack;
 
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;

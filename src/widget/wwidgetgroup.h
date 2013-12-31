@@ -46,8 +46,7 @@ class WWidgetGroup : public QGroupBox {
 
   private:
     // Associated background pixmap
-    QPixmapPointer m_pPixmapBack;
-    QPixmap m_pixmapBackScaled;
+    PaintablePointer m_pPixmapBack;
 };
 
 #endif // WWIDGETGROUP_H

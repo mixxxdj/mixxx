@@ -63,7 +63,7 @@ void WSliderComposed::setup(QDomNode node) {
 void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle) {
     m_bHorizontal = bHorizontal;
     unsetPixmaps();
-    m_pSlider = WPixmapStore::getPixmap(filenameSlider);
+    m_pSlider = WPixmapStore::getPaintable(filenameSlider);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
     } else {
@@ -71,7 +71,7 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
         setFixedSize(m_pSlider->size());
     }
 
-    m_pHandle = WPixmapStore::getPixmap(filenameHandle);
+    m_pHandle = WPixmapStore::getPaintable(filenameHandle);
     if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
     } else {
@@ -182,13 +182,13 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (!m_pSlider.isNull() && !m_pSlider->isNull()) {
-        p.drawPixmap(0, 0, *m_pSlider);
+        m_pSlider->draw(0, 0, &p);
     }
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
         int posx = m_bHorizontal ? m_iPos : 0;
         int posy = m_bHorizontal ? 0 : m_iPos;
-        p.drawPixmap(posx, posy, *m_pHandle);
+        m_pHandle->draw(posx, posy, &p);
     }
 }
 

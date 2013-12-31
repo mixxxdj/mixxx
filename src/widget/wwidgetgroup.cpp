@@ -88,7 +88,7 @@ void WWidgetGroup::setup(QDomNode node) {
 
 void WWidgetGroup::setPixmapBackground(const QString &filename) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPixmap(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename);
     if (!m_pPixmapBack) {
         qDebug() << "WWidgetGroup: Error loading background pixmap:" << filename;
     }
@@ -105,16 +105,12 @@ void WWidgetGroup::paintEvent(QPaintEvent* pe) {
     QGroupBox::paintEvent(pe);
 
     if (m_pPixmapBack) {
-        if (m_pixmapBackScaled.isNull()) {
-            m_pixmapBackScaled = m_pPixmapBack->scaled(size());
-        }
         QStylePainter p(this);
-        p.drawPixmap(0, 0, m_pixmapBackScaled);
+        m_pPixmapBack->draw(rect(), &p);
     }
 }
 
 void WWidgetGroup::resizeEvent(QResizeEvent* re) {
-    m_pixmapBackScaled = QPixmap();
     // Paint things styled by style sheet
     QGroupBox::resizeEvent(re);
 }

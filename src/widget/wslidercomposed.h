@@ -65,9 +65,9 @@ private:
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Pointer to pixmap of the slider */
-    QPixmapPointer m_pSlider;
+    PaintablePointer m_pSlider;
     /** Pointer to pixmap of the handle */
-    QPixmapPointer m_pHandle;
+    PaintablePointer m_pHandle;
 };
 
 #endif

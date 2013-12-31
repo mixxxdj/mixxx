@@ -80,14 +80,14 @@ void WVuMeter::resetPositions() {
 
 void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal)
 {
-    m_pPixmapBack = WPixmapStore::getPixmap(backFilename);
+    m_pPixmapBack = WPixmapStore::getPaintable(backFilename);
     if (!m_pPixmapBack || m_pPixmapBack->size() == QSize(0,0)) {
         qDebug() << "WVuMeter: Error loading back pixmap" << backFilename;
     } else {
         setFixedSize(m_pPixmapBack->size());
     }
 
-    m_pPixmapVu = WPixmapStore::getPixmap(vuFilename);
+    m_pPixmapVu = WPixmapStore::getPaintable(vuFilename);
     if (!m_pPixmapVu || m_pPixmapVu->size() == QSize(0,0)) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
     } else {
@@ -163,28 +163,34 @@ void WVuMeter::paintEvent(QPaintEvent *)
 
         QPainter painter(this);
         // Draw back
-        painter.drawPixmap(0, 0, *m_pPixmapBack);
+        m_pPixmapBack->draw(0, 0, &painter);
 
         // Draw (part of) vu
-        if (m_bHorizontal)
-        {
-            //This is a hack to fix something weird with horizontal VU meters:
-            if(idx == 0)
+        if (m_bHorizontal) {
+            // This is a hack to fix something weird with horizontal VU meters:
+            if (idx == 0)
                 idx = 1;
-            painter.drawPixmap(0, 0, *m_pPixmapVu, 0, 0, idx, m_pPixmapVu->height());
-            if(m_iPeakHoldSize > 0 && m_iPeakPos > 0)
-            {
-                painter.drawPixmap(m_iPeakPos-m_iPeakHoldSize, 0, *m_pPixmapVu,
-                    m_iPeakPos-m_iPeakHoldSize, 0, m_iPeakHoldSize, m_pPixmapVu->height());
+
+            QPointF targetPoint(0, 0);
+            QRectF sourceRect(0, 0, idx, m_pPixmapVu->height());
+            m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
+
+            if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
+                targetPoint = QPointF(m_iPeakPos - m_iPeakHoldSize, 0);
+                sourceRect = QRectF(m_iPeakPos - m_iPeakHoldSize, 0,
+                                    m_iPeakHoldSize, m_pPixmapVu->height());
+                m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
             }
-        }
-        else
-        {
-            painter.drawPixmap(0, m_iNoPos-idx, *m_pPixmapVu, 0, m_iNoPos-idx, m_pPixmapVu->width(), idx);
-            if(m_iPeakHoldSize > 0 && m_iPeakPos > 0)
-            {
-                painter.drawPixmap(0, m_pPixmapVu->height()-m_iPeakPos, *m_pPixmapVu,
-                    0, m_pPixmapVu->height()-m_iPeakPos, m_pPixmapVu->width(), m_iPeakHoldSize);
+        } else {
+            QPointF targetPoint(0, m_iNoPos - idx);
+            QRectF sourceRect(0, m_iNoPos - idx, m_pPixmapVu->width(), idx);
+            m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
+
+            if (m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
+                targetPoint = QPointF(0, m_pPixmapVu->height() - m_iPeakPos);
+                sourceRect = QRectF(0, m_pPixmapVu->height() - m_iPeakPos,
+                                    m_pPixmapVu->width(), m_iPeakHoldSize);
+                m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
             }
         }
     }

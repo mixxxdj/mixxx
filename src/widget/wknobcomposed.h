@@ -9,6 +9,7 @@
 #include "widget/wwidget.h"
 #include "widget/knobeventhandler.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wimagestore.h"
 
 class WKnobComposed : public WWidget {
     Q_OBJECT
@@ -30,8 +31,8 @@ class WKnobComposed : public WWidget {
     void setPixmapBackground(const QString& filename);
     void setPixmapKnob(const QString& filename);
 
-    QPixmapPointer m_pKnob;
-    QPixmapPointer m_pPixmapBack;
+    PaintablePointer m_pKnob;
+    PaintablePointer m_pPixmapBack;
     KnobEventHandler<WKnobComposed> m_handler;
     double m_dMinAngle;
     double m_dMaxAngle;

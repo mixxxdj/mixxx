@@ -43,7 +43,7 @@ class WDisplay : public WWidget {
 
   private:
 
-    void setPixmap(QVector<QPixmapPointer>* pPixmaps, int iPos,
+    void setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
                    const QString& filename);
 
     void setPixmapBackground(const QString& filename);
@@ -56,16 +56,16 @@ class WDisplay : public WWidget {
     void resetPositions();
 
     // Associated background pixmap
-    QPixmapPointer m_pPixmapBack;
+    PaintablePointer m_pPixmapBack;
 
     // List of associated pixmaps.
-    QVector<QPixmapPointer> m_pixmaps;
+    QVector<PaintablePointer> m_pixmaps;
 
     // Whether disabled pixmaps are loaded.
     bool m_bDisabledLoaded;
 
     // List of disabled pixmaps.
-    QVector<QPixmapPointer> m_disabledPixmaps;
+    QVector<PaintablePointer> m_disabledPixmaps;
 };
 
 #endif

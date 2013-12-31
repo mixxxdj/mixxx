@@ -40,7 +40,7 @@ void WKnobComposed::clear() {
 }
 
 void WKnobComposed::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPixmap(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << filename;
@@ -48,7 +48,7 @@ void WKnobComposed::setPixmapBackground(const QString& filename) {
 }
 
 void WKnobComposed::setPixmapKnob(const QString& filename) {
-    m_pKnob = WPixmapStore::getPixmap(filename);
+    m_pKnob = WPixmapStore::getPaintable(filename);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading knob pixmap:" << filename;
@@ -63,7 +63,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pPixmapBack) {
-        p.drawPixmap(0, 0, *m_pPixmapBack);
+        m_pPixmapBack->draw(0, 0, &p);
     }
 
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
@@ -75,8 +75,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         double angle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * value;
         p.rotate(angle);
 
-        p.drawPixmap(-m_pKnob->width() / 2.0, -m_pKnob->height() / 2.0,
-                     *m_pKnob);
+        m_pKnob->draw(-m_pKnob->width() / 2.0, -m_pKnob->height() / 2.0, &p);
     }
 }
 

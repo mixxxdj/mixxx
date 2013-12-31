@@ -46,7 +46,6 @@ void WKnob::mouseReleaseEvent(QMouseEvent* e) {
     m_handler.mouseReleaseEvent(this, e);
 }
 
-
 void WKnob::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
 }
