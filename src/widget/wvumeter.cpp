@@ -17,8 +17,9 @@
 
 #include "widget/wvumeter.h"
 
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QPaintEvent>
-#include <QPainter>
 #include <QtDebug>
 #include <QPixmap>
 
@@ -30,46 +31,45 @@
 #define DEFAULT_HOLDTIME 400
 #define DEFAULT_HOLDSIZE 5
 
-WVuMeter::WVuMeter(QWidget * parent) :
+WVuMeter::WVuMeter(QWidget* parent) :
         WWidget(parent),
         m_iNoPos(0),
-        m_pPixmapBack(NULL),
-        m_pPixmapVu(NULL),
+        m_bHorizontal(false),
         m_iPeakHoldSize(0),
         m_iPeakPos(0),
         m_iPeakHoldCountdown(0) {
 }
 
-WVuMeter::~WVuMeter()
-{
+WVuMeter::~WVuMeter() {
     resetPositions();
 }
 
-void WVuMeter::setup(QDomNode node)
-{
+void WVuMeter::setup(QDomNode node) {
     // Set pixmaps
-    bool bHorizontal = false;
-    if (!selectNode(node, "Horizontal").isNull() &&
-        selectNodeQString(node, "Horizontal")=="true")
-        bHorizontal = true;
+    bool bHorizontal = !selectNode(node, "Horizontal").isNull() &&
+            selectNodeQString(node, "Horizontal")=="true";
 
-    setPixmaps(getPath(selectNodeQString(node, "PathBack")),
-               getPath(selectNodeQString(node, "PathVu")), bHorizontal);
+    // Set background pixmap if available
+    if (!selectNode(node, "PathBack").isNull()) {
+        setPixmapBackground(getPath(selectNodeQString(node, "PathBack")));
+    }
+
+    setPixmaps(getPath(selectNodeQString(node, "PathVu")), bHorizontal);
 
     m_iPeakHoldSize = selectNodeInt(node, "PeakHoldSize");
-    if(m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
+    if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
         m_iPeakHoldSize = DEFAULT_HOLDSIZE;
 
     m_iPeakFallStep = selectNodeInt(node, "PeakFallStep");
-    if(m_iPeakFallStep < 1 || m_iPeakFallStep > 1000)
+    if (m_iPeakFallStep < 1 || m_iPeakFallStep > 1000)
         m_iPeakFallStep = DEFAULT_FALLSTEP;
 
     m_iPeakHoldTime = selectNodeInt(node, "PeakHoldTime");
-    if(m_iPeakHoldTime < 1 || m_iPeakHoldTime > 3000)
+    if (m_iPeakHoldTime < 1 || m_iPeakHoldTime > 3000)
         m_iPeakHoldTime = DEFAULT_HOLDTIME;
 
     m_iPeakFallTime = selectNodeInt(node, "PeakFallTime");
-    if(m_iPeakFallTime < 1 || m_iPeakFallTime > 1000)
+    if (m_iPeakFallTime < 1 || m_iPeakFallTime > 1000)
         m_iPeakFallTime = DEFAULT_FALLTIME;
 }
 
@@ -78,17 +78,20 @@ void WVuMeter::resetPositions() {
     m_pPixmapVu.clear();
 }
 
-void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal)
-{
-    m_pPixmapBack = WPixmapStore::getPaintable(backFilename);
-    if (!m_pPixmapBack || m_pPixmapBack->size() == QSize(0,0)) {
-        qDebug() << "WVuMeter: Error loading back pixmap" << backFilename;
+void WVuMeter::setPixmapBackground(const QString& filename) {
+    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+        qDebug() << metaObject()->className()
+                 << "Error loading background pixmap:" << filename;
     } else {
         setFixedSize(m_pPixmapBack->size());
     }
+}
 
+void WVuMeter::setPixmaps(const QString &vuFilename,
+                          bool bHorizontal) {
     m_pPixmapVu = WPixmapStore::getPaintable(vuFilename);
-    if (!m_pPixmapVu || m_pPixmapVu->size() == QSize(0,0)) {
+    if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
     } else {
         m_bHorizontal = bHorizontal;
@@ -104,9 +107,9 @@ void WVuMeter::setValue(double fValue)
 {
     int idx = (int)(fValue * (float)(m_iNoPos)/128.);
     // Range check
-    if (idx>m_iNoPos)
+    if (idx > m_iNoPos)
         idx = m_iNoPos;
-    else if (idx<0)
+    else if (idx < 0)
         idx = 0;
 
     setPeak(idx);
@@ -121,17 +124,14 @@ void WVuMeter::setValue(double fValue)
     update();
 }
 
-void WVuMeter::setPeak(int pos)
-{
-    if(pos > m_iPeakPos)
-    {
+void WVuMeter::setPeak(int pos) {
+    if (pos > m_iPeakPos) {
         m_iPeakPos = pos;
         m_iPeakHoldCountdown = m_iPeakHoldTime;
     }
 }
 
-void WVuMeter::updateState(int msecsElapsed)
-{
+void WVuMeter::updateState(int msecsElapsed) {
     // If we're holding at a peak then don't update anything
     m_iPeakHoldCountdown -= msecsElapsed;
     if (m_iPeakHoldCountdown > 0) {
@@ -149,21 +149,28 @@ void WVuMeter::updateState(int msecsElapsed)
         m_iPeakPos = 0;
 }
 
-void WVuMeter::paintEvent(QPaintEvent *)
-{
+void WVuMeter::paintEvent(QPaintEvent *) {
     ScopedTimer t("WVuMeter::paintEvent");
-    if (m_pPixmapBack && m_pPixmapVu) {
+
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
+
+    if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
+        // Draw background.
+        m_pPixmapBack->draw(0, 0, &p);
+    }
+
+    if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
         int idx = (int)(m_value*(float)(m_iNoPos)/128.);
 
         // Range check
-        if (idx>m_iNoPos)
+        if (idx > m_iNoPos)
             idx = m_iNoPos;
-        else if (idx<0)
+        else if (idx < 0)
             idx = 0;
 
-        QPainter painter(this);
-        // Draw back
-        m_pPixmapBack->draw(0, 0, &painter);
 
         // Draw (part of) vu
         if (m_bHorizontal) {
@@ -173,24 +180,24 @@ void WVuMeter::paintEvent(QPaintEvent *)
 
             QPointF targetPoint(0, 0);
             QRectF sourceRect(0, 0, idx, m_pPixmapVu->height());
-            m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
+            m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
                 targetPoint = QPointF(m_iPeakPos - m_iPeakHoldSize, 0);
                 sourceRect = QRectF(m_iPeakPos - m_iPeakHoldSize, 0,
                                     m_iPeakHoldSize, m_pPixmapVu->height());
-                m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
+                m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         } else {
             QPointF targetPoint(0, m_iNoPos - idx);
             QRectF sourceRect(0, m_iNoPos - idx, m_pPixmapVu->width(), idx);
-            m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
+            m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if (m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
                 targetPoint = QPointF(0, m_pPixmapVu->height() - m_iPeakPos);
                 sourceRect = QRectF(0, m_pPixmapVu->height() - m_iPeakPos,
                                     m_pPixmapVu->width(), m_iPeakHoldSize);
-                m_pPixmapVu->draw(targetPoint, &painter, sourceRect);
+                m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         }
     }

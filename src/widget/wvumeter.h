@@ -35,7 +35,8 @@ class WVuMeter : public WWidget  {
     virtual ~WVuMeter();
 
     void setup(QDomNode node);
-    void setPixmaps(const QString &backFilename, const QString &vuFilename,
+    void setPixmapBackground(const QString& filename);
+    void setPixmaps(const QString &vuFilename,
                     bool bHorizontal=false);
     void setValue(double fValue);
 
