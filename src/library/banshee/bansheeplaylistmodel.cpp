@@ -310,7 +310,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     }
 
     // If this track was not in the Mixxx library it is now added and will be
-    // saved with the metadata from iTunes. If it was already in the library
+    // saved with the metadata from Banshee. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
     if (!track_already_in_library) {
         pTrack->setArtist(getFieldString(index, CLM_ARTIST));
