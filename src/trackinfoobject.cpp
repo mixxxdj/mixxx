@@ -152,11 +152,14 @@ void TrackInfoObject::parseFilename() {
     // If the file name has the following form: "Artist - Title.type", extract
     // Artist, Title and type fields
     if (filename.count('-') == 1) {
-        m_sArtist = filename.section('-',0,0).trimmed(); // Get the first part
-        m_sTitle = filename.section('-',1,1); // Get the second part
-        m_sTitle = m_sTitle.section('.',0,-2).trimmed(); // Remove the ending
+        m_sArtist = filename.section('-', 0, 0).trimmed(); // Get the first part
+        m_sTitle = filename.section('-', 1, 1); // Get the second part
+        m_sTitle = m_sTitle.section('.', 0, -2).trimmed(); // Remove the ending
+        if (m_sTitle.isEmpty()) {
+            m_sTitle = filename.section('.', 0, -2).trimmed();
+        }
     } else {
-        m_sTitle = filename.section('.',0,-2).trimmed(); // Remove the ending;
+        m_sTitle = filename.section('.', 0, -2).trimmed(); // Remove the ending
     }
 
     // Replace underscores with spaces for Artist and Title
