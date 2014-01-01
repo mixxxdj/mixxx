@@ -135,11 +135,13 @@ void TrackInfoObject::doSave() {
 }
 
 int TrackInfoObject::parse() {
-    // Add basic information derived from the filename:
-    parseFilename();
-
     // Parse the information stored in the sound file
     int result = SoundSourceProxy::ParseHeader(this);
+
+    if (!m_bHeaderParsed) {
+        // Add basic information derived from the filename:
+        parseFilename();
+    }
     return result; // 0 = OK if Mixxx can handle this file
 }
 
