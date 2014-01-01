@@ -272,4 +272,3 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     }
 }
 
-
