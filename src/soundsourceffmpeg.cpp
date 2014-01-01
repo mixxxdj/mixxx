@@ -420,7 +420,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
     m_iNextMixxxPCMPoint += size;
 
     if (m_strBuffer.size() > 0) {
-        readBuffer.write(m_strBuffer.data(), m_strBuffer.size());
+        readBuffer.write(m_strBuffer.constData(), m_strBuffer.size());
         m_strBuffer.clear();
         // So we buffered this amount of bytes from last time
         currentBufferPosSec = (((double)(readByteArray.size() / 2) /
