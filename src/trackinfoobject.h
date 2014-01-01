@@ -61,7 +61,6 @@ public:
     virtual ~TrackInfoObject();
 
     // Returns true if the object contains valid information 
-    bool isValid() const;
     int parse();
 
     // Returns the duration in seconds 
@@ -368,9 +367,6 @@ public:
 
     // Mutex protecting access to object 
     mutable QMutex m_qMutex;
-
-    // True if object contains valid information 
-    bool m_bIsValid;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;

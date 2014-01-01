@@ -87,11 +87,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
     m_bPlayed = false;
-
-    //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
-
-    m_bIsValid = true;
-
     m_bDirty = false;
     m_bLocationChanged = false;
 }
@@ -111,7 +106,6 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iTimesPlayed = 0;
     m_bPlayed = false;
     m_fReplayGain = 0.;
-    m_bIsValid = false;
     m_bHeaderParsed = false;
     m_iId = -1;
     m_iSampleRate = 0;
@@ -140,19 +134,13 @@ void TrackInfoObject::doSave() {
     emit(save(this));
 }
 
-bool TrackInfoObject::isValid() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_bIsValid;
-}
-
 int TrackInfoObject::parse() {
     // Add basic information derived from the filename:
     parseFilename();
 
     // Parse the information stored in the sound file
     int result = SoundSourceProxy::ParseHeader(this);
-    m_bIsValid = result == OK;
-    return result;
+    return result; // 0 = OK if Mixxx can handle this file
 }
 
 
