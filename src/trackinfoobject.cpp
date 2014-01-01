@@ -79,11 +79,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
     m_bHeaderParsed = false;
-    QString create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
-    if (create_date == "")
-        m_dCreateDate = m_fileInfo.created();
-    else
-        m_dCreateDate = QDateTime::fromString(create_date);
 
     // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
     // ignore those. Tracks will get a new ID from the database.
@@ -122,7 +117,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
-    m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
+    m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_bBpmLock = false;
     m_sGrouping = "";
@@ -217,12 +212,6 @@ QString TrackInfoObject::getDirectory() const {
 QString TrackInfoObject::getFilename() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.fileName();
-}
-
-QDateTime TrackInfoObject::getCreateDate() const {
-    QMutexLocker lock(&m_qMutex);
-    QDateTime create_date = QDateTime(m_dCreateDate);
-    return create_date;
 }
 
 bool TrackInfoObject::exists() const {
