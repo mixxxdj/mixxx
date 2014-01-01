@@ -146,11 +146,10 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
     }
 }
 
-void SetlogFeature::slotGetNewPlaylist()
-{
-    // qDebug() << "slotGetNewPlaylist() succesfully triggered !";
+void SetlogFeature::slotGetNewPlaylist() {
+    //qDebug() << "slotGetNewPlaylist() succesfully triggered !";
 
-    //create a new playlist for today
+    // create a new playlist for today
     QString set_log_name_format;
     QString set_log_name;
 
@@ -163,7 +162,7 @@ void SetlogFeature::slotGetNewPlaylist()
         set_log_name = set_log_name_format.arg(++i);
     }
 
-    // qDebug() << "Creating session history playlist name:" << set_log_name;
+    //qDebug() << "Creating session history playlist name:" << set_log_name;
     m_playlistId = m_playlistDao.createPlaylist(set_log_name,
                                                 PlaylistDAO::PLHT_SET_LOG);
 
@@ -174,7 +173,6 @@ void SetlogFeature::slotGetNewPlaylist()
 
     slotPlaylistTableChanged(m_playlistId); // For moving selection
     emit(showTrackModel(m_pPlaylistTableModel));
-
 }
 
 void SetlogFeature::slotJoinWithPrevious() {

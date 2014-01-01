@@ -45,9 +45,9 @@ public:
     QString getRootViewHtml() const;
 
     QLinkedList<int> m_recentTracks;
-    QAction *m_pJoinWithPreviousAction;
-    QAction *m_pGetNewPlaylist;
+    QAction* m_pJoinWithPreviousAction;
+    QAction* m_pGetNewPlaylist;
     int m_playlistId;
 };
 
-#endif /* SETLOGFEATURE_H */
+#endif // SETLOGFEATURE_H
