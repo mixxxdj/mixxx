@@ -1,14 +1,13 @@
 #include "waveformrenderersignalbase.h"
-#include "waveformwidgetrenderer.h"
-
-#include "controlobject.h"
-#include "controlobjectthreadmain.h"
-
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 #include <QDomNode>
 
+#include "waveformwidgetrenderer.h"
+#include "controlobject.h"
+#include "controlobjectthreadmain.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
+#include "xmlparse.h"
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -61,8 +60,9 @@ bool WaveformRendererSignalBase::init() {
     return onInit();
 }
 
-void WaveformRendererSignalBase::setup(const QDomNode &node) {
-    QString alignString = WWidget::selectNodeQString(node, "Align").toLower();
+void WaveformRendererSignalBase::setup(const QDomNode& node,
+                                       const SkinContext& context) {
+    QString alignString = XmlParse::selectNodeQString(node, "Align").toLower();
     if (alignString == "bottom") {
         m_alignment = Qt::AlignBottom;
     } else if (alignString == "top") {

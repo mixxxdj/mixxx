@@ -50,7 +50,8 @@ double WaveformMarkRange::end() {
 }
 
 void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
-        const WaveformSignalColors& signalColors) {
+                              const SkinContext& context,
+                              const WaveformSignalColors& signalColors) {
     m_activeColor = XmlParse::selectNodeQString(node, "Color");
     if (m_activeColor == "") {
         //vRince kind of legacy fallback ...

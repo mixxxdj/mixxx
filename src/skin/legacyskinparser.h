@@ -17,6 +17,7 @@ class Library;
 class MixxxKeyboard;
 class PlayerManager;
 class ControllerManager;
+class SkinContext;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
@@ -90,7 +91,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
-    QWidget *m_pParent;
+    QWidget* m_pParent;
+    SkinContext* m_pContext;
     Tooltips m_tooltips;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;

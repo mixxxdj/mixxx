@@ -57,17 +57,17 @@ void WWidgetGroup::setLayoutAlignment(int alignment) {
     }
 }
 
-void WWidgetGroup::setup(QDomNode node) {
+void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
 
     // Set background pixmap if available
-    if (!WWidget::selectNode(node, "BackPath").isNull()) {
-        setPixmapBackground(WWidget::getPath(WWidget::selectNodeQString(node, "BackPath")));
+    if (context.hasNode(node, "BackPath")) {
+        setPixmapBackground(WWidget::getPath(context.selectString(node, "BackPath")));
     }
 
     QLayout* pLayout = NULL;
-    if (!XmlParse::selectNode(node, "Layout").isNull()) {
-        QString layout = XmlParse::selectNodeQString(node, "Layout");
+    if (context.hasNode(node, "Layout")) {
+        QString layout = context.selectString(node, "Layout");
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
             pLayout->setSpacing(0);

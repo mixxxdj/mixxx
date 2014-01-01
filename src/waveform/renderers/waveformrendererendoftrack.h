@@ -7,6 +7,7 @@
 
 #include "util.h"
 #include "waveformrendererabstract.h"
+#include "skin/skincontext.h"
 
 class ControlObject;
 class ControlObjectThread;
@@ -19,7 +20,7 @@ public:
     virtual ~WaveformRendererEndOfTrack();
 
     virtual bool init();
-    virtual void setup(const QDomNode& node);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void onResize();
     virtual void draw(QPainter* painter, QPaintEvent* event);
 

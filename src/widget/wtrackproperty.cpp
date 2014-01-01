@@ -9,10 +9,10 @@ WTrackProperty::~WTrackProperty() {
 
 }
 
-void WTrackProperty::setup(QDomNode node) {
-    WLabel::setup(node);
+void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
+    WLabel::setup(node, context);
 
-    m_property = selectNodeQString(node, "Property");
+    m_property = context.selectString(node, "Property");
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer track) {

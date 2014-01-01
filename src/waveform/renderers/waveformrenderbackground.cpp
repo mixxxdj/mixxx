@@ -3,6 +3,7 @@
 
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "xmlparse.h"
 
 WaveformRenderBackground::WaveformRenderBackground(
     WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -13,9 +14,10 @@ WaveformRenderBackground::WaveformRenderBackground(
 WaveformRenderBackground::~WaveformRenderBackground() {
 }
 
-void WaveformRenderBackground::setup(const QDomNode& node) {
+void WaveformRenderBackground::setup(const QDomNode& node,
+                                     const SkinContext& context) {
     m_backgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
-    m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
+    m_backgroundPixmapPath = XmlParse::selectNodeQString(node, "BgPixmap");
     if (m_backgroundPixmapPath.isEmpty()) {
         qWarning() << "WaveformRenderBackground::generatePixmap - no background file";
     }

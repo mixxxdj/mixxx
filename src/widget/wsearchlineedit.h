@@ -9,6 +9,7 @@
 #include <QColor>
 
 #include "configobject.h"
+#include "skin/skincontext.h"
 
 class WSearchLineEdit : public QLineEdit {
     Q_OBJECT
@@ -16,7 +17,8 @@ class WSearchLineEdit : public QLineEdit {
     WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
                     QWidget* pParent);
     virtual ~WSearchLineEdit();
-    void setup(QDomNode node);
+
+    void setup(QDomNode node, const SkinContext& context);
 
   protected:
     void resizeEvent(QResizeEvent*);

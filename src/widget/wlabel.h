@@ -21,6 +21,7 @@
 #include <QLabel>
 
 #include "widget/wwidget.h"
+#include "skin/skincontext.h"
 
 class WLabel : public WWidget {
     Q_OBJECT
@@ -28,7 +29,7 @@ class WLabel : public WWidget {
     WLabel(QWidget* pParent=NULL);
     virtual ~WLabel();
 
-    virtual void setup(QDomNode node);
+    virtual void setup(QDomNode node, const SkinContext& context);
     virtual QWidget* getComposedWidget() { return m_pLabel; }
 
   protected:

@@ -9,6 +9,7 @@
 #include "waveform/waveform.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "xmlparse.h"
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
   : WaveformRendererAbstract( waveformWidgetRenderer) {
@@ -17,9 +18,9 @@ WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* wavefor
 WaveformRendererPreroll::~WaveformRendererPreroll() {
 }
 
-void WaveformRendererPreroll::setup(const QDomNode& node) {
+void WaveformRendererPreroll::setup(const QDomNode& node, const SkinContext& context) {
     m_color.setNamedColor(
-        WWidget::selectNodeQString(node, "SignalColor"));
+        XmlParse::selectNodeQString(node, "SignalColor"));
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
@@ -71,4 +72,3 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         painter->restore();
     }
 }
-

@@ -25,6 +25,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 class WDisplay : public WWidget {
    Q_OBJECT
@@ -32,7 +33,7 @@ class WDisplay : public WWidget {
     WDisplay(QWidget *parent=NULL);
     virtual ~WDisplay();
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
   protected:
     void paintEvent(QPaintEvent*);

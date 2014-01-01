@@ -65,12 +65,11 @@ WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
 WSearchLineEdit::~WSearchLineEdit() {
 }
 
-void WSearchLineEdit::setup(QDomNode node)
-{
+void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
     // Background color
     QColor bgc(255,255,255);
-    if (!WWidget::selectNode(node, "BgColor").isNull()) {
-        bgc.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    if (context.hasNode(node, "BgColor")) {
+        bgc.setNamedColor(context.selectString(node, "BgColor"));
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -78,8 +77,8 @@ void WSearchLineEdit::setup(QDomNode node)
 
     // Foreground color
     m_fgc = QColor(0,0,0);
-    if (!WWidget::selectNode(node, "FgColor").isNull()) {
-        m_fgc.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+    if (context.hasNode(node, "FgColor")) {
+        m_fgc.setNamedColor(context.selectString(node, "FgColor"));
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());

@@ -42,11 +42,6 @@ public:
 
     // Sets the path used to find pixmaps
     static void setPixmapPath(QString qPath);
-    static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
-    static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
-    static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
-    static double selectNodeDouble(const QDomNode &nodeHeader, const QString sNode);
-    static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
 
     // Given a filename of a pixmap, returns its path
     static const QString getPath(QString location);

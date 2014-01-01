@@ -8,6 +8,7 @@
 
 #include "widget/wwidget.h"
 #include "vinylcontrol/vinylsignalquality.h"
+#include "skin/skincontext.h"
 
 class ControlObjectThread;
 class VisualPlayPosition;
@@ -21,7 +22,7 @@ class WSpinny : public QGLWidget, public VinylSignalQualityListener {
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
 
-    void setup(QDomNode node, QString group);
+    void setup(QDomNode node, const SkinContext& context, QString group);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 
