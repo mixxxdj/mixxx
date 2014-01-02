@@ -38,6 +38,13 @@ class WWidgetStack : public QStackedWidget {
                  ControlObject* pPrevControl);
     virtual ~WWidgetStack();
 
+    // QStackedWidget sizeHint and minimumSizeHint are the largest of all the
+    // widgets in the stack. This is presumably to prevent UI resizes when the
+    // stack changes. We explicitly want the UI to change when the stack changes
+    // (potentially grow or shrink).
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+
     void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl);
 
   private slots:

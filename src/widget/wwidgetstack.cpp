@@ -46,6 +46,16 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
 WWidgetStack::~WWidgetStack() {
 }
 
+QSize WWidgetStack::sizeHint() const {
+    QWidget* pWidget = currentWidget();
+    return pWidget ? pWidget->sizeHint() : QSize();
+}
+
+QSize WWidgetStack::minimumSizeHint() const {
+    QWidget* pWidget = currentWidget();
+    return pWidget ? pWidget->minimumSizeHint() : QSize();
+}
+
 void WWidgetStack::onNextControlChanged(double v) {
     if (v > 0.0) {
         setCurrentIndex((currentIndex() + 1) % count());
