@@ -18,6 +18,8 @@ WidgetStackControlListener::~WidgetStackControlListener() {
 void WidgetStackControlListener::slotValueChanged(double v) {
     if (v > 0.0) {
         emit(switchToWidget());
+    } else {
+        emit(hideWidget());
     }
 }
 
@@ -39,8 +41,10 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),
             this, SLOT(onPrevControlChanged(double)));
-    connect(&m_mapper, SIGNAL(mapped(int)),
+    connect(&m_showMapper, SIGNAL(mapped(int)),
             this, SLOT(setCurrentIndex(int)));
+    connect(&m_hideMapper, SIGNAL(mapped(int)),
+            this, SLOT(hideIndex(int)));
 }
 
 WWidgetStack::~WWidgetStack() {
@@ -54,6 +58,12 @@ QSize WWidgetStack::sizeHint() const {
 QSize WWidgetStack::minimumSizeHint() const {
     QWidget* pWidget = currentWidget();
     return pWidget ? pWidget->minimumSizeHint() : QSize();
+}
+
+void WWidgetStack::hideIndex(int index) {
+    if (currentIndex() == index) {
+        setCurrentIndex((index + 1) % count());
+    }
 }
 
 void WWidgetStack::onNextControlChanged(double v) {
@@ -77,11 +87,17 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
     if (pControl) {
         WidgetStackControlListener* pListener = new WidgetStackControlListener(
             this, pControl, index);
+        m_showMapper.setMapping(pListener, index);
+        m_hideMapper.setMapping(pListener, index);
+        if (pControl->get() > 0) {
+            setCurrentIndex(count()-1);
+        }
+        pListener->onCurrentWidgetChanged(currentIndex());
         connect(pListener, SIGNAL(switchToWidget()),
-                &m_mapper, SLOT(map()));
+                &m_showMapper, SLOT(map()));
+        connect(pListener, SIGNAL(hideWidget()),
+                &m_hideMapper, SLOT(map()));
         connect(this, SIGNAL(currentChanged(int)),
                 pListener, SLOT(onCurrentWidgetChanged(int)));
-        m_mapper.setMapping(pListener, index);
-        pListener->onCurrentWidgetChanged(currentIndex());
     }
 }
