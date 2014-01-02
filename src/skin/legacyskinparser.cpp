@@ -301,36 +301,20 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
 
         qDebug() << "Skin is a" << (newStyle ? ">=1.12.0" : "<1.12.0") << "style skin.";
 
-        // pOuterWidget is only for old-style skins.
-        QWidget* pOuterWidget = NULL;
-        QWidget* pInnerWidget = NULL;
-        QLayout* pInnerLayout = NULL;
 
         if (newStyle) {
-            pInnerWidget = new QWidget(m_pParent);
+            // New style skins are just a WidgetGroup at the root.
+            return parseWidgetGroup(node);
+        }
 
-            if (layout == "vertical") {
-                pInnerLayout = new QVBoxLayout(pInnerWidget);
-                pInnerLayout->setSpacing(0);
-                pInnerLayout->setContentsMargins(0, 0, 0, 0);
-                pInnerWidget->setLayout(pInnerLayout);
-            } else if (layout == "horizontal") {
-                pInnerLayout = new QHBoxLayout(pInnerWidget);
-                pInnerLayout->setSpacing(0);
-                pInnerLayout->setContentsMargins(0, 0, 0, 0);
-                pInnerWidget->setLayout(pInnerLayout);
-            } else {
-                qDebug() << "Could not parse root skin Layout:" << layout;
-            }
-        } else {
-            pOuterWidget = new QWidget(m_pParent);
-            pInnerWidget = new QWidget(pOuterWidget);
+        // From here on is loading for legacy skins only.
+        QWidget* pOuterWidget = new QWidget(m_pParent);
+        QWidget* pInnerWidget = new QWidget(pOuterWidget);
 
-            // <Background> is only valid for old-style skins.
-            QDomElement background = XmlParse::selectElement(node, "Background");
-            if (!background.isNull()) {
-                parseBackground(background, pOuterWidget, pInnerWidget);
-            }
+        // <Background> is only valid for old-style skins.
+        QDomElement background = XmlParse::selectElement(node, "Background");
+        if (!background.isNull()) {
+            parseBackground(background, pOuterWidget, pInnerWidget);
         }
 
         // Interpret <Size>, <SizePolicy>, <Style>, etc. tags for the root node.
@@ -338,33 +322,20 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
 
         m_pParent = pInnerWidget;
 
-        QDomNode childrenNode = XmlParse::selectNode(node, "Children");
-
-        // For backwards compatibility, allow children to be specified outside
-        // of a <Children> block.
-        QDomNodeList children = childrenNode.isNull() ? node.childNodes() :
-                childrenNode.childNodes();
-
+        // Legacy skins do not use a <Children> block.
+        QDomNodeList children = node.childNodes();
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
-
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement());
-                if (pChild != NULL && pInnerLayout != NULL) {
-                    pInnerLayout->addWidget(pChild);
-                }
+                parseNode(node.toElement());
             }
         }
 
-        if (pOuterWidget) {
-            // Keep innerWidget centered (for fullscreen).
-            pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
-            pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
-            pOuterWidget->layout()->addWidget(pInnerWidget);
-            return pOuterWidget;
-        } else {
-            return pInnerWidget;
-        }
+        // Keep innerWidget centered (for fullscreen).
+        pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
+        pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
+        pOuterWidget->layout()->addWidget(pInnerWidget);
+        return pOuterWidget;
     } else if (nodeName == "SliderComposed") {
         return parseSliderComposed(node);
     } else if (nodeName == "PushButton") {
