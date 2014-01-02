@@ -13,7 +13,7 @@ class ControlObject;
 class ControlObjectThread;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
-public:
+  public:
     static const int s_maxAlpha = 125;
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidgetRenderer);
@@ -24,7 +24,7 @@ public:
     virtual void onResize();
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
-private:
+  private:
     ControlObjectThread*  m_pEndOfTrackControl;
     bool m_endOfTrackEnabled;
 

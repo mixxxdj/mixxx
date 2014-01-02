@@ -1,6 +1,7 @@
 #include "widget/wwidgetgroup.h"
 
 #include <QLayout>
+#include <QMap>
 #include <QStylePainter>
 
 #include "widget/wwidget.h"
@@ -8,7 +9,7 @@
 #include "xmlparse.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
-        : QGroupBox(pParent),
+        : QFrame(pParent),
           m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
@@ -81,6 +82,23 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         }
     }
 
+    if (pLayout && !XmlParse::selectNode(node, "SizeConstraint").isNull()) {
+        QMap<QString, QLayout::SizeConstraint> constraints;
+        constraints["SetDefaultConstraint"] = QLayout::SetDefaultConstraint;
+        constraints["SetFixedSize"] = QLayout::SetFixedSize;
+        constraints["SetMinimumSize"] = QLayout::SetMinimumSize;
+        constraints["SetMaximumSize"] = QLayout::SetMaximumSize;
+        constraints["SetMinAndMaxSize"] = QLayout::SetMinAndMaxSize;
+        constraints["SetNoConstraint"] = QLayout::SetNoConstraint;
+
+        QString sizeConstraintStr = XmlParse::selectNodeQString(node, "SizeConstraint");
+        if (constraints.contains(sizeConstraintStr)) {
+            pLayout->setSizeConstraint(constraints[sizeConstraintStr]);
+        } else {
+            qDebug() << "Could not parse SizeConstraint:" << sizeConstraintStr;
+        }
+    }
+
     if (pLayout) {
         setLayout(pLayout);
     }
@@ -102,7 +120,7 @@ void WWidgetGroup::addWidget(QWidget* pChild) {
 }
 
 void WWidgetGroup::paintEvent(QPaintEvent* pe) {
-    QGroupBox::paintEvent(pe);
+    QFrame::paintEvent(pe);
 
     if (m_pPixmapBack) {
         QStylePainter p(this);
@@ -112,5 +130,5 @@ void WWidgetGroup::paintEvent(QPaintEvent* pe) {
 
 void WWidgetGroup::resizeEvent(QResizeEvent* re) {
     // Paint things styled by style sheet
-    QGroupBox::resizeEvent(re);
+    QFrame::resizeEvent(re);
 }

@@ -31,6 +31,7 @@ public:
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void slotJoinWithPrevious();
+    void slotGetNewPlaylist();
 
   protected:
     void buildPlaylistList();
@@ -44,8 +45,9 @@ public:
     QString getRootViewHtml() const;
 
     QLinkedList<int> m_recentTracks;
-    QAction *m_pJoinWithPreviousAction;
+    QAction* m_pJoinWithPreviousAction;
+    QAction* m_pGetNewPlaylist;
     int m_playlistId;
 };
 
-#endif /* SETLOGFEATURE_H */
+#endif // SETLOGFEATURE_H

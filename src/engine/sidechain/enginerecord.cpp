@@ -279,7 +279,7 @@ bool EngineRecord::openFile() {
         LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16();
         m_pSndfile = sf_wchar_open(lpcwFilename, SFM_WRITE, &m_sfInfo);
 #else
-        QByteArray qbaFilename = m_fileName.toUtf8();
+        QByteArray qbaFilename = m_fileName.toLocal8Bit();
         m_pSndfile = sf_open(qbaFilename.constData(), SFM_WRITE, &m_sfInfo);
 #endif
         if (m_pSndfile) {

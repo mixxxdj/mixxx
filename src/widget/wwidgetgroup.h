@@ -2,7 +2,7 @@
 #define WWIDGETGROUP_H
 
 #include <QDomNode>
-#include <QGroupBox>
+#include <QFrame>
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QResizeEvent>
@@ -12,7 +12,7 @@
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
 
-class WWidgetGroup : public QGroupBox {
+class WWidgetGroup : public QFrame {
     Q_OBJECT
   public:
     WWidgetGroup(QWidget* pParent=NULL);

@@ -18,16 +18,15 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   public:
     BaseSqlTableModel(QObject* pParent,
                       TrackCollection* pTrackCollection,
-                      QString settingsNamespace);
+                      const char* settingsNamespace);
     virtual ~BaseSqlTableModel();
 
     ///////////////////////////////////////////////////////////////////////////
     //  Functions that have to/can be reimplemented
     ///////////////////////////////////////////////////////////////////////////
-    //  This class also has protected variables that should be used in childs
+    //  This class also has protected variables that should be used in children
     //  m_database, m_pTrackCollection, m_trackDAO
 
-    virtual void setTableModel(int id=-1) = 0;
     virtual bool isColumnInternal(int column) = 0;
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const = 0;
@@ -88,9 +87,12 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
 
+    QString m_previewDeckGroup;
+    int m_iPreviewDeckTrackId;
+
   private slots:
-    void tracksChanged(QSet<int> trackIds);
-    void trackLoaded(QString group, TrackPointer pTrack);
+    virtual void tracksChanged(QSet<int> trackIds);
+    virtual void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
@@ -127,14 +129,11 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
     bool m_bInitialized;
-    bool m_bDirty;
     QSqlRecord m_queryRecord;
     QHash<int, int> m_trackSortOrder;
     QHash<int, QLinkedList<int> > m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
-    QString m_previewDeckGroup;
-    int m_iPreviewDeckTrackId;
     QVector<QHash<int, QVariant> > m_headerInfo;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);

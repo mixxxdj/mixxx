@@ -4,20 +4,20 @@
 #include "playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
-                                    TrackCollection* pTrackCollection,
-                                    QString settingsNamespace,
-                                    bool showAll)
+                                       TrackCollection* pTrackCollection,
+                                       const char* settingsNamespace,
+                                       bool showAll)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
-                            m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
-                            m_iPlaylistId(-1),
-                            m_showAll(showAll) {
+          m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
+          m_iPlaylistId(-1),
+          m_showAll(showAll) {
 }
 
 PlaylistTableModel::~PlaylistTableModel() {
 }
 
 void PlaylistTableModel::setTableModel(int playlistId) {
-    //qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+    //qDebug() << "PlaylistTableModel::setTableModel" << playlistId;
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;
@@ -56,8 +56,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = "preview";
     setTable(playlistTableName, columns[0], columns,
-            m_pTrackCollection->getTrackSource("default"));
-    initHeaderData();
+            m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
