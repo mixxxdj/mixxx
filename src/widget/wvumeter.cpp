@@ -47,7 +47,7 @@ WVuMeter::~WVuMeter() {
 void WVuMeter::setup(QDomNode node, const SkinContext& context) {
     // Set pixmaps
     bool bHorizontal = context.hasNode(node, "Horizontal") &&
-            context.selectString(node, "Horizontal")=="true";
+            context.selectString(node, "Horizontal") == "true";
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
