@@ -86,8 +86,6 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pRateRange->connectValueChanged(this, SLOT(slotRateChanged()),
                                       Qt::DirectConnection);
 
-    m_pSyncPhaseButton.reset(new ControlObjectSlave(getGroup(), "beatsync_phase", this));
-
 #ifdef __VINYLCONTROL__
     m_pVCEnabled.reset(new ControlObjectSlave(
         getGroup(), "vinylcontrol_enabled", this));
