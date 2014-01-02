@@ -11,7 +11,6 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "xmlparse.h"
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
@@ -30,7 +29,7 @@ bool WaveformRenderBeat::init() {
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_beatColor.setNamedColor(XmlParse::selectNodeQString(node, "BeatColor"));
+    m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor);
 
     if (m_beatColor.alphaF() > 0.99)

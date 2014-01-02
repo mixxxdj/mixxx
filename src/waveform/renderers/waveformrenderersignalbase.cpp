@@ -7,7 +7,6 @@
 #include "controlobjectthreadmain.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "xmlparse.h"
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -62,7 +61,7 @@ bool WaveformRendererSignalBase::init() {
 
 void WaveformRendererSignalBase::setup(const QDomNode& node,
                                        const SkinContext& context) {
-    QString alignString = XmlParse::selectNodeQString(node, "Align").toLower();
+    QString alignString = context.selectString(node, "Align").toLower();
     if (alignString == "bottom") {
         m_alignment = Qt::AlignBottom;
     } else if (alignString == "top") {

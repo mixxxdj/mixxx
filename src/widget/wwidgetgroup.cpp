@@ -6,7 +6,6 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "xmlparse.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
@@ -82,7 +81,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         }
     }
 
-    if (pLayout && !XmlParse::selectNode(node, "SizeConstraint").isNull()) {
+    if (pLayout && context.hasNode(node, "SizeConstraint")) {
         QMap<QString, QLayout::SizeConstraint> constraints;
         constraints["SetDefaultConstraint"] = QLayout::SetDefaultConstraint;
         constraints["SetFixedSize"] = QLayout::SetFixedSize;
@@ -91,7 +90,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         constraints["SetMinAndMaxSize"] = QLayout::SetMinAndMaxSize;
         constraints["SetNoConstraint"] = QLayout::SetNoConstraint;
 
-        QString sizeConstraintStr = XmlParse::selectNodeQString(node, "SizeConstraint");
+        QString sizeConstraintStr = context.selectString(node, "SizeConstraint");
         if (constraints.contains(sizeConstraintStr)) {
             pLayout->setSizeConstraint(constraints[sizeConstraintStr]);
         } else {
