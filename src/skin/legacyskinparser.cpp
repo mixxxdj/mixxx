@@ -290,6 +290,14 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     return widgets[0];
 }
 
+QList<QWidget*> wrapWidget(QWidget* pWidget) {
+    QList<QWidget*> result;
+    if (pWidget != NULL) {
+        result.append(pWidget);
+    }
+    return result;
+}
+
 QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     QList<QWidget*> result;
     QString nodeName = node.nodeName();
@@ -349,131 +357,56 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
             result.append(pOuterWidget);
         }
     } else if (nodeName == "SliderComposed") {
-        QWidget* pWidget = parseSliderComposed(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseSliderComposed(node));
     } else if (nodeName == "PushButton") {
-        QWidget* pWidget = parsePushButton(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parsePushButton(node));
     } else if (nodeName == "Overview") {
-        QWidget* pWidget = parseOverview(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseOverview(node));
     } else if (nodeName == "Visual") {
-        QWidget* pWidget = parseVisual(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseVisual(node));
     } else if (nodeName == "Text") {
-        QWidget* pWidget = parseText(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseText(node));
     } else if (nodeName == "TrackProperty") {
-        QWidget* pWidget = parseTrackProperty(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseTrackProperty(node));
     } else if (nodeName == "VuMeter") {
-        QWidget* pWidget = parseVuMeter(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseVuMeter(node));
     } else if (nodeName == "StatusLight") {
-        QWidget* pWidget = parseStatusLight(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseStatusLight(node));
     } else if (nodeName == "Display") {
-        QWidget* pWidget = parseDisplay(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseDisplay(node));
     } else if (nodeName == "NumberRate") {
-        QWidget* pWidget = parseNumberRate(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
-        QWidget* pWidget = parseNumberPos(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseNumberPos(node));
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
         // NumberBpm is deprecated, and is now the same as a Number
-        QWidget* pWidget = parseNumber(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseNumber(node));
     } else if (nodeName == "Label") {
-        QWidget* pWidget = parseLabel(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseLabel(node));
     } else if (nodeName == "Knob") {
-        QWidget* pWidget = parseKnob(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseKnob(node));
     } else if (nodeName == "KnobComposed") {
-        QWidget* pWidget = parseKnobComposed(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseKnobComposed(node));
     } else if (nodeName == "TableView") {
-        QWidget* pWidget = parseTableView(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseTableView(node));
     } else if (nodeName == "SearchBox") {
-        QWidget* pWidget = parseSearchBox(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseSearchBox(node));
     } else if (nodeName == "WidgetGroup") {
-        QWidget* pWidget = parseWidgetGroup(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseWidgetGroup(node));
     } else if (nodeName == "WidgetStack") {
-        QWidget* pWidget = parseWidgetStack(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseWidgetStack(node));
     } else if (nodeName == "Spinny") {
-        QWidget* pWidget = parseSpinny(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseSpinny(node));
     } else if (nodeName == "Time") {
-        QWidget* pWidget = parseTime(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseTime(node));
     } else if (nodeName == "Splitter") {
-        QWidget* pWidget = parseSplitter(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseSplitter(node));
     } else if (nodeName == "LibrarySidebar") {
-        QWidget* pWidget = parseLibrarySidebar(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseLibrarySidebar(node));
     } else if (nodeName == "Library") {
-        QWidget* pWidget = parseLibrary(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
-        QWidget* pWidget = parseKey(node);
-        if (pWidget != NULL) {
-            result.append(pWidget);
-        }
+        result = wrapWidget(parseKey(node));
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
