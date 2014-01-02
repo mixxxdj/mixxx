@@ -279,10 +279,19 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
     m_pContext = new SkinContext();
-    return parseNode(skinDocument);
+    QList<QWidget*> widgets = parseNode(skinDocument);
+
+    if (widgets.empty()) {
+        qWarning() << "Skin produced no widgets!";
+        return NULL;
+    } else if (widgets.size() > 1) {
+        qWarning() << "Skin produced more than 1 widget!";
+    }
+    return widgets[0];
 }
 
-QWidget* LegacySkinParser::parseNode(QDomElement node) {
+QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
+    QList<QWidget*> result;
     QString nodeName = node.nodeName();
     //qDebug() << "parseNode" << node.nodeName();
 
@@ -352,9 +361,11 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement());
-                if (pChild != NULL && pInnerLayout != NULL) {
-                    pInnerLayout->addWidget(pChild);
+                QList<QWidget*> children = parseNode(node.toElement());
+                foreach (QWidget* pChild, children) {
+                    if (pChild != NULL && pInnerLayout != NULL) {
+                        pInnerLayout->addWidget(pChild);
+                    }
                 }
             }
         }
@@ -364,66 +375,141 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
             pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
             pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
             pOuterWidget->layout()->addWidget(pInnerWidget);
-            return pOuterWidget;
+            result.append(pOuterWidget);
         } else {
-            return pInnerWidget;
+            result.append(pInnerWidget);
         }
     } else if (nodeName == "SliderComposed") {
-        return parseSliderComposed(node);
+        QWidget* pWidget = parseSliderComposed(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "PushButton") {
-        return parsePushButton(node);
+        QWidget* pWidget = parsePushButton(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Overview") {
-        return parseOverview(node);
+        QWidget* pWidget = parseOverview(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Visual") {
-        return parseVisual(node);
+        QWidget* pWidget = parseVisual(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Text") {
-        return parseText(node);
+        QWidget* pWidget = parseText(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "TrackProperty") {
-        return parseTrackProperty(node);
+        QWidget* pWidget = parseTrackProperty(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "VuMeter") {
-        return parseVuMeter(node);
+        QWidget* pWidget = parseVuMeter(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "StatusLight") {
-        return parseStatusLight(node);
+        QWidget* pWidget = parseStatusLight(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Display") {
-        return parseDisplay(node);
+        QWidget* pWidget = parseDisplay(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "NumberRate") {
-        return parseNumberRate(node);
+        QWidget* pWidget = parseNumberRate(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "NumberPos") {
-        return parseNumberPos(node);
+        QWidget* pWidget = parseNumberPos(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
         // NumberBpm is deprecated, and is now the same as a Number
-        return parseNumber(node);
+        QWidget* pWidget = parseNumber(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Label") {
-        return parseLabel(node);
+        QWidget* pWidget = parseLabel(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Knob") {
-        return parseKnob(node);
+        QWidget* pWidget = parseKnob(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "KnobComposed") {
-        return parseKnobComposed(node);
+        QWidget* pWidget = parseKnobComposed(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "TableView") {
-        return parseTableView(node);
+        QWidget* pWidget = parseTableView(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "SearchBox") {
-        return parseSearchBox(node);
+        QWidget* pWidget = parseSearchBox(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "WidgetGroup") {
-        return parseWidgetGroup(node);
+        QWidget* pWidget = parseWidgetGroup(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "WidgetStack") {
-        return parseWidgetStack(node);
+        QWidget* pWidget = parseWidgetStack(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Spinny") {
-        return parseSpinny(node);
+        QWidget* pWidget = parseSpinny(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Time") {
-        return parseTime(node);
+        QWidget* pWidget = parseTime(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Splitter") {
-        return parseSplitter(node);
+        QWidget* pWidget = parseSplitter(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "LibrarySidebar") {
-        return parseLibrarySidebar(node);
+        QWidget* pWidget = parseLibrarySidebar(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Library") {
-        return parseLibrary(node);
+        QWidget* pWidget = parseLibrary(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else if (nodeName == "Key") {
-        return parseKey(node);
+        QWidget* pWidget = parseKey(node);
+        if (pWidget != NULL) {
+            result.append(pWidget);
+        }
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
 
-    return NULL;
+    return result;
 }
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
@@ -454,12 +540,12 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement());
-
-                if (pChild == NULL)
-                    continue;
-
-                pSplitter->addWidget(pChild);
+                QList<QWidget*> children = parseNode(node.toElement());
+                foreach (QWidget* pChild, children) {
+                    if (pChild == NULL)
+                        continue;
+                    pSplitter->addWidget(pChild);
+                }
             }
         }
     }
@@ -508,13 +594,14 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement());
+                QList<QWidget*> children = parseNode(node.toElement());
 
-                if (pChild == NULL) {
-                    continue;
+                foreach (QWidget* pChild, children) {
+                    if (pChild == NULL) {
+                        continue;
+                    }
+                    pGroup->addWidget(pChild);
                 }
-
-                pGroup->addWidget(pChild);
             }
         }
     }
@@ -570,9 +657,22 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             }
             QDomElement element = node.toElement();
 
-            QWidget* pChild = parseNode(element);
-            if (pChild == NULL)
+            QList<QWidget*> children = parseNode(element);
+
+            if (children.empty()) {
+                qWarning() << "WidgetStack child produced no widget.";
                 continue;
+            }
+
+            if (children.size() > 1) {
+                qWarning() << "WidgetStack child produced multiple widgets."
+                           << "All but the first are ignored.";
+            }
+            QWidget* pChild = children[0];
+
+            if (pChild == NULL) {
+                continue;
+            }
 
             ControlObject* pControl = NULL;
             QString trigger_configkey = element.attribute("trigger");

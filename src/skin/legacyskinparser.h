@@ -39,7 +39,7 @@ class LegacySkinParser : public QObject, public SkinParser {
   private:
     static QDomElement openSkin(QString skinPath);
 
-    QWidget* parseNode(QDomElement node);
+    QList<QWidget*> parseNode(QDomElement node);
 
     // Support for various legacy behavior
     void parseColorSchemes(QDomElement node);
