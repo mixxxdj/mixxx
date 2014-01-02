@@ -505,6 +505,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         if (pWidget != NULL) {
             result.append(pWidget);
         }
+    } else if (nodeName == "SetVariable") {
+        m_pContext->updateVariable(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
