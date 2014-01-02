@@ -9,7 +9,7 @@
 #include "xmlparse.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
-        : QGroupBox(pParent),
+        : QFrame(pParent),
           m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
@@ -120,7 +120,7 @@ void WWidgetGroup::addWidget(QWidget* pChild) {
 }
 
 void WWidgetGroup::paintEvent(QPaintEvent* pe) {
-    QGroupBox::paintEvent(pe);
+    QFrame::paintEvent(pe);
 
     if (m_pPixmapBack) {
         QStylePainter p(this);
@@ -130,5 +130,5 @@ void WWidgetGroup::paintEvent(QPaintEvent* pe) {
 
 void WWidgetGroup::resizeEvent(QResizeEvent* re) {
     // Paint things styled by style sheet
-    QGroupBox::resizeEvent(re);
+    QFrame::resizeEvent(re);
 }

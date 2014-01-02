@@ -1412,6 +1412,7 @@ QString LegacySkinParser::getStyleFromNode(QDomNode node) {
         return QString();
     }
 
+    QString style;
     if (styleElement.hasAttribute("src")) {
         QString styleSrc = styleElement.attribute("src");
 
@@ -1419,13 +1420,21 @@ QString LegacySkinParser::getStyleFromNode(QDomNode node) {
         if (file.open(QIODevice::ReadOnly)) {
             QByteArray fileBytes = file.readAll();
 
-            return QString::fromLocal8Bit(fileBytes.constData(),
-                                          fileBytes.length());
+            style = QString::fromLocal8Bit(fileBytes.constData(),
+                                           fileBytes.length());
         }
+    } else {
+        // If no src attribute, use the node data as text.
+        style = styleElement.text();
     }
 
-    // If no src attribute, return the node data as text.
-    return styleElement.text();
+    // Legacy fixes: In Mixxx <1.12.0 we used QGroupBox for WWidgetGroup. Some
+    // skin writers used QGroupBox for styling. Now we have switched to QFrame
+    // and there should be no reason we would ever use a QGroupBox in a skin so
+    // we just rewrite all references to QGroupBox to QFrame.
+    style = style.replace("QGroupBox", "QFrame");
+
+    return style;
 }
 
 void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosition) {
