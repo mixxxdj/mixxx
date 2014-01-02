@@ -1,6 +1,7 @@
 #include "widget/wwidgetgroup.h"
 
 #include <QLayout>
+#include <QMap>
 #include <QStylePainter>
 
 #include "widget/wwidget.h"
@@ -78,6 +79,23 @@ void WWidgetGroup::setup(QDomNode node) {
             pLayout->setSpacing(0);
             pLayout->setContentsMargins(0, 0, 0, 0);
             pLayout->setAlignment(Qt::AlignCenter);
+        }
+    }
+
+    if (pLayout && !XmlParse::selectNode(node, "SizeConstraint").isNull()) {
+        QMap<QString, QLayout::SizeConstraint> constraints;
+        constraints["SetDefaultConstraint"] = QLayout::SetDefaultConstraint;
+        constraints["SetFixedSize"] = QLayout::SetFixedSize;
+        constraints["SetMinimumSize"] = QLayout::SetMinimumSize;
+        constraints["SetMaximumSize"] = QLayout::SetMaximumSize;
+        constraints["SetMinAndMaxSize"] = QLayout::SetMinAndMaxSize;
+        constraints["SetNoConstraint"] = QLayout::SetNoConstraint;
+
+        QString sizeConstraintStr = XmlParse::selectNodeQString(node, "SizeConstraint");
+        if (constraints.contains(sizeConstraintStr)) {
+            pLayout->setSizeConstraint(constraints[sizeConstraintStr]);
+        } else {
+            qDebug() << "Could not parse SizeConstraint:" << sizeConstraintStr;
         }
     }
 
