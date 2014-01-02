@@ -6,6 +6,14 @@ WWidget, QLabel {
   color: black;
 }
 
+WSliderComposed {
+  background-color: rgba(200, 200, 200, 128);
+}
+
+#MasterControls {
+  qproperty-layoutSpacing: 10;
+}
+
 #KnobLabel {
   background-color: white;
   border: 1px solid black;
@@ -20,19 +28,19 @@ WWidget, QLabel {
   background-color: red;
 }
 
-#Deck1 {
+#Deck1, #DeckMixer1 {
   background-color: rgb(128,128,0);
 }
 
-#Deck2 {
+#Deck2, #DeckMixer2 {
   background-color: cyan;
 }
 
-#Deck3 {
+#Deck3, #DeckMixer3 {
   background-color: violet;
 }
 
-#Deck4 {
+#Deck4, #DeckMixer4 {
   background-color: pink;
 }
 
