@@ -53,6 +53,24 @@ TEST_F(SkinContextTest, UpdateVariables) {
     EXPECT_QSTRING_EQ("foobar", m_context.variable("test5"));
 }
 
+TEST_F(SkinContextTest, UpdateVariables_EmbeddedVariable) {
+    m_context.setVariable("test", "asdf");
+
+    QDomDocument doc;
+    QDomElement tmpl = doc.createElement("Template");
+    QDomElement outerVar = doc.createElement("SetVariable");
+    outerVar.setAttribute("name", "test2");
+    outerVar.appendChild(doc.createTextNode("zxcv"));
+    QDomElement innerVar = doc.createElement("Variable");
+    innerVar.setAttribute("name", "test");
+    outerVar.appendChild(innerVar);
+    tmpl.appendChild(outerVar);
+
+    m_context.updateVariables(tmpl);
+
+    EXPECT_QSTRING_EQ("zxcvasdf", m_context.variable("test2"));
+}
+
 TEST_F(SkinContextTest, NoVariable) {
     QDomDocument doc;
     QDomElement test = doc.createElement("Test");

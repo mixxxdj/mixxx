@@ -115,19 +115,19 @@ QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
         return result.toString();
     } else if (variableNode.hasAttribute("name")) {
         QString variableName = variableNode.attribute("name");
-        QString variableValue = variable(variableName);
         if (variableNode.hasAttribute("format")) {
             QString formatString = variableNode.attribute("format");
-            return formatString.arg(variableValue);
+            return formatString.arg(variable(variableName));
         } else if (variableNode.nodeName() == "SetVariable") {
             // If we are setting the variable name and we didn't get a format
-            // string then return the node text.
-            return variableNode.text();
+            // string then return the node text. Use nodeToString to translate
+            // embedded variable references.
+            return nodeToString(variableNode);
         } else {
-            return variableValue;
+            return variable(variableName);
         }
-    } else
-    return variableNode.text();
+    }
+    return nodeToString(variableNode);
 }
 
 QString SkinContext::nodeToString(const QDomNode& node) const {
