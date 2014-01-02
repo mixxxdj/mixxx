@@ -45,6 +45,9 @@ class LegacySkinParser : public QObject, public SkinParser {
     void parseColorSchemes(QDomElement node);
     bool compareConfigKeys(QDomNode node, QString key);
 
+    // Load the given template from file and return its document element.
+    QDomElement loadTemplate(const QString& path);
+
     // Parsers for each node
     QWidget* parseWidgetGroup(QDomElement node);
     QWidget* parseWidgetStack(QDomElement node);
@@ -73,6 +76,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
     QWidget* parseKey(QDomElement node);
+    QList<QWidget*> parseTemplate(QDomElement node);
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
@@ -94,6 +98,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* m_pParent;
     SkinContext* m_pContext;
     Tooltips m_tooltips;
+    QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
 };

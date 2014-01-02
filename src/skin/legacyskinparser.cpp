@@ -507,6 +507,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         }
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
+    } else if (nodeName == "Template") {
+        result = parseTemplate(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -1340,6 +1342,77 @@ QWidget* LegacySkinParser::parseKey(QDomElement node) {
     return p;
 }
 
+QDomElement LegacySkinParser::loadTemplate(const QString& path) {
+    QFileInfo templateFileInfo(path);
+
+    QString absolutePath = templateFileInfo.absoluteFilePath();
+
+    QHash<QString, QDomElement>::const_iterator it =
+            m_templateCache.find(absolutePath);
+    if (it != m_templateCache.end()) {
+        return it.value();
+    }
+
+    QFile templateFile(absolutePath);
+
+    if (!templateFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open template file:" << absolutePath;
+    }
+
+    QDomDocument tmpl("template");
+    QString errorMessage;
+    int errorLine;
+    int errorColumn;
+
+    if (!tmpl.setContent(&templateFile, &errorMessage,
+                         &errorLine, &errorColumn)) {
+        qDebug() << "LegacySkinParser::loadTemplate - setContent failed see"
+                 << "line:" << errorLine << "column:" << errorColumn;
+        qDebug() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
+        return QDomElement();
+    }
+
+    m_templateCache[absolutePath] = tmpl.documentElement();
+    return tmpl.documentElement();
+}
+
+QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
+    if (!node.hasAttribute("src")) {
+        qDebug() << "Template instantiation without src attribute:" << node.text();
+        return QList<QWidget*>();
+    }
+
+    QString path = node.attribute("src");
+
+    QDomElement templateNode = loadTemplate(path);
+
+    if (templateNode.isNull()) {
+        qDebug() << "Template instantiation for template failed:"
+                 << path;
+        return QList<QWidget*>();
+    }
+
+    SkinContext* pOldContext = m_pContext;
+    m_pContext = new SkinContext(*pOldContext);
+    // Take any <SetVariable> elements from this node and update the context
+    // with them.
+    m_pContext->updateVariables(node);
+
+    QList<QWidget*> widgets;
+
+    QDomNode child = templateNode.firstChild();
+    while (!child.isNull()) {
+        if (child.isElement()) {
+            QList<QWidget*> childWidgets = parseNode(child.toElement());
+            widgets.append(childWidgets);
+        }
+        child = child.nextSibling();
+    }
+
+    delete m_pContext;
+    m_pContext = pOldContext;
+    return widgets;
+}
 
 QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     QString group = m_pContext->selectString(node, "Group");
