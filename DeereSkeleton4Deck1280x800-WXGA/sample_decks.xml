@@ -1,0 +1,63 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sample deck container widget.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <!-- I don't now why this works but a WidgetGroup wrapper around a
+         WidgetStack with a 'fixed' size policy makes the group track the
+         minimum size of the current stack widget. -->
+    <SizePolicy>me,f</SizePolicy>
+
+    <Children>
+      <WidgetStack>
+        <ObjectName>SampleDecksContainer</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <!-- Expanded SampleDecks -->
+          <WidgetGroup trigger="[Samplers],show_samplers">
+            <ObjectName>SampleDecksExpanded</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">1</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">3</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">4</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Collapsed SampleDecks -->
+          <WidgetGroup>
+            <ObjectName>SampleDecksCollapsed</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>-1,20</MinimumSize>
+            <MaximumSize>-1,20</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetStack>
+    </Children>
+  </WidgetGroup>
+</Template>

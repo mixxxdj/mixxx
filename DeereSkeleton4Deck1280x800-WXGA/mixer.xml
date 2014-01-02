@@ -1,0 +1,15 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The mixer section.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Mixer</ObjectName>
+    <Layout>vertical</Layout>
+    <MinimumSize>200,-1</MinimumSize>
+    <SizePolicy>f,min</SizePolicy>
+    <Children>
+    </Children>
+  </WidgetGroup>
+</Template>

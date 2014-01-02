@@ -1,0 +1,17 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect chain widget.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>EffectChain</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>300,100</MinimumSize>
+    <Children>
+    </Children>
+  </WidgetGroup>
+</Template>

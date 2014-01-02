@@ -1,0 +1,75 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Looping controls (in, out, reloop).
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LoopingContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <PushButton>
+            <ObjectName>LoopIn</ObjectName>
+            <Size><Variable name="SquareButtonSize"/></Size>
+	    <NumberStates>1</NumberStates>
+	    <State>
+	      <Number>0</Number>
+              <Text>IN</Text>
+	    </State>
+            <Connection>
+	      <ConfigKey><Variable name="group"/>,loop_in</ConfigKey>
+	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+	      <ButtonState>LeftButton</ButtonState>
+	    </Connection>
+	  </PushButton>
+
+          <PushButton>
+            <ObjectName>LoopOut</ObjectName>
+            <Size><Variable name="SquareButtonSize"/></Size>
+	    <NumberStates>1</NumberStates>
+	    <State>
+	      <Number>0</Number>
+              <Text>OUT</Text>
+	    </State>
+            <Connection>
+	      <ConfigKey><Variable name="group"/>,loop_out</ConfigKey>
+	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+	      <ButtonState>LeftButton</ButtonState>
+	    </Connection>
+	  </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <PushButton>
+            <ObjectName>ReloopExit</ObjectName>
+            <Size><Variable name="WideButtonSize"/></Size>
+	    <NumberStates>1</NumberStates>
+	    <State>
+	      <Number>0</Number>
+              <Text>RELOOP</Text>
+	    </State>
+            <Connection>
+	      <ConfigKey><Variable name="group"/>,reloop_exit</ConfigKey>
+	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+	      <ButtonState>LeftButton</ButtonState>
+	      <ConnectValueToWidget>false</ConnectValueToWidget>
+	    </Connection>
+	    <Connection>
+	      <ConfigKey><Variable name="group"/>,loop_enabled</ConfigKey>
+	      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+	    </Connection>
+	  </PushButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,21 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The right gutter.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>RightGutter</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <Template src="skin:deck.xml">
+        <SetVariable name="i">2</SetVariable>
+      </Template>
+
+      <Template src="skin:deck.xml">
+        <SetVariable name="i">4</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

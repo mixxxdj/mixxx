@@ -1,0 +1,18 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A sample deck.
+  Variables:
+    i: The Sampler number (1-indexed)
+-->
+<Template>
+  <SetVariable name="group">[Sampler<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Sampler<Variable name="i"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>300,100</MinimumSize>
+    <Children>
+    </Children>
+  </WidgetGroup>
+</Template>
