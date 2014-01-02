@@ -119,9 +119,6 @@ void WVuMeter::setValue(double fValue)
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
     m_lastUpdate = currentTime;
     updateState(msecsElapsed);
-
-    //Post a paintEvent() message, so that the widget repaints.
-    update();
 }
 
 void WVuMeter::setPeak(int pos) {

@@ -787,7 +787,8 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseVuMeter(QDomElement node) {
-    WVuMeter * p = new WVuMeter(m_pParent);
+    WVuMeter* p = new WVuMeter(m_pParent);
+    WaveformWidgetFactory::instance()->addTimerListener(p);
     setupWidget(node, p);
     p->setup(node);
     setupConnections(node, p);
