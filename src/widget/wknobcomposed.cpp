@@ -60,6 +60,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pPixmapBack) {
