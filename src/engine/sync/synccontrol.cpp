@@ -44,7 +44,7 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     connect(m_pSyncBeatDistance.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatDistanceChanged(double)), Qt::DirectConnection);
 
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(pGroup, "passthrough_enabled", this));
+    m_pPassthroughEnabled.reset(new ControlObjectSlave(pGroup, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged()),
                                                Qt::DirectConnection);
 
