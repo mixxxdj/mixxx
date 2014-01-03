@@ -65,8 +65,9 @@ class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
     ControlLinPotmeterBehavior(double dMinValue, double dMaxValue);
     virtual ~ControlLinPotmeterBehavior();
 
-    virtual double valueToWidgetParameter(double dValue);
-    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToMidiParameter(double dValue);
+    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
+                                           ControlDoublePrivate* pControl);
 };
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
