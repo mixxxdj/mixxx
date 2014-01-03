@@ -108,8 +108,7 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
 }
 
 int WDisplay::getActivePixmapIndex() const {
-    return static_cast<int>(
-        m_value * static_cast<double>(m_pixmaps.size()) / 128.0);
+    return static_cast<int>(m_value * m_pixmaps.size());
 }
 
 void WDisplay::paintEvent(QPaintEvent* ) {
