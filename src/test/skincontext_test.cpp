@@ -16,11 +16,13 @@ class SkinContextTest : public MixxxTest {
 };
 
 TEST_F(SkinContextTest, TestVariable) {
+    // Basic check that variable lookup works.
     m_context.setVariable("test", "asdf");
     EXPECT_QSTRING_EQ("asdf", m_context.variable("test"));
 }
 
 TEST_F(SkinContextTest, UpdateVariables) {
+    // Verify that updateVariables works on all 3 types of <SetVariable> nodes.
     m_context.setVariable("test", "asdf");
     m_context.setVariable("test2", "1234");
     m_context.setVariable("test3", "foo");
@@ -29,16 +31,19 @@ TEST_F(SkinContextTest, UpdateVariables) {
     QDomDocument doc;
     QDomElement tmpl = doc.createElement("Template");
 
+    // Set test to 'zxcv'.
     QDomElement var1 = doc.createElement("SetVariable");
     var1.setAttribute("name", "test");
     var1.appendChild(doc.createTextNode("zxcv"));
     tmpl.appendChild(var1);
 
+    // Set test2 to the pattern %1_%1.
     QDomElement var2 = doc.createElement("SetVariable");
     var2.setAttribute("name", "test2");
     var2.setAttribute("format", "%1_%1");
     tmpl.appendChild(var2);
 
+    // Set test5 to the result of test3 + test4.
     QDomElement var3 = doc.createElement("SetVariable");
     var3.setAttribute("name", "test5");
     var3.setAttribute("expression", "test3 + test4");
@@ -54,8 +59,9 @@ TEST_F(SkinContextTest, UpdateVariables) {
 }
 
 TEST_F(SkinContextTest, UpdateVariables_EmbeddedVariable) {
+    // Check that an embedded <Variable> node inside a <SetVariable> node is
+    // evaluated before assigning the variable.
     m_context.setVariable("test", "asdf");
-
     QDomDocument doc;
     QDomElement tmpl = doc.createElement("Template");
     QDomElement outerVar = doc.createElement("SetVariable");
@@ -72,6 +78,7 @@ TEST_F(SkinContextTest, UpdateVariables_EmbeddedVariable) {
 }
 
 TEST_F(SkinContextTest, NoVariable) {
+    // Test that converting a node to string with no variable reference works.
     QDomDocument doc;
     QDomElement test = doc.createElement("Test");
     test.appendChild(doc.createTextNode("Hello There"));
@@ -79,6 +86,7 @@ TEST_F(SkinContextTest, NoVariable) {
 }
 
 TEST_F(SkinContextTest, VariableByName) {
+    // Evaluate a variable by name.
     QDomDocument doc;
     QDomElement test = doc.createElement("Test");
     test.appendChild(doc.createTextNode("Hello "));
@@ -90,6 +98,7 @@ TEST_F(SkinContextTest, VariableByName) {
 }
 
 TEST_F(SkinContextTest, VariableWithFormat) {
+    // Evaluate a variable with a format string.
     QDomDocument doc;
     QDomElement test = doc.createElement("Test");
     test.appendChild(doc.createTextNode("Hello "));
@@ -102,6 +111,7 @@ TEST_F(SkinContextTest, VariableWithFormat) {
 }
 
 TEST_F(SkinContextTest, VariableWithExpression) {
+    // Evaluate an ECMAScript expression in the current context.
     QDomDocument doc;
     QDomElement test = doc.createElement("Test");
     test.appendChild(doc.createTextNode("Hello "));

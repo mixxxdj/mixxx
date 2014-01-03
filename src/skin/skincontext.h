@@ -7,6 +7,9 @@
 #include <QDomElement>
 #include <QScriptEngine>
 
+// A class for managing the current context/environment when processing a
+// skin. Used hierarchically by LegacySkinParser to create new contexts and
+// evaluate skin XML nodes while loading the skin.
 class SkinContext {
   public:
     SkinContext();
@@ -15,14 +18,20 @@ class SkinContext {
 
     SkinContext& operator=(const SkinContext& other);
 
+    // Variable lookup and modification methods.
     QString variable(const QString& name) const;
     const QHash<QString, QString>& variables() const {
         return m_variables;
     }
     void setVariable(const QString& name, const QString& value);
+
+
+    // Updates the SkinContext with all the <SetVariable> children of node.
     void updateVariables(const QDomNode& node);
+    // Updates the SkinContext with 'element', a <SetVariable> node.
     void updateVariable(const QDomElement& element);
 
+    // Methods for evaluating nodes given the context.
     bool hasNode(const QDomNode& node, const QString& nodeName) const;
     QDomNode selectNode(const QDomNode& node, const QString& nodeName) const;
     QDomElement selectElement(const QDomNode& node, const QString& nodeName) const;
