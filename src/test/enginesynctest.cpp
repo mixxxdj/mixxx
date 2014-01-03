@@ -608,9 +608,9 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
-TEST_F(EngineSyncTest, EnableOneDeckFollowsMaster) {
-    // If Internal is master, and we turn sync on a playing deck, the playing deck follows the
-    // internal master but the beat distances are now aligned.
+TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
+    // If Internal is master, and we turn sync on a playing deck, the playing deck sets the
+    // internal master and the beat distances are now aligned.
 
     QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
             ConfigKey(m_sInternalClockGroup, "sync_master")));
@@ -637,9 +637,9 @@ TEST_F(EngineSyncTest, EnableOneDeckFollowsMaster) {
     assertIsMaster(m_sInternalClockGroup);
 
     // Internal clock rate should match master but beat distance should match follower.
-    ASSERT_FLOAT_EQ(124.0,
+    ASSERT_FLOAT_EQ(130.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    ASSERT_FLOAT_EQ(124.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    ASSERT_FLOAT_EQ(130.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     ASSERT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
     ASSERT_FLOAT_EQ(0.2,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
@@ -655,9 +655,9 @@ TEST_F(EngineSyncTest, EnableOneDeckFollowsMaster) {
 
     pButtonSyncEnabled2->slotSet(1.0);
 
-    ASSERT_FLOAT_EQ(124.0,
+    ASSERT_FLOAT_EQ(130.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    ASSERT_FLOAT_EQ(124.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    ASSERT_FLOAT_EQ(130.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
     ASSERT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
     ASSERT_FLOAT_EQ(0.2,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
@@ -794,5 +794,30 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     ASSERT_FLOAT_EQ(getRateSliderValue(1.0),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
+
+TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
+    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
+            ConfigKey(m_sInternalClockGroup, "sync_master")));
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    QScopedPointer<ControlObjectThread> pButtonEject1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "eject")));
+
+    pButtonMasterSyncInternal->slotSet(1.0);
+
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(120.0);
+    pButtonSyncEnabled1->slotSet(1.0);
+
+    ProcessBuffer();
+    pButtonEject1->slotSet(1.0);
+    // When an eject happens, the bpm gets set to zero.
+    pFileBpm1->set(0.0);
+    ProcessBuffer();
+
+    assertIsFollower(m_sGroup1);
+}
+
 
 }  // namespace
