@@ -45,7 +45,7 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
             this, SLOT(slotBeatDistanceChanged(double)), Qt::DirectConnection);
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(pGroup, "passthrough", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged()),
+    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
     m_pEjectButton.reset(new ControlObjectSlave(pGroup, "eject", this));
