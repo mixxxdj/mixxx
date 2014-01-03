@@ -120,14 +120,14 @@ void WOverview::setup(QDomNode node) {
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 }
 
-void WOverview::setValue(double dValue) {
+void WOverview::setValue(double fValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
-        int iPos = valueToPosition(dValue);
+        int iPos = valueToPosition(fValue);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::setValue" << dValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::setValue" << fValue << ">>" << m_iPos;
             update();
         }
     }
@@ -247,14 +247,14 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
 
-    double dValue = positionToValue(m_iPos);
+    float fValue = positionToValue(m_iPos);
 
-    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
+    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
 
     if (e->button() == Qt::RightButton) {
-        emit(valueChangedRightUp(dValue));
+        emit(valueChangedRightUp(fValue));
     } else {
-        emit(valueChangedLeftUp(dValue));
+        emit(valueChangedLeftUp(fValue));
     }
     m_bDrag = false;
 }
@@ -466,21 +466,9 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    // Play-position potmeters range from -0.14 to 1.14. This is to give VC and
-    // MIDI control access to the pre-roll area.
-    // TODO(rryan): get these limits from the CO itself.
-    const double kMaxPlayposRange = 1.14;
-    const double kMinPlayposRange = -0.14;
-
-    // Values of zero and one in normalized space.
-    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-
-    // These coeficients convert between widget space and normalized value
-    // space.
-    m_a = (width() - 1) / (one - zero);
-    m_b = zero * m_a;
-
+    //Those coeficient map position from [0;width-1] to value [14;114]
+    m_a = (float)((width()-1))/( 114.f - 14.f);
+    m_b = 14.f * m_a;
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
 }

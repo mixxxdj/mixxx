@@ -71,8 +71,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
         p.translate(width() / 2.0, height() / 2.0);
 
-        // Value is in the range [0, 1].
-        double value = getValue();
+        // Value is now in the range [0, 1].
+        double value = getValue() / 127.0;
 
         double angle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * value;
         p.rotate(angle);

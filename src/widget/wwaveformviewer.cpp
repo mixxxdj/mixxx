@@ -100,16 +100,11 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         m_pScratchPosition->slotSet(targetPosition);
     } else if (m_bBending) {
         QPoint diff = event->pos() - m_mouseAnchor;
-        // Start at the middle of [0.0, 1.0], and emit values based on how far
-        // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
-        // this is tuned to 127.
-        // NOTE(rryan): This is basically a direct connection to the "wheel"
-        // control since we manually connect it in LegacySkinParser regardless
-        // of whether the skin specifies it. See ControlTTRotaryBehavior to see
-        // where this value is handled.
-        double v = 0.5 + (diff.x() / 1270.0);
-        // clamp to [0.0, 1.0]
-        v = math_min(1.0, math_max(0.0, v));
+        // start at the middle of 0-127, and emit values based on
+        // how far the mouse has traveled horizontally
+        double v = 64.0 + diff.x()/10.0f;
+        // clamp to [0, 127]
+        v = math_min(127.0, math_max(0.0, v));
         emit(valueChangedRightDown(v));
     }
 }

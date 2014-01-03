@@ -180,8 +180,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
 
-    // Slider to show and change song position. kMinPlayposRange and
-    // kMaxPlayposRange map conveniently to the 0-127 range of 7-bit MIDI.
+    // Slider to show and change song position
+    //these bizarre choices map conveniently to the 0-127 range of midi
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),

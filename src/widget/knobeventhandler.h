@@ -31,12 +31,13 @@ class KnobEventHandler {
             }
 
             double value = pWidget->getValue();
-            // For legacy (MIDI) reasons this is tuned to 127.
-            value += dist / 127.0;
+            value += dist;
             QCursor::setPos(m_startPos);
 
-            // Clamp to [0.0, 1.0]
-            value = math_max(0.0, math_min(1.0, value));
+            if (value > 127.0)
+                value = 127.0;
+            else if (value < 0.0)
+                value = 0.0;
 
             pWidget->setValue(value);
             emit(pWidget->valueChangedLeftDown(value));
@@ -79,12 +80,11 @@ class KnobEventHandler {
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
-        // For legacy (MIDI) reasons this is tuned to 127.
-        double wheelDirection = e->delta() / (120.0 * 127.0);
+        double wheelDirection = e->delta() / 120.;
         double newValue = pWidget->getValue() + wheelDirection;
 
-        // Clamp to [0.0, 1.0]
-        newValue = math_max(0.0, math_min(1.0, newValue));
+        // Clamp to [0.0, 127.0]
+        newValue = math_max(0.0, math_min(127.0, newValue));
 
         pWidget->updateValue(newValue);
         e->accept();
