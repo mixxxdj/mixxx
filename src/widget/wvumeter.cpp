@@ -103,9 +103,8 @@ void WVuMeter::setPixmaps(const QString &vuFilename,
     }
 }
 
-void WVuMeter::setValue(double fValue)
-{
-    int idx = (int)(fValue * (float)(m_iNoPos)/128.);
+void WVuMeter::setValue(double dValue) {
+    int idx = static_cast<int>(dValue * m_iNoPos);
     // Range check
     if (idx > m_iNoPos)
         idx = m_iNoPos;
@@ -113,7 +112,7 @@ void WVuMeter::setValue(double fValue)
         idx = 0;
 
     setPeak(idx);
-    m_value = fValue;
+    m_value = dValue;
 
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
@@ -160,7 +159,7 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
-        int idx = (int)(m_value*(float)(m_iNoPos)/128.);
+        int idx = static_cast<int>(m_value * m_iNoPos);
 
         // Range check
         if (idx > m_iNoPos)
