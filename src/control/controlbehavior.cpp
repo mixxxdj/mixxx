@@ -49,19 +49,19 @@ double ControlPotmeterBehavior::defaultValue(double dDefault) const {
 }
 
 double ControlPotmeterBehavior::valueToWidgetParameter(double dValue) {
+    if (m_dValueRange == 0.0) {
+        return 0;
+    }
     if (dValue > m_dMaxValue) {
         dValue = m_dMaxValue;
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
-    if (m_dValueRange == 0.0) {
-        return 0;
-    }
     return (dValue - m_dMinValue) / m_dValueRange;
 }
 
 double ControlPotmeterBehavior::widgetParameterToValue(double dParam) {
-    return m_dMinValue + dParam * m_dValueRange;
+    return m_dMinValue + (dParam * m_dValueRange);
 }
 
 double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
@@ -82,8 +82,8 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 
 #define maxPosition 1.0
 #define minPosition 0.0
-#define middlePosition ((maxPosition-minPosition)/2.0)
-#define positionrange (maxPosition-minPosition)
+#define middlePosition ((maxPosition - minPosition) / 2.0)
+#define positionrange (maxPosition - minPosition)
 
 ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
         : ControlPotmeterBehavior(0, dMaxValue) {

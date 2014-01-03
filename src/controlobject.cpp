@@ -73,7 +73,7 @@ void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     }
 }
 
-double ControlObject::getValueToMidi() const {
+double ControlObject::getMidiParameter() const {
     return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 
