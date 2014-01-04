@@ -42,7 +42,6 @@ class WDisplay : public WWidget {
     }
 
   private:
-
     void setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
                    const QString& filename);
 
@@ -50,7 +49,7 @@ class WDisplay : public WWidget {
 
     void setPositions(int iNoPos);
 
-    virtual int getActivePixmapIndex() const;
+    int getActivePixmapIndex() const;
 
     // Free existing pixmaps.
     void resetPositions();
