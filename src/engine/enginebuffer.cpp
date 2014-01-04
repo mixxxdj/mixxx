@@ -375,7 +375,7 @@ void EngineBuffer::queueNewPlaypos(double newpos) {
 void EngineBuffer::requestSyncPhase() {
     if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
         // Only honor phase syncing if quantize is on and playing.
-        m_bSyncPhaseQueued.fetchAndStoreRelease(1);
+        m_bSyncPhaseQueued = 1;
     }
 }
 
