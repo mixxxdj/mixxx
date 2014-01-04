@@ -222,7 +222,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode attributes_node = manifest_node.namedItem("attributes");
     if (!attributes_node.isNull() && attributes_node.isElement()) {
         QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
-        for (int i = 0; i < attribute_nodes.length(); ++i) {
+        for (unsigned int i = 0; i < attribute_nodes.length(); ++i) {
             QDomNode attribute_node = attribute_nodes.item(i);
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
@@ -825,7 +825,8 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseVuMeter(QDomElement node) {
-    WVuMeter * p = new WVuMeter(m_pParent);
+    WVuMeter* p = new WVuMeter(m_pParent);
+    WaveformWidgetFactory::instance()->addTimerListener(p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -1538,10 +1539,11 @@ QString LegacySkinParser::getStyleFromNode(QDomNode node) {
     }
 
     // Legacy fixes: In Mixxx <1.12.0 we used QGroupBox for WWidgetGroup. Some
-    // skin writers used QGroupBox for styling. Now we have switched to QFrame
-    // and there should be no reason we would ever use a QGroupBox in a skin so
-    // we just rewrite all references to QGroupBox to QFrame.
-    style = style.replace("QGroupBox", "QFrame");
+    // skin writers used QGroupBox for styling. In 1.12.0 onwards, we have
+    // switched to QFrame and there should be no reason we would ever use a
+    // QGroupBox in a skin. To support legacy skins, we rewrite QGroupBox
+    // selectors to use WWidgetGroup directly.
+    style = style.replace("QGroupBox", "WWidgetGroup");
 
     return style;
 }

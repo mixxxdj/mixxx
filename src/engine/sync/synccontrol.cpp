@@ -44,8 +44,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     connect(m_pSyncBeatDistance.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatDistanceChanged(double)), Qt::DirectConnection);
 
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(pGroup, "passthrough_enabled", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged()),
+    m_pPassthroughEnabled.reset(new ControlObjectSlave(pGroup, "passthrough", this));
+    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
     m_pEjectButton.reset(new ControlObjectSlave(pGroup, "eject", this));
@@ -260,9 +260,11 @@ void SyncControl::slotFileBpmChanged() {
     // This slot is fired by file_bpm changes.
     double file_bpm = m_pFileBpm ? m_pFileBpm->get() : 0.0;
 
-    if (file_bpm == 0 && getSyncMode() != SYNC_NONE) {
-        // If the file bpm is suddenly zero and sync was active, we have to disable sync.
-        // The track will keep playing but will not respond to rate changes.
+    if (file_bpm == 0 && getSyncMode() != SYNC_NONE && m_pPlayButton->get()) {
+        // If the file bpm is suddenly zero and sync was active and we are playing,
+        // we have to disable sync. The track will keep playing but will not
+        // respond to rate changes.
+        // I think this can only happen if the beatgrid is reset.
         qWarning() << getGroup() << " Sync is enabled on track with empty or zero bpm, "
                                     "disabling master sync.";
         m_pEngineSync->requestSyncMode(this, SYNC_NONE);
