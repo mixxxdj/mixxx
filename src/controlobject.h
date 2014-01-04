@@ -82,7 +82,7 @@ class ControlObject : public QObject {
     // DEPRECATED: Called to set the control value from the controller
     // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
-    virtual double getValueToMidi() const;
+    virtual double getMidiParameter() const;
 
   protected:
     // Key of the object
