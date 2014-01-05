@@ -629,7 +629,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
             baserate = ((double)m_file_srate_old / sr);
         }
 
-        bool paused = m_playButton->get() != 0.0f ? false : true;
+        bool paused = m_playButton->get() == 0.0f;
         bool is_scratching = false;
         bool keylock_enabled = m_pKeylock->get() > 0;
 
@@ -936,7 +936,6 @@ void EngineBuffer::processSlip(int iBufferSize) {
 }
 
 void EngineBuffer::processSeek() {
-    bool paused = m_playButton->get() != 0.0f ? false : true;
     SeekRequest seek_type =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     switch (seek_type) {
@@ -945,7 +944,8 @@ void EngineBuffer::processSeek() {
     case SEEK_EXACT:
         setNewPlaypos(m_dQueuedPosition);
         break;
-    case SEEK_STANDARD:
+    case SEEK_STANDARD: {
+        bool paused = m_playButton->get() == 0.0f;
         // If we are playing and quantize is on, match phase when seeking.
         if (!paused && m_pQuantize->get() > 0.0) {
             int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
@@ -956,7 +956,8 @@ void EngineBuffer::processSeek() {
         }
         setNewPlaypos(m_dQueuedPosition);
         break;
-    case SEEK_PHASE:
+    }
+    case SEEK_PHASE: {
         // XXX: syncPhase is private in bpmcontrol, so we seek directly.
         double dThisPosition = m_pBpmControl->getCurrentSample();
         double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
@@ -967,6 +968,11 @@ void EngineBuffer::processSeek() {
             }
             setNewPlaypos(dNewPlaypos);
         }
+        break;
+    }
+    default:
+        qWarning() << "Unhandled seek request type: " << seek_type;
+        return;
     }
 }
 
