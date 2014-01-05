@@ -44,14 +44,20 @@ WSliderComposed::~WSliderComposed() {
 
 void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     // Setup pixmaps
-    QString pathSlider = getPath(context.selectString(node, "Slider"));
+    unsetPixmaps();
+
+    if (context.hasNode(node, "Slider")) {
+        QString pathSlider = getPath(context.selectString(node, "Slider"));
+        setSliderPixmap(pathSlider);
+    }
+
     QString pathHandle = getPath(context.selectString(node, "Handle"));
     QString pathHorizontal = context.selectString(node, "Horizontal");
     bool h = false;
     if (pathHorizontal.contains("true",Qt::CaseInsensitive)) {
         h = true;
     }
-    setPixmaps(h, pathSlider, pathHandle);
+    setHandlePixmap(h, pathHandle);
 
     if (context.hasNode(node, "EventWhileDrag")) {
         if (context.selectString(node, "EventWhileDrag").contains("no")) {
@@ -60,9 +66,7 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle) {
-    m_bHorizontal = bHorizontal;
-    unsetPixmaps();
+void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
     m_pSlider = WPixmapStore::getPaintable(filenameSlider);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
@@ -70,7 +74,10 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
         // Set size of widget, using size of slider pixmap
         setFixedSize(m_pSlider->size());
     }
+}
 
+void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameHandle) {
+    m_bHorizontal = bHorizontal;
     m_pHandle = WPixmapStore::getPaintable(filenameHandle);
     if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
