@@ -83,7 +83,7 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
 }
 
 void EffectsManager::setupDefaults() {
-    m_pEffectChainManager->loadEffectChains();
+    //m_pEffectChainManager->loadEffectChains();
 
     EffectRackPointer pRack = m_pEffectChainManager->addEffectRack();
     pRack->addEffectChainSlot();
@@ -123,6 +123,14 @@ void EffectsManager::setupDefaults() {
     pChain->setName(tr("Reverb"));
     pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.reverb");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
+
+    pChain = EffectChainPointer(new EffectChain(
+        this, "org.mixxx.effectchain.echo"));
+    pChain->setName(tr("Echo"));
+    pChain->setParameter(0.0f);
+    pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 }
