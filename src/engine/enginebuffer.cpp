@@ -89,8 +89,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pScaleRB(NULL),
     m_bScalerChanged(false),
     m_bScalerOverride(false),
-    m_bSeekQueued(0),
-    m_bSyncPhaseQueued(0),
+    m_iSeekQueued(NO_SEEK),
     m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
     m_iTrackLoading(0),
@@ -365,17 +364,21 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     m_engineLock.unlock();
 }
 
-void EngineBuffer::queueNewPlaypos(double newpos) {
+void EngineBuffer::queueNewPlaypos(double newpos, bool exact) {
     // Temp Workaround: All seeks need to be done in the Engine thread so queue
     // it up.
     m_dQueuedPosition = newpos;
-    m_bSeekQueued.fetchAndStoreRelease(1);
+    if (exact) {
+        m_iSeekQueued.fetchAndStoreRelease(SEEK_EXACT);
+    } else {
+        m_iSeekQueued.fetchAndStoreRelease(SEEK_STANDARD);
+    }
 }
 
 void EngineBuffer::requestSyncPhase() {
     if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
         // Only honor phase syncing if quantize is on and playing.
-        m_bSyncPhaseQueued = 1;
+        m_iSeekQueued = SEEK_PHASE;
     }
 }
 
@@ -490,15 +493,28 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
-    slotControlSeek(0.);
+    doSeek(0., /* exact */ true);
     m_pause.unlock();
 
     emit(trackUnloaded(pTrack));
 }
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
-void EngineBuffer::slotControlSeek(double change)
-{
+void EngineBuffer::slotControlSeek(double change) {
+    doSeek(change, /* exact */ false);
+}
+
+// WARNING: This method runs from SyncWorker and Engine Worker
+void EngineBuffer::slotControlSeekAbs(double abs) {
+    doSeek(abs / m_file_length_old, /* exact */ false);
+}
+
+// WARNING: This method runs from SyncWorker and Engine Worker
+void EngineBuffer::slotControlSeekExact(double abs) {
+    doSeek(abs / m_file_length_old, /* exact */ true);
+}
+
+void EngineBuffer::doSeek(double change, bool exact) {
     if(isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
         // This seek is ridiculous.
         return;
@@ -516,13 +532,7 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    queueNewPlaypos(new_playpos);
-}
-
-// WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekAbs(double abs)
-{
-    slotControlSeek(abs / m_file_length_old);
+    queueNewPlaypos(new_playpos, exact);
 }
 
 void EngineBuffer::slotControlPlayRequest(double v)
@@ -546,21 +556,21 @@ void EngineBuffer::slotControlPlayRequest(double v)
 void EngineBuffer::slotControlStart(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(0.);
+        doSeek(0., /* exact */ true);
     }
 }
 
 void EngineBuffer::slotControlEnd(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(1.);
+        doSeek(1., /* exact */ true);
     }
 }
 
 void EngineBuffer::slotControlPlayFromStart(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(0.);
+        doSeek(0., /* exact */ true);
         m_playButton->set(1);
     }
 }
@@ -568,7 +578,7 @@ void EngineBuffer::slotControlPlayFromStart(double v)
 void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(0.);
+        doSeek(0., /* exact */ true);
         m_playButton->set(0);
     }
 }
@@ -641,29 +651,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
                                           fabs(speed) < 1.5;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
-        if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
-            // If we are playing and quantize is on, match phase when seeking.
-            if (!paused && m_pQuantize->get() > 0.0) {
-                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
-                if (!even(offset)) {
-                    offset--;
-                }
-                m_dQueuedPosition += offset;
-            }
-            setNewPlaypos(m_dQueuedPosition);
-        }
-        if (m_bSyncPhaseQueued.testAndSetAcquire(1, 0)) {
-            // XXX: syncPhase is private in bpmcontrol, so we seek directly.
-            double dThisPosition = m_pBpmControl->getCurrentSample();
-            double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
-            if (offset != 0.0) {
-                double dNewPlaypos = round(dThisPosition + offset);
-                if (!even(dNewPlaypos)) {
-                    dNewPlaypos--;
-                }
-                setNewPlaypos(dNewPlaypos);
-            }
-        }
+        processSeek();
 
         // If the baserate, speed, or pitch has changed, we need to update the
         // scaler. Also, if we have changed scalers then we need to update the
@@ -833,7 +821,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
                 && end_of_track) {
             if (repeat_enabled) {
                 double seekPosition = at_start ? m_file_length_old : 0;
-                slotControlSeek(seekPosition);
+                doSeek(seekPosition, /* exact */ false);
             } else {
                 m_playButton->set(0.);
             }
@@ -935,7 +923,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_dSlipRate = m_rate_old;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
-            slotControlSeekAbs(m_dSlipPosition);
+            slotControlSeekExact(m_dSlipPosition);
             m_dSlipPosition = 0;
         }
         m_bSlipToggled = false;
@@ -947,6 +935,41 @@ void EngineBuffer::processSlip(int iBufferSize) {
     }
 }
 
+void EngineBuffer::processSeek() {
+    bool paused = m_playButton->get() != 0.0f ? false : true;
+    bool ignore_quantize = false;
+    SeekRequest seek_type =
+            static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
+    switch (seek_type) {
+    case NO_SEEK:
+        return;
+    case SEEK_EXACT:
+        ignore_quantize = true;
+        // fallthrough intended
+    case SEEK_STANDARD:
+        // If we are playing and quantize is on, match phase when seeking.
+        if (!paused && m_pQuantize->get() > 0.0 && !ignore_quantize) {
+            int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
+            if (!even(offset)) {
+                offset--;
+            }
+            m_dQueuedPosition += offset;
+        }
+        setNewPlaypos(m_dQueuedPosition);
+        break;
+    case SEEK_PHASE:
+        // XXX: syncPhase is private in bpmcontrol, so we seek directly.
+        double dThisPosition = m_pBpmControl->getCurrentSample();
+        double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
+        if (offset != 0.0) {
+            double dNewPlaypos = round(dThisPosition + offset);
+            if (!even(dNewPlaypos)) {
+                dNewPlaypos--;
+            }
+            setNewPlaypos(dNewPlaypos);
+        }
+    }
+}
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
