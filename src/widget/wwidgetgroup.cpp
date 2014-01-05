@@ -16,6 +16,11 @@ WWidgetGroup::WWidgetGroup(QWidget* pParent)
 WWidgetGroup::~WWidgetGroup() {
 }
 
+int WWidgetGroup::layoutSpacing() const {
+    QLayout* pLayout = layout();
+    return pLayout ? pLayout->spacing() : 0;
+}
+
 void WWidgetGroup::setLayoutSpacing(int spacing) {
     //qDebug() << "WWidgetGroup::setSpacing" << spacing;
     if (spacing < 0) {
@@ -26,6 +31,14 @@ void WWidgetGroup::setLayoutSpacing(int spacing) {
     if (pLayout) {
         pLayout->setSpacing(spacing);
     }
+}
+
+QRect WWidgetGroup::layoutContentsMargins() const {
+    QLayout* pLayout = layout();
+    QMargins margins = pLayout ? pLayout->contentsMargins() :
+            contentsMargins();
+    return QRect(margins.left(), margins.top(),
+                 margins.right(), margins.bottom());
 }
 
 void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
@@ -46,6 +59,11 @@ void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
         pLayout->setContentsMargins(rectMargins.x(), rectMargins.y(),
                                     rectMargins.width(), rectMargins.height());
     }
+}
+
+Qt::Alignment WWidgetGroup::layoutAlignment() const {
+    QLayout* pLayout = layout();
+    return pLayout ? pLayout->alignment() : Qt::Alignment();
 }
 
 void WWidgetGroup::setLayoutAlignment(int alignment) {
