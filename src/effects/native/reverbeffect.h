@@ -14,12 +14,11 @@
 #include "effects/native/waveguide_nl.h"
 #include "sampleutil.h"
 
-class ReverbEffect : public EffectProcessor {
-  private:
-    #define LP_INNER 0.96f
-    #define LP_OUTER 0.983f
-    #define RUN_WG(n, junct_a, junct_b) waveguide_nl_process_lin(m_pWaveguide[n], junct_a - m_pOut[n*2+1], junct_b - m_pOut[n*2], m_pOut+n*2, m_pOut+n*2+1)
+#define LP_INNER 0.96f
+#define LP_OUTER 0.983f
+const unsigned int kOutBufSize = 32;
 
+class ReverbEffect : public EffectProcessor {
   public:
     ReverbEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~ReverbEffect();
@@ -39,20 +38,25 @@ class ReverbEffect : public EffectProcessor {
 
     EngineEffectParameter* m_pTimeParameter;
     EngineEffectParameter* m_pDampingParameter;
-    waveguide_nl** m_pWaveguide;
-    CSAMPLE* m_pOut;
 
     struct GroupState {
-        GroupState()
-                : delayPos(0),
-                  time(0) {
-            SampleUtil::applyGain(delayBuffer, 0, MAX_BUFFER_LEN);
+        GroupState() {
+            waveguide = (waveguide_nl**)malloc(8 * sizeof(waveguide_nl *));
+            waveguide[0] = waveguide_nl_new(2389, LP_INNER, 0.04f, 0.0f);
+            waveguide[1] = waveguide_nl_new(4742, LP_INNER, 0.17f, 0.0f);
+            waveguide[2] = waveguide_nl_new(4623, LP_INNER, 0.52f, 0.0f);
+            waveguide[3] = waveguide_nl_new(2142, LP_INNER, 0.48f, 0.0f);
+            waveguide[4] = waveguide_nl_new(5597, LP_OUTER, 0.32f, 0.0f);
+            waveguide[5] = waveguide_nl_new(3692, LP_OUTER, 0.89f, 0.0f);
+            waveguide[6] = waveguide_nl_new(5611, LP_OUTER, 0.28f, 0.0f);
+            waveguide[7] = waveguide_nl_new(3703, LP_OUTER, 0.29f, 0.0f);
+
+            out = SampleUtil::alloc(kOutBufSize);
         }
-        CSAMPLE delayBuffer[MAX_BUFFER_LEN];
-        unsigned int delayPos;
-        unsigned int time;
+        waveguide_nl** waveguide;
+        CSAMPLE* out;
     };
-    QMap<QString, GroupState> m_groupState;
+    QMap<QString, GroupState*> m_groupState;
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };
