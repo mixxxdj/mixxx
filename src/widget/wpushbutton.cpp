@@ -70,11 +70,15 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
             int iState = context.selectInt(state, "Number");
-            setPixmap(iState, true,
-                      getPath(context.selectString(state, "Pressed")));
+            if (context.hasNode(state, "Pressed")) {
+                setPixmap(iState, true,
+                          getPath(context.selectString(state, "Pressed")));
+            }
+            if (context.hasNode(state, "Unpressed")) {
+                setPixmap(iState, false,
+                          getPath(context.selectString(state, "Unpressed")));
+            }
             m_text[iState] = context.selectString(state, "Text");
-            setPixmap(iState, false,
-                      getPath(context.selectString(state, "Unpressed")));
         }
         state = state.nextSibling();
     }
