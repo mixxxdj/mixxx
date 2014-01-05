@@ -937,18 +937,17 @@ void EngineBuffer::processSlip(int iBufferSize) {
 
 void EngineBuffer::processSeek() {
     bool paused = m_playButton->get() != 0.0f ? false : true;
-    bool ignore_quantize = false;
     SeekRequest seek_type =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     switch (seek_type) {
     case NO_SEEK:
         return;
     case SEEK_EXACT:
-        ignore_quantize = true;
-        // fallthrough intended
+        setNewPlaypos(m_dQueuedPosition);
+        break;
     case SEEK_STANDARD:
         // If we are playing and quantize is on, match phase when seeking.
-        if (!paused && m_pQuantize->get() > 0.0 && !ignore_quantize) {
+        if (!paused && m_pQuantize->get() > 0.0) {
             int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
             if (!even(offset)) {
                 offset--;
