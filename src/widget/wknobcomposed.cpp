@@ -12,25 +12,25 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
 WKnobComposed::~WKnobComposed() {
 }
 
-void WKnobComposed::setup(QDomNode node) {
+void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     clear();
 
     // Set background pixmap if available
-    if (!selectNode(node, "BackPath").isNull()) {
-        setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
+    if (context.hasNode(node, "BackPath")) {
+        setPixmapBackground(getPath(context.selectString(node, "BackPath")));
     }
 
     // Set background pixmap if available
-    if (!selectNode(node, "Knob").isNull()) {
-        setPixmapKnob(getPath(selectNodeQString(node, "Knob")));
+    if (context.hasNode(node, "Knob")) {
+        setPixmapKnob(getPath(context.selectString(node, "Knob")));
     }
 
-    if (!selectNode(node, "MinAngle").isNull()) {
-        m_dMinAngle = selectNodeDouble(node, "MinAngle");
+    if (context.hasNode(node, "MinAngle")) {
+        m_dMinAngle = context.selectDouble(node, "MinAngle");
     }
 
-    if (!selectNode(node, "MaxAngle").isNull()) {
-        m_dMaxAngle = selectNodeDouble(node, "MaxAngle");
+    if (context.hasNode(node, "MaxAngle")) {
+        m_dMaxAngle = context.selectDouble(node, "MaxAngle");
     }
 }
 

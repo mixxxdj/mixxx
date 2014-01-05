@@ -22,7 +22,7 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* wavefor
 WaveformRenderMarkRange::~WaveformRenderMarkRange() {
 }
 
-void WaveformRenderMarkRange::setup(const QDomNode &node) {
+void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& context) {
     m_markRanges.clear();
     m_markRanges.reserve(1);
 
@@ -30,7 +30,8 @@ void WaveformRenderMarkRange::setup(const QDomNode &node) {
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
-            m_markRanges.back().setup(m_waveformRenderer->getGroup(), child, *m_waveformRenderer->getWaveformSignalColors());
+            m_markRanges.back().setup(m_waveformRenderer->getGroup(), child,
+                                      context, *m_waveformRenderer->getWaveformSignalColors());
         }
         child = child.nextSibling();
     }

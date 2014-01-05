@@ -11,6 +11,7 @@
 #include "defs.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
+#include "skin/skincontext.h"
 
 class ControlObjectThread;
 class WaveformWidgetAbstract;
@@ -23,7 +24,7 @@ class WWaveformViewer : public QWidget {
     virtual ~WWaveformViewer();
 
     const char* getGroup() const { return m_pGroup;}
-    void setup(QDomNode node = QDomNode());
+    void setup(QDomNode node, const SkinContext& context);
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);

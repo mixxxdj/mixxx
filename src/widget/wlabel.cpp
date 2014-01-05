@@ -36,36 +36,36 @@ WLabel::~WLabel() {
     delete m_pLabel;
 }
 
-void WLabel::setup(QDomNode node) {
+void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Colors
     QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
-    if (!WWidget::selectNode(node, "BgColor").isNull()) {
-        m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    if (context.hasNode(node, "BgColor")) {
+        m_qBgColor.setNamedColor(context.selectString(node, "BgColor"));
         palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
         m_pLabel->setAutoFillBackground(true);
     }
-    m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+    m_qFgColor.setNamedColor(context.selectString(node, "FgColor"));
     palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
     m_pLabel->setPalette(palette);
 
     // Text
-    if (!selectNode(node, "Text").isNull())
-        m_qsText = selectNodeQString(node, "Text");
+    if (context.hasNode(node, "Text"))
+        m_qsText = context.selectString(node, "Text");
     m_pLabel->setText(m_qsText);
 
     // Font size
-    if (!selectNode(node, "FontSize").isNull()) {
+    if (context.hasNode(node, "FontSize")) {
         int fontsize = 9;
-        fontsize = selectNodeQString(node, "FontSize").toInt();
+        fontsize = context.selectString(node, "FontSize").toInt();
         m_pLabel->setFont( QFont("Helvetica",fontsize,QFont::Normal) );
     }
 
     // Alignment
-    if (!selectNode(node, "Alignment").isNull()) {
-        if (selectNodeQString(node, "Alignment")=="right") {
-            m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-        } else if (selectNodeQString(node, "Alignment")=="center") {
-            m_pLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+    if (context.hasNode(node, "Alignment")) {
+        if (context.selectString(node, "Alignment") == "right") {
+            m_pLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        } else if (context.selectString(node, "Alignment") == "center") {
+            m_pLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         }
     }
 }

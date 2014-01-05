@@ -16,7 +16,7 @@
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
-WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) 
+WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group)
     : m_group(group),
       m_trackInfoObject(0),
       m_height(-1),
@@ -231,7 +231,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     //qDebug() << "draw() ende" << timer.restart();
 }
 
-void WaveformWidgetRenderer::resize( int width, int height) {
+void WaveformWidgetRenderer::resize(int width, int height) {
     m_width = width;
     m_height = height;
     for( int i = 0; i < m_rendererStack.size(); ++i) {
@@ -240,10 +240,10 @@ void WaveformWidgetRenderer::resize( int width, int height) {
     }
 }
 
-void WaveformWidgetRenderer::setup( const QDomNode& node) {
-    m_colors.setup(node);
+void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& context) {
+    m_colors.setup(node, context);
     for (int i = 0; i < m_rendererStack.size(); ++i) {
-        m_rendererStack[i]->setup(node);
+        m_rendererStack[i]->setup(node, context);
     }
 }
 
@@ -271,4 +271,3 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
         m_rendererStack[i]->onSetTrack();
     }
 }
-

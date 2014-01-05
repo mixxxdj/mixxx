@@ -17,6 +17,7 @@ class Library;
 class MixxxKeyboard;
 class PlayerManager;
 class ControllerManager;
+class SkinContext;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
@@ -38,11 +39,14 @@ class LegacySkinParser : public QObject, public SkinParser {
   private:
     static QDomElement openSkin(QString skinPath);
 
-    QWidget* parseNode(QDomElement node);
+    QList<QWidget*> parseNode(QDomElement node);
 
     // Support for various legacy behavior
     void parseColorSchemes(QDomElement node);
     bool compareConfigKeys(QDomNode node, QString key);
+
+    // Load the given template from file and return its document element.
+    QDomElement loadTemplate(const QString& path);
 
     // Parsers for each node
     QWidget* parseWidgetGroup(QDomElement node);
@@ -72,6 +76,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
     QWidget* parseKey(QDomElement node);
+    QList<QWidget*> parseTemplate(QDomElement node);
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
@@ -90,8 +95,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
-    QWidget *m_pParent;
+    QWidget* m_pParent;
+    SkinContext* m_pContext;
     Tooltips m_tooltips;
+    QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
 };

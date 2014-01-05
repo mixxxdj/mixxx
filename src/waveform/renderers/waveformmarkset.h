@@ -1,8 +1,10 @@
 #ifndef WAVEFORMMARKSET_H
 #define WAVEFORMMARKSET_H
 
-#include "waveformmark.h"
 #include <QList>
+
+#include "waveformmark.h"
+#include "skin/skincontext.h"
 
 class WaveformWidgetRenderer;
 
@@ -12,7 +14,8 @@ public:
     WaveformMarkSet();
     ~WaveformMarkSet();
     void setup(const QString& group, const QDomNode& node,
-            const WaveformSignalColors& signalColors);
+               const SkinContext& context,
+               const WaveformSignalColors& signalColors);
     void clear();
 
     int size() const { return m_marks.size();}

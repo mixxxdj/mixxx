@@ -3,6 +3,8 @@
 
 #include <QImage>
 
+#include "skin/skincontext.h"
+
 class ControlObjectThread;
 class QDomNode;
 class WaveformSignalColors;
@@ -24,7 +26,8 @@ class WaveformMarkRange {
     double end();
 
     void setup(const QString &group, const QDomNode& node,
-            const WaveformSignalColors& signalColors);
+               const SkinContext& context,
+               const WaveformSignalColors& signalColors);
 
   private:
     void generateImage(int weidth, int height);

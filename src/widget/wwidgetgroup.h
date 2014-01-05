@@ -10,6 +10,7 @@
 #include <QWidget>
 
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 class WWidgetGroup : public QFrame {
     Q_OBJECT
@@ -36,7 +37,7 @@ class WWidgetGroup : public QFrame {
     void setLayoutContentsMargins(QRect margins);
     void setLayoutAlignment(int alignment);
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
     void setPixmapBackground(const QString &filename);
     void addWidget(QWidget* pChild);
 

@@ -49,9 +49,10 @@ WWaveformViewer::~WWaveformViewer() {
     delete m_pScratchPosition;
 }
 
-void WWaveformViewer::setup(QDomNode node) {
+void WWaveformViewer::setup(QDomNode node, const SkinContext& context) {
+    Q_UNUSED(context);
     if (m_waveformWidget)
-        m_waveformWidget->setup(node);
+        m_waveformWidget->setup(node, context);
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {

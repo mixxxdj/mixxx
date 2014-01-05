@@ -62,45 +62,6 @@ void WWidget::slotReEmitValueUp(double value) {
     emit(valueChangedUp(value));
 }
 
-int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode) {
-    bool ok = false;
-    int conv = selectNode(nodeHeader, sNode).toElement().text().toInt(&ok, 0);
-    return ok ? conv : 0;
-}
-
-float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode) {
-    bool ok = false;
-    float conv = selectNode(nodeHeader, sNode).toElement().text().toFloat(&ok);
-    return ok ? conv : 0.0f;
-}
-
-double WWidget::selectNodeDouble(const QDomNode &nodeHeader, const QString sNode) {
-    bool ok = false;
-    double conv = selectNode(nodeHeader, sNode).toElement().text().toDouble(&ok);
-    return ok ? conv : 0.0;
-}
-
-QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNode) {
-    QString ret;
-    QDomNode node = selectNode(nodeHeader, sNode);
-    if (!node.isNull())
-        ret = node.toElement().text();
-    else
-        ret = "";
-    return ret;
-}
-
-QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode) {
-    QDomNode node = nodeHeader.firstChild();
-    while (!node.isNull())
-    {
-        if (node.nodeName() == sNode)
-            return node;
-        node = node.nextSibling();
-    }
-    return node;
-}
-
 const QString WWidget::getPath(QString location) {
     QString l(location);
     return l.prepend(m_qPath);
