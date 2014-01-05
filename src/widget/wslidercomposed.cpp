@@ -108,16 +108,19 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         int sliderLength = m_bHorizontal ? width() : height();
 
+        // Clamp to the range [0, sliderLength - m_iHandleLength].
         if (m_iPos > (sliderLength - m_iHandleLength)) {
             m_iPos = sliderLength - m_iHandleLength;
         } else if (m_iPos < 0) {
             m_iPos = 0;
         }
 
-        // value ranges from 0 to 127
-        m_value = (double)m_iPos * (127. / (double)(sliderLength - m_iHandleLength));
+        // Divide by (sliderLength - m_iHandleLength) to produce a normalized
+        // value in the range of [0.0, 1.0].  1.0
+        m_value = static_cast<double>(m_iPos) /
+                static_cast<double>(sliderLength - m_iHandleLength);
         if (!m_bHorizontal) {
-            m_value = 127. - m_value;
+            m_value = 1.0 - m_value;
         }
 
         // Emit valueChanged signal
@@ -135,9 +138,14 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 }
 
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
-    double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
+    // For legacy (MIDI) reasons this is tuned to 127.
+    double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
+    double newValue = getValue() + wheelDirection;
+
+    // Clamp to [0.0, 1.0]
+    newValue = math_max(0.0, math_min(1.0, newValue));
+
+    updateValue(newValue);
 
     e->accept();
 
@@ -199,18 +207,18 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
-void WSliderComposed::setValue(double fValue) {
-    if (!m_bDrag && m_value != fValue) {
+void WSliderComposed::setValue(double dValue) {
+    if (!m_bDrag && m_value != dValue) {
         // Set value without emitting a valueChanged signal
         // and force display update
-        m_value = fValue;
+        m_value = dValue;
 
         // Calculate handle position
         if (!m_bHorizontal) {
-            fValue = 127-fValue;
+            dValue = 1.0 - dValue;
         }
         int sliderLength = m_bHorizontal ? width() : height();
-        m_iPos = (int)((fValue / 127.) * (double)(sliderLength - m_iHandleLength));
+        m_iPos = static_cast<int>(dValue * (sliderLength - m_iHandleLength));
 
         if (m_iPos > (sliderLength - m_iHandleLength)) {
             m_iPos = sliderLength - m_iHandleLength;

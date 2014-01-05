@@ -80,11 +80,11 @@ void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget) {
 }
 
 double ControlObjectThreadWidget::get() {
-    return m_pControl ? m_pControl->getWidgetParameter() : 0.0;
+    return m_pControl ? m_pControl->getParameter() : 0.0;
 }
 
 void ControlObjectThreadWidget::set(double v) {
     if (m_pControl) {
-        m_pControl->setWidgetParameter(v, this);
+        m_pControl->setParameter(v, this);
     }
 }

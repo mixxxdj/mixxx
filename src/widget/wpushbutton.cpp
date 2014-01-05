@@ -189,6 +189,7 @@ void WPushButton::setValue(double v) {
 }
 
 void WPushButton::paintEvent(QPaintEvent* e) {
+    Q_UNUSED(e);
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);
