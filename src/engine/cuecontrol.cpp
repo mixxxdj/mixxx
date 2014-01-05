@@ -327,7 +327,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     bool playing = m_pPlayButton->get() > 0;
     if (!playing && m_pQuantizeEnabled->get() > 0.0) {
         lock.unlock();  // prevent deadlock.
-        seekExact(cuePosition);
+        // Enginebuffer will quantize more exactly than we can.
+        seekAbs(cuePosition);
     }
 }
 
@@ -347,7 +348,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
-            seekExact(position);
+            seekAbs(position);
         }
     }
 }
@@ -390,7 +391,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
-            seekExact(position);
+            seekAbs(position);
             m_pPlayButton->set(1.0);
         }
     }
@@ -458,7 +459,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            seekExact(iPosition);
+            seekAbs(iPosition);
         }
     } else if (m_bPreviewingHotcue) {
         // This is a activate release and we are previewing at least one
@@ -590,7 +591,7 @@ void CueControl::cueGoto(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekExact(cuePoint);
+    seekAbs(cuePoint);
 }
 
 void CueControl::cueGotoAndPlay(double v)
@@ -637,7 +638,7 @@ void CueControl::cuePreview(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekExact(cuePoint);
+    seekAbs(cuePoint);
 }
 
 void CueControl::cueSimple(double v) {
@@ -656,7 +657,7 @@ void CueControl::cueSimple(double v) {
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekExact(cuePoint);
+    seekAbs(cuePoint);
 }
 
 void CueControl::cueCDJ(double v) {
@@ -680,7 +681,7 @@ void CueControl::cueCDJ(double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            seekExact(cuePoint);
+            seekAbs(cuePoint);
         } else {
             if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
                 m_pPlayButton->set(1.0);
@@ -694,7 +695,8 @@ void CueControl::cueCDJ(double v) {
                 // necessarily where we currently are
                 if (m_pQuantizeEnabled->get() > 0.0) {
                     lock.unlock();  // prevent deadlock.
-                    seekExact(m_pCuePoint->get());
+                    // Enginebuffer will quantize more exactly than we can.
+                    seekAbs(m_pCuePoint->get());
                 }
             }
         }
@@ -705,7 +707,7 @@ void CueControl::cueCDJ(double v) {
         // Need to unlock before emitting any signals to prevent deadlock.
         lock.unlock();
 
-        seekExact(cuePoint);
+        seekAbs(cuePoint);
     }
     else {
         // Re-trigger the play button value so controllers get the correct one
