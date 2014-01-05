@@ -10,7 +10,7 @@ const unsigned int kOutBufSize = 32;
 
 // static
 QString ReverbEffect::getId() {
-    return "org.mixxx.effects.Reverb";
+    return "org.mixxx.effects.reverb";
 }
 
 // static

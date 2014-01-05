@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct waveguide_nl {
+typedef struct {
 	int size;
 	float *buffer[2];
 	int ptr;
@@ -14,9 +14,9 @@ struct waveguide_nl {
 	float a1a;
 	float a1b;
 	float zm1[2];
-};
+} waveguide_nl;
 
-waveguide_nl *waveguide_nl_new(int size, float fc, float da, float db)
+inline waveguide_nl *waveguide_nl_new(int size, float fc, float da, float db)
 {
 	waveguide_nl *wg = (waveguide_nl*)malloc(sizeof(waveguide_nl));
 	wg->size = size;
