@@ -20,3 +20,11 @@ lib/*/lib/*.a
 mixxx
 mixxx-test
 res/qrc_mixxx.cc
+.runsettings/
+Mixxx.config
+Mixxx.creator
+Mixxx.creator.user
+Mixxx.files
+Mixxx.includes
+run_this.sh
+
