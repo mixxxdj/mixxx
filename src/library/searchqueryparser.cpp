@@ -12,7 +12,6 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                   << "composer"
                   << "grouping"
                   << "comment"
-                  << "key"
                   << "location";
     m_numericFilters << "year"
                      << "track"
@@ -23,7 +22,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "bitrate";
     // TODO(XXX): For now key search is text-only. In the future we want to
     // support multiple notations of key searching.
-    //m_specialFilters << "key";
+    m_specialFilters << "key";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -231,11 +230,36 @@ bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
     // key. The handling here will depend on how we represent the keys in the
     // database but it should ideally automatically deal with all the different
     // representations there are for keys.
-    Q_UNUSED(field);
-    Q_UNUSED(argument);
-    Q_UNUSED(tokens);
-    Q_UNUSED(output);
-    return false;
+    //    qDebug() << "YO";
+
+    QStringList sqlColumns = m_fieldToSqlColumns.value(field);
+    if (sqlColumns.isEmpty()) {
+        return false;
+    }
+
+    QString filter = getTextArgument(argument, tokens).trimmed();
+    if (filter.length() == 0) {
+        qDebug() << "Text filter for" << field << "was empty.";
+        return false;
+    }
+
+    FieldEscaper escaper(m_database);
+    QString escapedFilterA = escaper.escapeString(filter + "A");
+    QString escapedFilterB = escaper.escapeString(filter + "B");
+    QString escapedFilterE = escaper.escapeString(filter);
+    QStringList searchClauses;
+    foreach (const QString sqlColumn, sqlColumns) {
+        searchClauses << QString("(%1 LIKE %2 OR %1 LIKE %3 OR %1 LIKE %4)").arg(sqlColumn
+                                                                                ,escapedFilterA
+                                                                                ,escapedFilterB
+                                                                                ,escapedFilterE
+                                                                                );
+    }
+    *output << (searchClauses.length() > 1 ?
+                    QString("(%1)").arg(searchClauses.join(" OR ")) :
+                    searchClauses[0]);
+    qDebug() << *output;
+    return true;
 }
 
 void SearchQueryParser::parseTokens(QStringList tokens,
