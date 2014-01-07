@@ -19,6 +19,11 @@
 #include "util/stat.h"
 #include "engine/enginedeck.h"
 
+// static
+PlayerManager::DeckOrderingManager PlayerManager::s_deckOrderingManager =
+    PlayerManager::DeckOrderingManager();
+PlayerManager::DeckOrderingManager::deck_order_t PlayerManager::s_currentDeckOrder;
+
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
                              EngineMaster* pEngine) :
@@ -178,6 +183,36 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
 
     while (m_decks.size() < num) {
         addDeckInner();
+    }
+}
+
+void PlayerManager::setDeckOrder(QString deckorder) {
+    int num_decks = m_pCONumDecks->get();
+    bool found_valid = false;
+    foreach(const PlayerManager::DeckOrderingManager::deck_order_t& order,
+            PlayerManager::getDeckOrderings(num_decks)) {
+        if (order.label == deckorder) {
+            found_valid = true;
+            s_currentDeckOrder = order;
+        }
+    }
+    if (!found_valid) {
+        s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(num_decks);
+    }
+    reorientDecks();
+}
+
+void PlayerManager::reorientDecks() {
+    int total_decks = static_cast<int>(m_pCONumDecks->get());
+    for (int i = 1; i < total_decks + 1; ++i) {
+        ControlObject* orientation =
+            ControlObject::getControl(
+                ConfigKey(QString("[Channel%1]").arg(i), "orientation"));
+        if (i > total_decks / 2) {
+            orientation->set(EngineChannel::RIGHT);
+        } else {
+            orientation->set(EngineChannel::LEFT);
+        }
     }
 }
 
@@ -372,9 +407,9 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     QMutexLocker locker(&m_mutex);
-    QList<Deck*>::iterator it = m_decks.begin();
-    while (it != m_decks.end()) {
-        Deck* pDeck = *it;
+
+    foreach(const int& i, s_currentDeckOrder.load_order) {
+        Deck* pDeck = m_decks.at(i);
         ControlObject* playControl =
                 ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
@@ -382,7 +417,6 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
             pDeck->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
     }
 }
 

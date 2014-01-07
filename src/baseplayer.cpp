@@ -9,6 +9,6 @@ BasePlayer::~BasePlayer() {
 
 }
 
-const QString BasePlayer::getGroup() {
+const QString BasePlayer::getGroup() const {
     return m_group;
 }

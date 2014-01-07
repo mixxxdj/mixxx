@@ -80,7 +80,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="TextLabel6_2_2_3">
        <property name="enabled">
         <bool>true</bool>
@@ -99,7 +99,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1" colspan="2">
+     <item row="4" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxPosition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -112,7 +112,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="TextLabel6_2_2_3_2">
        <property name="enabled">
         <bool>true</bool>
@@ -131,7 +131,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="2">
+     <item row="5" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxTooltips">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -144,7 +144,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="TextLabel6">
        <property name="enabled">
         <bool>true</bool>
@@ -163,7 +163,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="2">
+     <item row="6" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -176,7 +176,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="TextLabel6_2">
        <property name="enabled">
         <bool>true</bool>
@@ -195,7 +195,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
+     <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateDir">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -208,7 +208,20 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="3" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxDeckOrder"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="textDeckOrder">
+       <property name="text">
+        <string>Deck track load order</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxDeckOrder</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
       <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
         <string>Track load behavior</string>
@@ -218,10 +231,10 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1" colspan="2">
+     <item row="10" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="labelCueBehaviour">
        <property name="text">
         <string>Cue behavior</string>
@@ -231,10 +244,10 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1" colspan="2">
+     <item row="9" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault"/>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="textLabelCueRecall">
        <property name="text">
         <string>Auto Recall Cue</string>
@@ -244,10 +257,10 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="2">
+     <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueRecall"/>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="textAutoDjRequeue">
        <property name="text">
         <string>Re-queue tracks in Auto DJ</string>
@@ -257,10 +270,10 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="2">
+     <item row="11" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxAutoDjRequeue"/>
      </item>
-     <item row="13" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="textLabelLocale">
        <property name="text">
         <string>Locale</string>
@@ -270,7 +283,7 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="1" colspan="2">
+     <item row="14" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxLocale"/>
      </item>
      <item row="1" column="1" colspan="2">
@@ -283,14 +296,14 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+    <item row="12" column="0">
       <widget class="QLabel" name="autoDjMinimumAvailableLabel">
        <property name="text">
         <string>Auto DJ: Minimum available tracks [%]</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="2">
+     <item row="12" column="1" colspan="2">
       <widget class="QSpinBox" name="autoDjMinimumAvailableSpinBox">
        <property name="toolTip">
         <string>This percentage of tracks are always available for selecting, regardless of when they were last played.</string>
@@ -303,7 +316,7 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QCheckBox" name="autoDjIgnoreTimeCheckBox">
        <property name="toolTip">
         <string>Uncheck, to ignore all played tracks.</string>
@@ -313,7 +326,7 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="2">
+     <item row="13" column="1" colspan="2">
       <widget class="QTimeEdit" name="autoDjIgnoreTimeEdit">
        <property name="toolTip">
         <string>Duration after which a track is eligible for selection by Auto DJ again</string>

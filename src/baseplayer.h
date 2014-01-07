@@ -10,7 +10,7 @@ class BasePlayer : public QObject {
     BasePlayer(QObject* pParent, QString group);
     virtual ~BasePlayer();
 
-    const QString getGroup();
+    const QString getGroup() const;
 
   private:
     const QString m_group;

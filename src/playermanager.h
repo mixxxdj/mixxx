@@ -85,6 +85,83 @@ class PlayerManager : public QObject {
     // Used to determine if the user has configured an input for the given vinyl deck.
     bool hasVinylInput(int inputnum) const;
 
+    class DeckOrderingManager {
+      public:
+        struct deck_order_t {
+            deck_order_t() { }
+            deck_order_t(QString l, QList<int> o) : label(l), load_order(o) { }
+
+            QString label;
+            QList<int> load_order;
+        };
+
+        typedef QHash<int, QList<deck_order_t> > orders_hash_t;
+
+        DeckOrderingManager() {
+            // Known orderings for 4-deck controllers.
+            addOrdering(4, "ABCD");
+            addOrdering(4, "CABD");
+            addOrdering(4, "ACDB");
+        }
+
+        bool addOrdering(int deck_count, QString order) {
+            deck_order_t new_order(order, makeLoadOrder(order));
+            // ordering will be empty on error
+            if (new_order.load_order.empty()) {
+                return false;
+            }
+            m_hOrdersHash[deck_count].push_back(new_order);
+            return true;
+        }
+
+        // Just take the first order in the list is default.  Make sure it's the natural ordering
+        // "ABCD..."
+        deck_order_t getDefaultOrder(int deck_count) {
+            orders_hash_t::const_iterator it = m_hOrdersHash.find(deck_count);
+            if (it == m_hOrdersHash.end()) {
+                m_hOrdersHash[deck_count].push_back(makeDefaultOrder(deck_count));
+            }
+            return m_hOrdersHash[deck_count].at(0);
+        }
+
+        const QList<deck_order_t> getDeckOrderings(int deck_count) const {
+            return m_hOrdersHash[deck_count];
+        }
+
+      private:
+        deck_order_t makeDefaultOrder(int deck_count) const {
+            QString str_order;
+            QList<int> int_order;
+            for (int i = 0; i < deck_count; ++i) {
+                str_order += 'A' + i;
+                int_order.push_back(i);
+            }
+            return deck_order_t(str_order, int_order);
+        }
+
+        // Constructs a list of integers for load-order based on the string.
+        // If the string has errors, then we return an empty list.
+        QList<int> makeLoadOrder(QString str_order) {
+            QList<int> int_order;
+            for (int i = 0; i < str_order.length(); ++i) {
+                int pos = str_order.indexOf('A' + i);
+                if (pos == -1) {
+                    return QList<int>();
+                }
+                int_order.push_back(pos);
+            }
+            return int_order;
+        }
+
+        orders_hash_t m_hOrdersHash;
+    };
+
+    static const QList<DeckOrderingManager::deck_order_t> getDeckOrderings(int deck_count) {
+        return s_deckOrderingManager.getDeckOrderings(deck_count);
+    }
+
+    void setDeckOrder(QString order);
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -120,6 +197,9 @@ class PlayerManager : public QObject {
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new preview deck.
     void addPreviewDeckInner();
+    // When the skin changes, we need to change the orientations of the decks
+    // because deck B might have moved from the right to the left.
+    void reorientDecks();
 
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
@@ -136,6 +216,9 @@ class PlayerManager : public QObject {
     QList<Sampler*> m_samplers;
     QList<PreviewDeck*> m_preview_decks;
     QMap<QString, BaseTrackPlayer*> m_players;
+
+    static DeckOrderingManager s_deckOrderingManager;
+    static DeckOrderingManager::deck_order_t s_currentDeckOrder;
 };
 
 #endif // PLAYERMANAGER_H
