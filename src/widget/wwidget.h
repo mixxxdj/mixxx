@@ -40,10 +40,6 @@ public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
-    // Sometimes WWidget's compose a QWidget (like a label). This is used during
-    // skin parsing to style and size the composed widget.
-    virtual QWidget* getComposedWidget() { return NULL; }
-
     Q_PROPERTY(bool disabled READ isDisabled);
     Q_PROPERTY(double value READ getValue);
 

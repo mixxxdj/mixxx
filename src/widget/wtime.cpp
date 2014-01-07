@@ -55,7 +55,7 @@ void WTime::setTimeFormat(QDomNode node, const SkinContext& context) {
 void WTime::refreshTime() {
     QTime time = QTime::currentTime();
     QString timeString = time.toString(m_sTimeFormat);
-    if (m_pLabel->text() != timeString) {
-        m_pLabel->setText(timeString);
+    if (text() != timeString) {
+        setText(timeString);
     }
 }

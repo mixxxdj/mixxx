@@ -25,11 +25,11 @@ void WTrackText::slotTrackUnloaded(TrackPointer track) {
         disconnect(m_pCurrentTrack.data(), 0, this, 0);
     }
     m_pCurrentTrack.clear();
-    m_pLabel->setText("");
+    setText("");
 }
 
 void WTrackText::updateLabel(TrackInfoObject*) {
     if (m_pCurrentTrack) {
-        m_pLabel->setText(m_pCurrentTrack->getInfo());
+        setText(m_pCurrentTrack->getInfo());
     }
 }

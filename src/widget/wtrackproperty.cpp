@@ -30,14 +30,14 @@ void WTrackProperty::slotTrackUnloaded(TrackPointer track) {
         disconnect(m_pCurrentTrack.data(), 0, this, 0);
     }
     m_pCurrentTrack.clear();
-    m_pLabel->setText("");
+    setText("");
 }
 
 void WTrackProperty::updateLabel(TrackInfoObject*) {
     if (m_pCurrentTrack) {
         QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
         if (property.isValid() && qVariantCanConvert<QString>(property)) {
-            m_pLabel->setText(property.toString());
+            setText(property.toString());
         }
     }
 }

@@ -48,6 +48,6 @@ void WNumberRate::setValue(double) {
         sign = '-';
     }
 
-    m_pLabel->setText(QString(m_qsText).append(sign)
-                      .append("%1").arg(fabs(vsign)*100., 0, 'f', 2));
+    setText(QString(m_qsText).append(sign)
+            .append("%1").arg(fabs(vsign)*100., 0, 'f', 2));
 }

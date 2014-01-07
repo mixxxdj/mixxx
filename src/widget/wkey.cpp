@@ -22,9 +22,9 @@ void WKey::setValue(double dValue) {
 
     if (key != mixxx::track::io::key::INVALID) {
         // Render this key with the user-provided notation.
-        m_pLabel->setText(KeyUtils::keyToString(key));
+        setText(KeyUtils::keyToString(key));
     } else {
-        m_pLabel->setText("");
+        setText("");
     }
 }
 
