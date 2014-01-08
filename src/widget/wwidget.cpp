@@ -62,15 +62,6 @@ void WWidget::slotReEmitValueUp(double value) {
     emit(valueChangedUp(value));
 }
 
-const QString WWidget::getPath(QString location) {
-    QString l(location);
-    return l.prepend(m_qPath);
-}
-
-void WWidget::setPixmapPath(QString qPath) {
-    m_qPath = qPath;
-}
-
 void WWidget::updateValue(double value) {
     setValue(value);
     emit(valueChangedUp(value));

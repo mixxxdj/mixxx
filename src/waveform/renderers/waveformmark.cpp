@@ -47,7 +47,10 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
     }
 
     m_text = context.selectString(node, "Text");
-    m_pixmapPath = context.selectString(node,"Pixmap");
+    m_pixmapPath = context.selectString(node, "Pixmap");
+    if (!m_pixmapPath.isEmpty()) {
+        m_pixmapPath = context.getSkinPath(m_pixmapPath);
+    }
 }
 
 

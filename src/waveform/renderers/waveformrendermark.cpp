@@ -68,7 +68,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
 void WaveformRenderMark::generateMarkImage( WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if( mark.m_pixmapPath != "") {
-        QString path =  WWidget::getPath(mark.m_pixmapPath);
+        QString path =  mark.m_pixmapPath;
         QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.

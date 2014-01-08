@@ -152,9 +152,6 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
         return QDomElement();
     }
 
-    // TODO(XXX) legacy
-    WWidget::setPixmapPath(skinPath.append("/"));
-
     skinXmlFile.close();
     return skin.documentElement();
 }
@@ -279,6 +276,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
     m_pContext = new SkinContext();
+    m_pContext->setSkinBasePath(skinPath.append("/"));
     QList<QWidget*> widgets = parseNode(skinDocument);
 
     if (widgets.empty()) {
@@ -605,7 +603,8 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node,
     QLabel* bg = new QLabel(pInnerWidget);
 
     QString filename = m_pContext->selectString(node, "Path");
-    QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
+    QPixmap* background = WPixmapStore::getPixmapNoCache(
+        m_pContext->getSkinPath(filename));
 
     bg->move(0, 0);
     if (background != NULL && !background->isNull()) {

@@ -57,11 +57,11 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
         // Accept either PathStatusLight or PathStatusLight1 for value 1,
         QString nodeName = QString("PathStatusLight%1").arg(i);
         if (context.hasNode(node, nodeName)) {
-            setPixmap(i, getPath(context.selectString(node, nodeName)));
+            setPixmap(i, context.getSkinPath(context.selectString(node, nodeName)));
         } else if (i == 0 && context.hasNode(node, "PathBack")) {
-            setPixmap(i, getPath(context.selectString(node, "PathBack")));
+            setPixmap(i, context.getSkinPath(context.selectString(node, "PathBack")));
         } else if (i == 1 && context.hasNode(node, "PathStatusLight")) {
-            setPixmap(i, getPath(context.selectString(node, "PathStatusLight")));
+            setPixmap(i, context.getSkinPath(context.selectString(node, "PathStatusLight")));
         } else {
             m_pixmaps[i].clear();
         }

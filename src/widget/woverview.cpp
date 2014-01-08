@@ -76,7 +76,7 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     m_backgroundPixmap = QPixmap();
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
-        m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
+        m_backgroundPixmap = QPixmap(context.getSkinPath(m_backgroundPixmapPath));
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);

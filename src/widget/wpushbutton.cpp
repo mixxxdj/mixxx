@@ -62,7 +62,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(getPath(context.selectString(node, "BackPath")));
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
     }
 
     // Load pixmaps for associated states
@@ -72,11 +72,11 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             int iState = context.selectInt(state, "Number");
             if (context.hasNode(state, "Pressed")) {
                 setPixmap(iState, true,
-                          getPath(context.selectString(state, "Pressed")));
+                          context.getSkinPath(context.selectString(state, "Pressed")));
             }
             if (context.hasNode(state, "Unpressed")) {
                 setPixmap(iState, false,
-                          getPath(context.selectString(state, "Unpressed")));
+                          context.getSkinPath(context.selectString(state, "Unpressed")));
             }
             m_text[iState] = context.selectString(state, "Text");
         }

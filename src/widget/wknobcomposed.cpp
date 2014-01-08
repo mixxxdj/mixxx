@@ -17,12 +17,12 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(getPath(context.selectString(node, "BackPath")));
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
     }
 
     // Set background pixmap if available
     if (context.hasNode(node, "Knob")) {
-        setPixmapKnob(getPath(context.selectString(node, "Knob")));
+        setPixmapKnob(context.getSkinPath(context.selectString(node, "Knob")));
     }
 
     if (context.hasNode(node, "MinAngle")) {

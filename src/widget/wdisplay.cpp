@@ -39,7 +39,8 @@ WDisplay::~WDisplay() {
 void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(getPath(context.selectString(node, "BackPath")));
+        setPixmapBackground(context.getSkinPath(
+            context.selectString(node, "BackPath")));
     }
 
     // Number of states
@@ -49,7 +50,7 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Load knob pixmaps
     QString path = context.selectString(node, "Path");
     for (int i = 0; i < m_pixmaps.size(); ++i) {
-        setPixmap(&m_pixmaps, i, getPath(path.arg(i)));
+        setPixmap(&m_pixmaps, i, context.getSkinPath(path.arg(i)));
     }
 
     // See if disabled images is defined, and load them...
@@ -57,7 +58,7 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
         QString disabledPath = context.selectString(node, "DisabledPath");
         for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
             setPixmap(&m_disabledPixmaps, i,
-                      getPath(disabledPath.arg(i)));
+                      context.getSkinPath(disabledPath.arg(i)));
         }
         m_bDisabledLoaded = true;
     }
