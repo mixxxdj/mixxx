@@ -29,6 +29,7 @@
 #include "skin/propertybinder.h"
 #include "skin/skincontext.h"
 
+#include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
@@ -483,6 +484,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
+    setupBaseWidget(node, pGroup);
     setupWidget(node, pGroup);
     pGroup->setup(node, *m_pContext);
     setupConnections(node, pGroup);
@@ -533,6 +535,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
+    setupBaseWidget(node, pStack);
     setupWidget(node, pStack);
     setupConnections(node, pStack);
 
@@ -641,6 +644,7 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node,
 
 QWidget* LegacySkinParser::parsePushButton(QDomElement node) {
     WPushButton* p = new WPushButton(m_pParent);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -651,6 +655,7 @@ QWidget* LegacySkinParser::parsePushButton(QDomElement node) {
 
 QWidget* LegacySkinParser::parseSliderComposed(QDomElement node) {
     WSliderComposed* p = new WSliderComposed(m_pParent);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -682,6 +687,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
+    setupBaseWidget(node, overviewWidget);
     setupWidget(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
     setupConnections(node, overviewWidget);
@@ -731,6 +737,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
 
+    setupBaseWidget(node, viewer);
     setupWidget(node, viewer);
 
     // connect display with loading/unloading of tracks
@@ -765,6 +772,7 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -799,6 +807,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -820,6 +829,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 QWidget* LegacySkinParser::parseVuMeter(QDomElement node) {
     WVuMeter* p = new WVuMeter(m_pParent);
     WaveformWidgetFactory::instance()->addTimerListener(p);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -830,6 +840,7 @@ QWidget* LegacySkinParser::parseVuMeter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseStatusLight(QDomElement node) {
     WStatusLight * p = new WStatusLight(m_pParent);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -840,6 +851,7 @@ QWidget* LegacySkinParser::parseStatusLight(QDomElement node) {
 
 QWidget* LegacySkinParser::parseDisplay(QDomElement node) {
     WDisplay * p = new WDisplay(m_pParent);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -869,6 +881,7 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -890,6 +903,7 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -905,6 +919,7 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -920,6 +935,7 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -935,6 +951,7 @@ QWidget* LegacySkinParser::parseTime(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -944,6 +961,7 @@ QWidget* LegacySkinParser::parseTime(QDomElement node) {
 
 QWidget* LegacySkinParser::parseKnob(QDomElement node) {
     WKnob * p = new WKnob(m_pParent);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -954,6 +972,7 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
 
 QWidget* LegacySkinParser::parseKnobComposed(QDomElement node) {
     WKnobComposed* p = new WKnobComposed(m_pParent);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
     setupConnections(node, p);
@@ -973,6 +992,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
+    setupBaseWidget(node, spinny);
     setupWidget(node, spinny);
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
@@ -988,6 +1008,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
 
 QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig, m_pParent);
+    setupBaseWidget(node, pLineEditSearch);
     setupWidget(node, pLineEditSearch);
     pLineEditSearch->setup(node, *m_pContext);
 
@@ -1017,6 +1038,7 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
 
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
+    setupBaseWidget(node, pLibraryWidget);
     setupWidget(node, pLibraryWidget);
 
     return pLibraryWidget;
@@ -1027,6 +1049,7 @@ QWidget* LegacySkinParser::parseLibrarySidebar(QDomElement node) {
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+    setupBaseWidget(node, pLibrarySidebar);
     setupWidget(node, pLibrarySidebar);
     return pLibrarySidebar;
 }
@@ -1213,6 +1236,7 @@ QWidget* LegacySkinParser::parseKey(QDomElement node) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     p->setup(node, *m_pContext);
+    setupBaseWidget(node, p);
     setupWidget(node, p);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -1523,7 +1547,27 @@ QString LegacySkinParser::getStyleFromNode(QDomNode node) {
     return style;
 }
 
-void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosition) {
+void LegacySkinParser::setupBaseWidget(QDomNode node,
+                                       WBaseWidget* pBaseWidget) {
+    // Tooltip
+    if (m_pContext->hasNode(node, "Tooltip")) {
+        QString toolTip = m_pContext->selectString(node, "Tooltip");
+        pBaseWidget->setBaseTooltip(toolTip);
+    } else if (m_pContext->hasNode(node, "TooltipId")) {
+        QString toolTipId = m_pContext->selectString(node, "TooltipId");
+        QString toolTip = m_tooltips.tooltipForId(toolTipId);
+
+        if (toolTipId.length() > 0) {
+            pBaseWidget->setBaseTooltip(toolTip);
+        } else {
+            qDebug() << "Invalid <TooltipId> in skin.xml:" << toolTipId;
+        }
+    }
+}
+
+void LegacySkinParser::setupWidget(QDomNode node,
+                                   QWidget* pWidget,
+                                   bool setPosition) {
     // Override the widget object name.
     QString objectName = m_pContext->selectString(node, "ObjectName");
     if (!objectName.isEmpty()) {
@@ -1534,21 +1578,6 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosi
         setupPosition(node, pWidget);
     }
     setupSize(node, pWidget);
-
-    // Tooltip
-    if (m_pContext->hasNode(node, "Tooltip")) {
-        QString toolTip = m_pContext->selectString(node, "Tooltip");
-        pWidget->setToolTip(toolTip);
-    } else if (m_pContext->hasNode(node, "TooltipId")) {
-        QString toolTipId = m_pContext->selectString(node, "TooltipId");
-        QString toolTip = m_tooltips.tooltipForId(toolTipId);
-
-        if (toolTipId.length() > 0) {
-            pWidget->setToolTip(toolTip);
-        } else {
-            qDebug() << "Invalid <TooltipId> in skin.xml:" << toolTipId;
-        }
-    }
 
     QString style = getStyleFromNode(node);
     // Check if we should apply legacy library styling to this node.
