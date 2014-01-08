@@ -20,10 +20,10 @@
 
 #include <QLabel>
 
-#include "widget/wwidget.h"
+#include "widget/wbasewidget.h"
 #include "skin/skincontext.h"
 
-class WLabel : public QLabel {
+class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT
   public:
     WLabel(QWidget* pParent=NULL);

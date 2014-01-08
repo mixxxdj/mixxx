@@ -9,6 +9,7 @@
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
+          WBaseWidget(this),
           m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }

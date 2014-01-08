@@ -9,12 +9,13 @@
 #include "widget/wwidget.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
 
 class ControlObjectThread;
 class VisualPlayPosition;
 class VinylControlManager;
 
-class WSpinny : public QGLWidget, public VinylSignalQualityListener {
+class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, VinylControlManager* pVCMan);

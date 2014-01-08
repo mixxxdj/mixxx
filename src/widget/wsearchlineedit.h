@@ -10,8 +10,9 @@
 
 #include "configobject.h"
 #include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
 
-class WSearchLineEdit : public QLineEdit {
+class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
     WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,

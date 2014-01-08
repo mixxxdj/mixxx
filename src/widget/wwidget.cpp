@@ -23,6 +23,7 @@
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
+          WBaseWidget(this),
           m_value(0.0),
           m_bOff(false) {
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));

@@ -23,6 +23,7 @@
 
 WLabel::WLabel(QWidget* pParent)
         : QLabel(pParent),
+          WBaseWidget(this),
           m_qsText("") {
 }
 

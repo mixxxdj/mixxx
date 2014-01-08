@@ -8,7 +8,9 @@
 #include <QShortcut>
 
 WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
-                                 QWidget* pParent) : QLineEdit(pParent) {
+                                 QWidget* pParent)
+        : QLineEdit(pParent),
+          WBaseWidget(this) {
 
     QString skinpath = pConfig->getResourcePath();
     m_clearButton = new QToolButton(this);

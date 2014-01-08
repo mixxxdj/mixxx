@@ -612,6 +612,7 @@ class MixxxCore(Feature):
                    "soundsource.cpp",
 
                    "sharedglcontext.cpp",
+                   "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
                    "widget/wwidgetgroup.cpp",
                    "widget/wwidgetstack.cpp",

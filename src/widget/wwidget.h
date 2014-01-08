@@ -23,6 +23,7 @@
 #include <QDomNode>
 
 #include "configobject.h"
+#include "widget/wbasewidget.h"
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -34,7 +35,7 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WWidget : public QWidget  {
+class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
 public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);

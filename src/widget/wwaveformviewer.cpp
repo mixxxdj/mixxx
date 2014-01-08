@@ -17,7 +17,7 @@
 
 
 WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-        : QWidget(parent),
+        : WWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig) {
     setAcceptDrops(true);

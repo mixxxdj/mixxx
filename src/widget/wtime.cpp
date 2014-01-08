@@ -1,5 +1,6 @@
 #include "widget/wtime.h"
 
+#include <QtDebug>
 #include <QTime>
 
 WTime::WTime(QWidget *parent)

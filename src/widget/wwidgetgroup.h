@@ -9,10 +9,11 @@
 #include <QString>
 #include <QWidget>
 
+#include "widget/wbasewidget.h"
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
 
-class WWidgetGroup : public QFrame {
+class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT
   public:
     WWidgetGroup(QWidget* pParent=NULL);

@@ -18,6 +18,7 @@
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
+          WBaseWidget(this),
           m_pBgImage(NULL),
           m_pFgImage(NULL),
           m_pGhostImage(NULL),

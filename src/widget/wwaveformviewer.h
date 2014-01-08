@@ -17,7 +17,7 @@ class ControlObjectThread;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
 
-class WWaveformViewer : public QWidget {
+class WWaveformViewer : public WWidget {
     Q_OBJECT
   public:
     WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
@@ -34,8 +34,6 @@ class WWaveformViewer : public QWidget {
     void mouseReleaseEvent(QMouseEvent *);
 
 signals:
-    void valueChangedLeftDown(double);
-    void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
     void valueReset();
 
