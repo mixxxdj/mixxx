@@ -76,6 +76,8 @@ public:
   protected:
     // Value/state of widget
     double m_value;
+
+  private:
     // Is true if widget is off
     bool m_bOff;
 };
