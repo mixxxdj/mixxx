@@ -6,7 +6,6 @@
 #include "wnumberpos.h"
 #include "mathstuff.h"
 #include "controlobject.h"
-#include "controlobjectthreadwidget.h"
 #include "controlobjectthreadmain.h"
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
@@ -32,7 +31,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     m_pVisualPlaypos = new ControlObjectThreadMain(group, "playposition");
     connect(m_pVisualPlaypos, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
 
-    m_pTrackSamples = new ControlObjectThreadWidget(
+    m_pTrackSamples = new ControlObjectThreadMain(
             group, "track_samples");
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetTrackSamples(double)));
@@ -40,7 +39,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // set to a valid value.
     m_pTrackSamples->emitValueChanged();
 
-    m_pTrackSampleRate = new ControlObjectThreadWidget(
+    m_pTrackSampleRate = new ControlObjectThreadMain(
             group, "track_samplerate");
     connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetTrackSampleRate(double)));

@@ -7,7 +7,6 @@
 
 #include "wnumber.h"
 
-class ControlObjectThreadWidget;
 class ControlObjectThread;
 
 class WNumberPos : public WNumber {
@@ -39,8 +38,8 @@ class WNumberPos : public WNumber {
     ControlObjectThread* m_pShowTrackTimeRemaining;
     // Pointer to control object for position, rate, and track info
     ControlObjectThread* m_pVisualPlaypos;
-    ControlObjectThreadWidget* m_pTrackSamples;
-    ControlObjectThreadWidget* m_pTrackSampleRate;
+    ControlObjectThread* m_pTrackSamples;
+    ControlObjectThread* m_pTrackSampleRate;
 };
 
 #endif
