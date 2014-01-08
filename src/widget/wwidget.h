@@ -55,6 +55,10 @@ public:
         return m_value;
     }
 
+    void setValue(double value) {
+        m_value = value;
+    }
+
   public slots:
     virtual void slotConnectedValueChanged(double value);
     void updateValue(double value);
@@ -73,11 +77,10 @@ public:
     void valueChangedRightDown(double);
     void valueChangedRightUp(double);
 
-  protected:
+  private:
     // Value/state of widget
     double m_value;
 
-  private:
     // Is true if widget is off
     bool m_bOff;
 };
