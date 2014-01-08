@@ -16,7 +16,6 @@ class WNumberPos : public WNumber {
     WNumberPos(const char *group, QWidget *parent=0);
     virtual ~WNumberPos();
 
-    void setValue(double dValue);
     // Set if the display shows remaining time (true) or position (false)
     void setRemain(bool bRemain);
 
@@ -24,6 +23,7 @@ class WNumberPos : public WNumber {
     void mousePressEvent(QMouseEvent* pEvent);
 
   private slots:
+    void setValue(double dValue);
     void slotSetValue(double);
     void slotSetRemain(double dRemain);
     void slotSetTrackSampleRate(double dSampleRate);

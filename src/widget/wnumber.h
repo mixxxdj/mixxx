@@ -32,7 +32,7 @@ class WNumber : public WLabel  {
     virtual void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void setValue(double dValue);
+    virtual void setValue(double dValue);
 
   protected:
     // Number of digits to round to.
