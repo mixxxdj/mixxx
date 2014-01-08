@@ -108,6 +108,12 @@ int SkinContext::selectInt(const QDomNode& node,
     return ok ? conv : 0;
 }
 
+bool SkinContext::selectBool(const QDomNode& node,
+                             const QString& nodeName) const {
+    QString stringValue = selectString(node, nodeName);
+    return stringValue.contains("true", Qt::CaseInsensitive);
+}
+
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
     if (variableNode.hasAttribute("expression")) {
         QScriptValue result = m_scriptEngine.evaluate(

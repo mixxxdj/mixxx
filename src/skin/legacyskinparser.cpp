@@ -1576,8 +1576,7 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosi
 
     QString style = getStyleFromNode(node);
     // Check if we should apply legacy library styling to this node.
-    if (m_pContext->selectString(node, "LegacyTableViewStyle")
-        .contains("true", Qt::CaseInsensitive)) {
+    if (m_pContext->selectBool(node, "LegacyTableViewStyle")) {
         style = getLibraryStyle(node);
     }
     if (style != "") {
@@ -1624,19 +1623,14 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             ControlObjectThreadWidget::EmitOption emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS;
 
             // Get properties from XML, or use defaults
-            if (m_pContext->selectString(con, "EmitOnPressAndRelease").contains("true", Qt::CaseInsensitive))
+            if (m_pContext->selectBool(con, "EmitOnPressAndRelease"))
                 emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS_AND_RELEASE;
 
-            if (m_pContext->selectString(con, "EmitOnDownPress").contains("false", Qt::CaseInsensitive))
+            if (!m_pContext->selectBool(con, "EmitOnDownPress"))
                 emitOption = ControlObjectThreadWidget::EMIT_ON_RELEASE;
 
-            bool connectValueFromWidget = true;
-            if (m_pContext->selectString(con, "ConnectValueFromWidget").contains("false", Qt::CaseInsensitive))
-                connectValueFromWidget = false;
-
-            bool connectValueToWidget = true;
-            if (m_pContext->selectString(con, "ConnectValueToWidget").contains("false", Qt::CaseInsensitive))
-                connectValueToWidget = false;
+            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget");
+            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget");
 
             Qt::MouseButton state = Qt::NoButton;
             if (m_pContext->hasNode(con, "ButtonState")) {
