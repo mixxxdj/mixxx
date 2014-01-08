@@ -83,8 +83,8 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         state = state.nextSibling();
     }
 
-    m_bLeftClickForcePush = context.selectBool(node, "LeftClickIsPushButton");
-    m_bRightClickForcePush = context.selectBool(node, "RightClickIsPushButton");
+    m_bLeftClickForcePush = context.selectBool(node, "LeftClickIsPushButton", false);
+    m_bRightClickForcePush = context.selectBool(node, "RightClickIsPushButton", false);
 
     QDomNode con = context.selectNode(node, "Connection");
     while (!con.isNull()) {

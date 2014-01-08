@@ -109,9 +109,13 @@ int SkinContext::selectInt(const QDomNode& node,
 }
 
 bool SkinContext::selectBool(const QDomNode& node,
-                             const QString& nodeName) const {
-    QString stringValue = selectString(node, nodeName);
-    return stringValue.contains("true", Qt::CaseInsensitive);
+                             const QString& nodeName,
+                             bool defaultValue) const {
+    if (hasNode(node, nodeName)) {
+        QString stringValue = selectString(node, nodeName);
+        return stringValue.contains("true", Qt::CaseInsensitive);
+    }
+    return defaultValue;
 }
 
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {

@@ -52,7 +52,7 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 
     QString pathHandle = context.getSkinPath(context.selectString(node, "Handle"));
-    bool h = context.selectBool(node, "Horizontal");
+    bool h = context.selectBool(node, "Horizontal", false);
     setHandlePixmap(h, pathHandle);
 
     if (context.hasNode(node, "EventWhileDrag")) {
