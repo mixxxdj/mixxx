@@ -120,14 +120,14 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 }
 
-void WOverview::setValue(double dValue) {
+void WOverview::slotConnectedValueChanged(double dValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
         int iPos = valueToPosition(dValue);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::setValue" << dValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::slotConnectedValueChanged" << dValue << ">>" << m_iPos;
             update();
         }
     }

@@ -172,7 +172,7 @@ void WPushButton::setPixmapBackground(const QString &filename) {
     }
 }
 
-void WPushButton::setValue(double v) {
+void WPushButton::slotConnectedValueChanged(double v) {
     m_value = v;
 
     if (m_iNoStates == 1) {

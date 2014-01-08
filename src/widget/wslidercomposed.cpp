@@ -81,7 +81,7 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        setValue(m_value);
+        slotConnectedValueChanged(m_value);
         update();
     }
 }
@@ -203,7 +203,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
-void WSliderComposed::setValue(double dValue) {
+void WSliderComposed::slotConnectedValueChanged(double dValue) {
     if (!m_bDrag && m_value != dValue) {
         // Set value without emitting a valueChanged signal
         // and force display update

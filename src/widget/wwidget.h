@@ -56,7 +56,7 @@ public:
     }
 
   public slots:
-    virtual void setValue(double value);
+    virtual void slotConnectedValueChanged(double value);
     void updateValue(double value);
     void setOnOff(double);
 

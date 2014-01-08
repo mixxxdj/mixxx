@@ -103,7 +103,7 @@ void WVuMeter::setPixmaps(const QString &vuFilename,
     }
 }
 
-void WVuMeter::setValue(double dValue) {
+void WVuMeter::slotConnectedValueChanged(double dValue) {
     int idx = static_cast<int>(dValue * m_iNoPos);
     // Range check
     if (idx > m_iNoPos)

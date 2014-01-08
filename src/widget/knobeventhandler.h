@@ -38,7 +38,7 @@ class KnobEventHandler {
             // Clamp to [0.0, 1.0]
             value = math_max(0.0, math_min(1.0, value));
 
-            pWidget->setValue(value);
+            pWidget->slotConnectedValueChanged(value);
             emit(pWidget->valueChangedLeftDown(value));
             pWidget->update();
         }

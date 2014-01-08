@@ -40,7 +40,7 @@ class WOverview : public WWidget {
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void setValue(double);
+    void slotConnectedValueChanged(double);
     void slotLoadNewTrack(TrackPointer pTrack);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);

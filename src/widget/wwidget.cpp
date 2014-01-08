@@ -37,7 +37,7 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
 WWidget::~WWidget() {
 }
 
-void WWidget::setValue(double value) {
+void WWidget::slotConnectedValueChanged(double value) {
     m_value = value;
     update();
 }
@@ -60,7 +60,7 @@ void WWidget::slotReEmitValueUp(double value) {
 }
 
 void WWidget::updateValue(double value) {
-    setValue(value);
+    slotConnectedValueChanged(value);
     emit(valueChangedUp(value));
     emit(valueChangedDown(value));
 }
