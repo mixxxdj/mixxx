@@ -78,12 +78,6 @@ public:
     double m_value;
     // Is true if widget is off
     bool m_bOff;
-
-  private:
-    // Variable containing the path to the pixmaps
-    static QString m_qPath;
-    // Property used when connecting to ControlObject
-    //bool m_bEmitOnDownPress;
 };
 
 #endif

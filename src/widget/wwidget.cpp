@@ -21,9 +21,6 @@
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
 
-// Static member variable definition
-QString WWidget::m_qPath;
-
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
           m_value(0.0),
