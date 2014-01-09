@@ -24,6 +24,10 @@ WaveformRendererRGB::~WaveformRendererRGB() {
 
 void WaveformRendererRGB::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
+
+    m_lowColor = m_pColors->getLowColor();
+    m_midColor = m_pColors->getMidColor();
+    m_highColor = m_pColors->getHighColor();
 }
 
 void WaveformRendererRGB::draw(QPainter* painter,
@@ -129,19 +133,22 @@ void WaveformRendererRGB::draw(QPainter* painter,
             maxAllB = math_max(maxAllB, waveformDataNext.filtered.all);
         }
 
-        // Compute maximum (needed for value normalization)
-        // Also multiply with 1.5 to prevent to light color
-        float max = 1.5f * (float) MAX3(maxLow, maxMid, maxHigh);
+        // Compute sum (needed for value normalization)
+        float sum = maxLow + maxMid + maxHigh;
 
         // Prevent division by zero
-        if (max > 0.0f) {
+        if (sum > 0.0f) {
             // Normalize low, mid and high values
-            float lo = (float) maxLow  / max;
-            float mi = (float) maxMid  / max;
-            float hi = (float) maxHigh / max;
+            float lo = (float) maxLow  / sum;
+            float mi = (float) maxMid  / sum;
+            float hi = (float) maxHigh / sum;
+
+            float red   = lo * m_lowColor.redF()   + mi * m_midColor.redF()   + hi * m_highColor.redF();
+            float green = lo * m_lowColor.greenF() + mi * m_midColor.greenF() + hi * m_highColor.greenF();
+            float blue  = lo * m_lowColor.blueF()  + mi * m_midColor.blueF()  + hi * m_highColor.blueF();
 
             // Set color
-            color.setRgbF(lo, mi, hi);
+            color.setRgbF(red, green, blue);
 
             painter->setPen(color);
             switch (m_alignment) {
