@@ -23,11 +23,23 @@ WaveformRendererRGB::~WaveformRendererRGB() {
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+    m_lowColor.setNamedColor(WWidget::selectNodeQString(node, "SignalLowColor"));
+    if (!m_lowColor.isValid()) {
+        m_lowColor.setRgb(255,0,0);
+    }
+    m_lowColor  = WSkinColor::getCorrectColor(m_lowColor);
 
-    m_lowColor = m_pColors->getLowColor();
-    m_midColor = m_pColors->getMidColor();
-    m_highColor = m_pColors->getHighColor();
+    m_midColor.setNamedColor(WWidget::selectNodeQString(node, "SignalMidColor"));
+    if (!m_midColor.isValid()) {
+        m_midColor.setRgb(0,255,0);
+    }
+    m_midColor  = WSkinColor::getCorrectColor(m_midColor);
+
+    m_highColor.setNamedColor(WWidget::selectNodeQString(node, "SignalHighColor"));
+    if (!m_highColor.isValid()) {
+        m_highColor.setRgb(0,0,255);
+    }
+    m_highColor = WSkinColor::getCorrectColor(m_highColor);
 }
 
 void WaveformRendererRGB::draw(QPainter* painter,
