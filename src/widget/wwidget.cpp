@@ -25,11 +25,6 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
           WBaseWidget(this),
           m_value(0.0) {
-    connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
-    connect(this, SIGNAL(valueChangedRightDown(double)), this, SLOT(slotReEmitValueDown(double)));
-    connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
-    connect(this, SIGNAL(valueChangedRightUp(double)), this, SLOT(slotReEmitValueUp(double)));
-
     setAttribute(Qt::WA_StaticContents);
     setFocusPolicy(Qt::ClickFocus);
 }
@@ -37,26 +32,14 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
 WWidget::~WWidget() {
 }
 
-void WWidget::slotConnectedValueChanged(double value) {
+void WWidget::onConnectedControlValueChanged(double value) {
     m_value = value;
     update();
 }
 
-void WWidget::setOnOff(double d) {
-    setDisabled(d != 0.0);
-    update();
-}
-
-void WWidget::slotReEmitValueDown(double value) {
-    emit(valueChangedDown(value));
-}
-
-void WWidget::slotReEmitValueUp(double value) {
-    emit(valueChangedUp(value));
-}
-
 void WWidget::updateValue(double value) {
-    slotConnectedValueChanged(value);
-    emit(valueChangedUp(value));
-    emit(valueChangedDown(value));
+    onConnectedControlValueChanged(value);
+    // TODO(rryan): Why is this up then down versus down then up?
+    setConnectedControlUp(value);
+    setConnectedControlDown(value);
 }

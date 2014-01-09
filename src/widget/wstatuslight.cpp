@@ -86,7 +86,7 @@ void WStatusLight::setPixmap(int iState, const QString& filename) {
     }
 }
 
-void WStatusLight::slotConnectedValueChanged(double v) {
+void WStatusLight::onConnectedControlValueChanged(double v) {
     int val = static_cast<int>(v);
     if (m_iPos == val) {
         return;

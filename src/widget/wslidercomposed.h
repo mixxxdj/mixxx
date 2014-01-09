@@ -51,7 +51,7 @@ class WSliderComposed : public WWidget  {
     void wheelEvent(QWheelEvent *e);
     inline bool isHorizontal() const { return m_bHorizontal; };
 public slots:
-    void slotConnectedValueChanged(double);
+    void onConnectedControlValueChanged(double);
 private:
     void unsetPixmaps();
 

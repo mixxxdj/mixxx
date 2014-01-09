@@ -3,6 +3,80 @@
 
 #include <QString>
 #include <QWidget>
+#include <QList>
+#include <QObject>
+#include <QScopedPointer>
+#include <QDomNode>
+
+class ControlObjectThreadWidget;
+
+class WBaseWidget;
+class ControlWidgetConnection : public QObject {
+    Q_OBJECT
+  public:
+    enum EmitOption {
+        EMIT_NEVER                = 0x00,
+        EMIT_ON_PRESS             = 0x01,
+        EMIT_ON_RELEASE           = 0x02,
+        EMIT_ON_PRESS_AND_RELEASE = 0x03
+    };
+
+    // Takes ownership of pControl.
+    ControlWidgetConnection(WBaseWidget* pBaseWidget,
+                            ControlObjectThreadWidget* pControl);
+    virtual ~ControlWidgetConnection();
+
+    virtual void reset() = 0;
+    virtual void setDown(double v) = 0;
+    virtual void setUp(double v) = 0;
+
+  protected slots:
+    virtual void slotControlValueChanged(double v) = 0;
+
+  protected:
+    WBaseWidget* m_pWidget;
+    QScopedPointer<ControlObjectThreadWidget> m_pControl;
+};
+
+class ValueControlWidgetConnection : public ControlWidgetConnection {
+    Q_OBJECT
+  public:
+    ValueControlWidgetConnection(WBaseWidget* pBaseWidget,
+                                 ControlObjectThreadWidget* pControl,
+                                 bool connectValueFromWidget,
+                                 bool connectValueToWidget,
+                                 EmitOption emitOption);
+    virtual ~ValueControlWidgetConnection();
+
+  protected:
+    void reset();
+    void setDown(double v);
+    void setUp(double v);
+
+  protected slots:
+    void slotControlValueChanged(double v);
+
+  private:
+    bool m_bConnectValueFromWidget;
+    bool m_bConnectValueToWidget;
+    EmitOption m_emitOption;
+};
+
+class DisabledControlWidgetConnection : public ControlWidgetConnection {
+    Q_OBJECT
+  public:
+    DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
+                                    ControlObjectThreadWidget* pControl);
+    virtual ~DisabledControlWidgetConnection();
+
+  protected:
+    void reset();
+    void setDown(double v);
+    void setUp(double v);
+
+  protected slots:
+    void slotControlValueChanged(double v);
+};
 
 class WBaseWidget {
   public:
@@ -30,10 +104,33 @@ class WBaseWidget {
         return m_bDisabled;
     }
 
+    void addLeftConnection(ControlWidgetConnection* pConnection);
+    void addRightConnection(ControlWidgetConnection* pConnection);
+    void addConnection(ControlWidgetConnection* pConnection);
+
+  protected:
+    virtual void onConnectedControlValueChanged(double v) {
+        Q_UNUSED(v);
+    }
+
+    void resetConnectedControls();
+    void setConnectedControlDown(double v);
+    void setConnectedControlUp(double v);
+    void setConnectedControlLeftDown(double v);
+    void setConnectedControlLeftUp(double v);
+    void setConnectedControlRightDown(double v);
+    void setConnectedControlRightUp(double v);
+
   private:
     QWidget* m_pWidget;
     bool m_bDisabled;
     QString m_baseTooltip;
+    QList<ControlWidgetConnection*> m_connections;
+    QList<ControlWidgetConnection*> m_leftConnections;
+    QList<ControlWidgetConnection*> m_rightConnections;
+
+    friend class ValueControlWidgetConnection;
+    friend class DisabledControlWidgetConnection;
 };
 
 #endif /* WBASEWIDGET_H */

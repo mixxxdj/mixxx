@@ -52,23 +52,10 @@ public:
         m_value = value;
     }
 
+    virtual void onConnectedControlValueChanged(double value);
+
   public slots:
-    virtual void slotConnectedValueChanged(double value);
     void updateValue(double value);
-    void setOnOff(double);
-
-  private slots:
-    void slotReEmitValueDown(double);
-    void slotReEmitValueUp(double);
-
-  signals:
-    void valueReset();
-    void valueChangedDown(double);
-    void valueChangedUp(double);
-    void valueChangedLeftDown(double);
-    void valueChangedLeftUp(double);
-    void valueChangedRightDown(double);
-    void valueChangedRightUp(double);
 
   private:
     // Value/state of widget

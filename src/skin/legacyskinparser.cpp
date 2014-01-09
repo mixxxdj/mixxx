@@ -731,11 +731,11 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
-    ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
+    ControlObjectThreadWidget* p = new ControlObjectThreadWidget(
             channelStr, "wheel", viewer);
-
-    p->setWidget((QWidget *)viewer, true, false,
-                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
+    ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
+        viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
+    viewer->addRightConnection(pConnection);
 
     setupBaseWidget(node, viewer);
     setupWidget(node, viewer);
@@ -1589,7 +1589,7 @@ void LegacySkinParser::setupWidget(QDomNode node,
     }
 }
 
-void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
+void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     // For each connection
     QDomNode con = m_pContext->selectNode(node, "Connection");
 
@@ -1610,7 +1610,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // Bind this control to a property. Not leaked because it is
             // parented to the widget and so it dies with it.
             PropertyBinder* pBinder = new PropertyBinder(
-                pWidget, property, control, m_pConfig);
+                pWidget->toQWidget(), property, control, m_pConfig);
             // If we created this control, bind it to the PropertyBinder so that
             // it is deleted when the binder is deleted.
             if (created) {
@@ -1622,17 +1622,24 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // leaked. OnOff controls do not use the value of the widget at all
             // so we do not give this control's info to the
             // ControllerLearningEventFilter.
-            (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidgetOnOff(pWidget);
+            ControlObjectThreadWidget* pControlWidget =
+                    new ControlObjectThreadWidget(control->getKey(),
+                                                  pWidget->toQWidget());
+            ControlWidgetConnection* pConnection =
+                    new DisabledControlWidgetConnection(pWidget,
+                                                        pControlWidget);
+            pWidget->addConnection(pConnection);
         } else {
             // Default to emit on press
-            ControlObjectThreadWidget::EmitOption emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS;
+            ControlWidgetConnection::EmitOption emitOption =
+                    ControlWidgetConnection::EMIT_ON_PRESS;
 
             // Get properties from XML, or use defaults
             if (m_pContext->selectBool(con, "EmitOnPressAndRelease", false))
-                emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS_AND_RELEASE;
+                emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
 
             if (!m_pContext->selectBool(con, "EmitOnDownPress", true))
-                emitOption = ControlObjectThreadWidget::EMIT_ON_RELEASE;
+                emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
 
             bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
             bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
@@ -1648,15 +1655,31 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
-            (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidget(
-                        pWidget, connectValueFromWidget, connectValueToWidget,
-                        emitOption, state);
+            ControlObjectThreadWidget* pControlWidget = new ControlObjectThreadWidget(
+                control->getKey(), pWidget->toQWidget());
+            ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
+                pWidget, pControlWidget, connectValueFromWidget,
+                connectValueToWidget, emitOption);
+
+            switch (state) {
+                case Qt::NoButton:
+                    pWidget->addConnection(pConnection);
+                    break;
+                case Qt::LeftButton:
+                    pWidget->addLeftConnection(pConnection);
+                    break;
+                case Qt::RightButton:
+                    pWidget->addRightConnection(pConnection);
+                    break;
+                default:
+                    break;
+            }
 
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.
             if (connectValueFromWidget) {
                 m_pControllerManager->getControllerLearningEventFilter()
-                        ->addWidgetClickInfo(pWidget, state, control, emitOption);
+                        ->addWidgetClickInfo(pWidget->toQWidget(), state, control, emitOption);
             }
 
             // Add keyboard shortcut info to tooltip string
@@ -1667,7 +1690,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
                 const WSliderComposed* pSlider;
 
-                if (qobject_cast<const  WPushButton*>(pWidget)) {
+                if (qobject_cast<const  WPushButton*>(pWidget->toQWidget())) {
                     // check for "_activate", "_toggle"
                     ConfigKey subkey;
                     QString shortcut;
@@ -1681,7 +1704,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
                     subkey.item += "_toggle";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
                     addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
-                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget))) {
+                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget()))) {
                     // check for "_up", "_down", "_up_small", "_down_small"
                     ConfigKey subkey;
                     QString shortcut;
@@ -1734,12 +1757,12 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
     }
 }
 
-void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd) {
+void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd) {
     if (shortcut.isEmpty()) {
         return;
     }
 
-    QString tooltip = pWidget->toolTip();
+    QString tooltip = pWidget->baseTooltip();
 
     // translate shortcut to native text
 #if QT_VERSION >= 0x040700
@@ -1757,5 +1780,5 @@ void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& sho
     }
     tooltip += ": ";
     tooltip += nativeShortcut;
-    pWidget->setToolTip(tooltip);
+    pWidget->setBaseTooltip(tooltip);
 }

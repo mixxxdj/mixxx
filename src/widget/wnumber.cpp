@@ -47,6 +47,10 @@ void WNumber::setup(QDomNode node, const SkinContext& context) {
     setValue(0.);
 }
 
+void WNumber::onConnectedControlValueChanged(double v) {
+    setValue(v);
+}
+
 void WNumber::setValue(double dValue) {
     double v = dValue + m_dConstFactor;
     int d1 = (int)floor((v-floor(v))*10.);

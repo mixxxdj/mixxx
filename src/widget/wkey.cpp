@@ -15,6 +15,10 @@ WKey::WKey(QWidget* pParent)
 WKey::~WKey() {
 }
 
+void WKey::onConnectedControlValueChanged(double v) {
+    setValue(v);
+}
+
 void WKey::setValue(double dValue) {
     m_dOldValue = dValue;
     mixxx::track::io::key::ChromaticKey key =

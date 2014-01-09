@@ -68,7 +68,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         // If we are pitch-bending then disable and reset because the two
         // shouldn't be used at once.
         if (m_bBending) {
-            emit(valueChangedRightDown(0.5));
+            setConnectedControlRightDown(0.5);
             m_bBending = false;
         }
         m_bScratching = true;
@@ -83,7 +83,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_pScratchPositionEnable->slotSet(0.0f);
             m_bScratching = false;
         }
-        emit(valueChangedRightDown(0.5));
+        setConnectedControlRightDown(0.5);
         m_bBending = true;
     }
 
@@ -111,7 +111,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         double v = 0.5 + (diff.x() / 1270.0);
         // clamp to [0.0, 1.0]
         v = math_min(1.0, math_max(0.0, v));
-        emit(valueChangedRightDown(v));
+        setConnectedControlRightDown(v);
     }
 }
 
@@ -121,7 +121,7 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
         m_bScratching = false;
     }
     if (m_bBending) {
-        emit(valueChangedRightDown(0.5));
+        setConnectedControlRightDown(0.5);
         m_bBending = false;
     }
     m_mouseAnchor = QPoint();

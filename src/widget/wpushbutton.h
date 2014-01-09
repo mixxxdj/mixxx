@@ -54,7 +54,7 @@ class WPushButton : public WWidget {
     void setStates(int iStatesW);
 
   public slots:
-    void slotConnectedValueChanged(double);
+    void onConnectedControlValueChanged(double);
 
   protected:
     virtual void paintEvent(QPaintEvent *);

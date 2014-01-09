@@ -38,8 +38,8 @@ class KnobEventHandler {
             // Clamp to [0.0, 1.0]
             value = math_max(0.0, math_min(1.0, value));
 
-            pWidget->slotConnectedValueChanged(value);
-            emit(pWidget->valueChangedLeftDown(value));
+            pWidget->onConnectedControlValueChanged(value);
+            pWidget->setConnectedControlLeftDown(value);
             pWidget->update();
         }
     }
@@ -47,7 +47,7 @@ class KnobEventHandler {
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         switch (e->button()) {
             case Qt::RightButton:
-                emit(pWidget->valueReset());
+                pWidget->resetConnectedControls();
                 m_bRightButtonPressed = true;
                 break;
             case Qt::LeftButton:
@@ -66,11 +66,11 @@ class KnobEventHandler {
             case Qt::MidButton:
                 QCursor::setPos(m_startPos);
                 QApplication::restoreOverrideCursor();
-                emit(pWidget->valueChangedLeftUp(pWidget->getValue()));
+                pWidget->setConnectedControlLeftUp(pWidget->getValue());
                 break;
             case Qt::RightButton:
                 m_bRightButtonPressed = false;
-                //emit(pWidget->valueChangedRightUp(m_fValue));
+                //pWidget->setConnectedControlRightUp(pWidget->getValue());
                 break;
             default:
                 break;

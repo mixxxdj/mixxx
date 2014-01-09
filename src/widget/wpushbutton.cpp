@@ -172,7 +172,7 @@ void WPushButton::setPixmapBackground(const QString &filename) {
     }
 }
 
-void WPushButton::slotConnectedValueChanged(double v) {
+void WPushButton::onConnectedControlValueChanged(double v) {
     setValue(v);
 
     if (m_iNoStates == 1) {
@@ -236,7 +236,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             }
             setValue(1.0);
             m_bPressed = true;
-            emit(valueChangedLeftDown(1.0f));
+            setConnectedControlLeftDown(1.0);
             update();
         }
         // discharge right clicks here, because is used for latching in POWERWINDOW mode
@@ -248,13 +248,13 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         // due the leak of visual feedback we do not allow a toggle function
         if (m_bRightClickForcePush) {
             m_bPressed = true;
-            emit(valueChangedRightDown(1.0f));
+            setConnectedControlRightDown(1.0);
             update();
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
             setValue(1.0);
             m_bPressed = true;
-            emit(valueChangedRightDown(1.0f));
+            setConnectedControlRightDown(1.0);
             update();
         }
 
@@ -288,7 +288,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             }
         }
         m_bPressed = true;
-        emit(valueChangedLeftDown(emitValue));
+        setConnectedControlLeftDown(emitValue);
         update();
     }
 }
@@ -311,7 +311,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release button after timer, but not if right button is clicked
                 setValue(0.0);
-                emit(valueChangedLeftUp(0.0f));
+                setConnectedControlLeftUp(0.0);
             }
             m_bPressed = false;
         } else if (rightClick) {
@@ -327,11 +327,11 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         // function
         if (m_bRightClickForcePush) {
             m_bPressed = false;
-            emit(valueChangedRightUp(0.0f));
+            setConnectedControlRightUp(0.0);
             update();
         } else if (m_iNoStates == 1) {
             m_bPressed = false;
-            emit(valueChangedRightUp(0.0f));
+            setConnectedControlRightUp(0.0);
             update();
         }
         return;
@@ -357,7 +357,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             }
         }
         m_bPressed = false;
-        emit(valueChangedLeftUp(emitValue));
+        setConnectedControlLeftUp(emitValue);
         update();
     }
 }

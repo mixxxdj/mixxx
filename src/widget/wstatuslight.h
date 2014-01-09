@@ -40,7 +40,7 @@ class WStatusLight : public WWidget  {
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void slotConnectedValueChanged(double v);
+    void onConnectedControlValueChanged(double v);
 
   protected:
     void paintEvent(QPaintEvent *);

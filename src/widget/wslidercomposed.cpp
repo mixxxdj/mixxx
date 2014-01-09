@@ -81,7 +81,7 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        slotConnectedValueChanged(getValue());
+        onConnectedControlValueChanged(getValue());
         update();
     }
 }
@@ -123,9 +123,9 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
             if (e->button() == Qt::RightButton) {
-                emit(valueChangedRightUp(newValue));
+                setConnectedControlRightUp(newValue);
             } else {
-                emit(valueChangedLeftUp(newValue));
+                setConnectedControlLeftUp(newValue);
             }
         }
 
@@ -154,9 +154,9 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
         mouseMoveEvent(e);
 
         if (e->button() == Qt::RightButton) {
-            emit(valueChangedRightUp(getValue()));
+            setConnectedControlRightUp(getValue());
         } else {
-            emit(valueChangedLeftUp(getValue()));
+            setConnectedControlLeftUp(getValue());
         }
 
         m_bDrag = false;
@@ -174,7 +174,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
         m_bDrag = true;
     } else {
         if (e->button() == Qt::RightButton) {
-            emit(valueReset());
+            resetConnectedControls();
             m_bRightButtonPressed = true;
         } else {
             if (m_bHorizontal) {
@@ -204,7 +204,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
-void WSliderComposed::slotConnectedValueChanged(double dValue) {
+void WSliderComposed::onConnectedControlValueChanged(double dValue) {
     if (!m_bDrag && getValue() != dValue) {
         // Set value without emitting a valueChanged signal
         // and force display update

@@ -120,14 +120,14 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 }
 
-void WOverview::slotConnectedValueChanged(double dValue) {
+void WOverview::onConnectedControlValueChanged(double dValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
         int iPos = valueToPosition(dValue);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::slotConnectedValueChanged" << dValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
             update();
         }
     }
@@ -252,9 +252,9 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::RightButton) {
-        emit(valueChangedRightUp(dValue));
+        setConnectedControlRightUp(dValue);
     } else {
-        emit(valueChangedLeftUp(dValue));
+        setConnectedControlLeftUp(dValue);
     }
     m_bDrag = false;
 }
