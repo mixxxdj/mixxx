@@ -281,6 +281,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         } else {
             // Toggle thru the states
             emitValue = (int)(getValue() + 1.) % m_iNoStates;
+            setValue(emitValue);
             if (leftLongPressLatchingStyle) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
