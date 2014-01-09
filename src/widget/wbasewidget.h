@@ -22,8 +22,17 @@ class WBaseWidget {
         return m_baseTooltip;
     }
 
+    void setControlDisabled(bool disabled) {
+        m_bDisabled = disabled;
+    }
+
+    bool controlDisabled() const {
+        return m_bDisabled;
+    }
+
   private:
     QWidget* m_pWidget;
+    bool m_bDisabled;
     QString m_baseTooltip;
 };
 

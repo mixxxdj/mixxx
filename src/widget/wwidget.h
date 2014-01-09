@@ -41,12 +41,8 @@ public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
-    Q_PROPERTY(bool disabled READ isDisabled);
+    Q_PROPERTY(bool controlDisabled READ controlDisabled);
     Q_PROPERTY(double value READ getValue);
-
-    bool isDisabled() const {
-        return m_bOff;
-    }
 
     double getValue() const {
         return m_value;
@@ -77,9 +73,6 @@ public:
   private:
     // Value/state of widget
     double m_value;
-
-    // Is true if widget is off
-    bool m_bOff;
 };
 
 #endif

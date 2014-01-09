@@ -24,8 +24,7 @@
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
           WBaseWidget(this),
-          m_value(0.0),
-          m_bOff(false) {
+          m_value(0.0) {
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedRightDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
@@ -44,12 +43,8 @@ void WWidget::slotConnectedValueChanged(double value) {
 }
 
 void WWidget::setOnOff(double d) {
-    if (d == 0.) {
-        m_bOff = false;
-    } else {
-        m_bOff = true;
-    }
-    repaint();
+    setDisabled(d != 0.0);
+    update();
 }
 
 void WWidget::slotReEmitValueDown(double value) {

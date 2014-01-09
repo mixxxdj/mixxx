@@ -75,7 +75,7 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
 
 void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget) {
     connect(this, SIGNAL(valueChanged(double)),
-                          widget, SLOT(setOnOff(double)));
+            widget, SLOT(setOnOff(double)));
     emit(valueChanged(get()));
 }
 
