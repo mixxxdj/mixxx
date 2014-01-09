@@ -86,7 +86,10 @@ class KnobEventHandler {
         // Clamp to [0.0, 1.0]
         newValue = math_max(0.0, math_min(1.0, newValue));
 
-        pWidget->updateValue(newValue);
+        pWidget->setValue(newValue);
+        pWidget->setConnectedControlDown(newValue);
+        pWidget->setConnectedControlUp(newValue);
+        pWidget->update();
         e->accept();
     }
 

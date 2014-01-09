@@ -54,9 +54,6 @@ public:
 
     virtual void onConnectedControlValueChanged(double value);
 
-  public slots:
-    void updateValue(double value);
-
   private:
     // Value/state of widget
     double m_value;

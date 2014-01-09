@@ -36,10 +36,3 @@ void WWidget::onConnectedControlValueChanged(double value) {
     m_value = value;
     update();
 }
-
-void WWidget::updateValue(double value) {
-    onConnectedControlValueChanged(value);
-    // TODO(rryan): Why is this up then down versus down then up?
-    setConnectedControlUp(value);
-    setConnectedControlDown(value);
-}

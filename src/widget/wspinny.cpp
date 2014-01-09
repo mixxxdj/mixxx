@@ -458,19 +458,6 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
     }
 }
 
-void WSpinny::wheelEvent(QWheelEvent *e)
-{
-    Q_UNUSED(e); //ditch unused param warning
-
-    /*
-    double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
-
-    e->accept();
-    */
-}
-
 void WSpinny::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
     // If we want to draw the VC signal on this widget then register for

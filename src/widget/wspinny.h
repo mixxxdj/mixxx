@@ -41,7 +41,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void mouseMoveEvent(QMouseEvent * e);
     void mousePressEvent(QMouseEvent * e);
     void mouseReleaseEvent(QMouseEvent * e);
-    void wheelEvent(QWheelEvent *e);
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);
 
