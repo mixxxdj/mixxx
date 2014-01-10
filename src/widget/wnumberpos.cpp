@@ -18,7 +18,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
 
     m_pShowTrackTimeRemaining = new ControlObjectThread(
             "[Controls]", "ShowDurationRemaining");
-    connect(m_pShowTrackTimeRemaining, SIGNAL(valueChanged(double)),
+    m_pShowTrackTimeRemaining->connectValueChanged(
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
@@ -28,21 +28,23 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // which is normalized from 0 to 1.  As a result, the
     // <Connection> parameter is no longer necessary in skin definitions, but
     // leaving it in is harmless.
-    m_pVisualPlaypos = new ControlObjectThreadMain(group, "playposition");
-    connect(m_pVisualPlaypos, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+    m_pVisualPlaypos = new ControlObjectThread(group, "playposition");
+    m_pVisualPlaypos->connectValueChanged(this, SLOT(slotSetValue(double)));
 
-    m_pTrackSamples = new ControlObjectThreadMain(
+    m_pTrackSamples = new ControlObjectThread(
             group, "track_samples");
-    connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
+    m_pTrackSamples->connectValueChanged(
             this, SLOT(slotSetTrackSamples(double)));
+
     // Tell the CO to re-emit its value since we could be created after it was
     // set to a valid value.
     m_pTrackSamples->emitValueChanged();
 
-    m_pTrackSampleRate = new ControlObjectThreadMain(
+    m_pTrackSampleRate = new ControlObjectThread(
             group, "track_samplerate");
-    connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
+    m_pTrackSampleRate->connectValueChanged(
             this, SLOT(slotSetTrackSampleRate(double)));
+
     // Tell the CO to re-emit its value since we could be created after it was
     // set to a valid value.
     m_pTrackSampleRate->emitValueChanged();

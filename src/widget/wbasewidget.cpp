@@ -2,21 +2,20 @@
 
 #include "widget/wbasewidget.h"
 
-#include "controlobjectthreadwidget.h"
+#include "controlobjectslave.h"
 
 ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                 ControlObjectThreadWidget* pControl)
+                                                 ControlObjectSlave* pControl)
         : m_pWidget(pBaseWidget),
           m_pControl(pControl) {
-    connect(pControl, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlValueChanged(double)));
+    pControl->connectValueChanged(this, SLOT(slotControlValueChanged(double)));
 }
 
 ControlWidgetConnection::~ControlWidgetConnection() {
 }
 
 ValueControlWidgetConnection::ValueControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                           ControlObjectThreadWidget* pControl,
+                                                           ControlObjectSlave* pControl,
                                                            bool connectValueFromWidget,
                                                            bool connectValueToWidget,
                                                            EmitOption emitOption)
@@ -25,7 +24,7 @@ ValueControlWidgetConnection::ValueControlWidgetConnection(WBaseWidget* pBaseWid
           m_bConnectValueToWidget(connectValueToWidget),
           m_emitOption(emitOption) {
     if (m_bConnectValueToWidget) {
-        slotControlValueChanged(m_pControl->get());
+        slotControlValueChanged(m_pControl->getParameter());
     }
 }
 
@@ -33,8 +32,10 @@ ValueControlWidgetConnection::~ValueControlWidgetConnection() {
 }
 
 void ValueControlWidgetConnection::slotControlValueChanged(double v) {
+    // The widget system processes widget parameterized values, not values.
+    Q_UNUSED(v);
     if (m_bConnectValueToWidget) {
-        m_pWidget->onConnectedControlValueChanged(v);
+        m_pWidget->onConnectedControlValueChanged(m_pControl->getParameter());
         // TODO(rryan): copied from WWidget. Keep?
         //m_pWidget->toQWidget()->update();
     }
@@ -48,27 +49,29 @@ void ValueControlWidgetConnection::reset() {
 
 void ValueControlWidgetConnection::setDown(double v) {
     if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_PRESS) {
-        m_pControl->slotSet(v);
+        m_pControl->setParameter(v);
     }
 }
 
 void ValueControlWidgetConnection::setUp(double v) {
     if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_RELEASE) {
-        m_pControl->slotSet(v);
+        m_pControl->setParameter(v);
     }
 }
 
 DisabledControlWidgetConnection::DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                                 ControlObjectThreadWidget* pControl)
+                                                                 ControlObjectSlave* pControl)
         : ControlWidgetConnection(pBaseWidget, pControl) {
-    slotControlValueChanged(m_pControl->get());
+    slotControlValueChanged(m_pControl->getParameter());
 }
 
 DisabledControlWidgetConnection::~DisabledControlWidgetConnection() {
 }
 
 void DisabledControlWidgetConnection::slotControlValueChanged(double v) {
-    m_pWidget->setControlDisabled(v != 0.0);
+    // The widget system processes widget parameterized values, not values.
+    Q_UNUSED(v);
+    m_pWidget->setControlDisabled(m_pControl->getParameter() != 0.0);
     m_pWidget->toQWidget()->update();
 }
 

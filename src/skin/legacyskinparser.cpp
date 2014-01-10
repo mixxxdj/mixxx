@@ -15,7 +15,7 @@
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "controlobjectthreadwidget.h"
+#include "controlobjectslave.h"
 
 #include "mixxxkeyboard.h"
 #include "playermanager.h"
@@ -731,7 +731,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
-    ControlObjectThreadWidget* p = new ControlObjectThreadWidget(
+    ControlObjectSlave* p = new ControlObjectSlave(
             channelStr, "wheel", viewer);
     ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
         viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
@@ -1622,9 +1622,9 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             // leaked. OnOff controls do not use the value of the widget at all
             // so we do not give this control's info to the
             // ControllerLearningEventFilter.
-            ControlObjectThreadWidget* pControlWidget =
-                    new ControlObjectThreadWidget(control->getKey(),
-                                                  pWidget->toQWidget());
+            ControlObjectSlave* pControlWidget =
+                    new ControlObjectSlave(control->getKey(),
+                                           pWidget->toQWidget());
             ControlWidgetConnection* pConnection =
                     new DisabledControlWidgetConnection(pWidget,
                                                         pControlWidget);
@@ -1655,7 +1655,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
-            ControlObjectThreadWidget* pControlWidget = new ControlObjectThreadWidget(
+            ControlObjectSlave* pControlWidget = new ControlObjectSlave(
                 control->getKey(), pWidget->toQWidget());
             ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
                 pWidget, pControlWidget, connectValueFromWidget,

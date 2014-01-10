@@ -8,7 +8,7 @@
 #include <QScopedPointer>
 #include <QDomNode>
 
-class ControlObjectThreadWidget;
+class ControlObjectSlave;
 
 class WBaseWidget;
 class ControlWidgetConnection : public QObject {
@@ -23,7 +23,7 @@ class ControlWidgetConnection : public QObject {
 
     // Takes ownership of pControl.
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                            ControlObjectThreadWidget* pControl);
+                            ControlObjectSlave* pControl);
     virtual ~ControlWidgetConnection();
 
     virtual void reset() = 0;
@@ -35,14 +35,14 @@ class ControlWidgetConnection : public QObject {
 
   protected:
     WBaseWidget* m_pWidget;
-    QScopedPointer<ControlObjectThreadWidget> m_pControl;
+    QScopedPointer<ControlObjectSlave> m_pControl;
 };
 
 class ValueControlWidgetConnection : public ControlWidgetConnection {
     Q_OBJECT
   public:
     ValueControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                 ControlObjectThreadWidget* pControl,
+                                 ControlObjectSlave* pControl,
                                  bool connectValueFromWidget,
                                  bool connectValueToWidget,
                                  EmitOption emitOption);
@@ -66,7 +66,7 @@ class DisabledControlWidgetConnection : public ControlWidgetConnection {
     Q_OBJECT
   public:
     DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                    ControlObjectThreadWidget* pControl);
+                                    ControlObjectSlave* pControl);
     virtual ~DisabledControlWidgetConnection();
 
   protected:

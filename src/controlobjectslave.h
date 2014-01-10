@@ -30,7 +30,6 @@ class ControlObjectSlave : public QObject {
     bool connectValueChanged(
             const char* method, Qt::ConnectionType type = Qt::AutoConnection );
 
-
     // Called from update();
     void emitValueChanged();
 
@@ -39,18 +38,22 @@ class ControlObjectSlave : public QObject {
     // Returns the value of the object. Thread safe, non-blocking.
     virtual double get();
 
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameter();
+
   public slots:
     // Set the control to a new value. Non-blocking.
     virtual void slotSet(double v);
     // Sets the control value to v. Thread safe, non-blocking.
     virtual void set(double v);
+    // Sets the control parameterized value to v. Thread safe, non-blocking.
+    virtual void setParameter(double v);
     // Resets the control to its default value. Thread safe, non-blocking.
     virtual void reset();
 
   signals:
-    // This signal must not connected by connect()
-    // Use connectValueChanged() instead. It will connect
-    // to the base ControlDoublePrivate as well
+    // This signal must not connected by connect(). Use connectValueChanged()
+    // instead. It will connect to the base ControlDoublePrivate as well.
     void valueChanged(double);
 
   protected slots:
