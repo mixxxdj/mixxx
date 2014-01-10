@@ -6,21 +6,29 @@
 
 ControlObjectSlave::ControlObjectSlave(QObject* pParent)
         : QObject(pParent),
-          m_pControl(NULL) {
+          m_pControl(NULL),
+          m_bHasValueListener(false),
+          m_bHasParameterListener(false) {
 }
 
 ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i, QObject* pParent)
-        : QObject(pParent) {
+        : QObject(pParent),
+          m_bHasValueListener(false),
+          m_bHasParameterListener(false) {
     initialize(ConfigKey(g, i));
 }
 
 ControlObjectSlave::ControlObjectSlave(const char* g, const char* i, QObject* pParent)
-        : QObject(pParent) {
+        : QObject(pParent),
+          m_bHasValueListener(false),
+          m_bHasParameterListener(false) {
     initialize(ConfigKey(g, i));
 }
 
 ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
-        : QObject(pParent) {
+        : QObject(pParent),
+          m_bHasValueListener(false),
+          m_bHasParameterListener(false) {
     initialize(key);
 }
 
@@ -37,6 +45,7 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
     if (m_pControl) {
         ret = connect((QObject*)this, SIGNAL(valueChanged(double)),
                       receiver, method, type);
+        m_bHasValueListener = true;
         if (ret) {
             // Connect to ControlObjectPrivate only if required. Do not allow
             // duplicate connections.
@@ -54,9 +63,36 @@ bool ControlObjectSlave::connectValueChanged(
     return connectValueChanged(parent(), method, type);
 }
 
+bool ControlObjectSlave::connectParameterChanged(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    bool ret = false;
+    if (m_pControl) {
+        ret = connect((QObject*)this, SIGNAL(parameterChanged(double)),
+                      receiver, method, type);
+        m_bHasParameterListener = true;
+        if (ret) {
+            // Connect to ControlObjectPrivate only if required. Do not allow
+            // duplicate connections.
+            connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
+                    this, SLOT(slotValueChanged(double, QObject*)),
+                    static_cast<Qt::ConnectionType>(Qt::DirectConnection |
+                                                    Qt::UniqueConnection));
+        }
+    }
+    return ret;
+}
+
+bool ControlObjectSlave::connectParameterChanged(
+        const char* method, Qt::ConnectionType type) {
+    return connectParameterChanged(parent(), method, type);
+}
 
 double ControlObjectSlave::get() {
     return m_pControl ? m_pControl->get() : 0.0;
+}
+
+double ControlObjectSlave::getParameter() {
+    return m_pControl ? m_pControl->getParameter() : 0.0;
 }
 
 void ControlObjectSlave::slotSet(double v) {
@@ -66,6 +102,12 @@ void ControlObjectSlave::slotSet(double v) {
 void ControlObjectSlave::set(double v) {
     if (m_pControl) {
         m_pControl->set(v, this);
+    }
+}
+
+void ControlObjectSlave::setParameter(double v) {
+    if (m_pControl) {
+        m_pControl->setParameter(v, this);
     }
 }
 
@@ -84,9 +126,18 @@ void ControlObjectSlave::emitValueChanged() {
     emit(valueChanged(get()));
 }
 
+void ControlObjectSlave::emitParameterChanged() {
+    emit(parameterChanged(getParameter()));
+}
+
 void ControlObjectSlave::slotValueChanged(double v, QObject* pSetter) {
     if (pSetter != this) {
-        // This is base implementation of this function without scaling
-        emit(valueChanged(v));
+        if (m_bHasValueListener) {
+            // This is base implementation of this function without scaling
+            emit(valueChanged(v));
+        }
+        if (m_bHasParameterListener) {
+            emit(parameterChanged(getParameter()));
+        }
     }
 }

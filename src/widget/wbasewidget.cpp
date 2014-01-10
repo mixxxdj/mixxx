@@ -2,21 +2,20 @@
 
 #include "widget/wbasewidget.h"
 
-#include "controlobjectthreadwidget.h"
+#include "controlobjectslave.h"
 
 ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                 ControlObjectThreadWidget* pControl)
+                                                 ControlObjectSlave* pControl)
         : m_pWidget(pBaseWidget),
           m_pControl(pControl) {
-    connect(pControl, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlValueChanged(double)));
+    pControl->connectParameterChanged(this, SLOT(slotControlValueChanged(double)));
 }
 
 ControlWidgetConnection::~ControlWidgetConnection() {
 }
 
 ValueControlWidgetConnection::ValueControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                           ControlObjectThreadWidget* pControl,
+                                                           ControlObjectSlave* pControl,
                                                            bool connectValueFromWidget,
                                                            bool connectValueToWidget,
                                                            EmitOption emitOption)
@@ -25,7 +24,7 @@ ValueControlWidgetConnection::ValueControlWidgetConnection(WBaseWidget* pBaseWid
           m_bConnectValueToWidget(connectValueToWidget),
           m_emitOption(emitOption) {
     if (m_bConnectValueToWidget) {
-        slotControlValueChanged(m_pControl->get());
+        slotControlValueChanged(m_pControl->getParameter());
     }
 }
 
@@ -48,20 +47,20 @@ void ValueControlWidgetConnection::reset() {
 
 void ValueControlWidgetConnection::setDown(double v) {
     if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_PRESS) {
-        m_pControl->slotSet(v);
+        m_pControl->setParameter(v);
     }
 }
 
 void ValueControlWidgetConnection::setUp(double v) {
     if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_RELEASE) {
-        m_pControl->slotSet(v);
+        m_pControl->setParameter(v);
     }
 }
 
 DisabledControlWidgetConnection::DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                                 ControlObjectThreadWidget* pControl)
+                                                                 ControlObjectSlave* pControl)
         : ControlWidgetConnection(pBaseWidget, pControl) {
-    slotControlValueChanged(m_pControl->get());
+    slotControlValueChanged(m_pControl->getParameter());
 }
 
 DisabledControlWidgetConnection::~DisabledControlWidgetConnection() {

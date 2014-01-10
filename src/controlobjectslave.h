@@ -30,28 +30,42 @@ class ControlObjectSlave : public QObject {
     bool connectValueChanged(
             const char* method, Qt::ConnectionType type = Qt::AutoConnection );
 
+    bool connectParameterChanged(const QObject* receiver,
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectParameterChanged(
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection );
 
     // Called from update();
     void emitValueChanged();
+    void emitParameterChanged();
 
     inline bool valid() const { return m_pControl != NULL; }
 
     // Returns the value of the object. Thread safe, non-blocking.
     virtual double get();
 
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameter();
+
   public slots:
     // Set the control to a new value. Non-blocking.
     virtual void slotSet(double v);
     // Sets the control value to v. Thread safe, non-blocking.
     virtual void set(double v);
+    // Sets the control parameterized value to v. Thread safe, non-blocking.
+    virtual void setParameter(double v);
     // Resets the control to its default value. Thread safe, non-blocking.
     virtual void reset();
 
   signals:
-    // This signal must not connected by connect()
-    // Use connectValueChanged() instead. It will connect
-    // to the base ControlDoublePrivate as well
+    // This signal must not connected by connect(). Use connectValueChanged()
+    // instead. It will connect to the base ControlDoublePrivate as well.
     void valueChanged(double);
+
+    // This signal must not be connected by connect(). Use
+    // connectParameterChanged() instead. It will connect to the base
+    // ControlDoublePrivate as well.
+    void parameterChanged(double);
 
   protected slots:
     // Receives the value from the master control and re-emits either
@@ -61,6 +75,10 @@ class ControlObjectSlave : public QObject {
   protected:
     // Pointer to connected control.
     QSharedPointer<ControlDoublePrivate> m_pControl;
+
+  private:
+    bool m_bHasValueListener;
+    bool m_bHasParameterListener;
 };
 
 #endif // CONTROLOBJECTSLAVE_H
