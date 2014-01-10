@@ -8,7 +8,7 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
                                                  ControlObjectSlave* pControl)
         : m_pWidget(pBaseWidget),
           m_pControl(pControl) {
-    pControl->connectParameterChanged(this, SLOT(slotControlValueChanged(double)));
+    pControl->connectValueChanged(this, SLOT(slotControlValueChanged(double)));
 }
 
 ControlWidgetConnection::~ControlWidgetConnection() {
@@ -32,8 +32,10 @@ ValueControlWidgetConnection::~ValueControlWidgetConnection() {
 }
 
 void ValueControlWidgetConnection::slotControlValueChanged(double v) {
+    // The widget system processes widget parameterized values, not values.
+    Q_UNUSED(v);
     if (m_bConnectValueToWidget) {
-        m_pWidget->onConnectedControlValueChanged(v);
+        m_pWidget->onConnectedControlValueChanged(m_pControl->getParameter());
         // TODO(rryan): copied from WWidget. Keep?
         //m_pWidget->toQWidget()->update();
     }
@@ -67,7 +69,9 @@ DisabledControlWidgetConnection::~DisabledControlWidgetConnection() {
 }
 
 void DisabledControlWidgetConnection::slotControlValueChanged(double v) {
-    m_pWidget->setControlDisabled(v != 0.0);
+    // The widget system processes widget parameterized values, not values.
+    Q_UNUSED(v);
+    m_pWidget->setControlDisabled(m_pControl->getParameter() != 0.0);
     m_pWidget->toQWidget()->update();
 }
 

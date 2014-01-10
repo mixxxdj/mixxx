@@ -30,14 +30,8 @@ class ControlObjectSlave : public QObject {
     bool connectValueChanged(
             const char* method, Qt::ConnectionType type = Qt::AutoConnection );
 
-    bool connectParameterChanged(const QObject* receiver,
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
-    bool connectParameterChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection );
-
     // Called from update();
     void emitValueChanged();
-    void emitParameterChanged();
 
     inline bool valid() const { return m_pControl != NULL; }
 
@@ -62,11 +56,6 @@ class ControlObjectSlave : public QObject {
     // instead. It will connect to the base ControlDoublePrivate as well.
     void valueChanged(double);
 
-    // This signal must not be connected by connect(). Use
-    // connectParameterChanged() instead. It will connect to the base
-    // ControlDoublePrivate as well.
-    void parameterChanged(double);
-
   protected slots:
     // Receives the value from the master control and re-emits either
     // valueChanged(double) or valueChangedByThis(double) based on pSetter.
@@ -75,10 +64,6 @@ class ControlObjectSlave : public QObject {
   protected:
     // Pointer to connected control.
     QSharedPointer<ControlDoublePrivate> m_pControl;
-
-  private:
-    bool m_bHasValueListener;
-    bool m_bHasParameterListener;
 };
 
 #endif // CONTROLOBJECTSLAVE_H
