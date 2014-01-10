@@ -8,6 +8,10 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
                                                  ControlObjectSlave* pControl)
         : m_pWidget(pBaseWidget),
           m_pControl(pControl) {
+    // If pControl is NULL then the creator of ControlWidgetConnection has
+    // screwed up badly enough that we should just crash. This will not go
+    // unnoticed in development.
+    Q_ASSERT(pControl);
     pControl->connectValueChanged(this, SLOT(slotControlValueChanged(double)));
 }
 
