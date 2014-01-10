@@ -1,6 +1,7 @@
 
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
+#include "track/keyutils.h"
 
 SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
         : m_database(database) {
@@ -38,6 +39,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumns["bitrate"] << "bitrate";
     m_fieldToSqlColumns["duration"] << "duration";
     m_fieldToSqlColumns["key"] << "key";
+    m_fieldToSqlColumns["key_id"] << "key_id";
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
@@ -226,14 +228,10 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
 bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
                                            QStringList* tokens,
                                            QStringList* output) const {
-    // Currently unimplemented. This is called when we want to filter by
-    // key. The handling here will depend on how we represent the keys in the
-    // database but it should ideally automatically deal with all the different
-    // representations there are for keys.
-    //    qDebug() << "YO";
 
-    QStringList sqlColumns = m_fieldToSqlColumns.value(field);
+    QStringList sqlColumns = m_fieldToSqlColumns.value("key_id");
     if (sqlColumns.isEmpty()) {
+        qDebug() << "sqlColumns is empty";
         return false;
     }
 
@@ -243,22 +241,16 @@ bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
         return false;
     }
 
-    FieldEscaper escaper(m_database);
-    QString escapedFilterA = escaper.escapeString(filter + "A");
-    QString escapedFilterB = escaper.escapeString(filter + "B");
-    QString escapedFilterE = escaper.escapeString(filter);
+    mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(filter);
+
     QStringList searchClauses;
     foreach (const QString sqlColumn, sqlColumns) {
-        searchClauses << QString("(%1 LIKE %2 OR %1 LIKE %3 OR %1 LIKE %4)").arg(sqlColumn
-                                                                                ,escapedFilterA
-                                                                                ,escapedFilterB
-                                                                                ,escapedFilterE
-                                                                                );
+        searchClauses << QString("(%1 LIKE %2)").arg(sqlColumn ,QString::number(key));
     }
     *output << (searchClauses.length() > 1 ?
                     QString("(%1)").arg(searchClauses.join(" OR ")) :
-                    searchClauses[0]);
-    qDebug() << *output;
+                    searchClauses[0]
+               );
     return true;
 }
 
