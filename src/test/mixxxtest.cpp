@@ -24,4 +24,11 @@ MixxxTest::MixxxTest() {
 }
 
 MixxxTest::~MixxxTest() {
+    // Mixxx leaks a ton of COs normally. To make new tests not affected by
+    // previous tests, we clear our all COs after every MixxxTest completion.
+    QList<ControlDoublePrivate*> leakedControls;
+    ControlDoublePrivate::getControls(&leakedControls);
+    foreach (ControlDoublePrivate* pCDP, leakedControls) {
+        delete pCDP->getCreatorCO();
+    }
 }

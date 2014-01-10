@@ -10,6 +10,7 @@
 
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
+          WBaseWidget(this),
           m_mutex(QMutex::Recursive) {
 }
 

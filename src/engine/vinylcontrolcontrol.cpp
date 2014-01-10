@@ -66,7 +66,7 @@ void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
 }
 
 void VinylControlControl::slotControlVinylSeek(double change) {
-    if(isnan(change) || change > 1.14 || change < -1.14) {
+    if (isnan(change) || change > 1.14 || change < -0.14) {
         // This seek is ridiculous.
         return;
     }
@@ -90,7 +90,7 @@ void VinylControlControl::slotControlVinylSeek(double change) {
             return;  //if off, do nothing
         } else if (cuemode == MIXXX_RELATIVE_CUE_ONECUE) {
             //if onecue, just seek to the regular cue
-            seekAbs(m_pCurrentTrack->getCuePoint());
+            seekExact(m_pCurrentTrack->getCuePoint());
             return;
         }
 
@@ -121,7 +121,7 @@ void VinylControlControl::slotControlVinylSeek(double change) {
             }
             //if negative, allow a seek by falling down to the bottom
         } else {
-            seekAbs(nearest_playpos);
+            seekExact(nearest_playpos);
             return;
         }
     }

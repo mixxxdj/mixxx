@@ -22,14 +22,16 @@ class BaseExternalPlaylistModel;
 class TraktorTrackModel : public BaseExternalTrackModel {
   public:
     TraktorTrackModel(QObject* parent,
-                      TrackCollection* pTrackCollection);
+                      TrackCollection* pTrackCollection,
+                      QSharedPointer<BaseTrackCache> trackSource);
     virtual bool isColumnHiddenByDefault(int column);
 };
 
 class TraktorPlaylistModel : public BaseExternalPlaylistModel {
   public:
     TraktorPlaylistModel(QObject* parent,
-                         TrackCollection* pTrackCollection);
+                         TrackCollection* pTrackCollection,
+                         QSharedPointer<BaseTrackCache> trackSource);
     virtual bool isColumnHiddenByDefault(int column);
 };
 
@@ -76,6 +78,8 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
+
+    QSharedPointer<BaseTrackCache> m_trackSource;
 };
 
 #endif // TRAKTOR_FEATURE_H

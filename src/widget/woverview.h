@@ -24,7 +24,7 @@
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
-
+#include "skin/skincontext.h"
 
 // Waveform overview display
 // @author Tue Haste Andersen
@@ -36,10 +36,11 @@ class WOverview : public WWidget {
   public:
     WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
     virtual ~WOverview();
-    void setup(QDomNode node);
+
+    void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void setValue(double);
+    void onConnectedControlValueChanged(double);
     void slotLoadNewTrack(TrackPointer pTrack);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
@@ -84,11 +85,11 @@ class WOverview : public WWidget {
     // Append the waveform overview pixmap according to available data in waveform
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
-    inline int valueToPosition(float value) const {
-        return static_cast<int>(m_a * value - m_b + 0.5);
+    inline int valueToPosition(double value) const {
+        return static_cast<int>(m_a * value - m_b);
     }
     inline double positionToValue(int position) const {
-        return (static_cast<float>(position) + m_b) / m_a;
+        return (static_cast<double>(position) + m_b) / m_a;
     }
 
     const QString m_group;
@@ -116,10 +117,11 @@ class WOverview : public WWidget {
     std::vector<WaveformMarkRange> m_markRanges;
 
     // Coefficient value-position linear transposition
-    float m_a;
-    float m_b;
+    double m_a;
+    double m_b;
 
-    int m_analyserProgress; // In 0.1%
+    double m_dAnalyserProgress;
+    bool m_bAnalyserFinalizing;
     bool m_trackLoaded;
 };
 

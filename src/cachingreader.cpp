@@ -303,7 +303,6 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Check for bad inputs
     if (sample % 2 != 0 || num_samples < 0 || !buffer) {
         QString temp = QString("Sample = %1").arg(sample);
-        QByteArray tempBA = QString(temp).toUtf8();
         qDebug() << "CachingReader::read() invalid arguments sample:" << sample
                  << "num_samples:" << num_samples << "buffer:" << buffer;
         return 0;

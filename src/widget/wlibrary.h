@@ -10,10 +10,11 @@
 #include <QString>
 
 #include "library/libraryview.h"
+#include "widget/wbasewidget.h"
 
 class MixxxKeyboard;
 
-class WLibrary : public QStackedWidget {
+class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WLibrary(QWidget* parent);
@@ -36,6 +37,7 @@ class WLibrary : public QStackedWidget {
     void switchToView(const QString& name);
 
     void search(const QString&);
+
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;

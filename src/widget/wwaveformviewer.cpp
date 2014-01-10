@@ -17,7 +17,7 @@
 
 
 WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-        : QWidget(parent),
+        : WWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig) {
     setAcceptDrops(true);
@@ -49,9 +49,10 @@ WWaveformViewer::~WWaveformViewer() {
     delete m_pScratchPosition;
 }
 
-void WWaveformViewer::setup(QDomNode node) {
+void WWaveformViewer::setup(QDomNode node, const SkinContext& context) {
+    Q_UNUSED(context);
     if (m_waveformWidget)
-        m_waveformWidget->setup(node);
+        m_waveformWidget->setup(node, context);
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
@@ -67,7 +68,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         // If we are pitch-bending then disable and reset because the two
         // shouldn't be used at once.
         if (m_bBending) {
-            emit(valueChangedRightDown(64));
+            setConnectedControlRightDown(0.5);
             m_bBending = false;
         }
         m_bScratching = true;
@@ -82,7 +83,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_pScratchPositionEnable->slotSet(0.0f);
             m_bScratching = false;
         }
-        emit(valueChangedRightDown(64));
+        setConnectedControlRightDown(0.5);
         m_bBending = true;
     }
 
@@ -100,12 +101,17 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         m_pScratchPosition->slotSet(targetPosition);
     } else if (m_bBending) {
         QPoint diff = event->pos() - m_mouseAnchor;
-        // start at the middle of 0-127, and emit values based on
-        // how far the mouse has traveled horizontally
-        double v = 64.0 + diff.x()/10.0f;
-        // clamp to [0, 127]
-        v = math_min(127.0, math_max(0.0, v));
-        emit(valueChangedRightDown(v));
+        // Start at the middle of [0.0, 1.0], and emit values based on how far
+        // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
+        // this is tuned to 127.
+        // NOTE(rryan): This is basically a direct connection to the "wheel"
+        // control since we manually connect it in LegacySkinParser regardless
+        // of whether the skin specifies it. See ControlTTRotaryBehavior to see
+        // where this value is handled.
+        double v = 0.5 + (diff.x() / 1270.0);
+        // clamp to [0.0, 1.0]
+        v = math_min(1.0, math_max(0.0, v));
+        setConnectedControlRightDown(v);
     }
 }
 
@@ -115,7 +121,7 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
         m_bScratching = false;
     }
     if (m_bBending) {
-        emit(valueChangedRightDown(64));
+        setConnectedControlRightDown(0.5);
         m_bBending = false;
     }
     m_mouseAnchor = QPoint();

@@ -44,7 +44,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_bSetThreadPriority(false),
           m_pMasterUnderflowCount(ControlObject::getControl(
               ConfigKey("[Master]", "underflow_count"))),
-          m_undeflowUpdateCount(0) {
+          m_underflowUpdateCount(0) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -153,7 +153,7 @@ int SoundDevicePortAudio::open() {
     m_outputParams.hostApiSpecificStreamInfo = NULL;
 
     m_inputParams.device  = m_devId;
-    m_inputParams.sampleFormat  = paInt16; //This is how our vinyl control stuff like samples.
+    m_inputParams.sampleFormat  = paFloat32;
     m_inputParams.suggestedLatency = bufferMSec / 1000.0;
     m_inputParams.hostApiSpecificStreamInfo = NULL;
 
@@ -282,9 +282,9 @@ QString SoundDevicePortAudio::getError() const {
         -------- ------------------------------------------------------
  */
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
-        float *output, short *in, const PaStreamCallbackTimeInfo *timeInfo,
-        PaStreamCallbackFlags statusFlags) {
-    Q_UNUSED(timeInfo);
+                                          float *output, float *in,
+                                          const PaStreamCallbackTimeInfo *timeInfo,
+                                          PaStreamCallbackFlags statusFlags) {
     ScopedTimer t("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
@@ -299,16 +299,16 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         VisualPlayPosition::setTimeInfo(timeInfo);
     }
 
-    if (!m_undeflowUpdateCount) {
+    if (!m_underflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
             if (m_pMasterUnderflowCount) {
                 m_pMasterUnderflowCount->set(
                     m_pMasterUnderflowCount->get() + 1);
             }
-            m_undeflowUpdateCount = 40;
+            m_underflowUpdateCount = 40;
         }
     } else {
-        m_undeflowUpdateCount--;
+        m_underflowUpdateCount--;
     }
 
     //Note: Input is processed first so that any ControlObject changes made in
@@ -318,22 +318,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     // Send audio from the soundcard's input off to the SoundManager...
     if (in && framesPerBuffer > 0) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
-
-        //Apply software preamp
-        //Super big warning: Need to use channel_count here instead of iFrameSize because iFrameSize is
-        //only for output buffers...
-        // TODO(bkgood) move this to vcproxy or something, once we have other
-        // inputs we don't want every input getting the vc gain
-        static ControlObject* pControlObjectVinylControlGain =
-                ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"));
-        int iVCGain = pControlObjectVinylControlGain->get();
-        if (iVCGain > 1) {
-            for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
-                in[i] *= iVCGain;
-        }
-
         m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
-                                    m_inputParams.channelCount);
+                                    m_inputParams.channelCount, this);
     }
 
     if (output && framesPerBuffer > 0) {
@@ -367,5 +353,5 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   PaStreamCallbackFlags statusFlags,
                   void *soundDevice) {
     return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(framesPerBuffer,
-            (float*) outputBuffer, (short*) inputBuffer, timeInfo, statusFlags);
+            (float*) outputBuffer, (float*) inputBuffer, timeInfo, statusFlags);
 }

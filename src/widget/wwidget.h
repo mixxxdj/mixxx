@@ -23,6 +23,7 @@
 #include <QDomNode>
 
 #include "configobject.h"
+#include "widget/wbasewidget.h"
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -34,55 +35,28 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WWidget : public QWidget  {
+class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
 public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
-    // Sets the path used to find pixmaps
-    static void setPixmapPath(QString qPath);
-    static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
-    static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
-    static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
-    static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
+    Q_PROPERTY(bool controlDisabled READ controlDisabled);
+    Q_PROPERTY(double value READ getValue);
 
-    // Given a filename of a pixmap, returns its path
-    static const QString getPath(QString location);
-    double getValue();
-    // Sometimes WWidget's compose a QWidget (like a label). This is used during
-    // skin parsing to style and size the composed widget.
-    virtual QWidget* getComposedWidget() { return NULL; }
+    double getValue() const {
+        return m_value;
+    }
 
-  public slots:
-    virtual void setValue(double value);
-    void updateValue(double value);
-    void setOnOff(double);
+    void setValue(double value) {
+        m_value = value;
+    }
 
-  private slots:
-    void slotReEmitValueDown(double);
-    void slotReEmitValueUp(double);
-
-  signals:
-    void valueReset();
-    void valueChangedDown(double);
-    void valueChangedUp(double);
-    void valueChangedLeftDown(double);
-    void valueChangedLeftUp(double);
-    void valueChangedRightDown(double);
-    void valueChangedRightUp(double);
-
-  protected:
-    // Value/state of widget
-    double m_value;
-    // Is true if widget is off
-    bool m_bOff;
+    virtual void onConnectedControlValueChanged(double value);
 
   private:
-    // Variable containing the path to the pixmaps
-    static QString m_qPath;
-    // Property used when connecting to ControlObject
-    //bool m_bEmitOnDownPress;
+    // Value/state of widget
+    double m_value;
 };
 
 #endif

@@ -1,0 +1,104 @@
+#ifndef KNOBEVENTHANDLER_H
+#define KNOBEVENTHANDLER_H
+
+#include <QMouseEvent>
+#include <QWheelEvent>
+#include <QCursor>
+#include <QApplication>
+#include <QPoint>
+
+#include "defs.h"
+
+template <class T>
+class KnobEventHandler {
+  public:
+    KnobEventHandler()
+            : m_bRightButtonPressed(false) {
+    }
+
+    void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
+        if (!m_bRightButtonPressed) {
+            QPoint cur(e->globalPos());
+            QPoint diff(cur - m_startPos);
+            double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
+            bool y_dominant = abs(diff.y()) > abs(diff.x());
+
+            // if y is dominant, then thread an increase in dy as negative (y is
+            // pointed downward). Otherwise, if y is not dominant and x has
+            // decreased, then thread it as negative.
+            if ((y_dominant && diff.y() > 0) || (!y_dominant && diff.x() < 0)) {
+                dist = -dist;
+            }
+
+            double value = pWidget->getValue();
+            // For legacy (MIDI) reasons this is tuned to 127.
+            value += dist / 127.0;
+            QCursor::setPos(m_startPos);
+
+            // Clamp to [0.0, 1.0]
+            value = math_max(0.0, math_min(1.0, value));
+
+            pWidget->onConnectedControlValueChanged(value);
+            pWidget->setConnectedControlLeftDown(value);
+            pWidget->update();
+        }
+    }
+
+    void mousePressEvent(T* pWidget, QMouseEvent* e) {
+        switch (e->button()) {
+            case Qt::RightButton:
+                pWidget->resetConnectedControls();
+                m_bRightButtonPressed = true;
+                break;
+            case Qt::LeftButton:
+            case Qt::MidButton:
+                m_startPos = e->globalPos();
+                QApplication::setOverrideCursor(Qt::BlankCursor);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void mouseReleaseEvent(T* pWidget, QMouseEvent* e) {
+        switch (e->button()) {
+            case Qt::LeftButton:
+            case Qt::MidButton:
+                QCursor::setPos(m_startPos);
+                QApplication::restoreOverrideCursor();
+                pWidget->setConnectedControlLeftUp(pWidget->getValue());
+                break;
+            case Qt::RightButton:
+                m_bRightButtonPressed = false;
+                //pWidget->setConnectedControlRightUp(pWidget->getValue());
+                break;
+            default:
+                break;
+        }
+        pWidget->update();
+    }
+
+    void wheelEvent(T* pWidget, QWheelEvent* e) {
+        // For legacy (MIDI) reasons this is tuned to 127.
+        double wheelDirection = e->delta() / (120.0 * 127.0);
+        double newValue = pWidget->getValue() + wheelDirection;
+
+        // Clamp to [0.0, 1.0]
+        newValue = math_max(0.0, math_min(1.0, newValue));
+
+        pWidget->setValue(newValue);
+        pWidget->setConnectedControlDown(newValue);
+        pWidget->setConnectedControlUp(newValue);
+        pWidget->update();
+        e->accept();
+    }
+
+  private:
+    // True if right mouse button is pressed.
+    bool m_bRightButtonPressed;
+
+    // Starting point when left mouse button is pressed
+    QPoint m_startPos;
+};
+
+#endif /* KNOBEVENTHANDLER_H */

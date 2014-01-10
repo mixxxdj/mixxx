@@ -39,7 +39,7 @@
 
 #define TIMEOUT 10
 
-EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
+EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
         : m_pTextCodec(NULL),
           m_pMetaData(),
           m_pShout(NULL),

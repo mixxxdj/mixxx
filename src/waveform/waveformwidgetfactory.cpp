@@ -40,16 +40,17 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 
 WaveformWidgetHolder::WaveformWidgetHolder()
     : m_waveformWidget(NULL),
-      m_waveformViewer(NULL),
-      m_visualNodeCache(QDomNode()) {
+      m_waveformViewer(NULL) {
 }
 
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
                                            WWaveformViewer* waveformViewer,
-                                           const QDomNode& visualNodeCache)
+                                           const QDomNode& node,
+                                           const SkinContext& skinContext)
     : m_waveformWidget(waveformWidget),
       m_waveformViewer(waveformViewer),
-      m_visualNodeCache(visualNodeCache.cloneNode()) {
+      m_skinNodeCache(node.cloneNode()),
+      m_skinContextCache(skinContext) {
 }
 
 ///////////////////////////////////////////
@@ -227,7 +228,9 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
             Qt::DirectConnection);
 }
 
-bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDomElement& node) {
+bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
+                                              const QDomElement& node,
+                                              const SkinContext& context) {
     int index = findIndexOf(viewer);
     if (index != -1) {
         qDebug() << "WaveformWidgetFactory::setWaveformWidget - "\
@@ -238,14 +241,16 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDo
     //Cast to widget done just after creation because it can't be perform in constructor (pure virtual)
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, viewer);
     viewer->setWaveformWidget(waveformWidget);
-    viewer->setup(node);
+    viewer->setup(node, context);
 
     // create new holder
     if (index == -1) {
-        m_waveformWidgetHolders.push_back(WaveformWidgetHolder(waveformWidget, viewer, node));
+        m_waveformWidgetHolders.push_back(
+            WaveformWidgetHolder(waveformWidget, viewer, node, context));
         index = m_waveformWidgetHolders.size() - 1;
     } else { //update holder
-        m_waveformWidgetHolders[index] = WaveformWidgetHolder(waveformWidget, viewer, node);
+        m_waveformWidgetHolders[index] =
+                WaveformWidgetHolder(waveformWidget, viewer, node, context);
     }
 
     viewer->setZoom(m_defaultZoom);
@@ -335,7 +340,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
         holder.m_waveformWidget = widget;
         viewer->setWaveformWidget(widget);
-        viewer->setup(holder.m_visualNodeCache);
+        viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.

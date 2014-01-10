@@ -33,10 +33,12 @@
 #include <QTextStream>
 #endif
 
+class EngineChannel;
 class EngineControl;
 class BpmControl;
 class KeyControl;
 class RateControl;
+class SyncControl;
 class LoopingControl;
 class ClockControl;
 class CueControl;
@@ -54,6 +56,7 @@ class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
+class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
@@ -67,7 +70,7 @@ struct Hint;
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
 
-
+// Temporary buffer length
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
@@ -87,11 +90,19 @@ const int ENGINE_RAMP_UP = 1;
 
 //const int kiRampLength = 3;
 
+enum SeekRequest {
+    NO_SEEK,
+    SEEK_STANDARD,
+    SEEK_EXACT,
+    SEEK_PHASE
+};
+
 class EngineBuffer : public EngineObject {
      Q_OBJECT
-public:
-    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
-    ~EngineBuffer();
+  public:
+    EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
+                 EngineChannel* pChannel, EngineMaster* pMixingEngine);
+    virtual ~EngineBuffer();
     bool getPitchIndpTimeStretch(void);
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -105,17 +116,20 @@ public:
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)
     double getFileBpm();
-
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
-    void queueNewPlaypos(double newpos);
+    void queueNewPlaypos(double newpos, bool exact);
+    void requestSyncPhase();
 
     // Reset buffer playpos and set file playpos. This must only be called
     // while holding the pause mutex
     void setNewPlaypos(double playpos);
 
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    // The process methods all run in the audio callback.
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void processSlip(int iBufferSize);
+    void processSeek();
 
     const char* getGroup();
     bool isTrackLoaded();
@@ -127,6 +141,12 @@ public:
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
 
+    // For dependency injection of scalers.
+    void setScalerForTest(EngineBufferScale* pScale);
+
+    // For dependency injection of fake tracks.
+    void loadFakeTrack();
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -136,6 +156,7 @@ public:
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
+    void slotControlSeekExact(double);
     void slotControlSlip(double);
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -168,6 +189,8 @@ public:
 
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
+    void doSeek(double change, bool exact);
+
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
     QMutex m_engineLock;
@@ -177,6 +200,8 @@ public:
     ConfigObject<ConfigValue>* m_pConfig;
 
     LoopingControl* m_pLoopingControl;
+    EngineSync* m_pEngineSync;
+    SyncControl* m_pSyncControl;
     RateControl* m_pRateControl;
     BpmControl* m_pBpmControl;
     KeyControl* m_pKeyControl;
@@ -231,6 +256,8 @@ public:
     double m_dSlipRate;
     // Slip Status
     bool m_bSlipEnabled;
+    bool m_bSlipToggled;
+
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
@@ -247,6 +274,7 @@ public:
     ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
     ControlObject* m_visualKey;
+    ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
@@ -274,8 +302,10 @@ public:
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
+    // Indicates that dependency injection has taken place.
+    bool m_bScalerOverride;
 
-    QAtomicInt m_bSeekQueued;
+    QAtomicInt m_iSeekQueued;
     // TODO(XXX) make a macro or something.
 #if defined(__GNUC__)
     double m_dQueuedPosition __attribute__ ((aligned(sizeof(double))));

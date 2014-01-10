@@ -78,6 +78,10 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
         "Traktor Kontrol X1 - 1 MIDI input 0",
         "Traktor Kontrol X1 - 1 MIDI output 0"));
 
+    ASSERT_TRUE(shouldLinkInputToOutput(
+        "Pure Data Midi in 1",
+        "Pure Data Midi out 1"));
+
     // Strip ' input ' from inputs and ' output ' from outputs.
 
     // Lemur Daemon shows 8 port pairs named like: 'Daemon Input 1' and 'Daemon

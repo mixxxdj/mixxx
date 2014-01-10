@@ -11,8 +11,10 @@
 #include <QTimerEvent>
 #include <QTreeView>
 
-class WLibrarySidebar : public QTreeView {
-  Q_OBJECT
+#include "widget/wbasewidget.h"
+
+class WLibrarySidebar : public QTreeView, public WBaseWidget {
+    Q_OBJECT
   public:
     WLibrarySidebar(QWidget* parent = 0);
     virtual ~WLibrarySidebar();

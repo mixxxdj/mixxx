@@ -289,11 +289,17 @@ class Qt(Dependence):
                 'QtGui'      : ['QT_GUI_LIB'],
                 'QtNetwork'  : ['QT_NETWORK_LIB'],
                 'QtCore'     : ['QT_CORE_LIB'],
+                'QtWidgets'  : ['QT_WIDGETS_LIB'],
             }
 
             module_defines = qt5_module_defines if qt5 else qt4_module_defines
             for module in qt_modules:
                 build.env.AppendUnique(CPPDEFINES=module_defines.get(module, []))
+
+            if qt5:
+                build.env["QT5_MOCCPPPATH"] = build.env["CPPPATH"]
+            else:
+                build.env["QT4_MOCCPPPATH"] = build.env["CPPPATH"]
         elif build.platform_is_windows:
             # This automatically converts QtCore to QtCore[45][d] where
             # appropriate.
@@ -532,6 +538,11 @@ class MixxxCore(Feature):
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
 
+                   "engine/sync/basesyncablelistener.cpp",
+                   "engine/sync/enginesync.cpp",
+                   "engine/sync/synccontrol.cpp",
+                   "engine/sync/internalclock.cpp",
+
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
                    "engine/enginebuffer.cpp",
@@ -601,6 +612,7 @@ class MixxxCore(Feature):
                    "soundsource.cpp",
 
                    "sharedglcontext.cpp",
+                   "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
                    "widget/wwidgetgroup.cpp",
                    "widget/wwidgetstack.cpp",
@@ -610,18 +622,17 @@ class MixxxCore(Feature):
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
                    "widget/wknob.cpp",
+                   "widget/wknobcomposed.cpp",
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",
                    "widget/wpushbutton.cpp",
                    "widget/wslidercomposed.cpp",
-                   "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
                    "widget/woverviewlmh.cpp",
                    "widget/woverviewhsv.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
-                   "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",
                    "widget/wpixmapstore.cpp",
                    "widget/wimagestore.cpp",
@@ -786,6 +797,7 @@ class MixxxCore(Feature):
                    "skin/colorschemeparser.cpp",
                    "skin/propertybinder.cpp",
                    "skin/tooltips.cpp",
+                   "skin/skincontext.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

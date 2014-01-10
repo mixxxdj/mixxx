@@ -12,8 +12,8 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
-CueControl::CueControl(const char * _group,
-                       ConfigObject<ConfigValue> * _config) :
+CueControl::CueControl(const char* _group,
+                       ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_bHotcueCancel(false),
         m_bPreviewing(false),
@@ -205,7 +205,7 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     }
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-    seekAbs(loadCuePoint);
+    seekExact(loadCuePoint);
 }
 
 void CueControl::trackUnloaded(TrackPointer pTrack) {
@@ -327,6 +327,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     bool playing = m_pPlayButton->get() > 0;
     if (!playing && m_pQuantizeEnabled->get() > 0.0) {
         lock.unlock();  // prevent deadlock.
+        // Enginebuffer will quantize more exactly than we can.
         seekAbs(cuePosition);
     }
 }
@@ -369,7 +370,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
         int position = pCue->getPosition();
         if (position != -1) {
             m_pPlayButton->set(0.0);
-            seekAbs(position);
+            seekExact(position);
         }
     }
 }
@@ -485,7 +486,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                     m_pPlayButton->set(0.0);
                     // Need to unlock before emitting any signals to prevent deadlock.
                     lock.unlock();
-                    seekAbs(iPosition);
+                    seekExact(iPosition);
                 }
             }
         }
@@ -617,7 +618,7 @@ void CueControl::cueGotoAndStop(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekAbs(cuePoint);
+    seekExact(cuePoint);
 }
 
 void CueControl::cuePreview(double v)
@@ -694,6 +695,7 @@ void CueControl::cueCDJ(double v) {
                 // necessarily where we currently are
                 if (m_pQuantizeEnabled->get() > 0.0) {
                     lock.unlock();  // prevent deadlock.
+                    // Enginebuffer will quantize more exactly than we can.
                     seekAbs(m_pCuePoint->get());
                 }
             }

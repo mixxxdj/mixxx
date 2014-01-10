@@ -14,17 +14,17 @@ class TrackCollection;
 class BaseExternalTrackModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    BaseExternalTrackModel(QObject* parent, TrackCollection* pTrackCollection,
-                           QString settingsNamespace,
-                           QString trackTable,
-                           QString trackSource);
+    BaseExternalTrackModel(QObject* parent,
+                           TrackCollection* pTrackCollection,
+                           const char* settingsNamespace,
+                           const QString& trackTable,
+                           QSharedPointer<BaseTrackCache> trackSource);
     virtual ~BaseExternalTrackModel();
 
-    void setTableModel(int id=-1);
-    TrackModel::CapabilitiesFlags getCapabilities() const;
+    virtual TrackModel::CapabilitiesFlags getCapabilities() const;
     TrackPointer getTrack(const QModelIndex& index) const;
-    bool isColumnInternal(int column);
-    bool isColumnHiddenByDefault(int column);
+    virtual bool isColumnInternal(int column);
+    virtual bool isColumnHiddenByDefault(int column);
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
   private:

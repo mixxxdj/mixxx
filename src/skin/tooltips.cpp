@@ -213,8 +213,9 @@ void Tooltips::addStandardTooltips() {
             << tempoDisplay;
 
     add("visual_key")
+            //: The musical key of a track
             << tr("Key")
-            << tr("Displays the harmonic key of the loaded track.");
+            << tr("Displays the current musical key of the loaded track after pitch shifting.");
 
     add("bpm_tap")
             << tr("BPM Tap")
@@ -246,9 +247,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggles quantization.")
             << tr("Loops and cues snap to the nearest beat when quantization is enabled.");
 
+    // Reverse and reverseroll (censor)
     add("reverse")
-            << tr("Reverse")
-            << tr("Reverses track playback during regular playback.");
+    << tr("Reverse")
+            << QString("%1: %2").arg(leftClick, tr("Reverses track playback during regular playback."))
+            << QString("%1: %2").arg(rightClick, tr("Puts a track into reverse while being held (Censor)."))
+            << tr("Playback continues where the track would have been if it had not been temporarily reversed.");
 
     // Currently used for samplers
     add("play_start")
@@ -275,7 +279,7 @@ void Tooltips::addStandardTooltips() {
 
     add("pfl")
             << tr("Headphone")
-            << tr("Sends the selected channel's audio to the headphone output.")
+            << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
 
     add("back_start")

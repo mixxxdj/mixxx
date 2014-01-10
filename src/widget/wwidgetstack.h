@@ -8,6 +8,7 @@
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "widget/wbasewidget.h"
 
 class WidgetStackControlListener : public QObject {
     Q_OBJECT
@@ -18,6 +19,7 @@ class WidgetStackControlListener : public QObject {
 
   signals:
     void switchToWidget();
+    void hideWidget();
 
   public slots:
     void onCurrentWidgetChanged(int index);
@@ -30,7 +32,7 @@ class WidgetStackControlListener : public QObject {
     const int m_index;
 };
 
-class WWidgetStack : public QStackedWidget {
+class WWidgetStack : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WWidgetStack(QWidget* pParent,
@@ -38,14 +40,23 @@ class WWidgetStack : public QStackedWidget {
                  ControlObject* pPrevControl);
     virtual ~WWidgetStack();
 
+    // QStackedWidget sizeHint and minimumSizeHint are the largest of all the
+    // widgets in the stack. This is presumably to prevent UI resizes when the
+    // stack changes. We explicitly want the UI to change when the stack changes
+    // (potentially grow or shrink).
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+
     void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl);
 
   private slots:
     void onNextControlChanged(double v);
     void onPrevControlChanged(double v);
+    void hideIndex(int index);
 
   private:
-    QSignalMapper m_mapper;
+    QSignalMapper m_showMapper;
+    QSignalMapper m_hideMapper;
     ControlObjectThread m_nextControl;
     ControlObjectThread m_prevControl;
 };

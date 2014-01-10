@@ -108,7 +108,7 @@ public:
         //         << img << " bpp: "
         //         << bytesPerPixel << " format: " << i->format();
 
-        if(bytesPerPixel < 4) {
+        if (bytesPerPixel < 4) {
             // Handling Indexed color or mono colors requires different logic
             qDebug() << "ImgColorProcessor aborting on unsupported color format:"
                      << i->format();

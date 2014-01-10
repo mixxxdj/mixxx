@@ -91,6 +91,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 // static
 void ControlDoublePrivate::getControls(QList<ControlDoublePrivate*>* pControlList) {
     m_sqCOHashMutex.lock();
+    pControlList->clear();
     for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.begin();
          it != m_sqCOHash.end(); ++it) {
         pControlList->push_back(it.value().data());
@@ -147,20 +148,20 @@ void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }
 
-void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSender) {
+void ControlDoublePrivate::setParameter(double dParam, QObject* pSender) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (pBehavior.isNull()) {
         set(dParam, pSender);
     } else {
-        set(pBehavior->widgetParameterToValue(dParam), pSender);
+        set(pBehavior->parameterToValue(dParam), pSender);
     }
 }
 
-double ControlDoublePrivate::getWidgetParameter() const {
+double ControlDoublePrivate::getParameter() const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     double value = get();
     if (!pBehavior.isNull()) {
-        value = pBehavior->valueToWidgetParameter(value);
+        value = pBehavior->valueToParameter(value);
     }
     return value;
 }
