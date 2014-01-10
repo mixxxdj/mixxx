@@ -42,7 +42,7 @@ public:
     virtual ~WWidget();
 
     Q_PROPERTY(bool controlDisabled READ controlDisabled);
-    Q_PROPERTY(double value READ getConnectedDisplayValue);
+    Q_PROPERTY(double value READ getControlParameterDisplay);
 
     virtual void onConnectedControlValueChanged(double value);
 };

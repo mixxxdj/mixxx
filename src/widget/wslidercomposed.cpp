@@ -82,7 +82,7 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getConnectedControlLeft());
+        onConnectedControlValueChanged(getControlParameterLeft());
         update();
     }
 }
@@ -127,9 +127,9 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
             if (e->button() == Qt::RightButton) {
-                setConnectedControlRightUp(newValue);
+                setControlParameterRightUp(newValue);
             } else {
-                setConnectedControlLeftUp(newValue);
+                setControlParameterLeftUp(newValue);
             }
         }
 
@@ -141,13 +141,13 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // For legacy (MIDI) reasons this is tuned to 127.
     double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-    double newValue = getConnectedControl() + wheelDirection;
+    double newValue = getControlParameter() + wheelDirection;
 
     // Clamp to [0.0, 1.0]
     newValue = math_max(0.0, math_min(1.0, newValue));
 
-    setConnectedControlDown(newValue);
-    setConnectedControlUp(newValue);
+    setControlParameterDown(newValue);
+    setControlParameterUp(newValue);
     update();
 
     e->accept();
@@ -160,9 +160,9 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
         mouseMoveEvent(e);
 
         if (e->button() == Qt::RightButton) {
-            setConnectedControlRightUp(getConnectedControlRight());
+            setControlParameterRightUp(getControlParameterRight());
         } else {
-            setConnectedControlLeftUp(getConnectedControlLeft());
+            setControlParameterLeftUp(getControlParameterLeft());
         }
 
         m_bDrag = false;
@@ -180,7 +180,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
         m_bDrag = true;
     } else {
         if (e->button() == Qt::RightButton) {
-            resetConnectedControls();
+            resetControlParameters();
             m_bRightButtonPressed = true;
         } else {
             if (m_bHorizontal) {

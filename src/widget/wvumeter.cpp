@@ -158,7 +158,7 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
-        int idx = static_cast<int>(getConnectedDisplayValue() * m_iNoPos);
+        int idx = static_cast<int>(getControlParameterDisplay() * m_iNoPos);
 
         // Range check
         if (idx > m_iNoPos)

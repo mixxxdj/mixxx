@@ -111,23 +111,23 @@ class WBaseWidget {
     void addConnection(ControlWidgetConnection* pConnection);
     void setDisplayConnection(ControlWidgetConnection* pConnection);
 
-    double getConnectedControl() const;
-    double getConnectedControlLeft() const;
-    double getConnectedControlRight() const;
-    double getConnectedDisplayValue() const;
+    double getControlParameter() const;
+    double getControlParameterLeft() const;
+    double getControlParameterRight() const;
+    double getControlParameterDisplay() const;
 
   protected:
     virtual void onConnectedControlValueChanged(double v) {
         Q_UNUSED(v);
     }
 
-    void resetConnectedControls();
-    void setConnectedControlDown(double v);
-    void setConnectedControlUp(double v);
-    void setConnectedControlLeftDown(double v);
-    void setConnectedControlLeftUp(double v);
-    void setConnectedControlRightDown(double v);
-    void setConnectedControlRightUp(double v);
+    void resetControlParameters();
+    void setControlParameterDown(double v);
+    void setControlParameterUp(double v);
+    void setControlParameterLeftDown(double v);
+    void setControlParameterLeftUp(double v);
+    void setControlParameterRightDown(double v);
+    void setControlParameterRightUp(double v);
 
   private:
     QWidget* m_pWidget;

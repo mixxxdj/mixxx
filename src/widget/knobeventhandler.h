@@ -30,7 +30,7 @@ class KnobEventHandler {
         }
 
         // For legacy (MIDI) reasons this is tuned to 127.
-        double value = pWidget->getConnectedControlLeft() + dist / 127.0;
+        double value = pWidget->getControlParameterLeft() + dist / 127.0;
 
         // Clamp to [0.0, 1.0]
         value = math_max(0.0, math_min(1.0, value));
@@ -42,7 +42,7 @@ class KnobEventHandler {
         if (!m_bRightButtonPressed) {
             QCursor::setPos(m_startPos);
             double value = valueFromMouseEvent(pWidget, e);
-            pWidget->setConnectedControlLeftDown(value);
+            pWidget->setControlParameterLeftDown(value);
             pWidget->update();
         }
     }
@@ -50,7 +50,7 @@ class KnobEventHandler {
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         switch (e->button()) {
             case Qt::RightButton:
-                pWidget->resetConnectedControls();
+                pWidget->resetControlParameters();
                 m_bRightButtonPressed = true;
                 break;
             case Qt::LeftButton:
@@ -71,12 +71,12 @@ class KnobEventHandler {
                 QCursor::setPos(m_startPos);
                 QApplication::restoreOverrideCursor();
                 value = valueFromMouseEvent(pWidget, e);
-                pWidget->setConnectedControlLeftUp(value);
+                pWidget->setControlParameterLeftUp(value);
                 pWidget->update();
                 break;
             case Qt::RightButton:
                 m_bRightButtonPressed = false;
-                //pWidget->setConnectedControlRightUp(pWidget->getValue());
+                //pWidget->setControlParameterRightUp(pWidget->getValue());
                 break;
             default:
                 break;
@@ -87,13 +87,13 @@ class KnobEventHandler {
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // For legacy (MIDI) reasons this is tuned to 127.
         double wheelDirection = e->delta() / (120.0 * 127.0);
-        double newValue = pWidget->getConnectedControl() + wheelDirection;
+        double newValue = pWidget->getControlParameter() + wheelDirection;
 
         // Clamp to [0.0, 1.0]
         newValue = math_max(0.0, math_min(1.0, newValue));
 
-        pWidget->setConnectedControlDown(newValue);
-        pWidget->setConnectedControlUp(newValue);
+        pWidget->setControlParameterDown(newValue);
+        pWidget->setControlParameterUp(newValue);
         pWidget->update();
         e->accept();
     }
