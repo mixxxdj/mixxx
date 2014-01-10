@@ -12,6 +12,11 @@ public:
 
     virtual void onSetup(const QDomNode &node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
+
+private:
+    QColor m_lowColor;
+    QColor m_midColor;
+    QColor m_highColor;
 };
 
 #endif // GLWAVEFORMRENDERERRGB_H

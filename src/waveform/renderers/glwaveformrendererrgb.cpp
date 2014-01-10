@@ -4,6 +4,8 @@
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wwidget.h"
+#include "widget/wskincolor.h"
 
 #define MAX3(a, b, c)  ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
@@ -17,8 +19,25 @@ GLWaveformRendererRGB::~GLWaveformRendererRGB() {
 
 }
 
-void GLWaveformRendererRGB::onSetup(const QDomNode& /*node*/) {
+void GLWaveformRendererRGB::onSetup(const QDomNode& node) {
 
+    m_lowColor.setNamedColor(WWidget::selectNodeQString(node, "SignalLowColor"));
+    if (!m_lowColor.isValid()) {
+        m_lowColor = Qt::red;
+    }
+    m_lowColor  = WSkinColor::getCorrectColor(m_lowColor);
+
+    m_midColor.setNamedColor(WWidget::selectNodeQString(node, "SignalMidColor"));
+    if (!m_midColor.isValid()) {
+        m_midColor = Qt::green;
+    }
+    m_midColor  = WSkinColor::getCorrectColor(m_midColor);
+
+    m_highColor.setNamedColor(WWidget::selectNodeQString(node, "SignalHighColor"));
+    if (!m_highColor.isValid()) {
+        m_highColor = Qt::blue;
+    }
+    m_highColor = WSkinColor::getCorrectColor(m_highColor);
 }
 
 void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -110,9 +129,13 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 allA = data[visualIndex].filtered.all;
                 allB = data[visualIndex+1].filtered.all;
 
-                float max = (float) MAX3(low, mid, high);
+                int red   = low * m_lowColor.red()   + mid * m_midColor.red()   + high * m_highColor.red();
+                int green = low * m_lowColor.green() + mid * m_midColor.green() + high * m_highColor.green();
+                int blue  = low * m_lowColor.blue()  + mid * m_midColor.blue()  + high * m_highColor.blue();
+
+                float max = (float) MAX3(red, green, blue);
                 if (max > 0.0f) {  // Prevent division by zero
-                    glColor4f(low / max, mid / max, high / max, 0.9f);
+                    glColor4f(red / max, green / max, blue / max, 0.9f);
                     glVertex2f(visualIndex, allA);
                     glVertex2f(visualIndex, -1.0f * allB);
                 }
@@ -156,9 +179,13 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 allA = data[visualIndex].filtered.all;
                 allB = data[visualIndex+1].filtered.all;
 
-                float max = (float) MAX3(low, mid, high);
+                int red   = low * m_lowColor.red()   + mid * m_midColor.red()   + high * m_highColor.red();
+                int green = low * m_lowColor.green() + mid * m_midColor.green() + high * m_highColor.green();
+                int blue  = low * m_lowColor.blue()  + mid * m_midColor.blue()  + high * m_highColor.blue();
+
+                float max = (float) MAX3(red, green, blue);
                 if (max > 0.0f) {  // Prevent division by zero
-                    glColor4f(low / max, mid / max, high / max, 0.9f);
+                    glColor4f(red / max, green / max, blue / max, 0.9f);
                     glVertex2f(float(visualIndex), 0.0f);
                     glVertex2f(float(visualIndex), math_max(allA, allB));
                 }
