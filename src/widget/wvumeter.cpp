@@ -112,7 +112,6 @@ void WVuMeter::onConnectedControlValueChanged(double dValue) {
         idx = 0;
 
     setPeak(idx);
-    setValue(dValue);
 
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
@@ -159,7 +158,7 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
-        int idx = static_cast<int>(getValue() * m_iNoPos);
+        int idx = static_cast<int>(getConnectedDisplayValue() * m_iNoPos);
 
         // Range check
         if (idx > m_iNoPos)

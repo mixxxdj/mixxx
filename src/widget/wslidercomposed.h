@@ -55,6 +55,7 @@ public slots:
 private:
     void unsetPixmaps();
 
+    double m_dOldValue;
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
     /** Internal storage of slider position in pixels */

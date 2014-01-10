@@ -26,6 +26,7 @@
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
+      m_dOldValue(0.0),
       m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),
@@ -81,7 +82,7 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getValue());
+        onConnectedControlValueChanged(getConnectedControlLeft());
         update();
     }
 }
@@ -118,7 +119,10 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         if (!m_bHorizontal) {
             newValue = 1.0 - newValue;
         }
-        setValue(newValue);
+
+        // If we don't change this, then updates might be rejected in
+        // onConnectedControlValueChanged.
+        m_dOldValue = newValue;
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
@@ -137,12 +141,11 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // For legacy (MIDI) reasons this is tuned to 127.
     double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-    double newValue = getValue() + wheelDirection;
+    double newValue = getConnectedControl() + wheelDirection;
 
     // Clamp to [0.0, 1.0]
     newValue = math_max(0.0, math_min(1.0, newValue));
 
-    setValue(newValue);
     setConnectedControlDown(newValue);
     setConnectedControlUp(newValue);
     update();
@@ -157,9 +160,9 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
         mouseMoveEvent(e);
 
         if (e->button() == Qt::RightButton) {
-            setConnectedControlRightUp(getValue());
+            setConnectedControlRightUp(getConnectedControlRight());
         } else {
-            setConnectedControlLeftUp(getValue());
+            setConnectedControlLeftUp(getConnectedControlLeft());
         }
 
         m_bDrag = false;
@@ -208,10 +211,8 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
 }
 
 void WSliderComposed::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag && getValue() != dValue) {
-        // Set value without emitting a valueChanged signal
-        // and force display update
-        setValue(dValue);
+    if (!m_bDrag && m_dOldValue != dValue) {
+        m_dOldValue = dValue;
 
         // Calculate handle position
         if (!m_bHorizontal) {

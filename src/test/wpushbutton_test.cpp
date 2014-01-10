@@ -35,7 +35,7 @@ TEST_F(WPushButtonTest, QuickPressNoLatchTest) {
 
     m_Events.simulate(m_pButton.data());
 
-    ASSERT_EQ(0.0, m_pButton->getValue());
+    ASSERT_EQ(0.0, m_pButton->getConnectedDisplayValue());
 }
 
 TEST_F(WPushButtonTest, LongPressLatchTest) {
@@ -48,5 +48,5 @@ TEST_F(WPushButtonTest, LongPressLatchTest) {
 
     m_Events.simulate(m_pButton.data());
 
-    ASSERT_EQ(1.0, m_pButton->getValue());
+    ASSERT_EQ(1.0, m_pButton->getConnectedDisplayValue());
 }

@@ -126,7 +126,6 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
 }
 
 void WPushButton::setStates(int iStates) {
-    setValue(0.0);
     m_bPressed = false;
     m_iNoStates = 0;
 
@@ -173,14 +172,8 @@ void WPushButton::setPixmapBackground(const QString &filename) {
 }
 
 void WPushButton::onConnectedControlValueChanged(double v) {
-    setValue(v);
-
     if (m_iNoStates == 1) {
-        if (v == 1.0) {
-            m_bPressed = true;
-        } else {
-            m_bPressed = false;
-        }
+        m_bPressed = v == 1.0;
     }
     update();
 }
@@ -192,7 +185,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     QStylePainter p(this);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    double value = getValue();
+    double value = getConnectedDisplayValue();
     if (m_iNoStates == 0) {
         return;
     }
@@ -230,11 +223,10 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
-            if (getValue() == 0.0) {
+            if (getConnectedControlLeft() == 0.0) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             }
-            setValue(1.0);
             m_bPressed = true;
             setConnectedControlLeftDown(1.0);
             update();
@@ -252,7 +244,6 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             update();
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
-            setValue(1.0);
             m_bPressed = true;
             setConnectedControlRightDown(1.0);
             update();
@@ -270,18 +261,11 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (leftClick) {
         double emitValue;
-        if (m_bLeftClickForcePush) {
-            // This may a button with different functions on each mouse button
-            // m_value is changed by a separate feedback connection
+        if (m_bLeftClickForcePush || m_iNoStates == 1) {
             emitValue = 1.0;
-        } else if (m_iNoStates == 1) {
-            // This is a Pushbutton
-            emitValue = 1.0;
-            setValue(emitValue);
         } else {
             // Toggle thru the states
-            emitValue = (int)(getValue() + 1.) % m_iNoStates;
-            setValue(emitValue);
+            emitValue = (int)(getConnectedControlLeft() + 1.0) % m_iNoStates;
             if (leftLongPressLatchingStyle) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
@@ -310,7 +294,6 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release button after timer, but not if right button is clicked
-                setValue(0.0);
                 setConnectedControlLeftUp(0.0);
             }
             m_bPressed = false;
@@ -338,7 +321,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     }
 
     if (leftClick) {
-        double emitValue = getValue();
+        double emitValue = getConnectedControlLeft();
         if (m_bLeftClickForcePush) {
             // This may a klickButton with different functions on each mouse button
             // m_fValue is changed by a separate feedback connection
@@ -346,12 +329,10 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
             emitValue = 0.0;
-            setValue(emitValue);
         } else {
             if (leftLongPressLatchingStyle && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
                 emitValue = (int)(emitValue - 1.0) % m_iNoStates;
-                setValue(emitValue);
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }

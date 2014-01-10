@@ -26,6 +26,8 @@ class ControlWidgetConnection : public QObject {
                             ControlObjectSlave* pControl);
     virtual ~ControlWidgetConnection();
 
+    double get() const;
+
     virtual void reset() = 0;
     virtual void setDown(double v) = 0;
     virtual void setUp(double v) = 0;
@@ -107,6 +109,12 @@ class WBaseWidget {
     void addLeftConnection(ControlWidgetConnection* pConnection);
     void addRightConnection(ControlWidgetConnection* pConnection);
     void addConnection(ControlWidgetConnection* pConnection);
+    void setDisplayConnection(ControlWidgetConnection* pConnection);
+
+    double getConnectedControl() const;
+    double getConnectedControlLeft() const;
+    double getConnectedControlRight() const;
+    double getConnectedDisplayValue() const;
 
   protected:
     virtual void onConnectedControlValueChanged(double v) {
@@ -126,6 +134,7 @@ class WBaseWidget {
     bool m_bDisabled;
     QString m_baseTooltip;
     QList<ControlWidgetConnection*> m_connections;
+    ControlWidgetConnection* m_pDisplayConnection;
     QList<ControlWidgetConnection*> m_leftConnections;
     QList<ControlWidgetConnection*> m_rightConnections;
 

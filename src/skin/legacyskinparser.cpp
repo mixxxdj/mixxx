@@ -1674,6 +1674,12 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                     break;
             }
 
+            // Legacy behavior, the last widget that is marked
+            // connectValueToWidget is the display connection.
+            if (connectValueToWidget) {
+                pWidget->setDisplayConnection(pConnection);
+            }
+
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.
             if (connectValueFromWidget) {

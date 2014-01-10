@@ -145,7 +145,7 @@ int WDisplay::getActivePixmapIndex() const {
     // Subtracting an epsilon prevents out of bound values at the end of the
     // range and biases the middle value towards the lower of the 2 center
     // pixmaps when there are an even number of pixmaps.
-    return static_cast<int>(getValue() * numPixmaps() - 0.00001);
+    return static_cast<int>(getConnectedDisplayValue() * numPixmaps() - 0.00001);
 }
 
 void WDisplay::paintEvent(QPaintEvent* ) {

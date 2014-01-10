@@ -72,7 +72,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         p.translate(width() / 2.0, height() / 2.0);
 
         // Value is in the range [0, 1].
-        double value = getValue();
+        double value = getConnectedDisplayValue();
 
         double angle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * value;
         p.rotate(angle);
