@@ -262,6 +262,8 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     if (leftClick) {
         double emitValue;
         if (m_bLeftClickForcePush || m_iNoStates == 1) {
+            // This is either forced to behave like a push button on left-click
+            // or this is a push button.
             emitValue = 1.0;
         } else {
             // Toggle thru the states
