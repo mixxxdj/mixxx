@@ -36,10 +36,13 @@ class ControlObjectSlave : public QObject {
     inline bool valid() const { return m_pControl != NULL; }
 
     // Returns the value of the object. Thread safe, non-blocking.
-    virtual double get();
+    virtual double get() const;
 
     // Returns the parameterized value of the object. Thread safe, non-blocking.
-    virtual double getParameter();
+    virtual double getParameter() const;
+
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameterForValue(double value) const;
 
   public slots:
     // Set the control to a new value. Non-blocking.

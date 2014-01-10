@@ -54,12 +54,16 @@ bool ControlObjectSlave::connectValueChanged(
     return connectValueChanged(parent(), method, type);
 }
 
-double ControlObjectSlave::get() {
+double ControlObjectSlave::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
 }
 
-double ControlObjectSlave::getParameter() {
+double ControlObjectSlave::getParameter() const {
     return m_pControl ? m_pControl->getParameter() : 0.0;
+}
+
+double ControlObjectSlave::getParameterForValue(double value) const {
+    return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
 void ControlObjectSlave::slotSet(double v) {

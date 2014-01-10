@@ -158,8 +158,11 @@ void ControlDoublePrivate::setParameter(double dParam, QObject* pSender) {
 }
 
 double ControlDoublePrivate::getParameter() const {
+    return getParameterForValue(get());
+}
+
+double ControlDoublePrivate::getParameterForValue(double value) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    double value = get();
     if (!pBehavior.isNull()) {
         value = pBehavior->valueToParameter(value);
     }
