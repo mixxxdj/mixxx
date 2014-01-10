@@ -8,7 +8,8 @@ SkinContext::SkinContext() {
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
-        : m_variables(parent.variables()) {
+        : m_variables(parent.variables()),
+          m_skinBasePath(parent.m_skinBasePath) {
     QScriptValue context = m_scriptEngine.currentContext()->activationObject();
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
