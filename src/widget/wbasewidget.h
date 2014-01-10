@@ -26,11 +26,11 @@ class ControlWidgetConnection : public QObject {
                             ControlObjectSlave* pControl);
     virtual ~ControlWidgetConnection();
 
-    double get() const;
+    double getControlParameter() const;
 
     virtual void reset() = 0;
-    virtual void setDown(double v) = 0;
-    virtual void setUp(double v) = 0;
+    virtual void setControlParameterDown(double v) = 0;
+    virtual void setControlParameterUp(double v) = 0;
 
   protected slots:
     virtual void slotControlValueChanged(double v) = 0;
@@ -52,8 +52,8 @@ class ValueControlWidgetConnection : public ControlWidgetConnection {
 
   protected:
     void reset();
-    void setDown(double v);
-    void setUp(double v);
+    void setControlParameterDown(double v);
+    void setControlParameterUp(double v);
 
   protected slots:
     void slotControlValueChanged(double v);
@@ -73,8 +73,8 @@ class DisabledControlWidgetConnection : public ControlWidgetConnection {
 
   protected:
     void reset();
-    void setDown(double v);
-    void setUp(double v);
+    void setControlParameterDown(double v);
+    void setControlParameterUp(double v);
 
   protected slots:
     void slotControlValueChanged(double v);
