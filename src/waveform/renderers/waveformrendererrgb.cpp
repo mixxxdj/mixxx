@@ -145,22 +145,17 @@ void WaveformRendererRGB::draw(QPainter* painter,
             maxAllB = math_max(maxAllB, waveformDataNext.filtered.all);
         }
 
-        // Compute sum (needed for value normalization)
-        float sum = maxLow + maxMid + maxHigh;
+        int red   = maxLow * m_lowColor.red()   + maxMid * m_midColor.red()   + maxHigh * m_highColor.red();
+        int green = maxLow * m_lowColor.green() + maxMid * m_midColor.green() + maxHigh * m_highColor.green();
+        int blue  = maxLow * m_lowColor.blue()  + maxMid * m_midColor.blue()  + maxHigh * m_highColor.blue();
+
+        // Compute maximum (needed for value normalization)
+        float max = (float) MAX3(red, green, blue);
 
         // Prevent division by zero
-        if (sum > 0.0f) {
-            // Normalize low, mid and high values
-            float lo = (float) maxLow  / sum;
-            float mi = (float) maxMid  / sum;
-            float hi = (float) maxHigh / sum;
-
-            float red   = lo * m_lowColor.redF()   + mi * m_midColor.redF()   + hi * m_highColor.redF();
-            float green = lo * m_lowColor.greenF() + mi * m_midColor.greenF() + hi * m_highColor.greenF();
-            float blue  = lo * m_lowColor.blueF()  + mi * m_midColor.blueF()  + hi * m_highColor.blueF();
-
+        if (max > 0.0f) {
             // Set color
-            color.setRgbF(red, green, blue);
+            color.setRgbF(red / max, green / max, blue / max);
 
             painter->setPen(color);
             switch (m_alignment) {
