@@ -26,7 +26,6 @@
 
 #include "sounddeviceportaudio.h"
 
-#include "controlobjectthreadmain.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "soundmanagerutil.h"

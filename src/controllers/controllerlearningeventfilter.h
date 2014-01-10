@@ -5,7 +5,6 @@
 #include <QEvent>
 
 #include "controlobject.h"
-#include "controlobjectthreadwidget.h"
 #include "widget/wbasewidget.h"
 
 struct ControlInfo {

@@ -21,7 +21,7 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "trackinfoobject.h"

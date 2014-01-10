@@ -28,7 +28,6 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "controlobjectthreadmain.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"

@@ -6,7 +6,7 @@
 #include "wnumberpos.h"
 #include "mathstuff.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
@@ -22,12 +22,11 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
-    // We cannot use the parameter from the skin because this would be a connection
-    // to a ControlObjectThreadWidget and would be normalized to midi values
-    // -0.14 .. 1.14.  Instead we use the engine's playposition value
-    // which is normalized from 0 to 1.  As a result, the
-    // <Connection> parameter is no longer necessary in skin definitions, but
-    // leaving it in is harmless.
+    // We cannot use the parameter from the skin because this would be
+    // normalized to parameter values -0.14 .. 1.14.  Instead we use the
+    // engine's playposition value which is normalized from 0 to 1.  As a
+    // result, the <Connection> parameter is no longer necessary in skin
+    // definitions, but leaving it in is harmless.
     m_pVisualPlaypos = new ControlObjectThread(group, "playposition");
     m_pVisualPlaypos->connectValueChanged(this, SLOT(slotSetValue(double)));
 

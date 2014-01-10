@@ -3,7 +3,7 @@
 #include <QtDebug>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 PropertyBinder::PropertyBinder(QWidget* pWidget, QString propertyName,
         ControlObject* pControl, ConfigObject<ConfigValue>* pConfig)

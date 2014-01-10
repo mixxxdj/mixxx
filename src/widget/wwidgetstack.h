@@ -7,7 +7,7 @@
 #include <QStackedWidget>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "widget/wbasewidget.h"
 
 class WidgetStackControlListener : public QObject {

@@ -14,7 +14,6 @@
 #include <QtGlobal>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
 #include "controlobjectslave.h"
 
 #include "mixxxkeyboard.h"

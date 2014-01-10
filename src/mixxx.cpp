@@ -27,7 +27,6 @@
 #include "mixxx.h"
 
 #include "analyserqueue.h"
-#include "controlobjectthreadmain.h"
 #include "controlpotmeter.h"
 #include "deck.h"
 #include "defs_urls.h"

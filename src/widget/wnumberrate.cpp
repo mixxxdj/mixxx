@@ -15,7 +15,7 @@
 #include <math.h>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {

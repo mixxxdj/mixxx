@@ -26,7 +26,6 @@
 #include "defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
-#include "controlobjectthreadmain.h"
 
 class SoundDevice;
 class EngineMaster;

@@ -27,7 +27,6 @@
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
-#include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -48,8 +47,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
 #endif
           m_pClkRefDevice(NULL),
           m_pErrorDevice(NULL) {
-    //These are ControlObjectThreadMains because all the code that
-    //uses them is called from the GUI thread (stuff like opening soundcards).
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));

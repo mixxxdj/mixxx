@@ -18,8 +18,6 @@
 #include <QtDebug>
 
 #include "widget/wwidget.h"
-#include "controlobject.h"
-#include "controlobjectthreadwidget.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),

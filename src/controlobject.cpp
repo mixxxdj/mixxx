@@ -21,7 +21,6 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
-#include "controlevent.h"
 #include "control/control.h"
 #include "util/stat.h"
 #include "util/timer.h"

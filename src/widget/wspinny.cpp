@@ -9,7 +9,7 @@
 #include "mathstuff.h"
 #include "wimagestore.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "sharedglcontext.h"
 #include "visualplayposition.h"
 #include "widget/wspinny.h"
