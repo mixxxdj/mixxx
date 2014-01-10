@@ -109,6 +109,10 @@ class WBaseWidget {
     void addLeftConnection(ControlWidgetConnection* pConnection);
     void addRightConnection(ControlWidgetConnection* pConnection);
     void addConnection(ControlWidgetConnection* pConnection);
+
+    // Set a ControlWidgetConnection to be the display connection for the
+    // widget. The connection should also be added via an addConnection method
+    // or it will not be deleted or receive updates.
     void setDisplayConnection(ControlWidgetConnection* pConnection);
 
     double getControlParameter() const;

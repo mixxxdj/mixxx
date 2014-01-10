@@ -16,6 +16,16 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
 }
 
 ControlWidgetConnection::~ControlWidgetConnection() {
+    m_pDisplayConnection = NULL;
+    while (!m_leftConnections.isEmpty()) {
+        delete m_leftConnections.takeLast();
+    }
+    while (!m_rightConnections.isEmpty()) {
+        delete m_rightConnections.takeLast();
+    }
+    while (!m_connections.isEmpty()) {
+        delete m_connections.takeLast();
+    }
 }
 
 double ControlWidgetConnection::getControlParameter() const {
