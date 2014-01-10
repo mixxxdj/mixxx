@@ -22,20 +22,26 @@ WaveformRendererRGB::WaveformRendererRGB(
 WaveformRendererRGB::~WaveformRendererRGB() {
 }
 
-void WaveformRendererRGB::onSetup(const QDomNode& node) {
-    m_lowColor.setNamedColor(WWidget::selectNodeQString(node, "SignalLowColor"));
+void WaveformRendererRGB::onSetup(const QDomNode& /* node */) {
+}
+
+void WaveformRendererRGB::setup(const QDomNode& node,
+                                       const SkinContext& context) {
+    WaveformRendererSignalBase::setup(node, context);
+
+    m_lowColor.setNamedColor(context.selectString(node, "SignalLowColor"));
     if (!m_lowColor.isValid()) {
         m_lowColor.setRgb(255,0,0);
     }
     m_lowColor  = WSkinColor::getCorrectColor(m_lowColor);
 
-    m_midColor.setNamedColor(WWidget::selectNodeQString(node, "SignalMidColor"));
+    m_midColor.setNamedColor(context.selectString(node, "SignalMidColor"));
     if (!m_midColor.isValid()) {
         m_midColor.setRgb(0,255,0);
     }
     m_midColor  = WSkinColor::getCorrectColor(m_midColor);
 
-    m_highColor.setNamedColor(WWidget::selectNodeQString(node, "SignalHighColor"));
+    m_highColor.setNamedColor(context.selectString(node, "SignalHighColor"));
     if (!m_highColor.isValid()) {
         m_highColor.setRgb(0,0,255);
     }

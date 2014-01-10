@@ -10,7 +10,8 @@ public:
     explicit GLWaveformRendererRGB( WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererRGB();
 
-    virtual void onSetup(const QDomNode &node);
+    virtual void onSetup(const QDomNode& node);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
 private:
