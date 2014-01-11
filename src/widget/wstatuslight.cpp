@@ -45,7 +45,6 @@ void WStatusLight::setNoPos(int iNoPos) {
         iNoPos = 2;
     }
     m_pixmaps.resize(iNoPos);
-    setValue(0.0);
 }
 
 void WStatusLight::setup(QDomNode node, const SkinContext& context) {
