@@ -28,7 +28,7 @@ class ControlWidgetConnection : public QObject {
 
     double getControlParameter() const;
 
-    virtual void reset() = 0;
+    virtual void resetControl() = 0;
     virtual void setControlParameterDown(double v) = 0;
     virtual void setControlParameterUp(double v) = 0;
 
@@ -51,7 +51,7 @@ class ValueControlWidgetConnection : public ControlWidgetConnection {
     virtual ~ValueControlWidgetConnection();
 
   protected:
-    void reset();
+    void resetControl();
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
 
@@ -72,7 +72,7 @@ class DisabledControlWidgetConnection : public ControlWidgetConnection {
     virtual ~DisabledControlWidgetConnection();
 
   protected:
-    void reset();
+    void resetControl();
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
 

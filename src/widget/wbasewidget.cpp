@@ -48,7 +48,7 @@ void ValueControlWidgetConnection::slotControlValueChanged(double v) {
     }
 }
 
-void ValueControlWidgetConnection::reset() {
+void ValueControlWidgetConnection::resetControl() {
     if (m_bConnectValueFromWidget) {
         m_pControl->reset();
     }
@@ -80,7 +80,7 @@ void DisabledControlWidgetConnection::slotControlValueChanged(double v) {
     m_pWidget->toQWidget()->update();
 }
 
-void DisabledControlWidgetConnection::reset() {
+void DisabledControlWidgetConnection::resetControl() {
     // Do nothing.
 }
 
@@ -171,13 +171,13 @@ double WBaseWidget::getControlParameterDisplay() const {
 
 void WBaseWidget::resetControlParameters() {
     foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
-        pControlConnection->reset();
+        pControlConnection->resetControl();
     }
     foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
-        pControlConnection->reset();
+        pControlConnection->resetControl();
     }
     foreach (ControlWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->reset();
+        pControlConnection->resetControl();
     }
 }
 
