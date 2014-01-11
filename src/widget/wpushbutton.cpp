@@ -267,7 +267,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             emitValue = 1.0;
         } else {
             // Toggle thru the states
-            emitValue = (int)(getControlParameterLeft() + 1.0) % m_iNoStates;
+            emitValue = static_cast<int>(getControlParameterLeft() + 1.0) % m_iNoStates;
             if (leftLongPressLatchingStyle) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
@@ -334,7 +334,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         } else {
             if (leftLongPressLatchingStyle && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                emitValue = (int)(emitValue - 1.0) % m_iNoStates;
+                emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }

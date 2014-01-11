@@ -163,7 +163,7 @@ double WBaseWidget::getControlParameterRight() const {
 }
 
 double WBaseWidget::getControlParameterDisplay() const {
-    if (m_pDisplayConnection) {
+    if (m_pDisplayConnection != NULL) {
         return m_pDisplayConnection->getControlParameter();
     }
     return 0.0;
