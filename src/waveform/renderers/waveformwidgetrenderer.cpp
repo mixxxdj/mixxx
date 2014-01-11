@@ -115,14 +115,14 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     // we don't change the stretch at all.  Once the threshold has been crossed
     // we gradually stretch the waveform toward the new value.  This adds a small
     // amount of lag in the UI.
-    double rate_diff_magnitude = fabs(true_rate - m_rate);
-    if (rate_diff_magnitude > 1.0) {
+    double rate_difference = true_rate - m_rate;
+    if (fabs(rate_difference) > 1.0) {
         // If the difference is large, just immediately pop to the new value.
         m_rate = true_rate;
-    } else if (rate_diff_magnitude > 0.05) {
+    } else if (fabs(rate_difference) > 0.05) {
         // if the difference is small, converge slowly (10 updates to converge
         // on the new value).
-        m_rate += (true_rate - m_rate) * 0.1;
+        m_rate += rate_difference * 0.1;
     } // if the difference is even smaller, don't change the display.
 
     m_rateDir = m_pRateDirControlObject->get();

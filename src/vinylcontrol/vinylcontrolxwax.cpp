@@ -575,23 +575,23 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         controlScratch->slotSet(averagePitch + dDriftControl);
         if (m_iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition)) {
             double true_pitch = averagePitch + dDriftControl;
-            double pitch_diff_magnitude = fabs(true_pitch - m_dDisplayPitch);
+            double pitch_difference = true_pitch - m_dDisplayPitch;
 
             // The true pitch can show a misleading amount of variance --
             // differences of .1% or less can show up as 1 or 2 bpm changes.
             // Therefore we react slowly to bpm changes to show a more steady
             // number to the user.
-            if (pitch_diff_magnitude > 0.5) {
+            if (fabs(pitch_difference) > 0.5) {
                 // For large changes in pitch (start/stop, usually), immediately
                 // update the display.
                 m_dDisplayPitch = true_pitch;
-            } else if (pitch_diff_magnitude > 0.005) {
+            } else if (fabs(pitch_difference) > 0.005) {
                 // For medium changes in pitch, take 4 callback loops to
                 // converge on the correct amount.
-                m_dDisplayPitch += (true_pitch - m_dDisplayPitch) * .25;
+                m_dDisplayPitch += pitch_difference * .25;
             } else {
                 // For extremely small changes, converge very slowly.
-                m_dDisplayPitch += (true_pitch - m_dDisplayPitch) * .01;
+                m_dDisplayPitch += pitch_difference * .01;
             }
             rateSlider->slotSet(rateDir->get() * (m_dDisplayPitch - 1.0) / rateRange->get());
             m_dUiUpdateTime = filePosition;
