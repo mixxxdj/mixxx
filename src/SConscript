@@ -31,7 +31,7 @@ flags = build.flags
 # Build a static library that will be linked to the mixxx and mixxx-test
 # binaries.
 lib_sources = [source for source in sources if source != 'main.cpp']
-mixxx_lib = env.StaticLibrary('mixxx', lib_sources)
+mixxx_lib = env.StaticLibrary('libmixxx', lib_sources)
 
 #Tell SCons to build Mixxx
 #=========================
