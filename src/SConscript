@@ -227,7 +227,7 @@ if qt5:
                       for module in qt_modules]
         dll_files.extend(qt_modules)
 else:
-
+        suffix = 'd4.dll' if build.msvcdebug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         # TODO(rryan): Is this needed? We don't use phonon.
         qt_modules.append('$QTDIR/lib/phonon' + suffix)
