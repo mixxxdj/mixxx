@@ -147,7 +147,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, iSampleRate);
+    timecoder_init(&timecoder, tc_def, speed, iSampleRate, /* photo */ false);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -802,9 +802,7 @@ float VinylControlXwax::getAngle() {
     if (pos == -1)
         return -1.0;
 
-    pos /= 1000.0;
-
     float rps = timecoder_revs_per_sec(&timecoder);
     //invert angle to make vinyl spin direction correct
-    return 360 - ((int)(pos * 360.0 * rps) % 360);
+    return 360 - ((int)(when * 360.0 * rps) % 360);
 }
