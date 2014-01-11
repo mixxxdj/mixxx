@@ -24,20 +24,19 @@
 #include "soundsource.h"
 
 class SoundSourceOpus : public Mixxx::SoundSource {
- public:
-  SoundSourceOpus(QString qFilename);
-  ~SoundSourceOpus();
-  int open();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  inline long unsigned length();
-  int parseHeader();
-  static QList<QString> supportedFileExtensions();
- private:
-  int channels;
-  unsigned long filelength;
-  OggOpusFile *vf;
-  int current_section;
+public:
+    SoundSourceOpus(QString qFilename);
+    ~SoundSourceOpus();
+    int open();
+    long seek(long);
+    unsigned read(unsigned long size, const SAMPLE*);
+    inline long unsigned length();
+    int parseHeader();
+    static QList<QString> supportedFileExtensions();
+private:
+    int m_iChannels;
+    uint64_t m_lFilelength;
+    OggOpusFile *m_ptrOpusFile;
 };
 
 #endif
