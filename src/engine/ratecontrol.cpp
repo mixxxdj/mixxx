@@ -500,7 +500,7 @@ double RateControl::calculateRate(double baserate, bool paused,
         // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
         // Reverse with vinyl reverse mode is ok.
         int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
-        if ((!scratchEnable || vcmode == MIXXX_VCMODE_RELATIVE)
+        if ((!scratchEnable || vcmode != MIXXX_VCMODE_ABSOLUTE)
                 && m_pReverseButton->get()) {
             rate = -rate;
         }

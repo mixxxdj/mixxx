@@ -341,7 +341,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 !m_bForceResync) {
             // corner case: we are waiting for resync so don't enable just yet
             enableRecordEndMode();
-        } else if ((m_iVCMode == MIXXX_VCMODE_RELATIVE || m_iVCMode == MIXXX_VCMODE_CONSTANT) &&
+        } else if (m_iVCMode != MIXXX_VCMODE_ABSOLUTE &&
                        m_iPosition != -1 &&
                        m_iPosition > static_cast<int>(m_uiSafeZone)) {
             enableRecordEndMode();
