@@ -173,7 +173,7 @@ void WPushButton::setPixmapBackground(const QString &filename) {
 
 void WPushButton::onConnectedControlValueChanged(double v) {
     if (m_iNoStates == 1) {
-        m_bPressed = v == 1.0;
+        m_bPressed = (v == 1.0);
     }
     update();
 }
