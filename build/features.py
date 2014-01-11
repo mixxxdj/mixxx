@@ -701,6 +701,8 @@ class Verbose(Feature):
             build.env['CCCOMSTR'] = '[CC] $SOURCE'
             build.env['CXXCOMSTR'] = '[CXX] $SOURCE'
             build.env['ASCOMSTR'] = '[AS] $SOURCE'
+            build.env['ARCOMSTR'] = '[AR] $TARGET'
+            build.env['RANLIBCOMSTR'] = '[RANLIB] $TARGET'
             build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
             build.env['LINKCOMSTR'] = '[LD] $TARGET'
 
