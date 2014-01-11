@@ -28,6 +28,11 @@ Import('mixxxminimal_plugins')
 env = build.env
 flags = build.flags
 
+# Build a static library that will be linked to the mixxx and mixxx-test
+# binaries.
+lib_sources = [source for source in sources if source != 'main.cpp']
+mixxx_lib = env.StaticLibrary('mixxx', lib_sources)
+
 #Tell SCons to build Mixxx
 #=========================
 if build.platform_is_windows:
@@ -58,10 +63,10 @@ if build.platform_is_windows:
         fo.close()
 
         mixxx_bin = env.Program('mixxx',
-                            [sources, env.RES('#src/mixxx.rc')],
+                            [mixxx_lib, 'main.cpp', env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
-        mixxx_bin = env.Program('mixxx', sources)
+        mixxx_bin = env.Program('mixxx', [mixxx_lib, 'main.cpp'])
 
 test_bin = None
 def build_tests():
@@ -70,27 +75,27 @@ def build_tests():
         test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
         test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
         test_files = [test_env.StaticObject(filename) \
-                              if filename !='main.cpp' else filename
+                      if filename != 'main.cpp' else filename
                       for filename in test_files]
-        mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
-        test_sources = (test_files + mixxx_sources)
 
-        env.Append(LIBPATH="#lib/gtest-1.5.0/lib")
-        env.Append(LIBS = 'gtest')
+        test_sources = test_files
 
-        env.Append(LIBPATH="#lib/gmock-1.5.0/lib")
-        env.Append(LIBS = 'gmock')
+        test_env.Append(LIBPATH="#lib/gtest-1.5.0/lib")
+        test_env.Append(LIBS = 'gtest')
+
+        test_env.Append(LIBPATH="#lib/gmock-1.5.0/lib")
+        test_env.Append(LIBS = 'gmock')
 
         if build.platform_is_windows:
                 # We want a terminal for tests.
-                env['LINKFLAGS'].remove('/subsystem:windows')
-                env['LINKFLAGS'].append('/subsystem:console')
+                test_env['LINKFLAGS'].remove('/subsystem:windows')
+                test_env['LINKFLAGS'].append('/subsystem:console')
 
-                test_bin = env.Program(
-                        'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
+                test_bin = test_env.Program(
+                        'mixxx-test', [test_sources, mixxx_lib, env.RES('#src/mixxx.rc')],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
         else:
-                test_bin = env.Program(target='mixxx-test', source=test_sources)
+                test_bin = test_env.Program('mixxx-test', [test_sources, mixxx_lib])
 
         env.Alias('mixxx-test', test_bin)
 
