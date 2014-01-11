@@ -306,8 +306,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         } else {
             // go ahead and switch
             m_iVCMode = reportedMode;
-            if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
+            if (reportedMode == MIXXX_VCMODE_ABSOLUTE) {
                 m_bForceResync = true;
+            }
         }
 
         //if we are out of error mode...
@@ -322,6 +323,13 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         m_iVCMode = MIXXX_VCMODE_RELATIVE;
         mode->slotSet((double)m_iVCMode);
     }
+
+    // Don't allow cueing mode to be enabled in absolute mode.
+    if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
+            cueing->get() != MIXXX_RELATIVE_CUE_OFF) {
+        cueing->set(MIXXX_RELATIVE_CUE_OFF);
+    }
+
     //are we newly playing near the end of the record?  (in absolute mode, this happens
     //when the filepos is past safe (more accurate),
     //but it can also happen in relative mode if the vinylpos is nearing the end

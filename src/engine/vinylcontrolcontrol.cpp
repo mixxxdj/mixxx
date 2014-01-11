@@ -86,11 +86,20 @@ void VinylControlControl::slotControlVinylSeek(double change) {
         if (new_playpos < 0) {
             seek(change);
             return;
-        } else if (cuemode == MIXXX_RELATIVE_CUE_OFF) {
-            return;  //if off, do nothing
-        } else if (cuemode == MIXXX_RELATIVE_CUE_ONECUE) {
+        }
+
+        switch (cuemode) {
+        case MIXXX_RELATIVE_CUE_OFF:
+            return; // If off, do nothing.
+        case MIXXX_RELATIVE_CUE_ONECUE:
             //if onecue, just seek to the regular cue
             seekExact(m_pCurrentTrack->getCuePoint());
+            return;
+        case MIXXX_RELATIVE_CUE_HOTCUE:
+            // Continue processing in this function.
+            break;
+        default:
+            qWarning() << "Invalid vinyl cue setting";
             return;
         }
 
