@@ -70,6 +70,7 @@ else:
 
 test_bin = None
 def build_tests():
+        global test_bin
         test_files = Glob('test/*.cpp', strings=True)
         test_env = env.Clone()
         test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
@@ -99,7 +100,8 @@ def build_tests():
 
         env.Alias('mixxx-test', test_bin)
 
-        Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
+        if not build.platform_is_windows:
+                Command("../", test_bin, Copy("$TARGET", "$SOURCE"))
 
 def run_tests():
         ret = Execute("./mixxx-test")
@@ -244,9 +246,8 @@ if int(flags.get('sqlitedll', 0)):
                 pass
         else:
                 suffix = 'd4.dll' if build.msvcdebug else '4.dll'
-                if build.msvcdebug:
-                        # Qt SQLite plugin
-                        sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
+                # Qt SQLite plugin
+                sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
