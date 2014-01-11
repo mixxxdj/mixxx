@@ -66,6 +66,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pConfig(_config),
     m_pLoopingControl(NULL),
     m_pSyncControl(NULL),
+    m_pVinylControlControl(NULL),
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
     m_pKeyControl(NULL),
@@ -224,7 +225,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
-    addControl(new VinylControlControl(_group, _config));
+    m_pVinylControlControl = new VinylControlControl(_group, _config);
+    addControl(m_pVinylControlControl);
 #endif
 
     m_pRateControl = new RateControl(_group, _config);
@@ -531,6 +533,12 @@ void EngineBuffer::doSeek(double change, bool exact) {
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
         new_playpos--;
+
+    // Notify the vinyl control that a seek has taken place in case it is in
+    // absolute mode and needs be switched to relative.
+    if (m_pVinylControlControl) {
+        m_pVinylControlControl->notifySeek();
+    }
 
     queueNewPlaypos(new_playpos, exact);
 }

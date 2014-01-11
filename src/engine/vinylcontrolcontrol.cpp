@@ -4,7 +4,8 @@
 #include "library/dao/cue.h"
 
 VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(pGroup, pConfig) {
+        : EngineControl(pGroup, pConfig),
+          m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(pGroup, "vinylcontrol_status"));
     m_pControlVinylSpeedType = new ControlObject(ConfigKey(pGroup, "vinylcontrol_speed_type"));
 
@@ -63,6 +64,16 @@ void VinylControlControl::trackLoaded(TrackPointer pTrack) {
 void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
     Q_UNUSED(pTrack);
     m_pCurrentTrack.clear();
+}
+
+void VinylControlControl::notifySeek() {
+    // m_bRequested is set and unset in a single execution path,
+    // so there are no issues with signals/slots causing timing
+    // issues.
+    if (m_pControlVinylMode->get() == MIXXX_VCMODE_ABSOLUTE &&
+        !m_bSeekRequested) {
+        m_pControlVinylMode->set(MIXXX_VCMODE_RELATIVE);
+    }
 }
 
 void VinylControlControl::slotControlVinylSeek(double change) {
@@ -130,13 +141,17 @@ void VinylControlControl::slotControlVinylSeek(double change) {
             }
             //if negative, allow a seek by falling down to the bottom
         } else {
+            m_bSeekRequested = true;
             seekExact(nearest_playpos);
+            m_bSeekRequested = false;
             return;
         }
     }
 
-    // just seek where it wanted to originally
+    // Just seek where it wanted to originally.
+    m_bSeekRequested = true;
     seek(change);
+    m_bSeekRequested = false;
 }
 
 bool VinylControlControl::isEnabled()
