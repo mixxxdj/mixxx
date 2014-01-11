@@ -108,8 +108,23 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         return;
     }
 
-    //Fetch parameters before rendering in order the display all sub-renderers with the same values
-    m_rate = m_pRateControlObject->get();
+    // Fetch parameters before rendering in order the display all sub-renderers with the same values
+    double true_rate = m_pRateControlObject->get();
+    // We don't keep the waveform perfectly synced to the actual pitch to avoid
+    // unnecessary stretching of the waveform display.  Within a certain variance
+    // we don't change the stretch at all.  Once the threshold has been crossed
+    // we gradually stretch the waveform toward the new value.  This adds a small
+    // amount of lag in the UI.
+    double rate_diff_magnitude = fabs(true_rate - m_rate);
+    if (rate_diff_magnitude > 1.0) {
+        // If the difference is large, just immediately pop to the new value.
+        m_rate = true_rate;
+    } else if (rate_diff_magnitude > 0.05) {
+        // if the difference is small, converge slowly (10 updates to converge
+        // on the new value).
+        m_rate += (true_rate - m_rate) * 0.1;
+    } // if the difference is even smaller, don't change the display.
+
     m_rateDir = m_pRateDirControlObject->get();
     m_rateRange = m_pRateRangeControlObject->get();
     // This gain adjustment compensates for an arbitrary /2 gain chop in
