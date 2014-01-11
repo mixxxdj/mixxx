@@ -397,7 +397,7 @@ static void detect_zero_crossing(struct timecoder_channel *ch,
  * Plot the given sample value in the x-y monitor
  */
 
-static void update_monitor(struct timecoder *tc, signed int x, signed int y)
+inline static void update_monitor(struct timecoder *tc, signed int x, signed int y)
 {
     int px, py, size, ref;
 
