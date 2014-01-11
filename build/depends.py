@@ -206,24 +206,31 @@ class Qt(Dependence):
                 return d
         return None
 
-    def satisfy(self):
-        pass
-
-    def configure(self, build, conf):
+    @staticmethod
+    def enabled_modules(build):
         qt5 = Qt.qt5_enabled(build)
-        # Emit various Qt defines
-        build.env.Append(CPPDEFINES=['QT_SHARED',
-                                     'QT_TABLET_SUPPORT'])
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
             'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
             'QtTest'
         ]
+        if qt5:
+            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
+        return qt_modules
 
+    def satisfy(self):
+        pass
+
+    def configure(self, build, conf):
+        qt_modules = Qt.enabled_modules(build)
+
+        qt5 = Qt.qt5_enabled(build)
+        # Emit various Qt defines
+        build.env.Append(CPPDEFINES=['QT_SHARED',
+                                     'QT_TABLET_SUPPORT'])
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
-            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
 
         # Enable Qt include paths
         if build.platform_is_linux:
