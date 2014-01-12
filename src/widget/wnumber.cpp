@@ -24,7 +24,7 @@
 
 WNumber::WNumber(QWidget* pParent)
         : WLabel(pParent),
-          m_iNoDigits(1),
+          m_iNoDigits(2),
           m_dConstFactor(0.0) {
 }
 
