@@ -30,14 +30,13 @@ class SearchQueryParser {
 
     bool parseFuzzyMatch(QString field, QStringList* output) const;
     bool parseTextFilter(QString field, QString argument,
-                         QStringList* tokens, QStringList* output) const;
+                         QStringList* output) const;
     bool parseNumericFilter(QString field, QString argument,
-                            QStringList* tokens, QStringList* output) const;
-    bool parseSpecialFilter(QString field, QString argument,
-                            QStringList* tokens, QStringList* output) const;
+                            QStringList* output) const;
+    bool parseSpecialFilter(QString field, QString argument, bool fuzzy,
+                            QStringList* output) const;
 
     QSqlDatabase m_database;
-
     QStringList m_textFilters;
     QStringList m_numericFilters;
     QStringList m_specialFilters;

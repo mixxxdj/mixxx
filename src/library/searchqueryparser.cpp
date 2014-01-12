@@ -50,7 +50,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_numericFilters.join("|")));
-    m_specialFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_specialFilters.join("|")));
+    m_specialFilterMatcher = QRegExp(QString("^~?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
 
 SearchQueryParser::~SearchQueryParser() {
@@ -133,24 +133,18 @@ QString SearchQueryParser::getTextArgument(QString argument,
 }
 
 bool SearchQueryParser::parseTextFilter(QString field, QString argument,
-                                        QStringList* tokens,
                                         QStringList* output) const {
     QStringList sqlColumns = m_fieldToSqlColumns.value(field);
     if (sqlColumns.isEmpty()) {
         return false;
     }
 
-    QString filter = getTextArgument(argument, tokens).trimmed();
-    if (filter.isEmpty()) {
-        qDebug() << "Text filter for" << field << "was empty.";
-        return false;
-    }
-
     FieldEscaper escaper(m_database);
-    QString escapedFilter = escaper.escapeString("%" + filter + "%");
+    QString escapedArgument = escaper.escapeString("%" + argument + "%");
     QStringList searchClauses;
     foreach (const QString sqlColumn, sqlColumns) {
-        searchClauses << QString("(%1 LIKE %2)").arg(sqlColumn, escapedFilter);
+        searchClauses << QString("(%1 LIKE %2)").arg(sqlColumn,
+                                                     escapedArgument);
     }
     *output << (searchClauses.length() > 1 ?
                 QString("(%1)").arg(searchClauses.join(" OR ")) :
@@ -159,33 +153,25 @@ bool SearchQueryParser::parseTextFilter(QString field, QString argument,
 }
 
 bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
-                                           QStringList* tokens,
                                            QStringList* output) const {
     QStringList sqlColumns = m_fieldToSqlColumns.value(field);
     if (sqlColumns.isEmpty()) {
         return false;
     }
 
-    QString filter = getTextArgument(argument, tokens).trimmed();
-    if (filter.isEmpty()) {
-        qDebug() << "Text filter for" << field << "was empty.";
-        return false;
-    }
-
-
     QString op = "=";
-    if (m_operatorMatcher.indexIn(filter) != -1) {
+    if (m_operatorMatcher.indexIn(argument) != -1) {
         op = m_operatorMatcher.cap(1);
-        filter = m_operatorMatcher.cap(2);
+        argument = m_operatorMatcher.cap(2);
     }
 
     bool parsed = false;
     // Try to convert to see if it parses.
-    filter.toDouble(&parsed);
+    argument.toDouble(&parsed);
     if (parsed) {
         QStringList searchClauses;
         foreach (const QString sqlColumn, sqlColumns) {
-            searchClauses << QString("(%1 %2 %3)").arg(sqlColumn, op, filter);
+            searchClauses << QString("(%1 %2 %3)").arg(sqlColumn, op, argument);
         }
         *output << (searchClauses.length() > 1 ?
                 QString("(%1)").arg(searchClauses.join(" OR ")) :
@@ -193,7 +179,7 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
         return true;
     }
 
-    QStringList rangeArgs = filter.split("-");
+    QStringList rangeArgs = argument.split("-");
     if (rangeArgs.length() == 2) {
         bool ok = false;
         double arg1 = rangeArgs[0].toDouble(&ok);
@@ -212,7 +198,8 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
 
         QStringList searchClauses;
         foreach (const QString sqlColumn, sqlColumns) {
-            searchClauses << QString("(%1 >= %2 AND %1 <= %3)").arg(sqlColumn, rangeArgs[0], rangeArgs[1]);
+            searchClauses << QString("(%1 >= %2 AND %1 <= %3)")
+                    .arg(sqlColumn, rangeArgs[0], rangeArgs[1]);
         }
 
         *output << (searchClauses.length() > 1 ?
@@ -224,22 +211,30 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
 }
 
 bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
-                                           QStringList* tokens,
+                                           bool fuzzy,
                                            QStringList* output) const {
     if (field == "key") {
-        QString filter = getTextArgument(argument, tokens).trimmed();
-        if (filter.isEmpty()) {
-            qDebug() << "Text filter for" << field << "was empty.";
-            return false;
-        }
-
-        mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(filter);
-
+        mixxx::track::io::key::ChromaticKey key =
+                KeyUtils::guessKeyFromText(argument);
         if (key == mixxx::track::io::key::INVALID) {
-            return parseTextFilter(field, argument, tokens, output);
+            return parseTextFilter(field, argument, output);
         }
 
-        *output << QString("(key_id IS %1)").arg(QString::number(key));
+        QList<mixxx::track::io::key::ChromaticKey> matchKeys;
+        if (fuzzy) {
+            matchKeys = KeyUtils::getCompatibleKeys(key);
+        } else {
+            matchKeys.push_back(key);
+        }
+
+        QStringList searchClauses;
+        foreach (mixxx::track::io::key::ChromaticKey match, matchKeys) {
+            searchClauses << QString("(key_id IS %1)").arg(QString::number(match));
+        }
+
+        *output << (searchClauses.length() > 1 ?
+                    QString("(%1)").arg(searchClauses.join(" OR ")) :
+                    searchClauses[0]);
         return true;
     }
     return false;
@@ -263,25 +258,30 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         }
 
         if (!consumed && m_textFilterMatcher.indexIn(token) != -1) {
-            if (parseTextFilter(m_textFilterMatcher.cap(1),
-                                m_textFilterMatcher.cap(2),
-                                &tokens, output)) {
+            QString argument = getTextArgument(
+                m_textFilterMatcher.cap(2), &tokens).trimmed();
+            if (!argument.isEmpty() && parseTextFilter(
+                    m_textFilterMatcher.cap(1),
+                    argument, output)) {
                 consumed = true;
             }
         }
 
         if (!consumed && m_numericFilterMatcher.indexIn(token) != -1) {
-            if (parseNumericFilter(m_numericFilterMatcher.cap(1),
-                                   m_numericFilterMatcher.cap(2),
-                                   &tokens, output)) {
+            QString argument = getTextArgument(
+                m_numericFilterMatcher.cap(2), &tokens).trimmed();
+            if (!argument.isEmpty() && parseNumericFilter(
+                    m_numericFilterMatcher.cap(1), argument, output)) {
                 consumed = true;
             }
         }
 
         if (!consumed && m_specialFilterMatcher.indexIn(token) != -1) {
-            if (parseSpecialFilter(m_specialFilterMatcher.cap(1),
-                                   m_specialFilterMatcher.cap(2),
-                                   &tokens, output)) {
+            QString argument = getTextArgument(
+                m_specialFilterMatcher.cap(2), &tokens).trimmed();
+            if (!argument.isEmpty() && parseSpecialFilter(
+                    m_specialFilterMatcher.cap(1), argument,
+                    token.startsWith("~"), output)) {
                 consumed = true;
             }
         }
