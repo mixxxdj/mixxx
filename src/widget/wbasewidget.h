@@ -21,6 +21,21 @@ class ControlWidgetConnection : public QObject {
         EMIT_ON_PRESS_AND_RELEASE = 0x03
     };
 
+    static QString emitOptionToString(EmitOption option) {
+        switch (option) {
+            case EMIT_NEVER:
+                return "NEVER";
+            case EMIT_ON_PRESS:
+                return "PRESS";
+            case EMIT_ON_RELEASE:
+                return "RELEASE";
+            case EMIT_ON_PRESS_AND_RELEASE:
+                return "PRESS_AND_RELEASE";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
     // Takes ownership of pControl.
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
                             ControlObjectSlave* pControl);
