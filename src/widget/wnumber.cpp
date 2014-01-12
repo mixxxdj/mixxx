@@ -24,7 +24,7 @@
 
 WNumber::WNumber(QWidget* pParent)
         : WLabel(pParent),
-          m_iNoDigits(-1),
+          m_iNoDigits(1),
           m_dConstFactor(0.0) {
 }
 
@@ -34,10 +34,10 @@ WNumber::~WNumber() {
 void WNumber::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);
 
-    // Number of digits
-    // TODO(rryan): This has been unused for a long time yet our skins specify
-    // this value all over the place.
-    m_iNoDigits = context.selectInt(node, "NumberOfDigits");
+    // Number of digits after the decimal.
+    if (context.hasNode(node, "NumberOfDigits")) {
+        m_iNoDigits = context.selectInt(node, "NumberOfDigits");
+    }
 
     // Constant factor
     if (context.hasNode(node, "ConstFactor")) {
@@ -54,5 +54,5 @@ void WNumber::onConnectedControlValueChanged(double v) {
 void WNumber::setValue(double dValue) {
     double v = dValue + m_dConstFactor;
 
-    setText(QString(m_qsText).append(QString::number(v, 'f', 1)));
+    setText(QString(m_qsText).append(QString::number(v, 'f', m_iNoDigits)));
 }
