@@ -794,7 +794,6 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
-                   "skin/propertybinder.cpp",
                    "skin/tooltips.cpp",
                    "skin/skincontext.cpp",
 

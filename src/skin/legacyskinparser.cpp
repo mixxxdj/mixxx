@@ -25,7 +25,6 @@
 #include "controllers/controllermanager.h"
 
 #include "skin/colorschemeparser.h"
-#include "skin/propertybinder.h"
 #include "skin/skincontext.h"
 
 #include "widget/wbasewidget.h"
@@ -1601,33 +1600,27 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
         // Check that the control exists
         bool created = false;
-        ControlObject * control = controlFromConfigKey(configKey, &created);
+        ControlObject* control = controlFromConfigKey(configKey, &created);
 
-        QString property = m_pContext->selectString(con, "BindProperty");
-        if (property != "") {
-            qDebug() << "Making property binder for" << property;
-            // Bind this control to a property. Not leaked because it is
-            // parented to the widget and so it dies with it.
-            PropertyBinder* pBinder = new PropertyBinder(
-                pWidget->toQWidget(), property, control, m_pConfig);
-            // If we created this control, bind it to the PropertyBinder so that
-            // it is deleted when the binder is deleted.
-            if (created) {
-                control->setParent(pBinder);
-            }
-        } else if (m_pContext->hasNode(con, "OnOff") &&
-                   m_pContext->selectString(con, "OnOff")=="true") {
-            // Connect control proxy to widget. Parented to pWidget so it is not
-            // leaked. OnOff controls do not use the value of the widget at all
-            // so we do not give this control's info to the
-            // ControllerLearningEventFilter.
+        if (m_pContext->hasNode(con, "BindProperty")) {
+            QString property = m_pContext->selectString(con, "BindProperty");
+            qDebug() << "Making property connection for" << property;
+
             ControlObjectSlave* pControlWidget =
                     new ControlObjectSlave(control->getKey(),
                                            pWidget->toQWidget());
+
             ControlWidgetConnection* pConnection =
-                    new DisabledControlWidgetConnection(pWidget,
-                                                        pControlWidget);
+                    new PropertyControlWidgetConnection(pWidget, pControlWidget,
+                                                        m_pConfig, property);
             pWidget->addConnection(pConnection);
+
+            // If we created this control, bind it to the
+            // ControlWidgetConnection so that it is deleted when the connection
+            // is deleted.
+            if (created) {
+                control->setParent(pConnection);
+            }
         } else {
             // Default to emit on press
             ControlWidgetConnection::EmitOption emitOption =
@@ -1659,6 +1652,13 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
                 pWidget, pControlWidget, connectValueFromWidget,
                 connectValueToWidget, emitOption);
+
+            // If we created this control, bind it to the
+            // ControlWidgetConnection so that it is deleted when the connection
+            // is deleted.
+            if (created) {
+                control->setParent(pConnection);
+            }
 
             switch (state) {
                 case Qt::NoButton:

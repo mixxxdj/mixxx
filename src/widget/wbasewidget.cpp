@@ -78,42 +78,68 @@ void ValueControlWidgetConnection::setControlParameterUp(double v) {
     }
 }
 
-DisabledControlWidgetConnection::DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                                 ControlObjectSlave* pControl)
-        : ControlWidgetConnection(pBaseWidget, pControl) {
+PropertyControlWidgetConnection::PropertyControlWidgetConnection(WBaseWidget* pBaseWidget,
+                                                                 ControlObjectSlave* pControl,
+                                                                 ConfigObject<ConfigValue>* pConfig,
+                                                                 const QString& propertyName)
+        : ControlWidgetConnection(pBaseWidget, pControl),
+          m_pConfig(pConfig),
+          m_propertyName(propertyName.toAscii()) {
+    // Behavior copied from PropertyBinder: load config value for the control on
+    // creation.
+    // TODO(rryan): Remove this in favor of a better solution. See discussion on
+    // Bug #1091147.
+    bool ok = false;
+    double dValue = m_pConfig->getValueString(m_pControl->getKey()).toDouble(&ok);
+    if (ok) {
+        m_pControl->setParameter(dValue);
+    }
     slotControlValueChanged(m_pControl->get());
 }
 
-DisabledControlWidgetConnection::~DisabledControlWidgetConnection() {
+PropertyControlWidgetConnection::~PropertyControlWidgetConnection() {
 }
 
-QString DisabledControlWidgetConnection::toDebugString() const {
+QString PropertyControlWidgetConnection::toDebugString() const {
     const ConfigKey& key = m_pControl->getKey();
-    return QString("Disabled %1,%2").arg(key.group, key.item);
+    return QString("%1,%2 Parameter: %3 Property: %4 Value: %5").arg(
+        key.group, key.item, QString::number(m_pControl->getParameter()), m_propertyName,
+        m_pWidget->toQWidget()->property(
+            m_propertyName.constData()).toString());
 }
 
-void DisabledControlWidgetConnection::slotControlValueChanged(double v) {
-    m_pWidget->setControlDisabled(m_pControl->getParameterForValue(v) != 0.0);
-    m_pWidget->toQWidget()->update();
+void PropertyControlWidgetConnection::slotControlValueChanged(double v) {
+    double dParameter = m_pControl->getParameterForValue(v);
+
+    if (!m_pWidget->toQWidget()->setProperty(m_propertyName.constData(),
+                                             QVariant(dParameter))) {
+        qDebug() << "Setting property" << m_propertyName
+                 << "to widget failed. Value:" << dParameter;
+    }
+
+    // Behavior copied from PropertyBinder: save config value for the control on
+    // every change.
+    // TODO(rryan): Remove this in favor of a better solution. See discussion on
+    // Bug #1091147.
+    m_pConfig->set(m_pControl->getKey(), QString::number(dParameter));
 }
 
-void DisabledControlWidgetConnection::resetControl() {
+void PropertyControlWidgetConnection::resetControl() {
     // Do nothing.
 }
 
-void DisabledControlWidgetConnection::setControlParameterDown(double v) {
+void PropertyControlWidgetConnection::setControlParameterDown(double v) {
     // Do nothing.
     Q_UNUSED(v);
 }
 
-void DisabledControlWidgetConnection::setControlParameterUp(double v) {
+void PropertyControlWidgetConnection::setControlParameterUp(double v) {
     // Do nothing.
     Q_UNUSED(v);
 }
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
         : m_pWidget(pWidget),
-          m_bDisabled(false),
           m_pDisplayConnection(NULL) {
 }
 

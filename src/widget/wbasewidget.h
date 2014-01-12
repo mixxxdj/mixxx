@@ -3,10 +3,13 @@
 
 #include <QString>
 #include <QWidget>
+#include <QByteArray>
 #include <QList>
 #include <QObject>
 #include <QScopedPointer>
 #include <QDomNode>
+
+#include "configobject.h"
 
 class ControlObjectSlave;
 
@@ -74,7 +77,7 @@ class ValueControlWidgetConnection : public ControlWidgetConnection {
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
 
-  protected slots:
+  private slots:
     void slotControlValueChanged(double v);
 
   private:
@@ -83,12 +86,14 @@ class ValueControlWidgetConnection : public ControlWidgetConnection {
     EmitOption m_emitOption;
 };
 
-class DisabledControlWidgetConnection : public ControlWidgetConnection {
+class PropertyControlWidgetConnection : public ControlWidgetConnection {
     Q_OBJECT
   public:
-    DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                    ControlObjectSlave* pControl);
-    virtual ~DisabledControlWidgetConnection();
+    PropertyControlWidgetConnection(WBaseWidget* pBaseWidget,
+                                    ControlObjectSlave* pControl,
+                                    ConfigObject<ConfigValue>* pConfig,
+                                    const QString& property);
+    virtual ~PropertyControlWidgetConnection();
 
     QString toDebugString() const;
 
@@ -97,8 +102,12 @@ class DisabledControlWidgetConnection : public ControlWidgetConnection {
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
 
-  protected slots:
+  private slots:
     void slotControlValueChanged(double v);
+
+  private:
+    ConfigObject<ConfigValue>* m_pConfig;
+    QByteArray m_propertyName;
 };
 
 class WBaseWidget {
@@ -117,14 +126,6 @@ class WBaseWidget {
 
     QString baseTooltip() const {
         return m_baseTooltip;
-    }
-
-    void setControlDisabled(bool disabled) {
-        m_bDisabled = disabled;
-    }
-
-    bool controlDisabled() const {
-        return m_bDisabled;
     }
 
     void addLeftConnection(ControlWidgetConnection* pConnection);
@@ -163,7 +164,6 @@ class WBaseWidget {
 
   private:
     QWidget* m_pWidget;
-    bool m_bDisabled;
     QString m_baseTooltip;
     QList<ControlWidgetConnection*> m_connections;
     ControlWidgetConnection* m_pDisplayConnection;
