@@ -3,6 +3,7 @@
 #include "widget/wbasewidget.h"
 
 #include "controlobjectslave.h"
+#include "util/debug.h"
 
 ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
                                                  ControlObjectSlave* pControl)
@@ -39,6 +40,15 @@ ValueControlWidgetConnection::ValueControlWidgetConnection(WBaseWidget* pBaseWid
 ValueControlWidgetConnection::~ValueControlWidgetConnection() {
 }
 
+QString ValueControlWidgetConnection::toDebugString() const {
+    const ConfigKey& key = m_pControl->getKey();
+    return QString("%1,%2 ToWidget: %3 FromWidget %4 Emit: %5")
+            .arg(key.group, key.item,
+                 ::toDebugString(m_bConnectValueToWidget),
+                 ::toDebugString(m_bConnectValueFromWidget),
+                 emitOptionToString(m_emitOption));
+}
+
 void ValueControlWidgetConnection::slotControlValueChanged(double v) {
     if (m_bConnectValueToWidget) {
         m_pWidget->onConnectedControlValueChanged(
@@ -73,6 +83,11 @@ DisabledControlWidgetConnection::DisabledControlWidgetConnection(WBaseWidget* pB
 }
 
 DisabledControlWidgetConnection::~DisabledControlWidgetConnection() {
+}
+
+QString DisabledControlWidgetConnection::toDebugString() const {
+    const ConfigKey& key = m_pControl->getKey();
+    return QString("Disabled %1,%2").arg(key.group, key.item);
 }
 
 void DisabledControlWidgetConnection::slotControlValueChanged(double v) {

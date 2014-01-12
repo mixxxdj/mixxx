@@ -47,6 +47,8 @@ class ControlWidgetConnection : public QObject {
     virtual void setControlParameterDown(double v) = 0;
     virtual void setControlParameterUp(double v) = 0;
 
+    virtual QString toDebugString() const = 0;
+
   protected slots:
     virtual void slotControlValueChanged(double v) = 0;
 
@@ -64,6 +66,8 @@ class ValueControlWidgetConnection : public ControlWidgetConnection {
                                  bool connectValueToWidget,
                                  EmitOption emitOption);
     virtual ~ValueControlWidgetConnection();
+
+    QString toDebugString() const;
 
   protected:
     void resetControl();
@@ -85,6 +89,8 @@ class DisabledControlWidgetConnection : public ControlWidgetConnection {
     DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
                                     ControlObjectSlave* pControl);
     virtual ~DisabledControlWidgetConnection();
+
+    QString toDebugString() const;
 
   protected:
     void resetControl();
