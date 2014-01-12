@@ -27,6 +27,7 @@
 #include "skin/colorschemeparser.h"
 #include "skin/skincontext.h"
 
+#include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
@@ -731,7 +732,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectSlave* p = new ControlObjectSlave(
             channelStr, "wheel", viewer);
-    ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
+    ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
         viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
     viewer->addRightConnection(pConnection);
 
@@ -1611,7 +1612,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                                            pWidget->toQWidget());
 
             ControlWidgetConnection* pConnection =
-                    new PropertyControlWidgetConnection(pWidget, pControlWidget,
+                    new ControlWidgetPropertyConnection(pWidget, pControlWidget,
                                                         m_pConfig, property);
             pWidget->addConnection(pConnection);
 
@@ -1649,7 +1650,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             // leaked.
             ControlObjectSlave* pControlWidget = new ControlObjectSlave(
                 control->getKey(), pWidget->toQWidget());
-            ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
+            ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
                 pWidget, pControlWidget, connectValueFromWidget,
                 connectValueToWidget, emitOption);
 
