@@ -41,7 +41,6 @@ public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
-    Q_PROPERTY(bool controlDisabled READ controlDisabled);
     Q_PROPERTY(double value READ getControlParameterDisplay);
 
     virtual void onConnectedControlValueChanged(double value);
