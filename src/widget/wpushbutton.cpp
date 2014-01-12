@@ -29,6 +29,7 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "control/controlbehavior.h"
+#include "util/debug.h"
 
 const int PB_SHORTKLICKTIME = 200;
 
@@ -343,4 +344,21 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         setControlParameterLeftUp(emitValue);
         update();
     }
+}
+
+void WPushButton::fillDebugTooltip(QStringList* debug) {
+    WWidget::fillDebugTooltip(debug);
+    *debug << QString("NumberStates: %1").arg(m_iNoStates)
+           << QString("LeftCurrentState: %1").arg(
+               static_cast<int>(getControlParameterLeft()) %
+               (m_iNoStates > 0 ? m_iNoStates : 1))
+           << QString("Pressed: %1").arg(toDebugString(m_bPressed))
+           << QString("LeftButtonMode: %1")
+            .arg(ControlPushButton::buttonModeToString(m_leftButtonMode))
+           << QString("RightButtonMode: %1")
+            .arg(ControlPushButton::buttonModeToString(m_rightButtonMode))
+           << QString("LeftClickForcePush: %1")
+            .arg(toDebugString(m_bLeftClickForcePush))
+           << QString("RightClickForcePush: %1")
+            .arg(toDebugString(m_bRightClickForcePush));
 }

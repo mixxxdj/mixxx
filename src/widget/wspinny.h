@@ -5,6 +5,7 @@
 #include <QGLWidget>
 #include <QShowEvent>
 #include <QHideEvent>
+#include <QEvent>
 
 #include "widget/wwidget.h"
 #include "vinylcontrol/vinylsignalquality.h"
@@ -43,6 +44,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void mouseReleaseEvent(QMouseEvent * e);
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);
+    bool event(QEvent* pEvent);
 
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);

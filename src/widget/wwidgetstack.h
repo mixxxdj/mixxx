@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QSignalMapper>
 #include <QStackedWidget>
+#include <QEvent>
 
 #include "controlobject.h"
 #include "controlobjectthread.h"
@@ -48,6 +49,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     QSize minimumSizeHint() const;
 
     void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl);
+
+  protected:
+    bool event(QEvent* pEvent);
 
   private slots:
     void onNextControlChanged(double v);

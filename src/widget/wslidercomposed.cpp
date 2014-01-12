@@ -23,6 +23,7 @@
 
 #include "defs.h"
 #include "widget/wpixmapstore.h"
+#include "util/debug.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
@@ -228,4 +229,13 @@ void WSliderComposed::onConnectedControlValueChanged(double dValue) {
         }
         update();
     }
+}
+
+void WSliderComposed::fillDebugTooltip(QStringList* debug) {
+    WWidget::fillDebugTooltip(debug);
+    int sliderLength = m_bHorizontal ? width() : height();
+    *debug << QString("Horizontal: %1").arg(toDebugString(m_bHorizontal))
+           << QString("SliderPosition: %1").arg(m_iPos)
+           << QString("SliderLength: %1").arg(sliderLength)
+           << QString("HandleLength: %1").arg(m_iHandleLength);
 }

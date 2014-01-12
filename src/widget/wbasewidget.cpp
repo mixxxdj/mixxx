@@ -3,6 +3,7 @@
 #include "widget/wbasewidget.h"
 
 #include "controlobjectslave.h"
+#include "util/cmdlineargs.h"
 #include "util/debug.h"
 
 ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
@@ -253,5 +254,67 @@ void WBaseWidget::setControlParameterRightUp(double v) {
     }
     foreach (ControlWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->setControlParameterUp(v);
+    }
+}
+
+void WBaseWidget::updateTooltip() {
+    // If we are in developer mode, update the tooltip.
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        QStringList debug;
+        fillDebugTooltip(&debug);
+
+        QString base = baseTooltip();
+        if (!base.isEmpty()) {
+            debug.append(QString("Tooltip: \"%1\"").arg(base));
+        }
+        m_pWidget->setToolTip(debug.join("\n"));
+    }
+}
+
+template <>
+QString toDebugString(const QSizePolicy::Policy& policy) {
+    switch (policy) {
+        case QSizePolicy::Fixed:
+            return "Fixed";
+        case QSizePolicy::Minimum:
+            return "Minimum";
+        case QSizePolicy::Maximum:
+            return "Maximum";
+        case QSizePolicy::Preferred:
+            return "Preferred";
+        case QSizePolicy::Expanding:
+            return "Expanding";
+        case QSizePolicy::MinimumExpanding:
+            return "MinimumExpanding";
+        case QSizePolicy::Ignored:
+            return "Ignored";
+        default:
+            break;
+    }
+    return QString::number(static_cast<int>(policy));
+}
+
+void WBaseWidget::fillDebugTooltip(QStringList* debug) {
+    QSizePolicy policy = m_pWidget->sizePolicy();
+    *debug << QString("ClassName: %1").arg(m_pWidget->metaObject()->className())
+           << QString("ObjectName: %1").arg(m_pWidget->objectName())
+           << QString("Position: %1").arg(toDebugString(m_pWidget->pos()))
+           << QString("SizePolicy: %1,%2").arg(toDebugString(policy.horizontalPolicy()),
+                                               toDebugString(policy.verticalPolicy()))
+           << QString("Size: %1").arg(toDebugString(m_pWidget->size()))
+           << QString("SizeHint: %1").arg(toDebugString(m_pWidget->sizeHint()))
+           << QString("MinimumSizeHint: %1").arg(toDebugString(m_pWidget->minimumSizeHint()));
+
+    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+        *debug << QString("LeftConnection: %1").arg(pControlConnection->toDebugString());
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
+        *debug << QString("RightConnection: %1").arg(pControlConnection->toDebugString());
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
+        *debug << QString("Connection: %1").arg(pControlConnection->toDebugString());
+    }
+    if (m_pDisplayConnection) {
+        *debug << QString("DisplayConnection: %1").arg(m_pDisplayConnection->toDebugString());
     }
 }

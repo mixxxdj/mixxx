@@ -477,6 +477,13 @@ void WSpinny::hideEvent(QHideEvent* event) {
     m_qImage.fill(qRgba(0,0,0,0));
 }
 
+bool WSpinny::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QGLWidget::event(pEvent);
+}
+
 /** DRAG AND DROP **/
 void WSpinny::dragEnterEvent(QDragEnterEvent * event)
 {

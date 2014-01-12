@@ -102,3 +102,10 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                 pListener, SLOT(onCurrentWidgetChanged(int)));
     }
 }
+
+bool WWidgetStack::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QFrame::event(pEvent);
+}

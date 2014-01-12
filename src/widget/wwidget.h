@@ -19,8 +19,8 @@
 #define WWIDGET_H
 
 #include <QWidget>
+#include <QEvent>
 #include <QString>
-#include <QDomNode>
 
 #include "configobject.h"
 #include "widget/wbasewidget.h"
@@ -45,6 +45,9 @@ public:
     Q_PROPERTY(double value READ getControlParameterDisplay);
 
     virtual void onConnectedControlValueChanged(double value);
+
+  protected:
+    bool event(QEvent* pEvent);
 };
 
 #endif

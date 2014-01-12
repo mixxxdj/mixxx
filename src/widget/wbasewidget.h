@@ -154,6 +154,13 @@ class WBaseWidget {
     void setControlParameterRightDown(double v);
     void setControlParameterRightUp(double v);
 
+    // Tooltip handling. We support "debug tooltips" which are basically a way
+    // to expose debug information about widgets via the tooltip. To enable
+    // this, when widgets should call updateTooltip before they are about to
+    // display a tooltip.
+    void updateTooltip();
+    virtual void fillDebugTooltip(QStringList* debug);
+
   private:
     QWidget* m_pWidget;
     bool m_bDisabled;
