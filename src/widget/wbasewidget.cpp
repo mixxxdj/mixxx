@@ -43,8 +43,9 @@ ValueControlWidgetConnection::~ValueControlWidgetConnection() {
 
 QString ValueControlWidgetConnection::toDebugString() const {
     const ConfigKey& key = m_pControl->getKey();
-    return QString("%1,%2 ToWidget: %3 FromWidget %4 Emit: %5")
+    return QString("%1,%2 Parameter: %3 ToWidget: %4 FromWidget %5 Emit: %6")
             .arg(key.group, key.item,
+                 QString::number(m_pControl->getParameter()),
                  ::toDebugString(m_bConnectValueToWidget),
                  ::toDebugString(m_bConnectValueFromWidget),
                  emitOptionToString(m_emitOption));
