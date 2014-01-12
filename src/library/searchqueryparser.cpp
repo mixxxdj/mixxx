@@ -1,6 +1,7 @@
 
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
+#include "track/keyutils.h"
 
 SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
         : m_database(database) {
@@ -12,7 +13,6 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                   << "composer"
                   << "grouping"
                   << "comment"
-                  << "key"
                   << "location";
     m_numericFilters << "year"
                      << "track"
@@ -21,9 +21,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "played"
                      << "rating"
                      << "bitrate";
-    // TODO(XXX): For now key search is text-only. In the future we want to
-    // support multiple notations of key searching.
-    //m_specialFilters << "key";
+    m_specialFilters << "key";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -39,6 +37,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumns["bitrate"] << "bitrate";
     m_fieldToSqlColumns["duration"] << "duration";
     m_fieldToSqlColumns["key"] << "key";
+    m_fieldToSqlColumns["key_id"] << "key_id";
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
@@ -227,15 +226,34 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
 bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
                                            QStringList* tokens,
                                            QStringList* output) const {
-    // Currently unimplemented. This is called when we want to filter by
-    // key. The handling here will depend on how we represent the keys in the
-    // database but it should ideally automatically deal with all the different
-    // representations there are for keys.
-    Q_UNUSED(field);
-    Q_UNUSED(argument);
-    Q_UNUSED(tokens);
-    Q_UNUSED(output);
-    return false;
+
+    QStringList sqlColumns = m_fieldToSqlColumns.value("key_id");
+    if (sqlColumns.isEmpty()) {
+        qDebug() << "sqlColumns is empty";
+        return false;
+    }
+
+    QString filter = getTextArgument(argument, tokens).trimmed();
+    if (filter.length() == 0) {
+        qDebug() << "Text filter for" << field << "was empty.";
+        return false;
+    }
+
+    mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(filter);
+
+    if (key == mixxx::track::io::key::INVALID) {
+        return parseTextFilter(field, argument, tokens, output);
+    }
+
+    QStringList searchClauses;
+    foreach (const QString sqlColumn, sqlColumns) {
+        searchClauses << QString("(%1 IS %2)").arg(sqlColumn ,QString::number(key));
+    }
+    *output << (searchClauses.length() > 1 ?
+                    QString("(%1)").arg(searchClauses.join(" OR ")) :
+                    searchClauses[0]
+               );
+    return true;
 }
 
 void SearchQueryParser::parseTokens(QStringList tokens,
