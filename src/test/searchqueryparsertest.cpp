@@ -30,6 +30,10 @@ class SearchQueryParserTest : public testing::Test {
 TEST_F(SearchQueryParserTest, EmptySearch) {
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("", QStringList(), ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    EXPECT_FALSE(pQuery->match(pTrack));
+
     EXPECT_STREQ(qPrintable(QString("")),
                  qPrintable(pQuery->toSql()));
 }
@@ -40,6 +44,12 @@ TEST_F(SearchQueryParserTest, OneTermOneColumn) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("asdf", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setTitle("testASDFtest");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setArtist("testASDFtest");
+    EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
         qPrintable(QString("(artist LIKE '%asdf%')")),
@@ -54,6 +64,12 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumns) {
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("asdf", searchColumns, ""));
 
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setTitle("testASDFtest");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setAlbum("testASDFtest");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
     EXPECT_STREQ(
         qPrintable(QString("((artist LIKE '%asdf%') OR (album LIKE '%asdf%'))")),
         qPrintable(pQuery->toSql()));
@@ -65,6 +81,12 @@ TEST_F(SearchQueryParserTest, MultipleTermsOneColumn) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("asdf zxcv", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setTitle("test zXcV test");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setArtist("test zXcV test asDf");
+    EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
         qPrintable(QString("(artist LIKE '%asdf%') AND (artist LIKE '%zxcv%')")),
@@ -78,6 +100,16 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumns) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("asdf zxcv", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setTitle("asdf zxcv");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setArtist("zXcV");
+    pTrack->setAlbum("asDF");
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setArtist("");
+    pTrack->setAlbum("ASDF ZXCV");
+    EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
         qPrintable(QString(
@@ -94,6 +126,12 @@ TEST_F(SearchQueryParserTest, TextFilter) {
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("comment:asdf", searchColumns, ""));
 
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF test");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
     EXPECT_STREQ(
         qPrintable(QString("(comment LIKE '%asdf%')")),
         qPrintable(pQuery->toSql()));
@@ -106,6 +144,12 @@ TEST_F(SearchQueryParserTest, TextFilterQuote) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("comment:\"asdf zxcv\"", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setArtist("asdf zxcv");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF zxcv test");
+    EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
         qPrintable(QString("(comment LIKE '%asdf zxcv%')")),
@@ -120,6 +164,12 @@ TEST_F(SearchQueryParserTest, TextFilterQuote_NoEndQuoteTakesWholeQuery) {
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("comment:\"asdf zxcv qwer", searchColumns, ""));
 
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setArtist("asdf zxcv qwer");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF zxcv qwer test");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
     EXPECT_STREQ(
         qPrintable(QString("(comment LIKE '%asdf zxcv qwer%')")),
         qPrintable(pQuery->toSql()));
@@ -132,6 +182,12 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("comment: asdf", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF test");
+    EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
         qPrintable(QString("(comment LIKE '%asdf%')")),
@@ -146,6 +202,13 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("bpm:127.12", searchColumns, ""));
 
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setBpm(127);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBpm(127.12);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
     EXPECT_STREQ(
         qPrintable(QString("(bpm = 127.12)")),
         qPrintable(pQuery->toSql()));
@@ -159,6 +222,13 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("bpm: 127.12", searchColumns, ""));
 
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setBpm(127);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBpm(127.12);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
     EXPECT_STREQ(
         qPrintable(QString("(bpm = 127.12)")),
         qPrintable(pQuery->toSql()));
@@ -171,22 +241,41 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("bpm:>127.12", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setBpm(127.12);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBpm(127.13);
+    EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("(bpm > 127.12)")),
         qPrintable(pQuery->toSql()));
 
 
     pQuery.reset(m_parser.parseQuery("bpm:>=127.12", searchColumns, ""));
+    pTrack->setBpm(127.11);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBpm(127.12);
+    EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("(bpm >= 127.12)")),
         qPrintable(pQuery->toSql()));
 
     pQuery.reset(m_parser.parseQuery("bpm:<127.12", searchColumns, ""));
+    pTrack->setBpm(127.12);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBpm(127.11);
+    EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("(bpm < 127.12)")),
         qPrintable(pQuery->toSql()));
 
     pQuery.reset(m_parser.parseQuery("bpm:<=127.12", searchColumns, ""));
+    pTrack->setBpm(127.13);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBpm(127.12);
+    EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("(bpm <= 127.12)")),
         qPrintable(pQuery->toSql()));
@@ -199,6 +288,15 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("bpm:127.12-129", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setBpm(125);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBpm(127.12);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setBpm(129);
+    EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
         qPrintable(QString("(bpm >= 127.12 AND bpm <= 129)")),
@@ -214,6 +312,15 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
         m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision",
                             searchColumns, ""));
 
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setBpm(128);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setArtist("Com Truise");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setTitle("Colorvision");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
     EXPECT_STREQ(
         qPrintable(QString("(bpm >= 127.12 AND bpm <= 129) AND "
                            "((artist LIKE '%com truise%') OR (album_artist LIKE '%com truise%')) AND "
@@ -228,6 +335,12 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
 
     QScopedPointer<QueryNode> pQuery(
         m_parser.parseQuery("asdf", searchColumns, "1 > 2"));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setArtist("zxcv");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setArtist("asdf");
+    EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
         qPrintable(QString("(1 > 2) AND (artist LIKE '%asdf%')")),
