@@ -141,7 +141,7 @@ bool SearchQueryParser::parseTextFilter(QString field, QString argument,
     }
 
     QString filter = getTextArgument(argument, tokens).trimmed();
-    if (filter.length() == 0) {
+    if (filter.isEmpty()) {
         qDebug() << "Text filter for" << field << "was empty.";
         return false;
     }
@@ -167,7 +167,7 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
     }
 
     QString filter = getTextArgument(argument, tokens).trimmed();
-    if (filter.length() == 0) {
+    if (filter.isEmpty()) {
         qDebug() << "Text filter for" << field << "was empty.";
         return false;
     }
@@ -226,34 +226,23 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
 bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
                                            QStringList* tokens,
                                            QStringList* output) const {
+    if (field == "key") {
+        QString filter = getTextArgument(argument, tokens).trimmed();
+        if (filter.isEmpty()) {
+            qDebug() << "Text filter for" << field << "was empty.";
+            return false;
+        }
 
-    QStringList sqlColumns = m_fieldToSqlColumns.value("key_id");
-    if (sqlColumns.isEmpty()) {
-        qDebug() << "sqlColumns is empty";
-        return false;
+        mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(filter);
+
+        if (key == mixxx::track::io::key::INVALID) {
+            return parseTextFilter(field, argument, tokens, output);
+        }
+
+        *output << QString("(key_id IS %1)").arg(QString::number(key));
+        return true;
     }
-
-    QString filter = getTextArgument(argument, tokens).trimmed();
-    if (filter.length() == 0) {
-        qDebug() << "Text filter for" << field << "was empty.";
-        return false;
-    }
-
-    mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(filter);
-
-    if (key == mixxx::track::io::key::INVALID) {
-        return parseTextFilter(field, argument, tokens, output);
-    }
-
-    QStringList searchClauses;
-    foreach (const QString sqlColumn, sqlColumns) {
-        searchClauses << QString("(%1 IS %2)").arg(sqlColumn ,QString::number(key));
-    }
-    *output << (searchClauses.length() > 1 ?
-                    QString("(%1)").arg(searchClauses.join(" OR ")) :
-                    searchClauses[0]
-               );
-    return true;
+    return false;
 }
 
 void SearchQueryParser::parseTokens(QStringList tokens,
@@ -312,11 +301,11 @@ QString SearchQueryParser::parseQuery(const QString& query,
     FieldEscaper escaper(m_database);
     QStringList queryFragments;
 
-    if (!extraFilter.isNull() && extraFilter != "") {
+    if (!extraFilter.isNull() && !extraFilter.isEmpty()) {
         queryFragments << QString("(%1)").arg(extraFilter);
     }
 
-    if (!query.isNull() && query != "") {
+    if (!query.isNull() && !query.isEmpty()) {
         QStringList tokens = query.split(" ");
         parseTokens(tokens, searchColumns, &queryFragments);
     }
