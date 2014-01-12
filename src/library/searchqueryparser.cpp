@@ -21,8 +21,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "played"
                      << "rating"
                      << "bitrate";
-    // TODO(XXX): For now key search is text-only. In the future we want to
-    // support multiple notations of key searching.
+
     m_specialFilters << "key";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
@@ -243,9 +242,13 @@ bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
 
     mixxx::track::io::key::ChromaticKey key = KeyUtils::guessKeyFromText(filter);
 
+    if (key == mixxx::track::io::key::INVALID) {
+        return parseTextFilter(field, argument, tokens, output);
+    }
+
     QStringList searchClauses;
     foreach (const QString sqlColumn, sqlColumns) {
-        searchClauses << QString("(%1 LIKE %2)").arg(sqlColumn ,QString::number(key));
+        searchClauses << QString("(%1 IS %2)").arg(sqlColumn ,QString::number(key));
     }
     *output << (searchClauses.length() > 1 ?
                     QString("(%1)").arg(searchClauses.join(" OR ")) :
