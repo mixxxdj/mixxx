@@ -25,6 +25,10 @@ class ControlObjectSlave : public QObject {
 
     void initialize(const ConfigKey& key);
 
+    const ConfigKey& getKey() const {
+        return m_key;
+    }
+
     bool connectValueChanged(const QObject* receiver,
             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
     bool connectValueChanged(
@@ -65,6 +69,7 @@ class ControlObjectSlave : public QObject {
     virtual void slotValueChanged(double v, QObject* pSetter);
 
   protected:
+    ConfigKey m_key;
     // Pointer to connected control.
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };

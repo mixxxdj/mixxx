@@ -25,6 +25,7 @@ ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
 }
 
 void ControlObjectSlave::initialize(const ConfigKey& key) {
+    m_key = key;
     m_pControl = ControlDoublePrivate::getControl(key);
 }
 
