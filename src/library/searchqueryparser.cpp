@@ -21,7 +21,6 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "played"
                      << "rating"
                      << "bitrate";
-
     m_specialFilters << "key";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
