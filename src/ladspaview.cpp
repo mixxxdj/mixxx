@@ -23,7 +23,8 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     this->setLayout(m_pGridLayout);
 
     QDomDocument skin("LADSPASkin");
-    QFile file(WWidget::getPath("ladspa_skin.xml"));
+    // TODO
+    QFile file("ladspa_skin.xml");
     if (!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "Could not open skin definition file: " << file.fileName();
@@ -37,7 +38,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
 
     QDomElement bgElement = docElement.firstChildElement("Background");
     QString filename = bgElement.firstChildElement("Path").text();
-    QPixmap *background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
+    QPixmap *background = WPixmapStore::getPixmapNoCache(filename);
     //QLabel *bg = new QLabel(this);
 
     //bg->move(0, 0);

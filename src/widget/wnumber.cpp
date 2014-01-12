@@ -18,93 +18,46 @@
 #include "widget/wnumber.h"
 
 #include <math.h>
-#include <QFont>
-#include <QLabel>
 #include <QVBoxLayout>
 
 #include "widget/wskincolor.h"
 
-WNumber::WNumber(QWidget * parent) : WWidget(parent)
-{
-    m_pLabel = new QLabel(this);
-    QLayout* pLayout = new QVBoxLayout(this);
-    pLayout->setContentsMargins(0, 0, 0, 0);
-    pLayout->addWidget(m_pLabel);
-    setLayout(pLayout);
-    m_qsText = "";
-    m_dConstFactor = 0.;
+WNumber::WNumber(QWidget* pParent)
+        : WLabel(pParent),
+          m_iNoDigits(-1),
+          m_dConstFactor(0.0) {
 }
 
-WNumber::~WNumber()
-{
-    delete m_pLabel;
+WNumber::~WNumber() {
 }
 
-void WNumber::setup(QDomNode node)
-{
+void WNumber::setup(QDomNode node, const SkinContext& context) {
+    WLabel::setup(node, context);
+
     // Number of digits
-    setNumDigits(selectNodeInt(node, "NumberOfDigits"));
-
-    // Colors
-    QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
-    if (!WWidget::selectNode(node, "BgColor").isNull()) {
-        m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-        palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
-        m_pLabel->setAutoFillBackground(true);
-    }
-    m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-    palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
-    m_pLabel->setPalette(palette);
-
-    // Text
-    if (!selectNode(node, "Text").isNull())
-        m_qsText = selectNodeQString(node, "Text");
-
-    // FWI: Begin of font size patch
-    if (!selectNode(node, "FontSize").isNull()) {
-        int fontsize = 9;
-        fontsize = selectNodeQString(node, "FontSize").toInt();
-        m_pLabel->setFont( QFont("Helvetica",fontsize,QFont::Normal) );
-    }
-    // FWI: End of font size patch
-
-    // Alignment
-    if (!selectNode(node, "Alignment").isNull())
-    {
-        if (selectNodeQString(node, "Alignment")=="right")
-            m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-        // FWI: Begin of font alignment patch
-        else if (selectNodeQString(node, "Alignment")=="center")
-            m_pLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-        // FWI: End of font alignment patch
-    }
+    // TODO(rryan): This has been unused for a long time yet our skins specify
+    // this value all over the place.
+    m_iNoDigits = context.selectInt(node, "NumberOfDigits");
 
     // Constant factor
-    if (!selectNode(node, "ConstFactor").isNull())
-    {
-        m_dConstFactor = selectNodeQString(node, "ConstFactor").toDouble();
-        setValue(0.);
+    if (context.hasNode(node, "ConstFactor")) {
+        m_dConstFactor = context.selectString(node, "ConstFactor").toDouble();
     }
+
+    setValue(0.);
 }
 
-void WNumber::setNumDigits(int n)
-{
-    m_iNoDigits = n;
+void WNumber::onConnectedControlValueChanged(double v) {
+    setValue(v);
 }
 
-void WNumber::setValue(double dValue)
-{
-    double v = dValue+m_dConstFactor;
+void WNumber::setValue(double dValue) {
+    double v = dValue + m_dConstFactor;
     int d1 = (int)floor((v-floor(v))*10.);
     int d2 = (int)floor((v-floor(v))*100.)%10;
 
-    m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg(
+    setText(QString(m_qsText).append("%1.%2%3").arg(
         QString("%1").arg(static_cast<int>(v), 3, 10),
         QString("%1").arg(d1, 1, 10),
         QString("%1").arg(d2, 1, 10)));
-}
-
-void WNumber::setConstFactor(double c)
-{
-    m_dConstFactor = c;
 }

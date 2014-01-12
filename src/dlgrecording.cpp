@@ -5,7 +5,6 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
 #include "library/trackcollection.h"
 
 #include "dlgrecording.h"
@@ -114,7 +113,7 @@ void DlgRecording::slotBytesRecorded(long bytes) {
     double megabytes = bytes / 1048575.0f;
     QString byteStr = QString::number(megabytes,'f',2);
     QString text = (tr("Recording to file: ")) +m_pRecordingManager->getRecordingFile();
-    /* TRANSLATOR RecordingsView 
+    /* TRANSLATOR RecordingsView
     The size of the file which has been stored during the current recording in megabytes (MB) */
     text.append(" ( " +byteStr+ (tr("MB written")) +" )");
     label->setText(text);

@@ -13,12 +13,13 @@
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
 
+class WBaseWidget;
 class Library;
 class MixxxKeyboard;
 class PlayerManager;
-class WAbstractControl;
 class EffectsManager;
 class ControllerManager;
+class SkinContext;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
@@ -41,11 +42,14 @@ class LegacySkinParser : public QObject, public SkinParser {
   private:
     static QDomElement openSkin(QString skinPath);
 
-    QWidget* parseNode(QDomElement node);
+    QList<QWidget*> parseNode(QDomElement node);
 
     // Support for various legacy behavior
     void parseColorSchemes(QDomElement node);
     bool compareConfigKeys(QDomNode node, QString key);
+
+    // Load the given template from file and return its document element.
+    QDomElement loadTemplate(const QString& path);
 
     // Parsers for each node
     QWidget* parseWidgetGroup(QDomElement node);
@@ -67,6 +71,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseNumber(QDomElement node);
     QWidget* parseLabel(QDomElement node);
     QWidget* parseKnob(QDomElement node);
+    QWidget* parseKnobComposed(QDomElement node);
     QWidget* parseTableView(QDomElement node);
     QWidget* parseEffectChainName(QDomElement node);
     QWidget* parseEffectName(QDomElement node);
@@ -77,12 +82,15 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
     QWidget* parseKey(QDomElement node);
+    QList<QWidget*> parseTemplate(QDomElement node);
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
-    void setupWidget(QDomNode node, QWidget* pWidget, bool setupPosition=true);
-    void setupConnections(QDomNode node, QWidget* pWidget);
-    void addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd);
+    void setupBaseWidget(QDomNode node, WBaseWidget* pBaseWidget);
+    void setupWidget(QDomNode node, QWidget* pWidget,
+                     bool setupPosition=true);
+    void setupConnections(QDomNode node, WBaseWidget* pWidget);
+    void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString getLibraryStyle(QDomNode node);
     QString getStyleFromNode(QDomNode node);
 
@@ -96,8 +104,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
-    QWidget *m_pParent;
+    QWidget* m_pParent;
+    SkinContext* m_pContext;
     Tooltips m_tooltips;
+    QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
 };

@@ -4,7 +4,8 @@
 #include "library/dao/cue.h"
 
 VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(pGroup, pConfig) {
+        : EngineControl(pGroup, pConfig),
+          m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(pGroup, "vinylcontrol_status"));
     m_pControlVinylSpeedType = new ControlObject(ConfigKey(pGroup, "vinylcontrol_speed_type"));
 
@@ -65,8 +66,18 @@ void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
     m_pCurrentTrack.clear();
 }
 
+void VinylControlControl::notifySeek() {
+    // m_bRequested is set and unset in a single execution path,
+    // so there are no issues with signals/slots causing timing
+    // issues.
+    if (m_pControlVinylMode->get() == MIXXX_VCMODE_ABSOLUTE &&
+        !m_bSeekRequested) {
+        m_pControlVinylMode->set(MIXXX_VCMODE_RELATIVE);
+    }
+}
+
 void VinylControlControl::slotControlVinylSeek(double change) {
-    if(isnan(change) || change > 1.14 || change < -1.14) {
+    if (isnan(change) || change > 1.14 || change < -0.14) {
         // This seek is ridiculous.
         return;
     }
@@ -86,11 +97,20 @@ void VinylControlControl::slotControlVinylSeek(double change) {
         if (new_playpos < 0) {
             seek(change);
             return;
-        } else if (cuemode == MIXXX_RELATIVE_CUE_OFF) {
-            return;  //if off, do nothing
-        } else if (cuemode == MIXXX_RELATIVE_CUE_ONECUE) {
+        }
+
+        switch (cuemode) {
+        case MIXXX_RELATIVE_CUE_OFF:
+            return; // If off, do nothing.
+        case MIXXX_RELATIVE_CUE_ONECUE:
             //if onecue, just seek to the regular cue
-            seekAbs(m_pCurrentTrack->getCuePoint());
+            seekExact(m_pCurrentTrack->getCuePoint());
+            return;
+        case MIXXX_RELATIVE_CUE_HOTCUE:
+            // Continue processing in this function.
+            break;
+        default:
+            qWarning() << "Invalid vinyl cue setting";
             return;
         }
 
@@ -121,13 +141,17 @@ void VinylControlControl::slotControlVinylSeek(double change) {
             }
             //if negative, allow a seek by falling down to the bottom
         } else {
-            seekAbs(nearest_playpos);
+            m_bSeekRequested = true;
+            seekExact(nearest_playpos);
+            m_bSeekRequested = false;
             return;
         }
     }
 
-    // just seek where it wanted to originally
+    // Just seek where it wanted to originally.
+    m_bSeekRequested = true;
     seek(change);
+    m_bSeekRequested = false;
 }
 
 bool VinylControlControl::isEnabled()

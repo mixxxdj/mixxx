@@ -201,7 +201,7 @@ int main(int argc, char * argv[])
     --settingsPath PATH     Top-level directory where Mixxx should look\n\
                             for settings. Default is:\n", stdout);
         fprintf(stdout, "\
-                            %s\n", args.getSettingsPath().toLocal8Bit().data());
+                            %s\n", args.getSettingsPath().toLocal8Bit().constData());
         fputs("\
 \n\
     --controllerDebug       Causes Mixxx to display/log all of the controller\n\

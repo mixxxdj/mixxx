@@ -24,5 +24,5 @@ void WEffectChain::chainUpdated() {
             name = pChain->name();
         }
     }
-    m_pLabel->setText(name);
+    setText(name);
 }

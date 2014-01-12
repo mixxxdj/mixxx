@@ -19,26 +19,26 @@
 #define WLABEL_H
 
 #include <QLabel>
+#include <QEvent>
 
-#include "widget/wwidget.h"
+#include "widget/wbasewidget.h"
+#include "skin/skincontext.h"
 
-/**
-  *@author Tue Haste Andersen
-  */
-class WLabel : public WWidget {
+class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT
   public:
-    WLabel(QWidget *parent=0);
+    WLabel(QWidget* pParent=NULL);
     virtual ~WLabel();
 
-    void setup(QDomNode node);
-    virtual QWidget* getComposedWidget() { return m_pLabel; }
+    virtual void setup(QDomNode node, const SkinContext& context);
 
   protected:
-    QLabel* m_pLabel;
+    bool event(QEvent* pEvent);
+    void fillDebugTooltip(QStringList* debug);
     QString m_qsText;
-    /** Foreground and background colors */
-    QColor m_qFgColor, m_qBgColor;
+    // Foreground and background colors.
+    QColor m_qFgColor;
+    QColor m_qBgColor;
 };
 
 #endif

@@ -9,7 +9,7 @@
 #include "mathstuff.h"
 #include "wimagestore.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "sharedglcontext.h"
 #include "visualplayposition.h"
 #include "widget/wspinny.h"
@@ -18,6 +18,7 @@
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
+          WBaseWidget(this),
           m_pBgImage(NULL),
           m_pFgImage(NULL),
           m_pGhostImage(NULL),
@@ -110,15 +111,15 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 #endif
 }
 
-void WSpinny::setup(QDomNode node, QString group) {
+void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_group = group;
 
     // Set images
-    m_pBgImage = WImageStore::getImage(WWidget::getPath(WWidget::selectNodeQString(node,
+    m_pBgImage = WImageStore::getImage(context.getSkinPath(context.selectString(node,
                                                     "PathBackground")));
-    m_pFgImage = WImageStore::getImage(WWidget::getPath(WWidget::selectNodeQString(node,
+    m_pFgImage = WImageStore::getImage(context.getSkinPath(context.selectString(node,
                                                     "PathForeground")));
-    m_pGhostImage = WImageStore::getImage(WWidget::getPath(WWidget::selectNodeQString(node,
+    m_pGhostImage = WImageStore::getImage(context.getSkinPath(context.selectString(node,
                                                     "PathGhost")));
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
@@ -457,19 +458,6 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
     }
 }
 
-void WSpinny::wheelEvent(QWheelEvent *e)
-{
-    Q_UNUSED(e); //ditch unused param warning
-
-    /*
-    double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
-
-    e->accept();
-    */
-}
-
 void WSpinny::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
     // If we want to draw the VC signal on this widget then register for
@@ -487,6 +475,13 @@ void WSpinny::hideEvent(QHideEvent* event) {
     }
     // fill with transparent black
     m_qImage.fill(qRgba(0,0,0,0));
+}
+
+bool WSpinny::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QGLWidget::event(pEvent);
 }
 
 /** DRAG AND DROP **/

@@ -3,7 +3,6 @@
 #include "basetrackplayer.h"
 #include "playerinfo.h"
 
-#include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "controlpotmeter.h"
 #include "trackinfoobject.h"

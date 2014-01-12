@@ -34,6 +34,7 @@
 
 #include "widget/wwidget.h"
 #include "util/cmdlineargs.h"
+#include "xmlparse.h"
 
 ConfigKey::ConfigKey() {
 }
@@ -430,8 +431,8 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
 
         while (!ctrl.isNull()) {
             if(ctrl.nodeName() == "control") {
-                QString group = WWidget::selectNodeQString(ctrl, "group");
-                QString key = WWidget::selectNodeQString(ctrl, "key");
+                QString group = XmlParse::selectNodeQString(ctrl, "group");
+                QString key = XmlParse::selectNodeQString(ctrl, "key");
                 ConfigKey k(group, key);
                 ValueType m(ctrl);
                 set(k, m);

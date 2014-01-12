@@ -24,5 +24,5 @@ void WEffect::effectUpdated() {
             name = pEffect->getManifest().name();
         }
     }
-    m_pLabel->setText(name);
+    setText(name);
 }

@@ -19,15 +19,15 @@
 
 class MixxxUtils {
   public:
-    /** Constructs a nicely formatted duration string from a given number of seconds */
-    static inline QString secondsToMinutes(int totalSeconds, bool showMillis=false) {
+    // Constructs a nicely formatted duration string from a given number of seconds
+    static inline QString secondsToMinutes(int totalSeconds, bool showMillis = false) {
         if (totalSeconds < 0)
             return "?";
-        return millisecondsToMinutes(totalSeconds*1000, showMillis);
+        return millisecondsToMinutes(totalSeconds * 1000, showMillis);
     }
 
-    /** Constructs a nicely formatted duration string from a given number of milliseconds */
-    static inline QString millisecondsToMinutes(int totalMilliseconds, bool showMillis=false) {
+    // Constructs a nicely formatted duration string from a given number of milliseconds
+    static inline QString millisecondsToMinutes(int totalMilliseconds, bool showMillis = false) {
         if (totalMilliseconds < 0)
             return "?";
         QTime t = QTime().addMSecs(totalMilliseconds);

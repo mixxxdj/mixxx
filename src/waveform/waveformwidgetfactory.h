@@ -1,22 +1,20 @@
 #ifndef WAVEFORMWIDGETFACTORY_H
 #define WAVEFORMWIDGETFACTORY_H
 
-#include <singleton.h>
-#include "configobject.h"
-
-#include "waveform/widgets/waveformwidgettype.h"
-#include "waveform/waveform.h"
-
 #include <QObject>
 #include <QTime>
 #include <QVector>
 
+#include "singleton.h"
+#include "configobject.h"
+#include "waveform/widgets/waveformwidgettype.h"
+#include "waveform/waveform.h"
+#include "skin/skincontext.h"
+
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class ControlObjectThreadMain;
 class QTimer;
 class VSyncThread;
-
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -40,11 +38,13 @@ class WaveformWidgetHolder {
   private:
     WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
                          WWaveformViewer* waveformViewer,
-                         const QDomNode& visualNodeCache);
+                         const QDomNode& skinNode,
+                         const SkinContext& skinContext);
 
     WaveformWidgetAbstract* m_waveformWidget;
     WWaveformViewer* m_waveformViewer;
-    QDomNode m_visualNodeCache;
+    QDomNode m_skinNodeCache;
+    SkinContext m_skinContextCache;
 
     friend class WaveformWidgetFactory;
 };
@@ -61,7 +61,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
-    bool setWaveformWidget(WWaveformViewer* viewer, const QDomElement &node);
+    bool setWaveformWidget(WWaveformViewer* viewer,
+                           const QDomElement &node, const SkinContext& context);
 
     void setFrameRate( int frameRate);
     int getFrameRate() const { return m_frameRate;}

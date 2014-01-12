@@ -19,8 +19,8 @@ void WEffectParameter::setEffectParameterSlot(EffectParameterSlotPointer pEffect
 
 void WEffectParameter::parameterUpdated() {
     if (m_pEffectParameterSlot) {
-        m_pLabel->setText(m_pEffectParameterSlot->name());
+        setText(m_pEffectParameterSlot->name());
     } else {
-        m_pLabel->setText(tr("None"));
+        setText(tr("None"));
     }
 }

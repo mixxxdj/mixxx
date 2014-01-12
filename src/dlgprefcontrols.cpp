@@ -28,7 +28,6 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "controlobjectthreadmain.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
@@ -239,7 +238,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Skin configurations
     //
     QString warningString = "<img src=\":/images/preferences/ic_preferences_warning.png\") width=16 height=16 />"
-        + tr("The selected skin is bigger than your screen resolution.");
+        + tr("The minimum size of the selected skin is bigger than your screen resolution.");
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
@@ -256,7 +255,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
         if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
         {
             checkSkinResolution(list.at(i).fileName())
-                    ? ComboBoxSkinconf->insertItem(i, QIcon(":/trolltech/styles/commonstyle/images/standardbutton-apply-32.png"), list.at(i).fileName())
+                    ? ComboBoxSkinconf->insertItem(i, list.at(i).fileName())
                     : ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
 
             if (list.at(i).filePath() == configuredSkinPath) {
@@ -768,7 +767,7 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         return;
     }
 
-    for (int i = m_rateControls.size(); i < m_iNumConfiguredSamplers; ++i) {
+    for (int i = m_iNumConfiguredSamplers; i < numsamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
         m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));

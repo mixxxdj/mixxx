@@ -21,7 +21,6 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
-#include "controlevent.h"
 #include "control/control.h"
 #include "util/stat.h"
 #include "util/timer.h"
@@ -73,7 +72,7 @@ void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     }
 }
 
-double ControlObject::getValueToMidi() const {
+double ControlObject::getMidiParameter() const {
     return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 

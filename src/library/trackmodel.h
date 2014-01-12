@@ -14,7 +14,7 @@
 class TrackModel {
   public:
     TrackModel(QSqlDatabase db,
-               QString settingsNamespace)
+               const char* settingsNamespace)
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),

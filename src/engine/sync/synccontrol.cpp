@@ -3,8 +3,10 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
-#include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginechannel.h"
+#include "engine/ratecontrol.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
 
@@ -25,28 +27,32 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
 
     m_pSyncMode.reset(new ControlObject(ConfigKey(pGroup, "sync_mode")));
     m_pSyncMode->connectValueChangeRequest(
-        this, SLOT(slotSyncModeChangeRequest(double)),
-        Qt::DirectConnection);
+            this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
-        new ControlPushButton(ConfigKey(pGroup, "sync_master")));
+            new ControlPushButton(ConfigKey(pGroup, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-        this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
-        Qt::DirectConnection);
+            this, SLOT(slotSyncMasterEnabledChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncEnabled.reset(
-        new ControlPushButton(ConfigKey(pGroup, "sync_enabled")));
+            new ControlPushButton(ConfigKey(pGroup, "sync_enabled")));
     m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
     m_pSyncEnabled->connectValueChangeRequest(
-        this, SLOT(slotSyncEnabledChangeRequest(double)),
-        Qt::DirectConnection);
+            this, SLOT(slotSyncEnabledChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncBeatDistance.reset(
-        new ControlObject(ConfigKey(pGroup, "beat_distance")));
+            new ControlObject(ConfigKey(pGroup, "beat_distance")));
     connect(m_pSyncBeatDistance.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatDistanceChanged(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotBeatDistanceChanged(double)), Qt::DirectConnection);
+
+    m_pPassthroughEnabled.reset(new ControlObjectSlave(pGroup, "passthrough", this));
+    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
+                                               Qt::DirectConnection);
+
+    m_pEjectButton.reset(new ControlObjectSlave(pGroup, "eject", this));
+    m_pEjectButton->connectValueChanged(this, SLOT(slotEjectPushed(double)),
+                                        Qt::DirectConnection);
 
     // BPMControl and RateControl will be initialized later.
 }
@@ -80,6 +86,8 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pRateRange->connectValueChanged(this, SLOT(slotRateChanged()),
                                       Qt::DirectConnection);
 
+    m_pSyncPhaseButton.reset(new ControlObjectSlave(getGroup(), "beatsync_phase", this));
+
 #ifdef __VINYLCONTROL__
     m_pVCEnabled.reset(new ControlObjectSlave(
         getGroup(), "vinylcontrol_enabled", this));
@@ -100,10 +108,23 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
-    if (mode == SYNC_FOLLOWER && m_pVCEnabled->get()) {
-        // If follower mode is enabled, disable vinyl control.
-        m_pVCEnabled->set(0.0);
+    if (mode == SYNC_FOLLOWER) {
+        if (m_pVCEnabled->get()) {
+            // If follower mode is enabled, disable vinyl control.
+            m_pVCEnabled->set(0.0);
+        }
     }
+    if (mode != SYNC_NONE && m_pPassthroughEnabled->get()) {
+        // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
+        // This is very unlikely to happen so this deserves a warning.
+        qWarning() << "Notified of sync mode change when passthrough was active -- "
+                      "must disable passthrough";
+        m_pPassthroughEnabled->set(0.0);
+    }
+}
+
+void SyncControl::requestSyncPhase() {
+    m_pChannel->getEngineBuffer()->requestSyncPhase();
 }
 
 double SyncControl::getBeatDistance() const {
@@ -160,6 +181,22 @@ bool SyncControl::isPlaying() const {
     return m_pPlayButton->get() > 0.0;
 }
 
+void SyncControl::trackLoaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
+    if (getSyncMode() == SYNC_MASTER) {
+        // If we loaded a new track while master, hand off.
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+    }
+}
+
+void SyncControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
+    if (getSyncMode() == SYNC_MASTER) {
+        // If we unloaded a new track while master, hand off.
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+    }
+}
+
 void SyncControl::slotControlPlay(double play) {
     m_pEngineSync->notifyPlaying(this, play > 0.0);
 }
@@ -171,8 +208,28 @@ void SyncControl::slotVinylControlChanged(double enabled) {
     }
 }
 
+void SyncControl::slotPassthroughChanged(double enabled) {
+    if (enabled && getSyncMode() != SYNC_NONE) {
+        // If passthrough was enabled and sync was on, disable it.
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+    }
+}
+
+void SyncControl::slotEjectPushed(double enabled) {
+    Q_UNUSED(enabled);
+    // We can't eject tracks if the decks is playing back, so if we are master
+    // and eject was pushed the deck must be stopped.  Handing off in this case
+    // actually causes the other decks to start playing, so not doing anything
+    // is preferred.
+}
+
 void SyncControl::slotSyncModeChangeRequest(double state) {
-    m_pEngineSync->requestSyncMode(this, syncModeFromDouble(state));
+    SyncMode mode(syncModeFromDouble(state));
+    if (m_pPassthroughEnabled->get() && mode != SYNC_NONE) {
+        qDebug() << "Disallowing enabling of sync mode when passthrough active";
+    } else {
+        m_pEngineSync->requestSyncMode(this, mode);
+    }
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
@@ -211,8 +268,21 @@ SyncMode SyncControl::getSyncMode() const {
 
 void SyncControl::slotFileBpmChanged() {
     // This slot is fired by file_bpm changes.
+    double file_bpm = m_pFileBpm ? m_pFileBpm->get() : 0.0;
+
+    if (file_bpm == 0 && getSyncMode() != SYNC_NONE && m_pPlayButton->get()) {
+        // If the file bpm is suddenly zero and sync was active and we are playing,
+        // we have to disable sync. The track will keep playing but will not
+        // respond to rate changes.
+        // I think this can only happen if the beatgrid is reset.
+        qWarning() << getGroup() << " Sync is enabled on track with empty or zero bpm, "
+                                    "disabling master sync.";
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+        return;
+    }
+
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
-    double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
+    double bpm = file_bpm * rate;
     m_pEngineSync->notifyBpmChanged(this, bpm, true);
 }
 

@@ -27,55 +27,53 @@
  *   these slow speeds.
  */
 
-EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue>* pConfig, const char* group)
-{
-    m_pConfig = pConfig;
-    m_pRateEngine = ControlObject::getControl(ConfigKey(group, "rateEngine"));
-    m_fSpeed = m_fOldSpeed = 0.0f;
-    m_fGainFactor = 1.0f;
-    m_iNoisePos = 0;
-
-    for (int i=0; i<NOISE_BUFFER_SIZE; i++)
-    {
-        m_fNoise[i] = (float)(rand() % RAND_MAX) / RAND_MAX - 0.5;
+EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue>* pConfig,
+                                         const char* group)
+        : m_pConfig(pConfig),
+          m_pRateEngine(ControlObject::getControl(
+              ConfigKey(group, "rateEngine"))),
+          m_dSpeed(0.0),
+          m_dOldSpeed(0.0),
+          m_iNoisePos(0) {
+    // Generate dither values. When engine samples used to be within [SHRT_MIN,
+    // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
+    // normalize engine samples to the range [-1.0, 1.0] we divide by SHRT_MAX
+    // to preserve the previous behavior.
+    for (int i = 0; i < NOISE_BUFFER_SIZE; ++i) {
+        m_fNoise[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SHRT_MAX;
     }
 }
 
-EngineVinylSoundEmu::~EngineVinylSoundEmu()
-{
-
+EngineVinylSoundEmu::~EngineVinylSoundEmu() {
 }
 
 void EngineVinylSoundEmu::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
-    m_fSpeed = (float)m_pRateEngine->get();
-    float rateFrac = 2 * (m_fSpeed - m_fOldSpeed) / (float)iBufferSize;
-    float curRate = m_fOldSpeed;
+    m_dSpeed = m_pRateEngine->get();
+    double rateFrac = 2.0 * (m_dSpeed - m_dOldSpeed) / iBufferSize;
+    double curRate = m_dOldSpeed;
 
-    const float thresholdSpeed = 0.070f; //Scale volume if playback speed is below 7%.
-    const float ditherSpeed = 0.85f; //Dither if playback speed is below 85%.
+    const double thresholdSpeed = 0.070; //Scale volume if playback speed is below 7%.
+    const double ditherSpeed = 0.85; //Dither if playback speed is below 85%.
 
     //iterate over old rate to new rate to prevent audible pops
-    for (int i=0; i<iBufferSize; i+=2)
-    {
-        float absCurRate = fabs(curRate);
-        float dither = 0;
+    for (int i = 0; i < iBufferSize; i += 2) {
+        CSAMPLE absCurRate = fabs(curRate);
+        CSAMPLE dither = 0;
         if (absCurRate < ditherSpeed) {
             dither = m_fNoise[m_iNoisePos];
             m_iNoisePos = (m_iNoisePos + 1) % NOISE_BUFFER_SIZE;
         }
 
         if (absCurRate < thresholdSpeed) {
-            float gainfrac = absCurRate / thresholdSpeed;
-            pOutput[i] = gainfrac * (float)pIn[i] + dither;
-            pOutput[i+1] = gainfrac * (float)pIn[i+1] + dither;
-        }
-        else
-        {
+            CSAMPLE gainfrac = absCurRate / thresholdSpeed;
+            pOutput[i] = gainfrac * pIn[i] + dither;
+            pOutput[i+1] = gainfrac * pIn[i+1] + dither;
+        } else {
            pOutput[i] = pIn[i] + dither;
            pOutput[i+1] = pIn[i+1] + dither;
         }
 
         curRate += rateFrac;
     }
-    m_fOldSpeed = m_fSpeed;
+    m_dOldSpeed = m_dSpeed;
 }

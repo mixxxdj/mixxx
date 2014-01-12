@@ -122,11 +122,12 @@ void EncoderVorbis::writePage() {
 void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
     float **buffer = vorbis_analysis_buffer(&m_vdsp, size);
 
-    // Deinterleave samples
-    for (int i = 0; i < size/2; ++i)
-    {
-        buffer[0][i] = samples[i*2]/32768.f;
-        buffer[1][i] = samples[i*2+1]/32768.f;
+    // Deinterleave samples. We use normalized floats in the engine [-1.0, 1.0]
+    // and libvorbis expects samples in the range [-1.0, 1.0] so no conversion
+    // is required.
+    for (int i = 0; i < size/2; ++i) {
+        buffer[0][i] = samples[i*2];
+        buffer[1][i] = samples[i*2+1];
     }
     /** encodes audio **/
     vorbis_analysis_wrote(&m_vdsp, size/2);

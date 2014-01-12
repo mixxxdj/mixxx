@@ -206,24 +206,31 @@ class Qt(Dependence):
                 return d
         return None
 
-    def satisfy(self):
-        pass
-
-    def configure(self, build, conf):
+    @staticmethod
+    def enabled_modules(build):
         qt5 = Qt.qt5_enabled(build)
-        # Emit various Qt defines
-        build.env.Append(CPPDEFINES=['QT_SHARED',
-                                     'QT_TABLET_SUPPORT'])
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
             'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
             'QtTest'
         ]
+        if qt5:
+            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
+        return qt_modules
 
+    def satisfy(self):
+        pass
+
+    def configure(self, build, conf):
+        qt_modules = Qt.enabled_modules(build)
+
+        qt5 = Qt.qt5_enabled(build)
+        # Emit various Qt defines
+        build.env.Append(CPPDEFINES=['QT_SHARED',
+                                     'QT_TABLET_SUPPORT'])
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
-            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
 
         # Enable Qt include paths
         if build.platform_is_linux:
@@ -505,9 +512,6 @@ class MixxxCore(Feature):
                    "control/controlbehavior.cpp",
                    "controlobjectslave.cpp",
                    "controlobjectthread.cpp",
-                   "controlobjectthreadwidget.cpp",
-                   "controlobjectthreadmain.cpp",
-                   "controlevent.cpp",
                    "controllogpotmeter.cpp",
                    "controlobject.cpp",
                    "controlpotmeter.cpp",
@@ -636,6 +640,8 @@ class MixxxCore(Feature):
                    "soundsource.cpp",
 
                    "sharedglcontext.cpp",
+                   "widget/controlwidgetconnection.cpp",
+                   "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
                    "widget/wwidgetgroup.cpp",
                    "widget/wwidgetstack.cpp",
@@ -645,18 +651,17 @@ class MixxxCore(Feature):
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
                    "widget/wknob.cpp",
+                   "widget/wknobcomposed.cpp",
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",
                    "widget/wpushbutton.cpp",
                    "widget/wslidercomposed.cpp",
-                   "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
                    "widget/woverviewlmh.cpp",
                    "widget/woverviewhsv.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
-                   "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",
                    "widget/wpixmapstore.cpp",
                    "widget/wimagestore.cpp",
@@ -690,6 +695,7 @@ class MixxxCore(Feature):
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
+                   "library/searchquery.cpp",
                    "library/searchqueryparser.cpp",
                    "library/analysislibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
@@ -817,8 +823,8 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
-                   "skin/propertybinder.cpp",
                    "skin/tooltips.cpp",
+                   "skin/skincontext.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

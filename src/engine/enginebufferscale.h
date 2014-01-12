@@ -45,10 +45,13 @@ class EngineBufferScale : public QObject {
 
     // Sets the scaling parameters.
     // * The desired output sample rate.
-    // * The rate adjustment describes the rate change in percentage of original
-    //   rate. For example, a rate adjustment of 1.0 is no change.
-    // * The tempo adjustment describes the tempo change in percentage of
-    //   original tempo. For example, a tempo adjustment of 1.0 is no change.
+    // * The base rate (ratio of track sample rate to output sample rate).
+    // * Whether changes in speed should affect the pitch.
+    // * The speed adjustment describes the speed change in percentage of
+    //   original speed. Put another way, it is the ratio of track seconds to
+    //   real second. For example, a rate adjustment of 1.0 is no change. A
+    //   speed adjustment of 2 is a 2x speedup (2 track seconds pass for every 1
+    //   real second).
     // * The pitch adjustment describes the pitch adjustment in percentage of
     //   octaves. For example, a pitch adjustment of 0.0 is no change and a
     //   pitch adjustment of 1.0 is a full octave shift up.
@@ -56,12 +59,14 @@ class EngineBufferScale : public QObject {
     // If parameter settings are outside of acceptable limits, each setting will
     // be set to the value it was clamped to.
     virtual void setScaleParameters(int iSampleRate,
-                                    double* rate_adjust,
-                                    double* tempo_adjust,
+                                    double base_rate,
+                                    bool speed_affects_pitch,
+                                    double* speed_adjust,
                                     double* pitch_adjust) {
         m_iSampleRate = iSampleRate;
-        m_dRateAdjust = *rate_adjust;
-        m_dTempoAdjust = *tempo_adjust;
+        m_dBaseRate = base_rate;
+        m_bSpeedAffectsPitch = speed_affects_pitch;
+        m_dSpeedAdjust = *speed_adjust;
         m_dPitchAdjust = *pitch_adjust;
     }
 
@@ -74,8 +79,9 @@ class EngineBufferScale : public QObject {
 
   protected:
     int m_iSampleRate;
-    double m_dRateAdjust;
-    double m_dTempoAdjust;
+    double m_dBaseRate;
+    bool m_bSpeedAffectsPitch;
+    double m_dSpeedAdjust;
     double m_dPitchAdjust;
     /** Pointer to internal buffer */
     CSAMPLE* m_buffer;

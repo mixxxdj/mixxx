@@ -8,7 +8,7 @@
 #include "waveformwidgetrenderer.h"
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -52,9 +52,9 @@ bool WaveformRendererEndOfTrack::init() {
     return true;
 }
 
-void WaveformRendererEndOfTrack::setup(const QDomNode& node) {
+void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& context) {
     m_color = QColor(200, 25, 20);
-    const QString endOfTrackColorName = WWidget::selectNodeQString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_color.setNamedColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);

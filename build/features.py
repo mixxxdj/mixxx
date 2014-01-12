@@ -398,25 +398,6 @@ class MSVCDebug(Feature):
             build.env.Append(CCFLAGS='/MD')
 
 
-class HifiEq(Feature):
-    def description(self):
-        return "High quality EQs"
-
-    def enabled(self, build):
-        build.flags['hifieq'] = util.get_flags(build.env, 'hifieq', 1)
-        if int(build.flags['hifieq']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            # Enables old crappy EQs
-            build.env.Append(CPPDEFINES=['__LOFI__', '__NO_INTTYPES__'])
-
-
 class VinylControl(Feature):
     def description(self):
         return "Vinyl Control"
@@ -720,6 +701,8 @@ class Verbose(Feature):
             build.env['CCCOMSTR'] = '[CC] $SOURCE'
             build.env['CXXCOMSTR'] = '[CXX] $SOURCE'
             build.env['ASCOMSTR'] = '[AS] $SOURCE'
+            build.env['ARCOMSTR'] = '[AR] $TARGET'
+            build.env['RANLIBCOMSTR'] = '[RANLIB] $TARGET'
             build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
             build.env['LINKCOMSTR'] = '[LD] $TARGET'
 
@@ -1060,10 +1043,11 @@ class Optimize(Feature):
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             build.env.Append(CCFLAGS='/fp:fast')
 
-            # Do link-time code generation (and show a progress indicator)
-            # Should we turn on PGO ?
+            # Do link-time code generation (and don't show a progress indicator
+            # -- this relies on aNSI control characters and tends to overwhelm
+            # Jenkins logs) Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-            build.env.Append(LINKFLAGS='/LTCG:STATUS')
+            build.env.Append(LINKFLAGS='/LTCG:NOSTATUS')
 
             # Suggested for unused code removal
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx

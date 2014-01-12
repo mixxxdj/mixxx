@@ -31,10 +31,8 @@ EngineClipping::~EngineClipping()
     delete m_ctrlClipping;
 }
 
-void EngineClipping::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize)
-{
-    static const FLOAT_TYPE kfMaxAmp = 32767.;
-    // static const FLOAT_TYPE kfClip = 0.8*kfMaxAmp;
+void EngineClipping::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+    const CSAMPLE kfMaxAmp = 1.0;
 
     // SampleUtil clamps the buffer and if pIn and pOut are aliased will not copy.
     clipped = SampleUtil::copyClampBuffer(kfMaxAmp, -kfMaxAmp,
@@ -55,12 +53,9 @@ void EngineClipping::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBu
     else {
         m_duration--;
     }
-
-
 }
 
 //returns true if the last buffer processed clipped
-bool EngineClipping::hasClipped()
-{
+bool EngineClipping::hasClipped() {
     return clipped;
 }
