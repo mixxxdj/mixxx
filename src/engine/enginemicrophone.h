@@ -24,11 +24,12 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     bool isMaster();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
-    virtual void process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize);
+    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
 
     // This is called by SoundManager whenever there are new samples from the
     // microphone to be processed
-    virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples);
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int iNumSamples);
 
     // Called by SoundManager whenever the microphone input is connected to a
     // soundcard input.

@@ -22,6 +22,7 @@
 #include "defs_urls.h"
 #include "dlgprefshoutcast.h"
 #include "shoutcast/defs_shoutcast.h"
+#include "controlobjectthread.h"
 
 DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config)
         : DlgPreferencePage(parent),

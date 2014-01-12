@@ -8,18 +8,25 @@
 
 #include "configobject.h"
 #include "engine/enginecontrol.h"
+#include "engine/sync/syncable.h"
 
 const int RATE_TEMP_STEP = 500;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
 const int RATE_SENSITIVITY_MIN = 100;
 const int RATE_SENSITIVITY_MAX = 2500;
 
+class BpmControl;
 class Rotary;
 class ControlTTRotary;
 class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
+class ControlObjectSlave;
+class EngineChannel;
 class PositionScratchController;
+#ifdef __VINYLCONTROL__
+class VinylControlControl;
+#endif
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from
@@ -30,6 +37,7 @@ public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
 
+    void setBpmControl(BpmControl* bpmcontrol);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     double process(const double dRate,
@@ -38,7 +46,7 @@ public:
                    const int bufferSamples);
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
-    double getRawRate();
+    double getRawRate() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -55,6 +63,7 @@ public:
     virtual void notifySeek(double dNewPlaypos);
 
   public slots:
+    void slotReverseRollActivate(double);
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
     void slotControlRatePermUp(double);
@@ -65,12 +74,13 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    void slotControlVinyl(double);
-    void slotControlVinylScratching(double);
+    virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
 
   private:
-    double getJogFactor();
-    double getWheelFactor();
+    double getJogFactor() const;
+    double getWheelFactor() const;
+    SyncMode getSyncMode() const;
 
     /** Set rate change of the temporary pitch rate */
     void setRateTemp(double v);
@@ -94,6 +104,7 @@ public:
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;
+    ControlPushButton* m_pReverseRollButton;
     ControlObject* m_pBackButton;
     ControlObject* m_pForwardButton;
 
@@ -104,9 +115,21 @@ public:
 
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
+    ControlObject* m_pVCEnabled;
+    ControlObject* m_pVCScratching;
+    ControlObject* m_pVCMode;
     Rotary* m_pJogFilter;
 
-    ControlObject *m_pSampleRate;
+    ControlObject* m_pSampleRate;
+
+    TrackPointer m_pTrack;
+
+    // For Master Sync
+    BpmControl* m_pBpmControl;
+
+    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncEnabled;
+    ControlObjectSlave* m_pSyncMode;
+    ControlObjectSlave* m_pSlipEnabled;
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.
@@ -136,28 +159,23 @@ public:
         RATERAMP_RAMPBACK_PERIOD
     };
 
-    /** Is vinyl control enabled? **/
-    bool m_bVinylControlEnabled;
-    bool m_bVinylControlScratching;
-
     // The current rate ramping direction. Only holds the last button pressed.
     int m_ePbCurrent;
     //  The rate ramping buttons which are currently being pressed.
     int m_ePbPressed;
 
-    /** This is true if we've already started to ramp the rate */
+    // This is true if we've already started to ramp the rate
     bool m_bTempStarted;
-    /** Set to the rate change used for rate temp */
+    // Set to the rate change used for rate temp
     double m_dTempRateChange;
-    /** Set the Temporary Rate Change Mode */
+    // Set the Temporary Rate Change Mode
     static enum RATERAMP_MODE m_eRateRampMode;
-    /** The Rate Temp Sensitivity, the higher it is the slower it gets */
+    // The Rate Temp Sensitivity, the higher it is the slower it gets
     static int m_iRateRampSensitivity;
-    /** Temporary pitchrate, added to the permanent rate for calculateRate */
+    // Temporary pitchrate, added to the permanent rate for calculateRate
     double m_dRateTemp;
-    /** */
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
-    /** Return speed for temporary rate change */
+    // Return speed for temporary rate change
     double m_dRateTempRampbackChange;
 };
 

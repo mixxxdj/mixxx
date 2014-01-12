@@ -8,12 +8,14 @@
 #include <QMutex>
 #include <QStackedWidget>
 #include <QString>
+#include <QEvent>
 
 #include "library/libraryview.h"
+#include "widget/wbasewidget.h"
 
 class MixxxKeyboard;
 
-class WLibrary : public QStackedWidget {
+class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WLibrary(QWidget* parent);
@@ -36,6 +38,10 @@ class WLibrary : public QStackedWidget {
     void switchToView(const QString& name);
 
     void search(const QString&);
+
+  protected:
+    bool event(QEvent* pEvent);
+
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;

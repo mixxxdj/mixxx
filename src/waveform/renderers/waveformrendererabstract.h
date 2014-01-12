@@ -1,9 +1,11 @@
 #ifndef WAVEFORMRENDERERABSTRACT_H
 #define WAVEFORMRENDERERABSTRACT_H
 
-class QDomNode;
-class QPaintEvent;
-class QPainter;
+#include <QDomNode>
+#include <QPaintEvent>
+#include <QPainter>
+
+#include "skin/skincontext.h"
 
 class WaveformWidgetRenderer;
 
@@ -13,7 +15,7 @@ class WaveformRendererAbstract {
     virtual ~WaveformRendererAbstract();
 
     virtual bool init() {return true; }
-    virtual void setup(const QDomNode& node) = 0;
+    virtual void setup(const QDomNode& node, const SkinContext& context) = 0;
     virtual void draw(QPainter* painter, QPaintEvent* event) = 0;
 
     virtual void onResize() {}

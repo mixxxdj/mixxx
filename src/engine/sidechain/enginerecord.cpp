@@ -64,7 +64,7 @@ void EngineRecord::updateFromPreferences() {
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
 
-    // Delete m_pEncoder if it has been initalized (with maybe) different bitrate.
+    // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
         delete m_pEncoder;
         m_pEncoder = NULL;
@@ -252,7 +252,7 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
 }
 
 bool EngineRecord::fileOpen() {
-    // Both encoder and file must be initalized.
+    // Both encoder and file must be initialized.
     if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
         return (m_pSndfile != NULL);
     } else {
@@ -274,21 +274,28 @@ bool EngineRecord::openFile() {
             m_sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
 
         // Creates a new WAVE or AIFF file and writes header information.
-        m_pSndfile = sf_open(m_fileName.toLocal8Bit(), SFM_WRITE, &m_sfInfo);
+#ifdef __WINDOWS__
+        // Pointer valid until string changed
+        LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16();
+        m_pSndfile = sf_wchar_open(lpcwFilename, SFM_WRITE, &m_sfInfo);
+#else
+        QByteArray qbaFilename = m_fileName.toLocal8Bit();
+        m_pSndfile = sf_open(qbaFilename.constData(), SFM_WRITE, &m_sfInfo);
+#endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
             // Set meta data
             int ret;
 
-            ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.data());
+            ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
-            ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.data());
+            ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.constData());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
-            ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.data());
+            ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.constData());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
@@ -312,7 +319,9 @@ bool EngineRecord::openFile() {
         props->setType(DLG_WARNING);
         props->setTitle(tr("Recording"));
         props->setText("<html>"+tr("Could not create audio file for recording!")
-                       +"<p><br>"+tr("Maybe you do not have enough free disk space or file permissions.")+"</p></html>");
+                       +"<p>"+tr("Ensure there is enough free disk space and you have write permission for the Recordings folder.")
+                       +"<p>"+tr("You can change the location of the Recordings folder in Preferences > Recording.")
+                       +"</p></html>");
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return false;
     }

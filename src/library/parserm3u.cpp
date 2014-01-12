@@ -70,9 +70,9 @@ QList<QString> ParserM3u::parse(QString sFilename)
         bool isCR_encoded = ba.contains("\r");
         if(isCR_encoded && !isCRLF_encoded)
             ba.replace('\r','\n');
-        QTextStream textstream(ba.data());
+        QTextStream textstream(ba.constData());
 
-        if (isUtf8(ba.data())) {
+        if (isUtf8(ba.constData())) {
             textstream.setCodec("UTF-8");
         } else {
             textstream.setCodec("windows-1252");

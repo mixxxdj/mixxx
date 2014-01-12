@@ -12,7 +12,7 @@ class ControlObjectSlave;
 class ClockControl: public EngineControl {
     Q_OBJECT
   public:
-    ClockControl(const char * pGroup,
+    ClockControl(const char* pGroup,
                  ConfigObject<ConfigValue>* pConfig);
 
     virtual ~ClockControl();

@@ -18,13 +18,12 @@
 #ifndef ENGINECHANNEL_H
 #define ENGINECHANNEL_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "configobject.h"
 
 class ControlObject;
 class EngineBuffer;
 class EnginePregain;
-class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
 class EngineFlanger;
@@ -42,7 +41,7 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(const char *pGroup, ChannelOrientation defaultOrientation = CENTER);
+    EngineChannel(const char* pGroup, ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
@@ -52,18 +51,26 @@ class EngineChannel : public EngineObject {
     virtual bool isPFL();
     virtual bool isMaster();
 
-    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize) = 0;
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer() {
         return NULL;
     }
 
+  private slots:
+    void slotOrientationLeft(double v);
+    void slotOrientationRight(double v);
+    void slotOrientationCenter(double v);
+
   private:
     const QString m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
     ControlObject* m_pOrientation;
+    ControlPushButton* m_pOrientationLeft;
+    ControlPushButton* m_pOrientationRight;
+    ControlPushButton* m_pOrientationCenter;
 };
 
 #endif

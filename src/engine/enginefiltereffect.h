@@ -14,7 +14,7 @@ class EngineFilterEffect : public EngineObject {
     EngineFilterEffect(const char* group);
     virtual ~EngineFilterEffect();
 
-    void process(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
   private:
     void applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize,

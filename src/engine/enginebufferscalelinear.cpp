@@ -50,22 +50,22 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
 }
 
 void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
-                                                 double* rate_adjust,
-                                                 double* tempo_adjust,
+                                                 double base_rate,
+                                                 bool speed_affects_pitch,
+                                                 double* speed_adjust,
                                                  double* pitch_adjust) {
     m_iSampleRate = iSampleRate;
 
-    // EBSL doesn't support tempo adjustment so we assume it is 1.
-    if (*tempo_adjust != 1.0) {
-        qDebug() << "WARNING: EngineBufferScaleLinear being used with tempo != 1. Ignoring.";
-        *tempo_adjust = 1.0;
+    // EBSL doesn't support pitch-independent tempo adjustment.
+    if (!speed_affects_pitch) {
+        qWarning() << "WARNING: EngineBufferScaleLinear requested to adjust"
+                   << "tempo independent of pitch. Ignoring.";
     }
 
     m_dOldRate = m_dRate;
-    // pitch_adjust is measured in octave change. This exp() function (magic
-    // constants taken from SoundTouch) converts it from octaves of change to
-    // rate change.
-    m_dRate = *rate_adjust * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
+    // pitch_adjust is measured in octave change. Convert it to a rate using
+    // octaveChangeToPowerOf2.
+    m_dRate = base_rate * *speed_adjust * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
 
     // Determine playback direction
     m_bBackwards = m_dRate < 0.0;
@@ -93,9 +93,13 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 
 /** Determine if we're changing directions (scratching) and then perform
     a stretch */
-CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
+CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
+    if (m_bClear) {
+        m_dOldRate = m_dRate;  // If cleared, don't interpolate rate.
+        m_bClear = false;
+    }
+    float rate_add_old = m_dOldRate;  //Smoothly interpolate to new playback rate
     float rate_add_new = m_dRate;
-    float rate_add_old = m_dOldRate; //Smoothly interpolate to new playback rate
     int samples_read = 0;
     m_samplesRead = 0;
 
@@ -155,11 +159,10 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 }
 
 /** Stretch a specified buffer worth of audio using linear interpolation */
-CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
-        unsigned long buf_size, int* samples_read) {
-    float rate_add_new = m_dRate;
-    // Smoothly interpolate to new playback rate
+CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
+                                           unsigned long buf_size, int* samples_read) {
     float rate_add_old = m_dOldRate;
+    float rate_add_new = m_dRate;
     float rate_add_diff = rate_add_new - rate_add_old;
 
     //Update the old base rate because we only need to

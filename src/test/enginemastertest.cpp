@@ -27,7 +27,7 @@ class EngineChannelMock : public EngineChannel {
     MOCK_METHOD0(isActive, bool());
     MOCK_METHOD0(isMaster, bool());
     MOCK_METHOD0(isPFL, bool());
-    MOCK_METHOD3(process, void(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize));
+    MOCK_METHOD3(process, void(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize));
 };
 
 class EngineMasterTest : public MixxxTest {
@@ -72,7 +72,7 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
     CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    FillBuffer(pChannelBuffer, 1.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
     // Instruct the mock to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel, isActive())
@@ -90,11 +90,11 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
-    AssertWholeBufferEquals(pMasterBuffer, 1.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pMasterBuffer, 0.1f, MAX_BUFFER_LEN);
 
     // Check that the headphone output does not contain the channel data.
     const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
@@ -112,8 +112,8 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
-    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
@@ -145,11 +145,11 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
-    AssertWholeBufferEquals(pMasterBuffer, 3.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pMasterBuffer, 0.3f, MAX_BUFFER_LEN);
 
     // Check that the headphone output does not contain any channel data.
     const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
@@ -167,8 +167,8 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
-    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
@@ -200,15 +200,15 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
-    AssertWholeBufferEquals(pMasterBuffer, 3.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pMasterBuffer, 0.3f, MAX_BUFFER_LEN);
 
     // Check that the headphone output does not contain any channel data.
     const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
-    AssertWholeBufferEquals(pHeadphoneBuffer, 3.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pHeadphoneBuffer, 0.3f, MAX_BUFFER_LEN);
 }
 
 TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
@@ -225,9 +225,9 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
-    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
-    FillBuffer(pChannel3Buffer, 3.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
@@ -273,11 +273,11 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
-    AssertWholeBufferEquals(pMasterBuffer, 6.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pMasterBuffer, 0.6f, MAX_BUFFER_LEN);
 
     // Check that the headphone output does not contain any channel data.
     const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
@@ -298,9 +298,9 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
-    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
-    FillBuffer(pChannel3Buffer, 3.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
@@ -346,15 +346,15 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output contains the sum of the channel data.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
-    AssertWholeBufferEquals(pMasterBuffer, 6.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pMasterBuffer, 0.6f, MAX_BUFFER_LEN);
 
     // Check that the headphone output does not contain any channel data.
     const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
-    AssertWholeBufferEquals(pHeadphoneBuffer, 6.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pHeadphoneBuffer, 0.6f, MAX_BUFFER_LEN);
 }
 
 TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
@@ -364,7 +364,7 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
     CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    FillBuffer(pChannelBuffer, 1.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
     // Instruct the mock to claim it is active, not master and PFL
     EXPECT_CALL(*pChannel, isActive())
@@ -382,7 +382,7 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+    m_pMaster->process(MAX_BUFFER_LEN);
 
     // Check that the master output is empty.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
@@ -390,7 +390,7 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
 
     // Check that the headphone output contains the channel data.
     const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
-    AssertWholeBufferEquals(pHeadphoneBuffer, 1.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pHeadphoneBuffer, 0.1f, MAX_BUFFER_LEN);
 }
 
 }  // namespace

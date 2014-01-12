@@ -30,7 +30,7 @@ float XmlParse::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode)
     return selectNode(nodeHeader, sNode).toElement().text().toFloat();
 }
 
-QDomNode XmlParse::selectNode(const QDomNode &nodeHeader, const QString sNode) {
+QDomNode XmlParse::selectNode(const QDomNode& nodeHeader, const QString sNode) {
     QDomNode node = nodeHeader.firstChild();
     while (!node.isNull()) {
         if (node.nodeName() == sNode)
@@ -38,6 +38,21 @@ QDomNode XmlParse::selectNode(const QDomNode &nodeHeader, const QString sNode) {
         node = node.nextSibling();
     }
     return node;
+}
+
+QDomElement XmlParse::selectElement(const QDomNode &nodeHeader, const QString& sNode) {
+    QDomNode node = nodeHeader.firstChild();
+    while (!node.isNull()) {
+        if (node.nodeName() == sNode) {
+            if (node.isElement()) {
+                return node.toElement();
+            } else {
+                break;
+            }
+        }
+        node = node.nextSibling();
+    }
+    return QDomElement();
 }
 
 QString XmlParse::selectNodeQString(const QDomNode &nodeHeader, const QString sNode) {

@@ -24,44 +24,24 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-#include "widget/wabstractcontrol.h"
+#include "widget/wdisplay.h"
+#include "widget/knobeventhandler.h"
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
-class WKnob : public WAbstractControl  {
+class WKnob : public WDisplay {
    Q_OBJECT
-public:
-    WKnob(QWidget *parent=0);
-    ~WKnob();
-    void setup(QDomNode node);
-    void setPositions(int iNoPos, bool bIncludingDisabled=false);
-    void setPixmap(int iPos, const QString &filename);
-    /** Associates a background pixmap with the widget. This is only needed if the knob
-      * pixmaps contains alpha channel values. */
-    void setPixmapBackground(const QString &filename);
+  public:
+    WKnob(QWidget* pParent=NULL);
+    virtual ~WKnob();
+
+  protected:
     void wheelEvent(QWheelEvent *e);
-private:
-    /** Set position number to zero and deallocate pixmaps */
-    void resetPositions();
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent *);
 
-    /** Current position */
-    int m_iPos;
-    /** Number of positions associated with this knob */
-    int m_iNoPos;
-    /** Array of associated pixmaps */
-    QPixmap **m_pPixmaps;
-    /** Associated background pixmap */
-    QPixmap *m_pPixmapBack;
-    /** Starting point when left mouse button is pressed */
-    QPoint m_startPos;
-    /** True if disabled pixmaps is loaded */
-    bool m_bDisabledLoaded;
+  private:
+    KnobEventHandler<WKnob> m_handler;
+    friend class KnobEventHandler<WKnob>;
 };
 
 #endif

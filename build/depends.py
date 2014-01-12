@@ -206,24 +206,31 @@ class Qt(Dependence):
                 return d
         return None
 
-    def satisfy(self):
-        pass
-
-    def configure(self, build, conf):
+    @staticmethod
+    def enabled_modules(build):
         qt5 = Qt.qt5_enabled(build)
-        # Emit various Qt defines
-        build.env.Append(CPPDEFINES=['QT_SHARED',
-                                     'QT_TABLET_SUPPORT'])
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
             'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
             'QtTest'
         ]
+        if qt5:
+            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
+        return qt_modules
 
+    def satisfy(self):
+        pass
+
+    def configure(self, build, conf):
+        qt_modules = Qt.enabled_modules(build)
+
+        qt5 = Qt.qt5_enabled(build)
+        # Emit various Qt defines
+        build.env.Append(CPPDEFINES=['QT_SHARED',
+                                     'QT_TABLET_SUPPORT'])
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
-            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
 
         # Enable Qt include paths
         if build.platform_is_linux:
@@ -265,6 +272,41 @@ class Qt(Dependence):
             # the search path and a QObject.h in QtCore.framework/Headers.
             build.env.Append(CCFLAGS=['-F%s' % os.path.join(framework_path)])
             build.env.Append(LINKFLAGS=['-F%s' % os.path.join(framework_path)])
+
+            # Copied verbatim from qt4.py and qt5.py.
+            # TODO(rryan): Get our fixes merged upstream so we can use qt4.py
+            # and qt5.py for OS X.
+            qt4_module_defines = {
+                'QtScript'   : ['QT_SCRIPT_LIB'],
+                'QtSvg'      : ['QT_SVG_LIB'],
+                'Qt3Support' : ['QT_QT3SUPPORT_LIB','QT3_SUPPORT'],
+                'QtSql'      : ['QT_SQL_LIB'],
+                'QtXml'      : ['QT_XML_LIB'],
+                'QtOpenGL'   : ['QT_OPENGL_LIB'],
+                'QtGui'      : ['QT_GUI_LIB'],
+                'QtNetwork'  : ['QT_NETWORK_LIB'],
+                'QtCore'     : ['QT_CORE_LIB'],
+            }
+            qt5_module_defines = {
+                'QtScript'   : ['QT_SCRIPT_LIB'],
+                'QtSvg'      : ['QT_SVG_LIB'],
+                'QtSql'      : ['QT_SQL_LIB'],
+                'QtXml'      : ['QT_XML_LIB'],
+                'QtOpenGL'   : ['QT_OPENGL_LIB'],
+                'QtGui'      : ['QT_GUI_LIB'],
+                'QtNetwork'  : ['QT_NETWORK_LIB'],
+                'QtCore'     : ['QT_CORE_LIB'],
+                'QtWidgets'  : ['QT_WIDGETS_LIB'],
+            }
+
+            module_defines = qt5_module_defines if qt5 else qt4_module_defines
+            for module in qt_modules:
+                build.env.AppendUnique(CPPDEFINES=module_defines.get(module, []))
+
+            if qt5:
+                build.env["QT5_MOCCPPPATH"] = build.env["CPPPATH"]
+            else:
+                build.env["QT4_MOCCPPPATH"] = build.env["CPPPATH"]
         elif build.platform_is_windows:
             # This automatically converts QtCore to QtCore[45][d] where
             # appropriate.
@@ -470,9 +512,6 @@ class MixxxCore(Feature):
                    "control/controlbehavior.cpp",
                    "controlobjectslave.cpp",
                    "controlobjectthread.cpp",
-                   "controlobjectthreadwidget.cpp",
-                   "controlobjectthreadmain.cpp",
-                   "controlevent.cpp",
                    "controllogpotmeter.cpp",
                    "controlobject.cpp",
                    "controlpotmeter.cpp",
@@ -503,6 +542,11 @@ class MixxxCore(Feature):
                    "dlgautodj.cpp",
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
+
+                   "engine/sync/basesyncablelistener.cpp",
+                   "engine/sync/enginesync.cpp",
+                   "engine/sync/synccontrol.cpp",
+                   "engine/sync/internalclock.cpp",
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
@@ -574,6 +618,7 @@ class MixxxCore(Feature):
                    "soundsource.cpp",
 
                    "sharedglcontext.cpp",
+                   "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
                    "widget/wwidgetgroup.cpp",
                    "widget/wwidgetstack.cpp",
@@ -583,18 +628,17 @@ class MixxxCore(Feature):
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
                    "widget/wknob.cpp",
+                   "widget/wknobcomposed.cpp",
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",
                    "widget/wpushbutton.cpp",
                    "widget/wslidercomposed.cpp",
-                   "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
                    "widget/woverviewlmh.cpp",
                    "widget/woverviewhsv.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
-                   "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",
                    "widget/wpixmapstore.cpp",
                    "widget/wimagestore.cpp",
@@ -754,6 +798,7 @@ class MixxxCore(Feature):
                    "skin/colorschemeparser.cpp",
                    "skin/propertybinder.cpp",
                    "skin/tooltips.cpp",
+                   "skin/skincontext.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

@@ -3,7 +3,6 @@
 #include "dlgautodj.h"
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "playerinfo.h"

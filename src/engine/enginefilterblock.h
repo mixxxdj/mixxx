@@ -20,6 +20,7 @@
 
 #include "engine/engineobject.h"
 
+class ControlObjectSlave;
 class ControlLogpotmeter;
 class ControlPotmeter;
 class ControlPushButton;
@@ -35,23 +36,27 @@ class ControlPushButton;
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineFilterBlock : public EngineObject
-{
-public:
-    EngineFilterBlock(const char *group);
-    ~EngineFilterBlock();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-private:
+class EngineFilterBlock : public EngineObject {
+    Q_OBJECT
+  public:
+    EngineFilterBlock(const char* group);
+    virtual ~EngineFilterBlock();
+
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+  private:
     void setFilters(bool forceSetting = false);
 
     CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3;
     EngineObject *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
+    ControlObjectSlave* m_pSampleRate;
 
     static ControlPotmeter *s_loEqFreq, *s_hiEqFreq;
     static ControlPushButton *s_lofiEq;
 
+    int m_iOldSampleRate;
     double old_low, old_mid, old_high;
 
     int ilowFreq, ihighFreq;

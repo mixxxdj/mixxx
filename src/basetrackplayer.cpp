@@ -3,7 +3,6 @@
 #include "basetrackplayer.h"
 #include "playerinfo.h"
 
-#include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "controlpotmeter.h"
 #include "trackinfoobject.h"
@@ -33,7 +32,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
     m_pChannel = new EngineDeck(pSafeGroupName,
-                                pConfig, defaultOrientation);
+                                pConfig, pMixingEngine, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);

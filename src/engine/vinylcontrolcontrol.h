@@ -15,6 +15,9 @@ class VinylControlControl : public EngineControl {
 
     void trackLoaded(TrackPointer pTrack);
     void trackUnloaded(TrackPointer pTrack);
+
+    // If the engine asks for a seek, we may need to disable absolute mode.
+    void notifySeek();
     bool isEnabled();
     bool isScratching();
 
@@ -32,6 +35,7 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylCueing;
     ControlPushButton* m_pControlVinylSignalEnabled;
     TrackPointer m_pCurrentTrack;
+    bool m_bSeekRequested;
 };
 
 #endif /* VINYLCONTROLCONTROL_H */

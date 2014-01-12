@@ -408,14 +408,14 @@ TEST_F(SampleUtilTest, testBitwiseFabs) {
         float val = i;
         int iv = ((int&)val & 0x7FFFFFFF);
         val = (float&)iv;
-        EXPECT_FLOAT_EQ(val, fabs(i));
+        EXPECT_FLOAT_EQ(val, fabs(static_cast<float>(i)));
     }
     // Test -1 to 1
     for (int i = -10000; i < 10000; ++i) {
         float val = float(i)/10000.0;
         int iv = ((int&)val & 0x7FFFFFFF);
         val = (float&)iv;
-        EXPECT_FLOAT_EQ(val, fabs(float(i)/10000.0));
+        EXPECT_FLOAT_EQ(val, fabs(static_cast<float>(i)/10000.0));
     }
 }
 

@@ -29,18 +29,15 @@ const int kFrequencyLowerLimit = 16;
 
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
-#ifndef __LOFI__
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
-#endif
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0) {
     setupUi(this);
 
     // Connection
-#ifndef __LOFI__
     connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
     connect(SliderHiEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));
     connect(SliderHiEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateHiEQ()));
@@ -50,11 +47,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
-#else
-    CheckBoxLoFi->setChecked(true);
-    slotLoFiChanged();
-    CheckBoxLoFi->setEnabled(false);
-#endif
     connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
 
     loadSettings();
@@ -194,11 +186,9 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
 
 void DlgPrefEQ::slotApply()
 {
-#ifndef __LOFI__
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
     m_COTLoFi.slotSet(CheckBoxLoFi->isChecked());
-#endif
 }
 
 void DlgPrefEQ::slotUpdate()

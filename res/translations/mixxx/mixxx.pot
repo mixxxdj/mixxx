@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-07 12:14+0200\n"
+"POT-Creation-Date: 2013-12-18 12:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -892,7 +892,6 @@ msgid "Enable Auto DJ"
 msgstr ""
 
 #: DlgBeatsDlg#1
-msgctxt "DlgBeatsDlg#1"
 msgid ""
 "When beat detection is enabled, Mixxx detects the beats per minute and beats "
 "of your tracks, \n"
@@ -1286,193 +1285,197 @@ msgid "Preview Deck %1"
 msgstr ""
 
 #: DlgControllerLearning#73
-msgid "Speed control slider"
+msgid "Reverse roll (Censor) button"
 msgstr ""
 
 #: DlgControllerLearning#74
-msgid "Pass through external audio into the internal mixer"
+msgid "Speed control slider"
 msgstr ""
 
 #: DlgControllerLearning#75
-msgid "Single deck mode - Toggle vinyl control to next deck"
+msgid "Pass through external audio into the internal mixer"
 msgstr ""
 
 #: DlgControllerLearning#76
-msgid "Cues"
+msgid "Single deck mode - Toggle vinyl control to next deck"
 msgstr ""
 
 #: DlgControllerLearning#77
-msgid "Hotcues"
+msgid "Cues"
 msgstr ""
 
 #: DlgControllerLearning#78
-msgid "Hotcue %1"
+msgid "Hotcues"
 msgstr ""
 
 #: DlgControllerLearning#79
-msgid "Loop Exit button"
+msgid "Hotcue %1"
 msgstr ""
 
 #: DlgControllerLearning#80
-msgid "Beat-Looping"
+msgid "Loop Exit button"
 msgstr ""
 
 #: DlgControllerLearning#81
-msgid "Create %1-beat loop"
+msgid "Beat-Looping"
 msgstr ""
 
 #: DlgControllerLearning#82
-msgid "Create temporary %1-beat loop roll"
+msgid "Create %1-beat loop"
 msgstr ""
 
 #: DlgControllerLearning#83
-msgid "1/32th"
+msgid "Create temporary %1-beat loop roll"
 msgstr ""
 
 #: DlgControllerLearning#84
-msgid "1/16th"
+msgid "1/32th"
 msgstr ""
 
 #: DlgControllerLearning#85
-msgid "1/8th"
+msgid "1/16th"
 msgstr ""
 
 #: DlgControllerLearning#86
-msgid "1/4th"
+msgid "1/8th"
 msgstr ""
 
 #: DlgControllerLearning#87
-msgctxt "DlgControllerLearning#87"
-msgid "Library"
+msgid "1/4th"
 msgstr ""
 
 #: DlgControllerLearning#88
-msgid "Expand/collapse the selected view (library, playlist..)"
+msgctxt "DlgControllerLearning#88"
+msgid "Library"
 msgstr ""
 
 #: DlgControllerLearning#89
-msgid "Switch to the next view (library, playlist..)"
+msgid "Expand/collapse the selected view (library, playlist..)"
 msgstr ""
 
 #: DlgControllerLearning#90
-msgid "Switch to the previous view (library, playlist..)"
+msgid "Switch to the next view (library, playlist..)"
 msgstr ""
 
 #: DlgControllerLearning#91
-msgid "Scroll to next track in library/playlist"
+msgid "Switch to the previous view (library, playlist..)"
 msgstr ""
 
 #: DlgControllerLearning#92
-msgid "Scroll to previous track in library/playlist"
+msgid "Scroll to next track in library/playlist"
 msgstr ""
 
 #: DlgControllerLearning#93
-msgid "Load selected track into first stopped deck"
+msgid "Scroll to previous track in library/playlist"
 msgstr ""
 
 #: DlgControllerLearning#94
-msgid "Load selected track"
+msgid "Load selected track into first stopped deck"
 msgstr ""
 
 #: DlgControllerLearning#95
-msgid "Load selected track and play"
+msgid "Load selected track"
 msgstr ""
 
 #: DlgControllerLearning#96
-msgid "Effects"
+msgid "Load selected track and play"
 msgstr ""
 
 #: DlgControllerLearning#97
-msgid "Toggle flange effect"
+msgid "Effects"
 msgstr ""
 
 #: DlgControllerLearning#98
-msgid "Flange effect: Wavelength/period"
+msgid "Toggle flange effect"
 msgstr ""
 
 #: DlgControllerLearning#99
-msgid "Flange effect: Intensity"
+msgid "Flange effect: Wavelength/period"
 msgstr ""
 
 #: DlgControllerLearning#100
-msgid "Flange effect: Phase delay"
+msgid "Flange effect: Intensity"
 msgstr ""
 
 #: DlgControllerLearning#101
-msgid "Toggle filter effect"
+msgid "Flange effect: Phase delay"
 msgstr ""
 
 #: DlgControllerLearning#102
-msgid "Filter effect: Intensity"
+msgid "Toggle filter effect"
 msgstr ""
 
 #: DlgControllerLearning#103
-msgctxt "DlgControllerLearning#103"
-msgid "Microphone"
+msgid "Filter effect: Intensity"
 msgstr ""
 
 #: DlgControllerLearning#104
-msgid "Microphone on/off"
+msgctxt "DlgControllerLearning#104"
+msgid "Microphone"
 msgstr ""
 
 #: DlgControllerLearning#105
-msgid "Microphone volume"
+msgid "Microphone on/off"
 msgstr ""
 
 #: DlgControllerLearning#106
-msgid "Microphone channel orientation (e.g. left, right, center)"
+msgid "Microphone volume"
 msgstr ""
 
 #: DlgControllerLearning#107
-msgctxt "DlgControllerLearning#107"
-msgid "Auto DJ"
+msgid "Microphone channel orientation (e.g. left, right, center)"
 msgstr ""
 
 #: DlgControllerLearning#108
-msgid "Shuffle the content of the Auto DJ playlist"
+msgctxt "DlgControllerLearning#108"
+msgid "Auto DJ"
 msgstr ""
 
 #: DlgControllerLearning#109
-msgid "Skip the next track in the Auto DJ playlist"
+msgid "Shuffle the content of the Auto DJ playlist"
 msgstr ""
 
 #: DlgControllerLearning#110
-msgid "Trigger the transition to the next track"
+msgid "Skip the next track in the Auto DJ playlist"
 msgstr ""
 
 #: DlgControllerLearning#111
-msgid "Toggle Auto DJ (ON/OFF)"
+msgid "Trigger the transition to the next track"
 msgstr ""
 
 #: DlgControllerLearning#112
-msgid "User Interface"
+msgid "Toggle Auto DJ (ON/OFF)"
 msgstr ""
 
 #: DlgControllerLearning#113
-msgid "Show/hide the sampler section"
+msgid "User Interface"
 msgstr ""
 
 #: DlgControllerLearning#114
-msgid "Show/hide the microphone section"
+msgid "Show/hide the sampler section"
 msgstr ""
 
 #: DlgControllerLearning#115
-msgid "Show/hide the vinyl control section"
+msgid "Show/hide the microphone section"
 msgstr ""
 
 #: DlgControllerLearning#116
-msgid "Show/hide the preview deck"
+msgid "Show/hide the vinyl control section"
 msgstr ""
 
 #: DlgControllerLearning#117
-msgid "Show/hide spinning vinyl widget"
+msgid "Show/hide the preview deck"
 msgstr ""
 
 #: DlgControllerLearning#118
-msgid "Ready to map: %1. Now move a control on your controller."
+msgid "Show/hide spinning vinyl widget"
 msgstr ""
 
 #: DlgControllerLearning#119
+msgid "Ready to map: %1. Now move a control on your controller."
+msgstr ""
+
+#: DlgControllerLearning#120
 msgid "Successfully mapped to:"
 msgstr ""
 
@@ -2017,12 +2020,9 @@ msgid "Key Notation Format Settings"
 msgstr ""
 
 #: DlgPrefKeyDlg#2
-msgctxt "DlgPrefKeyDlg#2"
 msgid ""
-"When beat detection is enabled, Mixxx detects the beats per minute and beats "
-"of your tracks, \n"
-"automatically shows a beat-grid for them, and allows you to synchronize "
-"tracks using their beat information."
+"When key detection is enabled, Mixxx detects the musical key of your tracks \n"
+"and allows you to pitch adjust them for harmonic mixing."
 msgstr ""
 
 #: DlgPrefKeyDlg#3
@@ -2169,6 +2169,165 @@ msgstr ""
 
 #: DlgPrefKeyDlg#38
 msgid "G#m"
+msgstr ""
+
+#: DlgPrefLibrary#1
+msgid "Choose a music directory"
+msgstr ""
+
+#: DlgPrefLibrary#2
+msgid "Confirm Directory Removal"
+msgstr ""
+
+#: DlgPrefLibrary#3
+msgid ""
+"Mixxx will no longer watch this directory for new tracks. What would you "
+"like to do with the tracks from this directory and "
+"subdirectories?<ul><li>Hide all tracks from this directory and "
+"subdirectories.</li><li>Delete all metadata for these tracks from Mixxx "
+"permanently.</li><li>Leave the tracks unchanged in your "
+"library.</li></ul>Hiding tracks saves their metadata in case you re-add them "
+"in the future."
+msgstr ""
+
+#: DlgPrefLibrary#4
+msgid ""
+"Metadata means all track details (artist, title, playcount, etc.) as well as "
+"beatgrids, hotcues, and loops. This choice only affects the Mixxx library. "
+"No files on disk will be changed or deleted."
+msgstr ""
+
+#: DlgPrefLibrary#5
+msgid "Hide Tracks"
+msgstr ""
+
+#: DlgPrefLibrary#6
+msgid "Delete Track Metadata"
+msgstr ""
+
+#: DlgPrefLibrary#7
+msgid "Leave Tracks Unchanged"
+msgstr ""
+
+#: DlgPrefLibrary#8
+msgid "Relink music directory to new location"
+msgstr ""
+
+#: DlgPrefLibraryDlg#1
+msgctxt "DlgPrefLibraryDlg#1"
+msgid "Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#2
+msgid "Music Directories:"
+msgstr ""
+
+#: DlgPrefLibraryDlg#3
+msgid ""
+"If removed, Mixxx will no longer watch this directory and its subdirectories "
+"for new tracks."
+msgstr ""
+
+#: DlgPrefLibraryDlg#4
+msgctxt "DlgPrefLibraryDlg#4"
+msgid "Remove"
+msgstr ""
+
+#: DlgPrefLibraryDlg#5
+msgid ""
+"Add a directory where your music is stored. Mixxx will watch this directory "
+"and its subdirectories for new tracks."
+msgstr ""
+
+#: DlgPrefLibraryDlg#6
+msgctxt "DlgPrefLibraryDlg#6"
+msgid "Add"
+msgstr ""
+
+#: DlgPrefLibraryDlg#7
+msgid ""
+"If an existing music directory is moved, Mixxx doesn't know where to find "
+"the audio files in it. Choose Relink to select the music directory in its "
+"new location. <br/> This will re-establish the links to the audio files in "
+"the Mixxx library."
+msgstr ""
+
+#: DlgPrefLibraryDlg#8
+msgid "Relink"
+msgstr ""
+
+#: DlgPrefLibraryDlg#9
+msgid "Audio File Formats"
+msgstr ""
+
+#: DlgPrefLibraryDlg#10
+msgid "Additional Format Plugins:"
+msgstr ""
+
+#: DlgPrefLibraryDlg#11
+msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
+msgstr ""
+
+#: DlgPrefLibraryDlg#12
+msgid "Built-in"
+msgstr ""
+
+#: DlgPrefLibraryDlg#13
+msgid "Available Online..."
+msgstr ""
+
+#: DlgPrefLibraryDlg#14
+msgid "Loaded Plugins:"
+msgstr ""
+
+#: DlgPrefLibraryDlg#15
+msgctxt "DlgPrefLibraryDlg#15"
+msgid "None"
+msgstr ""
+
+#: DlgPrefLibraryDlg#16
+msgctxt "DlgPrefLibraryDlg#16"
+msgid "Miscellaneous"
+msgstr ""
+
+#: DlgPrefLibraryDlg#17
+msgid "Synchronize ID3 tags on track modifications"
+msgstr ""
+
+#: DlgPrefLibraryDlg#18
+msgid "Rescan library on start-up"
+msgstr ""
+
+#: DlgPrefLibraryDlg#19
+msgid "Use relative paths for playlist export if possible"
+msgstr ""
+
+#: DlgPrefLibraryDlg#20
+msgid "External Libraries"
+msgstr ""
+
+#: DlgPrefLibraryDlg#21
+msgid "You will need to restart Mixxx for these settings to take effect."
+msgstr ""
+
+#: DlgPrefLibraryDlg#22
+msgid "Show Rhythmbox Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#23
+msgid "Show Banshee Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#24
+msgid "Show iTunes Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#25
+msgid "Show Traktor Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#26
+msgid "All external libraries shown are write protected."
 msgstr ""
 
 #: DlgPrefMappableController#1
@@ -2459,145 +2618,6 @@ msgstr ""
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
-msgstr ""
-
-#: DlgPrefPlaylist#1
-msgid "Choose a music library directory"
-msgstr ""
-
-#: DlgPrefPlaylist#2
-msgid "Confirm Directory Removal"
-msgstr ""
-
-#: DlgPrefPlaylist#3
-msgid ""
-"Mixxx will no longer watch this directory for new tracks. What would you "
-"like to do with the tracks from this directory and "
-"subdirectories?<ul><li>Hide all tracks from this directory and "
-"subdirectories.</li><li>Delete all metadata for these tracks from Mixxx "
-"permanently.</li><li>Leave the tracks unchanged in your "
-"library.</li></ul>Hiding tracks saves their metadata in case you re-add them "
-"in the future."
-msgstr ""
-
-#: DlgPrefPlaylist#4
-msgid ""
-"Metadata means all track details (artist, title, playcount, etc.) as well as "
-"beatgrids, hotcues, and loops. This choice only affects the Mixxx library. "
-"No files on disk will be changed or deleted."
-msgstr ""
-
-#: DlgPrefPlaylist#5
-msgid "Hide Tracks"
-msgstr ""
-
-#: DlgPrefPlaylist#6
-msgid "Delete Track Metadata"
-msgstr ""
-
-#: DlgPrefPlaylist#7
-msgid "Leave Tracks Unchanged"
-msgstr ""
-
-#: DlgPrefPlaylist#8
-msgid "relocate to directory"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#1
-msgid "Audio File Formats"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#2
-msgid "Additional Format Plugins:"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#3
-msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#4
-msgid "Loaded Plugins:"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#5
-msgctxt "DlgPrefPlaylistDlg#5"
-msgid "None"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#6
-msgctxt "DlgPrefPlaylistDlg#6"
-msgid "Miscellaneous"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#7
-msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#8
-msgid "Rescan library on start-up"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#9
-msgid "Use relative paths for playlist export if possible"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#10
-msgid "Show Rhythmbox Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#11
-msgid "Show Banshee Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#12
-msgid "Show iTunes Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#13
-msgid "Show Traktor Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#14
-msgid "You will need to restart Mixxx for these settings to take effect"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#15
-msgctxt "DlgPrefPlaylistDlg#15"
-msgid "Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#16
-msgid "Music Directory:"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#17
-msgctxt "DlgPrefPlaylistDlg#17"
-msgid "Remove"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#18
-msgctxt "DlgPrefPlaylistDlg#18"
-msgid "Add"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#19
-msgid "Relocate"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#20
-msgid "Built-in"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#21
-msgid "Available Online..."
-msgstr ""
-
-#: DlgPrefPlaylistDlg#22
-msgid "External Libraries"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#23
-msgid "All other libraries are shown write protected"
 msgstr ""
 
 #: DlgPrefRecord#1
@@ -3463,85 +3483,109 @@ msgid "Cuepoints"
 msgstr ""
 
 #: DlgTrackInfo#30
-msgctxt "DlgTrackInfo#30"
-msgid "&Previous"
+msgid "Move to the previous item."
 msgstr ""
 
 #: DlgTrackInfo#31
 msgctxt "DlgTrackInfo#31"
-msgid "&Next"
+msgid "&Previous"
 msgstr ""
 
 #: DlgTrackInfo#32
-msgid "Duration:"
+msgid "Move to the next item."
 msgstr ""
 
 #: DlgTrackInfo#33
-msgid "Comments:"
+msgctxt "DlgTrackInfo#33"
+msgid "&Next"
 msgstr ""
 
 #: DlgTrackInfo#34
-msgid "Track BPM: "
+msgid "Duration:"
 msgstr ""
 
 #: DlgTrackInfo#35
-msgid "Sets the BPM to 66% of the current value."
+msgid "Comments:"
 msgstr ""
 
 #: DlgTrackInfo#36
-msgctxt "DlgTrackInfo#36"
-msgid "2/3 BPM"
+msgid "Track BPM: "
 msgstr ""
 
 #: DlgTrackInfo#37
-msgid "Tap with the beat to set the BPM to the speed you are tapping."
+msgid "Sets the BPM to 66% of the current value."
 msgstr ""
 
 #: DlgTrackInfo#38
-msgid "Tap to Beat"
+msgctxt "DlgTrackInfo#38"
+msgid "2/3 BPM"
 msgstr ""
 
 #: DlgTrackInfo#39
-msgid "Hint: Use the Library Analyze view to run BPM detection."
+msgid "Tap with the beat to set the BPM to the speed you are tapping."
 msgstr ""
 
 #: DlgTrackInfo#40
-msgid "Cue Id"
+msgid "Tap to Beat"
 msgstr ""
 
 #: DlgTrackInfo#41
-msgctxt "DlgTrackInfo#41"
-msgid "Position"
+msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
 
 #: DlgTrackInfo#42
-msgctxt "DlgTrackInfo#42"
-msgid "Hotcue"
+msgid "Cue Id"
 msgstr ""
 
 #: DlgTrackInfo#43
-msgid "Label"
+msgctxt "DlgTrackInfo#43"
+msgid "Position"
 msgstr ""
 
 #: DlgTrackInfo#44
-msgid "Activate Cue"
+msgctxt "DlgTrackInfo#44"
+msgid "Hotcue"
 msgstr ""
 
 #: DlgTrackInfo#45
-msgid "Delete Cue"
+msgid "Label"
 msgstr ""
 
 #: DlgTrackInfo#46
-msgctxt "DlgTrackInfo#46"
-msgid "&Apply"
+msgid "Activate Cue"
 msgstr ""
 
 #: DlgTrackInfo#47
-msgid "&Cancel"
+msgid "Save changes and close the window."
 msgstr ""
 
 #: DlgTrackInfo#48
-msgctxt "DlgTrackInfo#48"
+msgid "&OK"
+msgstr ""
+
+#: DlgTrackInfo#49
+msgid "Delete Cue"
+msgstr ""
+
+#: DlgTrackInfo#50
+msgid "Discard changes and close the window."
+msgstr ""
+
+#: DlgTrackInfo#51
+msgid "Save changes and keep the window open."
+msgstr ""
+
+#: DlgTrackInfo#52
+msgctxt "DlgTrackInfo#52"
+msgid "&Apply"
+msgstr ""
+
+#: DlgTrackInfo#53
+msgid "&Cancel"
+msgstr ""
+
+#: DlgTrackInfo#54
+msgctxt "DlgTrackInfo#54"
 msgid "kbps"
 msgstr ""
 
@@ -4990,118 +5034,120 @@ msgid "Key"
 msgstr ""
 
 #: Tooltips#85
-msgid "Displays the harmonic key of the loaded track."
-msgstr ""
-
-#: Tooltips#86
 msgid "BPM Tap"
 msgstr ""
 
-#: Tooltips#87
+#: Tooltips#86
 msgid "When tapped repeatedly, adjusts the BPM to match the tapped BPM."
 msgstr ""
 
-#: Tooltips#88
+#: Tooltips#87
 msgid "Tempo and BPM Tap"
 msgstr ""
 
-#: Tooltips#89
+#: Tooltips#88
 msgid "Show/hide the spinning vinyl section."
 msgstr ""
 
-#: Tooltips#90
+#: Tooltips#89
 msgid "Adjust Beatgrid"
 msgstr ""
 
-#: Tooltips#91
+#: Tooltips#90
 msgid ""
 "Adjust beatgrid so the closest beat is aligned with the current play "
 "position."
 msgstr ""
 
-#: Tooltips#92
+#: Tooltips#91
 msgid "Key-Lock"
 msgstr ""
 
-#: Tooltips#93
+#: Tooltips#92
 msgid "Prevents the pitch from from changing when the rate changes."
 msgstr ""
 
-#: Tooltips#94
+#: Tooltips#93
 msgid ""
 "Toggling key-lock during playback may result in a momentary audio glitch."
 msgstr ""
 
-#: Tooltips#95
+#: Tooltips#94
 msgid "If quantize is enabled, snaps to the nearest beat."
 msgstr ""
 
-#: Tooltips#96
+#: Tooltips#95
 msgid "Quantize"
 msgstr ""
 
-#: Tooltips#97
+#: Tooltips#96
 msgid "Toggles quantization."
 msgstr ""
 
-#: Tooltips#98
+#: Tooltips#97
 msgid "Loops and cues snap to the nearest beat when quantization is enabled."
 msgstr ""
 
-#: Tooltips#99
+#: Tooltips#98
 msgid "Reverse"
 msgstr ""
 
-#: Tooltips#100
+#: Tooltips#99
 msgid "Reverses track playback during regular playback."
 msgstr ""
 
+#: Tooltips#100
+msgid "Puts a track into reverse while being held (Censor)."
+msgstr ""
+
 #: Tooltips#101
-msgid "Play/Pause"
+msgid ""
+"Playback continues where the track would have been if it had not been "
+"temporarily reversed."
 msgstr ""
 
 #: Tooltips#102
-msgid "Toggles playing or pausing the track."
+msgid "Play/Pause"
 msgstr ""
 
 #: Tooltips#103
-msgid "Jumps to the beginning of the track."
+msgid "Toggles playing or pausing the track."
 msgstr ""
 
 #: Tooltips#104
-msgid "Places a cue-point at the current position on the waveform."
+msgid "Jumps to the beginning of the track."
 msgstr ""
 
 #: Tooltips#105
-msgid "Plays or pauses the track."
+msgid "Places a cue-point at the current position on the waveform."
 msgstr ""
 
 #: Tooltips#106
-msgid "(while playing)"
+msgid "Plays or pauses the track."
 msgstr ""
 
 #: Tooltips#107
-msgid "(while stopped)"
+msgid "(while playing)"
 msgstr ""
 
 #: Tooltips#108
-msgid "Cue"
+msgid "(while stopped)"
 msgstr ""
 
 #: Tooltips#109
-msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
+msgid "Cue"
 msgstr ""
 
 #: Tooltips#110
-msgid "Seeks the track to the cue-point and stops."
+msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
 msgstr ""
 
 #: Tooltips#111
-msgid "Headphone"
+msgid "Seeks the track to the cue-point and stops."
 msgstr ""
 
 #: Tooltips#112
-msgid "Sends the selected channel's audio to the headphone output."
+msgid "Headphone"
 msgstr ""
 
 #: Tooltips#113
@@ -5225,296 +5271,305 @@ msgid "Change the step-size in the Preferences -> Interface menu."
 msgstr ""
 
 #: Tooltips#140
-msgid "Change the default cue behavior in Preferences -> Interface."
+msgid ""
+"Displays the current musical key of the loaded track after pitch shifting."
 msgstr ""
 
 #: Tooltips#141
-msgid "selected in Preferences -> Sound Hardware."
+msgid "Change the default cue behavior in Preferences -> Interface."
 msgstr ""
 
 #: Tooltips#142
-msgid "Fast Rewind"
+msgid "Sends the selected channel's audio to the headphone output,"
 msgstr ""
 
 #: Tooltips#143
-msgid "Fast rewind through the track."
+msgid "selected in Preferences -> Sound Hardware."
 msgstr ""
 
 #: Tooltips#144
-msgid "Fast Forward"
+msgid "Fast Rewind"
 msgstr ""
 
 #: Tooltips#145
-msgid "Fast forward through the track."
+msgid "Fast rewind through the track."
 msgstr ""
 
 #: Tooltips#146
-msgid "Jumps to the end of the track."
+msgid "Fast Forward"
 msgstr ""
 
 #: Tooltips#147
-msgctxt "Tooltips#147"
-msgid "Synchronize"
+msgid "Fast forward through the track."
 msgstr ""
 
 #: Tooltips#148
-msgid "Syncs the tempo (BPM) and phase to that of the other track, "
+msgid "Jumps to the end of the track."
 msgstr ""
 
 #: Tooltips#149
-msgid "if BPM is detected on both."
+msgctxt "Tooltips#149"
+msgid "Synchronize"
 msgstr ""
 
 #: Tooltips#150
-msgid "Syncs the tempo (BPM) to that of the other track,"
+msgid "Syncs the tempo (BPM) and phase to that of the other track, "
 msgstr ""
 
 #: Tooltips#151
-msgid "Pitch Control"
+msgid "if BPM is detected on both."
 msgstr ""
 
 #: Tooltips#152
-msgid "Pitch Rate"
+msgid "Syncs the tempo (BPM) to that of the other track,"
 msgstr ""
 
 #: Tooltips#153
-msgid "Displays the current playback rate of the track."
+msgid "Pitch Control"
 msgstr ""
 
 #: Tooltips#154
-msgid "Repeat"
+msgid "Pitch Rate"
 msgstr ""
 
 #: Tooltips#155
+msgid "Displays the current playback rate of the track."
+msgstr ""
+
+#: Tooltips#156
+msgid "Repeat"
+msgstr ""
+
+#: Tooltips#157
 msgid ""
 "When active the track will repeat if you go past the end or reverse before "
 "the start."
 msgstr ""
 
-#: Tooltips#156
+#: Tooltips#158
 msgid "Eject"
 msgstr ""
 
-#: Tooltips#157
+#: Tooltips#159
 msgid "Ejects track from the player."
 msgstr ""
 
-#: Tooltips#158
-msgctxt "Tooltips#158"
+#: Tooltips#160
+msgctxt "Tooltips#160"
 msgid "Hotcue"
 msgstr ""
 
-#: Tooltips#159
+#: Tooltips#161
 msgid "If hotcue is set, jumps to the hotcue."
 msgstr ""
 
-#: Tooltips#160
+#: Tooltips#162
 msgid "If hotcue is not set, sets the hotcue to the current play position."
 msgstr ""
 
-#: Tooltips#161
+#: Tooltips#163
 msgid "If hotcue is set, clears the hotcue."
 msgstr ""
 
-#: Tooltips#162
+#: Tooltips#164
 msgid "Vinyl Control Mode"
 msgstr ""
 
-#: Tooltips#163
+#: Tooltips#165
 msgid "Absolute mode - track position equals needle position and speed."
 msgstr ""
 
-#: Tooltips#164
+#: Tooltips#166
 msgid ""
 "Relative mode - track speed equals needle speed regardless of needle "
 "position."
 msgstr ""
 
-#: Tooltips#165
+#: Tooltips#167
 msgid ""
 "Constant mode - track speed equals last known-steady speed regardless of "
 "needle input."
 msgstr ""
 
-#: Tooltips#166
+#: Tooltips#168
 msgid "Vinyl Status"
 msgstr ""
 
-#: Tooltips#167
+#: Tooltips#169
 msgid "Provides visual feedback for vinyl control status:"
 msgstr ""
 
-#: Tooltips#168
+#: Tooltips#170
 msgid "Green for control enabled."
 msgstr ""
 
-#: Tooltips#169
+#: Tooltips#171
 msgid "Blinking yellow for when the needle reaches the end of the record."
 msgstr ""
 
-#: Tooltips#170
+#: Tooltips#172
 msgid "Red for needle skip detected."
 msgstr ""
 
-#: Tooltips#171
+#: Tooltips#173
 msgid "Loop-In Marker"
 msgstr ""
 
-#: Tooltips#172
+#: Tooltips#174
 msgid "Sets the deck loop-in position to the current play position."
 msgstr ""
 
-#: Tooltips#173
+#: Tooltips#175
 msgid "Loop-Out Marker"
 msgstr ""
 
-#: Tooltips#174
+#: Tooltips#176
 msgid "Sets the deck loop-out position to the current play position."
 msgstr ""
 
-#: Tooltips#175
+#: Tooltips#177
 msgid "Loop Halve"
 msgstr ""
 
-#: Tooltips#176
+#: Tooltips#178
 msgid "Halves the current loop's length by moving the end marker."
 msgstr ""
 
-#: Tooltips#177
+#: Tooltips#179
 msgid "Deck immediately loops if past the new endpoint."
 msgstr ""
 
-#: Tooltips#178
+#: Tooltips#180
 msgid "Loop Double"
 msgstr ""
 
-#: Tooltips#179
+#: Tooltips#181
 msgid "Doubles the current loop's length by moving the end marker."
 msgstr ""
 
-#: Tooltips#180
+#: Tooltips#182
 msgid "Beatloop"
 msgstr ""
 
-#: Tooltips#181
+#: Tooltips#183
 msgid "Reloop/Exit"
 msgstr ""
 
-#: Tooltips#182
+#: Tooltips#184
 msgid "Toggles the current loop on or off."
 msgstr ""
 
-#: Tooltips#183
+#: Tooltips#185
 msgid "Works only if Loop-In and Loop-Out marker are set."
 msgstr ""
 
-#: Tooltips#184
+#: Tooltips#186
 msgid "Vinyl Cueing Mode"
 msgstr ""
 
-#: Tooltips#185
+#: Tooltips#187
 msgid "Determines how cue points are treated in vinyl control Relative mode:"
 msgstr ""
 
-#: Tooltips#186
+#: Tooltips#188
 msgid "Off - Cue points ignored."
 msgstr ""
 
-#: Tooltips#187
+#: Tooltips#189
 msgid ""
 "One Cue - If needle is dropped after the cue point, track will seek to that "
 "cue point."
 msgstr ""
 
-#: Tooltips#188
+#: Tooltips#190
 msgid "Hot Cue - Track will seek to nearest previous hot cue point."
 msgstr ""
 
-#: Tooltips#189
+#: Tooltips#191
 msgid "Track Time"
 msgstr ""
 
-#: Tooltips#190
+#: Tooltips#192
 msgid "Displays the elapsed or remaining time of the track loaded."
 msgstr ""
 
-#: Tooltips#191
+#: Tooltips#193
 msgid "Click to toggle between time elapsed/remaining time."
 msgstr ""
 
-#: Tooltips#192
+#: Tooltips#194
 msgid "Track Duration"
 msgstr ""
 
-#: Tooltips#193
+#: Tooltips#195
 msgid "Displays the duration of the loaded track."
 msgstr ""
 
-#: Tooltips#194
+#: Tooltips#196
 msgid "Information is loaded from the track's metadata tags."
 msgstr ""
 
-#: Tooltips#195
+#: Tooltips#197
 msgid "Track Artist"
 msgstr ""
 
-#: Tooltips#196
+#: Tooltips#198
 msgid "Displays the artist of the loaded track."
 msgstr ""
 
-#: Tooltips#197
+#: Tooltips#199
 msgid "Track Title"
 msgstr ""
 
-#: Tooltips#198
+#: Tooltips#200
 msgid "Displays the title of the loaded track."
 msgstr ""
 
-#: Tooltips#199
+#: Tooltips#201
 msgid "Track Album"
 msgstr ""
 
-#: Tooltips#200
+#: Tooltips#202
 msgid "Displays the album name of the loaded track."
 msgstr ""
 
-#: Tooltips#201
+#: Tooltips#203
 msgid "Track Artist/Title"
 msgstr ""
 
-#: Tooltips#202
+#: Tooltips#204
 msgid "Displays the artist and title of the loaded track."
 msgstr ""
 
-#: Tooltips#203
+#: Tooltips#205
 msgid "Flanger"
 msgstr ""
 
-#: Tooltips#204
+#: Tooltips#206
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
 msgstr ""
 
-#: Tooltips#205
+#: Tooltips#207
 msgid "Flanger Delay"
 msgstr ""
 
-#: Tooltips#206
+#: Tooltips#208
 msgid "Adjusts the phase delay of the flange effect (when active)."
 msgstr ""
 
-#: Tooltips#207
+#: Tooltips#209
 msgid "Flanger Depth"
 msgstr ""
 
-#: Tooltips#208
+#: Tooltips#210
 msgid "Adjusts the intensity of the flange effect (when active)."
 msgstr ""
 
-#: Tooltips#209
+#: Tooltips#211
 msgid "Flanger LFO Period"
 msgstr ""
 
-#: Tooltips#210
+#: Tooltips#212
 msgid "Adjusts the wavelength of the flange effect (when active)."
 msgstr ""
 

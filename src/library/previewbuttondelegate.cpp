@@ -6,7 +6,6 @@
 #include "playerinfo.h"
 #include "playermanager.h"
 #include "trackinfoobject.h"
-#include "controlobjectthreadmain.h"
 #include "controlobject.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)

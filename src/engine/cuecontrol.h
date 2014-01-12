@@ -83,8 +83,8 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(const char * _group,
-               ConfigObject<ConfigValue> * _config);
+    CueControl(const char* _group,
+               ConfigObject<ConfigValue>* _config);
     virtual ~CueControl();
 
     virtual void hintReader(QVector<Hint>* pHintList);
