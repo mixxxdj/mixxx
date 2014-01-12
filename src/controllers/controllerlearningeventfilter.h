@@ -5,7 +5,7 @@
 #include <QEvent>
 
 #include "controlobject.h"
-#include "widget/wbasewidget.h"
+#include "widget/controlwidgetconnection.h"
 
 struct ControlInfo {
     ControlInfo()
