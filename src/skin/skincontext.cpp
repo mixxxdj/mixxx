@@ -103,9 +103,13 @@ double SkinContext::selectDouble(const QDomNode& node,
 }
 
 int SkinContext::selectInt(const QDomNode& node,
-                           const QString& nodeName) const {
+                           const QString& nodeName,
+                           bool* pOk) const {
     bool ok = false;
     int conv = nodeToString(selectElement(node, nodeName)).toInt(&ok);
+    if (pOk != NULL) {
+        *pOk = ok;
+    }
     return ok ? conv : 0;
 }
 
