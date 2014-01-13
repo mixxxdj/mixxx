@@ -43,10 +43,9 @@ bool EngineMicrophone::isMaster() {
 }
 
 void EngineMicrophone::onInputConnected(AudioInput input) {
-    if (input.getType() != AudioPath::MICROPHONE ||
-        AudioInput::channelsNeededForType(input.getType()) != 1) {
+    if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer.clear();
@@ -54,10 +53,9 @@ void EngineMicrophone::onInputConnected(AudioInput input) {
 }
 
 void EngineMicrophone::onInputDisconnected(AudioInput input) {
-    if (input.getType() != AudioPath::MICROPHONE ||
-        AudioInput::channelsNeededForType(input.getType()) != 1) {
+    if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer.clear();
@@ -68,7 +66,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                      unsigned int nFrames) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type!";
         return;
     }
 
