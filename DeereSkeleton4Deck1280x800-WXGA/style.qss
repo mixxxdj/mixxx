@@ -14,10 +14,13 @@ WSliderComposed {
   qproperty-layoutSpacing: 10;
 }
 
+WLabel {
+  qproperty-alignment: 'AlignCenter';
+}
+
 #KnobLabel {
   background-color: white;
   border: 1px solid black;
-  qproperty-alignment: 'AlignHCenter | AlignVCenter';
 }
 
 #Mixer {
