@@ -41,8 +41,7 @@
  *******************************************************************************/
 
 WWidget, QLabel {
-  font-family: Helvetica;
-  font-weight: bold;
+  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   font-size: 7px;
   text-transform: uppercase;
   color: black;
@@ -52,12 +51,34 @@ WSliderComposed {
   background-color: rgba(200, 200, 200, 128);
 }
 
-#MasterControls {
-  qproperty-layoutSpacing: 10;
-}
-
 WLabel {
   qproperty-alignment: 'AlignCenter';
+}
+
+#ArtistGutter, #TitleGutter {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 2px;
+}
+
+#BPMGutter, #PositionGutter {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutSpacing: 10;
+  padding: 2px;
+}
+
+#ArtistGutter WLabel, #BPMGutter WLabel, #PositionGutter WLabel {
+  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+}
+
+#BPMGutter WLabel, #PositionGutter WLabel {
+  qproperty-alignment: 'AlignRight | AlignVCenter';
+}
+
+#TitleGutter WLabel {
+  font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
 }
 
 #KnobLabel {
