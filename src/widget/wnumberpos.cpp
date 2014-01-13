@@ -47,6 +47,8 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // Tell the CO to re-emit its value since we could be created after it was
     // set to a valid value.
     m_pTrackSampleRate->emitValueChanged();
+
+    slotSetValue(m_pVisualPlaypos->get());
 }
 
 WNumberPos::~WNumberPos() {
@@ -78,6 +80,8 @@ void WNumberPos::slotSetTrackSampleRate(double dSampleRate) {
 void WNumberPos::setValue(double dValue) {
     // Ignore midi-scaled signals from the skin connection.
     Q_UNUSED(dValue);
+    // Update our value with the old value.
+    slotSetValue(m_dOldValue);
 }
 
 void WNumberPos::slotSetValue(double dValue) {
