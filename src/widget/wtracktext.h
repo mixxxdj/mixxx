@@ -1,6 +1,8 @@
 #ifndef WTRACKTEXT_H
 #define WTRACKTEXT_H
 
+#include <QDropEvent>
+
 #include "widget/wlabel.h"
 #include "trackinfoobject.h"
 
@@ -9,6 +11,11 @@ class WTrackText : public WLabel {
   public:
     WTrackText(QWidget *parent);
     virtual ~WTrackText();
+
+    void dropEvent(QDropEvent *event);
+
+  signals:
+    void trackDropped(QString fileName, QString group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

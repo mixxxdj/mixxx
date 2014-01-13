@@ -1,4 +1,7 @@
 
+#include <QDebug>
+#include <QUrl>
+
 #include "widget/wtracktext.h"
 
 WTrackText::WTrackText(QWidget* pParent)
@@ -31,5 +34,17 @@ void WTrackText::slotTrackUnloaded(TrackPointer track) {
 void WTrackText::updateLabel(TrackInfoObject*) {
     if (m_pCurrentTrack) {
         m_pLabel->setText(m_pCurrentTrack->getInfo());
+    }
+}
+
+void WTrackText::dropEvent(QDropEvent *event) {
+    if (event->mimeData()->hasUrls() &&
+            event->mimeData()->urls().size() > 0) {
+        QUrl url = event->mimeData()->urls().first();
+        QString fileName = url.toLocalFile();
+        qDebug() << fileName;
+        event->accept();
+    } else {
+        event->ignore();
     }
 }

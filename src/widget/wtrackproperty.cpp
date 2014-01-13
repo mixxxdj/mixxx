@@ -1,3 +1,7 @@
+
+#include <QDebug>
+#include <QUrl>
+
 #include "widget/wtrackproperty.h"
 
 WTrackProperty::WTrackProperty(QWidget* pParent)
@@ -39,5 +43,17 @@ void WTrackProperty::updateLabel(TrackInfoObject*) {
         if (property.isValid() && qVariantCanConvert<QString>(property)) {
             m_pLabel->setText(property.toString());
         }
+    }
+}
+
+void WTrackProperty::dropEvent(QDropEvent *event) {
+    if (event->mimeData()->hasUrls() &&
+            event->mimeData()->urls().size() > 0) {
+        QUrl url = event->mimeData()->urls().first();
+        QString fileName = url.toLocalFile();
+        qDebug() << fileName;
+        event->accept();
+    } else {
+        event->ignore();
     }
 }

@@ -1,6 +1,8 @@
 #ifndef WTRACKPROPERTY_H
 #define WTRACKPROPERTY_H
 
+#include <QDropEvent>
+
 #include "widget/wlabel.h"
 #include "trackinfoobject.h"
 #include "skin/skincontext.h"
@@ -12,6 +14,7 @@ class WTrackProperty : public WLabel {
     virtual ~WTrackProperty();
 
     void setup(QDomNode node, const SkinContext& context);
+    void dropEvent(QDropEvent *event);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
