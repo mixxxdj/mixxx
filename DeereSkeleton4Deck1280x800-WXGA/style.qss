@@ -67,7 +67,17 @@ WLabel {
 
 #Mixer {
   background-color: green;
+  qproperty-layoutAlignment: 'AlignTop';
 }
+
+#MasterControls {
+  qproperty-layoutSpacing: 0;
+}
+
+#DeckControls {
+  qproperty-layoutSpacing: 0;
+}
+
 
 #MainDeckContainer {
   background-color: red;
@@ -135,10 +145,6 @@ WEffectChain {
 
 #SampleDecksExpanded, #SampleDecksCollapsed {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-
-#DeckRows {
-  border: 1px solid white;
 }
 
 #OverviewRow, #VisualRow, #ButtonRow {
