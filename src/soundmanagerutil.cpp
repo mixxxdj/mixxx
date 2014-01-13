@@ -262,15 +262,19 @@ AudioPathType AudioPath::getTypeFromInt(int typeInt) {
     return static_cast<AudioPathType>(typeInt);
 }
 
-/**
- * Returns the number of channels needed on a sound device for an
- * AudioPathType.
- * @note This method is static.
- */
-unsigned char AudioPath::channelsNeededForType(AudioPathType type) {
+// static
+unsigned char AudioPath::minChannelsForType(AudioPathType type) {
     switch (type) {
-    case AudioPath::MICROPHONE:
+    case AudioPath::VINYLCONTROL:
+        return 2;
+    default:
         return 1;
+    }
+}
+
+// static
+unsigned char AudioPath::maxChannelsForType(AudioPathType type) {
+    switch (type) {
     default:
         return 2;
     }
@@ -280,9 +284,10 @@ unsigned char AudioPath::channelsNeededForType(AudioPathType type) {
  * Constructs an AudioOutput.
  */
 AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
-        unsigned char channelBase /* = 0 */,
-        unsigned char index /* = 0 */)
-    : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
+                         unsigned char channelBase /* = 0 */,
+                         unsigned char channels /* = 0 */,
+                         unsigned char index /* = 0 */)
+    : AudioPath(channelBase, channels) {
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -304,6 +309,7 @@ QDomElement AudioOutput::toXML(QDomElement *element) const {
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
     element->setAttribute("channel", m_channelGroup.getChannelBase());
+    element->setAttribute("channels", m_channelGroup.getChannelCount());
     return *element;
 }
 
@@ -315,7 +321,15 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
-    return AudioOutput(type, channel, index);
+    unsigned int channels(xml.attribute("channels", "0").toUInt());
+    // In Mixxx <1.12.0 we didn't save channels to file since they directly
+    // corresponded to the type. To migrate users over, use mono for all
+    // microphones and stereo for everything else since previously microphone
+    // inputs were the only mono AudioPath.
+    if (channels == 0) {
+        m_channels = type == MICROPHONE ? 1 : 2;
+    }
+    return AudioOutput(type, channel, channels, index);
 }
 
 //static
@@ -348,9 +362,10 @@ void AudioOutput::setType(AudioPathType type) {
  * Constructs an AudioInput.
  */
 AudioInput::AudioInput(AudioPathType type /* = INVALID */,
-        unsigned char channelBase /* = 0 */,
-        unsigned char index /* = 0 */)
-  : AudioPath(channelBase, AudioPath::channelsNeededForType(type)) {
+                       unsigned char channelBase /* = 0 */,
+                       unsigned char channels /* = 0 */,
+                       unsigned char index /* = 0 */)
+        : AudioPath(channelBase, channels) {
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -372,6 +387,7 @@ QDomElement AudioInput::toXML(QDomElement *element) const {
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
     element->setAttribute("channel", m_channelGroup.getChannelBase());
+    element->setAttribute("channels", m_channelGroup.getChannelCount());
     return *element;
 }
 
@@ -383,7 +399,15 @@ AudioInput AudioInput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
-    return AudioInput(type, channel, index);
+    unsigned int channels(xml.attribute("channels", "0").toUInt());
+    // In Mixxx <1.12.0 we didn't save channels to file since they directly
+    // corresponded to the type. To migrate users over, use mono for all
+    // microphones and stereo for everything else since previously microphone
+    // inputs were the only mono AudioPath.
+    if (channels == 0) {
+        m_channels = type == MICROPHONE ? 1 : 2;
+    }
+    return AudioInput(type, channel, channels, index);
 }
 
 /**
