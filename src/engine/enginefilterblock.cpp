@@ -146,6 +146,7 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
 }
 
 void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+    return;
     ScopedTimer t("EngineFilterBlock::process");
     float fLow=0.f, fMid=0.f, fHigh=0.f;
     if (filterKillLow->get()==0.)
