@@ -44,7 +44,7 @@ class FlangerEffect : public EffectProcessor {
         unsigned int delayPos;
         unsigned int time;
     };
-    QMap<QString, GroupState> m_groupState;
+    QMap<QString, GroupState*> m_groupState;
 
     DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
 };

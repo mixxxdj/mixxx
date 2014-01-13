@@ -75,7 +75,10 @@ FlangerEffect::~FlangerEffect() {
 void FlangerEffect::process(const QString& group,
                             const CSAMPLE* pInput, CSAMPLE* pOutput,
                             const unsigned int numSamples) {
-    GroupState& group_state = m_groupState[group];
+    if (!m_groupState.contains(group)) {
+        m_groupState[group] = new GroupState();
+    }
+    GroupState& group_state = *m_groupState[group];
 
     CSAMPLE lfoPeriod = m_pPeriodParameter ?
             m_pPeriodParameter->value().toDouble() : 0.0f;
