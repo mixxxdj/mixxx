@@ -309,7 +309,7 @@ QDomElement AudioOutput::toXML(QDomElement *element) const {
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
     element->setAttribute("channel", m_channelGroup.getChannelBase());
-    element->setAttribute("channels", m_channelGroup.getChannelCount());
+    element->setAttribute("channel_count", m_channelGroup.getChannelCount());
     return *element;
 }
 
@@ -321,7 +321,7 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
-    unsigned int channels(xml.attribute("channels", "0").toUInt());
+    unsigned int channels(xml.attribute("channel_count", "0").toUInt());
     // In Mixxx <1.12.0 we didn't save channels to file since they directly
     // corresponded to the type. To migrate users over, use mono for all
     // microphones and stereo for everything else since previously microphone
@@ -387,7 +387,7 @@ QDomElement AudioInput::toXML(QDomElement *element) const {
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
     element->setAttribute("channel", m_channelGroup.getChannelBase());
-    element->setAttribute("channels", m_channelGroup.getChannelCount());
+    element->setAttribute("channel_count", m_channelGroup.getChannelCount());
     return *element;
 }
 
@@ -399,7 +399,7 @@ AudioInput AudioInput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
-    unsigned int channels(xml.attribute("channels", "0").toUInt());
+    unsigned int channels(xml.attribute("channel_count", "0").toUInt());
     // In Mixxx <1.12.0 we didn't save channels to file since they directly
     // corresponded to the type. To migrate users over, use mono for all
     // microphones and stereo for everything else since previously microphone
