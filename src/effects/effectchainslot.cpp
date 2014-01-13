@@ -15,7 +15,7 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
             this, SLOT(slotControlClear(double)));
 
     m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
-    m_pControlNumEffects->set(0.0f);
+    m_pControlNumEffects->set(0.0);
     connect(m_pControlNumEffects, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlNumEffects(double)));
 
@@ -172,10 +172,11 @@ void EffectChainSlot::clear() {
         }
 
     }
-    m_pControlNumEffects->set(0.0f);
-    m_pControlChainEnabled->set(0.0f);
-    m_pControlChainMix->set(0.0f);
-    m_pControlChainParameter->set(0.0f);
+    m_pControlNumEffects->set(0.0);
+    m_pControlChainEnabled->set(0.0);
+    m_pControlChainMix->set(0.0);
+    m_pControlChainParameter->set(0.0);
+    emit(updated());
 }
 
 unsigned int EffectChainSlot::numSlots() const {
@@ -203,7 +204,7 @@ void EffectChainSlot::registerGroup(const QString& group) {
     }
     ControlObject* pEnableControl = new ControlObject(
         ConfigKey(m_group, QString("channel_%1").arg(group)));
-    pEnableControl->set(0.0f);
+    pEnableControl->set(0.0);
     m_groupEnableControls[group] = pEnableControl;
     m_groupStatusMapper.setMapping(pEnableControl, group);
     connect(pEnableControl, SIGNAL(valueChanged(double)),
@@ -245,9 +246,9 @@ void EffectChainSlot::slotControlChainMix(double v) {
     qDebug() << debugString() << "slotControlChainMix" << v;
 
     // Clamp to [0.0, 1.0]
-    if (v < 0.0f || v > 1.0f) {
+    if (v < 0.0 || v > 1.0) {
         qDebug() << debugString() << "value out of limits";
-        v = math_clamp(v, 0.0f, 1.0f);
+        v = math_clamp(v, 0.0, 1.0);
         m_pControlChainMix->set(v);
     }
     if (m_pEffectChain) {
@@ -259,9 +260,9 @@ void EffectChainSlot::slotControlChainParameter(double v) {
     qDebug() << debugString() << "slotControlChainParameter" << v;
 
     // Clamp to [0.0, 1.0]
-    if (v < 0.0f || v > 1.0f) {
+    if (v < 0.0 || v > 1.0) {
         qDebug() << debugString() << "value out of limits";
-        v = math_clamp(v, 0.0f, 1.0f);
+        v = math_clamp(v, 0.0, 1.0);
         m_pControlChainParameter->set(v);
     }
     if (m_pEffectChain) {

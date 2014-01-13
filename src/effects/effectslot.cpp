@@ -88,4 +88,5 @@ void EffectSlot::clear() {
     foreach (EffectParameterSlotPointer pParameter, m_parameters) {
         pParameter->loadEffect(EffectPointer());
     }
+    emit(updated());
 }

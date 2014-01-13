@@ -61,7 +61,7 @@ void EffectChainManager::removeEffectChain(EffectChainPointer pEffectChain) {
 }
 
 EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEffectChain) {
-    if (m_effectChains.size() == 0)
+    if (m_effectChains.isEmpty())
         return EffectChainPointer();
 
     if (!pEffectChain) {
@@ -78,7 +78,7 @@ EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEf
 }
 
 EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEffectChain) {
-    if (m_effectChains.size() == 0)
+    if (m_effectChains.isEmpty())
         return EffectChainPointer();
 
     if (!pEffectChain) {

@@ -120,8 +120,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValueType->set(0); // TODO(rryan) expose this from EffectParameter
             m_pControlValueDefault->set(dDefault);
             // Default loaded parameters to enabled and unlinked
-            m_pControlEnabled->set(1.0f);
-            m_pControlLinked->set(0.0f);
+            m_pControlEnabled->set(1.0);
+            m_pControlLinked->set(0.0);
         }
     } else {
         clear();
@@ -133,15 +133,16 @@ void EffectParameterSlot::clear() {
     qDebug() << debugString() << "clear";
     m_pEffectParameter = NULL;
     m_pEffect.clear();
-    m_pControlEnabled->set(0.0f);
-    m_pControlValue->set(0.0f);
-    m_pControlValueNormalized->set(0.0f);
-    m_pControlValueType->set(0.0f);
-    m_pControlValueDefault->set(0.0f);
-    m_pControlValueMaximum->set(0.0f);
-    m_pControlValueMaximumLimit->set(0.0f);
-    m_pControlValueMinimum->set(0.0f);
-    m_pControlValueMinimumLimit->set(0.0f);
+    m_pControlEnabled->set(0.0);
+    m_pControlValue->set(0.0);
+    m_pControlValueNormalized->set(0.0);
+    m_pControlValueType->set(0.0);
+    m_pControlValueDefault->set(0.0);
+    m_pControlValueMaximum->set(0.0);
+    m_pControlValueMaximumLimit->set(0.0);
+    m_pControlValueMinimum->set(0.0);
+    m_pControlValueMinimumLimit->set(0.0);
+    emit(updated());
 }
 
 void EffectParameterSlot::slotEnabled(double v) {
