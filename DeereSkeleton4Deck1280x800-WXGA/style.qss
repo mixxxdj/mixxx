@@ -75,10 +75,33 @@ WLabel {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#TitleGutter WLabel {
+#TitleGutter WLabel, #EffectChainNameContainer WLabel {
   font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
   text-align: left;
+}
+
+#EffectChainNameRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+#EffectChain1, #EffectChain2, #EffectChain3, #EffectChain4 {
+  qproperty-layoutAlignment: 'AlignTop';
+}
+
+#EffectChainNameContainer {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#EffectChainNextPrevContainer {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#EffectChainNextPrevContainer WPushButton {
+  font-size: 12px;
 }
 
 #KnobLabel {
@@ -136,8 +159,12 @@ WLabel {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
-#EffectChainTopRow {
+#EffectChainParameters {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#EffectChainControls {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
 WEffectChain {
