@@ -30,6 +30,10 @@ class EffectsManager : public QObject {
         return m_pEngineEffectsManager;
     }
 
+    EffectChainManager* getEffectChainManager() {
+        return m_pEffectChainManager;
+    }
+
     // Add an effect backend to be managed by EffectsManager. EffectsManager
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.

@@ -1,5 +1,6 @@
 #include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectchainmanager.h"
 #include "engine/effects/message.h"
 #include "engine/effects/engineeffectchain.h"
 #include "sampleutil.h"
@@ -248,6 +249,10 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
         pChain->setParameter(parameter);
     }
 
+    EffectChainPointer pChainWrapped(pChain);
+
+    pEffectsManager->getEffectChainManager()->addEffectChain(pChainWrapped);
+
     QDomElement effects = XmlParse::selectElement(element, "Effects");
     QDomNodeList effectChildren = effects.childNodes();
 
@@ -262,5 +267,5 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
         }
     }
 
-    return EffectChainPointer(pChain);
+    return pChainWrapped;
 }
