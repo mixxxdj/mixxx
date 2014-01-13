@@ -1360,34 +1360,7 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
 }
 
 QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
-    WEffectChain* pEffectChain = new WEffectChain(m_pParent);
-
-    bool rackOk = false;
-    int rackNumber = m_pContext->selectInt(node, "EffectRack", &rackOk) - 1;
-    bool chainOk = false;
-    int chainNumber = m_pContext->selectInt(node, "EffectChain", &chainOk) - 1;
-
-    // Tolerate no <EffectRack>. Use the default one.
-    if (!rackOk) {
-        rackNumber = 0;
-    }
-
-    if (!chainOk) {
-        qDebug() << "EffectChainName node had invalid EffectChain number:" << chainNumber;
-    }
-
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
-    if (pRack) {
-        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
-        if (pChainSlot) {
-            pEffectChain->setEffectChainSlot(pChainSlot);
-        } else {
-            qDebug() << "EffectChainName node had invalid EffectChain number:" << chainNumber;
-        }
-    } else {
-        qDebug() << "EffectChainName node had invalid EffectRack number:" << rackNumber;
-    }
-
+    WEffectChain* pEffectChain = new WEffectChain(m_pParent, m_pEffectsManager);
     // NOTE(rryan): To support color schemes, the WWidget::setup() call must
     // come first. This is because WNumber/WLabel both change the palette based
     // on the node and setupWidget() will set the widget style. If the style is
@@ -1403,45 +1376,7 @@ QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
-    WEffect* pEffect = new WEffect(m_pParent);
-
-    bool rackOk = false;
-    int rackNumber = m_pContext->selectInt(node, "EffectRack", &rackOk) - 1;
-    bool chainOk = false;
-    int chainNumber = m_pContext->selectInt(node, "EffectChain", &chainOk) - 1;
-    bool effectOk = false;
-    int effectNumber = m_pContext->selectInt(node, "Effect", &effectOk) - 1;
-
-    // Tolerate no <EffectRack>. Use the default one.
-    if (!rackOk) {
-        rackNumber = 0;
-    }
-
-    if (!chainOk) {
-        qDebug() << "EffectName node had invalid EffectChain number:" << chainNumber;
-    }
-
-    if (!effectOk) {
-        qDebug() << "EffectName node had invalid Effect number:" << effectNumber;
-    }
-
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
-    if (pRack) {
-        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
-        if (pChainSlot) {
-            EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
-            if (pEffectSlot) {
-                pEffect->setEffectSlot(pEffectSlot);
-            } else {
-                qDebug() << "EffectName node had invalid Effect number:" << effectNumber;
-            }
-        } else {
-            qDebug() << "EffectName node had invalid EffectChain number:" << chainNumber;
-        }
-    } else {
-        qDebug() << "EffectName node had invalid EffectRack number:" << rackNumber;
-    }
-
+    WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
     // NOTE(rryan): To support color schemes, the WWidget::setup() call must
     // come first. This is because WNumber/WLabel both change the palette based
     // on the node and setupWidget() will set the widget style. If the style is
@@ -1457,57 +1392,7 @@ QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
-    WEffectParameter* pEffectParameter = new WEffectParameter(m_pParent);
-
-    bool rackOk = false;
-    int rackNumber = m_pContext->selectInt(node, "EffectRack", &rackOk) - 1;
-    bool chainOk = false;
-    int chainNumber = m_pContext->selectInt(node, "EffectChain", &chainOk) - 1;
-    bool effectOk = false;
-    int effectNumber = m_pContext->selectInt(node, "Effect", &effectOk) - 1;
-    bool parameterOk = false;
-    int parameterNumber = m_pContext->selectInt(node, "EffectParameter", &parameterOk) - 1;
-
-    // Tolerate no <EffectRack>. Use the default one.
-    if (!rackOk) {
-        rackNumber = 0;
-    }
-
-    if (!chainOk) {
-        qDebug() << "EffectParameterName node had invalid EffectChain number:" << chainNumber;
-    }
-
-    if (!effectOk) {
-        qDebug() << "EffectParameterName node had invalid Effect number:" << effectNumber;
-    }
-
-    if (!parameterOk) {
-        qDebug() << "EffectParameterName node had invalid Parameter number:" << parameterNumber;
-    }
-
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
-    if (pRack) {
-        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
-        if (pChainSlot) {
-            EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
-            if (pEffectSlot) {
-                EffectParameterSlotPointer pParameterSlot =
-                        pEffectSlot->getEffectParameterSlot(parameterNumber);
-                if (pParameterSlot) {
-                    pEffectParameter->setEffectParameterSlot(pParameterSlot);
-                } else {
-                    qDebug() << "EffectParameterName node had invalid Parameter number:" << parameterNumber;
-                }
-            } else {
-                qDebug() << "EffectParameterName node had invalid Effect number:" << effectNumber;
-            }
-        } else {
-            qDebug() << "EffectParameterName node had invalid EffectChain number:" << chainNumber;
-        }
-    } else {
-        qDebug() << "EffectParameterName node had invalid EffectRack number:" << rackNumber;
-    }
-
+    WEffectParameter* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
     // NOTE(rryan): To support color schemes, the WWidget::setup() call must
     // come first. This is because WNumber/WLabel both change the palette based
     // on the node and setupWidget() will set the widget style. If the style is
