@@ -10,6 +10,25 @@
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+      <PushButton>
+        <ObjectName>DeckSync</ObjectName>
+        <Size>40f,40f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>Sync</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Sync</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,sync</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
       <Template src="skin:knob.xml">
         <SetVariable name="control">pregain</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
