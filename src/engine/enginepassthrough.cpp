@@ -64,6 +64,10 @@ void EnginePassthrough::onInputDisconnected(AudioInput input) {
 
 void EnginePassthrough::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                       unsigned int nFrames) {
+    if (m_pPassing->get() <= 0.0) {
+        return;
+    }
+
     if (input.getType() != AudioPath::EXTPASSTHROUGH) {
         // This is an error!
         qDebug() << "WARNING: EnginePassthrough receieved an AudioInput for a non-passthrough type!";
