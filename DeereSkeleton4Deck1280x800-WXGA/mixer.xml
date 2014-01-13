@@ -18,7 +18,7 @@
           <Template src="skin:knob.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headVolume</SetVariable>
-            <SetVariable name="label">Head Vol.</SetVariable>
+            <SetVariable name="label">Head Vol</SetVariable>
           </Template>
 
           <Template src="skin:knob.xml">
@@ -68,8 +68,8 @@
         <Children>
           <SliderComposed>
             <SizePolicy>me,min</SizePolicy>
-            <MinimumSize>100,21</MinimumSize>
-            <MaximumSize>100,21</MaximumSize>
+            <MinimumSize>100,40</MinimumSize>
+            <MaximumSize>100,40</MaximumSize>
             <Handle>handle-horizontal.svg</Handle>
             <Horizontal>true</Horizontal>
             <Connection>
