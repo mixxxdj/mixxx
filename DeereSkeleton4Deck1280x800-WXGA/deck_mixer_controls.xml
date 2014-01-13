@@ -49,6 +49,18 @@
         </Connection>
       </PushButton>
 
+      <SliderComposed>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>40,100</MinimumSize>
+        <MaximumSize>40,100</MaximumSize>
+        <Handle>handle-vertical.svg</Handle>
+        <Horizontal>false</Horizontal>
+        <Connection>
+	  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+	  <EmitOnDownPress>false</EmitOnDownPress>
+	</Connection>
+      </SliderComposed>
+
     </Children>
   </WidgetGroup>
 </Template>
