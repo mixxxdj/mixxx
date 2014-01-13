@@ -33,16 +33,6 @@
       </WidgetGroup>
 
       <Template src="skin:knob.xml">
-        <SetVariable name="control">pregain</SetVariable>
-        <SetVariable name="label">Pregain</SetVariable>
-      </Template>
-
-      <Template src="skin:knob.xml">
-        <SetVariable name="control">volume</SetVariable>
-        <SetVariable name="label">Volume</SetVariable>
-      </Template>
-
-      <Template src="skin:knob.xml">
         <SetVariable name="control">pitch</SetVariable>
         <SetVariable name="label">Pitch</SetVariable>
       </Template>
