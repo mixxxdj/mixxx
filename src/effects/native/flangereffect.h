@@ -36,9 +36,11 @@ class FlangerEffect : public EffectProcessor {
         GroupState()
                 : delayPos(0),
                   time(0) {
-            SampleUtil::applyGain(delayBuffer, 0, MAX_BUFFER_LEN);
+            SampleUtil::applyGain(delayLeft, 0, MAX_BUFFER_LEN);
+            SampleUtil::applyGain(delayRight, 0, MAX_BUFFER_LEN);
         }
-        CSAMPLE delayBuffer[MAX_BUFFER_LEN];
+        CSAMPLE delayRight[MAX_BUFFER_LEN];
+        CSAMPLE delayLeft[MAX_BUFFER_LEN];
         unsigned int delayPos;
         unsigned int time;
     };

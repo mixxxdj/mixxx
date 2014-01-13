@@ -90,9 +90,14 @@ void FlangerEffect::process(const QString& group,
     // delay needs to be >=0
     // depth is ???
 
-    CSAMPLE* delayBuffer = group_state.delayBuffer;
-    for (int i = 0; i < numSamples; ++i) {
-        delayBuffer[group_state.delayPos] = pInput[i];
+    CSAMPLE* delayLeft = group_state.delayLeft;
+    CSAMPLE* delayRight = group_state.delayRight;
+
+    const int kChannels = 2;
+    for (int i = 0; i < numSamples; i += kChannels) {
+        delayLeft[group_state.delayPos] = pInput[i];
+        delayRight[group_state.delayPos] = pInput[i+1];
+
         group_state.delayPos = (group_state.delayPos + 1) % kMaxDelay;
 
         group_state.time++;
@@ -103,10 +108,19 @@ void FlangerEffect::process(const QString& group,
         CSAMPLE periodFraction = CSAMPLE(group_state.time) / lfoPeriod;
         CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(two_pi * periodFraction);
 
-        CSAMPLE prev = delayBuffer[(group_state.delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay];
-        CSAMPLE next = delayBuffer[(group_state.delayPos - int(delay) + kMaxDelay    ) % kMaxDelay];
-        CSAMPLE frac = delay - floor(delay);
-        CSAMPLE delayed_sample = prev + frac * (next - prev);
-        pOutput[i] = pInput[i] + lfoDepth * delayed_sample;
+        int framePrev = (group_state.delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
+        int frameNext = (group_state.delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;
+        CSAMPLE prevLeft = delayLeft[framePrev];
+        CSAMPLE nextLeft = delayLeft[frameNext];
+
+        CSAMPLE prevRight = delayRight[framePrev];
+        CSAMPLE nextRight = delayRight[frameNext];
+
+        CSAMPLE frac = delay - floorf(delay);
+        CSAMPLE delayedSampleLeft = prevLeft + frac * (nextLeft - prevLeft);
+        CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
+
+        pOutput[i] = pInput[i] + lfoDepth * delayedSampleLeft;
+        pOutput[i+1] = pInput[i+1] + lfoDepth * delayedSampleRight;
     }
 }
