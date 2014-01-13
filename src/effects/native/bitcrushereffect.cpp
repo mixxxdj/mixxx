@@ -66,7 +66,7 @@ void BitCrusherEffect::process(const QString& group,
             m_pBitDepthParameter->value().toInt() : 1;
     bit_depth = math_max(bit_depth, 1);
 
-    const CSAMPLE step = static_cast<CSAMPLE>(SHRT_MAX) / (1 << (bit_depth-1));
+    const CSAMPLE scale = 1 << (bit_depth-1);
 
     const int kChannels = 2;
     for (int i = 0; i < numSamples; i += kChannels) {
@@ -74,8 +74,8 @@ void BitCrusherEffect::process(const QString& group,
 
         if (group_state.accumulator >= 1.0) {
             group_state.accumulator -= 1.0;
-            group_state.hold_l = step * floorf(pInput[i] / step + 0.5);
-            group_state.hold_r = step * floorf(pInput[i+1] / step + 0.5);
+            group_state.hold_l = floorf(pInput[i] * scale + 0.5f) / scale;
+            group_state.hold_r = floorf(pInput[i+1] * scale + 0.5f) / scale;
         }
 
         pOutput[i] = group_state.hold_l;
