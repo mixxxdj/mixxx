@@ -23,7 +23,7 @@
           <Text>Sync</Text>
         </State>
         <Connection>
-          <ConfigKey><Variable name="group"/>,sync</ConfigKey>
+          <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
