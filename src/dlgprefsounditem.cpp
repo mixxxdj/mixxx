@@ -110,6 +110,9 @@ void DlgPrefSoundItem::deviceChanged(int index) {
              channelsForType >= minChannelsForType; --channelsForType) {
             for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels;
                  i += channelsForType) {
+                // Because QVariant supports QPoint natively we use a QPoint to
+                // store the channel info. x is the channel base and y is the
+                // channel count.
                 if (channelsForType == 1) {
                     channelComboBox->addItem(
                         QString(tr("Channel %1")).arg(i), QPoint(i - 1, channelsForType));
@@ -178,8 +181,11 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
     if (device == NULL) {
         return;
     } // otherwise, this will have a valid audiopath
-    QPoint channelData = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
+    QPoint channelData = channelComboBox->itemData(
+        channelComboBox->currentIndex()).toPoint();
 
+    // Because QVariant supports QPoint natively we use a QPoint to store the
+    // channel info. x is the channel base and y is the channel count.
     if (m_isInput) {
         config->addInput(
                 device->getInternalName(),
@@ -251,6 +257,8 @@ void DlgPrefSoundItem::setDevice(const QString &deviceName) {
  */
 void DlgPrefSoundItem::setChannel(unsigned int channelBase,
                                   unsigned int channels) {
+    // Because QVariant supports QPoint natively we use a QPoint to store the
+    // channel info. x is the channel base and y is the channel count.
     int index = channelComboBox->findData(QPoint(channelBase, channels));
     if (index != -1) {
         channelComboBox->setCurrentIndex(index);

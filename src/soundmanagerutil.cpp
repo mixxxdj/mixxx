@@ -327,7 +327,7 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     // microphones and stereo for everything else since previously microphone
     // inputs were the only mono AudioPath.
     if (channels == 0) {
-        m_channels = type == MICROPHONE ? 1 : 2;
+        channels = type == MICROPHONE ? 1 : 2;
     }
     return AudioOutput(type, channel, channels, index);
 }
@@ -405,7 +405,7 @@ AudioInput AudioInput::fromXML(const QDomElement &xml) {
     // microphones and stereo for everything else since previously microphone
     // inputs were the only mono AudioPath.
     if (channels == 0) {
-        m_channels = type == MICROPHONE ? 1 : 2;
+        channels = type == MICROPHONE ? 1 : 2;
     }
     return AudioInput(type, channel, channels, index);
 }
