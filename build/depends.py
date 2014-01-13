@@ -144,15 +144,15 @@ class Opus(Dependence):
         return "Opus (RFC 6716) support"
       
     def configure(self, build, conf):
-        # Supported for vOpus (RFC 6716)
+        # Supported for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
         if build.platform_is_linux or build.platform_is_osx \
                 or build.platform_is_bsd:
-            # Check for libavcodec, libavformat
+            # Check for libopusfile
             # I just randomly picked version numbers lower than mine for this
             if not conf.CheckForPKG('opusfile', '0.4'):
                 raise Exception('Missing libopusfile or libopus')
-	      
+
 	    build.env.ParseConfig('pkg-config opusfile opus ogg --silence-errors \
                                   --cflags --libs')
 
