@@ -95,7 +95,7 @@ class EffectChain : public QObject {
     void effectAdded();
     void effectRemoved();
     void nameChanged(const QString& name);
-    void enabledChanged(double v);
+    void enabledChanged(bool enabled);
     void mixChanged(double v);
     void parameterChanged(double v);
     void groupStatusChanged(const QString& group, bool enabled);

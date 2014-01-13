@@ -59,6 +59,7 @@ QString EffectChain::name() const {
 
 void EffectChain::setName(const QString& name) {
     m_name = name;
+    emit(nameChanged(name));
 }
 
 bool EffectChain::enabled() const {
@@ -68,6 +69,7 @@ bool EffectChain::enabled() const {
 void EffectChain::setEnabled(bool enabled) {
     m_bEnabled = enabled;
     sendParameterUpdate();
+    emit(enabledChanged(enabled));
 }
 
 void EffectChain::enableForGroup(const QString& group) {
@@ -79,6 +81,8 @@ void EffectChain::enableForGroup(const QString& group) {
         request->pTargetChain = m_pEngineEffectChain;
         request->group = group;
         m_pEffectsManager->writeRequest(request);
+
+        emit(groupStatusChanged(group, true));
     }
 }
 
@@ -93,6 +97,8 @@ void EffectChain::disableForGroup(const QString& group) {
         request->pTargetChain = m_pEngineEffectChain;
         request->group = group;
         m_pEffectsManager->writeRequest(request);
+
+        emit(groupStatusChanged(group, false));
     }
 }
 
@@ -103,6 +109,7 @@ double EffectChain::parameter() const {
 void EffectChain::setParameter(const double& dParameter) {
     m_dParameter = dParameter;
     sendParameterUpdate();
+    emit(parameterChanged(dParameter));
 }
 
 double EffectChain::mix() const {
@@ -112,6 +119,7 @@ double EffectChain::mix() const {
 void EffectChain::setMix(const double& dMix) {
     m_dMix = dMix;
     sendParameterUpdate();
+    emit(mixChanged(dMix));
 }
 
 EffectChain::InsertionType EffectChain::insertionType() const {
