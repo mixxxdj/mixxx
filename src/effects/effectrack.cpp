@@ -61,7 +61,7 @@ void EffectRack::addEffectChainSlot() {
 }
 
 EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
-    if (i >= m_effectChainSlots.size()) {
+    if (i < 0 || i >= m_effectChainSlots.size()) {
         qDebug() << "WARNING: Invalid index for getEffectChainSlot";
         return EffectChainSlotPointer();
     }
