@@ -89,6 +89,12 @@ WLabel {
 
 #EffectChain1, #EffectChain2, #EffectChain3, #EffectChain4 {
   qproperty-layoutAlignment: 'AlignTop';
+  border: 1px solid #555;
+  border-left:none;
+}
+
+#EffectChain1 {
+  border-left: 1px solid #555;
 }
 
 #EffectChainNameContainer {
@@ -160,10 +166,18 @@ WLabel {
 }
 
 #EffectChainParameters {
+  padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutSpacing: 2;
 }
 
 #EffectChainControls {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutSpacing: 2;
+}
+
+#EffectChainGroupControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 

@@ -111,83 +111,6 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <PushButton>
-                        <Size>40f,20f</Size>
-	                <NumberStates>2</NumberStates>
-                        <State>
-	                  <Number>0</Number>
-                          <Text>Head</Text>
-	                </State>
-	                <State>
-	                  <Number>1</Number>
-                          <Text>Head</Text>
-	                </State>
-	                <Connection>
-	                  <ConfigKey><Variable name="group"/>,channel_[Headphone]</ConfigKey>
-	                </Connection>
-	              </PushButton>
-                      <PushButton>
-                        <Size>40f,20f</Size>
-	                <NumberStates>2</NumberStates>
-                        <State>
-	                  <Number>0</Number>
-                          <Text>Master</Text>
-	                </State>
-	                <State>
-	                  <Number>1</Number>
-                          <Text>Master</Text>
-	                </State>
-	                <Connection>
-	                  <ConfigKey><Variable name="group"/>,channel_[Master]</ConfigKey>
-	                </Connection>
-	              </PushButton>
-                    </Children>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <PushButton>
-                        <Size>40f,20f</Size>
-	                <NumberStates>2</NumberStates>
-                        <State>
-	                  <Number>0</Number>
-                          <Text>CH1</Text>
-	                </State>
-	                <State>
-	                  <Number>1</Number>
-                          <Text>CH1</Text>
-	                </State>
-	                <Connection>
-	                  <ConfigKey><Variable name="group"/>,channel_[Channel1]</ConfigKey>
-	                </Connection>
-	              </PushButton>
-                      <PushButton>
-                        <Size>40f,20f</Size>
-	                <NumberStates>2</NumberStates>
-                        <State>
-	                  <Number>0</Number>
-                          <Text>CH2</Text>
-	                </State>
-	                <State>
-	                  <Number>1</Number>
-                          <Text>CH2</Text>
-	                </State>
-	                <Connection>
-	                  <ConfigKey><Variable name="group"/>,channel_[Channel2]</ConfigKey>
-	                </Connection>
-	              </PushButton>
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
               <Template src="skin:knob.xml">
                 <SetVariable name="control">parameter</SetVariable>
                 <SetVariable name="label">Parameter</SetVariable>
@@ -204,6 +127,104 @@
         </Children>
       </WidgetGroup>
 
+
+      <WidgetGroup>
+        <ObjectName>EffectChainGroupControls</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <PushButton>
+            <Size>40f,20f</Size>
+	    <NumberStates>2</NumberStates>
+            <State>
+	      <Number>0</Number>
+              <Text>Head</Text>
+	    </State>
+	    <State>
+	      <Number>1</Number>
+              <Text>Head</Text>
+	    </State>
+	    <Connection>
+	      <ConfigKey><Variable name="group"/>,channel_[Headphone]</ConfigKey>
+	    </Connection>
+	  </PushButton>
+          <PushButton>
+            <Size>40f,20f</Size>
+	    <NumberStates>2</NumberStates>
+            <State>
+	      <Number>0</Number>
+              <Text>Master</Text>
+	    </State>
+	    <State>
+	      <Number>1</Number>
+              <Text>Master</Text>
+	    </State>
+	    <Connection>
+	      <ConfigKey><Variable name="group"/>,channel_[Master]</ConfigKey>
+	    </Connection>
+	  </PushButton>
+          <PushButton>
+            <Size>40f,20f</Size>
+	    <NumberStates>2</NumberStates>
+            <State>
+	      <Number>0</Number>
+              <Text>CH1</Text>
+	    </State>
+	    <State>
+	      <Number>1</Number>
+              <Text>CH1</Text>
+	    </State>
+	    <Connection>
+	      <ConfigKey><Variable name="group"/>,channel_[Channel1]</ConfigKey>
+	    </Connection>
+	  </PushButton>
+          <PushButton>
+            <Size>40f,20f</Size>
+	    <NumberStates>2</NumberStates>
+            <State>
+	      <Number>0</Number>
+              <Text>CH2</Text>
+	    </State>
+	    <State>
+	      <Number>1</Number>
+              <Text>CH2</Text>
+	    </State>
+	    <Connection>
+	      <ConfigKey><Variable name="group"/>,channel_[Channel2]</ConfigKey>
+	    </Connection>
+	  </PushButton>
+          <PushButton>
+            <Size>40f,20f</Size>
+	    <NumberStates>2</NumberStates>
+            <State>
+	      <Number>0</Number>
+              <Text>CH3</Text>
+	    </State>
+	    <State>
+	      <Number>1</Number>
+              <Text>CH3</Text>
+	    </State>
+	    <Connection>
+	      <ConfigKey><Variable name="group"/>,channel_[Channel3]</ConfigKey>
+	    </Connection>
+	  </PushButton>
+          <PushButton>
+            <Size>40f,20f</Size>
+	    <NumberStates>2</NumberStates>
+            <State>
+	      <Number>0</Number>
+              <Text>CH4</Text>
+	    </State>
+	    <State>
+	      <Number>1</Number>
+              <Text>CH4</Text>
+	    </State>
+	    <Connection>
+	      <ConfigKey><Variable name="group"/>,channel_[Channel4]</ConfigKey>
+	    </Connection>
+	  </PushButton>
+        </Children>
+      </WidgetGroup>
 
 
     </Children>
