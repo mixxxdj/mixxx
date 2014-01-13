@@ -93,7 +93,7 @@
                 <MaximumSize>30,30</MaximumSize>
 		<State>
 		  <Number>0</Number>
-                  <Text>E</Text>
+                  <Text>⏏</Text>
 		</State>
 		<Connection>
 		  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
