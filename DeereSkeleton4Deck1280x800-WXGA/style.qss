@@ -1,3 +1,45 @@
+/*******************************************************************************
+ ** BORDER *********************************************************************
+ *******************************************************************************/
+/* These definitions put a faint grey border around all the widgets. We have to
+   be tricky with top/bottom-ness to get things right. */
+
+#Mixer {
+  border: 1px solid #555;
+  border-left: none;
+  border-right: none;
+}
+
+#UpperTextRow {
+  border-top: 1px solid #555;
+  border-bottom: 1px solid #555;
+}
+
+#DeckRows {
+  border: 1px solid #555;
+}
+
+/* Prevent a 2px border where the decks meet. */
+#Deck3 #DeckRows, #Deck4 #DeckRows {
+  border-top: none;
+}
+
+#OverviewRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+#VisualRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+/*******************************************************************************
+ ** END BORDER *****************************************************************
+ *******************************************************************************/
+
 WWidget, QLabel {
   font-family: Helvetica;
   font-weight: bold;
