@@ -102,7 +102,7 @@ void EnginePassthrough::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
     if (pWriteBuffer != NULL) {
         // TODO(rryan) do we need to verify the input is the one we asked for?
         // Oh well.
-        unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer,
+        unsigned int samplesWritten = m_sampleBuffer.write(pWriteBuffer,
                                                            samplesToWrite);
         if (samplesWritten < samplesToWrite) {
             // Buffer overflow. We aren't processing samples fast enough. This
