@@ -83,7 +83,6 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
     unsigned int samplesToWrite = 0;
 
     if (iChannels == 1) {
-        qDebug() << "MIC IS MONO";
         // Do mono -> stereo conversion.
         for (unsigned int i = 0; i < nFrames; ++i) {
             m_pConversionBuffer[i*2 + 0] = pBuffer[i];
@@ -92,7 +91,6 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
         pWriteBuffer = m_pConversionBuffer;
         samplesToWrite = nFrames * 2;
     } else if (iChannels == 2) {
-        qDebug() << "MIC IS STEREO";
         // Already in stereo. Use pBuffer as-is.
         pWriteBuffer = pBuffer;
         samplesToWrite = nFrames * iChannels;
