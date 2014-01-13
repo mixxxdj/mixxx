@@ -29,19 +29,23 @@
               </Template>
 
               <Template src="skin:effect_chain.xml">
-                <SetVariable name="group">[EffectChain1]</SetVariable>
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectChain">1</SetVariable>
               </Template>
 
               <Template src="skin:effect_chain.xml">
-                <SetVariable name="group">[EffectChain2]</SetVariable>
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectChain">2</SetVariable>
               </Template>
 
               <Template src="skin:effect_chain.xml">
-                <SetVariable name="group">[EffectChain3]</SetVariable>
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectChain">3</SetVariable>
               </Template>
 
               <Template src="skin:effect_chain.xml">
-                <SetVariable name="group">[EffectChain4]</SetVariable>
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectChain">4</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

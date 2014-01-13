@@ -6,12 +6,188 @@
     group: The group for the controls.
 -->
 <Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectChain<Variable name="EffectChain"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>EffectChain</ObjectName>
+    <ObjectName>EffectChain<Variable name="EffectChain"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
     <MinimumSize>300,100</MinimumSize>
     <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectChainTopRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <!-- next/prev/clear -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,max</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <PushButton>
+                    <Size>20f,20f</Size>
+                    <NumberStates>1</NumberStates>
+	            <State>
+	              <Number>0</Number>
+                      <Text>Prev</Text>
+	            </State>
+	            <Connection>
+	              <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+	              <ButtonState>LeftButton</ButtonState>
+	            </Connection>
+	          </PushButton>
+                  <PushButton>
+                    <Size>20f,20f</Size>
+                    <NumberStates>1</NumberStates>
+	            <State>
+	              <Number>0</Number>
+                      <Text>Next</Text>
+	            </State>
+	            <Connection>
+	              <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+	              <ButtonState>LeftButton</ButtonState>
+	            </Connection>
+	          </PushButton>
+                </Children>
+              </WidgetGroup>
+              <PushButton>
+                <Size>40f,20f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+	          <Number>0</Number>
+                  <Text>Clear</Text>
+	        </State>
+	        <Connection>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+	          <ConfigKey><Variable name="group"/>,clear</ConfigKey>
+	        </Connection>
+	      </PushButton>
+            </Children>
+          </WidgetGroup>
+
+          <EffectChainName>
+            <Size>80,40</Size>
+            <SizePolicy>min,min</SizePolicy>
+            <EffectChain><Variable name="EffectChain"/></EffectChain>
+          </EffectChainName>
+
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="Effect">1</SetVariable>
+            <SetVariable name="EffectParameter">1</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="Effect">1</SetVariable>
+            <SetVariable name="EffectParameter">2</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_parameter_knob.xml">
+            <SetVariable name="Effect">1</SetVariable>
+            <SetVariable name="EffectParameter">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <PushButton>
+                    <Size>40f,20f</Size>
+	            <NumberStates>2</NumberStates>
+                    <State>
+	              <Number>0</Number>
+                      <Text>Head</Text>
+	            </State>
+	            <State>
+	              <Number>1</Number>
+                      <Text>Head</Text>
+	            </State>
+	            <Connection>
+	              <ConfigKey><Variable name="group"/>,channel_[Headphone]</ConfigKey>
+	            </Connection>
+	          </PushButton>
+                  <PushButton>
+                    <Size>40f,20f</Size>
+	            <NumberStates>2</NumberStates>
+                    <State>
+	              <Number>0</Number>
+                      <Text>Master</Text>
+	            </State>
+	            <State>
+	              <Number>1</Number>
+                      <Text>Master</Text>
+	            </State>
+	            <Connection>
+	              <ConfigKey><Variable name="group"/>,channel_[Master]</ConfigKey>
+	            </Connection>
+	          </PushButton>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <PushButton>
+                    <Size>40f,20f</Size>
+	            <NumberStates>2</NumberStates>
+                    <State>
+	              <Number>0</Number>
+                      <Text>CH1</Text>
+	            </State>
+	            <State>
+	              <Number>1</Number>
+                      <Text>CH1</Text>
+	            </State>
+	            <Connection>
+	              <ConfigKey><Variable name="group"/>,channel_[Channel1]</ConfigKey>
+	            </Connection>
+	          </PushButton>
+                  <PushButton>
+                    <Size>40f,20f</Size>
+	            <NumberStates>2</NumberStates>
+                    <State>
+	              <Number>0</Number>
+                      <Text>CH2</Text>
+	            </State>
+	            <State>
+	              <Number>1</Number>
+                      <Text>CH2</Text>
+	            </State>
+	            <Connection>
+	              <ConfigKey><Variable name="group"/>,channel_[Channel2]</ConfigKey>
+	            </Connection>
+	          </PushButton>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <Template src="skin:knob.xml">
+            <SetVariable name="control">parameter</SetVariable>
+            <SetVariable name="label">Parameter</SetVariable>
+          </Template>
+          <Template src="skin:knob.xml">
+            <SetVariable name="control">mix</SetVariable>
+            <SetVariable name="label">Mix</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>
