@@ -154,7 +154,7 @@ class Opus(Dependence):
                 raise Exception('Missing libopusfile')
 
             # This one have needed support for opus tags..
-            if not conf.CheckForPKG('talib', '1.9.1'):
+            if not conf.CheckForPKG('taglib', '1.9.1'):
                 raise Exception('Missing version taglib that have Opus support (minimum is taglib 1.9.1)')
 
 	    build.env.ParseConfig('pkg-config opusfile opus ogg --silence-errors \
