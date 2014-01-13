@@ -1,19 +1,6 @@
-/***************************************************************************
-                          soundsourceopus.cpp  -  Opus decoder
-                             -------------------
-    copyright            : (C) 2013 by Tuukka Pasanen
-                           (C) 2003 by Svein Magne Bang (Based on Ogg Vorbis Code)
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+// soundsourceopus.cpp  -  Opus decoder
+// Create by 14/01/2013 Tuukka Pasanen
+// Based on work 2003 by Svein Magne Bang
 
 #include <taglib/opusfile.h>
 
@@ -42,9 +29,9 @@ inline int getByteOrder() {
 
 }
 
-/*
-   Class for reading Xiph Opus
- */
+//
+//   Class for reading Xiph Opus
+//
 
 SoundSourceOpus::SoundSourceOpus(QString qFilename)
     : Mixxx::SoundSource(qFilename) {

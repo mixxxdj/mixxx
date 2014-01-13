@@ -1,18 +1,6 @@
-/***************************************************************************
-                          soundsourceoggvorbis.h  -  ogg vorbis decoder
-                             -------------------
-    copyright            : (C) 2003 by Svein Magne Bang
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+// soundsourceopus.cpp  -  Opus decoder
+// Create by 14/01/2013 Tuukka Pasanen
+// Based on work 2003 by Svein Magne Bang
 
 #ifndef SOUNDSOURCEOPUS_H
 #define SOUNDSOURCEOPUS_H
