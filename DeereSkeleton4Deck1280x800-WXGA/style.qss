@@ -60,6 +60,30 @@ WSliderComposed {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
+#EffectChainTopRow {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+WEffectChain {
+  font-size: 16px;
+}
+
+#EffectChain1 {
+  background-color: pink;
+}
+
+#EffectChain2 {
+  background-color: brown;
+}
+
+#EffectChain3 {
+  background-color: red;
+}
+
+#EffectChain4 {
+  background-color: green;
+}
+
 #SampleDecksContainer {
   background-color: orange;
 }
