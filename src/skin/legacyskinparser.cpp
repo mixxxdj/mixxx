@@ -1363,9 +1363,9 @@ QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
     WEffectChain* pEffectChain = new WEffectChain(m_pParent);
 
     bool rackOk = false;
-    int rackNumber = XmlParse::selectNodeInt(node, "EffectRack", &rackOk) - 1;
+    int rackNumber = m_pContext->selectInt(node, "EffectRack", &rackOk) - 1;
     bool chainOk = false;
-    int chainNumber = XmlParse::selectNodeInt(node, "EffectChain", &chainOk) - 1;
+    int chainNumber = m_pContext->selectInt(node, "EffectChain", &chainOk) - 1;
 
     // Tolerate no <EffectRack>. Use the default one.
     if (!rackOk) {
@@ -1388,8 +1388,17 @@ QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
         qDebug() << "EffectChainName node had invalid EffectRack number:" << rackNumber;
     }
 
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    pEffectChain->setup(node, *m_pContext);
+    setupBaseWidget(node, pEffectChain);
     setupWidget(node, pEffectChain);
+    setupConnections(node, pEffectChain);
     pEffectChain->installEventFilter(m_pKeyboard);
+    pEffectChain->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     return pEffectChain;
 }
 
@@ -1397,11 +1406,11 @@ QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
     WEffect* pEffect = new WEffect(m_pParent);
 
     bool rackOk = false;
-    int rackNumber = XmlParse::selectNodeInt(node, "EffectRack", &rackOk) - 1;
+    int rackNumber = m_pContext->selectInt(node, "EffectRack", &rackOk) - 1;
     bool chainOk = false;
-    int chainNumber = XmlParse::selectNodeInt(node, "EffectChain", &chainOk) - 1;
+    int chainNumber = m_pContext->selectInt(node, "EffectChain", &chainOk) - 1;
     bool effectOk = false;
-    int effectNumber = XmlParse::selectNodeInt(node, "Effect", &effectOk) - 1;
+    int effectNumber = m_pContext->selectInt(node, "Effect", &effectOk) - 1;
 
     // Tolerate no <EffectRack>. Use the default one.
     if (!rackOk) {
@@ -1433,8 +1442,17 @@ QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
         qDebug() << "EffectName node had invalid EffectRack number:" << rackNumber;
     }
 
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    pEffect->setup(node, *m_pContext);
+    setupBaseWidget(node, pEffect);
     setupWidget(node, pEffect);
+    setupConnections(node, pEffect);
     pEffect->installEventFilter(m_pKeyboard);
+    pEffect->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     return pEffect;
 }
 
@@ -1442,13 +1460,13 @@ QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
     WEffectParameter* pEffectParameter = new WEffectParameter(m_pParent);
 
     bool rackOk = false;
-    int rackNumber = XmlParse::selectNodeInt(node, "EffectRack", &rackOk) - 1;
+    int rackNumber = m_pContext->selectInt(node, "EffectRack", &rackOk) - 1;
     bool chainOk = false;
-    int chainNumber = XmlParse::selectNodeInt(node, "EffectChain", &chainOk) - 1;
+    int chainNumber = m_pContext->selectInt(node, "EffectChain", &chainOk) - 1;
     bool effectOk = false;
-    int effectNumber = XmlParse::selectNodeInt(node, "Effect", &effectOk) - 1;
+    int effectNumber = m_pContext->selectInt(node, "Effect", &effectOk) - 1;
     bool parameterOk = false;
-    int parameterNumber = XmlParse::selectNodeInt(node, "EffectParameter", &parameterOk) - 1;
+    int parameterNumber = m_pContext->selectInt(node, "EffectParameter", &parameterOk) - 1;
 
     // Tolerate no <EffectRack>. Use the default one.
     if (!rackOk) {
@@ -1490,8 +1508,17 @@ QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
         qDebug() << "EffectParameterName node had invalid EffectRack number:" << rackNumber;
     }
 
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    pEffectParameter->setup(node, *m_pContext);
+    setupBaseWidget(node, pEffectParameter);
     setupWidget(node, pEffectParameter);
+    setupConnections(node, pEffectParameter);
     pEffectParameter->installEventFilter(m_pKeyboard);
+    pEffectParameter->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     return pEffectParameter;
 }
 
