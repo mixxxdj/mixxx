@@ -21,6 +21,7 @@ LoopingControl::LoopingControl(const char* _group,
                                ConfigObject<ConfigValue>* _config)
         : EngineControl(_group, _config) {
     m_bLoopingEnabled = false;
+    m_bLoopRollActive = false;
     m_iLoopStartSample = kNoTrigger;
     m_iLoopEndSample = kNoTrigger;
     m_iCurrentSample = 0.;
@@ -417,9 +418,10 @@ void LoopingControl::slotReloopExit(double val) {
     if (val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
-            // If slip was enabled, also disable that.
-            if (m_pSlipEnabled->get() > 0.0) {
+            // If loop roll was active, also disable slip.
+            if (m_bLoopRollActive) {
                 m_pSlipEnabled->set(0);
+                m_bLoopRollActive = false;
             }
             setLoopingEnabled(false);
             //qDebug() << "reloop_exit looping off";
@@ -573,6 +575,7 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
     //Disregard existing loops
     m_pSlipEnabled->set(1);
     slotBeatLoop(pBeatLoopControl->getSize(), false);
+    m_bLoopRollActive = true;
 }
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
@@ -584,6 +587,7 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
     m_pSlipEnabled->set(0);
+    m_bLoopRollActive = false;
 }
 
 void LoopingControl::clearActiveBeatLoop() {
