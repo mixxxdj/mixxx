@@ -33,7 +33,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
-          m_COTDisEq(CONFIG_KEY,DISABLE_INT_EQ), //TODO is this really necessary ?
+          m_COTDisEq(CONFIG_KEY,DISABLE_INT_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0) {
@@ -115,7 +115,6 @@ void DlgPrefEQ::reset() {
 
 void DlgPrefEQ::slotDisEQChanged()
 {
-    qDebug() << "State:" << CheckBoxDisEQ->isChecked();
     if(CheckBoxDisEQ->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, DISABLE_INT_EQ), ConfigValue(QString("yes")));
     } else {

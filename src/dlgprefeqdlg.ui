@@ -23,6 +23,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="CheckBoxDisEQ">
+       <property name="text">
+        <string>Disable EQs (for controllers with external mixer)</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
