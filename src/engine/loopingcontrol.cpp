@@ -417,6 +417,10 @@ void LoopingControl::slotReloopExit(double val) {
     if (val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
+            // If slip was enabled, also disable that.
+            if (m_pSlipEnabled->get() > 0.0) {
+                m_pSlipEnabled->set(0);
+            }
             setLoopingEnabled(false);
             //qDebug() << "reloop_exit looping off";
         } else {
