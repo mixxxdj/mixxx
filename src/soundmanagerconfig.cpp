@@ -201,8 +201,7 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
 }
 
 void
-SoundManagerConfig::correctDeckCount(const SoundManager &soundManager) {
-    int configured_deck_count = soundManager.getConfiguredDeckCount();
+SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
     foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
@@ -220,8 +219,10 @@ SoundManagerConfig::correctDeckCount(const SoundManager &soundManager) {
         }
     }
 
-    if (minimum_deck_count > configured_deck_count) {
+    if (minimum_deck_count > configuredDeckCount) {
         m_deckCount = minimum_deck_count;
+    } else {
+        m_deckCount = configuredDeckCount;
     }
 }
 

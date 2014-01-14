@@ -478,7 +478,7 @@ void SoundManager::checkConfig() {
 
     // Even if we have a two-deck skin, if someone has configured a deck > 2
     // then the configuration needs to know about that extra deck.
-    m_config.correctDeckCount(*this);
+    m_config.setCorrectDeckCount(getConfiguredDeckCount());
     // latency checks itself for validity on SMConfig::setLatency()
 }
 

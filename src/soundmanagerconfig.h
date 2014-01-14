@@ -59,7 +59,7 @@ public:
     // be created and configured.
     unsigned int getDeckCount() const;
     void setDeckCount(unsigned int deckCount);
-    void correctDeckCount(const SoundManager &soundManager);
+    void setCorrectDeckCount(int configuredDeckCount);
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
