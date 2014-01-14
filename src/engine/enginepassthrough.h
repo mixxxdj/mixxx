@@ -20,9 +20,7 @@ class EnginePassthrough : public EngineChannel, public AudioDestination {
     EnginePassthrough(const char* pGroup);
     virtual ~EnginePassthrough();
 
-    bool isActive();
-    bool isPFL();
-    bool isMaster();
+    bool isActive() const;
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);

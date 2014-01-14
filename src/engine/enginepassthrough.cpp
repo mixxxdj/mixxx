@@ -20,6 +20,11 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
+
+    // Default passthrough to enabled on the master and disabled on PFL. User
+    // can over-ride by setting the "pfl" or "master" controls.
+    setMaster(true);
+    setPFL(false);
 }
 
 EnginePassthrough::~EnginePassthrough() {
@@ -29,17 +34,9 @@ EnginePassthrough::~EnginePassthrough() {
     delete m_pPassing;
 }
 
-bool EnginePassthrough::isActive() {
+bool EnginePassthrough::isActive() const {
     bool enabled = m_pEnabled->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
-}
-
-bool EnginePassthrough::isPFL() {
-    return true;
-}
-
-bool EnginePassthrough::isMaster() {
-    return true;
 }
 
 void EnginePassthrough::onInputConnected(AudioInput input) {

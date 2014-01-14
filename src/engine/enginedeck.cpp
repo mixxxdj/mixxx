@@ -121,7 +121,7 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
     return m_pBuffer;
 }
 
-bool EngineDeck::isActive() {
+bool EngineDeck::isActive() const {
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
         return true;
     }
@@ -201,7 +201,7 @@ void EngineDeck::onInputDisconnected(AudioInput input) {
     m_sampleBuffer.clear();
 }
 
-bool EngineDeck::isPassthroughActive() {
+bool EngineDeck::isPassthroughActive() const {
     return (m_bPassthroughIsActive && !m_sampleBuffer.isEmpty());
 }
 

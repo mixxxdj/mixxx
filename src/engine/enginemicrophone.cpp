@@ -19,6 +19,12 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
     m_pControlTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
+
+    // You normally don't expect to hear yourself in the headphones. Default PFL
+    // setting for mic to false. User can over-ride by setting the "pfl" or
+    // "master" controls.
+    setMaster(true);
+    setPFL(false);
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -28,18 +34,9 @@ EngineMicrophone::~EngineMicrophone() {
     delete m_pControlTalkover;
 }
 
-bool EngineMicrophone::isActive() {
+bool EngineMicrophone::isActive() const {
     bool enabled = m_pEnabled->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
-}
-
-bool EngineMicrophone::isPFL() {
-    // You normally don't expect to hear yourself in the headphones
-    return false;
-}
-
-bool EngineMicrophone::isMaster() {
-    return true;
 }
 
 void EngineMicrophone::onInputConnected(AudioInput input) {
