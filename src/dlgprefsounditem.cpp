@@ -30,14 +30,12 @@
  */
 DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
                                    QList<SoundDevice*> &devices, bool isInput,
-                                   unsigned int index /* = 0 */)
+                                   unsigned int index)
         : QWidget(parent),
           m_type(type),
           m_index(index),
           m_devices(devices),
-          m_isInput(isInput),
-          m_savedDevice(""),
-          m_savedChannel(0, 0) {
+          m_isInput(isInput) {
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
@@ -101,29 +99,30 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         goto emitAndReturn;
     } else {
         unsigned char minChannelsForType =
-            AudioPath::minChannelsForType(m_type);
+                AudioPath::minChannelsForType(m_type);
         unsigned char maxChannelsForType =
-            AudioPath::maxChannelsForType(m_type);
+                AudioPath::maxChannelsForType(m_type);
 
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
-             channelsForType >= minChannelsForType; --channelsForType) {
+                 channelsForType >= minChannelsForType; --channelsForType) {
             for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels;
-                 i += channelsForType) {
-                // Because QVariant supports QPoint natively we use a QPoint to
-                // store the channel info. x is the channel base and y is the
-                // channel count.
+                     i += channelsForType) {
+                QString channelString;
                 if (channelsForType == 1) {
-                    channelComboBox->addItem(
-                        QString(tr("Channel %1")).arg(i), QPoint(i - 1, channelsForType));
+                    channelString = tr("Channel %1").arg(i);
                 } else {
-                    channelComboBox->addItem(
-                        QString(tr("Channels %1 - %2")).arg(QString::number(i),
-                                                            QString::number(i + 1)),
-                        QPoint(i - 1, channelsForType));
+                    channelString = tr("Channels %1 - %2").arg(
+                            QString::number(i),
+                            QString::number(i + channelsForType - 1));
                 }
-                // i-1 because want the data part to be what goes into audiopath's
-                // channelbase which is zero-based -- bkgood
+
+                // Because QComboBox supports QPoint natively (via QVariant) we
+                // use a QPoint to store the channel info. x is the channel base
+                // and y is the channel count. We use i - 1 because the channel
+                // base is 0-indexed.
+                channelComboBox->addItem(channelString,
+                                         QPoint(i - 1, channelsForType));
             }
         }
     }
@@ -181,19 +180,24 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
     if (device == NULL) {
         return;
     } // otherwise, this will have a valid audiopath
+
+    // Because QComboBox supports QPoint natively (via QVariant) we use a QPoint
+    // to store the channel info. x is the channel base and y is the channel
+    // count.
     QPoint channelData = channelComboBox->itemData(
         channelComboBox->currentIndex()).toPoint();
+    int channelBase = channelData.x();
+    int channelCount = channelData.y();
 
-    // Because QVariant supports QPoint natively we use a QPoint to store the
-    // channel info. x is the channel base and y is the channel count.
+
     if (m_isInput) {
         config->addInput(
                 device->getInternalName(),
-                AudioInput(m_type, channelData.x(), channelData.y(), m_index));
+                AudioInput(m_type, channelBase, channelCount, m_index));
     } else {
         config->addOutput(
                 device->getInternalName(),
-                AudioOutput(m_type, channelData.x(), channelData.y(), m_index));
+                AudioOutput(m_type, channelBase, channelCount, m_index));
     }
 }
 
@@ -257,8 +261,9 @@ void DlgPrefSoundItem::setDevice(const QString &deviceName) {
  */
 void DlgPrefSoundItem::setChannel(unsigned int channelBase,
                                   unsigned int channels) {
-    // Because QVariant supports QPoint natively we use a QPoint to store the
-    // channel info. x is the channel base and y is the channel count.
+    // Because QComboBox supports QPoint natively (via QVariant) we use a QPoint
+    // to store the channel info. x is the channel base and y is the channel
+    // count.
     int index = channelComboBox->findData(QPoint(channelBase, channels));
     if (index != -1) {
         channelComboBox->setCurrentIndex(index);

@@ -177,19 +177,19 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
         // handle this -- bkgood
-        return QString(QObject::tr("Invalid"));
+        return QObject::tr("Invalid");
     case MASTER:
-        return QString(QObject::tr("Master"));
+        return QObject::tr("Master");
     case HEADPHONES:
-        return QString(QObject::tr("Headphones"));
+        return QObject::tr("Headphones");
     case BUS:
         switch (index) {
         case EngineChannel::LEFT:
-            return QString(QObject::tr("Left Bus"));
+            return QObject::tr("Left Bus");
         case EngineChannel::CENTER:
-            return QString(QObject::tr("Center Bus"));
+            return QObject::tr("Center Bus");
         case EngineChannel::RIGHT:
-            return QString(QObject::tr("Right Bus"));
+            return QObject::tr("Right Bus");
         default:
             return QObject::tr("Invalid Bus");
         }
@@ -200,12 +200,12 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
                                     QString::number(index + 1));
     case MICROPHONE:
-        return QString(QObject::tr("Microphone"));
+        return QObject::tr("Microphone");
     case EXTPASSTHROUGH:
         return QString("%1 %2").arg(QObject::tr("Passthrough"),
                                     QString::number(index + 1));
     }
-    return QString(QObject::tr("Unknown path type %1")).arg(type);
+    return QObject::tr("Unknown path type %1").arg(type);
 }
 
 /**
@@ -283,10 +283,10 @@ unsigned char AudioPath::maxChannelsForType(AudioPathType type) {
 /**
  * Constructs an AudioOutput.
  */
-AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
-                         unsigned char channelBase /* = 0 */,
-                         unsigned char channels /* = 0 */,
-                         unsigned char index /* = 0 */)
+AudioOutput::AudioOutput(AudioPathType type,
+                         unsigned char channelBase,
+                         unsigned char channels,
+                         unsigned char index)
     : AudioPath(channelBase, channels) {
     setType(type);
     if (isIndexed(type)) {
@@ -361,10 +361,10 @@ void AudioOutput::setType(AudioPathType type) {
 /**
  * Constructs an AudioInput.
  */
-AudioInput::AudioInput(AudioPathType type /* = INVALID */,
-                       unsigned char channelBase /* = 0 */,
-                       unsigned char channels /* = 0 */,
-                       unsigned char index /* = 0 */)
+AudioInput::AudioInput(AudioPathType type,
+                       unsigned char channelBase,
+                       unsigned char channels,
+                       unsigned char index)
         : AudioPath(channelBase, channels) {
     setType(type);
     if (isIndexed(type)) {
