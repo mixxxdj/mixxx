@@ -405,14 +405,13 @@ void EngineMaster::process(const int iBufferSize) {
     m_headphoneVolumeOld = headphoneVolume;
     m_pHeadClipping->process(m_pHead, m_pHead, iBufferSize);
 
-    // If Mono Split is enabled, we mix both master and headphone to mono
-    // and then overwrite the right channel of master with the headphone
-    // buffer.
+    // If Head Split is enabled, replace the left channel of the pfl buffer
+    // with a mono mix of the headphone buffer, and the right channel of the pfl
+    // buffer with a mono mix of the master output buffer.
     if (m_pHeadSplitEnabled->get()) {
-        SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, iBufferSize);
-        SampleUtil::mixStereoToMono(m_pHead, m_pHead, iBufferSize);
         for (int i = 0; i + 1 < iBufferSize; i += 2) {
-            m_pMaster[i + 1] = m_pHead[i];
+            m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
+            m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
         }
     }
 
