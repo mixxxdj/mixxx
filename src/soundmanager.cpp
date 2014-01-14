@@ -38,8 +38,7 @@ typedef PaError (*SetJackClientName)(const char *name);
 
 SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
                            EngineMaster *pMaster)
-        : QObject(),
-          m_pMaster(pMaster),
+        : m_pMaster(pMaster),
           m_pConfig(pConfig),
 #ifdef __PORTAUDIO__
           m_paInitialized(false),
