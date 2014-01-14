@@ -10,9 +10,9 @@
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
-          m_dOldValue(0.0f),
+          m_dOldValue(0.0),
           m_dTrackSamples(0.0),
-          m_dTrackSampleRate(0.0f),
+          m_dTrackSampleRate(0.0),
           m_bRemain(false) {
     m_qsText = "";
 
@@ -63,7 +63,7 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 
     if (leftClick) {
         setRemain(!m_bRemain);
-        m_pShowTrackTimeRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
+        m_pShowTrackTimeRemaining->slotSet(m_bRemain ? 1.0 : 0.0);
     }
 }
 
@@ -87,14 +87,14 @@ void WNumberPos::setValue(double dValue) {
 void WNumberPos::slotSetValue(double dValue) {
     m_dOldValue = dValue;
 
-    double valueMillis = 0.0f;
-    double durationMillis = 0.0f;
+    double valueMillis = 0.0;
+    double durationMillis = 0.0;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
         double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
-        valueMillis = dValue * 500.0f * m_dTrackSamples / m_dTrackSampleRate;
-        durationMillis = dDuration * 1000.0f;
+        valueMillis = dValue * 500.0 * m_dTrackSamples / m_dTrackSampleRate;
+        durationMillis = dDuration * 1000.0;
         if (m_bRemain)
-            valueMillis = math_max(durationMillis - valueMillis, 0.0f);
+            valueMillis = math_max(durationMillis - valueMillis, 0.0);
     }
 
     QString valueString;
@@ -114,7 +114,7 @@ void WNumberPos::slotSetValue(double dValue) {
 }
 
 void WNumberPos::slotSetRemain(double remain) {
-    setRemain(remain > 0.0f);
+    setRemain(remain > 0.0);
 }
 
 void WNumberPos::setRemain(bool bRemain)

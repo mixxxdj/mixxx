@@ -49,7 +49,7 @@ void EnginePassthrough::onInputConnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(1.0f);
+    m_pEnabled->set(1.0);
 }
 
 void EnginePassthrough::onInputDisconnected(AudioInput input) {
@@ -59,7 +59,7 @@ void EnginePassthrough::onInputDisconnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(0.0f);
+    m_pEnabled->set(0.0);
 }
 
 void EnginePassthrough::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
@@ -122,7 +122,7 @@ void EnginePassthrough::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int 
 
     // If passthrough is enabled, then read into the output buffer. Otherwise,
     // skip the appropriate number of samples to throw them away.
-    if (m_pPassing->get() > 0.0f) {
+    if (m_pPassing->get() > 0.0) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This

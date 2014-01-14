@@ -49,7 +49,7 @@ void EngineMicrophone::onInputConnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(1.0f);
+    m_pEnabled->set(1.0);
 }
 
 void EngineMicrophone::onInputDisconnected(AudioInput input) {
@@ -59,7 +59,7 @@ void EngineMicrophone::onInputDisconnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(0.0f);
+    m_pEnabled->set(0.0);
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
@@ -117,7 +117,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.
-    if (m_pControlTalkover->get() > 0.0f) {
+    if (m_pControlTalkover->get() > 0.0) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This

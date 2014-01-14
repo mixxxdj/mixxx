@@ -216,10 +216,10 @@ void DlgAutoDJ::skipNext(double value) {
         return;
     }
     // Load the next song from the queue.
-    if (m_pCOPlay1Fb->get() == 0.0f) {
+    if (m_pCOPlay1Fb->get() == 0.0) {
         removePlayingTrackFromQueue("[Channel1]");
         loadNextTrackFromQueue();
-    } else if (m_pCOPlay2Fb->get() == 0.0f) {
+    } else if (m_pCOPlay2Fb->get() == 0.0) {
         removePlayingTrackFromQueue("[Channel2]");
         loadNextTrackFromQueue();
     }
@@ -309,7 +309,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             m_eState = ADJ_ENABLE_P1LOADED;
             pushButtonFadeNow->setEnabled(false);
             // Force Update on load Track
-            m_pCOPlayPos1->slotSet(-0.001f);
+            m_pCOPlayPos1->slotSet(-0.001);
         } else {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);

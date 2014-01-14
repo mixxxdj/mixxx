@@ -52,7 +52,7 @@ LoopingControl::LoopingControl(const char* _group,
     m_pReloopExitButton->set(0);
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(_group, "loop_enabled"));
-    m_pCOLoopEnabled->set(0.0f);
+    m_pCOLoopEnabled->set(0.0);
 
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(_group, "loop_start_position"));
@@ -190,7 +190,7 @@ void LoopingControl::slotLoopHalve(double v) {
 }
 
 void LoopingControl::slotLoopDouble(double v) {
-    if (v > 0.0f) {
+    if (v > 0.0) {
         // If a beatloop is active then double should deactive the current
         // beatloop and activate the next one.
         if (m_pActiveBeatLoop != NULL) {
@@ -452,7 +452,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
     clearActiveBeatLoop();
 
-    if (pos == -1.0f) {
+    if (pos == -1.0) {
         setLoopingEnabled(false);
     }
 
@@ -492,7 +492,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
 
     clearActiveBeatLoop();
 
-    if (pos == -1.0f) {
+    if (pos == -1.0) {
         setLoopingEnabled(false);
     }
     m_iLoopEndSample = newpos;
