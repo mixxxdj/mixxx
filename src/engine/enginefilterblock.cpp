@@ -47,7 +47,7 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
         s_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
         s_hiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
         s_lofiEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "LoFiEQs"));
-        s_disEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "DisEQ"));
+        s_disEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "DisableBuiltInEQs"));
     }
 
     high = band = low = NULL;
