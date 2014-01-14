@@ -134,6 +134,7 @@ class SoundManager : public QObject {
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
+    CSAMPLE* m_pDownmixBuffer;
 };
 
 #endif

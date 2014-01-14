@@ -141,7 +141,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
         return;
     }
 
-    const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
+    const unsigned int iChannels = input.getChannelGroup().getChannelCount();
 
     // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
