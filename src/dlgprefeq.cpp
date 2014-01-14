@@ -32,6 +32,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
+          m_COTDisEq(CONFIG_KEY,"DisEQ"), //TODO is this really necessary ?
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0) {
@@ -47,6 +48,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
+    connect(CheckBoxDisEQ, SIGNAL(stateChanged(int)), this, SLOT(slotDisEQChanged()));
     connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
 
     loadSettings();
@@ -88,11 +90,8 @@ void DlgPrefEQ::loadSettings()
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
 
-    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")) {
-        CheckBoxLoFi->setChecked(true);
-    } else {
-        CheckBoxLoFi->setChecked(false);
-    }
+    CheckBoxLoFi->setChecked(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"));
+    CheckBoxDisEQ->setChecked(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "DisEQ")) == QString("yes"));
 
     slotUpdate();
     slotApply();
@@ -111,6 +110,16 @@ void DlgPrefEQ::setDefaultShelves()
 void DlgPrefEQ::reset() {
     setDefaultShelves();
     loadSettings();
+}
+
+void DlgPrefEQ::slotDisEQChanged()
+{
+    qDebug() << "State:" << CheckBoxDisEQ->isChecked();
+    if(CheckBoxDisEQ->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "DisEQ"), ConfigValue(QString("yes")));
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "DisEQ"), ConfigValue(QString("no")));
+    }
 }
 
 void DlgPrefEQ::slotLoFiChanged()
@@ -189,6 +198,7 @@ void DlgPrefEQ::slotApply()
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
     m_COTLoFi.slotSet(CheckBoxLoFi->isChecked());
+    m_COTDisEq.slotSet(CheckBoxDisEQ->isChecked());
 }
 
 void DlgPrefEQ::slotUpdate()
@@ -196,6 +206,7 @@ void DlgPrefEQ::slotUpdate()
     slotUpdateLoEQ();
     slotUpdateHiEQ();
     slotLoFiChanged();
+    slotDisEQChanged();
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {

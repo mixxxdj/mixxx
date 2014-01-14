@@ -55,6 +55,7 @@ class EngineFilterBlock : public EngineObject {
 
     static ControlPotmeter *s_loEqFreq, *s_hiEqFreq;
     static ControlPushButton *s_lofiEq;
+    static ControlPushButton *s_disEq;
 
     int m_iOldSampleRate;
     double old_low, old_mid, old_high;

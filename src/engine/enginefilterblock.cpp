@@ -30,6 +30,7 @@
 ControlPotmeter* EngineFilterBlock::s_loEqFreq = NULL;
 ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;
 ControlPushButton* EngineFilterBlock::s_lofiEq = NULL;
+ControlPushButton* EngineFilterBlock::s_disEq = NULL;
 
 EngineFilterBlock::EngineFilterBlock(const char* group)
 {
@@ -46,6 +47,7 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
         s_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
         s_hiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
         s_lofiEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "LoFiEQs"));
+        s_disEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "DisEQ"));
     }
 
     high = band = low = NULL;
@@ -114,6 +116,8 @@ EngineFilterBlock::~EngineFilterBlock()
     s_hiEqFreq = NULL;
     delete s_lofiEq;
     s_lofiEq = NULL;
+    delete s_disEq;
+    s_disEq = NULL;
 }
 
 void EngineFilterBlock::setFilters(bool forceSetting) {
@@ -146,7 +150,9 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
 }
 
 void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
-    return;
+    if (s_disEq->get()) { //Disable EQ
+        return;
+    }
     ScopedTimer t("EngineFilterBlock::process");
     float fLow=0.f, fMid=0.f, fHigh=0.f;
     if (filterKillLow->get()==0.)
