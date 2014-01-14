@@ -101,9 +101,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadMix->set(-1.);
 
     // Master / Headphone split-out mode (for devices with only one output).
-    m_pSplitOutEnabled = new ControlPushButton(ConfigKey(group, "splitOut"));
-    m_pSplitOutEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSplitOutEnabled->set(0.0);
+    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
+    m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pHeadSplitEnabled->set(0.0);
 
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
@@ -408,7 +408,7 @@ void EngineMaster::process(const int iBufferSize) {
     // If Mono Split is enabled, we mix both master and headphone to mono
     // and then overwrite the right channel of master with the headphone
     // buffer.
-    if (m_pSplitOutEnabled->get()) {
+    if (m_pHeadSplitEnabled->get()) {
         SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, iBufferSize);
         SampleUtil::mixStereoToMono(m_pHead, m_pHead, iBufferSize);
         for (int i = 0; i + 1 < iBufferSize; i += 2) {

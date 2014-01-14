@@ -188,7 +188,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlPotmeter* m_pXFaderCurve;
     ControlPotmeter* m_pXFaderCalibration;
     ControlPotmeter* m_pXFaderReverse;
-    ControlPushButton* m_pSplitOutEnabled;
+    ControlPushButton* m_pHeadSplitEnabled;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
