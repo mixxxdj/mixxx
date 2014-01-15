@@ -1592,6 +1592,9 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     // For each connection
     QDomNode con = m_pContext->selectNode(node, "Connection");
 
+    ControlWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
+    ControlWidgetConnection* pLastRightButtonConnection = NULL;
+
     while (!con.isNull())
     {
         // Get ConfigKey
@@ -1664,21 +1667,24 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             switch (state) {
                 case Qt::NoButton:
                     pWidget->addConnection(pConnection);
+                    if (connectValueToWidget) {
+                        pLastLeftOrNoButtonConnection = pConnection;
+                    }
                     break;
                 case Qt::LeftButton:
                     pWidget->addLeftConnection(pConnection);
+                    if (connectValueToWidget) {
+                        pLastLeftOrNoButtonConnection = pConnection;
+                    }
                     break;
                 case Qt::RightButton:
                     pWidget->addRightConnection(pConnection);
+                    if (connectValueToWidget) {
+                        pLastRightButtonConnection = pConnection;
+                    }
                     break;
                 default:
                     break;
-            }
-
-            // Legacy behavior, the last widget that is marked
-            // connectValueToWidget is the display connection.
-            if (connectValueToWidget) {
-                pWidget->setDisplayConnection(pConnection);
             }
 
             // We only add info for controls that this widget affects, not
@@ -1760,6 +1766,16 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             }
         }
         con = con.nextSibling();
+    }
+
+    // Legacy behavior: The last left-button or no-button connection with
+    // connectValueToWidget is the display connection. If no left-button or
+    // no-button connection exists, use the last right-button connection as the
+    // display connection.
+    if (pLastLeftOrNoButtonConnection != NULL) {
+        pWidget->setDisplayConnection(pLastLeftOrNoButtonConnection);
+    } else if (pLastRightButtonConnection != NULL) {
+        pWidget->setDisplayConnection(pLastRightButtonConnection);
     }
 }
 
