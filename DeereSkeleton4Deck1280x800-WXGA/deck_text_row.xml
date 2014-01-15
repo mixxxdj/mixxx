@@ -22,9 +22,9 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <TrackProperty>
-	        <TooltipId>track_title</TooltipId>
-	        <Property>title</Property>
-	        <Group><Variable name="group"/></Group>
+                <TooltipId>track_title</TooltipId>
+                <Property>title</Property>
+                <Group><Variable name="group"/></Group>
                 <MinimumSize>-1,20</MinimumSize>
               </TrackProperty>
             </Children>
@@ -38,15 +38,15 @@
                 <Group><Variable name="group"/></Group>
                 <MinimumSize>40,20</MinimumSize>
                 <Connection>
-		  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-		</Connection>
+                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                </Connection>
               </Key>
               <NumberBpm>
                 <Group><Variable name="group"/></Group>
                 <MinimumSize>40,20</MinimumSize>
                 <Connection>
-		  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-		</Connection>
+                  <ConfigKey> <Variable name="group"/>,visual_bpm</ConfigKey>
+                </Connection>
               </NumberBpm>
             </Children>
           </WidgetGroup>
@@ -63,8 +63,8 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <TrackProperty>
-	        <TooltipId>track_artist</TooltipId>
-	        <Property>artist</Property>
+                <TooltipId>track_artist</TooltipId>
+                <Property>artist</Property>
                 <Group><Variable name="group"/></Group>
                 <MinimumSize>-1,15</MinimumSize>
               </TrackProperty>

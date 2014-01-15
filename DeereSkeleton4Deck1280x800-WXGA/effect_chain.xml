@@ -13,7 +13,6 @@
     <SizePolicy>me,f</SizePolicy>
     <MinimumSize>200,100</MinimumSize>
     <Children>
-
       <WidgetGroup>
         <ObjectName>EffectChainNameRow</ObjectName>
         <Layout>horizontal</Layout>
@@ -30,6 +29,7 @@
               </EffectChainName>
             </Children>
           </WidgetGroup>
+
           <WidgetGroup>
             <ObjectName>EffectChainNextPrevContainer</ObjectName>
             <Layout>horizontal</Layout>
@@ -39,40 +39,42 @@
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
-	          <Number>0</Number>
+                  <Number>0</Number>
                   <Text>⏏</Text>
-	        </State>
-	        <Connection>
+                </State>
+                <Connection>
                   <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	          <ConfigKey><Variable name="group"/>,clear</ConfigKey>
-	        </Connection>
-	      </PushButton>
+                  <ConfigKey><Variable name="group"/>,clear</ConfigKey>
+                </Connection>
+              </PushButton>
+
               <PushButton>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
-	        <State>
-	          <Number>0</Number>
+                <State>
+                  <Number>0</Number>
                   <Text>◀</Text>
-	        </State>
-	        <Connection>
-	          <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
                   <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	          <ButtonState>LeftButton</ButtonState>
-	        </Connection>
-	      </PushButton>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
               <PushButton>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
-	        <State>
-	          <Number>0</Number>
+                <State>
+                  <Number>0</Number>
                   <Text>▶</Text>
-	        </State>
-	        <Connection>
-	          <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
                   <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	          <ButtonState>LeftButton</ButtonState>
-	        </Connection>
-	      </PushButton>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup>
         </Children>
@@ -83,7 +85,6 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-
           <WidgetGroup>
             <ObjectName>EffectChainParameters</ObjectName>
             <SizePolicy>me,max</SizePolicy>
@@ -93,12 +94,10 @@
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
               </Template>
-
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">2</SetVariable>
               </Template>
-
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">3</SetVariable>
@@ -115,18 +114,15 @@
                 <SetVariable name="control">parameter</SetVariable>
                 <SetVariable name="label">Parameter</SetVariable>
               </Template>
+
               <Template src="skin:knob.xml">
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
-
-
-
         </Children>
       </WidgetGroup>
-
 
       <WidgetGroup>
         <ObjectName>EffectChainGroupControls</ObjectName>
@@ -135,98 +131,101 @@
         <Children>
           <PushButton>
             <Size>40f,20f</Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <State>
-	      <Number>0</Number>
+              <Number>0</Number>
               <Text>Head</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>Head</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,channel_[Headphone]</ConfigKey>
-	    </Connection>
-	  </PushButton>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,channel_[Headphone]</ConfigKey>
+            </Connection>
+          </PushButton>
+
           <PushButton>
             <Size>40f,20f</Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <State>
-	      <Number>0</Number>
+              <Number>0</Number>
               <Text>Master</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>Master</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,channel_[Master]</ConfigKey>
-	    </Connection>
-	  </PushButton>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,channel_[Master]</ConfigKey>
+            </Connection>
+          </PushButton>
+
           <PushButton>
             <Size>40f,20f</Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <State>
-	      <Number>0</Number>
+              <Number>0</Number>
               <Text>CH1</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>CH1</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,channel_[Channel1]</ConfigKey>
-	    </Connection>
-	  </PushButton>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,channel_[Channel1]</ConfigKey>
+            </Connection>
+          </PushButton>
+
           <PushButton>
             <Size>40f,20f</Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <State>
-	      <Number>0</Number>
+              <Number>0</Number>
               <Text>CH2</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>CH2</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,channel_[Channel2]</ConfigKey>
-	    </Connection>
-	  </PushButton>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,channel_[Channel2]</ConfigKey>
+            </Connection>
+          </PushButton>
+
           <PushButton>
             <Size>40f,20f</Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <State>
-	      <Number>0</Number>
+              <Number>0</Number>
               <Text>CH3</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>CH3</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,channel_[Channel3]</ConfigKey>
-	    </Connection>
-	  </PushButton>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,channel_[Channel3]</ConfigKey>
+            </Connection>
+          </PushButton>
+
           <PushButton>
             <Size>40f,20f</Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <State>
-	      <Number>0</Number>
+              <Number>0</Number>
               <Text>CH4</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>CH4</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,channel_[Channel4]</ConfigKey>
-	    </Connection>
-	  </PushButton>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,channel_[Channel4]</ConfigKey>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
-
-
     </Children>
   </WidgetGroup>
 </Template>

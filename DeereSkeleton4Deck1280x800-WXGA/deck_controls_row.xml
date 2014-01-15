@@ -24,9 +24,10 @@
             <Handle>handle-horizontal.svg</Handle>
             <Horizontal>true</Horizontal>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
-	      <EmitOnDownPress>false</EmitOnDownPress>
-	    </Connection>
+              <ConfigKey>
+                <Variable name="group"/>,volume</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
           </SliderComposed>
           <!--<Template src="skin:vumeter.xml"/>-->
         </Children>

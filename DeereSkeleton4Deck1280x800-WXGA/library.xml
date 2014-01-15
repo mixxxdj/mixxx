@@ -7,7 +7,7 @@
   <WidgetStack>
     <ObjectName>LibraryContainer</ObjectName>
     <!-- Fixed is interesting here. Ignore is the only thing that lets it shrink
-         to nothign. -->
+         to nothing. -->
     <SizePolicy>me,i</SizePolicy>
     <MinimumSize>0,0</MinimumSize>
     <Children>
@@ -16,7 +16,7 @@
         <ObjectName>LibraryExpanded</ObjectName>
         <Layout>vertical</Layout>
         <!-- Fixed is interesting here. Ignore is the only thing that lets it
-             shrink to nothign. -->
+             shrink to nothing. -->
         <SizePolicy>me,f</SizePolicy>
         <MinimumSize>0,0</MinimumSize>
         <Children>

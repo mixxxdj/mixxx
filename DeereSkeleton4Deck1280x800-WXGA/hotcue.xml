@@ -17,136 +17,135 @@
           <PushButton>
             <ObjectName>HotcueButton</ObjectName>
             <Size><Variable name="SquareButtonSize"/></Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
-	    <RightClickIsPushButton>true</RightClickIsPushButton>
-	    <State>
-	      <Number>0</Number>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
               <Text>1</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>1</Text>
-	    </State>
+            </State>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
+              <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
+            </Connection>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	      <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
-	      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-	    </Connection>
-	  </PushButton>
+              <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
 
           <PushButton>
             <ObjectName>HotcueButton</ObjectName>
             <Size><Variable name="SquareButtonSize"/></Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
-	    <RightClickIsPushButton>true</RightClickIsPushButton>
-	    <State>
-	      <Number>0</Number>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
               <Text>2</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>2</Text>
-	    </State>
+            </State>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
+              <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
+            </Connection>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	      <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
-	      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-	    </Connection>
-	  </PushButton>
-
+              <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
+          <PushButton>
+            <ObjectName>HotcueButton</ObjectName>
+            <Size><Variable name="SquareButtonSize"/></Size>
+            <NumberStates>2</NumberStates>
+            <LeftClickIsPushButton>true</LeftClickIsPushButton>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Text>3</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>3</Text>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
 
           <PushButton>
             <ObjectName>HotcueButton</ObjectName>
             <Size><Variable name="SquareButtonSize"/></Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
-	    <RightClickIsPushButton>true</RightClickIsPushButton>
-	    <State>
-	      <Number>0</Number>
-              <Text>3</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
-              <Text>3</Text>
-	    </State>
-            <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
-              <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
-            <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	      <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
-	      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-	    </Connection>
-	  </PushButton>
-
-          <PushButton>
-            <ObjectName>HotcueButton</ObjectName>
-            <Size><Variable name="SquareButtonSize"/></Size>
-	    <NumberStates>2</NumberStates>
-            <LeftClickIsPushButton>true</LeftClickIsPushButton>
-	    <RightClickIsPushButton>true</RightClickIsPushButton>
-	    <State>
-	      <Number>0</Number>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
               <Text>4</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>4</Text>
-	    </State>
+            </State>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
+              <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
+            </Connection>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	      <ConnectValueToWidget>false</ConnectValueToWidget>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
-	      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-	    </Connection>
-	  </PushButton>
+              <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+              <ConnectValueToWidget>false</ConnectValueToWidget>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
+              <ConnectValueFromWidget>false</ConnectValueFromWidget>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
     </Children>

@@ -17,100 +17,98 @@
           <PushButton>
             <ObjectName>FastBack</ObjectName>
             <Size>20f,20f</Size>
-	    <NumberStates>1</NumberStates>
-	    <State>
-	      <Number>0</Number>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
               <Text>&lt;&lt;</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,back</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,start</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	    </Connection>
-	  </PushButton>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,back</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,start</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
 
           <PushButton>
             <ObjectName>FastFwd</ObjectName>
             <Size>20f,20f</Size>
-	    <NumberStates>1</NumberStates>
-	    <State>
-	      <Number>0</Number>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
               <Text>&gt;&gt;</Text>
-	    </State>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,fwd</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,end</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	    </Connection>
-	  </PushButton>
-
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,fwd</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,end</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-
           <PushButton>
             <ObjectName>ReverseButton</ObjectName>
             <Size>20f,20f</Size>
-	    <NumberStates>2</NumberStates>
+            <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
-	    <RightClickIsPushButton>true</RightClickIsPushButton>
-	    <State>
-	      <Number>0</Number>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
               <Text>◀</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>◀</Text>
-	    </State>
+            </State>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,reverse</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,reverseroll</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	    </Connection>
-	  </PushButton>
+              <ConfigKey><Variable name="group"/>,reverse</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,reverseroll</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
 
           <PushButton>
             <ObjectName>PlayToggle</ObjectName>
             <Size>20f,20f</Size>
-	    <NumberStates>2</NumberStates>
-	    <RightClickIsPushButton>true</RightClickIsPushButton>
-	    <State>
-	      <Number>0</Number>
+            <NumberStates>2</NumberStates>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
               <Text>▶</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>▶</Text>
-	    </State>
+            </State>
             <Connection>
-	      <ConfigKey><Variable name="group"/>,play</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>LeftButton</ButtonState>
-	    </Connection>
-	    <Connection>
-	      <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-	      <ButtonState>RightButton</ButtonState>
-	    </Connection>
-	  </PushButton>
+              <ConfigKey><Variable name="group"/>,play</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
     </Children>

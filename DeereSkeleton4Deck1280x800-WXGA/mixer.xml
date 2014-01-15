@@ -73,9 +73,9 @@
             <Handle>handle-horizontal.svg</Handle>
             <Horizontal>true</Horizontal>
             <Connection>
-	      <ConfigKey>[Master],crossfader</ConfigKey>
-	      <EmitOnDownPress>false</EmitOnDownPress>
-	    </Connection>
+              <ConfigKey>[Master],crossfader</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
           </SliderComposed>
         </Children>
       </WidgetGroup>
