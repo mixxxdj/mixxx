@@ -69,8 +69,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
 }
 
 SoundManager::~SoundManager() {
-    SampleUtil::free(m_pDownmixBuffer);
-
     //Clean up devices.
     clearDeviceList();
 
@@ -85,6 +83,7 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
+    SampleUtil::free(m_pDownmixBuffer);
 }
 
 QList<SoundDevice*> SoundManager::getDeviceList(
