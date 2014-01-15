@@ -106,14 +106,14 @@
                             <Spinny>
                               <Group>[Channel1]</Group>
                               <PathBackground>vinyl_spinny1_background.png</PathBackground>
-                              <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-                              <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
                             </Spinny>
                           </Children>
                           <Connection>
-                            <ConfigKey>[Spinny1],show_spinny</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
+			    <ConfigKey>[Spinny1],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
                         </WidgetGroup>
                       </Children>
                     </WidgetGroup>
@@ -124,23 +124,23 @@
                       <Layout>horizontal</Layout>
                       <Children>
                         <PushButton>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>btn_spinny1.png</Pressed>
-                          <Unpressed>btn_spinny1.png</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>btn_spinny1_over.png</Pressed>
-                          <Unpressed>btn_spinny1_over.png</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey>[Spinny1],show_spinny</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        </PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny1],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
                       </Children>
                     </WidgetGroup>
                     <!-- End ButtonRow -->
@@ -180,14 +180,14 @@
                             <Spinny>
                               <Group>[Channel3]</Group>
                               <PathBackground>vinyl_spinny1_background.png</PathBackground>
-                              <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-                              <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
                             </Spinny>
                           </Children>
                           <Connection>
-                            <ConfigKey>[Spinny3],show_spinny</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
+			    <ConfigKey>[Spinny3],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
                         </WidgetGroup>
                       </Children>
                     </WidgetGroup>
@@ -198,23 +198,23 @@
                       <Layout>horizontal</Layout>
                       <Children>
                         <PushButton>
-                          <NumberStates>2</NumberStates>
-                          <State>
-                            <Number>0</Number>
-                            <Pressed>btn_spinny1.png</Pressed>
-                            <Unpressed>btn_spinny1.png</Unpressed>
-                          </State>
-                          <State>
-                            <Number>1</Number>
-                            <Pressed>btn_spinny1_over.png</Pressed>
-                            <Unpressed>btn_spinny1_over.png</Unpressed>
-                          </State>
-                          <Connection>
-                            <ConfigKey>[Spinny3],show_spinny</ConfigKey>
-                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                            <ButtonState>LeftButton</ButtonState>
-                          </Connection>
-                        </PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny3],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
                       </Children>
                     </WidgetGroup>
                     <!-- End ButtonRow -->
@@ -271,15 +271,15 @@
                             <Spinny>
                               <Group>[Channel2]</Group>
                               <PathBackground>vinyl_spinny1_background.png</PathBackground>
-                              <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-                              <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
                             </Spinny>
                           </Children>
                           <Connection>
-                            <ConfigKey>[Spinny2],show_spinny</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                          </WidgetGroup>
+			    <ConfigKey>[Spinny2],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
+                        </WidgetGroup>
                         <Visual>
                           <Group>[Channel2]</Group>
                         </Visual>
@@ -292,23 +292,23 @@
                       <Layout>horizontal</Layout>
                       <Children>
                         <PushButton>
-                          <NumberStates>2</NumberStates>
-                          <State>
-                            <Number>0</Number>
-                            <Pressed>btn_spinny1.png</Pressed>
-                            <Unpressed>btn_spinny1.png</Unpressed>
-                          </State>
-                          <State>
-                            <Number>1</Number>
-                            <Pressed>btn_spinny1_over.png</Pressed>
-                            <Unpressed>btn_spinny1_over.png</Unpressed>
-                          </State>
-                          <Connection>
-                            <ConfigKey>[Spinny2],show_spinny</ConfigKey>
-                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                            <ButtonState>LeftButton</ButtonState>
-                          </Connection>
-                        </PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny2],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
                       </Children>
                     </WidgetGroup>
                     <!-- End ButtonRow -->
@@ -344,14 +344,14 @@
                             <Spinny>
                               <Group>[Channel4]</Group>
                               <PathBackground>vinyl_spinny1_background.png</PathBackground>
-                              <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-                              <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
                             </Spinny>
                           </Children>
                           <Connection>
-                            <ConfigKey>[Spinny4],show_spinny</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
+			    <ConfigKey>[Spinny4],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
                         </WidgetGroup>
                         <Visual>
                           <Group>[Channel4]</Group>
@@ -365,23 +365,23 @@
                       <Layout>horizontal</Layout>
                       <Children>
                         <PushButton>
-                          <NumberStates>2</NumberStates>
-                          <State>
-                            <Number>0</Number>
-                            <Pressed>btn_spinny1.png</Pressed>
-                            <Unpressed>btn_spinny1.png</Unpressed>
-                          </State>
-                          <State>
-                            <Number>1</Number>
-                            <Pressed>btn_spinny1_over.png</Pressed>
-                            <Unpressed>btn_spinny1_over.png</Unpressed>
-                          </State>
-                          <Connection>
-                            <ConfigKey>[Spinny4],show_spinny</ConfigKey>
-                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                            <ButtonState>LeftButton</ButtonState>
-                          </Connection>
-                        </PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny4],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
                       </Children>
                     </WidgetGroup>
                     <!-- End ButtonRow -->
@@ -440,8 +440,8 @@
         </WidgetGroup>
       </Children>
       <Connection>
-        <ConfigKey>[Samplers],show_samplers</ConfigKey>
-        <BindProperty>visible</BindProperty>
+	<ConfigKey>[Samplers],show_samplers</ConfigKey>
+	<BindProperty>visible</BindProperty>
       </Connection>
     </WidgetGroup>
 
