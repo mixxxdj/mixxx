@@ -16,18 +16,13 @@ class GuiTick : public QObject {
     void process();
     static double cpuTime();
 
-  private slots:
-    void slotBackupTimerExpired();
-
   private:
-    ControlObject* m_pCOGuiTickTime; // in audio buffer resolution
+    ControlObject* m_pCOGuiTickTime;
     ControlObject* m_pCOGuiTick50ms;
 
     PerformanceTimer m_cpuTimer;
-    QTimer* m_backupTimer;
 
     double m_lastUpdateTime;
-
     static double m_cpuTime; // Stream Time in seconds
 };
 
