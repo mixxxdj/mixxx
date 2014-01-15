@@ -512,14 +512,9 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                 bool bHotcueCancel = m_bHotcueCancel;
                 m_bPreviewingHotcue = false;
                 m_bHotcueCancel = false;
-                // If hotcue cancel is marked then do not snap back to the
-                // hotcue and stop. Otherwise, seek back to the start point and
-                // stop.
-                if (bHotcueCancel) {
-                    // Re-trigger the play button value so controllers get the correct one
-                    // after.
-                    //m_pPlayButton->set(m_pPlayButton->get());
-                } else {
+                // If hotcue cancel was not marked then snap back to the
+                // hotcue and stop.
+                if (!bHotcueCancel) {
                     m_pPlayButton->set(0.0);
                     // Need to unlock before emitting any signals to prevent deadlock.
                     lock.unlock();
