@@ -365,3 +365,38 @@ int KeyUtils::shortestStepsToCompatibleKey(
 
     return shortestStepsToKey(key, target_key);
 }
+
+QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
+        mixxx::track::io::key::ChromaticKey key) {
+    QList<mixxx::track::io::key::ChromaticKey> compatible;
+    if (!ChromaticKey_IsValid(key) || key == mixxx::track::io::key::INVALID) {
+        return compatible;
+    }
+
+    // We know the key is in the set of valid values. Save whether or not the
+    // value is minor.
+    bool major = keyIsMajor(key);
+    int openKeyNumber = KeyUtils::keyToOpenKeyNumber(key);
+
+    // The compatible keys of particular key are:
+    // * The relative major/minor key.
+    // * The perfect 4th (sub-dominant) key.
+    // * The perfect 5th (dominant) key.
+    //
+    // The Circle of Fifths is a handy tool that encodes this compatibility.
+    // Keys on the same radial of the circle are compatible and adjacent keys on
+    // the circle are compatible. OpenKey notation encodes the Circle of
+    // Fifths. The OpenKey number represents the radial on the circle and
+    // major/minor determines whether you are on the inner or outer ring of the
+    // radial.
+
+    // The relative major/minor key is compatible.
+    compatible << openKeyNumberToKey(openKeyNumber, !major);
+
+    // The perfect 4th and perfect 5th are compatible.
+    compatible << openKeyNumberToKey(
+            openKeyNumber == 12 ? 1 : openKeyNumber + 1, major);
+    compatible << openKeyNumberToKey(
+            openKeyNumber == 1 ? 12 : openKeyNumber - 1, major);
+    return compatible;
+}

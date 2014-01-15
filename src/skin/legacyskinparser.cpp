@@ -25,9 +25,9 @@
 #include "controllers/controllermanager.h"
 
 #include "skin/colorschemeparser.h"
-#include "skin/propertybinder.h"
 #include "skin/skincontext.h"
 
+#include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
@@ -732,7 +732,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectSlave* p = new ControlObjectSlave(
             channelStr, "wheel", viewer);
-    ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
+    ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
         viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
     viewer->addRightConnection(pConnection);
 
@@ -1601,33 +1601,27 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
         // Check that the control exists
         bool created = false;
-        ControlObject * control = controlFromConfigKey(configKey, &created);
+        ControlObject* control = controlFromConfigKey(configKey, &created);
 
-        QString property = m_pContext->selectString(con, "BindProperty");
-        if (property != "") {
-            qDebug() << "Making property binder for" << property;
-            // Bind this control to a property. Not leaked because it is
-            // parented to the widget and so it dies with it.
-            PropertyBinder* pBinder = new PropertyBinder(
-                pWidget->toQWidget(), property, control, m_pConfig);
-            // If we created this control, bind it to the PropertyBinder so that
-            // it is deleted when the binder is deleted.
-            if (created) {
-                control->setParent(pBinder);
-            }
-        } else if (m_pContext->hasNode(con, "OnOff") &&
-                   m_pContext->selectString(con, "OnOff")=="true") {
-            // Connect control proxy to widget. Parented to pWidget so it is not
-            // leaked. OnOff controls do not use the value of the widget at all
-            // so we do not give this control's info to the
-            // ControllerLearningEventFilter.
+        if (m_pContext->hasNode(con, "BindProperty")) {
+            QString property = m_pContext->selectString(con, "BindProperty");
+            qDebug() << "Making property connection for" << property;
+
             ControlObjectSlave* pControlWidget =
                     new ControlObjectSlave(control->getKey(),
                                            pWidget->toQWidget());
+
             ControlWidgetConnection* pConnection =
-                    new DisabledControlWidgetConnection(pWidget,
-                                                        pControlWidget);
+                    new ControlWidgetPropertyConnection(pWidget, pControlWidget,
+                                                        m_pConfig, property);
             pWidget->addConnection(pConnection);
+
+            // If we created this control, bind it to the
+            // ControlWidgetConnection so that it is deleted when the connection
+            // is deleted.
+            if (created) {
+                control->setParent(pConnection);
+            }
         } else {
             // Default to emit on press
             ControlWidgetConnection::EmitOption emitOption =
@@ -1643,58 +1637,49 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
             bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
 
-
-
             Qt::MouseButton state = Qt::NoButton;
-            bool isIndicator = false;
-            if (!XmlParse::selectNode(con, "ButtonState").isNull()) {
-                if (XmlParse::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
+            if (m_pContext->hasNode(con, "ButtonState")) {
+                if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
                     state = Qt::LeftButton;
                 } else if (m_pContext->selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
                     state = Qt::RightButton;
-                } else if (XmlParse::selectNodeQString(con, "ButtonState").contains("Indicator", Qt::CaseInsensitive)) {
-                    isIndicator = true;
-                    connectValueFromWidget = false;
                 }
             }
 
-            // TODO(DSC) fix connections
-            if (isIndicator) {
-                // Connect control proxy to widget. Parented to pWidget so it is not
-                // leaked.
-           //     (new ControlObjectThreadWidget(
-           //             control->getKey(), pWidget))->setIndicatorWidget(pWidget);
-            } else {
-                    // Connect control proxy to widget. Parented to pWidget so it is not
-                    // leaked.
-                    ControlObjectSlave* pControlWidget = new ControlObjectSlave(
-                        control->getKey(), pWidget->toQWidget());
-                    ControlWidgetConnection* pConnection = new ValueControlWidgetConnection(
-                        pWidget, pControlWidget, connectValueFromWidget,
-                        connectValueToWidget, emitOption);
+            // Connect control proxy to widget. Parented to pWidget so it is not
+            // leaked.
+            ControlObjectSlave* pControlWidget = new ControlObjectSlave(
+                control->getKey(), pWidget->toQWidget());
+            ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
+                pWidget, pControlWidget, connectValueFromWidget,
+                connectValueToWidget, emitOption);
 
-                    switch (state) {
-                        case Qt::NoButton:
-                            pWidget->addConnection(pConnection);
-                            break;
-                        case Qt::LeftButton:
-                            pWidget->addLeftConnection(pConnection);
-                            break;
-                        case Qt::RightButton:
-                            pWidget->addRightConnection(pConnection);
-                            break;
-                        default:
-                            break;
-                    }
-
-                    // Legacy behavior, the last widget that is marked
-                    // connectValueToWidget is the display connection.
-                    if (connectValueToWidget) {
-                        pWidget->setDisplayConnection(pConnection);
-                    }
+            // If we created this control, bind it to the
+            // ControlWidgetConnection so that it is deleted when the connection
+            // is deleted.
+            if (created) {
+                control->setParent(pConnection);
             }
 
+            switch (state) {
+                case Qt::NoButton:
+                    pWidget->addConnection(pConnection);
+                    break;
+                case Qt::LeftButton:
+                    pWidget->addLeftConnection(pConnection);
+                    break;
+                case Qt::RightButton:
+                    pWidget->addRightConnection(pConnection);
+                    break;
+                default:
+                    break;
+            }
 
+            // Legacy behavior, the last widget that is marked
+            // connectValueToWidget is the display connection.
+            if (connectValueToWidget) {
+                pWidget->setDisplayConnection(pConnection);
+            }
 
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.

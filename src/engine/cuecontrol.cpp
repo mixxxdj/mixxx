@@ -451,7 +451,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(pControl, v);
             } else {
-                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0f) {
+                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0) {
                     hotcueGoto(pControl, v);
                 } else {
                     hotcueActivatePreview(pControl, v);
@@ -686,7 +686,7 @@ void CueControl::cueSimple(double v) {
     QMutexLocker lock(&m_mutex);
     // Simple cueing is if the player is not playing, set the cue point --
     // otherwise seek to the cue point.
-    if (m_pPlayButton->get() == 0.0f && getCurrentSample() < getTotalSamples()) {
+    if (m_pPlayButton->get() == 0.0 && getCurrentSample() < getTotalSamples()) {
         return cueSet(v);
     }
 

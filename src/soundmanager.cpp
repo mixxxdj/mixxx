@@ -38,15 +38,15 @@ typedef PaError (*SetJackClientName)(const char *name);
 
 SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
                            EngineMaster *pMaster)
-        : QObject(),
-          m_pMaster(pMaster),
+        : m_pMaster(pMaster),
           m_pConfig(pConfig),
 #ifdef __PORTAUDIO__
           m_paInitialized(false),
           m_jackSampleRate(-1),
 #endif
           m_pClkRefDevice(NULL),
-          m_pErrorDevice(NULL) {
+          m_pErrorDevice(NULL),
+          m_pDownmixBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));
@@ -83,6 +83,7 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
+    SampleUtil::free(m_pDownmixBuffer);
 }
 
 QList<SoundDevice*> SoundManager::getDeviceList(
@@ -478,11 +479,22 @@ void SoundManager::requestBuffer(
                  e = outputs.end(); i != e; ++i) {
         const AudioOutputBuffer& out = *i;
 
-        // buffer is always !NULL
-        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
         const ChannelGroup outChans = out.getChannelGroup();
         const int iChannelCount = outChans.getChannelCount();
         const int iChannelBase = outChans.getChannelBase();
+
+        // buffer is always !NULL
+        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
+
+        // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
+        // output then we need to downsample.
+        if (iChannelCount == 1) {
+            for (int i = 0; i < iFramesPerBuffer; ++i) {
+                m_pDownmixBuffer[i] = (pAudioOutputBuffer[i*2] +
+                                       pAudioOutputBuffer[i*2 + 1]) / 2.0f;
+            }
+            pAudioOutputBuffer = m_pDownmixBuffer;
+        }
 
         for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
             // iFrameBase is the "base sample" in a frame (ie. the first

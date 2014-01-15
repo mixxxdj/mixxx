@@ -375,7 +375,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
             ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
             // TODO(XXX): Check for other than just the first preview deck.
             if (group != "[PreviewDeck1]" &&
-                    ControlObject::get(ConfigKey(group, "play")) > 0.0f) {
+                    ControlObject::get(ConfigKey(group, "play")) > 0.0) {
                 return;
             }
         }

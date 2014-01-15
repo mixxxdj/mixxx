@@ -126,7 +126,7 @@ int SoundDevicePortAudio::open() {
 
     // Sample rate
     if (m_dSampleRate <= 0) {
-        m_dSampleRate = 44100.0f;
+        m_dSampleRate = 44100.0;
     }
 
     // Get latency in milleseconds
@@ -291,7 +291,6 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         m_bSetThreadPriority = true;
     }
 
- 
     if (m_pSoundManager->isDeviceClkRef(this)) {
         VisualPlayPosition::setTimeInfo(timeInfo);
     }

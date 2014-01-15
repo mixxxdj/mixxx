@@ -101,6 +101,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
+    // Master / Headphone split-out mode (for devices with only one output).
+    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
+    m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pHeadSplitEnabled->set(0.0);
+
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
 
@@ -402,6 +407,16 @@ void EngineMaster::process(const int iBufferSize) {
     }
     m_headphoneVolumeOld = headphoneVolume;
     m_pHeadClipping->process(m_pHead, m_pHead, iBufferSize);
+
+    // If Head Split is enabled, replace the left channel of the pfl buffer
+    // with a mono mix of the headphone buffer, and the right channel of the pfl
+    // buffer with a mono mix of the master output buffer.
+    if (m_pHeadSplitEnabled->get()) {
+        for (int i = 0; i + 1 < iBufferSize; i += 2) {
+            m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
+            m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
+        }
+    }
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07

@@ -2,118 +2,12 @@
 
 #include "widget/wbasewidget.h"
 
-#include "controlobjectslave.h"
+#include "widget/controlwidgetconnection.h"
 #include "util/cmdlineargs.h"
 #include "util/debug.h"
 
-ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                 ControlObjectSlave* pControl)
-        : m_pWidget(pBaseWidget),
-          m_pControl(pControl) {
-    // If pControl is NULL then the creator of ControlWidgetConnection has
-    // screwed up badly enough that we should just crash. This will not go
-    // unnoticed in development.
-    Q_ASSERT(pControl);
-    pControl->connectValueChanged(this, SLOT(slotControlValueChanged(double)));
-}
-
-ControlWidgetConnection::~ControlWidgetConnection() {
-}
-
-double ControlWidgetConnection::getControlParameter() const {
-    return m_pControl->getParameter();
-}
-
-ValueControlWidgetConnection::ValueControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                           ControlObjectSlave* pControl,
-                                                           bool connectValueFromWidget,
-                                                           bool connectValueToWidget,
-                                                           EmitOption emitOption)
-        : ControlWidgetConnection(pBaseWidget, pControl),
-          m_bConnectValueFromWidget(connectValueFromWidget),
-          m_bConnectValueToWidget(connectValueToWidget),
-          m_emitOption(emitOption) {
-    if (m_bConnectValueToWidget) {
-        slotControlValueChanged(m_pControl->get());
-    }
-}
-
-ValueControlWidgetConnection::~ValueControlWidgetConnection() {
-}
-
-QString ValueControlWidgetConnection::toDebugString() const {
-    const ConfigKey& key = m_pControl->getKey();
-    return QString("%1,%2 Parameter: %3 ToWidget: %4 FromWidget %5 Emit: %6")
-            .arg(key.group, key.item,
-                 QString::number(m_pControl->getParameter()),
-                 ::toDebugString(m_bConnectValueToWidget),
-                 ::toDebugString(m_bConnectValueFromWidget),
-                 emitOptionToString(m_emitOption));
-}
-
-void ValueControlWidgetConnection::slotControlValueChanged(double v) {
-    if (m_bConnectValueToWidget) {
-        m_pWidget->onConnectedControlValueChanged(
-                m_pControl->getParameterForValue(v));
-        // TODO(rryan): copied from WWidget. Keep?
-        //m_pWidget->toQWidget()->update();
-    }
-}
-
-void ValueControlWidgetConnection::resetControl() {
-    if (m_bConnectValueFromWidget) {
-        m_pControl->reset();
-    }
-}
-
-void ValueControlWidgetConnection::setControlParameterDown(double v) {
-    if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_PRESS) {
-        m_pControl->setParameter(v);
-    }
-}
-
-void ValueControlWidgetConnection::setControlParameterUp(double v) {
-    if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_RELEASE) {
-        m_pControl->setParameter(v);
-    }
-}
-
-DisabledControlWidgetConnection::DisabledControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                                 ControlObjectSlave* pControl)
-        : ControlWidgetConnection(pBaseWidget, pControl) {
-    slotControlValueChanged(m_pControl->get());
-}
-
-DisabledControlWidgetConnection::~DisabledControlWidgetConnection() {
-}
-
-QString DisabledControlWidgetConnection::toDebugString() const {
-    const ConfigKey& key = m_pControl->getKey();
-    return QString("Disabled %1,%2").arg(key.group, key.item);
-}
-
-void DisabledControlWidgetConnection::slotControlValueChanged(double v) {
-    m_pWidget->setControlDisabled(m_pControl->getParameterForValue(v) != 0.0);
-    m_pWidget->toQWidget()->update();
-}
-
-void DisabledControlWidgetConnection::resetControl() {
-    // Do nothing.
-}
-
-void DisabledControlWidgetConnection::setControlParameterDown(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
-}
-
-void DisabledControlWidgetConnection::setControlParameterUp(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
-}
-
 WBaseWidget::WBaseWidget(QWidget* pWidget)
         : m_pWidget(pWidget),
-          m_bDisabled(false),
           m_pDisplayConnection(NULL) {
 }
 

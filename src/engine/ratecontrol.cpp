@@ -392,7 +392,7 @@ double RateControl::getJogFactor() const {
     double jogFactor = jogValueFiltered * jogSensitivity;
 
     if (isnan(jogValue) || isnan(jogFactor)) {
-        jogFactor = 0.0f;
+        jogFactor = 0.0;
     }
 
     return jogFactor;

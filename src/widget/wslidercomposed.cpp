@@ -149,6 +149,7 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
 
     setControlParameterDown(newValue);
     setControlParameterUp(newValue);
+    onConnectedControlValueChanged(newValue);
     update();
 
     e->accept();

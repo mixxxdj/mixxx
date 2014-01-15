@@ -71,12 +71,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
     {
         ComboBoxPosition->setCurrentIndex(1);
-        m_pControlPositionDisplay->set(1.0f);
+        m_pControlPositionDisplay->set(1.0);
     }
     else
     {
         ComboBoxPosition->setCurrentIndex(0);
-        m_pControlPositionDisplay->set(0.0f);
+        m_pControlPositionDisplay->set(0.0);
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
 
@@ -391,11 +391,11 @@ void DlgPrefControls::slotSetLocale(int pos) {
 
 void DlgPrefControls::slotSetRateRange(int pos)
 {
-    float range = (float)(pos-1)/10.;
-    if (pos==0)
-        range = 0.06f;
-    if (pos==1)
-        range = 0.08f;
+    double range = static_cast<double>(pos-1) / 10.0;
+    if (pos == 0)
+        range = 0.06;
+    if (pos == 1)
+        range = 0.08;
 
     // Set rate range for every group
     foreach (ControlObjectThread* pControl, m_rateRangeControls) {
