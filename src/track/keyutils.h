@@ -63,7 +63,7 @@ class KeyUtils {
                                             mixxx::track::io::key::ChromaticKey target_key);
 
     // Returns a list of keys that are harmonically compatible with key using
-    // the Circle of Fifths.
+    // the Circle of Fifths (including the key itself).
     static QList<mixxx::track::io::key::ChromaticKey> getCompatibleKeys(
         mixxx::track::io::key::ChromaticKey key);
 

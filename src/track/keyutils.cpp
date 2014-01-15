@@ -390,6 +390,9 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
     // major/minor determines whether you are on the inner or outer ring of the
     // radial.
 
+    // The key is compatible with tracks in the same key.
+    compatible << key;
+
     // The relative major/minor key is compatible.
     compatible << openKeyNumberToKey(openKeyNumber, !major);
 
