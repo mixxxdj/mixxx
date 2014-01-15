@@ -9,6 +9,7 @@
 #include "mathstuff.h"
 #include "vsyncthread.h"
 #include "util/performancetimer.h"
+#include "waveform/guitick.h"
 
 #if defined(__APPLE__)
 
@@ -29,6 +30,8 @@ VSyncThread::VSyncThread(QWidget* parent)
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1) {
     doRendering = true;
+
+    m_pGuiTick = new GuiTick(this);
 }
 
 VSyncThread::~VSyncThread() {
@@ -86,6 +89,10 @@ void VSyncThread::run() {
             usRemainingForSwap = m_usWaitToSwap - usLastSwapTime;
             m_usWaitToSwap = m_usSyncIntervalTime + (usRemainingForSwap % m_usSyncIntervalTime);
         }
+
+        // Qt timers are not that useful in our case, because they
+        // are handled with priority without respecting the callback
+        m_pGuiTick->process();
     }
 }
 

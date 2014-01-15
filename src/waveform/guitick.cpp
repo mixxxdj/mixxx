@@ -1,6 +1,6 @@
 #include <QTimer>
 
-#include "engine/guitick.h"
+#include "guitick.h"
 #include "controlobject.h"
 
 

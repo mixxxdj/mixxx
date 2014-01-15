@@ -195,8 +195,6 @@ class EngineMaster : public QObject, public AudioSource {
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
-
-    GuiTick* m_pGuiTick;
 };
 
 #endif

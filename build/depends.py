@@ -584,8 +584,7 @@ class MixxxCore(Feature):
                    "engine/cuecontrol.cpp",
                    "engine/quantizecontrol.cpp",
                    "engine/clockcontrol.cpp",
-                   "engine/readaheadmanager.cpp",
-                   "engine/guitick.cpp", 
+                   "engine/readaheadmanager.cpp", 
                    "cachingreader.cpp",
                    "cachingreaderworker.cpp",
 
@@ -755,6 +754,7 @@ class MixxxCore(Feature):
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/vsyncthread.cpp",
+                   "waveform/guitick.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",

@@ -31,6 +31,7 @@
 
 
 class QGLWidget;
+class GuiTick;
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -113,6 +114,9 @@ class VSyncThread : public QThread {
     QSemaphore m_semaVsyncSlot;
     double m_displayFrameRate;
     int m_vSyncPerRendering;
+
+
+    GuiTick* m_pGuiTick;
 };
 
 
