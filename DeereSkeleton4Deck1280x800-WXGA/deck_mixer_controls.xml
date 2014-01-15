@@ -75,9 +75,9 @@
         <Handle>handle-vertical.svg</Handle>
         <Horizontal>false</Horizontal>
         <Connection>
-	  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
-	  <EmitOnDownPress>false</EmitOnDownPress>
-	</Connection>
+          <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+          <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
       </SliderComposed>
 
     </Children>
