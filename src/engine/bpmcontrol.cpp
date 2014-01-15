@@ -59,7 +59,6 @@ BpmControl::BpmControl(const char* _group,
 
     // Beat sync (scale buffer tempo relative to tempo of other buffer)
     m_pButtonSync = new ControlPushButton(ConfigKey(_group, "beatsync"));
-    m_pButtonSync->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
     connect(m_pButtonSync, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlBeatSync(double)),
             Qt::DirectConnection);
