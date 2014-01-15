@@ -1,0 +1,17 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Main deck container.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>MainDeckContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+      <Template src="skin:left_gutter.xml"/>
+      <Template src="skin:mixer.xml"/>
+      <Template src="skin:right_gutter.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

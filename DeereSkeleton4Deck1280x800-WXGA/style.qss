@@ -1,0 +1,264 @@
+/*******************************************************************************
+ ** BORDER *********************************************************************
+ *******************************************************************************/
+/* These definitions put a faint grey border around all the widgets. We have to
+   be tricky with top/bottom-ness to get things right. */
+
+#Mixer {
+  border: 1px solid #555;
+  border-left: none;
+  border-right: none;
+}
+
+#UpperTextRow {
+  border-top: 1px solid #555;
+  border-bottom: 1px solid #555;
+}
+
+#DeckRows {
+  border: 1px solid #555;
+}
+
+/* Prevent a 2px border where the decks meet. */
+#Deck3 #DeckRows, #Deck4 #DeckRows {
+  border-top: none;
+}
+
+#OverviewRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+#VisualRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+/*******************************************************************************
+ ** END BORDER *****************************************************************
+ *******************************************************************************/
+
+WWidget, QLabel {
+  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-size: 7px;
+  text-transform: uppercase;
+  color: black;
+}
+
+WSliderComposed {
+  background-color: rgba(200, 200, 200, 128);
+}
+
+WLabel {
+  qproperty-alignment: 'AlignCenter';
+}
+
+#ArtistGutter, #TitleGutter {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 2px;
+}
+
+#BPMGutter, #PositionGutter {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutSpacing: 10;
+  padding: 2px;
+}
+
+#ArtistGutter WLabel, #BPMGutter WLabel, #PositionGutter WLabel {
+  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+}
+
+#BPMGutter WLabel, #PositionGutter WLabel {
+  qproperty-alignment: 'AlignRight | AlignVCenter';
+}
+
+#TitleGutter WLabel, #EffectChainNameContainer WLabel {
+  font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#EffectChainNameRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+#EffectChain1, #EffectChain2, #EffectChain3, #EffectChain4 {
+  qproperty-layoutAlignment: 'AlignTop';
+  border: 1px solid #555;
+  border-left:none;
+}
+
+#EffectChain1 {
+  border-left: 1px solid #555;
+}
+
+#EffectChainNameContainer {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#EffectChainNextPrevContainer {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#EffectChainNextPrevContainer WPushButton {
+  font-size: 12px;
+}
+
+#KnobLabel {
+  background-color: white;
+  border: 1px solid black;
+}
+
+#Mixer {
+  background-color: green;
+  qproperty-layoutAlignment: 'AlignTop';
+}
+
+#MasterControls {
+  qproperty-layoutSpacing: 0;
+}
+
+#DeckControls {
+  qproperty-layoutSpacing: 0;
+}
+
+
+#MainDeckContainer {
+  background-color: red;
+}
+
+#Deck1, #DeckMixer1 {
+  background-color: rgb(128,128,0);
+}
+
+#Deck2, #DeckMixer2 {
+  background-color: cyan;
+}
+
+#Deck3, #DeckMixer3 {
+  background-color: violet;
+}
+
+#Deck4, #DeckMixer4 {
+  background-color: pink;
+}
+
+#LibraryContainer {
+  background-color: green;
+}
+
+#LibraryExpanded, #LibraryCollapsed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#EffectRackContainer {
+  background-color: red;
+}
+
+#EffectRackExpanded, #EffectRackCollapsed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#EffectChainParameters {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutSpacing: 2;
+}
+
+#EffectChainControls {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutSpacing: 2;
+}
+
+#EffectChainGroupControls {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
+
+WEffectChain {
+  font-size: 16px;
+}
+
+#EffectChain1 {
+  background-color: pink;
+}
+
+#EffectChain2 {
+  background-color: brown;
+}
+
+#EffectChain3 {
+  background-color: red;
+}
+
+#EffectChain4 {
+  background-color: green;
+}
+
+#SampleDecksContainer {
+  background-color: orange;
+}
+
+#SampleDecksExpanded, #SampleDecksCollapsed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#OverviewRow, #VisualRow, #ButtonRow {
+  /*qproperty-layoutContentsMargins: rect(0 1 0 1);*/
+}
+
+WWidgetGroup {
+  /*border: 1px solid rgb(128, 128, 128);*/
+  /*margin: 0px;
+  padding: 0px;
+  qproperty-layoutSpacing: 0;
+  qproperty-layoutContentsMargins: rect(0 0 0 0);*/
+  /*qproperty-layoutAlignment: 'AlignCenter';*/
+}
+
+
+/*
+
+#Deck1 {
+  margin: 0px;
+  qproperty-layoutSpacing: 0;
+  qproperty-layoutContentsMargins: rect(10 2 10 2);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+WWidget {
+  border: 1px solid rgb(128, 128, 128);
+  background-color: grey;
+}
+
+WSliderComposed {
+  background-color: orange;
+}
+
+WVuMeter {
+  background-color: pink;
+}
+
+WPushButton[value="1"] {
+  background-color: green;
+}
+
+WPushButton[pressed="true"] {
+  background-color: pink;
+}
+
+#BeatLoopButton[value="1"][pressed="true"] {
+  background-color: pink;
+}
+
+#BeatLoopButton[value="0"][pressed="true"] {
+  background-color: orange;
+}
+*/

@@ -1,0 +1,43 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck controls row (transport, beatgrid, looping, hotcue, etc.).
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>ControlsRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <Template src="skin:transport.xml"/>
+      <Template src="skin:beatloop.xml"/>
+      <Template src="skin:loop.xml"/>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <SliderComposed>
+            <MinimumSize>100,21</MinimumSize>
+            <MaximumSize>200,21</MaximumSize>
+            <Handle>handle-horizontal.svg</Handle>
+            <Horizontal>true</Horizontal>
+            <Connection>
+	      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+	      <EmitOnDownPress>false</EmitOnDownPress>
+	    </Connection>
+          </SliderComposed>
+          <!--<Template src="skin:vumeter.xml"/>-->
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:knob.xml">
+        <SetVariable name="control">pitch</SetVariable>
+        <SetVariable name="label">Pitch</SetVariable>
+      </Template>
+
+      <Template src="skin:hotcue.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,84 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The mixer section.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Mixer</ObjectName>
+    <Layout>vertical</Layout>
+    <MinimumSize>160,-1</MinimumSize>
+    <SizePolicy>f,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MasterControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headVolume</SetVariable>
+            <SetVariable name="label">Head Vol</SetVariable>
+          </Template>
+
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headMix</SetVariable>
+            <SetVariable name="label">Head Mix</SetVariable>
+          </Template>
+
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">balance</SetVariable>
+            <SetVariable name="label">Balance</SetVariable>
+          </Template>
+
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">volume</SetVariable>
+            <SetVariable name="label">Volume</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:deck_mixer_controls.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <Template src="skin:deck_mixer_controls.xml">
+            <SetVariable name="i">1</SetVariable>
+          </Template>
+          <Template src="skin:deck_mixer_controls.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:deck_mixer_controls.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>CrossfadeContainer</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SliderComposed>
+            <SizePolicy>me,min</SizePolicy>
+            <MinimumSize>100,40</MinimumSize>
+            <MaximumSize>100,40</MaximumSize>
+            <Handle>handle-horizontal.svg</Handle>
+            <Horizontal>true</Horizontal>
+            <Connection>
+	      <ConfigKey>[Master],crossfader</ConfigKey>
+	      <EmitOnDownPress>false</EmitOnDownPress>
+	    </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
