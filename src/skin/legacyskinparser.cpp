@@ -57,6 +57,7 @@
 #include "widget/wwidgetstack.h"
 #include "widget/wwidgetgroup.h"
 #include "widget/wkey.h"
+#include "widget/wbattery.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -405,6 +406,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
         result = wrapWidget(parseKey(node));
+    } else if (nodeName == "Battery") {
+        result = wrapWidget(parseBattery(node));
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
@@ -971,6 +974,17 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
 
 QWidget* LegacySkinParser::parseKnobComposed(QDomElement node) {
     WKnobComposed* p = new WKnobComposed(m_pParent);
+    setupBaseWidget(node, p);
+    setupWidget(node, p);
+    p->setup(node, *m_pContext);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseBattery(QDomElement node) {
+    WBattery *p = new WBattery(m_pParent);
     setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);
