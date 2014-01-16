@@ -2,7 +2,7 @@
 #define WBATTERY_H
 
 #include <QList>
-#include <QMap>
+#include <QVector>
 #include <QPixmap>
 #include <QScopedPointer>
 
@@ -32,15 +32,19 @@ class WBattery : public WWidget {
     // returns a formatted time string
     QString getTimeLeft();
 
-    // sets all pixmaps in target for 0 <= i <= 100
-    void setPixmap(QMap<int, PaintablePointer>* target,
-                   const QString& filename, const QList<int>& charge);
+    void setPixmap(PaintablePointer* ppPixmap, const QString& filename);
+    void setPixmaps(QVector<PaintablePointer>* pPixmaps, int iPos,
+                    const QString& filename);
+
 
     QScopedPointer<Battery> m_pBattery;
-    PaintablePointer m_pPixmap;
+    PaintablePointer m_pCurrentPixmap;
+
+    PaintablePointer m_pPixmapBack;
+    PaintablePointer m_pPixmapUnknown;
     PaintablePointer m_pPixmapCharged;
-    QMap<int, PaintablePointer> m_qmPixmapsCharging;
-    QMap<int, PaintablePointer> m_qmPixmapsDischarging;
+    QVector<PaintablePointer> m_dischargingPixmaps;
+    QVector<PaintablePointer> m_chargingPixmaps;
 };
 
 #endif /* WBATTERY_H */
