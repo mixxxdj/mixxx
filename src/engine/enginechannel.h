@@ -45,9 +45,11 @@ class EngineChannel : public EngineObject {
     virtual ChannelOrientation getOrientation() const;
     virtual const QString& getGroup() const;
 
-    virtual bool isActive() = 0;
-    virtual bool isPFL();
-    virtual bool isMaster();
+    virtual bool isActive() const = 0;
+    void setPFL(bool enabled);
+    virtual bool isPFL() const;
+    void setMaster(bool enabled);
+    virtual bool isMaster() const;
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) = 0;
 

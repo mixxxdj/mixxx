@@ -83,7 +83,7 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
     FillBuffer<CSAMPLE>(input, 0.1f, inputLength);
     SampleUtil::applyGain(output, 0.0f, outputLength);
 
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
     m_pTalkover->set(1.0);
 
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
@@ -95,7 +95,7 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
 
 TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
     SampleUtil::applyGain(output, 0.0f, outputLength);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
 
     m_pTalkover->set(0.0);
     FillBuffer<CSAMPLE>(input, 0.1f, inputLength);
@@ -116,7 +116,7 @@ TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
 
 TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
     SampleUtil::applyGain(output, 0.0f, outputLength);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
     m_pTalkover->set(1.0);
 
     for (int i = 0; i < 10; i++) {

@@ -57,12 +57,12 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
 
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
-            m_pEngine);
+                                    m_pEngine);
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
-            m_pEngine);
+                                    m_pEngine);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-      m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, o),
-                                      m_pEngine);
+        m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 0, o),
+                                        m_pEngine);
     }
 }
 
@@ -243,12 +243,12 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
-        AudioOutput(AudioOutput::DECK, 0, number-1), m_pEngine);
+        AudioOutput(AudioOutput::DECK, 0, 0, number-1), m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
-        AudioInput(AudioInput::VINYLCONTROL, 0, number-1), pEngineDeck);
+        AudioInput(AudioInput::VINYLCONTROL, 0, 0, number-1), pEngineDeck);
 }
 
 void PlayerManager::addSampler() {

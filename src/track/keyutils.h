@@ -18,7 +18,7 @@ class KeyUtils {
         TRADITIONAL = 3,
     };
 
-    static const char* keyDebugName(mixxx::track::io::key::ChromaticKey key);
+    static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
 
     static inline bool keyIsMajor(mixxx::track::io::key::ChromaticKey key) {
         return key > mixxx::track::io::key::INVALID &&
@@ -63,7 +63,7 @@ class KeyUtils {
                                             mixxx::track::io::key::ChromaticKey target_key);
 
     // Returns a list of keys that are harmonically compatible with key using
-    // the Circle of Fifths.
+    // the Circle of Fifths (including the key itself).
     static QList<mixxx::track::io::key::ChromaticKey> getCompatibleKeys(
         mixxx::track::io::key::ChromaticKey key);
 

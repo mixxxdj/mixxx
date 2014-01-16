@@ -110,11 +110,13 @@ void DlgRecording::slotRecordingEnabled(bool isRecording) {
 }
 /** int bytes: the number of recorded bytes within a session **/
 void DlgRecording::slotBytesRecorded(long bytes) {
-    double megabytes = bytes / 1048575.0f;
-    QString byteStr = QString::number(megabytes,'f',2);
-    QString text = (tr("Recording to file: ")) +m_pRecordingManager->getRecordingFile();
+    double megabytes = bytes / 1048575.0;
+
     /* TRANSLATOR RecordingsView
-    The size of the file which has been stored during the current recording in megabytes (MB) */
-    text.append(" ( " +byteStr+ (tr("MB written")) +" )");
+       Message shown to user when recording an audio file. %1 is the file path
+       and %2 is the current size of the recording in megabytes (MB) */
+    QString message = tr("Recording to file: %1 (%2 MB written)");
+    QString text = message.arg(m_pRecordingManager->getRecordingFile(),
+                               QString::number(megabytes,'f',2));
     label->setText(text);
 }

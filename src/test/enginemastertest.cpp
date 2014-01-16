@@ -24,9 +24,9 @@ class EngineChannelMock : public EngineChannel {
         Q_UNUSED(iBufferSize);
     }
 
-    MOCK_METHOD0(isActive, bool());
-    MOCK_METHOD0(isMaster, bool());
-    MOCK_METHOD0(isPFL, bool());
+    MOCK_CONST_METHOD0(isActive, bool());
+    MOCK_CONST_METHOD0(isMaster, bool());
+    MOCK_CONST_METHOD0(isPFL, bool());
     MOCK_METHOD3(process, void(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize));
 };
 

@@ -468,7 +468,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
-    m_playButton->set(0.0f);
+    m_playButton->set(0.0);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -632,12 +632,12 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
 
-        double baserate = 0.0f;
+        double baserate = 0.0;
         if (sr > 0) {
             baserate = ((double)m_file_srate_old / sr);
         }
 
-        bool paused = m_playButton->get() == 0.0f;
+        bool paused = m_playButton->get() == 0.0;
         bool is_scratching = false;
         bool keylock_enabled = m_pKeylock->get() > 0;
 
@@ -819,7 +819,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
         at_start = m_filepos_play <= 0;
         at_end = m_filepos_play >= m_file_length_old;
 
-        bool repeat_enabled = m_pRepeat->get() != 0.0f;
+        bool repeat_enabled = m_pRepeat->get() != 0.0;
 
         bool end_of_track = //(at_start && backwards) ||
             (at_end && !backwards);
@@ -953,7 +953,7 @@ void EngineBuffer::processSeek() {
         setNewPlaypos(m_dQueuedPosition);
         break;
     case SEEK_STANDARD: {
-        bool paused = m_playButton->get() == 0.0f;
+        bool paused = m_playButton->get() == 0.0;
         // If we are playing and quantize is on, match phase when seeking.
         if (!paused && m_pQuantize->get() > 0.0) {
             int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
