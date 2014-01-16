@@ -3,8 +3,7 @@
 #include <QDebug>
 #include <QRegExp>
 
-#include "battery/battery.h"
-#include "battery/batterylinux.h"
+#include "util/battery/batterylinux.h"
 
 // these constants are used to retrieve data from infoFile and stateFile
 const QString BatteryLinux::s_sMaximumCapacityKeyword = "last full capacity";

@@ -2,6 +2,7 @@
 #include <QStylePainter>
 
 #include "widget/wbattery.h"
+#include "util/battery/battery.h"
 
 WBattery::WBattery(QWidget *parent)
         : WWidget(parent),

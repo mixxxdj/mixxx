@@ -811,7 +811,6 @@ class MixxxCore(Feature):
                    "track/keyutils.cpp",
 
                    "baseplayer.cpp",
-                   "battery/battery.cpp",
                    "basetrackplayer.cpp",
                    "deck.cpp",
                    "sampler.cpp",
@@ -840,6 +839,7 @@ class MixxxCore(Feature):
                    "util/performancetimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
+                   "util/battery/battery.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -888,7 +888,7 @@ class MixxxCore(Feature):
         map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
-            sources.append("battery/batterywin.cpp")
+            sources.append("util/battery/batterywin.cpp")
             # Add Windows resource file with icons and such
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
@@ -899,9 +899,10 @@ class MixxxCore(Feature):
             #Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-headerpad=ffff")
             build.env.Append(LINKFLAGS="-headerpad_max_install_names")
-            sources.append("battery/batterymac.cpp")
+            sources.append("util/mac.cpp")
+            sources.append("util/battery/batterymac.cpp")
         elif build.platform_is_linux:
-            sources.append("battery/batterylinux.cpp")
+            sources.append("util/battery/batterylinux.cpp")
 
         return sources
 

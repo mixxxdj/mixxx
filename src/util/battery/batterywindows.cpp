@@ -1,4 +1,4 @@
-#include "battery/batterywindows.h"
+#include "util/battery/batterywindows.h"
 
 BatteryWindows::BatteryWindows(QObject* pParent)
         : Battery(pParent) {

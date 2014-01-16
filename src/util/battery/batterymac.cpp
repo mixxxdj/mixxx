@@ -1,4 +1,4 @@
-#include "battery/batterymac.h"
+#include "util/battery/batterymac.h"
 
 BatteryMac::BatteryMac(QObject* pParent)
         : Battery(pParent) {

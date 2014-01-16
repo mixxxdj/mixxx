@@ -1,11 +1,11 @@
-#include "battery/battery.h"
+#include "util/battery/battery.h"
 
 #ifdef Q_OS_LINUX
-#include "battery/batterylinux.h"
+#include "util/battery/batterylinux.h"
 #elif defined(Q_OS_WIN)
-#include "battery/batterywindows.h"
+#include "util/battery/batterywindows.h"
 #elif defined(Q_OS_MAC)
-#include "battery/batterymac.h"
+#include "util/battery/batterymac.h"
 #endif
 
 Battery::Battery(QObject *parent)

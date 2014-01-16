@@ -1,7 +1,7 @@
 #ifndef BATTERYLINUX_H
 #define BATTERYLINUX_H
 
-#include "battery/battery.h"
+#include "util/battery/battery.h"
 
 class BatteryLinux : public Battery {
     Q_OBJECT

@@ -1,7 +1,7 @@
 #ifndef BATTERYWINDOWS_H
 #define BATTERYWINDOWS_H
 
-#include "battery/battery.h"
+#include "util/battery/battery.h"
 
 class BatteryWindows : public Battery {
     Q_OBJECT

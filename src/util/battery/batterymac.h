@@ -1,7 +1,7 @@
 #ifndef BATTERYMAC_H
 #define BATTERYMAC_H
 
-#include "battery/battery.h"
+#include "util/battery/battery.h"
 
 class BatteryMac : public Battery {
     Q_OBJECT

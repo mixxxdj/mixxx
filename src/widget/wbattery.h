@@ -6,11 +6,12 @@
 #include <QPixmap>
 #include <QScopedPointer>
 
-#include "battery/battery.h"
 #include "widget/wlabel.h"
 #include "widget/wwidget.h"
 #include "skin/skincontext.h"
 #include "widget/wpixmapstore.h"
+
+class Battery;
 
 class WBattery : public WWidget {
     Q_OBJECT
