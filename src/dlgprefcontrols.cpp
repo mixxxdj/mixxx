@@ -53,11 +53,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::DirectConnection);
+    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
     slotNumDecksChanged(m_pNumDecks->get());
 
     m_pNumSamplers = new ControlObjectSlave("[Master]", "num_samplers", this);
-    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)), Qt::DirectConnection);
+    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
     slotNumSamplersChanged(m_pNumSamplers->get());
 
     // Position display configuration

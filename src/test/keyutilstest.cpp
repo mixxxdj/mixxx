@@ -158,13 +158,15 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
     EXPECT_THAT(compatible, ElementsAre(
         mixxx::track::io::key::C_MAJOR,
         mixxx::track::io::key::D_MINOR,
-        mixxx::track::io::key::E_MINOR));
+        mixxx::track::io::key::E_MINOR,
+        mixxx::track::io::key::A_MINOR));
 
     key = mixxx::track::io::key::F_MAJOR;
     compatible = KeyUtils::getCompatibleKeys(key);
     qSort(compatible);
     EXPECT_THAT(compatible, ElementsAre(
         mixxx::track::io::key::C_MAJOR,
+        mixxx::track::io::key::F_MAJOR,
         mixxx::track::io::key::B_FLAT_MAJOR,
         mixxx::track::io::key::D_MINOR));
 }

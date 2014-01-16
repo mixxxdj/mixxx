@@ -47,6 +47,12 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
           m_pClkRefDevice(NULL),
           m_pErrorDevice(NULL),
           m_pDownmixBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+
+#ifdef __PORTAUDIO__
+    qDebug() << "PortAudio version:" << Pa_GetVersion()
+             << "text:" << Pa_GetVersionText();
+#endif
+
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));
