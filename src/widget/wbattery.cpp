@@ -68,6 +68,7 @@ QString WBattery::getTimeLeft() {
 }
 
 int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
+    // See WDisplay::getActivePixmapIndex for more info on this.
     int result = static_cast<int>(dPercentage * numPixmaps - 0.00001);
     result = math_min(numPixmaps - 1, math_max(0, result));
     return result;
@@ -81,26 +82,29 @@ void WBattery::update() {
     m_pCurrentPixmap.clear();
     switch (csChargingState) {
         case Battery::CHARGING:
-            m_pCurrentPixmap = m_chargingPixmaps[
-                pixmapIndexFromPercentage(dPercentage,
-                                          m_chargingPixmaps.size())];
-
-            setToolTip(tr("Time until charged: %1").arg(getTimeLeft()));
+            if (!m_chargingPixmaps.isEmpty()) {
+                m_pCurrentPixmap = m_chargingPixmaps[
+                    pixmapIndexFromPercentage(dPercentage,
+                                              m_chargingPixmaps.size())];
+            }
+            setBaseTooltip(tr("Time until charged: %1").arg(getTimeLeft()));
             break;
         case Battery::DISCHARGING:
-            m_pCurrentPixmap = m_dischargingPixmaps[
-                pixmapIndexFromPercentage(dPercentage,
-                                          m_dischargingPixmaps.size())];
-            setToolTip(tr("Time left: %1").arg(getTimeLeft()));
+            if (!m_dischargingPixmaps.isEmpty()) {
+                m_pCurrentPixmap = m_dischargingPixmaps[
+                    pixmapIndexFromPercentage(dPercentage,
+                                              m_dischargingPixmaps.size())];
+            }
+            setBaseTooltip(tr("Time left: %1").arg(getTimeLeft()));
             break;
         case Battery::CHARGED:
             m_pCurrentPixmap = m_pPixmapCharged;
-            setToolTip(tr("Battery fully charged."));
+            setBaseTooltip(tr("Battery fully charged."));
             break;
         case Battery::UNKNOWN:
         default:
             m_pCurrentPixmap = m_pPixmapUnknown;
-            setToolTip(tr("Battery status unknown."));
+            setBaseTooltip(tr("Battery status unknown."));
             break;
     }
 
