@@ -11,8 +11,8 @@ class ControlIndicator : public ControlObject {
     enum BlinkValue {
         OFF = 0,
         ON = 1,
-        RATIO1TO1_500MS = 2, // used for CDJ play/pause
-        RATIO1TO1_250MS = 3, // used for CDJ cue
+        RATIO1TO1_500MS = 2, // used for Pioneer play/pause
+        RATIO1TO1_250MS = 3, // used for Pioneer cue
     };
 
     ControlIndicator(ConfigKey key);

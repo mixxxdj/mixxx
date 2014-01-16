@@ -167,14 +167,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //
 
     // Set default value in config file and control objects, if not present
-    // Default is "0" = CDJ Mode
+    // Default is "0" = Pioneer Mode
     QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"), "0");
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
-    ComboBoxCueDefault->addItem(tr("CDJ Mode"));
+    ComboBoxCueDefault->addItem(tr("Pioneer Mode"));
     ComboBoxCueDefault->addItem(tr("Simple"));
-    ComboBoxCueDefault->addItem(tr("DENON Mode"));
+    ComboBoxCueDefault->addItem(tr("Denon Mode"));
     ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
 
     slotSetCueDefault(cueDefaultValue);

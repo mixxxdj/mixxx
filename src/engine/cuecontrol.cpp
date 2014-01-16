@@ -13,7 +13,7 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
-static const double CUE_MODE_CDJ = 0.0;
+static const double CUE_MODE_PIONEER = 0.0;
 static const double CUE_MODE_SIMPLE = 1.0;
 static const double CUE_MODE_DENON = 2.0;
 
@@ -41,7 +41,7 @@ CueControl::CueControl(const char* _group,
     m_pCuePoint->set(-1.0);
     
     m_pCueMode = new ControlObject(ConfigKey(_group, "cue_mode"));
-    // 0.0 -> CDJ mode
+    // 0.0 -> Pioneer mode
     // 1.0 -> Simple mode
     // 2.0 -> Denon mode
 
@@ -222,7 +222,7 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
         m_pCuePoint->set(0.0);
     }
     if (m_pCueMode->get() == 0.0) {
-        // in CDJ mode Cue Button is lit if a cue point is set
+        // in Pioneer mode Cue Button is lit if a cue point is set
         m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
     }
 
@@ -694,7 +694,7 @@ void CueControl::cueSimple(double v) {
 }
 
 void CueControl::cueCDJ(double v) {
-    // This is how CDJ cue buttons work:
+    // This is how Pioneer cue buttons work:
     // If pressed while playing, stop playback and go to cue.
     // If pressed while stopped and at cue, play while pressed.
     // If pressed while stopped and not at cue, set new cue point.
@@ -793,7 +793,7 @@ void CueControl::cueDefault(double v) {
     } else if (m_pCueMode->get() == CUE_MODE_DENON) {
         cueDenon(v);
     } else {
-        // if (m_pCueMode->get() == CUE_MODE_CDJ) {
+        // if (m_pCueMode->get() == CUE_MODE_PIONEER) {
         cueCDJ(v);
     }
 }
@@ -863,7 +863,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
-        } else if (m_pCueMode->get() == CUE_MODE_CDJ) {
+        } else if (m_pCueMode->get() == CUE_MODE_PIONEER) {
             // Flashing indicates that play is possible
             m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
         } else {
@@ -875,10 +875,10 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
         if (m_pCuePoint->get() != -1) {
             if (play == 0.0 && !isTrackAtCue() &&
                     getCurrentSample() < getTotalSamples()) {
-                // in CDJ mode Cue Button is flashing fast if CUE sets a new Cue point
+                // in Pioneer mode Cue Button is flashing fast if CUE sets a new Cue point
                 m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
             } else {
-                if (m_pCueMode->get() != CUE_MODE_CDJ) {
+                if (m_pCueMode->get() != CUE_MODE_PIONEER) {
                     m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
                 } else {
                     m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
@@ -894,7 +894,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
 }
 
 void CueControl::updateIndicators() {
-    if (m_pCueMode->get() == CUE_MODE_CDJ) {
+    if (m_pCueMode->get() == CUE_MODE_PIONEER) {
         if (!m_bPreviewing) {
             bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
