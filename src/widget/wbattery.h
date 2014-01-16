@@ -29,9 +29,6 @@ class WBattery : public WWidget {
     void paintEvent(QPaintEvent *);
 
   private:
-    // returns a formatted time string
-    QString getTimeLeft();
-
     void setPixmap(PaintablePointer* ppPixmap, const QString& filename);
     void setPixmaps(QVector<PaintablePointer>* pPixmaps, int iPos,
                     const QString& filename);

@@ -59,12 +59,12 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-QString WBattery::getTimeLeft() {
-    int minutes = m_pBattery ? m_pBattery->getMinutesLeft() : 0;
+QString formatMinutes(int minutes) {
     if (minutes < 60) {
-        return tr("%1 minutes").arg(minutes);
+        return QObject::tr("%1 minutes").arg(minutes);
     }
-    return tr("%1:%2").arg(minutes/60).arg(minutes%60, 2, 10, QChar('0'));
+    return QObject::tr("%1:%2").arg(minutes/60)
+            .arg(minutes%60, 2, 10, QChar('0'));
 }
 
 int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
@@ -75,6 +75,7 @@ int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
 }
 
 void WBattery::update() {
+    int minutesLeft = m_pBattery ? m_pBattery->getMinutesLeft() : 0;
     Battery::ChargingState csChargingState = m_pBattery ?
             m_pBattery->getChargingState() : Battery::UNKNOWN;
     double dPercentage = m_pBattery ? m_pBattery->getPercentage() : 0;
@@ -87,7 +88,12 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_chargingPixmaps.size())];
             }
-            setBaseTooltip(tr("Time until charged: %1").arg(getTimeLeft()));
+            if (minutesLeft == -1) {
+                setBaseTooltip(tr("Time until charged unknown."));
+            } else {
+                setBaseTooltip(tr("Time until charged: %1")
+                               .arg(formatMinutes(minutesLeft)));
+            }
             break;
         case Battery::DISCHARGING:
             if (!m_dischargingPixmaps.isEmpty()) {
@@ -95,7 +101,12 @@ void WBattery::update() {
                     pixmapIndexFromPercentage(dPercentage,
                                               m_dischargingPixmaps.size())];
             }
-            setBaseTooltip(tr("Time left: %1").arg(getTimeLeft()));
+            if (minutesLeft == -1) {
+                setBaseTooltip(tr("Time left unknown."));
+            } else {
+                setBaseTooltip(tr("Time left: %1")
+                               .arg(formatMinutes(minutesLeft)));
+            }
             break;
         case Battery::CHARGED:
             m_pCurrentPixmap = m_pPixmapCharged;
