@@ -16,6 +16,7 @@ GuiTick::GuiTick(QObject* pParent)
 }
 
 GuiTick::~GuiTick() {
+    delete m_pCOGuiTickTime;
     delete m_pCOGuiTick50ms;
 }
 
