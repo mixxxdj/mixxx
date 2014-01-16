@@ -81,6 +81,14 @@ class OpenGL(Dependence):
                 CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
             build.env.Append(LINKFLAGS='-framework OpenGL')
 
+class IOKit(Dependence):
+    """IOKit is used to get battery measurements on OS X and iOS."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(
+            CPPPATH='/Library/Frameworks/IOKit.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework IOKit')
 
 class OggVorbis(Dependence):
 
@@ -1046,7 +1054,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand]
+                Chromaprint, RubberBand, IOKit]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
