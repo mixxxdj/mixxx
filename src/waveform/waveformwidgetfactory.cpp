@@ -652,13 +652,13 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(QWidget *parent) {
+void WaveformWidgetFactory::startVSync(MixxxApp *mixxxApp) {
     if (m_vsyncThread) {
         disconnect(m_vsyncThread, SIGNAL(vsyncRender()), this, SLOT(render()));
         disconnect(m_vsyncThread, SIGNAL(vsyncSwap()), this, SLOT(swap()));
         delete m_vsyncThread;
     }
-    m_vsyncThread = new VSyncThread(parent);
+    m_vsyncThread = new VSyncThread(mixxxApp);
     m_vsyncThread->start();
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),

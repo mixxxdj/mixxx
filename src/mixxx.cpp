@@ -63,6 +63,7 @@
 #include "util/version.h"
 #include "util/compatibility.h"
 #include "playerinfo.h"
+#include "waveform/guitick.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -330,6 +331,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // Register TrackPointer as a metatype since we use it in signals/slots
     // regularly.
     qRegisterMetaType<TrackPointer>("TrackPointer");
+
+    m_pGuiTick = new GuiTick();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, m_pConfig, m_pSoundManager);
@@ -641,6 +644,8 @@ MixxxApp::~MixxxApp() {
 
     PlayerInfo::destroy();
 
+    delete m_pGuiTick;
+
     // Check for leaked ControlObjects and give warnings.
     QList<ControlDoublePrivate*> leakedControls;
     QList<ConfigKey> leakedConfigKeys;
@@ -648,25 +653,28 @@ MixxxApp::~MixxxApp() {
     ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
-        foreach (ControlDoublePrivate* pCOP, leakedControls) {
+        qDebug() << "WARNING: The following" << leakedControls.size()
+                 << "controls were leaked:";
+        foreach (ControlDoublePrivate* pCOP, leakedControls)
+        {
             ConfigKey key = pCOP->getKey();
             qDebug() << key.group << key.item << pCOP->getCreatorCO();
             leakedConfigKeys.append(key);
         }
 
-       foreach (ConfigKey key, leakedConfigKeys) {
-           // delete just to satisfy valgrind:
-           // check if the pointer is still valid, the control object may have bin already
-           // deleted by its parent in this loop
-           ControlObject* pCo = ControlObject::getControl(key, false);
-           if (pCo) {
-               // it might happens that a control is deleted as child from an other control
-               delete pCo;
-           }
-       }
-   }
-   qDebug() << "~MixxxApp: All leaking controls deleted.";
+        foreach (ConfigKey key, leakedConfigKeys)
+        {
+            // delete just to satisfy valgrind:
+            // check if the pointer is still valid, the control object may have bin already
+            // deleted by its parent in this loop
+            ControlObject* pCo = ControlObject::getControl(key, false);
+            if (pCo) {
+                // it might happens that a control is deleted as child from an other control
+                delete pCo;
+            }
+        }
+    }
+    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
     delete m_pKeyboard;
     delete m_pKbdConfig;

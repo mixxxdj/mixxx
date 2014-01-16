@@ -6,10 +6,12 @@
 #include <qdebug.h>
 #include <QTime>
 
+#include "mixxx.h"
 #include "mathstuff.h"
 #include "vsyncthread.h"
 #include "util/performancetimer.h"
 #include "waveform/guitick.h"
+
 
 #if defined(__APPLE__)
 
@@ -19,8 +21,8 @@
    extern const QX11Info *qt_x11Info(const QPaintDevice *pd);
 #endif
 
-VSyncThread::VSyncThread(QWidget* parent)
-        : QThread(parent),
+VSyncThread::VSyncThread(MixxxApp* mixxxApp)
+        : QThread(mixxxApp),
           m_vSyncTypeChanged(false),
           m_usSyncIntervalTime(33333),
           m_vSyncMode(ST_TIMER),
@@ -28,10 +30,9 @@ VSyncThread::VSyncThread(QWidget* parent)
           m_rtErrorCnt(0),
           m_swapWait(0),
           m_displayFrameRate(60.0),
-          m_vSyncPerRendering(1) {
+          m_vSyncPerRendering(1),
+          m_pGuiTick(mixxxApp->getGuiTick()){
     doRendering = true;
-
-    m_pGuiTick = new GuiTick(this);
 }
 
 VSyncThread::~VSyncThread() {

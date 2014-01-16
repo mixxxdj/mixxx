@@ -29,9 +29,9 @@
     #undef Unsorted
 #endif
 
-
 class QGLWidget;
 class GuiTick;
+class MixxxApp;
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -45,7 +45,7 @@ class VSyncThread : public QThread {
         ST_COUNT // Dummy Type at last, counting possible types
     };
 
-    VSyncThread(QWidget* parent);
+    VSyncThread(MixxxApp* mixxApp);
     ~VSyncThread();
     void run();
     void stop();
