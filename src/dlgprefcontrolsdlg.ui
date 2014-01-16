@@ -234,7 +234,7 @@
      <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pioneer Mode: &lt;br&gt;- Cue button while pause at cue point = preview &lt;br&gt;- Cue button while pause not at cue point = set cue point&lt;br&gt;- Cue button while playing = pause at cue point&lt;/p&gt;&lt;p&gt;Simple: &lt;br&gt;- Cue button while pause = set cue point&lt;br&gt;- Cue button while playing = play from cue point&lt;/p&gt;&lt;p&gt;DENON Mode: &lt;br&gt;- Cue button at cue point = preview &lt;br&gt;- Cue button not at cue point = pause at cue point&lt;br&gt;- Play = set cue point&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pioneer Mode: &lt;br&gt;- Cue button while pause at cue point = preview &lt;br&gt;- Cue button while pause not at cue point = set cue point&lt;br&gt;- Cue button while playing = pause at cue point&lt;/p&gt;&lt;p&gt;Denon Mode: &lt;br&gt;- Cue button at cue point = preview &lt;br&gt;- Cue button not at cue point = pause at cue point&lt;br&gt;- Play = set cue point&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>

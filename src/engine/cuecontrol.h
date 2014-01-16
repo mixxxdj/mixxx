@@ -113,7 +113,6 @@ class CueControl : public EngineControl {
     void cueGoto(double v);
     void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
-    void cueSimple(double v);
     void cuePreview(double v);
     void cueCDJ(double v);
     void cueDenon(double v);
@@ -144,7 +143,6 @@ class CueControl : public EngineControl {
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;
-    ControlPushButton* m_pCueSimple;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
     ControlPushButton* m_pPause;

@@ -14,8 +14,7 @@
 #include "mathstuff.h"
 
 static const double CUE_MODE_PIONEER = 0.0;
-static const double CUE_MODE_SIMPLE = 1.0;
-static const double CUE_MODE_DENON = 2.0;
+static const double CUE_MODE_DENON = 1.0;
 
 CueControl::CueControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
@@ -42,8 +41,7 @@ CueControl::CueControl(const char* _group,
     
     m_pCueMode = new ControlObject(ConfigKey(_group, "cue_mode"));
     // 0.0 -> Pioneer mode
-    // 1.0 -> Simple mode
-    // 2.0 -> Denon mode
+    // 1.0 -> Denon mode
 
     m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
     connect(m_pCueSet, SIGNAL(valueChanged(double)),
@@ -65,11 +63,6 @@ CueControl::CueControl(const char* _group,
             new ControlPushButton(ConfigKey(_group, "cue_gotoandstop"));
     connect(m_pCueGotoAndStop, SIGNAL(valueChanged(double)),
             this, SLOT(cueGotoAndStop(double)),
-            Qt::DirectConnection);
-
-    m_pCueSimple = new ControlPushButton(ConfigKey(_group, "cue_simple"));
-    connect(m_pCueSimple, SIGNAL(valueChanged(double)),
-            this, SLOT(cueSimple(double)),
             Qt::DirectConnection);
 
     m_pCuePreview = new ControlPushButton(ConfigKey(_group, "cue_preview"));
@@ -109,7 +102,6 @@ CueControl::~CueControl() {
     delete m_pCueGoto;
     delete m_pCueGotoAndPlay;
     delete m_pCueGotoAndStop;
-    delete m_pCueSimple;
     delete m_pCuePreview;
     delete m_pCueCDJ;
     delete m_pCueDefault;
@@ -674,25 +666,6 @@ void CueControl::cuePreview(double v)
     seekAbs(cuePoint);
 }
 
-void CueControl::cueSimple(double v) {
-    if (!v)
-        return;
-
-    QMutexLocker lock(&m_mutex);
-    // Simple cueing is if the player is not playing, set the cue point --
-    // otherwise seek to the cue point.
-    if (m_pPlayButton->get() == 0.0 && getCurrentSample() < getTotalSamples()) {
-        return cueSet(v);
-    }
-
-    double cuePoint = m_pCuePoint->get();
-
-    // Need to unlock before emitting any signals to prevent deadlock.
-    lock.unlock();
-
-    seekAbs(cuePoint);
-}
-
 void CueControl::cueCDJ(double v) {
     // This is how Pioneer cue buttons work:
     // If pressed while playing, stop playback and go to cue.
@@ -788,12 +761,11 @@ void CueControl::cueDenon(double v) {
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
-    if (m_pCueMode->get() == CUE_MODE_SIMPLE) {
-        cueSimple(v);
-    } else if (m_pCueMode->get() == CUE_MODE_DENON) {
+    if (m_pCueMode->get() == CUE_MODE_DENON) {
         cueDenon(v);
     } else {
-        // if (m_pCueMode->get() == CUE_MODE_PIONEER) {
+        //if (m_pCueMode->get() == CUE_MODE_PIONEER) {
+        // default to Pioneer mode
         cueCDJ(v);
     }
 }
@@ -825,7 +797,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
             play > 0.0 &&
             playPossible &&
             m_pPlayButton->get() == 0.0) {
-        // in DENON mode each play from pause moves the cue point
+        // in Denon mode each play from pause moves the cue point
         // if not previewing
         cueSet(1.0);
     }
@@ -863,11 +835,9 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
-        } else if (m_pCueMode->get() == CUE_MODE_PIONEER) {
-            // Flashing indicates that play is possible
-            m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
         } else {
-            m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+            // Flashing indicates that play is possible in Pioneer Mode
+            m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
         }
     }
 
@@ -894,24 +864,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
 }
 
 void CueControl::updateIndicators() {
-    if (m_pCueMode->get() == CUE_MODE_PIONEER) {
-        if (!m_bPreviewing) {
-            bool playing = m_pPlayButton->get() > 0;
-            if (!playing) {
-                if (!isTrackAtCue()) {
-                    if (getCurrentSample() < getTotalSamples()) {
-                        // Flash cue button if a next press would move the cue point
-                        m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
-                    } else {
-                        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
-                    }
-                } else if (m_pCuePoint->get() != -1) {
-                    // Next Press is preview
-                    m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
-                }
-            }
-        }
-    } else if (m_pCueMode->get() == CUE_MODE_DENON) {
+    if (m_pCueMode->get() == CUE_MODE_DENON) {
         // Cue button is only lit at cue point
         bool playing = m_pPlayButton->get() > 0;
         if (isTrackAtCue()) {
@@ -930,14 +883,23 @@ void CueControl::updateIndicators() {
                 }
             }
         }
-    } else { // Simple mode
-        bool playing = m_pPlayButton->get() > 0;
-        if (!playing) {
-            if (!isTrackAtCue() && getCurrentSample() < getTotalSamples()) {
-                // Flash cue button if a next press would move the cue point
-                m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
-            } else {
-                m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+    } else {
+        //if (m_pCueMode->get() == CUE_MODE_PIONEER) {
+        // default to Pioneer mode
+        if (!m_bPreviewing) {
+            bool playing = m_pPlayButton->get() > 0;
+            if (!playing) {
+                if (!isTrackAtCue()) {
+                    if (getCurrentSample() < getTotalSamples()) {
+                        // Flash cue button if a next press would move the cue point
+                        m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+                    } else {
+                        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+                    }
+                } else if (m_pCuePoint->get() != -1) {
+                    // Next Press is preview
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+                }
             }
         }
     }
