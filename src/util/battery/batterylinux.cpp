@@ -15,9 +15,7 @@ BatteryLinux::BatteryLinux(QObject* pParent, const QString& infoFile,
                            const QString& stateFile)
         : Battery(parent),
           m_sInfoFile(infoFile),
-          m_sStateFile(stateFile),
-          m_iMaximumCapacity(readMaximumCapacity()),
-          m_iCurrentCapacity(0) {
+          m_sStateFile(stateFile) {
 }
 
 BatteryLinux::~BatteryLinux() {
@@ -25,11 +23,17 @@ BatteryLinux::~BatteryLinux() {
 }
 
 void BatteryLinux::read() {
+    int currentCapacity = readCurrentCapacity();
+    int maximumCapacity = readMaximumCapacity();
+    int currentRate = readCurrentRate();
+
     m_csChargingState = readChargingState();
-    m_iCurrentCapacity = readCurrentCapacity();
-    m_iCurrentRate = readCurrentRate();
-    m_iMinutesLeft = readMinutesLeft();
-    m_iPercentage = readPercentage();
+    m_dPercentage = 0.0;
+    if (maximumCapacity > 0) {
+        m_dPercentage = static_cast<double>(currentCapacity) / maximumCapacity;
+    }
+    m_iMinutesLeft = getMinutesLeft(m_csChargingState, currentCapacity,
+                                    maximumCapacity, currentRate);
 }
 
 Battery::ChargingState BatteryLinux::readChargingState() {
@@ -57,17 +61,18 @@ Battery::ChargingState BatteryLinux::readChargingState() {
     return UNKNOWN;
 }
 
-int BatteryLinux::readMinutesLeft() {
+int BatteryLinux::getMinutesLeft(ChargingState chargingState, int currentCapacity,
+                                 int maximumCapacity, int currentRate) const {
     // Prevent division by 0
-    if (!m_iCurrentRate) {
+    if (currentRate == 0) {
         return 0;
     }
 
-    switch (m_csChargingState) {
+    switch (chargingState) {
         case DISCHARGING:
-            return 60 * m_iCurrentCapacity / m_iCurrentRate;
+            return 60 * currentCapacity / currentRate;
         case CHARGING:
-            return 60 * (m_iMaximumCapacity - m_iCurrentCapacity) / m_iCurrentRate;
+            return 60 * (maximumCapacity - currentCapacity) / currentRate;
         case CHARGED:
         case UNKNOWN:
         default:

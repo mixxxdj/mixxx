@@ -16,7 +16,7 @@ BatteryMac::~BatteryMac() {
 
 void BatteryMac::read() {
     m_iMinutesLeft = 0;
-    m_iPercentage = 0;
+    m_dPercentage = 0.0;
     m_csChargingState = Battery::UNKNOWN;
 
     CFTypeRef powerInfo = IOPSCopyPowerSourcesInfo();
@@ -112,7 +112,8 @@ void BatteryMac::read() {
         }
 
         if (max_capacity > 0) {
-            m_iPercentage = 100 * current_capacity / max_capacity;
+            m_dPercentage = static_cast<double>(current_capacity) /
+                    max_capacity;
         }
 
         if (on_ac) {

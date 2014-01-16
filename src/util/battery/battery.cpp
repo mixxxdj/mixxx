@@ -11,10 +11,11 @@
 // interval (in ms) of the timer which calls update()
 static const int kiUpdateInterval = 5000;
 
+
 Battery::Battery(QObject *parent)
         : QObject(parent),
           m_csChargingState(UNKNOWN),
-          m_iPercentage(0),
+          m_dPercentage(0.0),
           m_iMinutesLeft(0),
           timer(this) {
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -37,11 +38,11 @@ Battery* Battery::getBattery(QObject *parent) {
 }
 
 void Battery::update() {
-    int lastPercentage = m_iPercentage;
+    double lastPercentage = m_dPercentage;
     int lastMinutesLeft = m_iMinutesLeft;
     ChargingState lastChargingState = m_csChargingState;
     read();
-    if (lastPercentage != m_iPercentage ||
+    if (lastPercentage != m_dPercentage ||
         lastChargingState != m_csChargingState ||
         lastMinutesLeft != m_iMinutesLeft) {
         emit(stateChanged());

@@ -18,7 +18,7 @@ class Battery : public QObject {
     // returns time until discharged or time until fully charged
     // dependent on the current state
     int getMinutesLeft() { return m_iMinutesLeft; }
-    int getPercentage() { return m_iPercentage; }
+    double getPercentage() { return m_dPercentage; }
     ChargingState getChargingState() { return m_csChargingState; }
 
   public slots:
@@ -34,7 +34,7 @@ class Battery : public QObject {
     virtual void read() = 0;
 
     ChargingState m_csChargingState;
-    int m_iPercentage;
+    double m_dPercentage;
     int m_iMinutesLeft;
 
   private:
