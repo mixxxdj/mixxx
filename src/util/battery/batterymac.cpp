@@ -117,7 +117,10 @@ void BatteryMac::read() {
         }
 
         if (on_ac) {
-            m_csChargingState = is_charging ? CHARGING : CHARGED;
+            // Technically we can be on AC, not charged and not charging. We lie
+            // and say that if we are not on battery and we are not charged then
+            // we are charging.
+            m_csChargingState = is_charged ? CHARGED : CHARGING;
         } else {
             m_csChargingState = DISCHARGING;
         }
