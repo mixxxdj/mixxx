@@ -31,8 +31,6 @@ class Battery : public QObject {
 
   protected:
     Battery(QObject* parent=NULL);
-    // interval (in ms) of the timer which calls update()
-    static const int s_iUpdateInterval = 5000;
     virtual void read() = 0;
 
     ChargingState m_csChargingState;

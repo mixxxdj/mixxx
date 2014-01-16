@@ -8,6 +8,9 @@
 #include "util/battery/batterymac.h"
 #endif
 
+// interval (in ms) of the timer which calls update()
+static const int kiUpdateInterval = 5000;
+
 Battery::Battery(QObject *parent)
         : QObject(parent),
           m_csChargingState(UNKNOWN),
@@ -15,7 +18,7 @@ Battery::Battery(QObject *parent)
           m_iMinutesLeft(0),
           timer(this) {
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer.start(s_iUpdateInterval);
+    timer.start(kiUpdateInterval);
 }
 
 Battery::~Battery() {
