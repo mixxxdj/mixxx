@@ -653,11 +653,6 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 }
 
 void WaveformWidgetFactory::startVSync(MixxxApp *mixxxApp) {
-    if (m_vsyncThread) {
-        disconnect(m_vsyncThread, SIGNAL(vsyncRender()), this, SLOT(render()));
-        disconnect(m_vsyncThread, SIGNAL(vsyncSwap()), this, SLOT(swap()));
-        delete m_vsyncThread;
-    }
     m_vsyncThread = new VSyncThread(mixxxApp);
     m_vsyncThread->start();
 
@@ -665,7 +660,6 @@ void WaveformWidgetFactory::startVSync(MixxxApp *mixxxApp) {
             this, SLOT(render()));
     connect(m_vsyncThread, SIGNAL(vsyncSwap()),
             this, SLOT(swap()));
-
 }
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
