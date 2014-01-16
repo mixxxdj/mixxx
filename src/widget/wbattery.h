@@ -4,11 +4,13 @@
 #include <QList>
 #include <QMap>
 #include <QPixmap>
+#include <QScopedPointer>
 
 #include "battery/battery.h"
 #include "widget/wlabel.h"
 #include "widget/wwidget.h"
 #include "skin/skincontext.h"
+#include "widget/wpixmapstore.h"
 
 class WBattery : public WWidget {
     Q_OBJECT
@@ -30,13 +32,14 @@ class WBattery : public WWidget {
     QString getTimeLeft();
 
     // sets all pixmaps in target for 0 <= i <= 100
-    void setPixmap(QMap<int, QPixmap*> *target, const QString &filename, const QList<int> &charge);
+    void setPixmap(QMap<int, PaintablePointer>* target,
+                   const QString& filename, const QList<int>& charge);
 
-    Battery* battery;
-    QPixmap* m_pPixmap;
-    QPixmap* m_pPixmapCharged;
-    QMap<int, QPixmap*> m_qmPixmapsCharging;
-    QMap<int, QPixmap*> m_qmPixmapsDischarging;
+    QScopedPointer<Battery> m_pBattery;
+    PaintablePointer m_pPixmap;
+    PaintablePointer m_pPixmapCharged;
+    QMap<int, PaintablePointer> m_qmPixmapsCharging;
+    QMap<int, PaintablePointer> m_qmPixmapsDischarging;
 };
 
 #endif /* WBATTERY_H */

@@ -1,19 +1,18 @@
+#include <QStyleOption>
+#include <QStylePainter>
+
 #include "widget/wbattery.h"
-#include "widget/wpixmapstore.h"
 
 WBattery::WBattery(QWidget *parent)
         : WWidget(parent),
-          m_pPixmap(0),
-          m_pPixmapCharged(0),
-          m_qmPixmapsCharging(),
-          m_qmPixmapsDischarging() {
-    battery = Battery::getBattery(this);
-    connect(battery, SIGNAL(stateChanged()),
-            this, SLOT(update()));
+          m_pBattery(Battery::getBattery(this)) {
+    if (m_pBattery) {
+        connect(m_pBattery.data(), SIGNAL(stateChanged()),
+                this, SLOT(update()));
+    }
 }
 
 WBattery::~WBattery() {
-    delete battery;
 }
 
 void WBattery::setup(QDomNode node, const SkinContext& context) {
@@ -30,58 +29,67 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
 
     if (context.hasNode(node, "PixmapsCharging")) {
         QString sPathCharging = context.selectString(node, "PixmapsCharging");
-        setPixmap(&m_qmPixmapsCharging, sPathCharging, lStates);
+        setPixmap(&m_qmPixmapsCharging, context.getSkinPath(sPathCharging),
+                  lStates);
     }
     if (context.hasNode(node, "PixmapsDischarging")) {
         QString sPathDischarging = context.selectString(node, "PixmapsDischarging");
-        setPixmap(&m_qmPixmapsDischarging, sPathDischarging, lStates);
+        setPixmap(&m_qmPixmapsDischarging,
+                  context.getSkinPath(sPathDischarging), lStates);
     }
     if (context.selectBool(node, "HideWhenCharged", false)) {
         m_pPixmapCharged = m_qmPixmapsCharging[100];
     }
 
-    battery->update();
+    if (m_pBattery) {
+        m_pBattery->update();
+    }
 }
 
 QString WBattery::getTimeLeft() {
-    int minutes = battery->getMinutesLeft();
+    int minutes = m_pBattery ? m_pBattery->getMinutesLeft() : 0;
     if (minutes < 60) {
-        return QString("%1 minutes").arg(minutes);
+        return tr("%1 minutes").arg(minutes);
     }
-    return QString("%1:%2").arg(minutes/60).arg(minutes%60, 2, 10, QChar('0'));
+    return tr("%1:%2").arg(minutes/60).arg(minutes%60, 2, 10, QChar('0'));
 }
 
 void WBattery::update() {
-    Battery::ChargingState csChargingState = battery->getChargingState();
-    int iPercentage = battery->getPercentage();
+    Battery::ChargingState csChargingState = m_pBattery ?
+            m_pBattery->getChargingState() : Battery::UNKNOWN;
+    int iPercentage = m_pBattery ? m_pBattery->getPercentage() : 0;
+
     qDebug() << "WBattery: percentage:" << iPercentage;
     switch(csChargingState) {
         case Battery::CHARGING:
             m_pPixmap = m_qmPixmapsCharging[iPercentage];
-            setToolTip("Time until charged: " + getTimeLeft());
+            setToolTip(tr("Time until charged: %1").arg(getTimeLeft()));
             break;
         case Battery::DISCHARGING:
             m_pPixmap = m_qmPixmapsDischarging[iPercentage];
-            setToolTip("Time left: " + getTimeLeft());
+            setToolTip(tr("Time left: %1").arg(getTimeLeft()));
             break;
         case Battery::CHARGED:
             m_pPixmap = m_pPixmapCharged;
-            setToolTip("Battery fully charged");
+            setToolTip(tr("Battery fully charged."));
             break;
         case Battery::UNKNOWN:
         default:
-            setToolTip("Battery status unknown");
+            setToolTip(tr("Battery status unknown."));
     }
     // showEvent() hides the widget if m_pPixmap == 0, we have to show it again
-    if (m_pPixmap) show();
+    if (m_pPixmap)
+        show();
     // call parent's update() to show changes, this should call QWidget::update()
     WWidget::update();
 }
 
-void WBattery::setPixmap(QMap<int, QPixmap*> *target, const QString &filename, const QList<int> &chargeStates) {
+void WBattery::setPixmap(QMap<int, PaintablePointer>* target,
+                         const QString& filename,
+                         const QList<int>& chargeStates) {
     for (int i = 0; i < chargeStates.size(); ++i) {
         QString sPath = filename.arg(chargeStates.at(i), 3, 10, QChar('0'));
-        QPixmap *pPixmap = WPixmapStore::getPixmap(getPath(sPath));
+        PaintablePointer pPixmap = WPixmapStore::getPaintable(sPath);
         if (pPixmap) {
             setFixedSize(pPixmap->size());
             target->insert(chargeStates.at(i), pPixmap);
@@ -90,7 +98,7 @@ void WBattery::setPixmap(QMap<int, QPixmap*> *target, const QString &filename, c
     // fill the QMap so every key 0-100 has a value
     for (int i = 0; i <= 100; ++i) {
         if (!(target->contains(i))) {
-            QMap<int, QPixmap*>::const_iterator next = target->upperBound(i);
+            QMap<int, PaintablePointer>::const_iterator next = target->upperBound(i);
             if (next != target->constEnd()) {
                 target->insert(i, next.value());
             }
@@ -98,11 +106,13 @@ void WBattery::setPixmap(QMap<int, QPixmap*> *target, const QString &filename, c
     }
 }
 
-void WBattery::paintEvent(QPaintEvent *) {
-    if (!m_pPixmap) {
-        hide();
-        return;
+void WBattery::paintEvent(QPaintEvent*) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
+
+    if (m_pPixmap) {
+        m_pPixmap->draw(0, 0, &p);
     }
-    QPainter painter(this);
-    painter.drawPixmap(0, 0, *m_pPixmap);
 }
