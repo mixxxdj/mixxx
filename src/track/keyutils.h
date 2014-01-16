@@ -18,7 +18,7 @@ class KeyUtils {
         TRADITIONAL = 3,
     };
 
-    static const char* keyDebugName(mixxx::track::io::key::ChromaticKey key);
+    static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
 
     static inline bool keyIsMajor(mixxx::track::io::key::ChromaticKey key) {
         return key > mixxx::track::io::key::INVALID &&
