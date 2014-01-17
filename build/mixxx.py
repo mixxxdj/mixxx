@@ -187,6 +187,11 @@ class MixxxBuild(object):
             tools=tools, toolpath=toolpath, ENV=os.environ,
             **extra_arguments)
         self.read_environment_variables()
+
+        # Now that environment variables have been read, we can detect the compiler.
+        self.compiler_is_gcc = 'gcc' in self.env['CC']
+        self.compiler_is_clang = 'clang' in self.env['CC']
+
         self.virtualize_build_dir()
 
         if self.toolchain_is_gnu:
