@@ -272,7 +272,7 @@ void Tooltips::addStandardTooltips() {
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point."))
-            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer) OR preview from it (Denon)."))
+            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Numark) OR preview from it (Denon)."))
             << tr("Hint: Change the default cue behavior in Preferences -> Interface.")
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue-point and stops."));

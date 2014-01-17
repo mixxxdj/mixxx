@@ -15,6 +15,7 @@
 
 static const double CUE_MODE_PIONEER = 0.0;
 static const double CUE_MODE_DENON = 1.0;
+static const double CUE_MODE_NUMARK = 2.0;
 
 CueControl::CueControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
@@ -765,6 +766,7 @@ void CueControl::cueDefault(double v) {
         cueDenon(v);
     } else {
         //if (m_pCueMode->get() == CUE_MODE_PIONEER) {
+        //if (m_pCueMode->get() == CUE_MODE_NUMARK) {
         // default to Pioneer mode
         cueCDJ(v);
     }
@@ -792,8 +794,9 @@ void CueControl::playStutter(double v) {
 
 double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible) {
     QMutexLocker lock(&m_mutex);
+    double cueMode = m_pCueMode->get();
 
-    if (m_pCueMode->get() == CUE_MODE_DENON &&
+    if (cueMode == CUE_MODE_DENON &&
             play > 0.0 &&
             playPossible &&
             m_pPlayButton->get() == 0.0) {
@@ -828,31 +831,34 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
     } else {
         // Pause:
         m_pPause->set(1.0);
-        if (m_pCueMode->get() == CUE_MODE_DENON) {
+        if (cueMode == CUE_MODE_DENON) {
             if (isTrackAtCue()) {
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
             } else {
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
+        } else if (cueMode == CUE_MODE_NUMARK) {
+            m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
             // Flashing indicates that play is possible in Pioneer Mode
             m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
         }
     }
 
-    if (m_pCueMode->get() != CUE_MODE_DENON) {
+    if (cueMode != CUE_MODE_DENON) {
         if (m_pCuePoint->get() != -1) {
             if (play == 0.0 && !isTrackAtCue() &&
                     getCurrentSample() < getTotalSamples()) {
-                // in Pioneer mode Cue Button is flashing fast if CUE sets a new Cue point
-                m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
-            } else {
-                if (m_pCueMode->get() != CUE_MODE_PIONEER) {
-                    m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+                if (cueMode == CUE_MODE_NUMARK) {
+                    // in Numark mode Cue Button is flashing slow if CUE will move Cue point
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                 } else {
-                    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+                    // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
                 }
+            } else {
+                m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
             }
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
@@ -864,7 +870,9 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
 }
 
 void CueControl::updateIndicators() {
-    if (m_pCueMode->get() == CUE_MODE_DENON) {
+    double cueMode = m_pCueMode->get();
+
+    if (cueMode == CUE_MODE_DENON) {
         // Cue button is only lit at cue point
         bool playing = m_pPlayButton->get() > 0;
         if (isTrackAtCue()) {
@@ -877,23 +885,32 @@ void CueControl::updateIndicators() {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
             if (!playing) {
                 if (getCurrentSample() < getTotalSamples()) {
+                    // Play will move cue point
                     m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                 } else {
+                    // At track end
                     m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
                 }
             }
         }
     } else {
         //if (m_pCueMode->get() == CUE_MODE_PIONEER) {
+        //if (m_pCueMode->get() == CUE_MODE_NUMARK) {
         // default to Pioneer mode
         if (!m_bPreviewing) {
             bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
                 if (!isTrackAtCue()) {
                     if (getCurrentSample() < getTotalSamples()) {
-                        // Flash cue button if a next press would move the cue point
-                        m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+                        if (cueMode == CUE_MODE_NUMARK) {
+                            // in Numark mode Cue Button is flashing slow if CUE will move Cue point
+                            m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+                        } else {
+                            // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
+                            m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+                        }
                     } else {
+                        // At track end
                         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
                     }
                 } else if (m_pCuePoint->get() != -1) {
