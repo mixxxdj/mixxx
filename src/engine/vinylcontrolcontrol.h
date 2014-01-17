@@ -5,6 +5,7 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "controlpushbutton.h"
 
 class VinylControlControl : public EngineControl {
@@ -34,6 +35,7 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylWantEnabled;
     ControlPushButton* m_pControlVinylCueing;
     ControlPushButton* m_pControlVinylSignalEnabled;
+    ControlObjectSlave* m_pPlayEnabled;
     TrackPointer m_pCurrentTrack;
     bool m_bSeekRequested;
 };

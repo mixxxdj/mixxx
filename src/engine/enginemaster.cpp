@@ -48,7 +48,12 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            bool bRampingGain)
         : m_bRampingGain(bRampingGain),
           m_headphoneMasterGainOld(0.0),
-          m_headphoneVolumeOld(1.0) {
+          m_headphoneVolumeOld(1.0),
+          m_bMasterOutputConnected(false),
+          m_bHeadphoneOutputConnected(false) {
+    m_bBusOutputConnected[0] = false;
+    m_bBusOutputConnected[1] = false;
+    m_bBusOutputConnected[2] = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
@@ -493,5 +498,43 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
         break;
     default:
         return NULL;
+    }
+}
+
+void EngineMaster::onOutputConnected(AudioOutput output) {
+    switch (output.getType()) {
+        case AudioOutput::MASTER:
+            m_bMasterOutputConnected = true;
+            break;
+        case AudioOutput::HEADPHONES:
+            m_bHeadphoneOutputConnected = true;
+            break;
+        case AudioOutput::BUS:
+            m_bBusOutputConnected[output.getIndex()] = true;
+            break;
+        case AudioOutput::DECK:
+            // We don't track enabled decks.
+            break;
+        default:
+            break;
+    }
+}
+
+void EngineMaster::onOutputDisconnected(AudioOutput output) {
+    switch (output.getType()) {
+        case AudioOutput::MASTER:
+            m_bMasterOutputConnected = false;
+            break;
+        case AudioOutput::HEADPHONES:
+            m_bHeadphoneOutputConnected = false;
+            break;
+        case AudioOutput::BUS:
+            m_bBusOutputConnected[output.getIndex()] = false;
+            break;
+        case AudioOutput::DECK:
+            // We don't track enabled decks.
+            break;
+        default:
+            break;
     }
 }

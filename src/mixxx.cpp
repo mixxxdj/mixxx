@@ -647,18 +647,20 @@ MixxxApp::~MixxxApp() {
     delete m_pGuiTick;
 
     // Check for leaked ControlObjects and give warnings.
-    QList<ControlDoublePrivate*> leakedControls;
+    QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
     QList<ConfigKey> leakedConfigKeys;
 
     ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size()
+        qDebug() << "WARNING: The following" << leakedControls.size() 
                  << "controls were leaked:";
-        foreach (ControlDoublePrivate* pCOP, leakedControls)
-        {
-            ConfigKey key = pCOP->getKey();
-            qDebug() << key.group << key.item << pCOP->getCreatorCO();
+        foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
+            if (pCDP.isNull()) {
+                continue;
+            }
+            ConfigKey key = pCDP->getKey();
+            qDebug() << key.group << key.item << pCDP->getCreatorCO();
             leakedConfigKeys.append(key);
         }
 

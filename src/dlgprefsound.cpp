@@ -81,9 +81,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(resetButton, SIGNAL(clicked()),
             this, SLOT(resetClicked()));
 
-    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, const AudioSource*)),
+    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(addPath(AudioOutput)));
-    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, const AudioSource*)),
+    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(loadSettings()));
 
     connect(m_pSoundManager, SIGNAL(inputRegistered(AudioInput, AudioDestination*)),

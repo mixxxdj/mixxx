@@ -43,6 +43,8 @@ VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<Config
     m_pControlVinylSignalEnabled = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_signal_enabled"));
     m_pControlVinylSignalEnabled->set(1);
     m_pControlVinylSignalEnabled->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pPlayEnabled = new ControlObjectSlave(pGroup, "play", this);
 }
 
 VinylControlControl::~VinylControlControl() {
@@ -71,6 +73,7 @@ void VinylControlControl::notifySeek() {
     // so there are no issues with signals/slots causing timing
     // issues.
     if (m_pControlVinylMode->get() == MIXXX_VCMODE_ABSOLUTE &&
+        m_pPlayEnabled->get() > 0.0 &&
         !m_bSeekRequested) {
         m_pControlVinylMode->set(MIXXX_VCMODE_RELATIVE);
     }

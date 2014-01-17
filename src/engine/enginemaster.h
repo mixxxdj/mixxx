@@ -56,6 +56,14 @@ class EngineMaster : public QObject, public AudioSource {
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
 
+    // WARNING: These methods are called by the main thread. They should only
+    // touch the volatile bool connected indicators (see below). However, when
+    // these methods are called the callback is guaranteed to be inactive
+    // (SoundManager closes all devices before calling these). This may change
+    // in the future.
+    virtual void onOutputConnected(AudioOutput output);
+    virtual void onOutputDisconnected(AudioOutput output);
+
     void process(const int iBufferSize);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
@@ -195,6 +203,10 @@ class EngineMaster : public QObject, public AudioSource {
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
+
+    volatile bool m_bMasterOutputConnected;
+    volatile bool m_bHeadphoneOutputConnected;
+    volatile bool m_bBusOutputConnected[3];
 };
 
 #endif

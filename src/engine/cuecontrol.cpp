@@ -718,7 +718,7 @@ void CueControl::cueCDJ(double v) {
     }
     // indicator may flash because the delayed adoption of seekAbs
     // Correct the Indicator set via play
-    if (m_pLoadedTrack) {
+    if (m_pLoadedTrack && !playing) {
         m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
     } else {
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
