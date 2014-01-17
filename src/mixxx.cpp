@@ -643,6 +643,7 @@ MixxxApp::~MixxxApp() {
     delete m_pConfig;
 
     PlayerInfo::destroy();
+    WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
 
@@ -682,7 +683,6 @@ MixxxApp::~MixxxApp() {
     delete m_pKbdConfig;
     delete m_pKbdConfigEmpty;
 
-    WaveformWidgetFactory::destroy();
     t.elapsed(true);
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
