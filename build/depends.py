@@ -139,32 +139,6 @@ class OggVorbis(Dependence):
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
-class Opus(Dependence):
-    def description(self):
-        return "Opus (RFC 6716) support"
-      
-    def configure(self, build, conf):
-        # Supported for Opus (RFC 6716)
-        # More info http://http://www.opus-codec.org/
-        if build.platform_is_linux or build.platform_is_osx \
-                or build.platform_is_bsd:
-            # Check for libopusfile
-            # I just randomly picked version numbers lower than mine for this
-            if not conf.CheckForPKG('opusfile', '0.4'):
-                raise Exception('Missing libopusfile')
-
-            # This one have needed support for opus tags..
-            if not conf.CheckForPKG('taglib', '1.9.1'):
-                raise Exception('Missing version taglib that have Opus support (minimum is taglib 1.9.1)')
-
-	    build.env.ParseConfig('pkg-config opusfile opus ogg --silence-errors \
-                                  --cflags --libs')
-
-    def sources(self, build):
-        return ['soundsourceopus.cpp']
-
-
-
 class SndFile(Dependence):
 
     def configure(self, build, conf):
@@ -1055,7 +1029,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, Opus, OpenGL, TagLib, ProtoBuf,
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand]
 
     def post_dependency_check_configure(self, build, conf):

@@ -873,6 +873,43 @@ class Shoutcast(Feature):
                 'engine/sidechain/engineshoutcast.cpp']
 
 
+class Opus(Feature):
+    def description(self):
+        return "Opus (RFC 6716) support"
+
+    def enabled(self, build):
+        build.flags['opus'] = util.get_flags(build.env, 'opus', 0)
+        if int(build.flags['opus']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('opus', 'Set to 1 to enable Opus (RFC 6716) support \
+                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 0)
+
+    def configure(self, build, conf):
+        # Supported for Opus (RFC 6716)
+        # More info http://http://www.opus-codec.org/
+        if build.platform_is_linux or build.platform_is_osx \
+                or build.platform_is_bsd:
+            # Check for libopusfile
+            # I just randomly picked version numbers lower than mine for this
+            if not conf.CheckForPKG('opusfile', '0.2'):
+                raise Exception('Missing libopusfile (needs at least 0.2)')
+
+            build.env.Append(CPPDEFINES='__OPUS__')
+
+            # This one have needed support for opus tags..
+            if not conf.CheckForPKG('taglib', '1.9.1'):
+                build.env.Append(CPPDEFINES='__OPUSFILETAGS__')
+
+	    build.env.ParseConfig('pkg-config opusfile opus --silence-errors \
+                                  --cflags --libs')
+
+    def sources(self, build):
+        return ['soundsourceopus.cpp']
+
+
 class FFMPEG(Feature):
     def description(self):
         return "FFMPEG/LibAV support"
