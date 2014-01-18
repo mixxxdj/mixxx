@@ -42,7 +42,7 @@
 
 WWidget, QLabel {
   font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  font-size: 7px;
+  font-size: 7pt;
   text-transform: uppercase;
   color: black;
 }
@@ -182,7 +182,7 @@ WLabel {
 }
 
 WEffectChain {
-  font-size: 16px;
+  font-size: 16pt;
 }
 
 #EffectChain1 {
