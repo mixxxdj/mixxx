@@ -33,24 +33,30 @@ class EchoEffect : public EffectProcessor {
 
     EngineEffectParameter* m_pDelayParameter;
     EngineEffectParameter* m_pDecayParameter;
+    EngineEffectParameter* m_pPingPongParameter;
 
     struct GroupState {
         GroupState() {
             delay_buf = SampleUtil::alloc(MAX_BUFFER_LEN);
-            lowpass_buf = SampleUtil::alloc(MAX_BUFFER_LEN);
             // TODO(owilliams): use the actual samplerate.
             decay_lowpass =
                     new EngineFilterButterworth8Low(44100, 10000);
             SampleUtil::applyGain(delay_buf, 0, MAX_BUFFER_LEN);
             prev_delay_time = 0.0;
+            prev_delay_samples = 0;
             write_position = 0;
+            ping_pong_left = true;
+        }
+        ~GroupState() {
+            SampleUtil::free(delay_buf);
+            delete decay_lowpass;
         }
         CSAMPLE* delay_buf;
-        CSAMPLE* lowpass_buf;
         EngineFilterButterworth8Low* decay_lowpass;
         double prev_delay_time;
         int prev_delay_samples;
         int write_position;
+        bool ping_pong_left;
     };
     QMap<QString, GroupState*> m_groupState;
 
