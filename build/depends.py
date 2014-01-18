@@ -646,6 +646,7 @@ class MixxxCore(Feature):
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
+                   "widget/wsplitter.cpp",
 
                    "mathstuff.cpp",
 

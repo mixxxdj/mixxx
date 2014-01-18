@@ -58,6 +58,7 @@
 #include "widget/wwidgetgroup.h"
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
+#include "widget/wsplitter.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -420,22 +421,13 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
-    QSplitter* pSplitter = new QSplitter(m_pParent);
-    pSplitter->setObjectName("Splitter");
+    WSplitter* pSplitter = new WSplitter(m_pParent);
+    setupBaseWidget(node, pSplitter);
     setupWidget(node, pSplitter);
-
-    // Default orientation is horizontal.
-    if (m_pContext->hasNode(node, "Orientation")) {
-        QString layout = m_pContext->selectString(node, "Orientation");
-        if (layout == "vertical") {
-            pSplitter->setOrientation(Qt::Vertical);
-        } else if (layout == "horizontal") {
-            pSplitter->setOrientation(Qt::Horizontal);
-        }
-    }
+    pSplitter->setup(node, *m_pContext);
+    setupConnections(node, pSplitter);
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
-
     QWidget* pOldParent = m_pParent;
     m_pParent = pSplitter;
 
