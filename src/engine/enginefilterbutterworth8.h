@@ -1,3 +1,6 @@
+#ifndef ENGINE_ENGINEFILTERBUTTERWORTH8_H_
+#define ENGINE_ENGINEFILTERBUTTERWORTH8_H_
+
 #define MAX_COEFS 17
 #define MAX_INTERNAL_BUF 16
 
@@ -54,3 +57,5 @@ class EngineFilterButterworth8High : public EngineFilterButterworth8 {
     void setFrequencyCorners(double freqCorner1);
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
+
+#endif  // ENGINE_ENGINEFILTERBUTTERWORTH8_H_
