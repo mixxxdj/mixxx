@@ -25,7 +25,7 @@
             <Horizontal>true</Horizontal>
             <Connection>
               <ConfigKey>
-                <Variable name="group"/>,volume</ConfigKey>
+                <Variable name="group"/>,rate</ConfigKey>
               <EmitOnDownPress>false</EmitOnDownPress>
             </Connection>
           </SliderComposed>
