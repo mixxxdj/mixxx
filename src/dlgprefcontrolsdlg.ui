@@ -241,9 +241,10 @@
 Denon Mode:
 - Cue button at cue point = preview
 - Cue button not at cue point = pause at cue point
-- Play = set cue point</string>
+- Play = set cue point
 Numark Mode:
 - Same as Pioneer Mode, but without a flashing play button
+        </string>
        </property>
       </widget>
      </item>
