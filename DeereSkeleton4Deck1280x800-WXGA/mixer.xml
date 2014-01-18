@@ -7,7 +7,7 @@
   <WidgetGroup>
     <ObjectName>Mixer</ObjectName>
     <Layout>vertical</Layout>
-    <MinimumSize>160,-1</MinimumSize>
+    <MinimumSize>min,-1</MinimumSize>
     <SizePolicy>f,min</SizePolicy>
     <Children>
       <Template src="skin:mixer_status_bar.xml"/>
@@ -16,18 +16,6 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:knob.xml">
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headVolume</SetVariable>
-            <SetVariable name="label">Head Vol</SetVariable>
-          </Template>
-
-          <Template src="skin:knob.xml">
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headMix</SetVariable>
-            <SetVariable name="label">Head Mix</SetVariable>
-          </Template>
-
           <Template src="skin:knob.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">balance</SetVariable>
@@ -43,34 +31,72 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>HeadphoneControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headVolume</SetVariable>
+            <SetVariable name="label">Head Vol</SetVariable>
+          </Template>
+
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headMix</SetVariable>
+            <SetVariable name="label">Head Mix</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
         <ObjectName>DeckControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck_mixer_controls.xml">
-            <SetVariable name="i">3</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:deck_mixer_controls.xml">
+                <SetVariable name="i">3</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
           <Template src="skin:deck_mixer_controls.xml">
             <SetVariable name="i">1</SetVariable>
           </Template>
           <Template src="skin:deck_mixer_controls.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
-          <Template src="skin:deck_mixer_controls.xml">
-            <SetVariable name="i">4</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:deck_mixer_controls.xml">
+                <SetVariable name="i">4</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>CrossfadeContainer</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
           <SliderComposed>
             <SizePolicy>me,min</SizePolicy>
-            <MinimumSize>100,40</MinimumSize>
-            <MaximumSize>100,40</MaximumSize>
+            <MinimumSize>-1,40</MinimumSize>
+            <MaximumSize>-1,40</MaximumSize>
             <Handle>handle-horizontal.svg</Handle>
             <Horizontal>true</Horizontal>
             <Connection>

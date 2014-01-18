@@ -9,6 +9,22 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+      <PushButton>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>2DECK</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>4DECK</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+        </Connection>
+      </PushButton>
       <Time>
       </Time>
       <Battery>
