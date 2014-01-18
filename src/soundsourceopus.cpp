@@ -2,7 +2,9 @@
 // Create by 14/01/2013 Tuukka Pasanen
 // Based on work 2003 by Svein Magne Bang
 
+#ifndef __OPUSFILETAGS__
 #include <taglib/opusfile.h>
+#endif
 
 #include "trackinfoobject.h"
 #include "soundsourceopus.h"
@@ -47,8 +49,6 @@ SoundSourceOpus::~SoundSourceOpus() {
 int SoundSourceOpus::open() {
     int error = 0;
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
-
-    qDebug() << m_qFilename;
 
     m_ptrOpusFile = op_open_file(qBAFilename.data(), &error);
     if ( m_ptrOpusFile == NULL ) {
@@ -172,7 +172,7 @@ unsigned SoundSourceOpus::read(volatile unsigned long size, const SAMPLE * desti
    Parse the the file to get metadata
  */
 int SoundSourceOpus::parseHeader() {
-    setType("opus");
+    int error = 0;
 
 #ifdef __WINDOWS__
     /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
@@ -187,6 +187,18 @@ int SoundSourceOpus::parseHeader() {
 #else
     QByteArray qBAFilename = m_qFilename.toUtf8();
 #endif
+
+    
+    OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.data(), &error);
+    this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
+    this->setSampleRate(48000);
+    this->setChannels(2);
+    int64_t l_lLength = op_pcm_total(l_ptrOpusFile, -1) * 2;
+    this->setDuration(l_lLength / (48000 * 2));
+    this->setType("opus");
+
+// If we don't have new enough Taglib we use libopusfile parser!
+#ifndef __OPUSFILETAGS__
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata
@@ -197,8 +209,59 @@ int SoundSourceOpus::parseHeader() {
     if (tag) {
         processXiphComment(tag);
     }
+#else
+    // From Taglib 1.9.x Opus is supported
+    // Before that we have parse tags by this code
+    int i = 0;
+    const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
+   
 
+    // This is left for debug reasons !!
+    // qDebug() << "opus: We have " << l_ptrOpusTags->comments;
+    for( i = 0; i < l_ptrOpusTags->comments; i ++){
+      QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
+      QString l_STag = l_SWholeTag.left(l_SWholeTag.indexOf("="));
+      QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
+      
+      if (!l_STag.compare("ARTIST") ) {
+            this->setArtist(l_SPayload);
+      } else if (!l_STag.compare("ALBUM")) {
+            this->setAlbum(l_SPayload);
+      } else if (!l_STag.compare("BPM")) {
+            this->setBPM(l_SPayload.toFloat());
+      } else if (!l_STag.compare("YEAR") || !l_STag.compare("DATE")) {
+            this->setYear(l_SPayload);
+      } else if (!l_STag.compare("GENRE")) {
+            this->setGenre(l_SPayload);
+      } else if (!l_STag.compare("TRACKNUMBER")) {
+            this->setTrackNumber(l_SPayload);
+      } else if (!l_STag.compare("COMPOSER")) {
+            this->setComposer(l_SPayload);
+      } else if (!l_STag.compare("ALBUMARTIST")) {
+            this->setAlbumArtist(l_SPayload);
+      } else if (!l_STag.compare("TITLE")) {
+            this->setTitle(l_SPayload);
+      } else if (!l_STag.compare("REPLAYGAIN_TRACK_PEAK")) {
+      } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
+            this->parseReplayGainString (l_SPayload);
+      } else if (!l_STag.compare("REPLAYGAIN_ALBUM_PEAK")) {
+      } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
+      }
+      
+      // This is left fot debug reasons!!
+      //qDebug() << "Comment" << i << l_ptrOpusTags->comment_lengths[i] << 
+      //" (" << l_ptrOpusTags->user_comments[i] << ")" << l_STag << "*" << l_SPayload;
+    }
+
+    op_free(l_ptrOpusFile);
+    return OK;
+#endif
+    
+    
+#ifndef __OPUSFILETAGS__
     return result ? OK : ERR;
+#endif
+  
 }
 
 /*
