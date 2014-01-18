@@ -762,8 +762,8 @@ void CueControl::cueDefault(double v) {
     if (m_pCueMode->get() == CUE_MODE_DENON) {
         cueDenon(v);
     } else {
-        //if (m_pCueMode->get() == CUE_MODE_PIONEER) {
-        //if (m_pCueMode->get() == CUE_MODE_NUMARK) {
+        // The modes CUE_MODE_PIONEER and CUE_MODE_NUMARK are similar
+        // are handled inside cueCDJ(v)
         // default to Pioneer mode
         cueCDJ(v);
     }
@@ -891,8 +891,7 @@ void CueControl::updateIndicators() {
             }
         }
     } else {
-        //if (m_pCueMode->get() == CUE_MODE_PIONEER) {
-        //if (m_pCueMode->get() == CUE_MODE_NUMARK) {
+        // Here we have CUE_MODE_PIONEER or CUE_MODE_NUMARK
         // default to Pioneer mode
         if (!m_bPreviewing) {
             bool playing = m_pPlayButton->get() > 0;
