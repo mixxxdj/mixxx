@@ -275,8 +275,6 @@ QString SoundDevicePortAudio::getError() const {
     return m_lastError;
 }
 
-// This callback function gets called every time the sound device runs
-// out of samples (ie. when it needs more sound to play)
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
                                           float *output, float *in,
                                           const PaStreamCallbackTimeInfo *timeInfo,
@@ -336,9 +334,6 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     return paContinue;
 }
 
-// Wrapper function to call processing loop function,
-// implemented as a method in a class. Used in PortAudio,
-// which knows nothing about C++.
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,
