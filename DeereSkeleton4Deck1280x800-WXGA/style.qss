@@ -55,6 +55,11 @@ WLabel {
   qproperty-alignment: 'AlignCenter';
 }
 
+/* All widget groups that are children of #DeckRows should AlignTop. */
+#DeckRows > WWidgetGroup {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+}
+
 #ArtistGutter, #TitleGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px;
