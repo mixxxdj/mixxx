@@ -103,8 +103,8 @@ void EchoEffect::process(const QString& group, const CSAMPLE* pInput,
 
     if (delay_time < group_state.prev_delay_time) {
         // If the delay time has shrunk, we may need to wrap the write position.
-        group_state.write_position = group_state.write_position % delay_samples;
         delay_samples = getDelaySamples(delay_time);
+        group_state.write_position = group_state.write_position % delay_samples;
     } else if (delay_time > group_state.prev_delay_time) {
         // If the delay time has grown, we need to zero out the new portion
         // of the buffer we are using.
