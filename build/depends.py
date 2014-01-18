@@ -645,6 +645,7 @@ class MixxxCore(Feature):
                    "widget/wtrackproperty.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
+                   "widget/wcombobox.cpp",
 
                    "mathstuff.cpp",
 

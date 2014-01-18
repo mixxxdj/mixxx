@@ -57,6 +57,7 @@
 #include "widget/wwidgetstack.h"
 #include "widget/wwidgetgroup.h"
 #include "widget/wkey.h"
+#include "widget/wcombobox.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -358,6 +359,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseSliderComposed(node));
     } else if (nodeName == "PushButton") {
         result = wrapWidget(parsePushButton(node));
+    } else if (nodeName == "ComboBox") {
+        result = wrapWidget(parseComboBox(node));
     } else if (nodeName == "Overview") {
         result = wrapWidget(parseOverview(node));
     } else if (nodeName == "Visual") {
@@ -643,6 +646,17 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node,
 
 QWidget* LegacySkinParser::parsePushButton(QDomElement node) {
     WPushButton* p = new WPushButton(m_pParent);
+    setupBaseWidget(node, p);
+    setupWidget(node, p);
+    p->setup(node, *m_pContext);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseComboBox(QDomElement node) {
+    WComboBox* p = new WComboBox(m_pParent);
     setupBaseWidget(node, p);
     setupWidget(node, p);
     p->setup(node, *m_pContext);

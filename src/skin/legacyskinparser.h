@@ -54,6 +54,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseWidgetStack(QDomElement node);
     QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget, QWidget* pInnerWidget);
     QWidget* parsePushButton(QDomElement node);
+    QWidget* parseComboBox(QDomElement node);
     QWidget* parseSliderComposed(QDomElement node);
     QWidget* parseVisual(QDomElement node);
     QWidget* parseOverview(QDomElement node);
