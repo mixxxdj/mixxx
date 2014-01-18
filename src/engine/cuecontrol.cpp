@@ -771,7 +771,7 @@ void CueControl::cueDefault(double v) {
 
 void CueControl::pause(double v) {
     QMutexLocker lock(&m_mutex);
-    qDebug() << "CueControl::pause()" << v;
+    //qDebug() << "CueControl::pause()" << v;
     if (v != 0.0) {
         m_pPlayButton->set(0.0);
     }
@@ -779,7 +779,7 @@ void CueControl::pause(double v) {
 
 void CueControl::playStutter(double v) {
     QMutexLocker lock(&m_mutex);
-    qDebug() << "playStutter" << v;
+    //qDebug() << "playStutter" << v;
     if (v != 0.0) {
         if (m_pPlayButton->get() != 0.0) {
             cueGoto(1.0);
