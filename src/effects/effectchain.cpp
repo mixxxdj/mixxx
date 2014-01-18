@@ -63,6 +63,15 @@ void EffectChain::setName(const QString& name) {
     emit(nameChanged(name));
 }
 
+QString EffectChain::description() const {
+    return m_description;
+}
+
+void EffectChain::setDescription(const QString& description) {
+    m_description = description;
+    emit(descriptionChanged(description));
+}
+
 bool EffectChain::enabled() const {
     return m_bEnabled;
 }
@@ -205,6 +214,7 @@ QDomElement EffectChain::toXML(QDomDocument* doc) const {
 
     XmlParse::addElement(*doc, element, "Id", m_id);
     XmlParse::addElement(*doc, element, "Name", m_name);
+    XmlParse::addElement(*doc, element, "Description", m_description);
     XmlParse::addElement(*doc, element, "InsertionType",
                          insertionTypeToString(m_insertionType));
     XmlParse::addElement(*doc, element, "Mix",
@@ -227,12 +237,14 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
                                         const QDomElement& element) {
     QString id = XmlParse::selectNodeQString(element, "Id");
     QString name = XmlParse::selectNodeQString(element, "Name");
+    QString description = XmlParse::selectNodeQString(element, "Description");
     QString insertionTypeStr = XmlParse::selectNodeQString(element, "InsertionType");
     QString mixStr = XmlParse::selectNodeQString(element, "Mix");
     QString parameterStr = XmlParse::selectNodeQString(element, "ParameterStr");
 
     EffectChain* pChain = new EffectChain(pEffectsManager, id);
     pChain->setName(name);
+    pChain->setDescription(description);
     InsertionType insertionType = insertionTypeFromString(insertionTypeStr);
     if (insertionType != UNKNOWN_INSERTION_TYPE) {
         pChain->setInsertionType(insertionType);

@@ -43,6 +43,10 @@ class EffectChain : public QObject {
     QString name() const;
     void setName(const QString& name);
 
+    // Get the human-readable description of the EffectChain
+    QString description() const;
+    void setDescription(const QString& description);
+
     double parameter() const;
     void setParameter(const double& dParameter);
 
@@ -95,6 +99,7 @@ class EffectChain : public QObject {
     void effectAdded();
     void effectRemoved();
     void nameChanged(const QString& name);
+    void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);
     void mixChanged(double v);
     void parameterChanged(double v);
@@ -114,6 +119,7 @@ class EffectChain : public QObject {
     bool m_bEnabled;
     QString m_id;
     QString m_name;
+    QString m_description;
     InsertionType m_insertionType;
     double m_dMix;
     double m_dParameter;
