@@ -893,9 +893,9 @@ class MixxxCore(Feature):
             if build.toolchain_is_msvs:
                 build.env.Append(LINKFLAGS="/MANIFEST")
         elif build.platform_is_osx:
-            #Need extra room for code signing (App Store)
-            build.env.Append(LINKFLAGS="-headerpad=ffff")
-            build.env.Append(LINKFLAGS="-headerpad_max_install_names")
+            # Need extra room for code signing (App Store)
+            build.env.Append(LINKFLAGS="-Wl,-headerpad,ffff")
+            build.env.Append(LINKFLAGS="-Wl,-headerpad_max_install_names")
 
         return sources
 
