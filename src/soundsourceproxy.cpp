@@ -22,7 +22,9 @@
 #include "soundsourcemp3.h"
 #endif
 #include "soundsourceoggvorbis.h"
+#ifdef __OPUS__
 #include "soundsourceopus.h"
+#endif
 #ifdef __COREAUDIO__
 #include "soundsourcecoreaudio.h"
 #endif
@@ -132,8 +134,10 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #endif
     if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
         return new SoundSourceOggVorbis(qFilename);
+#ifdef __OPUS__
     } else if (SoundSourceOpus::supportedFileExtensions().contains(extension)) {
         return new SoundSourceOpus(qFilename);
+#endif
 #ifdef __MAD__
     } else if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
         return new SoundSourceMp3(qFilename);
@@ -388,7 +392,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
 #endif
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
+#ifdef __OPUS__
     supportedFileExtensions.append(SoundSourceOpus::supportedFileExtensions());
+#endif
 #ifdef __SNDFILE__
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
 #endif
