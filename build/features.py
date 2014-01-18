@@ -902,6 +902,7 @@ class Opus(Feature):
             # This one have needed support for opus tags..
             if not conf.CheckForPKG('taglib', '1.9.1'):
                 build.env.Append(CPPDEFINES='__OPUSFILETAGS__')
+                self.status = "Enabled -- Using libopusfile Tag parsing"
 
 	    build.env.ParseConfig('pkg-config opusfile opus --silence-errors \
                                   --cflags --libs')
