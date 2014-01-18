@@ -41,8 +41,8 @@
  *******************************************************************************/
 
 WWidget, QLabel {
-  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  font-size: 7px;
+  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-size: 7pt;
   text-transform: uppercase;
   color: black;
 }
@@ -67,7 +67,7 @@ WLabel {
 }
 
 #ArtistGutter WLabel, #BPMGutter WLabel, #PositionGutter WLabel {
-  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
 }
 
@@ -76,7 +76,7 @@ WLabel {
 }
 
 #TitleGutter WLabel, #EffectChainNameContainer WLabel {
-  font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
   text-align: left;
 }
@@ -107,7 +107,7 @@ WLabel {
 }
 
 #EffectChainNextPrevContainer WPushButton {
-  font-size: 12px;
+  font-size: 12pt;
 }
 
 #KnobLabel {
@@ -182,7 +182,7 @@ WLabel {
 }
 
 WEffectChain {
-  font-size: 16px;
+  font-size: 16pt;
 }
 
 #EffectChain1 {
