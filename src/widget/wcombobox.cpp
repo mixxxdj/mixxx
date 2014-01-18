@@ -36,7 +36,7 @@ bool WComboBox::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QWidget::event(pEvent);
+    return QComboBox::event(pEvent);
 }
 
 void WComboBox::onConnectedControlValueChanged(double v) {

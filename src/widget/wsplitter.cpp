@@ -24,5 +24,5 @@ bool WSplitter::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QWidget::event(pEvent);
+    return QSplitter::event(pEvent);
 }
