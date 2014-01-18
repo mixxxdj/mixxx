@@ -1216,49 +1216,19 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
 
 QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
     WEffectChain* pEffectChain = new WEffectChain(m_pParent, m_pEffectsManager);
-    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
-    // come first. This is because WNumber/WLabel both change the palette based
-    // on the node and setupWidget() will set the widget style. If the style is
-    // set before the palette is set then the custom palette will not take
-    // effect which breaks color scheme support.
-    pEffectChain->setup(node, *m_pContext);
-    setupBaseWidget(node, pEffectChain);
-    setupWidget(node, pEffectChain);
-    setupConnections(node, pEffectChain);
-    pEffectChain->installEventFilter(m_pKeyboard);
-    pEffectChain->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    setupLabelWidget(node, pEffectChain);
     return pEffectChain;
 }
 
 QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
     WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
-    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
-    // come first. This is because WNumber/WLabel both change the palette based
-    // on the node and setupWidget() will set the widget style. If the style is
-    // set before the palette is set then the custom palette will not take
-    // effect which breaks color scheme support.
-    pEffect->setup(node, *m_pContext);
-    setupBaseWidget(node, pEffect);
-    setupWidget(node, pEffect);
-    setupConnections(node, pEffect);
-    pEffect->installEventFilter(m_pKeyboard);
-    pEffect->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    setupLabelWidget(node, pEffect);
     return pEffect;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
     WEffectParameter* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
-    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
-    // come first. This is because WNumber/WLabel both change the palette based
-    // on the node and setupWidget() will set the widget style. If the style is
-    // set before the palette is set then the custom palette will not take
-    // effect which breaks color scheme support.
-    pEffectParameter->setup(node, *m_pContext);
-    setupBaseWidget(node, pEffectParameter);
-    setupWidget(node, pEffectParameter);
-    setupConnections(node, pEffectParameter);
-    pEffectParameter->installEventFilter(m_pKeyboard);
-    pEffectParameter->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    setupLabelWidget(node, pEffectParameter);
     return pEffectParameter;
 }
 
