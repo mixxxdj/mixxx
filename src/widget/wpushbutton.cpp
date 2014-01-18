@@ -39,8 +39,7 @@ WPushButton::WPushButton(QWidget* pParent)
           m_bRightClickForcePush(false),
           m_bPressed(false),
           m_leftButtonMode(ControlPushButton::PUSH),
-          m_rightButtonMode(ControlPushButton::PUSH),
-          m_indicatorConnected(false) {    
+          m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
 }
 
@@ -50,8 +49,7 @@ WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftBut
           m_bLeftClickForcePush(false),
           m_bRightClickForcePush(false),
           m_leftButtonMode(leftButtonMode),
-          m_rightButtonMode(rightButtonMode), 
-          m_indicatorConnected(false) {
+          m_rightButtonMode(rightButtonMode) {
     setStates(0);
 }
 
