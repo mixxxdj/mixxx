@@ -107,18 +107,21 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
                 qDebug() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
             double dNormalized = (dValue - dMinimum) / (dMaximum - dMinimum);
+            double dDefaultNormalized = (dDefault - dMinimum)  / (dMaximum - dMinimum);
 
             qDebug() << debugString() << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6 Norm: %7").arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault).arg(dNormalized);
 
             m_pControlValue->set(dValue);
-            // Convert to stupid GUI widget convention
+            m_pControlValue->setDefaultValue(dDefault);
             m_pControlValueNormalized->set(dNormalized);
+            m_pControlValueNormalized->setDefaultValue(dDefaultNormalized);
             m_pControlValueMinimum->set(dMinimum);
             m_pControlValueMinimumLimit->set(dMinimumLimit);
             m_pControlValueMaximum->set(dMaximum);
             m_pControlValueMaximumLimit->set(dMaximumLimit);
             m_pControlValueType->set(0); // TODO(rryan) expose this from EffectParameter
             m_pControlValueDefault->set(dDefault);
+
             // Default loaded parameters to enabled and unlinked
             m_pControlEnabled->set(1.0);
             m_pControlLinked->set(0.0);
@@ -135,7 +138,9 @@ void EffectParameterSlot::clear() {
     m_pEffect.clear();
     m_pControlEnabled->set(0.0);
     m_pControlValue->set(0.0);
+    m_pControlValue->setDefaultValue(0.0);
     m_pControlValueNormalized->set(0.0);
+    m_pControlValueNormalized->setDefaultValue(0.0);
     m_pControlValueType->set(0.0);
     m_pControlValueDefault->set(0.0);
     m_pControlValueMaximum->set(0.0);
