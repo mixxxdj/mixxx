@@ -209,24 +209,21 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
             attachCue(pCue, hotcue);
     }
 
+    double loadCuePoint = 0.0;
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
+
+        // If cue recall is ON in the prefs, then we're supposed to seek to the cue
+        // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
+        if (!getConfig()->getValueString(
+                ConfigKey("[Controls]","CueRecall")).toInt()) {
+            loadCuePoint = loadCue->getPosition();
+        }
     } else {
+        // If no cue point is stored, set one at track start
         m_pCuePoint->set(0.0);
     }
-    if (m_pCueMode->get() == 0.0) {
-        // in Pioneer mode Cue Button is lit if a cue point is set
-        m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
-    }
 
-    int cueRecall = getConfig()->getValueString(
-        ConfigKey("[Controls]","CueRecall")).toInt();
-    //If cue recall is ON in the prefs, then we're supposed to seek to the cue
-    //point on song load. Note that cueRecall == 0 corresponds to "ON", not OFF.
-    double loadCuePoint = 0;
-    if (loadCue && cueRecall == 0) {
-        loadCuePoint = loadCue->getPosition();
-    }
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
     seekExact(loadCuePoint);
