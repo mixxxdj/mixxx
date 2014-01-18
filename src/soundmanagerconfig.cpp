@@ -200,19 +200,22 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
     m_deckCount = deckCount;
 }
 
-void
-SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
+void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
     foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
         foreach (AudioInput in, m_inputs.values(device)) {
-            if (in.getIndex() + 1 > minimum_deck_count) {
+            if ((in.getType() == AudioInput::DECK ||
+                 in.getType() == AudioInput::VINYLCONTROL ||
+                 in.getType() == AudioInput::EXTPASSTHROUGH) &&
+                in.getIndex() + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
                 minimum_deck_count = in.getIndex() + 1;
             }
         }
         foreach (AudioOutput out, m_outputs.values(device)) {
-            if (out.getIndex() + 1 > minimum_deck_count) {
+            if (out.getType() == AudioOutput::DECK &&
+                    out.getIndex() + 1 > minimum_deck_count) {
                 qDebug() << "Found an output connection above current deck count";
                 minimum_deck_count = out.getIndex() + 1;
             }
