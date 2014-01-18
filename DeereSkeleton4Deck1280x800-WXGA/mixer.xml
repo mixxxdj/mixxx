@@ -10,6 +10,7 @@
     <MinimumSize>160,-1</MinimumSize>
     <SizePolicy>f,min</SizePolicy>
     <Children>
+      <Template src="skin:mixer_status_bar.xml"/>
       <WidgetGroup>
         <ObjectName>MasterControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
