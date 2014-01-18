@@ -26,7 +26,7 @@ EffectManifest EchoEffect::getManifest() {
 
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("delay_time");
-    time->setName(QObject::tr("Delay Time"));
+    time->setName(QObject::tr("Delay"));
     time->setDescription(QObject::tr("Delay time (seconds)"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
@@ -38,7 +38,7 @@ EffectManifest EchoEffect::getManifest() {
 
     time = manifest.addParameter();
     time->setId("decay_amount");
-    time->setName(QObject::tr("Decay Amount"));
+    time->setName(QObject::tr("Decay"));
     time->setDescription(
             QObject::tr("Amount the echo fades each time it loops"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
@@ -52,7 +52,7 @@ EffectManifest EchoEffect::getManifest() {
 
     time = manifest.addParameter();
     time->setId("pingpong_amount");
-    time->setName(QObject::tr("Ping-Pong Amount"));
+    time->setName(QObject::tr("PingPong"));
     time->setDescription(
             QObject::tr("As the ping-pong amount increases, increasing amounts "
                         "of the echoed signal is bounced between the left and "
@@ -154,25 +154,21 @@ void EchoEffect::process(const QString& group, const CSAMPLE* pInput,
         if (gs.ping_pong_left) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            CSAMPLE left =
+            pOutput[i] =
                     (gs.delay_buf[read_position] +
                             gs.delay_buf[read_position + 1] * pingpong_frac) /
                     (1 + pingpong_frac);
             // Right sample reduced by (1 - fraction)
-            CSAMPLE right = gs.delay_buf[read_position + 1] * (1 - pingpong_frac);
-            pOutput[i] = left;
-            pOutput[i + 1] = right;
+            pOutput[i + 1] = gs.delay_buf[read_position + 1] * (1 - pingpong_frac);
         } else {
             // Left sample reduced by (1 - fraction)
-            CSAMPLE left = gs.delay_buf[read_position] * (1 - pingpong_frac);
+            pOutput[i] = gs.delay_buf[read_position] * (1 - pingpong_frac);
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            CSAMPLE right =
+            pOutput[i + 1] =
                     (gs.delay_buf[read_position + 1] +
                             gs.delay_buf[read_position] * pingpong_frac) /
                     (1 + pingpong_frac);
-            pOutput[i] = left;
-            pOutput[i + 1] = right;
         }
 
         INCREMENT_RING(read_position, 2, delay_samples);
