@@ -340,6 +340,11 @@ void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
     // interpolation code (EngineBufferScaleLinear). It is faster and sounds
     // much better for scratching.
 
+    // If scaler is over-ridden then don't switch anything.
+    if (m_bScalerOverride) {
+        return;
+    }
+
     if (bEnable && m_pScale != m_pScaleRB) {
         m_pScale = m_pScaleRB;
         m_bScalerChanged = true;

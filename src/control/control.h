@@ -26,7 +26,7 @@ class ControlDoublePrivate : public QObject {
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
-    static void getControls(QList<ControlDoublePrivate*>* pControlsList);
+    static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
 
     // Sets the control value.
     void set(double value, QObject* pSender);
