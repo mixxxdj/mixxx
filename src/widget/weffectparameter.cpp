@@ -75,7 +75,9 @@ void WEffectParameter::setEffectParameterSlot(EffectParameterSlotPointer pEffect
 void WEffectParameter::parameterUpdated() {
     if (m_pEffectParameterSlot) {
         setText(m_pEffectParameterSlot->name());
+        setBaseTooltip(m_pEffectParameterSlot->description());
     } else {
         setText(tr("None"));
+        setBaseTooltip(tr("No effect loaded."));
     }
 }

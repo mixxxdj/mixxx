@@ -85,6 +85,13 @@ QString EffectParameterSlot::name() const {
     return QString();
 }
 
+QString EffectParameterSlot::description() const {
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->description();
+    }
+    return tr("No effect loaded.");
+}
+
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {

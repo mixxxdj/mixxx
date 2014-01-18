@@ -37,6 +37,7 @@ class EffectParameterSlot : public QObject {
     void loadEffect(EffectPointer pEffect);
 
     QString name() const;
+    QString description() const;
 
   signals:
     // Signal that indicates that the EffectParameterSlot has been updated.
