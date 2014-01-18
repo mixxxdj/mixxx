@@ -419,7 +419,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
         pControl->notifySeek(m_filepos_play);
     }
 
-    m_playButton->set(m_playButton->get()); // verify or update play button and indicator
+    slotControlPlayRequest(m_playButton->get()); // verify or update play button and indicator
 
     m_engineLock.unlock();
 }
