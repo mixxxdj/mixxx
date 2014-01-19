@@ -3,7 +3,8 @@
 
 	Copyright 2002-13 Tim Goetze <tim@quitte.de>
 
-	Port from LADSPA to Mixxx 2014 by Owen Williams <owilliams@mixxx.org>
+	Port from LADSPA to Mixxx 2014 by Owen Williams <owilliams@mixxx.org>,
+	Mostly just deleting excess code.
 
 	http://quitte.de/dsp/
 
@@ -107,7 +108,7 @@ PlateStub::init()
 	dediff2 = .729;
 }
 
-inline void
+void
 PlateStub::process (sample_t x, sample_t decay, sample_t * _xl, sample_t * _xr)
 {
 	x = input.bandwidth.process (x);
@@ -158,48 +159,3 @@ PlateStub::process (sample_t x, sample_t decay, sample_t * _xl, sample_t * _xr)
 	*_xl = xl;
 	*_xr = xr;
 }
-
-/* //////////////////////////////////////////////////////////////////////// */
-
-
-// This will get replaced with my own inner loop
-//void
-//PlateX2::cycle (uint frames)
-//{
-//	sample_t * sl = ports[0];
-//	sample_t * sr = ports[1];
-//
-//	sample_t bw = .005 + .994*getport(2);
-//	input.bandwidth.set (exp (-M_PI * (1. - bw)));
-//
-//	sample_t decay = .749*getport(3);
-//
-//	double damp = exp (-M_PI * (.0005+.9995*getport(3)));
-//	tank.damping[0].set (damp);
-//	tank.damping[1].set (damp);
-//
-//	sample_t blend = getport(5);
-//	blend = pow (blend, 1.53);
-//	sample_t dry = 1 - blend;
-//
-//	sample_t * dl = ports[6];
-//	sample_t * dr = ports[7];
-//
-//	/* the modulated lattices interpolate, which needs truncated float */
-//	DSP::FPTruncateMode _truncate;
-//
-//	for (uint i = 0; i < frames; ++i)
-//	{
-//		normal = -normal;
-//		sample_t x = (sl[i] + sr[i] + normal) * .5;
-//
-//		sample_t xl, xr;
-//		PlateStub::process (x, decay, &xl, &xr);
-//
-//		xl = blend * xl + dry * sl[i];
-//		xr = blend * xr + dry * sr[i];
-//
-//		dl[i] = xl;
-//		dr[i] = xr;
-//	}
-//}

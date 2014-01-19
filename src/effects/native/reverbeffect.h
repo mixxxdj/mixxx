@@ -8,19 +8,24 @@
 
 #include "defs.h"
 #include "util.h"
+#include "effects/effectprocessor.h"
+#include "effects/native/reverb/Reverb.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "effects/effectprocessor.h"
 #include "sampleutil.h"
 
 struct ReverbGroupState {
     ReverbGroupState() {
-//        out = SampleUtil::alloc(kOutBufSize);
+        // Default damping value.
+        prev_damping = 0.5;
+        reverb.init();
+        reverb.activate();
     }
-    ~ReverbGroupState() {
-//        SampleUtil::free(out);
-    }
-    CSAMPLE* out;
+
+    ~ReverbGroupState() { }
+
+    MixxxPlateX2 reverb;
+    double prev_damping;
 };
 
 class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
@@ -42,7 +47,7 @@ class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pTimeParameter;
+    EngineEffectParameter* m_pBandWidthParameter;
     EngineEffectParameter* m_pDampingParameter;
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);

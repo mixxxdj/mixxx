@@ -146,26 +146,30 @@ class PlateStub
 				tank.mlattice[1].lfo.set_f (1.2, fs, .5 * M_PI);
 			}
 
-		inline void process (sample_t x, sample_t decay,
-					sample_t * xl, sample_t * xr);
+		// Process a single mono sample, returning a left and right reverbed
+		// sample.
+		void process (sample_t x, sample_t decay,
+					  sample_t * xl, sample_t * xr);
 
 	private:
 		float fs; // sameple rate;
 };
 
-/* /////////////////////////////////////////////////////////////////////// */
+class MixxxPlateX2 : public PlateStub {
+  public:
+    void setBandwidth(double bandwidth) {
+         input.bandwidth.set(exp(-M_PI * (1. - bandwidth)));
+    }
 
-class PlateX2
-: public PlateStub
-{
-	public:
-        void cycle (uint frames);
+    void setDecay(double decay_control) {
+        double damp = exp(-M_PI * decay_control);
+        tank.damping[0].set(damp);
+        tank.damping[1].set(damp);
+    }
 
-//	public:
-//		static PortInfo port_info [];
-
-//		void run (uint n) { cycle<store_func> (n); }
-//		void run_adding (uint n) { cycle<adding_func> (n); }
+    void process(sample_t x, sample_t decay, sample_t * xl, sample_t * xr) {
+        PlateStub::process(x, decay, xl, xr);
+    }
 };
 
 #endif /* _REVERB_H_ */
