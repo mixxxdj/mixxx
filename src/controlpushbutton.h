@@ -51,7 +51,7 @@ class ControlPushButton : public ControlObject {
         }
     }
 
-    ControlPushButton(ConfigKey key);
+    ControlPushButton(ConfigKey key, bool bPersist=false);
     virtual ~ControlPushButton();
 
     inline ButtonMode getButtonMode() const {
