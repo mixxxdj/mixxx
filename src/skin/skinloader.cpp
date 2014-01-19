@@ -38,19 +38,28 @@ QString SkinLoader::getConfiguredSkinPath() {
     if (configSkin.length() > 0 && thisSkin.exists()) {
         qSkinPath = qThisSkin;
     } else {
-        // Fall back to default skin
-        QString defaultSkin;
-        QRect screenGeo = QApplication::desktop()->screenGeometry();
-        if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
-            defaultSkin = "Deere1280x800-WXGA";
+        // try developer path
+        qSkinPath = m_pConfig->getResourcePath();
+        qSkinPath.append("developer_skins/");
+        qThisSkin = qSkinPath + configSkin;
+        thisSkin = qThisSkin;
+        if (configSkin.length() > 0 && thisSkin.exists()) {
+            qSkinPath = qThisSkin;
+        } else {
+            // Fall back to default skin
+            QString defaultSkin;
+            QRect screenGeo = QApplication::desktop()->screenGeometry();
+            if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
+                defaultSkin = "Deere1280x800-WXGA";
+            }
+            else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
+                defaultSkin = "ShadeDark1024x600-Netbook";
+            }
+            else {
+                defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
+            }
+            qSkinPath.append(defaultSkin);
         }
-        else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
-            defaultSkin = "ShadeDark1024x600-Netbook";
-        }
-        else {
-            defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
-        }
-        qSkinPath.append(defaultSkin);
     }
 
     QDir skinPath(qSkinPath);
