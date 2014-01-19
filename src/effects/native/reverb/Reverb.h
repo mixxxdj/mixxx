@@ -49,7 +49,8 @@
 
 #include <stdio.h>
 
-#include "defs.h"
+//#include "defs.h"
+#include "effects/native/reverb/basics.h"
 #include "effects/native/reverb/dsp/Delay.h"
 #include "effects/native/reverb/dsp/OnePole.h"
 #include "effects/native/reverb/dsp/Sine.h"
@@ -160,7 +161,7 @@ class PlateX2
 	public:
         void cycle (uint frames);
 
-	public:
+//	public:
 //		static PortInfo port_info [];
 
 //		void run (uint n) { cycle<store_func> (n); }

@@ -3,6 +3,8 @@
 
 	Copyright 2002-13 Tim Goetze <tim@quitte.de>
 
+	Port from LADSPA to Mixxx 2014 by Owen Williams <owilliams@mixxx.org>
+
 	http://quitte.de/dsp/
 
 	Three reverb units: JVRev, Plate and PlateX2.
@@ -42,9 +44,6 @@
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
-#include "defs.h"
-
-#include "basics.h"
 #include "Reverb.h"
 
 /* //////////////////////////////////////////////////////////////////////// */

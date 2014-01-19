@@ -29,17 +29,14 @@
 #ifndef _BASICS_H_
 #define _BASICS_H_
 
-#include "defs.h"
-typedef CSAMPLE sample_t
-
-#define _GNU_SOURCE 1
-#define _USE_GNU 1
-
-/* unlocking some standard math calls. */
-#define __USE_ISOC99 1
-#define __USE_ISOC9X 1
-#define _ISOC99_SOURCE 1
-#define _ISOC9X_SOURCE 1
+//#define _GNU_SOURCE 1
+//#define _USE_GNU 1
+//
+///* unlocking some standard math calls. */
+//#define __USE_ISOC99 1
+//#define __USE_ISOC9X 1
+//#define _ISOC99_SOURCE 1
+//#define _ISOC9X_SOURCE 1
 
 #include <stdlib.h>
 #include <string.h>
@@ -50,7 +47,10 @@ typedef CSAMPLE sample_t
 #include <assert.h>
 #include <stdio.h>
 
-#include "ladspa.h"
+//#include "ladspa.h"
+
+#include "defs.h"
+typedef CSAMPLE sample_t;
 
 typedef __int8_t			int8;
 typedef __uint8_t			uint8;
