@@ -17,14 +17,20 @@
 struct ReverbGroupState {
     ReverbGroupState() {
         // Default damping value.
+        prev_bandwidth = 0.5;
         prev_damping = 0.5;
         reverb.init();
         reverb.activate();
+        crossfade_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     }
 
-    ~ReverbGroupState() { }
+    ~ReverbGroupState() {
+        delete crossfade_buffer;
+    }
 
     MixxxPlateX2 reverb;
+    CSAMPLE* crossfade_buffer;
+    double prev_bandwidth;
     double prev_damping;
 };
 

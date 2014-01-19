@@ -75,11 +75,8 @@ void ReverbEffect::processGroup(const QString& group,
     // Flip value around.  Assumes max allowable is 1.0.
     damping = 1.0 - damping;
 
-    double damp_inc = 0.0;
-
-    if (damping != pState->prev_damping) {
-        damp_inc = (damping - pState->prev_damping) / (numSamples / 2);
-    }
+    bool params_changed = (damping != pState->prev_damping ||
+                           bandwidth != pState->prev_bandwidth);
 
     pState->reverb.setBandwidth(bandwidth);
     pState->reverb.setDecay(damping);
@@ -93,10 +90,26 @@ void ReverbEffect::processGroup(const QString& group,
 
         pOutput[i] = xl;
         pOutput[i + 1] = xr;
+    }
 
-        if (damp_inc != 0.0) {
-            pState->prev_damping += damp_inc;
-            pState->reverb.setDecay(pState->prev_damping);
+    if (params_changed) {
+        pState->reverb.setBandwidth(pState->prev_bandwidth);
+        pState->reverb.setDecay(pState->prev_damping);
+
+        for (uint i = 0; i + 1 < numSamples; i += 2) {
+            CSAMPLE mono_sample = (pInput[i] + pInput[i + 1]) / 2;
+            CSAMPLE xl, xr;
+
+            pState->reverb.process(mono_sample, pState->prev_damping, &xl, &xr);
+
+            pState->crossfade_buffer[i] = xl;
+            pState->crossfade_buffer[i + 1] = xr;
         }
+
+        pState->prev_bandwidth = bandwidth;
+        pState->prev_damping = damping;
+
+        SampleUtil::linearCrossfadeBuffers(
+                pOutput, pOutput, pState->crossfade_buffer, numSamples);
     }
 }
