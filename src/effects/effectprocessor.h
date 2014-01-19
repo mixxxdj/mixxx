@@ -2,6 +2,7 @@
 #define EFFECTPROCESSOR_H
 
 #include <QString>
+#include <QMap>
 
 #include "defs.h"
 
@@ -23,6 +24,41 @@ class EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples) = 0;
+};
+
+// Helper class for automatically fetching group state parameters upon receipt
+// of a group-specific process call.
+template <typename T>
+class GroupEffectProcessor : public EffectProcessor {
+  public:
+    GroupEffectProcessor() {}
+    virtual ~GroupEffectProcessor() {
+        for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
+             it != m_groupState.end();) {
+            T* pState = it.value();
+            it = m_groupState.erase(it);
+            delete pState;
+        }
+    }
+
+    virtual void process(const QString& group,
+                         const CSAMPLE* pInput, CSAMPLE* pOutput,
+                         const unsigned int numSamples) {
+        T* pState = m_groupState.value(group, NULL);
+        if (pState == NULL) {
+            pState = new T();
+            m_groupState[group] = pState;
+        }
+        processGroup(group, pState, pInput, pOutput, numSamples);
+    }
+
+    virtual void processGroup(const QString& group,
+                              T* groupState,
+                              const CSAMPLE* pInput, CSAMPLE* pOutput,
+                              const unsigned int numSamples) = 0;
+
+  private:
+    QMap<QString, T*> m_groupState;
 };
 
 #endif /* EFFECTPROCESSOR_H */
