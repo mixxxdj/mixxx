@@ -265,6 +265,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
+    ControlDoublePrivate::setUserConfig(m_pConfig);
 
     QString resourcePath = m_pConfig->getResourcePath();
 
@@ -637,6 +638,7 @@ MixxxApp::~MixxxApp() {
     delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
+    ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
 
     PlayerInfo::destroy();

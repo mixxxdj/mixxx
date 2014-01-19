@@ -18,12 +18,20 @@ class ControlDoublePrivate : public QObject {
   public:
     virtual ~ControlDoublePrivate();
 
+    // Used to implement control persistence. All controls that are marked
+    // "persist in user config" get and set their value on creation/deletion
+    // using this ConfigObject.
+    static void setUserConfig(ConfigObject<ConfigValue>* pConfig) {
+        s_pUserConfig = pConfig;
+    }
+
     // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
     // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
     // does not exist.
     static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key, bool warn = true,
-            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false);
+            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
+            bool bPersist = false);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
@@ -108,11 +116,24 @@ class ControlDoublePrivate : public QObject {
     void valueChangeRequest(double value);
 
   private:
-    ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO, bool bIgnoreNops, bool bTrack);
+    // Used to implement control persistence. Do not make public -- we don't
+    // want this to turn into a way to get the configuration object from
+    // anywhere in Mixxx.
+    static ConfigObject<ConfigValue>* getUserConfig() {
+        return s_pUserConfig;
+    }
+
+    ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
+                         bool bIgnoreNops, bool bTrack, bool bPersist);
     void initialize();
     void setInner(double value, QObject* pSender);
 
     ConfigKey m_key;
+
+    // Whether the control should persist in the Mixxx user configuration. The
+    // value is loaded from configuration when the control is created and
+    // written to the configuration when the control is deleted.
+    bool m_bPersistInConfiguration;
 
     // User-visible, i18n name for what the control is.
     QString m_name;
@@ -139,8 +160,17 @@ class ControlDoublePrivate : public QObject {
 
     ControlObject* m_pCreatorCO;
 
+    // Hack to implement persistent controls. This is a pointer to the current
+    // user configuration object (if one exists). In general, we do not want the
+    // user configuration to be a singleton -- objects that need access to it
+    // should be passed it explicitly. However, the Control system is so
+    // pervasive that updating every control creation to include the
+    // configuration object would be arduous.
+    static ConfigObject<ConfigValue>* s_pUserConfig;
+
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
+
     // Mutex guarding access to the ControlDoublePrivate hash.
     static QMutex s_qCOHashMutex;
 };
