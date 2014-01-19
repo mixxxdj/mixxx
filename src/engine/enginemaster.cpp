@@ -52,6 +52,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            bool bRampingGain)
         : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_bRampingGain(bRampingGain),
+          m_masterVolumeOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0),
           m_bMasterOutputConnected(false),
@@ -363,17 +364,26 @@ void EngineMaster::process(const int iBufferSize) {
                                 &c1_gain, &c2_gain);
 
     // And mix the 3 buses into the master
-    float master_gain = m_pMasterVolume->get();
     SampleUtil::copy3WithGain(m_pMaster,
-                              m_outputBus[EngineChannel::LEFT].m_pBuffer, c1_gain*master_gain,
-                              m_outputBus[EngineChannel::CENTER].m_pBuffer, master_gain,
-                              m_outputBus[EngineChannel::RIGHT].m_pBuffer, c2_gain*master_gain,
+                              m_outputBus[EngineChannel::LEFT].m_pBuffer, c1_gain,
+                              m_outputBus[EngineChannel::CENTER].m_pBuffer, 1.0,
+                              m_outputBus[EngineChannel::RIGHT].m_pBuffer, c2_gain,
                               iBufferSize);
 
     // Process master channel effects
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster, iBufferSize);
     }
+
+    // Apply master volume after effects.
+    CSAMPLE master_volume = m_pMasterVolume->get();
+    if (m_bRampingGain) {
+        SampleUtil::applyRampingGain(m_pMaster, m_masterVolumeOld,
+                                     master_volume, iBufferSize);
+    } else {
+        SampleUtil::applyGain(m_pHead, master_volume, iBufferSize);
+    }
+    m_masterVolumeOld = master_volume;
 
 #ifdef __LADSPA__
     // LADPSA master effects
