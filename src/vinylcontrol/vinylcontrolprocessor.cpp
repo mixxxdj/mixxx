@@ -32,7 +32,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
         m_samplePipes[i] = new FIFO<CSAMPLE>(SAMPLE_PIPE_FIFO_SIZE);
     }
 
-    start();
+    start(QThread::HighPriority);
 }
 
 VinylControlProcessor::~VinylControlProcessor() {
