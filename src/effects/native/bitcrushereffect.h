@@ -9,7 +9,19 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util.h"
 
-class BitCrusherEffect : public EffectProcessor {
+struct BitCrusherGroupState {
+    // Default accumulator to 1 so we immediately pick an input value.
+    BitCrusherGroupState()
+            : hold_l(0),
+              hold_r(0),
+              accumulator(1) {
+    }
+    CSAMPLE hold_l, hold_r;
+    // Accumulated fractions of a samplerate period.
+    CSAMPLE accumulator;
+};
+
+class BitCrusherEffect : public GroupEffectProcessor<BitCrusherGroupState> {
   public:
     BitCrusherEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~BitCrusherEffect();
@@ -18,9 +30,10 @@ class BitCrusherEffect : public EffectProcessor {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void process(const QString& group,
-                 const CSAMPLE* pInput, CSAMPLE *pOutput,
-                 const unsigned int numSamples);
+    void processGroup(const QString& group,
+                      BitCrusherGroupState* pState,
+                      const CSAMPLE* pInput, CSAMPLE *pOutput,
+                      const unsigned int numSamples);
 
   private:
     QString debugString() const {
@@ -29,19 +42,6 @@ class BitCrusherEffect : public EffectProcessor {
 
     EngineEffectParameter* m_pBitDepthParameter;
     EngineEffectParameter* m_pDownsampleParameter;
-
-    struct GroupState {
-        // Default accumulator to 1 so we immediately pick an input value.
-        GroupState()
-                : hold_l(0),
-                  hold_r(0),
-                  accumulator(1) {
-        }
-        CSAMPLE hold_l, hold_r;
-        // Accumulated fractions of a samplerate period.
-        CSAMPLE accumulator;
-    };
-    QMap<QString, GroupState> m_groupState;
 
     DISALLOW_COPY_AND_ASSIGN(BitCrusherEffect);
 };

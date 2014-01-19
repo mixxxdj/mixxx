@@ -64,11 +64,6 @@ FilterEffect::FilterEffect(EngineEffect* pEffect,
 
 FilterEffect::~FilterEffect() {
     qDebug() << debugString() << "destroyed";
-    for (QMap<QString, GroupState*>::iterator it = m_groupState.begin();
-         it != m_groupState.end();) {
-        delete it.value();
-        it = m_groupState.erase(it);
-    }
 }
 
 double getLowFrequencyCorner(double depth) {
@@ -79,16 +74,10 @@ double getHighFrequencyCorner(double depth, double bandpassSize) {
     return pow(2.0, 5.0 + (depth + bandpassSize) * 9.0);
 }
 
-void FilterEffect::process(const QString& group,
-                           const CSAMPLE* pInput, CSAMPLE* pOutput,
-                           const unsigned int numSamples) {
-    GroupState* pGroupState = m_groupState.value(group, NULL);
-    if (pGroupState == NULL) {
-        pGroupState = new GroupState();
-        m_groupState[group] = pGroupState;
-    }
-    GroupState& group_state = *pGroupState;
-
+void FilterEffect::processGroup(const QString& group,
+                                FilterGroupState* pState,
+                                const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                const unsigned int numSamples) {
     double depth = m_pDepthParameter ?
             m_pDepthParameter->value().toDouble() : 0.0;
     double bandpass_width = m_pBandpassWidthParameter ?
@@ -97,35 +86,35 @@ void FilterEffect::process(const QString& group,
             m_pBandpassGainParameter->value().toFloat() : 0.0;
 
     // TODO(rryan) what if bandpass_gain changes?
-    bool parametersChanged = depth != group_state.oldDepth ||
-            bandpass_width != group_state.oldBandpassWidth;
+    bool parametersChanged = depth != pState->oldDepth ||
+            bandpass_width != pState->oldBandpassWidth;
     if (parametersChanged) {
-        if (group_state.oldDepth == 0.0) {
+        if (pState->oldDepth == 0.0) {
             SampleUtil::copyWithGain(
-                group_state.crossfadeBuffer, pInput, 1.0, numSamples);
-        } else if (group_state.oldDepth == -1.0 || group_state.oldDepth == 1.0) {
+                pState->crossfadeBuffer, pInput, 1.0, numSamples);
+        } else if (pState->oldDepth == -1.0 || pState->oldDepth == 1.0) {
             SampleUtil::copyWithGain(
-                group_state.crossfadeBuffer, pInput, 0.0, numSamples);
+                pState->crossfadeBuffer, pInput, 0.0, numSamples);
         } else {
-            applyFilters(group_state,
-                         pInput, group_state.crossfadeBuffer,
-                         group_state.bandpassBuffer,
-                         numSamples, group_state.oldDepth,
-                         group_state.oldBandpassGain);
+            applyFilters(pState,
+                         pInput, pState->crossfadeBuffer,
+                         pState->bandpassBuffer,
+                         numSamples, pState->oldDepth,
+                         pState->oldBandpassGain);
         }
         if (depth < 0.0) {
             // Lowpass + bandpass
             // Freq from 2^5=32Hz to 2^(5+9)=16384
             double freq = getLowFrequencyCorner(depth + 1.0);
             double freq2 = getHighFrequencyCorner(depth + 1.0, bandpass_width);
-            group_state.lowFilter.setFrequencyCorners(freq2);
-            group_state.bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->lowFilter.setFrequencyCorners(freq2);
+            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
         } else if (depth > 0.0) {
             // Highpass + bandpass
             double freq = getLowFrequencyCorner(depth);
             double freq2 = getHighFrequencyCorner(depth, bandpass_width);
-            group_state.highFilter.setFrequencyCorners(freq);
-            group_state.bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->highFilter.setFrequencyCorners(freq);
+            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
         }
     }
 
@@ -134,30 +123,30 @@ void FilterEffect::process(const QString& group,
     } else if (depth == -1.0 || depth == 1.0) {
         SampleUtil::copyWithGain(pOutput, pInput, 0.0, numSamples);
     } else {
-        applyFilters(group_state, pInput, pOutput, group_state.bandpassBuffer,
+        applyFilters(pState, pInput, pOutput, pState->bandpassBuffer,
                      numSamples, depth, bandpass_gain);
     }
 
     if (parametersChanged) {
-        SampleUtil::linearCrossfadeBuffers(pOutput, group_state.crossfadeBuffer,
+        SampleUtil::linearCrossfadeBuffers(pOutput, pState->crossfadeBuffer,
                                            pOutput, numSamples);
-        group_state.oldDepth = depth;
-        group_state.oldBandpassWidth = bandpass_width;
-        group_state.oldBandpassGain = bandpass_gain;
+        pState->oldDepth = depth;
+        pState->oldBandpassWidth = bandpass_width;
+        pState->oldBandpassGain = bandpass_gain;
     }
 }
 
-void FilterEffect::applyFilters(GroupState& group_state,
+void FilterEffect::applyFilters(FilterGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 CSAMPLE* pTempBuffer,
                                 const int numSamples,
                                 double depth, CSAMPLE bandpassGain) {
     if (depth < 0.0) {
-        group_state.lowFilter.process(pInput, pOutput, numSamples);
-        group_state.bandpassFilter.process(pInput, pTempBuffer, numSamples);
+        pState->lowFilter.process(pInput, pOutput, numSamples);
+        pState->bandpassFilter.process(pInput, pTempBuffer, numSamples);
     } else {
-        group_state.highFilter.process(pInput, pOutput, numSamples);
-        group_state.bandpassFilter.process(pInput, pTempBuffer, numSamples);
+        pState->highFilter.process(pInput, pOutput, numSamples);
+        pState->bandpassFilter.process(pInput, pTempBuffer, numSamples);
 
     }
     SampleUtil::addWithGain(pOutput, pTempBuffer, bandpassGain, numSamples);

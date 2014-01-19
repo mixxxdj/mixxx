@@ -75,11 +75,6 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
 }
 
 EchoEffect::~EchoEffect() {
-    for (QMap<QString, GroupState*>::iterator it = m_groupState.begin();
-            it != m_groupState.end();) {
-        delete it.value();
-        it = m_groupState.erase(it);
-    }
     qDebug() << debugString() << "destroyed";
 }
 
@@ -96,15 +91,10 @@ int EchoEffect::getDelaySamples(double delay_time) const {
     return delay_samples;
 }
 
-void EchoEffect::process(const QString& group, const CSAMPLE* pInput,
-                          CSAMPLE* pOutput, const unsigned int numSamples) {
-    GroupState* pGroupState = m_groupState.value(group, NULL);
-    if (pGroupState == NULL) {
-        pGroupState = new GroupState();
-        m_groupState[group] = pGroupState;
-    }
-    GroupState& gs = *pGroupState;
-
+void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
+                              const CSAMPLE* pInput,
+                              CSAMPLE* pOutput, const unsigned int numSamples) {
+    EchoGroupState& gs = *pGroupState;
     double delay_time =
             m_pDelayParameter ? m_pDelayParameter->value().toDouble() : 1.0f;
     double decay_amount =

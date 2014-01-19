@@ -6,7 +6,7 @@
 #include "mathstuff.h"
 #include "sampleutil.h"
 
-#define RUN_WG(n, junct_a, junct_b) waveguide_nl_process_lin(group_state.waveguide[n], junct_a - group_state.out[n*2+1], junct_b - group_state.out[n*2], group_state.out+n*2, group_state.out+n*2+1)
+#define RUN_WG(n, junct_a, junct_b) waveguide_nl_process_lin(pState->waveguide[n], junct_a - pState->out[n*2+1], junct_b - pState->out[n*2], pState->out+n*2, pState->out+n*2+1)
 
 // static
 QString ReverbEffect::getId() {
@@ -60,28 +60,13 @@ ReverbEffect::ReverbEffect(EngineEffect* pEffect,
 }
 
 ReverbEffect::~ReverbEffect() {
-    for (QMap<QString, GroupState*>::iterator it = m_groupState.begin();
-         it != m_groupState.end();) {
-        for (int i = 0; i < 8; i++) {
-            waveguide_nl_reset((*it)->waveguide[i]);
-        }
-        SampleUtil::free((*it)->out);
-        delete it.value();
-        it = m_groupState.erase(it);
-    }
     qDebug() << debugString() << "destroyed";
 }
 
-void ReverbEffect::process(const QString& group,
-                            const CSAMPLE* pInput, CSAMPLE* pOutput,
-                            const unsigned int numSamples) {
-    GroupState* pGroupState = m_groupState.value(group, NULL);
-    if (pGroupState == NULL) {
-        pGroupState = new GroupState();
-        m_groupState[group] = pGroupState;
-    }
-    GroupState& group_state = *pGroupState;
-
+void ReverbEffect::processGroup(const QString& group,
+                                ReverbGroupState* pState,
+                                const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                const unsigned int numSamples) {
     CSAMPLE time = m_pTimeParameter ?
             m_pTimeParameter->value().toDouble() : 1.0f;
     CSAMPLE damping = m_pDampingParameter ?
@@ -94,31 +79,31 @@ void ReverbEffect::process(const QString& group,
     const float lpscale = 1.0f - damping * 0.93;
 
     for (pos=0; pos<8; pos++) {
-        waveguide_nl_set_delay(group_state.waveguide[pos],
-                               group_state.waveguide[pos]->size * scale);
+        waveguide_nl_set_delay(pState->waveguide[pos],
+                               pState->waveguide[pos]->size * scale);
     }
     for (pos=0; pos<4; pos++) {
-        waveguide_nl_set_fc(group_state.waveguide[pos], LP_INNER * lpscale);
+        waveguide_nl_set_fc(pState->waveguide[pos], LP_INNER * lpscale);
     }
     for (; pos<8; pos++) {
-        waveguide_nl_set_fc(group_state.waveguide[pos], LP_OUTER * lpscale);
+        waveguide_nl_set_fc(pState->waveguide[pos], LP_OUTER * lpscale);
     }
 
     for (pos = 0; pos < numSamples - 1; pos+=2) {
         const float alpha =
-                (group_state.out[0] + group_state.out[2] +
-                 group_state.out[4] + group_state.out[6]) * 0.5f + pInput[pos];
+                (pState->out[0] + pState->out[2] +
+                 pState->out[4] + pState->out[6]) * 0.5f + pInput[pos];
         const float beta =
-                (group_state.out[1] + group_state.out[9] + group_state.out[14])
+                (pState->out[1] + pState->out[9] + pState->out[14])
                 * 0.666666666f;
         const float gamma =
-                (group_state.out[3] + group_state.out[8] + group_state.out[11])
+                (pState->out[3] + pState->out[8] + pState->out[11])
                 * 0.666666666f;
         const float delta =
-                (group_state.out[5] + group_state.out[10] + group_state.out[13])
+                (pState->out[5] + pState->out[10] + pState->out[13])
                 * 0.666666666f;
         const float epsilon =
-                (group_state.out[7] + group_state.out[12] + group_state.out[15])
+                (pState->out[7] + pState->out[12] + pState->out[15])
                 * 0.666666666f;
 
         RUN_WG(0, beta, alpha);

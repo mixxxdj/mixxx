@@ -72,14 +72,10 @@ FlangerEffect::~FlangerEffect() {
     qDebug() << debugString() << "destroyed";
 }
 
-void FlangerEffect::process(const QString& group,
-                            const CSAMPLE* pInput, CSAMPLE* pOutput,
-                            const unsigned int numSamples) {
-    if (!m_groupState.contains(group)) {
-        m_groupState[group] = new GroupState();
-    }
-    GroupState& group_state = *m_groupState[group];
-
+void FlangerEffect::processGroup(const QString& group,
+                                 FlangerGroupState* pState,
+                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                 const unsigned int numSamples) {
     CSAMPLE lfoPeriod = m_pPeriodParameter ?
             m_pPeriodParameter->value().toDouble() : 0.0f;
     CSAMPLE lfoDepth = m_pDepthParameter ?
@@ -93,26 +89,26 @@ void FlangerEffect::process(const QString& group,
     // delay needs to be >=0
     // depth is ???
 
-    CSAMPLE* delayLeft = group_state.delayLeft;
-    CSAMPLE* delayRight = group_state.delayRight;
+    CSAMPLE* delayLeft = pState->delayLeft;
+    CSAMPLE* delayRight = pState->delayRight;
 
     const int kChannels = 2;
     for (int i = 0; i < numSamples; i += kChannels) {
-        delayLeft[group_state.delayPos] = pInput[i];
-        delayRight[group_state.delayPos] = pInput[i+1];
+        delayLeft[pState->delayPos] = pInput[i];
+        delayRight[pState->delayPos] = pInput[i+1];
 
-        group_state.delayPos = (group_state.delayPos + 1) % kMaxDelay;
+        pState->delayPos = (pState->delayPos + 1) % kMaxDelay;
 
-        group_state.time++;
-        if (group_state.time > lfoPeriod) {
-            group_state.time = 0;
+        pState->time++;
+        if (pState->time > lfoPeriod) {
+            pState->time = 0;
         }
 
-        CSAMPLE periodFraction = CSAMPLE(group_state.time) / lfoPeriod;
+        CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
         CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(two_pi * periodFraction);
 
-        int framePrev = (group_state.delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
-        int frameNext = (group_state.delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;
+        int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
+        int frameNext = (pState->delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;
         CSAMPLE prevLeft = delayLeft[framePrev];
         CSAMPLE nextLeft = delayLeft[frameNext];
 

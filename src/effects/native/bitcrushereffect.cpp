@@ -51,11 +51,10 @@ BitCrusherEffect::~BitCrusherEffect() {
     qDebug() << debugString() << "destroyed";
 }
 
-void BitCrusherEffect::process(const QString& group,
-                               const CSAMPLE* pInput, CSAMPLE* pOutput,
-                               const unsigned int numSamples) {
-    GroupState& group_state = m_groupState[group];
-
+void BitCrusherEffect::processGroup(const QString& group,
+                                    BitCrusherGroupState* pState,
+                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                    const unsigned int numSamples) {
     // TODO(rryan) this is broken. it needs to take into account the sample
     // rate.
     const CSAMPLE downsample = m_pDownsampleParameter ?
@@ -70,15 +69,15 @@ void BitCrusherEffect::process(const QString& group,
 
     const int kChannels = 2;
     for (int i = 0; i < numSamples; i += kChannels) {
-        group_state.accumulator += accumulate;
+        pState->accumulator += accumulate;
 
-        if (group_state.accumulator >= 1.0) {
-            group_state.accumulator -= 1.0;
-            group_state.hold_l = floorf(pInput[i] * scale + 0.5f) / scale;
-            group_state.hold_r = floorf(pInput[i+1] * scale + 0.5f) / scale;
+        if (pState->accumulator >= 1.0) {
+            pState->accumulator -= 1.0;
+            pState->hold_l = floorf(pInput[i] * scale + 0.5f) / scale;
+            pState->hold_r = floorf(pInput[i+1] * scale + 0.5f) / scale;
         }
 
-        pOutput[i] = group_state.hold_l;
-        pOutput[i+1] = group_state.hold_r;
+        pOutput[i] = pState->hold_l;
+        pOutput[i+1] = pState->hold_r;
     }
 }
