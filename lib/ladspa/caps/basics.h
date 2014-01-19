@@ -1,11 +1,11 @@
 /*
 	basics.h
-	
+
 	Copyright 2004-5 Tim Goetze <tim@quitte.de>
-	
+
 	http://quitte.de/dsp/
 
-	common constants, typedefs, utility functions 
+	common constants, typedefs, utility functions
 	and simplified LADSPA #defines.
 
 */
@@ -28,6 +28,8 @@
 
 #ifndef _BASICS_H_
 #define _BASICS_H_
+
+#include "defs.h"
 
 #define _GNU_SOURCE 1
 #define _USE_GNU 1
@@ -141,7 +143,7 @@ frandom()
 }
 
 /* for testing only. */
-inline bool 
+inline bool
 is_denormal (float & f)
 {
 	int32 i = *((int32 *) &f);
@@ -149,7 +151,7 @@ is_denormal (float & f)
 }
 
 /* not sure if this double version is correct, actually ... */
-inline bool 
+inline bool
 is_denormal (double & f)
 {
 	int64 i = *((int64 *) &f);
@@ -166,32 +168,32 @@ is_denormal (double & f)
 
 #define CAPS "C* "
 
-class Plugin {
-	public:
-		double fs; /* sample rate */
-		double adding_gain; /* for run_adding() */
-
-		int first_run; /* 1st block after activate(), do no parameter smoothing */
-		d_sample normal; /* renormal constant */
-
-		d_sample ** ports;
-		LADSPA_PortRangeHint * ranges; /* for getport() below */
-
-	public:
-		/* get port value, mapping inf or nan to 0 */
-		inline d_sample getport_unclamped (int i)
-			{
-				d_sample v = *ports[i];
-				return (isinf (v) || isnan(v)) ? 0 : v;
-			}
-
-		/* get port value and clamp to port range */
-		inline d_sample getport (int i)
-			{
-				LADSPA_PortRangeHint & r = ranges[i];
-				d_sample v = getport_unclamped (i);
-				return clamp (v, r.LowerBound, r.UpperBound);
-			}
-};
+//class Plugin {
+//	public:
+//		double fs; /* sample rate */
+//		double adding_gain; /* for run_adding() */
+//
+//		int first_run; /* 1st block after activate(), do no parameter smoothing */
+//		d_sample normal; /* renormal constant */
+//
+//		d_sample ** ports;
+//		LADSPA_PortRangeHint * ranges; /* for getport() below */
+//
+//	public:
+//		/* get port value, mapping inf or nan to 0 */
+//		inline d_sample getport_unclamped (int i)
+//			{
+//				d_sample v = *ports[i];
+//				return (isinf (v) || isnan(v)) ? 0 : v;
+//			}
+//
+//		/* get port value and clamp to port range */
+//		inline d_sample getport (int i)
+//			{
+//				LADSPA_PortRangeHint & r = ranges[i];
+//				d_sample v = getport_unclamped (i);
+//				return clamp (v, r.LowerBound, r.UpperBound);
+//			}
+//};
 
 #endif /* _BASICS_H_ */
