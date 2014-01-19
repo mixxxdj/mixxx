@@ -867,6 +867,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
 }
 
 void CueControl::updateIndicators() {
+    // No need for mutex lock because we are only touching COs.
     double cueMode = m_pCueMode->get();
 
     if (cueMode == CUE_MODE_DENON) {

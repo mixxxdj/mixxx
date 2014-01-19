@@ -20,12 +20,18 @@ class ControlIndicator : public ControlObject {
 
     void setBlinkValue(enum BlinkValue bv);
 
+  signals:
+    void blinkValueChanged();
+
   private slots:
     void slotGuiTick50ms(double cpuTime);
+    void slotBlinkValueChanged();
 
   private:
     void toggle();
     // set() is private, use setBlinkValue instead
+    // it must be called from the GUI thread only to a void
+    // race condition by toggle()
     void set(double value) { ControlObject::set(value); };
 
     enum BlinkValue m_blinkValue;

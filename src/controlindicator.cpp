@@ -9,7 +9,8 @@ ControlIndicator::ControlIndicator(ConfigKey key)
     m_pCOTGuiTick50ms = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTick50ms, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTick50ms(double)));
-
+    connect(this, SIGNAL(blinkValueChanged()),
+            this, SLOT(slotBlinkValueChanged()));
 }
 
 ControlIndicator::~ControlIndicator() {
@@ -20,25 +21,7 @@ ControlIndicator::~ControlIndicator() {
 void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
     if (m_blinkValue != bv) {
         m_blinkValue = bv; // must be set at first, to avoid timer toggle
-        switch (m_blinkValue) {
-        case OFF:
-            set(0.0);
-            break;
-        case ON:
-            set(1.0);
-            break;
-        case RATIO1TO1_500MS:
-            toggle();
-            m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.5;
-            break;
-        case RATIO1TO1_250MS:
-            toggle();
-            m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.25;
-            break;
-        default:
-            // nothing to do
-            break;
-        }
+        emit(blinkValueChanged());
     }
 }
 
@@ -59,6 +42,34 @@ void ControlIndicator::slotGuiTick50ms(double cpuTime) {
             // nothing to do
             break;
         }
+    }
+}
+
+void ControlIndicator::slotBlinkValueChanged() {
+    double oldValue = get();
+
+    switch (m_blinkValue) {
+    case OFF:
+        if (oldValue) {
+            set(0.0);
+        }
+        break;
+    case ON:
+        if (!oldValue) {
+            set(1.0);
+        }
+        break;
+    case RATIO1TO1_500MS:
+        toggle();
+        m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.5;
+        break;
+    case RATIO1TO1_250MS:
+        toggle();
+        m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.25;
+        break;
+    default:
+        // nothing to do
+        break;
     }
 }
 
