@@ -8,6 +8,9 @@
 	Common constants, typedefs, utility functions
 	and simplified LADSPA #defines.
 
+	Some code removed by Owen Williams for port to Mixxx, mostly ladspa-specific
+	defines and i386 customizations.
+
 */
 /*
 	This program is free software; you can redistribute it and/or
@@ -29,15 +32,6 @@
 #ifndef _BASICS_H_
 #define _BASICS_H_
 
-//#define _GNU_SOURCE 1
-//#define _USE_GNU 1
-//
-///* unlocking some standard math calls. */
-//#define __USE_ISOC99 1
-//#define __USE_ISOC9X 1
-//#define _ISOC99_SOURCE 1
-//#define _ISOC9X_SOURCE 1
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -46,8 +40,6 @@
 
 #include <assert.h>
 #include <stdio.h>
-
-//#include "ladspa.h"
 
 #include "defs.h"
 typedef CSAMPLE sample_t;
@@ -64,39 +56,6 @@ typedef __uint64_t		uint64;
 #define MIN_GAIN .000001 /* -120 dB */
 /* smallest non-denormal 32 bit IEEE float is 1.18e-38 */
 #define NOISE_FLOOR .00000000000005 /* -266 dB */
-
-#define HARD_RT  LADSPA_PROPERTY_HARD_RT_CAPABLE
-
-///* some LADSPA_DEFINES_THAT_COME_WITH_LOTS_OF_CHARACTERS */
-//#define INPUT   LADSPA_PORT_INPUT
-//#define OUTPUT  LADSPA_PORT_OUTPUT
-//#define CONTROL LADSPA_PORT_CONTROL
-//#define AUDIO   LADSPA_PORT_AUDIO
-//
-//#define AUDIO_IN  AUDIO|INPUT
-//#define AUDIO_OUT AUDIO|OUTPUT
-//#define CTRL_IN  	CONTROL|INPUT
-//#define CTRL_OUT 	CONTROL|OUTPUT
-//
-///* extending LADSPA_PORT_* */
-//#define LADSPA_PORT_GROUP (AUDIO<<1) /* 16 */
-//#define GROUP    LADSPA_PORT_GROUP
-//
-///* more LADSPA_DEFINES_THAT_REALLY_COME_WITH_LOTS_OF_CHARACTERS */
-//#define BOUNDED  (LADSPA_HINT_BOUNDED_BELOW | LADSPA_HINT_BOUNDED_ABOVE)
-//#define INTEGER  LADSPA_HINT_INTEGER
-//#define LOG      LADSPA_HINT_LOGARITHMIC
-//#define TOGGLE   LADSPA_HINT_TOGGLED
-//
-//#define DEFAULT_0     LADSPA_HINT_DEFAULT_0
-//#define DEFAULT_1     LADSPA_HINT_DEFAULT_1
-//#define DEFAULT_100   LADSPA_HINT_DEFAULT_100
-//#define DEFAULT_440   LADSPA_HINT_DEFAULT_440
-//#define DEFAULT_MIN   LADSPA_HINT_DEFAULT_MINIMUM
-//#define DEFAULT_LOW   LADSPA_HINT_DEFAULT_LOW
-//#define DEFAULT_MID   LADSPA_HINT_DEFAULT_MIDDLE
-//#define DEFAULT_HIGH  LADSPA_HINT_DEFAULT_HIGH
-//#define DEFAULT_MAX   LADSPA_HINT_DEFAULT_MAXIMUM
 
 /* //////////////////////////////////////////////////////////////////////// */
 
@@ -197,14 +156,6 @@ lin2db (double lin)
 	return 20*log10(lin);
 }
 
-#ifdef __i386__
-	#define TRAP asm ("int $3;")
-#else
-	#define TRAP
-#endif
-
 /* //////////////////////////////////////////////////////////////////////// */
-
-#define CAPS "C* "
 
 #endif /* _BASICS_H_ */
