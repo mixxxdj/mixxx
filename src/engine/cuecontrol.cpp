@@ -838,7 +838,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
         } else if (cueMode == CUE_MODE_NUMARK) {
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
-            // Flashing indicates that play is possible in Pioneer Mode
+            // Flashing indicates that play is possible in Pioneer mode
             m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
         }
     }

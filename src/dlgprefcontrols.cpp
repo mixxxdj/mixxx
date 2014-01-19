@@ -172,9 +172,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
-    ComboBoxCueDefault->addItem(tr("Pioneer Mode"));
-    ComboBoxCueDefault->addItem(tr("Denon Mode"));
-    ComboBoxCueDefault->addItem(tr("Numark Mode"));
+    ComboBoxCueDefault->addItem(tr("Pioneer mode"));
+    ComboBoxCueDefault->addItem(tr("Denon mode"));
+    ComboBoxCueDefault->addItem(tr("Numark mode"));
     ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
 
     slotSetCueDefault(cueDefaultValue);
