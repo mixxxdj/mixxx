@@ -151,6 +151,7 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
 
 void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
     if (!s_EnableEq->get()) { //Disable EQ
+        SampleUtil::copyWithGain(pOutput, pIn, 1, iBufferSize);
         return;
     }
     ScopedTimer t("EngineFilterBlock::process");
