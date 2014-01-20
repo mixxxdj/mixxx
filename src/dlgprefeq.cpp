@@ -49,7 +49,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
-    connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnbEQChanged()));
+    connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
     connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
 
     loadSettings();
