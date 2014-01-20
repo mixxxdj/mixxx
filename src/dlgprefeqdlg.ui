@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
+    <width>575</width>
     <height>520</height>
    </rect>
   </property>
@@ -17,16 +17,16 @@
    <item>
     <layout class="QHBoxLayout">
      <item>
-      <widget class="QCheckBox" name="CheckBoxLoFi">
+      <widget class="QCheckBox" name="CheckBoxEnbEQ">
        <property name="text">
-        <string>Static EQs (for slower CPUs)</string>
+        <string>Enable EQs</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="CheckBoxDisEQ">
+      <widget class="QCheckBox" name="CheckBoxLoFi">
        <property name="text">
-        <string>Disable EQs (for controllers with external mixer)</string>
+        <string>Static EQs (for slower CPUs)</string>
        </property>
       </widget>
      </item>

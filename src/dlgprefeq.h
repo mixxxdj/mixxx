@@ -38,7 +38,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   public slots:
     void slotLoFiChanged();
-    void slotDisEQChanged();
+    void slotEnaEQChanged();
     /** Update Hi EQ **/
     void slotUpdateHiEQ();
     /** Update Lo EQ **/
@@ -63,7 +63,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     ControlObjectThread m_COTLoFreq;
     ControlObjectThread m_COTHiFreq;
     ControlObjectThread m_COTLoFi;
-    ControlObjectThread m_COTDisEq;
+    ControlObjectThread m_COTEnableEq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 };

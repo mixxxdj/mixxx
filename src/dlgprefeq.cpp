@@ -23,7 +23,7 @@
 #include "controlobject.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
-#define DISABLE_INT_EQ "DisableBuiltInEQs"
+#define ENABLE_INT_EQ "EnableEQs"
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
@@ -33,7 +33,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
-          m_COTDisEq(CONFIG_KEY,DISABLE_INT_EQ),
+          m_COTEnableEq(CONFIG_KEY,ENABLE_INT_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0) {
@@ -49,7 +49,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
-    connect(CheckBoxDisEQ, SIGNAL(stateChanged(int)), this, SLOT(slotDisEQChanged()));
+    connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnbEQChanged()));
     connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
 
     loadSettings();
@@ -92,7 +92,7 @@ void DlgPrefEQ::loadSettings()
                           SliderLoEQ->maximum()));
 
     CheckBoxLoFi->setChecked(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"));
-    CheckBoxDisEQ->setChecked(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, DISABLE_INT_EQ)) == QString("yes"));
+    CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, ENABLE_INT_EQ)) == QString("yes"));
 
     slotUpdate();
     slotApply();
@@ -113,12 +113,12 @@ void DlgPrefEQ::reset() {
     loadSettings();
 }
 
-void DlgPrefEQ::slotDisEQChanged()
+void DlgPrefEQ::slotEnaEQChanged()
 {
-    if(CheckBoxDisEQ->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, DISABLE_INT_EQ), ConfigValue(QString("yes")));
+    if(CheckBoxEnbEQ->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INT_EQ), ConfigValue(QString("yes")));
     } else {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, DISABLE_INT_EQ), ConfigValue(QString("no")));
+        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INT_EQ), ConfigValue(QString("no")));
     }
 }
 
@@ -198,7 +198,7 @@ void DlgPrefEQ::slotApply()
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
     m_COTLoFi.slotSet(CheckBoxLoFi->isChecked());
-    m_COTDisEq.slotSet(CheckBoxDisEQ->isChecked());
+    m_COTEnableEq.slotSet(CheckBoxEnbEQ->isChecked());
 }
 
 void DlgPrefEQ::slotUpdate()
@@ -206,7 +206,7 @@ void DlgPrefEQ::slotUpdate()
     slotUpdateLoEQ();
     slotUpdateHiEQ();
     slotLoFiChanged();
-    slotDisEQChanged();
+    slotEnaEQChanged();
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
