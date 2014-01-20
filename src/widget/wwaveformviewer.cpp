@@ -8,13 +8,11 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "controlpotmeter.h"
-
 
 WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
         : WWidget(parent),
@@ -68,22 +66,22 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         // If we are pitch-bending then disable and reset because the two
         // shouldn't be used at once.
         if (m_bBending) {
-            setConnectedControlRightDown(0.5);
+            setControlParameterRightDown(0.5);
             m_bBending = false;
         }
         m_bScratching = true;
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
         m_pScratchPosition->slotSet(targetPosition);
-        m_pScratchPositionEnable->slotSet(1.0f);
+        m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         // If we are scratching then disable and reset because the two shouldn't
         // be used at once.
         if (m_bScratching) {
-            m_pScratchPositionEnable->slotSet(0.0f);
+            m_pScratchPositionEnable->slotSet(0.0);
             m_bScratching = false;
         }
-        setConnectedControlRightDown(0.5);
+        setControlParameterRightDown(0.5);
         m_bBending = true;
     }
 
@@ -111,17 +109,17 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         double v = 0.5 + (diff.x() / 1270.0);
         // clamp to [0.0, 1.0]
         v = math_min(1.0, math_max(0.0, v));
-        setConnectedControlRightDown(v);
+        setControlParameterRightDown(v);
     }
 }
 
 void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     if (m_bScratching) {
-        m_pScratchPositionEnable->slotSet(0.0f);
+        m_pScratchPositionEnable->slotSet(0.0);
         m_bScratching = false;
     }
     if (m_bBending) {
-        setConnectedControlRightDown(0.5);
+        setControlParameterRightDown(0.5);
         m_bBending = false;
     }
     m_mouseAnchor = QPoint();

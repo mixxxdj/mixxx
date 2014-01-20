@@ -147,7 +147,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
                     ->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
-                        (m_bBackwards ? -1.0f : 1.0f) * m_dBaseRate * m_dSpeedAdjust,
+                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dSpeedAdjust,
                         buffer_back,
                         iLenFrames * iNumChannels);
             unsigned long iAvailFrames = iAvailSamples / iNumChannels;

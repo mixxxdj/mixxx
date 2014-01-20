@@ -185,3 +185,10 @@ void WSearchLineEdit::updateCloseButton(const QString& text)
 {
     m_clearButton->setVisible(!text.isEmpty() && !m_place);
 }
+
+bool WSearchLineEdit::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QLineEdit::event(pEvent);
+}

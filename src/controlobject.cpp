@@ -21,13 +21,11 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
-#include "controlevent.h"
 #include "control/control.h"
 #include "util/stat.h"
 #include "util/timer.h"
 
-ControlObject::ControlObject()
-        : m_pControl(NULL) {
+ControlObject::ControlObject() {
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
@@ -36,7 +34,9 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
 }
 
 ControlObject::~ControlObject() {
-    m_pControl->removeCreatorCO();
+    if (m_pControl) {
+        m_pControl->removeCreatorCO();
+    }
 }
 
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {

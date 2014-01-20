@@ -145,7 +145,7 @@ int WDisplay::getActivePixmapIndex() const {
     // Subtracting an epsilon prevents out of bound values at the end of the
     // range and biases the middle value towards the lower of the 2 center
     // pixmaps when there are an even number of pixmaps.
-    return static_cast<int>(getValue() * numPixmaps() - 0.00001);
+    return static_cast<int>(getControlParameterDisplay() * numPixmaps() - 0.00001);
 }
 
 void WDisplay::paintEvent(QPaintEvent* ) {
@@ -160,7 +160,7 @@ void WDisplay::paintEvent(QPaintEvent* ) {
 
     // If we are disabled, use the disabled pixmaps. If not, use the regular
     // pixmaps.
-    const QVector<PaintablePointer>& pixmaps = (controlDisabled() && m_bDisabledLoaded) ?
+    const QVector<PaintablePointer>& pixmaps = (!isEnabled() && m_bDisabledLoaded) ?
             m_disabledPixmaps : m_pixmaps;
 
     if (pixmaps.empty()) {

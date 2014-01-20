@@ -13,7 +13,6 @@
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class ControlObjectThreadMain;
 class QTimer;
 class VSyncThread;
 

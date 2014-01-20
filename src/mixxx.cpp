@@ -27,7 +27,6 @@
 #include "mixxx.h"
 
 #include "analyserqueue.h"
-#include "controlobjectthreadmain.h"
 #include "controlpotmeter.h"
 #include "deck.h"
 #include "defs_urls.h"
@@ -297,19 +296,19 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
     // What should channelbase be?
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0);
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, 0);
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
     EnginePassthrough* pPassthrough1 = new EnginePassthrough("[Passthrough1]");
     // What should channelbase be?
-    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0);
+    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 0);
     m_pEngine->addChannel(pPassthrough1);
     m_pSoundManager->registerInput(passthroughInput1, pPassthrough1);
 
     EnginePassthrough* pPassthrough2 = new EnginePassthrough("[Passthrough2]");
     // What should channelbase be?
-    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 1);
+    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 1);
     m_pEngine->addChannel(pPassthrough2);
     m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
 
@@ -643,16 +642,19 @@ MixxxApp::~MixxxApp() {
     PlayerInfo::destroy();
 
     // Check for leaked ControlObjects and give warnings.
-    QList<ControlDoublePrivate*> leakedControls;
+    QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
     QList<ConfigKey> leakedConfigKeys;
 
     ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
         qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
-        foreach (ControlDoublePrivate* pCOP, leakedControls) {
-            ConfigKey key = pCOP->getKey();
-            qDebug() << key.group << key.item << pCOP->getCreatorCO();
+        foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
+            if (pCDP.isNull()) {
+                continue;
+            }
+            ConfigKey key = pCDP->getKey();
+            qDebug() << key.group << key.item << pCDP->getCreatorCO();
             leakedConfigKeys.append(key);
         }
 
@@ -1573,11 +1575,8 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
         // return true for no tool tips
         if (m_toolTipsCfg == 2) {
             // ON (only in Library)
-            WWidget* pWidget = dynamic_cast<WWidget*>(obj);
-            WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
-            WSpinny* pSpinny = dynamic_cast<WSpinny*>(obj);
-            QLabel* pLabel = dynamic_cast<QLabel*>(obj);
-            return (pWidget || pWfViewer || pSpinny || pLabel);
+            WBaseWidget* pWidget = dynamic_cast<WBaseWidget*>(obj);
+            return pWidget != NULL;
         } else if (m_toolTipsCfg == 1) {
             // ON
             return false;

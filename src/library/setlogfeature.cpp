@@ -14,7 +14,8 @@
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME") {
+        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
+          m_playlistId(-1) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks

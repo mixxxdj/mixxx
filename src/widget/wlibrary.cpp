@@ -55,3 +55,10 @@ void WLibrary::search(const QString& name) {
 LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
 }
+
+bool WLibrary::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QStackedWidget::event(pEvent);
+}

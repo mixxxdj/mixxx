@@ -592,6 +592,50 @@ class WavPack(Feature):
                 'Could not find libwavpack, libwv or its development headers.')
 
 
+class ColorDiagnostics(Feature):
+    def description(self):
+        return "Color Diagnostics"
+
+    def enabled(self, build):
+        build.flags['color'] = util.get_flags(build.env, 'color', 0)
+        return bool(int(build.flags['color']))
+
+    def add_options(self, build, vars):
+        vars.Add('color', "Set to 1 to enable Clang color diagnostics.", 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if not build.compiler_is_clang:
+            raise Exception('Color diagnostics are only available using clang.')
+
+        build.env.Append(CCFLAGS='-fcolor-diagnostics')
+
+
+class AddressSanitizer(Feature):
+    def description(self):
+        return "Address Sanitizer"
+
+    def enabled(self, build):
+        build.flags['asan'] = util.get_flags(build.env, 'asan', 0)
+        return bool(int(build.flags['asan']))
+
+    def add_options(self, build, vars):
+        vars.Add("asan", "Set to 1 to enable linking against the Clang AddressSanitizer.", 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if not build.compiler_is_clang:
+            raise Exception('Address Sanitizer is only available using clang.')
+
+        # -fno-omit-frame-pointer gets much better stack traces in asan output.
+        build.env.Append(CCFLAGS="-fsanitize=address -fno-omit-frame-pointer")
+        build.env.Append(LINKFLAGS="-fsanitize=address -fno-omit-frame-pointer")
+
+
 class PerfTools(Feature):
     def description(self):
         return "Google PerfTools"
@@ -701,6 +745,8 @@ class Verbose(Feature):
             build.env['CCCOMSTR'] = '[CC] $SOURCE'
             build.env['CXXCOMSTR'] = '[CXX] $SOURCE'
             build.env['ASCOMSTR'] = '[AS] $SOURCE'
+            build.env['ARCOMSTR'] = '[AR] $TARGET'
+            build.env['RANLIBCOMSTR'] = '[RANLIB] $TARGET'
             build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
             build.env['LINKCOMSTR'] = '[LD] $TARGET'
 

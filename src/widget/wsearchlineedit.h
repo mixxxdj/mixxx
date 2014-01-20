@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QDomNode>
 #include <QColor>
+#include <QEvent>
 
 #include "configobject.h"
 #include "skin/skincontext.h"
@@ -25,6 +26,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void resizeEvent(QResizeEvent*);
     virtual void focusInEvent(QFocusEvent*);
     virtual void focusOutEvent(QFocusEvent*);
+    bool event(QEvent* pEvent);
 
   signals:
     void search(const QString& text);

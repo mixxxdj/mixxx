@@ -179,3 +179,10 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     }
     scrollTo(index);
 }
+
+bool WLibrarySidebar::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QTreeView::event(pEvent);
+}

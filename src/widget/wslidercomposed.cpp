@@ -23,9 +23,11 @@
 
 #include "defs.h"
 #include "widget/wpixmapstore.h"
+#include "util/debug.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
+      m_dOldValue(0.0),
       m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),
@@ -81,7 +83,7 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getValue());
+        onConnectedControlValueChanged(getControlParameterLeft());
         update();
     }
 }
@@ -118,14 +120,17 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         if (!m_bHorizontal) {
             newValue = 1.0 - newValue;
         }
-        setValue(newValue);
+
+        // If we don't change this, then updates might be rejected in
+        // onConnectedControlValueChanged.
+        m_dOldValue = newValue;
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
             if (e->button() == Qt::RightButton) {
-                setConnectedControlRightUp(newValue);
+                setControlParameterRightUp(newValue);
             } else {
-                setConnectedControlLeftUp(newValue);
+                setControlParameterLeftUp(newValue);
             }
         }
 
@@ -137,14 +142,14 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // For legacy (MIDI) reasons this is tuned to 127.
     double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-    double newValue = getValue() + wheelDirection;
+    double newValue = getControlParameter() + wheelDirection;
 
     // Clamp to [0.0, 1.0]
     newValue = math_max(0.0, math_min(1.0, newValue));
 
-    setValue(newValue);
-    setConnectedControlDown(newValue);
-    setConnectedControlUp(newValue);
+    setControlParameterDown(newValue);
+    setControlParameterUp(newValue);
+    onConnectedControlValueChanged(newValue);
     update();
 
     e->accept();
@@ -157,9 +162,9 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
         mouseMoveEvent(e);
 
         if (e->button() == Qt::RightButton) {
-            setConnectedControlRightUp(getValue());
+            setControlParameterRightUp(getControlParameterRight());
         } else {
-            setConnectedControlLeftUp(getValue());
+            setControlParameterLeftUp(getControlParameterLeft());
         }
 
         m_bDrag = false;
@@ -177,7 +182,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
         m_bDrag = true;
     } else {
         if (e->button() == Qt::RightButton) {
-            resetConnectedControls();
+            resetControlParameters();
             m_bRightButtonPressed = true;
         } else {
             if (m_bHorizontal) {
@@ -208,10 +213,8 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
 }
 
 void WSliderComposed::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag && getValue() != dValue) {
-        // Set value without emitting a valueChanged signal
-        // and force display update
-        setValue(dValue);
+    if (!m_bDrag && m_dOldValue != dValue) {
+        m_dOldValue = dValue;
 
         // Calculate handle position
         if (!m_bHorizontal) {
@@ -227,4 +230,13 @@ void WSliderComposed::onConnectedControlValueChanged(double dValue) {
         }
         update();
     }
+}
+
+void WSliderComposed::fillDebugTooltip(QStringList* debug) {
+    WWidget::fillDebugTooltip(debug);
+    int sliderLength = m_bHorizontal ? width() : height();
+    *debug << QString("Horizontal: %1").arg(toDebugString(m_bHorizontal))
+           << QString("SliderPosition: %1").arg(m_iPos)
+           << QString("SliderLength: %1").arg(sliderLength)
+           << QString("HandleLength: %1").arg(m_iHandleLength);
 }

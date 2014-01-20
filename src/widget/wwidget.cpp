@@ -18,13 +18,10 @@
 #include <QtDebug>
 
 #include "widget/wwidget.h"
-#include "controlobject.h"
-#include "controlobjectthreadwidget.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
-          WBaseWidget(this),
-          m_value(0.0) {
+          WBaseWidget(this) {
     setAttribute(Qt::WA_StaticContents);
     setFocusPolicy(Qt::ClickFocus);
 }
@@ -33,6 +30,13 @@ WWidget::~WWidget() {
 }
 
 void WWidget::onConnectedControlValueChanged(double value) {
-    m_value = value;
+    Q_UNUSED(value);
     update();
+}
+
+bool WWidget::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QWidget::event(pEvent);
 }

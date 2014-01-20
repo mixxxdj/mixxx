@@ -28,7 +28,6 @@
 
 // Waveform overview display
 // @author Tue Haste Andersen
-class ControlObjectThreadMain;
 class Waveform;
 
 class WOverview : public WWidget {

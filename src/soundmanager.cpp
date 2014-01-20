@@ -27,7 +27,6 @@
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
-#include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -39,17 +38,21 @@ typedef PaError (*SetJackClientName)(const char *name);
 
 SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
                            EngineMaster *pMaster)
-        : QObject(),
-          m_pMaster(pMaster),
+        : m_pMaster(pMaster),
           m_pConfig(pConfig),
 #ifdef __PORTAUDIO__
           m_paInitialized(false),
           m_jackSampleRate(-1),
 #endif
           m_pClkRefDevice(NULL),
-          m_pErrorDevice(NULL) {
-    //These are ControlObjectThreadMains because all the code that
-    //uses them is called from the GUI thread (stuff like opening soundcards).
+          m_pErrorDevice(NULL),
+          m_pDownmixBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+
+#ifdef __PORTAUDIO__
+    qDebug() << "PortAudio version:" << Pa_GetVersion()
+             << "text:" << Pa_GetVersionText();
+#endif
+
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));
@@ -86,6 +89,7 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
+    SampleUtil::free(m_pDownmixBuffer);
 }
 
 QList<SoundDevice*> SoundManager::getDeviceList(
@@ -141,16 +145,31 @@ void SoundManager::closeDevices() {
     m_pClkRefDevice = NULL;
     m_pErrorDevice = NULL;
 
-    // TODO(rryan): Should we do this before SoundDevice::close()?
-    foreach (AudioInput in, m_inputBuffers.keys()) {
-        // Need to tell all registered AudioDestinations for this AudioInput
-        // that the input was disconnected.
-        for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                     m_registeredDestinations.find(in);
-                it != m_registeredDestinations.end() && it.key() == in; ++it) {
-            it.value()->onInputDisconnected(in);
+    // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
+    // then the callback may be running when we call
+    // onInputDisconnected/onOutputDisconnected.
+    foreach (SoundDevice* pDevice, m_devices) {
+        foreach (AudioInput in, pDevice->inputs()) {
+            // Need to tell all registered AudioDestinations for this AudioInput
+            // that the input was disconnected.
+            for (QHash<AudioInput, AudioDestination*>::const_iterator it =
+                         m_registeredDestinations.find(in);
+                 it != m_registeredDestinations.end() && it.key() == in; ++it) {
+                it.value()->onInputDisconnected(in);
+            }
         }
+        foreach (AudioOutput out, pDevice->outputs()) {
+            // Need to tell all registered AudioSources for this AudioOutput
+            // that the output was disconnected.
+            for (QHash<AudioOutput, AudioSource*>::const_iterator it =
+                         m_registeredSources.find(out);
+                 it != m_registeredSources.end() && it.key() == out; ++it) {
+                it.value()->onOutputDisconnected(out);
+            }
+        }
+    }
 
+    foreach (AudioInput in, m_inputBuffers.keys()) {
         CSAMPLE* buffer = m_inputBuffers.value(in);
         if (buffer != NULL) {
             m_inputBuffers.insert(in, NULL);
@@ -320,7 +339,7 @@ int SoundManager::setupDevices() {
 
             m_inputBuffers.insert(in, aib.getBuffer());
 
-            // Check if any AudioDestination is registered for this AudioInput,
+            // Check if any AudioDestination is registered for this AudioInput
             // and call the onInputConnected method.
             for (QHash<AudioInput, AudioDestination*>::const_iterator it =
                          m_registeredDestinations.find(in);
@@ -347,6 +366,14 @@ int SoundManager::setupDevices() {
                     && !pNewMasterClockRef) {
                 pNewMasterClockRef = device;
             }
+
+            // Check if any AudioSource is registered for this AudioOutput and
+            // call the onOutputConnected method.
+            for (QHash<AudioOutput, AudioSource*>::const_iterator it =
+                         m_registeredSources.find(out);
+                 it != m_registeredSources.end() && it.key() == out; ++it) {
+                it.value()->onOutputConnected(out);
+            }
         }
         if (isInput || isOutput) {
             device->setSampleRate(m_config.getSampleRate());
@@ -371,7 +398,7 @@ int SoundManager::setupDevices() {
             if (isInput)
                 ++inputDevicesOpened;
 
-            // If we have no yet set a clock source then we use the first
+            // If we have not yet set a clock source then we use the first
             // successfully opened SoundDevice.
             if (pNewMasterClockRef == NULL) {
                 pNewMasterClockRef = device;
@@ -481,11 +508,22 @@ void SoundManager::requestBuffer(
                  e = outputs.end(); i != e; ++i) {
         const AudioOutputBuffer& out = *i;
 
-        // buffer is always !NULL
-        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
         const ChannelGroup outChans = out.getChannelGroup();
         const int iChannelCount = outChans.getChannelCount();
         const int iChannelBase = outChans.getChannelBase();
+
+        // buffer is always !NULL
+        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
+
+        // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
+        // output then we need to downsample.
+        if (iChannelCount == 1) {
+            for (int i = 0; i < iFramesPerBuffer; ++i) {
+                m_pDownmixBuffer[i] = (pAudioOutputBuffer[i*2] +
+                                       pAudioOutputBuffer[i*2 + 1]) / 2.0f;
+            }
+            pAudioOutputBuffer = m_pDownmixBuffer;
+        }
 
         for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
             // iFrameBase is the "base sample" in a frame (ie. the first
@@ -581,7 +619,7 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* in
     }
 }
 
-void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
+void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     if (m_registeredSources.contains(output)) {
         qDebug() << "WARNING: AudioOutput already registered!";
     }
