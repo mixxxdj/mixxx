@@ -116,13 +116,6 @@ class ControlDoublePrivate : public QObject {
     void valueChangeRequest(double value);
 
   private:
-    // Used to implement control persistence. Do not make public -- we don't
-    // want this to turn into a way to get the configuration object from
-    // anywhere in Mixxx.
-    static ConfigObject<ConfigValue>* getUserConfig() {
-        return s_pUserConfig;
-    }
-
     ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
                          bool bIgnoreNops, bool bTrack, bool bPersist);
     void initialize();

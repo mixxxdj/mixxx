@@ -43,7 +43,7 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
 void ControlDoublePrivate::initialize() {
     double value = 0;
     if (m_bPersistInConfiguration) {
-        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::getUserConfig();
+        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             bool ok = false;
             double configValue = pConfig->getValueString(m_key).toDouble(&ok);
@@ -70,7 +70,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
     s_qCOHashMutex.unlock();
 
     if (m_bPersistInConfiguration) {
-        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::getUserConfig();
+        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             pConfig->set(m_key, QString::number(get()));
         }
