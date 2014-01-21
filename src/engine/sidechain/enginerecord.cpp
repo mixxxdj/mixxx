@@ -33,6 +33,7 @@
 #include "errordialoghandler.h"
 #include "playerinfo.h"
 #include "recording/defs_recording.h"
+#include "util/event.h"
 
 const int kMetaDataLifeTimeout = 16;
 
@@ -145,6 +146,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (recordingStatus == RECORD_OFF) {
         //qDebug("Setting record flag to: OFF");
         if (fileOpen()) {
+            Event::end("EngineRecord recording");
             closeFile();  // Close file and free encoder.
             emit(isRecording(false));
         }
@@ -153,6 +155,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // open a new file.
         updateFromPreferences();  // Update file location from preferences.
         if (openFile()) {
+            Event::start("EngineRecord recording");
             qDebug("Setting record flag to: ON");
             m_pRecReady->slotSet(RECORD_ON);
             emit(isRecording(true));  // will notify the RecordingManager

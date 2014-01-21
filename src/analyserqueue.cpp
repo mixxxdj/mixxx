@@ -16,6 +16,8 @@
 #include "analyserkey.h"
 #include "vamp/vampanalyser.h"
 #include "util/compatibility.h"
+#include "util/event.h"
+#include "util/trace.h"
 
 // Measured in 0.1%,
 // 0 for no progress during finalize
@@ -115,7 +117,9 @@ bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer tio) {
 TrackPointer AnalyserQueue::dequeueNextBlocking() {
     m_qm.lock();
     if (m_tioq.isEmpty()) {
+        Event::end("AnalyserQueue process");
         m_qwait.wait(&m_qm);
+        Event::start("AnalyserQueue process");
 
         if (m_exit) {
             m_qm.unlock();
@@ -289,6 +293,8 @@ void AnalyserQueue::run() {
         if (!nextTrack) {
             continue;
         }
+
+        Trace trace("AnalyserQueue analyzing track");
 
         // Get the audio
         SoundSourceProxy* pSoundSource = new SoundSourceProxy(nextTrack);

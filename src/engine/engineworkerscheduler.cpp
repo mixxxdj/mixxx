@@ -5,6 +5,7 @@
 
 #include "engine/engineworker.h"
 #include "engine/engineworkerscheduler.h"
+#include "util/event.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : m_bWakeScheduler(false),
@@ -41,15 +42,16 @@ void EngineWorkerScheduler::runWorkers() {
 
 void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
+        Event::start("EngineWorkerScheduler");
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
             if (pWorker) {
                 pWorker->wake();
             }
         }
+        Event::end("EngineWorkerScheduler");
         m_mutex.lock();
         m_waitCondition.wait(&m_mutex); // unlock mutex and wait
         m_mutex.unlock();
     }
 }
-
