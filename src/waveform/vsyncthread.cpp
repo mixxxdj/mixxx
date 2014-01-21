@@ -47,16 +47,14 @@ void VSyncThread::stop()
 void VSyncThread::run() {
     QThread::currentThread()->setObjectName("VSyncThread");
 
-    int usRemainingForSwap;
-    int usLastSwapTime;
-
     m_usWaitToSwap = m_usSyncIntervalTime;
     m_timer.start();
 
     while (doRendering) {
         if (m_vSyncMode == ST_FREE) {
             // for benchmark only!
-            emit(vsyncRender()); // renders the waveform, Possible delayed due to anti tearing
+            // renders the waveform, Possible delayed due to anti tearing
+            emit(vsyncRender());
             m_semaVsyncSlot.acquire();
             emit(vsyncSwap()); // swaps the new waveform to front
             m_semaVsyncSlot.acquire();
@@ -65,31 +63,39 @@ void VSyncThread::run() {
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
             emit(vsyncRender()); // renders the new waveform.
-            m_semaVsyncSlot.acquire(); // wait until rendering was scheduled. It might be delayed due a pending swap (depends one driver vSync settings)
+
+            // wait until rendering was scheduled. It might be delayed due a
+            // pending swap (depends one driver vSync settings)
+            m_semaVsyncSlot.acquire();
             // qDebug() << "ST_TIMER                      " << usLast << usRest;
-            usRemainingForSwap = m_usWaitToSwap - (int)m_timer.elapsed() / 1000;
+            int usRemainingForSwap = m_usWaitToSwap - (int)m_timer.elapsed() / 1000;
             // waiting for interval by sleep
             if (usRemainingForSwap > 100) {
                 usleep(usRemainingForSwap);
             }
 
-            emit(vsyncSwap()); // swaps the new waveform to front in case of gl-wf
-            m_semaVsyncSlot.acquire(); // wait until swap was scheduled. It might be delayed due to driver vSync settings  
+            // swaps the new waveform to front in case of gl-wf
+            emit(vsyncSwap());
+
+            // wait until swap occurred. It might be delayed due to driver vSync
+            // settings.
+            m_semaVsyncSlot.acquire();
             // <- Assume we are VSynced here ->
-            usLastSwapTime = (int)m_timer.restart() / 1000;
+            int usLastSwapTime = (int)m_timer.restart() / 1000;
             if (usRemainingForSwap < 0) {
                 // Our swapping call was already delayed
-                // The real swap might happens on the following VSync, depending on driver settings 
+                // The real swap might happens on the following VSync, depending on driver settings
                 m_rtErrorCnt++; // Count as Real Time Error
             }
             // try to stay in right intervals
-            usRemainingForSwap = m_usWaitToSwap - usLastSwapTime;
-            m_usWaitToSwap = m_usSyncIntervalTime + (usRemainingForSwap % m_usSyncIntervalTime);
+            m_usWaitToSwap = m_usSyncIntervalTime +
+                    ((m_usWaitToSwap - usLastSwapTime) % m_usSyncIntervalTime);
         }
     }
 }
 
 
+// static
 void VSyncThread::swapGl(QGLWidget* glw, int index) {
     Q_UNUSED(index);
     // No need for glw->makeCurrent() here.
