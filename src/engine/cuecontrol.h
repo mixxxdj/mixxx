@@ -131,6 +131,7 @@ class CueControl : public EngineControl {
     bool m_bPreviewing;
     bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
+    ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
@@ -145,7 +146,6 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueSet;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
-    ControlPushButton* m_pPause;
     ControlPushButton* m_pPlayStutter;
     ControlIndicator* m_pCueIndicator;
     ControlIndicator* m_pPlayIndicator;

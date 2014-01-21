@@ -24,6 +24,7 @@ CueControl::CueControl(const char* _group,
         m_bPreviewing(false),
         m_bPreviewingHotcue(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
+        m_pStopButton(ControlObject::getControl(ConfigKey(_group, "stop"))),
         m_iCurrentlyPreviewingHotcues(0),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
@@ -81,12 +82,6 @@ CueControl::CueControl(const char* _group,
             this, SLOT(cueDefault(double)),
             Qt::DirectConnection);
 
-    m_pPause = new ControlPushButton(ConfigKey(_group, "pause"));
-    // m_playButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pPause, SIGNAL(valueChanged(double)),
-            this, SLOT(pause(double)),
-            Qt::DirectConnection);
-
     m_pPlayStutter = new ControlPushButton(ConfigKey(_group, "play_stutter"));
     connect(m_pPlayStutter, SIGNAL(valueChanged(double)),
             this, SLOT(playStutter(double)),
@@ -106,7 +101,7 @@ CueControl::~CueControl() {
     delete m_pCuePreview;
     delete m_pCueCDJ;
     delete m_pCueDefault;
-    delete m_pPause;
+    delete m_pStopButton;
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
@@ -820,14 +815,14 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
         // play not possible
         play = 0.0;
         m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
-        m_pPause->set(0.0);
+        m_pStopButton->set(0.0);
     } else if (play && !previewing) {
         // Play: Indicates a latched Play
         m_pPlayIndicator->setBlinkValue(ControlIndicator::ON);
-        m_pPause->set(0.0);
+        m_pStopButton->set(0.0);
     } else {
         // Pause:
-        m_pPause->set(1.0);
+        m_pStopButton->set(1.0);
         if (cueMode == CUE_MODE_DENON) {
             if (isTrackAtCue()) {
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
