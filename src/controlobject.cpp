@@ -28,9 +28,9 @@
 ControlObject::ControlObject() {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack, bool bPersist)
         : m_pControl(NULL) {
-    initialize(key, bIgnoreNops, bTrack);
+    initialize(key, bIgnoreNops, bTrack, bPersist);
 }
 
 ControlObject::~ControlObject() {
@@ -39,9 +39,12 @@ ControlObject::~ControlObject() {
     }
 }
 
-void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
+void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
+                               bool bPersist) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(m_key, true, this, bIgnoreNops, bTrack);
+    m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
+                                                  bIgnoreNops, bTrack,
+                                                  bPersist);
     connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);
