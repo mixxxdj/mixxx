@@ -286,7 +286,7 @@ bool EngineRecord::openFile() {
         m_pSndfile = sf_open(qbaFilename.constData(), SFM_WRITE, &m_sfInfo);
 #endif
         if (m_pSndfile) {
-            sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
+            sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);
             // Set meta data
             int ret;
 
