@@ -469,10 +469,11 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
+    const QList<QString>& musicFiles = args.getMusicFiles();
     for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-            && i < args.getMusicFiles().count(); ++i) {
-        if ( SoundSourceProxy::isFilenameSupported(args.getMusicFiles().at(i))) {
-            m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
+                 && i < musicFiles.count(); ++i) {
+        if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
+            m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
 
