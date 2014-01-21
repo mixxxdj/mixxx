@@ -54,6 +54,10 @@
                 <SetVariable name="object_name">SampleDeckToggle</SetVariable>
                 <SetVariable name="control">[Samplers],show_samplers</SetVariable>
               </Template>
+              <Label>
+                <ObjectName>SectionLabel</ObjectName>
+                <Text>Samplers</Text>
+              </Label>
             </Children>
           </WidgetGroup>
         </Children>

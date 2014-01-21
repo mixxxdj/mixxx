@@ -62,6 +62,10 @@
                 <SetVariable name="object_name">EffectRackToggle</SetVariable>
                 <SetVariable name="control">[EffectRack1],show</SetVariable>
               </Template>
+              <Label>
+                <ObjectName>SectionLabel</ObjectName>
+                <Text>Effects</Text>
+              </Label>
             </Children>
           </WidgetGroup>
         </Children>
