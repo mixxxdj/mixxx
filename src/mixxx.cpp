@@ -60,6 +60,7 @@
 #include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
+#include "util/time.h"
 #include "util/version.h"
 #include "util/compatibility.h"
 #include "playerinfo.h"
@@ -245,6 +246,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
+    Time::start();
     initializeWindow();
 
     // Only record stats in developer mode.

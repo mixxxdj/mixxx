@@ -10,10 +10,12 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QThreadStorage>
+#include <QList>
 
 #include "util/fifo.h"
 #include "singleton.h"
 #include "util/stat.h"
+#include "util/event.h"
 
 class StatsManager;
 
@@ -44,6 +46,7 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
 
     QAtomicInt m_quit;
     QMap<QString, Stat> m_stats;
+    QList<Event> m_events;
 
     QWaitCondition m_statsPipeCondition;
     QMutex m_statsPipeLock;

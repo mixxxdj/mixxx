@@ -23,8 +23,8 @@ StatsPipe::~StatsPipe() {
 }
 
 StatsManager::StatsManager()
-    : QThread(),
-      m_quit(0) {
+        : QThread(),
+          m_quit(0) {
     s_bStatsManagerEnabled = true;
     setObjectName("StatsManager");
     moveToThread(this);
@@ -79,12 +79,22 @@ void StatsManager::processIncomingStatReports() {
     StatReport report;
     foreach (StatsPipe* pStatsPipe, m_statsPipes) {
         while (pStatsPipe->read(&report, 1) == 1) {
-            QString tag(report.tag);
+            QString tag = QString::fromUtf8(report.tag);
             Stat& info = m_stats[tag];
             info.m_tag = tag;
             info.m_type = report.type;
             info.m_compute = report.compute;
             info.processReport(report);
+
+            if (report.type == Stat::EVENT ||
+                    report.type == Stat::EVENT_START ||
+                    report.type == Stat::EVENT_END) {
+                Event event;
+                event.m_tag = tag;
+                event.m_type = report.type;
+                event.m_time = report.time;
+                m_events.append(event);
+            }
             free(report.tag);
         }
     }
