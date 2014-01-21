@@ -914,7 +914,7 @@ Numark mode:
      <item row="8" column="0">
       <widget class="QLabel" name="labelCueMode">
        <property name="text">
-        <string>Cue mode &lt;a href=&quot;http://mixxx.org/manual/1.11/chapters/user_interface.html#using-cue-modes&quot;&gt;(?)&lt;/a&gt;</string>
+        <string>Cue mode</string>
        </property>
        <property name="openExternalLinks">
         <bool>true</bool>

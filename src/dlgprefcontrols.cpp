@@ -38,6 +38,7 @@
 #include "playermanager.h"
 #include "controlobject.h"
 #include "mixxx.h"
+#include "defs_urls.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
@@ -163,8 +164,15 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             this, SLOT(slotSetLocale(int)));
 
     //
-    // Default Cue Behavior
+    // Cue Mode
     //
+
+    // Add "(?)" with a manual link to the label
+    labelCueMode->setText(
+            labelCueMode->text() +
+            " <a href=\"" +
+            MIXXX_MANUAL_URL +
+            "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
 
     // Set default value in config file and control objects, if not present
     // Default is "0" = Pioneer Mode
