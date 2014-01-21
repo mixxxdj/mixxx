@@ -841,6 +841,7 @@ class MixxxCore(Feature):
                    "util/performancetimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
+                   "util/valuetransformer.cpp",
 
                    '#res/mixxx.qrc'
                    ]
