@@ -14,7 +14,10 @@
       <WidgetGroup>
         <ObjectName>UpperTextRow</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <!-- When TextRow is laid out, we need to ignore our children. Otherwise
+             decks might end up with different widths based on the size of the
+             labels in this row -->
+        <SizePolicy>i,max</SizePolicy>
         <Children>
           <WidgetGroup>
             <ObjectName>TitleGutter</ObjectName>
@@ -55,7 +58,10 @@
       <WidgetGroup>
         <ObjectName>LowerTextRow</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <!-- When TextRow is laid out, we need to ignore our children. Otherwise
+             decks might end up with different widths based on the size of the
+             labels in this row -->
+        <SizePolicy>i,max</SizePolicy>
         <Children>
           <WidgetGroup>
             <ObjectName>ArtistGutter</ObjectName>
