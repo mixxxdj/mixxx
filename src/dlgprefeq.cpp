@@ -23,7 +23,7 @@
 #include "controlobject.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
-#define ENABLE_INT_EQ "EnableEQs"
+#define ENABLE_INTERNAL_EQ "EnableEQs"
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
@@ -33,7 +33,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
-          m_COTEnableEq(CONFIG_KEY,ENABLE_INT_EQ),
+          m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0) {
@@ -91,8 +91,12 @@ void DlgPrefEQ::loadSettings()
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
 
-    CheckBoxLoFi->setChecked(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"));
-    CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, ENABLE_INT_EQ)) == QString("yes"));
+    CheckBoxLoFi->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"));
+
+    // Default internal EQs to enabled.
+    CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes"));
 
     slotUpdate();
     slotApply();
@@ -113,13 +117,9 @@ void DlgPrefEQ::reset() {
     loadSettings();
 }
 
-void DlgPrefEQ::slotEnaEQChanged()
-{
-    if(CheckBoxEnbEQ->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INT_EQ), ConfigValue(QString("yes")));
-    } else {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INT_EQ), ConfigValue(QString("no")));
-    }
+void DlgPrefEQ::slotEnaEQChanged() {
+    m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ),
+                   CheckBoxEnbEQ->isChecked() ? QString("yes") : QString("no"));
 }
 
 void DlgPrefEQ::slotLoFiChanged()

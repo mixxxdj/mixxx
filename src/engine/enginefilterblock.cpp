@@ -150,11 +150,14 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
 }
 
 void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
-    if (!s_EnableEq->get()) { //Disable EQ
+    ScopedTimer t("EngineFilterBlock::process");
+
+    // Check if EQ processing is disabled.
+    if (!s_EnableEq->get()) {
         SampleUtil::copyWithGain(pOutput, pIn, 1, iBufferSize);
         return;
     }
-    ScopedTimer t("EngineFilterBlock::process");
+
     float fLow=0.f, fMid=0.f, fHigh=0.f;
     if (filterKillLow->get()==0.)
         fLow = filterpotLow->get(); //*0.7;
