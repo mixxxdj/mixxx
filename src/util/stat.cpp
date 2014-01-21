@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "util/stat.h"
+#include "util/time.h"
 #include "util/statsmanager.h"
 
 Stat::Stat()
@@ -26,8 +27,9 @@ QString Stat::valueUnits() const {
             return "ns";
         case DURATION_SEC:
             return "s";
-        case TRACE_START:
-        case TRACE_FINISH:
+        case EVENT:
+        case EVENT_START:
+        case EVENT_END:
         case UNSPECIFIED:
         default:
             return "";
@@ -146,6 +148,7 @@ bool Stat::track(const QString& tag,
     report.tag = strdup(tag.toAscii().constData());
     report.type = type;
     report.compute = compute;
+    report.time = Time::elapsed();
     report.value = value;
     StatsManager* pManager = StatsManager::instance();
     return pManager && pManager->maybeWriteReport(report);

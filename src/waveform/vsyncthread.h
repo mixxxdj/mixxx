@@ -45,8 +45,11 @@ class VSyncThread : public QThread {
         ST_COUNT // Dummy Type at last, counting possible types
     };
 
+    static void swapGl(QGLWidget* glw, int index);
+
     VSyncThread(MixxxApp* mixxApp);
     ~VSyncThread();
+
     void run();
     void stop();
 
@@ -61,7 +64,6 @@ class VSyncThread : public QThread {
     void vsyncSlotFinished();
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void setupSync(QGLWidget* glw, int index);
-    void swapGl(QGLWidget* glw, int index);
     void waitUntilSwap(QGLWidget* glw);
 
   signals:

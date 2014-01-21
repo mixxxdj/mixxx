@@ -11,10 +11,6 @@
 // The max engine workers that can be expected to run within a callback
 // (e.g. the max that we will schedule). Must be a power of 2.
 #define MAX_ENGINE_WORKERS 32
-// The max number of threads that EngineWorkers will be scheduled on. TODO(XXX)
-// this should be dynamically chosen by the user, since it will vary depending
-// on the machine resources available.
-#define ENGINE_WORKER_THREAD_COUNT 4
 
 class EngineWorker;
 
@@ -31,6 +27,10 @@ class EngineWorkerScheduler : public QThread {
     void run();
 
   private:
+    // Indicates whether workerReady has been called since the last time
+    // runWorkers was run. This should only be touched from the engine callback.
+    bool m_bWakeScheduler;
+
     FIFO<EngineWorker*> m_scheduleFIFO;
     QWaitCondition m_waitCondition;
     QMutex m_mutex;
