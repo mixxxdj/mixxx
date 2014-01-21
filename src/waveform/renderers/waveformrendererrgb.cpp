@@ -10,8 +10,6 @@
 
 #include "defs.h"
 
-#include "controlobjectthreadmain.h"
-
 #define MAX3(a, b, c)  ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
 WaveformRendererRGB::WaveformRendererRGB(
