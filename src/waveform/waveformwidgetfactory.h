@@ -5,7 +5,7 @@
 #include <QTime>
 #include <QVector>
 
-#include "singleton.h"
+#include "util/singleton.h"
 #include "configobject.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/waveform.h"
