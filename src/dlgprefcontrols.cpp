@@ -39,7 +39,7 @@
 #include "controlobject.h"
 #include "mixxx.h"
 
-DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
+DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
