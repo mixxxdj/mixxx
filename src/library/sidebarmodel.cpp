@@ -5,6 +5,7 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
+#include "library/browse/browsefeature.h"
 
 SidebarModel::SidebarModel(QObject* parent)
         : QAbstractItemModel(parent),
@@ -174,6 +175,7 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     }
 
     if (index.internalPointer() == this) {
+        //If it points to SidebarModel
         if (role == Qt::DisplayRole) {
             return m_sFeatures[index.row()]->title();
         } else if (role == Qt::DecorationRole) {
@@ -181,23 +183,23 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         }
     }
 
-    TreeItem* tree_item = (TreeItem*)index.internalPointer();
-    if (tree_item) {
-        if (role == Qt::DisplayRole) {
-            return tree_item->data();
-        } else if (role == Qt::ToolTipRole) {
-            if (index.internalPointer() != this) {
-                // Check if the node is not the root and display a tooltip
-                // with its path
+    if (index.internalPointer() != this) {
+        // If it points to a TreeItem
+        TreeItem* tree_item = (TreeItem*)index.internalPointer();
+        if (tree_item) {
+            if (role == Qt::DisplayRole) {
+                return tree_item->data();
+            } else if (role == Qt::ToolTipRole) {
                 return tree_item->dataPath();
+            } else if (role == Qt::UserRole) {
+                // We use Qt::UserRole to ask for the datapath.
+                return tree_item->dataPath();
+            } else if (role == Qt::DecorationRole) {
+                return tree_item->getIcon();
             }
-        } else if (role == Qt::UserRole) {
-            // We use Qt::UserRole to ask for the datapath.
-            return tree_item->dataPath();
-        } else if (role == Qt::DecorationRole) {
-            return tree_item->getIcon();
         }
     }
+
     return QVariant();
 }
 
