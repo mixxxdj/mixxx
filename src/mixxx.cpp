@@ -74,163 +74,6 @@
 #include "dlgprefmodplug.h"
 #endif
 
-bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString userLocale,
-                      const QString& translation, const QString& prefix,
-                      const QString& translationPath, QTranslator* pTranslator) {
-    if (userLocale.size() == 0) {
-#if QT_VERSION >= 0x040800
-        QStringList uiLanguages = systemLocale.uiLanguages();
-        if (uiLanguages.size() > 0 && uiLanguages.first() == "en") {
-            // Don't bother loading a translation if the first ui-langauge is
-            // English because the interface is already in English. This fixes
-            // the case where the user's install of Qt doesn't have an explicit
-            // English translation file and the fact that we don't ship a
-            // mixxx_en.qm.
-            return false;
-        }
-        return pTranslator->load(systemLocale, translation, prefix, translationPath);
-#else
-        userLocale = systemLocale.name();
-#endif  // QT_VERSION
-    }
-    return pTranslator->load(translation + prefix + userLocale, translationPath);
-}
-
-void MixxxMainWindow::logBuildDetails() {
-    QString version = Version::version();
-    QString buildBranch = Version::developmentBranch();
-    QString buildRevision = Version::developmentRevision();
-    QString buildFlags = Version::buildFlags();
-
-    QStringList buildInfo;
-    if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
-        buildInfo.append(
-            QString("git %1 r%2").arg(buildBranch, buildRevision));
-    } else if (!buildRevision.isEmpty()) {
-        buildInfo.append(
-            QString("git r%2").arg(buildRevision));
-    }
-    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
-    if (!buildFlags.isEmpty()) {
-        buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
-    }
-    QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
-
-    // This is the first line in mixxx.log
-    qDebug() << "Mixxx" << version << buildInfoFormatted << "is starting...";
-    qDebug() << "Qt version is:" << qVersion();
-}
-
-void MixxxMainWindow::initializeWindow() {
-    QString version = Version::version();
-#ifdef __APPLE__
-    setWindowTitle(tr("Mixxx")); //App Store
-#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    setWindowTitle(tr("Mixxx %1 x64").arg(version));
-#elif defined(IA64)
-    setWindowTitle(tr("Mixxx %1 Itanium").arg(version));
-#else
-    setWindowTitle(tr("Mixxx %1").arg(version));
-#endif
-    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
-}
-
-void MixxxMainWindow::initializeTranslations(QApplication* pApp) {
-    QString resourcePath = m_pConfig->getResourcePath();
-    QString translationsFolder = resourcePath + "translations/";
-
-    // Load Qt base translations
-    QString userLocale = m_cmdLineArgs.getLocale();
-    QLocale systemLocale = QLocale::system();
-
-    // Attempt to load user locale from config
-    if (userLocale == "") {
-        userLocale = m_pConfig->getValueString(ConfigKey("[Config]","Locale"));
-    }
-
-    // Load Qt translations for this locale from the system translation
-    // path. This is the lowest precedence QTranslator.
-    QTranslator* qtTranslator = new QTranslator(pApp);
-    if (loadTranslations(systemLocale, userLocale, "qt", "_",
-                         QLibraryInfo::location(QLibraryInfo::TranslationsPath),
-                         qtTranslator)) {
-        pApp->installTranslator(qtTranslator);
-    } else {
-        delete qtTranslator;
-    }
-
-    // Load Qt translations for this locale from the Mixxx translations
-    // folder.
-    QTranslator* mixxxQtTranslator = new QTranslator(pApp);
-    if (loadTranslations(systemLocale, userLocale, "qt", "_",
-                         translationsFolder,
-                         mixxxQtTranslator)) {
-        pApp->installTranslator(mixxxQtTranslator);
-    } else {
-        delete mixxxQtTranslator;
-    }
-
-    // Load Mixxx specific translations for this locale from the Mixxx
-    // translations folder.
-    QTranslator* mixxxTranslator = new QTranslator(pApp);
-    bool mixxxLoaded = loadTranslations(systemLocale, userLocale, "mixxx", "_",
-                                        translationsFolder, mixxxTranslator);
-    qDebug() << "Loading translations for locale"
-             << (userLocale.size() > 0 ? userLocale : systemLocale.name())
-             << "from translations folder" << translationsFolder << ":"
-             << (mixxxLoaded ? "success" : "fail");
-    if (mixxxLoaded) {
-        pApp->installTranslator(mixxxTranslator);
-    } else {
-        delete mixxxTranslator;
-    }
-}
-
-void MixxxMainWindow::initializeKeyboard() {
-    QString resourcePath = m_pConfig->getResourcePath();
-
-    // Set the default value in settings file
-    if (m_pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
-        m_pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
-
-    // Read keyboard configuration and set kdbConfig object in WWidget
-    // Check first in user's Mixxx directory
-    QString userKeyboard = m_cmdLineArgs.getSettingsPath() + "Custom.kbd.cfg";
-
-    //Empty keyboard configuration
-    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
-
-    if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
-    } else {
-        // Default to the locale for the main input method (e.g. keyboard).
-        QLocale locale = inputLocale();
-
-        // check if a default keyboard exists
-        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
-        defaultKeyboard += locale.name();
-        defaultKeyboard += ".kbd.cfg";
-
-        if (!QFile::exists(defaultKeyboard)) {
-            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
-            if (!QFile::exists(defaultKeyboard)) {
-                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
-                defaultKeyboard = "";
-            }
-        }
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(defaultKeyboard);
-    }
-
-    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
-    // initialization into MixxxKeyboard
-    // Workaround for today: MixxxKeyboard calls delete
-    bool keyboardShortcutsEnabled = m_pConfig->getValueString(
-        ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
-}
-
 MixxxMainWindow::MixxxMainWindow(QApplication *pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
@@ -678,6 +521,163 @@ MixxxMainWindow::~MixxxMainWindow() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+}
+
+bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString userLocale,
+                      const QString& translation, const QString& prefix,
+                      const QString& translationPath, QTranslator* pTranslator) {
+    if (userLocale.size() == 0) {
+#if QT_VERSION >= 0x040800
+        QStringList uiLanguages = systemLocale.uiLanguages();
+        if (uiLanguages.size() > 0 && uiLanguages.first() == "en") {
+            // Don't bother loading a translation if the first ui-langauge is
+            // English because the interface is already in English. This fixes
+            // the case where the user's install of Qt doesn't have an explicit
+            // English translation file and the fact that we don't ship a
+            // mixxx_en.qm.
+            return false;
+        }
+        return pTranslator->load(systemLocale, translation, prefix, translationPath);
+#else
+        userLocale = systemLocale.name();
+#endif  // QT_VERSION
+    }
+    return pTranslator->load(translation + prefix + userLocale, translationPath);
+}
+
+void MixxxMainWindow::logBuildDetails() {
+    QString version = Version::version();
+    QString buildBranch = Version::developmentBranch();
+    QString buildRevision = Version::developmentRevision();
+    QString buildFlags = Version::buildFlags();
+
+    QStringList buildInfo;
+    if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("git %1 r%2").arg(buildBranch, buildRevision));
+    } else if (!buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("git r%2").arg(buildRevision));
+    }
+    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
+    if (!buildFlags.isEmpty()) {
+        buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
+    }
+    QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
+
+    // This is the first line in mixxx.log
+    qDebug() << "Mixxx" << version << buildInfoFormatted << "is starting...";
+    qDebug() << "Qt version is:" << qVersion();
+}
+
+void MixxxMainWindow::initializeWindow() {
+    QString version = Version::version();
+#ifdef __APPLE__
+    setWindowTitle(tr("Mixxx")); //App Store
+#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
+    setWindowTitle(tr("Mixxx %1 x64").arg(version));
+#elif defined(IA64)
+    setWindowTitle(tr("Mixxx %1 Itanium").arg(version));
+#else
+    setWindowTitle(tr("Mixxx %1").arg(version));
+#endif
+    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+}
+
+void MixxxMainWindow::initializeTranslations(QApplication* pApp) {
+    QString resourcePath = m_pConfig->getResourcePath();
+    QString translationsFolder = resourcePath + "translations/";
+
+    // Load Qt base translations
+    QString userLocale = m_cmdLineArgs.getLocale();
+    QLocale systemLocale = QLocale::system();
+
+    // Attempt to load user locale from config
+    if (userLocale == "") {
+        userLocale = m_pConfig->getValueString(ConfigKey("[Config]","Locale"));
+    }
+
+    // Load Qt translations for this locale from the system translation
+    // path. This is the lowest precedence QTranslator.
+    QTranslator* qtTranslator = new QTranslator(pApp);
+    if (loadTranslations(systemLocale, userLocale, "qt", "_",
+                         QLibraryInfo::location(QLibraryInfo::TranslationsPath),
+                         qtTranslator)) {
+        pApp->installTranslator(qtTranslator);
+    } else {
+        delete qtTranslator;
+    }
+
+    // Load Qt translations for this locale from the Mixxx translations
+    // folder.
+    QTranslator* mixxxQtTranslator = new QTranslator(pApp);
+    if (loadTranslations(systemLocale, userLocale, "qt", "_",
+                         translationsFolder,
+                         mixxxQtTranslator)) {
+        pApp->installTranslator(mixxxQtTranslator);
+    } else {
+        delete mixxxQtTranslator;
+    }
+
+    // Load Mixxx specific translations for this locale from the Mixxx
+    // translations folder.
+    QTranslator* mixxxTranslator = new QTranslator(pApp);
+    bool mixxxLoaded = loadTranslations(systemLocale, userLocale, "mixxx", "_",
+                                        translationsFolder, mixxxTranslator);
+    qDebug() << "Loading translations for locale"
+             << (userLocale.size() > 0 ? userLocale : systemLocale.name())
+             << "from translations folder" << translationsFolder << ":"
+             << (mixxxLoaded ? "success" : "fail");
+    if (mixxxLoaded) {
+        pApp->installTranslator(mixxxTranslator);
+    } else {
+        delete mixxxTranslator;
+    }
+}
+
+void MixxxMainWindow::initializeKeyboard() {
+    QString resourcePath = m_pConfig->getResourcePath();
+
+    // Set the default value in settings file
+    if (m_pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
+        m_pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+
+    // Read keyboard configuration and set kdbConfig object in WWidget
+    // Check first in user's Mixxx directory
+    QString userKeyboard = m_cmdLineArgs.getSettingsPath() + "Custom.kbd.cfg";
+
+    //Empty keyboard configuration
+    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
+
+    if (QFile::exists(userKeyboard)) {
+        qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
+        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
+    } else {
+        // Default to the locale for the main input method (e.g. keyboard).
+        QLocale locale = inputLocale();
+
+        // check if a default keyboard exists
+        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
+        defaultKeyboard += locale.name();
+        defaultKeyboard += ".kbd.cfg";
+
+        if (!QFile::exists(defaultKeyboard)) {
+            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
+            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
+            if (!QFile::exists(defaultKeyboard)) {
+                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
+                defaultKeyboard = "";
+            }
+        }
+        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(defaultKeyboard);
+    }
+
+    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
+    // initialization into MixxxKeyboard
+    // Workaround for today: MixxxKeyboard calls delete
+    bool keyboardShortcutsEnabled = m_pConfig->getValueString(
+        ConfigKey("[Keyboard]", "Enabled")) == "1";
+    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
