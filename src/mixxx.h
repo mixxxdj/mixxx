@@ -47,6 +47,7 @@ class SoundManager;
 #include "util/timer.h"
 
 class ControlObjectThread;
+class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
@@ -132,6 +133,9 @@ class MixxxMainWindow : public QMainWindow {
     void initializeWindow();
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
+    bool loadTranslations(const QLocale& systemLocale, QString userLocale,
+                          const QString& translation, const QString& prefix,
+                          const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
 

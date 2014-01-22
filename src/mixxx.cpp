@@ -74,7 +74,7 @@
 #include "dlgprefmodplug.h"
 #endif
 
-bool loadTranslations(const QLocale& systemLocale, QString userLocale,
+bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString userLocale,
                       const QString& translation, const QString& prefix,
                       const QString& translationPath, QTranslator* pTranslator) {
     if (userLocale.size() == 0) {
@@ -233,11 +233,11 @@ void MixxxMainWindow::initializeKeyboard() {
 
 MixxxMainWindow::MixxxMainWindow(QApplication *pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
-          m_runtime_timer("MixxxApp::runtime"),
+          m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
     logBuildDetails();
-    ScopedTimer t("MixxxApp::MixxxApp");
+    ScopedTimer t("MixxxMainWindow::MixxxMainWindow");
     m_runtime_timer.start();
     Time::start();
     initializeWindow();
@@ -564,10 +564,10 @@ MixxxMainWindow::~MixxxMainWindow() {
     // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();
-    Timer t("MixxxApp::~MixxxApp");
+    Timer t("MixxxMainWindow::~MixxxMainWindow");
     t.start();
 
-    qDebug() << "Destroying MixxxApp";
+    qDebug() << "Destroying MixxxMainWindow";
 
     qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
@@ -667,7 +667,7 @@ MixxxMainWindow::~MixxxMainWindow() {
            }
        }
    }
-   qDebug() << "~MixxxApp: All leaking controls deleted.";
+   qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
