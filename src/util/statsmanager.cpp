@@ -178,9 +178,9 @@ void StatsManager::processIncomingStatReports() {
             info.processReport(report);
 
             if (CmdlineArgs::Instance().getTimelineEnabled() &&
-                    report.type == Stat::EVENT ||
-                    report.type == Stat::EVENT_START ||
-                    report.type == Stat::EVENT_END) {
+                    (report.type == Stat::EVENT ||
+                     report.type == Stat::EVENT_START ||
+                     report.type == Stat::EVENT_END)) {
                 Event event;
                 event.m_tag = tag;
                 event.m_type = report.type;
