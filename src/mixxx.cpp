@@ -74,13 +74,6 @@
 #include "dlgprefmodplug.h"
 #endif
 
-extern "C" void crashDlg()
-{
-    QMessageBox::critical(0, "Mixxx",
-        "Mixxx has encountered a serious error and needs to close.");
-}
-
-
 bool loadTranslations(const QLocale& systemLocale, QString userLocale,
                       const QString& translation, const QString& prefix,
                       const QString& translationPath, QTranslator* pTranslator) {
