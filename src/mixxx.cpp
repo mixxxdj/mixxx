@@ -74,7 +74,7 @@
 #include "dlgprefmodplug.h"
 #endif
 
-MixxxMainWindow::MixxxMainWindow(QApplication *pApp, const CmdlineArgs& args)
+MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
@@ -308,7 +308,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication *pApp, const CmdlineArgs& args)
     // 1 and 2:
     const QList<QString>& musicFiles = args.getMusicFiles();
     for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-                 && i < musicFiles.count(); ++i) {
+            && i < musicFiles.count(); ++i) {
         if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
@@ -351,7 +351,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication *pApp, const CmdlineArgs& args)
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
     pApp->installEventFilter(this); // The eventfilter is located in this
-                                      // Mixxx class as a callback.
+                                    // Mixxx class as a callback.
 
     // If we were told to start in fullscreen mode on the command-line,
     // then turn on fullscreen mode.
@@ -509,8 +509,8 @@ MixxxMainWindow::~MixxxMainWindow() {
                delete pCo;
            }
        }
-   }
-   qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
+    }
+    qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
 
     delete m_pKeyboard;
     delete m_pKbdConfig;

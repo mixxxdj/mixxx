@@ -38,17 +38,17 @@
 class WSliderComposed : public WWidget  {
     Q_OBJECT
   public:
-    WSliderComposed(QWidget *parent=0);
+    WSliderComposed(QWidget* parent = 0);
     virtual ~WSliderComposed();
 
     void setup(QDomNode node, const SkinContext& context);
     void setSliderPixmap(const QString& filenameSlider);
     void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent *);
-    void wheelEvent(QWheelEvent *e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void paintEvent(QPaintEvent* e);
+    void wheelEvent(QWheelEvent* e);
     inline bool isHorizontal() const { return m_bHorizontal; };
 public slots:
     void onConnectedControlValueChanged(double);
