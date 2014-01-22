@@ -2,6 +2,8 @@
 #define TIME_H
 
 #include <QtGlobal>
+#include <QString>
+#include <QTime>
 
 #include "util/performancetimer.h"
 #include "util/timer.h"
@@ -15,6 +17,24 @@ class Time {
     // Returns the time elapsed since Mixxx started up in nanoseconds.
     static qint64 elapsed() {
         return s_timer.elapsed();
+    }
+
+    // The standard way of formatting a time in seconds. Used for display of
+    // track duration, etc. showMillis indicates whether to include
+    // millisecond-precision or to round to the nearest second.
+    static QString formatSeconds(int seconds, bool showMillis) {
+        if (seconds < 0)
+            return "?";
+        QTime t = QTime().addSecs(seconds);
+        QString formatString = (t.hour() >= 1) ? "hh:mm:ss" : "mm:ss";
+        if (showMillis)
+            formatString = formatString.append(".zzz");
+        QString timeString = t.toString(formatString);
+        // The format string gives us one extra digit of millisecond precision than
+        // we care about. Slice it off.
+        if (showMillis)
+            timeString = timeString.left(timeString.length() - 1);
+        return timeString;
     }
 
   private:
