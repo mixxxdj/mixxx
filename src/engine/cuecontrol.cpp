@@ -13,9 +13,10 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
-static const double CUE_MODE_PIONEER = 0.0;
-static const double CUE_MODE_DENON = 1.0;
-static const double CUE_MODE_NUMARK = 2.0;
+static const double CUE_MODE_MIXXX = 0.0;
+static const double CUE_MODE_PIONEER = 1.0;
+static const double CUE_MODE_DENON = 2.0;
+static const double CUE_MODE_NUMARK = 3.0;
 
 CueControl::CueControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
@@ -830,7 +831,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
-        } else if (cueMode == CUE_MODE_NUMARK) {
+        } else if (cueMode == CUE_MODE_MIXXX) {
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
             // Flashing indicates that play is possible in Pioneer mode
@@ -842,8 +843,8 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
         if (m_pCuePoint->get() != -1) {
             if (play == 0.0 && !isTrackAtCue() &&
                     getCurrentSample() < getTotalSamples()) {
-                if (cueMode == CUE_MODE_NUMARK) {
-                    // in Numark mode Cue Button is flashing slow if CUE will move Cue point
+                if (cueMode == CUE_MODE_MIXXX) {
+                    // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                 } else {
                     // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
@@ -894,8 +895,8 @@ void CueControl::updateIndicators() {
             if (!playing) {
                 if (!isTrackAtCue()) {
                     if (getCurrentSample() < getTotalSamples()) {
-                        if (cueMode == CUE_MODE_NUMARK) {
-                            // in Numark mode Cue Button is flashing slow if CUE will move Cue point
+                        if (cueMode == CUE_MODE_MIXXX) {
+                            // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                         } else {
                             // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point

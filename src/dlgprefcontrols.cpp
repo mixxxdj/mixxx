@@ -175,14 +175,15 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
 
     // Set default value in config file and control objects, if not present
-    // Default is "0" = Pioneer Mode
+    // Default is "0" = Mixxx Mode
     QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"), "0");
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
+    ComboBoxCueDefault->addItem(tr("Mixxx mode"));
     ComboBoxCueDefault->addItem(tr("Pioneer mode"));
     ComboBoxCueDefault->addItem(tr("Denon mode"));
-    ComboBoxCueDefault->addItem(tr("Numark mode"));
+
     ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
 
     slotSetCueDefault(cueDefaultValue);
