@@ -806,16 +806,18 @@
      <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
-        <string>Pioneer mode: 
+        <string>Mixxx mode: 
 - Cue button while pause at cue point = preview
 - Cue button while pause not at cue point = set cue point
 - Cue button while playing = pause at cue point
+Pioneer mode:
+- Same as Mixxx mode with a flashing play button
 Denon mode:
 - Cue button at cue point = preview
 - Cue button not at cue point = pause at cue point
 - Play = set cue point
 Numark mode:
-- Same as Pioneer mode, but without a flashing play button
+- Same as Denon mode, but without a flashing play button
         </string>
        </property>
       </widget>

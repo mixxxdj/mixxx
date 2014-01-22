@@ -754,11 +754,12 @@ void CueControl::cueDenon(double v) {
 }
 
 void CueControl::cueDefault(double v) {
+    double cueMode = m_pCueMode->get();
     // Decide which cue implementation to call based on the user preference
-    if (m_pCueMode->get() == CUE_MODE_DENON) {
+    if (cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) {
         cueDenon(v);
     } else {
-        // The modes CUE_MODE_PIONEER and CUE_MODE_NUMARK are similar
+        // The modes CUE_MODE_PIONEER and CUE_MODE_MIXXX are similar
         // are handled inside cueCDJ(v)
         // default to Pioneer mode
         cueCDJ(v);
@@ -789,7 +790,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
     QMutexLocker lock(&m_mutex);
     double cueMode = m_pCueMode->get();
 
-    if (cueMode == CUE_MODE_DENON &&
+    if ((cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) &&
             play > 0.0 &&
             playPossible &&
             m_pPlayButton->get() == 0.0) {
@@ -831,7 +832,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
-        } else if (cueMode == CUE_MODE_MIXXX) {
+        } else if (cueMode == CUE_MODE_MIXXX || cueMode == CUE_MODE_NUMARK) {
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
             // Flashing indicates that play is possible in Pioneer mode
@@ -839,7 +840,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
         }
     }
 
-    if (cueMode != CUE_MODE_DENON) {
+    if (cueMode != CUE_MODE_DENON && cueMode != CUE_MODE_NUMARK) {
         if (m_pCuePoint->get() != -1) {
             if (play == 0.0 && !isTrackAtCue() &&
                     getCurrentSample() < getTotalSamples()) {
@@ -866,7 +867,7 @@ void CueControl::updateIndicators() {
     // No need for mutex lock because we are only touching COs.
     double cueMode = m_pCueMode->get();
 
-    if (cueMode == CUE_MODE_DENON) {
+    if (cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) {
         // Cue button is only lit at cue point
         bool playing = m_pPlayButton->get() > 0;
         if (isTrackAtCue()) {
@@ -878,7 +879,7 @@ void CueControl::updateIndicators() {
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
             if (!playing) {
-                if (getCurrentSample() < getTotalSamples()) {
+                if (getCurrentSample() < getTotalSamples() && cueMode != CUE_MODE_NUMARK) {
                     // Play will move cue point
                     m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                 } else {
@@ -888,7 +889,7 @@ void CueControl::updateIndicators() {
             }
         }
     } else {
-        // Here we have CUE_MODE_PIONEER or CUE_MODE_NUMARK
+        // Here we have CUE_MODE_PIONEER or CUE_MODE_MIXXX
         // default to Pioneer mode
         if (!m_bPreviewing) {
             bool playing = m_pPlayButton->get() > 0;
