@@ -190,7 +190,12 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             if (role == Qt::DisplayRole) {
                 return tree_item->data();
             } else if (role == Qt::ToolTipRole) {
-                return tree_item->dataPath();
+                // If it's the "Quick Links" node, display it's name
+                if (tree_item->dataPath() == QUICK_LINK_NODE) {
+                    return tree_item->data();
+                } else {
+                    return tree_item->dataPath();
+                }
             } else if (role == Qt::UserRole) {
                 // We use Qt::UserRole to ask for the datapath.
                 return tree_item->dataPath();
