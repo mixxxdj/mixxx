@@ -133,7 +133,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
 
 void WPushButton::setStates(int iStates) {
     m_bPressed = false;
-    m_iNoStates = 0;
+    m_iNoStates = iStates;
 
     // Clear existing pixmaps.
     m_pressedPixmaps.resize(0);
@@ -141,7 +141,6 @@ void WPushButton::setStates(int iStates) {
     m_text.resize(0);
 
     if (iStates > 0) {
-        m_iNoStates = iStates;
         m_pressedPixmaps.resize(iStates);
         m_unpressedPixmaps.resize(iStates);
         m_text.resize(iStates);
@@ -242,26 +241,13 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     }
 
     if (rightClick) {
-        // This is the secondary button function, it does not change m_fValue
+        // This is the secondary button function allways a Pushbutton
         // due the leak of visual feedback we do not allow a toggle function
-        if (m_bRightClickForcePush) {
-            m_bPressed = true;
-            setControlParameterRightDown(1.0);
-            update();
-        } else if (m_iNoStates == 1) {
-            // This is a Pushbutton
+        if (m_bRightClickForcePush || m_iNoStates == 1) {
             m_bPressed = true;
             setControlParameterRightDown(1.0);
             update();
         }
-
-        // Do not allow right-clicks to change button state other than when
-        // forced to be a push button. This is how Mixxx <1.8.0 worked so
-        // keep it that way. For a multi-state button, really only one click
-        // type (left/right) should be able to change the state. One problem
-        // with this is that you can get the button out of sync with its
-        // underlying control. For example the PFL buttons on Jus's skins
-        // could get out of sync with the button state. rryan 9/2010
         return;
     }
 
@@ -313,14 +299,10 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     }
 
     if (rightClick) {
-        // This is the secondary clickButton function, it does not change
-        // m_fValue due the leak of visual feedback we do not allow a toggle
+        // This is the secondary clickButton function,
+        // due the leak of visual feedback we do not allow a toggle
         // function
-        if (m_bRightClickForcePush) {
-            m_bPressed = false;
-            setControlParameterRightUp(0.0);
-            update();
-        } else if (m_iNoStates == 1) {
+        if (m_bRightClickForcePush || m_iNoStates == 1) {
             m_bPressed = false;
             setControlParameterRightUp(0.0);
             update();
@@ -330,11 +312,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (leftClick) {
         double emitValue = getControlParameterLeft();
-        if (m_bLeftClickForcePush) {
-            // This may a klickButton with different functions on each mouse button
-            // m_fValue is changed by a separate feedback connection
-            emitValue = 0.0;
-        } else if (m_iNoStates == 1) {
+        if (m_bLeftClickForcePush || m_iNoStates == 1) {
             // This is a Pushbutton
             emitValue = 0.0;
         } else {
