@@ -26,8 +26,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
-          m_rootViewName(rootViewName),
-          m_lastPlaylistDirectory(QDesktopServices::storageLocation(QDesktopServices::MusicLocation)) {
+          m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -286,19 +285,24 @@ void BasePlaylistFeature::slotImportPlaylist() {
         return;
     }
 
+    QString lastPlaylistDirectory = m_pConfig->getValueString(
+            ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+
     QString playlist_file = QFileDialog::getOpenFileName(
             NULL,
             tr("Import Playlist"),
-            m_lastPlaylistDirectory,
+            lastPlaylistDirectory,
             tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty()) {
         return;
     }
 
-    // Update the import playlist directory
+    // Update the import/export playlist directory
     QFileInfo fileName(playlist_file);
-    m_lastPlaylistDirectory = fileName.dir().absolutePath();
+    m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
+                ConfigValue(fileName.dir().absolutePath()));
 
     Parser* playlist_parser = NULL;
 
@@ -327,6 +331,11 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
+
+    QString lastPlaylistDirectory = m_pConfig->getValueString(
+                ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
+                QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+
     qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
@@ -335,7 +344,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString file_location = QFileDialog::getSaveFileName(
             NULL,
             tr("Export Playlist"),
-            m_lastPlaylistDirectory.append("/").append(playlist_filename),
+            lastPlaylistDirectory.append("/").append(playlist_filename),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
             "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
@@ -343,9 +352,10 @@ void BasePlaylistFeature::slotExportPlaylist() {
         return;
     }
 
-    // Update the export playlist directory
+    // Update the import/export playlist directory
     QFileInfo fileName(file_location);
-    m_lastPlaylistDirectory = fileName.dir().absolutePath();
+    m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
+                ConfigValue(fileName.dir().absolutePath()));
 
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
