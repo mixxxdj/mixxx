@@ -10,11 +10,12 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include <QTextStream>
-#include <QDebug>
+
+#include "library/parserm3u.h"
+
+#include <QtDebug>
 #include <QDir>
 #include <QMessageBox>
-#include "parserm3u.h"
 #include <QUrl>
 #include <QTextCodec>
 
@@ -69,9 +70,9 @@ QList<QString> ParserM3u::parse(QString sFilename)
         bool isCR_encoded = ba.contains("\r");
         if(isCR_encoded && !isCRLF_encoded)
             ba.replace('\r','\n');
-        QTextStream textstream(ba.data());
+        QTextStream textstream(ba.constData());
 
-        if (isUtf8(ba.data())) {
+        if (isUtf8(ba.constData())) {
             textstream.setCodec("UTF-8");
         } else {
             textstream.setCodec("windows-1252");

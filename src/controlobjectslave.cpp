@@ -25,6 +25,7 @@ ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
 }
 
 void ControlObjectSlave::initialize(const ConfigKey& key) {
+    m_key = key;
     m_pControl = ControlDoublePrivate::getControl(key);
 }
 
@@ -36,12 +37,14 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
     bool ret = false;
     if (m_pControl) {
         ret = connect((QObject*)this, SIGNAL(valueChanged(double)),
-                receiver, method, type);
+                      receiver, method, type);
         if (ret) {
-            // connect to ControlObjectPrivate only if required
-            ret = connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
+            // Connect to ControlObjectPrivate only if required. Do not allow
+            // duplicate connections.
+            connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                     this, SLOT(slotValueChanged(double, QObject*)),
-                    Qt::DirectConnection);
+                    static_cast<Qt::ConnectionType>(Qt::DirectConnection |
+                                                    Qt::UniqueConnection));
         }
     }
     return ret;
@@ -52,9 +55,16 @@ bool ControlObjectSlave::connectValueChanged(
     return connectValueChanged(parent(), method, type);
 }
 
-
-double ControlObjectSlave::get() {
+double ControlObjectSlave::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
+}
+
+double ControlObjectSlave::getParameter() const {
+    return m_pControl ? m_pControl->getParameter() : 0.0;
+}
+
+double ControlObjectSlave::getParameterForValue(double value) const {
+    return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
 void ControlObjectSlave::slotSet(double v) {
@@ -64,6 +74,12 @@ void ControlObjectSlave::slotSet(double v) {
 void ControlObjectSlave::set(double v) {
     if (m_pControl) {
         m_pControl->set(v, this);
+    }
+}
+
+void ControlObjectSlave::setParameter(double v) {
+    if (m_pControl) {
+        m_pControl->setParameter(v, this);
     }
 }
 

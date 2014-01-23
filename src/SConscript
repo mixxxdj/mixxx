@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import SCons
 import shutil
 import subprocess
@@ -64,7 +63,9 @@ if build.platform_is_windows:
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
+test_bin = None
 def build_tests():
+        global test_bin
         test_files = Glob('test/*.cpp', strings=True)
         test_env = env.Clone()
         test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
@@ -81,9 +82,21 @@ def build_tests():
         env.Append(LIBPATH="#lib/gmock-1.5.0/lib")
         env.Append(LIBS = 'gmock')
 
-        env.Program(target='mixxx-test', source=test_sources)
+        if build.platform_is_windows:
+                # We want a terminal for tests.
+                env['LINKFLAGS'].remove('/subsystem:windows')
+                env['LINKFLAGS'].append('/subsystem:console')
 
-        Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
+                test_bin = env.Program(
+                        'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
+                        LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+        else:
+                test_bin = env.Program(target='mixxx-test', source=test_sources)
+
+        env.Alias('mixxx-test', test_bin)
+
+        if not build.platform_is_windows:
+                Command("../", test_bin, Copy("$TARGET", "$SOURCE"))
 
 def run_tests():
         ret = Execute("./mixxx-test")
@@ -143,7 +156,9 @@ def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
 #        unix_bin_path   = flags['prefix'] + "/bin"
 
 #Mixxx binary
-binary_files = mixxx_bin;
+binary_files = [mixxx_bin];
+if test_bin is not None:
+        binary_files.append(test_bin)
 
 # Mixxx essential resource files
 resource_files = Glob('#res/schema.xml')
@@ -205,40 +220,29 @@ elif build.crosscompile and build.platform_is_osx:
 else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
-if build.msvcdebug:
-    dll_files += Split("""$QTDIR/lib/QtWebKitd4.dll""")
-else:
-    dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
+qt_modules = depends.Qt.enabled_modules(build)
+qt5 = depends.Qt.qt5_enabled(build)
 
-if build.msvcdebug:
-    dll_files += Split("""$QTDIR/lib/QtCored4.dll
-                          $QTDIR/lib/QtGuid4.dll
-                          $QTDIR/lib/QtNetworkd4.dll
-                          $QTDIR/lib/QtOpenGLd4.dll
-                          $QTDIR/lib/QtSqld4.dll
-                          $QTDIR/lib/QtXmld4.dll
-                          $QTDIR/lib/QtXmlPatternsd4.dll
-                          $QTDIR/lib/QtSvgd4.dll
-                          $QTDIR/lib/phonond4.dll
-                          $QTDIR/lib/QtScriptd4.dll""")
+if qt5:
+        suffix = 'd.dll' if build.msvcdebug else '.dll'
+        qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
+                      for module in qt_modules]
+        dll_files.extend(qt_modules)
 else:
-    # if not int(build.flags['staticlibs']):
-    dll_files += Split("""$QTDIR/lib/QtCore4.dll
-                          $QTDIR/lib/QtGui4.dll
-                          $QTDIR/lib/QtNetwork4.dll
-                          $QTDIR/lib/QtOpenGL4.dll
-                          $QTDIR/lib/QtSql4.dll
-                          $QTDIR/lib/QtXml4.dll
-                          $QTDIR/lib/QtXmlPatterns4.dll
-                          $QTDIR/lib/QtSvg4.dll
-                          $QTDIR/lib/phonon4.dll
-                          $QTDIR/lib/QtScript4.dll""")
+        suffix = 'd4.dll' if build.msvcdebug else '4.dll'
+        qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
+        # TODO(rryan): Is this needed? We don't use phonon.
+        qt_modules.append('$QTDIR/lib/phonon' + suffix)
+        dll_files.extend(qt_modules)
 
 if int(flags.get('sqlitedll', 0)):
-    if build.msvcdebug:
-        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
-    else:
-        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
+        if qt5:
+                # TODO(rryan): Add the SQLite DLL For Qt5.
+                pass
+        else:
+                suffix = 'd4.dll' if build.msvcdebug else '4.dll'
+                # Qt SQLite plugin
+                sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
@@ -375,7 +379,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                    File("#README"),
                    File("#LICENSE")]
         bundle = env.App(
-                "Mixxx",
+                # Bug #1258435. This must be lower case as it is the binary
+                # name.
+                "mixxx",
                 sources,
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))

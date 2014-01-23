@@ -18,11 +18,14 @@
 #ifndef WWIDGET_H
 #define WWIDGET_H
 
-#include <QtGui>
+#include <QWidget>
+#include <QEvent>
+#include <QString>
 
 #include "configobject.h"
+#include "widget/wbasewidget.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -34,62 +37,24 @@ class ControlObjectThread;
   *@author Tue & Ken Haste Andersen
   */
 
-class WWidget : public QWidget  {
+class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
-public:
+  public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
-    /** Sets the path used to find pixmaps */
-    static void setPixmapPath(QString qPath);
-    static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
-    static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
-    static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
-    static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);
+    Q_PROPERTY(double value READ getControlParameterDisplay);
 
-    /** Given a filename of a pixmap, returns its path */
-    static const QString getPath(QString location);
-    double getValue();
-    // Sometimes WWidget's compose a QWidget (like a label). This is used during
-    // skin parsing to style and size the composed widget.
-    virtual QWidget* getComposedWidget() { return NULL; }
-
-  public slots:
-    virtual void setValue(double fValue);
-    void updateValue(double fValue);
-    void setOnOff(double);
-
-  private slots:
-    void slotReEmitValueDown(double);
-    void slotReEmitValueUp(double);
-
-  signals:
-    void valueReset();
-    void valueChangedDown(double);
-    void valueChangedUp(double);
-    void valueChangedLeftDown(double);
-    void valueChangedLeftUp(double);
-    void valueChangedRightDown(double);
-    void valueChangedRightUp(double);
+    virtual void onConnectedControlValueChanged(double value);
 
   protected:
     bool touchIsRightButton();
-    virtual bool event(QEvent* e);
-
-    /** Value/state of widget */
-    double m_fValue;
-    /** Is true if widget is off */
-    bool m_bOff;
+    bool event(QEvent* e);
 
     enum Qt::MouseButton m_activeTouchButton;
 
   private:
-    /** Variable containing the path to the pixmaps */
-    static QString m_qPath;
-    /** Property used when connecting to ControlObject */
-    bool m_bEmitOnDownPress;
-
-    ControlObjectThread* m_pTouchShift;
+    ControlObjectSlave* m_pTouchShift;
 };
 
 #endif

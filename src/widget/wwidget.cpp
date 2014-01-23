@@ -15,115 +15,29 @@
 *                                                                         *
 ***************************************************************************/
 
-
-#include <QtGui>
 #include <QtDebug>
+#include <QTouchEvent>
 
-#include "wwidget.h"
-#include "controlobject.h"
-#include "controlobjectthread.h"
-#include "controlobjectthreadwidget.h"
-
-
-// Static member variable definition
-QString WWidget::m_qPath;
+#include "widget/wwidget.h"
+#include "controlobjectslave.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
-          m_fValue(0.0),
-          m_bOff(false),
+          WBaseWidget(this), 
           m_activeTouchButton(Qt::NoButton) {
-    m_pTouchShift = new ControlObjectThread("[Controls]", "touch_shift");
-    connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
-    connect(this, SIGNAL(valueChangedRightDown(double)), this, SLOT(slotReEmitValueDown(double)));
-    connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
-    connect(this, SIGNAL(valueChangedRightUp(double)), this, SLOT(slotReEmitValueUp(double)));
-
+    m_pTouchShift = new ControlObjectSlave("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
     setAttribute(Qt::WA_AcceptTouchEvents);
     setFocusPolicy(Qt::ClickFocus);
-    //setBackgroundMode(Qt::NoBackground); //this is deprecated, and commenting it out doesn't seem to change anything -kousu 2009/03
 }
 
 WWidget::~WWidget() {
     delete m_pTouchShift;
 }
 
-void WWidget::setValue(double fValue) {
-    m_fValue = fValue;
+void WWidget::onConnectedControlValueChanged(double value) {
+    Q_UNUSED(value);
     update();
-}
-
-void WWidget::setOnOff(double d) {
-    if (d==0.)
-        m_bOff = false;
-    else
-        m_bOff = true;
-
-    repaint();
-}
-
-void WWidget::slotReEmitValueDown(double fValue) {
-    emit(valueChangedDown(fValue));
-}
-
-void WWidget::slotReEmitValueUp(double fValue) {
-    emit(valueChangedUp(fValue));
-}
-
-int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode) {
-    QString text = selectNode(nodeHeader, sNode).toElement().text();
-    bool ok;
-    int conv = text.toInt(&ok, 0);
-    if (ok) {
-        return conv;
-    } else {
-        return 0;
-    }
-}
-
-float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode) {
-    return selectNode(nodeHeader, sNode).toElement().text().toFloat();
-}
-
-QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNode) {
-    QString ret;
-    QDomNode node = selectNode(nodeHeader, sNode);
-    if (!node.isNull())
-        ret = node.toElement().text();
-    else
-        ret = "";
-    return ret;
-}
-
-QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode) {
-    QDomNode node = nodeHeader.firstChild();
-    while (!node.isNull())
-    {
-        if (node.nodeName() == sNode)
-            return node;
-        node = node.nextSibling();
-    }
-    return node;
-}
-
-const QString WWidget::getPath(QString location) {
-    QString l(location);
-    return l.prepend(m_qPath);
-}
-
-void WWidget::setPixmapPath(QString qPath) {
-    m_qPath = qPath;
-}
-
-double WWidget::getValue() {
-   return m_fValue;
-}
-
-void WWidget::updateValue(double fValue) {
-    setValue(fValue);
-    emit(valueChangedUp(fValue));
-    emit(valueChangedDown(fValue));
 }
 
 bool WWidget::touchIsRightButton() {
@@ -131,7 +45,9 @@ bool WWidget::touchIsRightButton() {
 }
 
 bool WWidget::event(QEvent* e) {
-    if (isEnabled()) {
+    if (e->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (isEnabled()) {
         switch(e->type()) {
         case QEvent::TouchBegin:
         case QEvent::TouchUpdate:

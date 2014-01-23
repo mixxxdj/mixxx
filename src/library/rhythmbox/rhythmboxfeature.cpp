@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <QStringList>
+#include <QUrl>
 
 #include "library/rhythmbox/rhythmboxfeature.h"
 
@@ -29,21 +30,21 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
             << "duration"
             << "bitrate"
             << "bpm";
-    pTrackCollection->addTrackSource(QString("rhythmbox"),
-                    QSharedPointer<BaseTrackCache>( new BaseTrackCache(m_pTrackCollection,
-                                        tableName, idColumn, columns, false)));
+    m_trackSource = QSharedPointer<BaseTrackCache>(
+            new BaseTrackCache(m_pTrackCollection,
+                    tableName, idColumn, columns, false));
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
         this, m_pTrackCollection,
         "mixxx.db.model.rhythmbox",
         "rhythmbox_library",
-        "rhythmbox");
+        m_trackSource);
     m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.rhythmbox_playlist",
         "rhythmbox_playlists",
         "rhythmbox_playlist_tracks",
-        "rhythmbox");
+        m_trackSource);
 
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
@@ -76,7 +77,7 @@ BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlis
                                             "mixxx.db.model.rhythmbox_playlist",
                                             "rhythmbox_playlists",
                                             "rhythmbox_playlist_tracks",
-                                            "rhythmbox");
+                                            m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -426,7 +427,7 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
         m_childModel.setRootItem(root);
 
         // Tell the rhythmbox track source that it should re-build its index.
-        m_pTrackCollection->getTrackSource("rhythmbox")->buildIndex();
+        m_trackSource->buildIndex();
 
         //m_pRhythmboxTrackModel->select();
     } else {

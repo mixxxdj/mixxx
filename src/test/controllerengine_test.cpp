@@ -1,7 +1,6 @@
 
 #include <gtest/gtest.h>
-#include <QDebug>
-#include <QApplication>
+#include <QtDebug>
 #include <QObject>
 #include <QFile>
 #include <QThread>
@@ -18,13 +17,7 @@ class ControllerEngineTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         qDebug() << "SetUp";
-        static int argc = 1;
-        static char* argv[1] = { "test"};
         QThread::currentThread()->setObjectName("Main");
-        // start the app without the GUI so that we can generate and
-        // destroy it several times in one thread, see
-        // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
-        app = new QApplication(argc, argv, false);
         new ControlPotmeter(ConfigKey("[Test]", "potmeter"),-1.,1.);
         Controller* pController = NULL;
         cEngine = new ControllerEngine(pController);
@@ -36,10 +29,8 @@ class ControllerEngineTest : public MixxxTest {
         qDebug() << "TearDown";
         cEngine->gracefulShutdown();
         delete cEngine;
-        delete app;
     }
 
-    QApplication *app;
     ControllerEngine *cEngine;
 };
 
@@ -59,7 +50,7 @@ TEST_F(ControllerEngineTest, scriptSetValue) {
     ControlObject *co = new ControlObject(ConfigKey("[Channel1]", "co"));
     co->set(0.0);
     cEngine->execute("setValue");
-    EXPECT_DOUBLE_EQ(co->get(), 1.0f);
+    EXPECT_DOUBLE_EQ(co->get(), 1.0);
 
     delete co;
 }
@@ -74,7 +65,7 @@ TEST_F(ControllerEngineTest, scriptGetSetValue) {
     ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
     cEngine->execute("getSetValue");
-    EXPECT_DOUBLE_EQ(co->get(), 1.0f);
+    EXPECT_DOUBLE_EQ(co->get(), 1.0);
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
@@ -104,7 +95,7 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
-    app->processEvents();
+    application()->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 
@@ -133,7 +124,7 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlClosure) {
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
-    app->processEvents();
+    application()->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 
@@ -164,7 +155,7 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
-    app->processEvents();
+    application()->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 
@@ -222,7 +213,7 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObjec
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
-    app->processEvents();
+    application()->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 

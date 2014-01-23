@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,7 +18,8 @@
 #ifndef ENGINEOBJECT_H
 #define ENGINEOBJECT_H
 
-#include <qobject.h>
+#include <QObject>
+
 #include "defs.h"
 
 /**
@@ -27,18 +28,12 @@
 
 class EngineObject : public QObject {
     Q_OBJECT
-public:
+  public:
     EngineObject();
     virtual ~EngineObject();
-    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iLen) = 0;
-//    static int getPlaySrate();
 
-//protected:
-//    void setPlaySrate(int srate);
-
-//private:
-//    static int PLAY_SRATE;
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut,
+                         const int iLen) = 0;
 };
-
 
 #endif

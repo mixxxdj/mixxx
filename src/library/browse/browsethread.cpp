@@ -2,15 +2,15 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
+#include <QtDebug>
 #include <QStringList>
 #include <QDirIterator>
-#include <QtCore>
 
 #include "library/browse/browsethread.h"
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
-#include "mixxxutils.cpp"
-
+#include "util/time.h"
+#include "util/trace.h"
 
 BrowseThread* BrowseThread::m_instance = NULL;
 static QMutex s_Mutex;
@@ -26,8 +26,8 @@ static QMutex s_Mutex;
  * signals to BrowseModel objects. It does not
  * make sense to use this class in non-GUI threads
  */
-BrowseThread::BrowseThread(QObject *parent): QThread(parent)
-{
+BrowseThread::BrowseThread(QObject *parent)
+        : QThread(parent) {
     m_bStopThread = false;
     m_model_observer = NULL;
     //start Thread
@@ -77,9 +77,11 @@ void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
 
 void BrowseThread::run() {
     m_mutex.lock();
-    while(!m_bStopThread) {
+
+    while (!m_bStopThread) {
         //Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
+        Trace trace("BrowseThread");
 
         //Terminate thread if Mixxx closes
         if(m_bStopThread) {
@@ -143,6 +145,10 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_ALBUM, item);
 
+        item = new QStandardItem(tio.getAlbumArtist());
+        item->setToolTip(item->text());
+        row_data.insert(COLUMN_ALBUMARTIST, item);
+
         item = new QStandardItem(tio.getTrackNumber());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_TRACK_NUMBER, item);
@@ -159,11 +165,16 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_COMPOSER, item);
 
+        item = new QStandardItem(tio.getGrouping());
+        item->setToolTip(item->text());
+        row_data.insert(COLUMN_GROUPING, item);
+
         item = new QStandardItem(tio.getComment());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+        QString duration = Time::formatSeconds(qVariantValue<int>(
+                tio.getDuration()), false);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         row_data.insert(COLUMN_DURATION, item);
@@ -172,7 +183,7 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_BPM, item);
 
-        item = new QStandardItem(tio.getKey());
+        item = new QStandardItem(tio.getKeyText());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_KEY, item);
 

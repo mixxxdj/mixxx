@@ -4,7 +4,7 @@
 #ifndef ENGINEMICROPHONE_H
 #define ENGINEMICROPHONE_H
 
-#include "circularbuffer.h"
+#include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
@@ -19,16 +19,15 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     EngineMicrophone(const char* pGroup);
     virtual ~EngineMicrophone();
 
-    bool isActive();
-    bool isPFL();
-    bool isMaster();
+    bool isActive() const;
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
-    virtual void process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize);
+    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
 
     // This is called by SoundManager whenever there are new samples from the
     // microphone to be processed
-    virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples);
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int iNumSamples);
 
     // Called by SoundManager whenever the microphone input is connected to a
     // soundcard input.

@@ -18,6 +18,8 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
+#include <QObject>
+
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
@@ -38,8 +40,9 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class SyncWorker;
+class EngineSync;
 
-class EngineMaster : public EngineObject, public AudioSource {
+class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
@@ -52,7 +55,15 @@ class EngineMaster : public EngineObject, public AudioSource {
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
 
-    void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
+    // WARNING: These methods are called by the main thread. They should only
+    // touch the volatile bool connected indicators (see below). However, when
+    // these methods are called the callback is guaranteed to be inactive
+    // (SoundManager closes all devices before calling these). This may change
+    // in the future.
+    virtual void onOutputConnected(AudioOutput output);
+    virtual void onOutputDisconnected(AudioOutput output);
+
+    void process(const int iBufferSize);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
@@ -71,6 +82,11 @@ class EngineMaster : public EngineObject, public AudioSource {
             default:
                 return centerGain;
         }
+    }
+
+    // Provide access to the master sync so enginebuffers can know what their rate controller is.
+    EngineSync* getEngineSync() const{
+        return m_pMasterSync;
     }
 
     // These are really only exposed for tests to use.
@@ -116,8 +132,7 @@ class EngineMaster : public EngineObject, public AudioSource {
             const double orientationGain = EngineMaster::gainForOrientation(
                 pChannelInfo->m_pChannel->getOrientation(),
                 m_dLeftGain, m_dCenterGain, m_dRightGain);
-            const double gain = m_dVolume * channelVolume * orientationGain;
-            return gain;
+            return m_dVolume * channelVolume * orientationGain;
         }
 
         inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
@@ -131,8 +146,20 @@ class EngineMaster : public EngineObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
+    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
+                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+
+    // Processes active channels. The master sync channel (if any) is processed
+    // first and all others are processed after. Sets the i'th bit of
+    // masterOutput and headphoneOutput if the i'th channel is enabled for the
+    // master output or headphone output, respectively.
+    void processChannels(unsigned int* busChannelConnectionFlags,
+                         unsigned int* headphoneOutput,
+                         int iBufferSize);
+
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
+    QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
     struct OutputBus {
@@ -144,6 +171,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     CSAMPLE* m_pHead;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
+    EngineSync* m_pMasterSync;
 
     ControlObject* m_pMasterVolume;
     ControlObject* m_pHeadVolume;
@@ -168,11 +196,16 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlPotmeter* m_pXFaderCurve;
     ControlPotmeter* m_pXFaderCalibration;
     ControlPotmeter* m_pXFaderReverse;
+    ControlPushButton* m_pHeadSplitEnabled;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
+
+    volatile bool m_bMasterOutputConnected;
+    volatile bool m_bHeadphoneOutputConnected;
+    volatile bool m_bBusOutputConnected[3];
 };
 
 #endif

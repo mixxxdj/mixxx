@@ -5,7 +5,7 @@
 #ifndef ENGINEPASSTHROUGH_H
 #define ENGINEPASSTHROUGH_H
 
-#include "circularbuffer.h"
+#include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
@@ -17,19 +17,18 @@
 class EnginePassthrough : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EnginePassthrough(const char *pGroup);
+    EnginePassthrough(const char* pGroup);
     virtual ~EnginePassthrough();
 
-    bool isActive();
-    bool isPFL();
-    bool isMaster();
+    bool isActive() const;
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
-    virtual void process(const CSAMPLE *pInput, const CSAMPLE *pOutput, const int iBufferSize);
+    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
 
     // This is called by SoundManager whenever there are new samples from the
     // deck to be processed
-    virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int nFrames);
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.
@@ -42,9 +41,9 @@ class EnginePassthrough : public EngineChannel, public AudioDestination {
   private:
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
-    ControlObject *m_pEnabled;
-    ControlPushButton *m_pPassing;
-    CSAMPLE *m_pConversionBuffer;
+    ControlObject* m_pEnabled;
+    ControlPushButton* m_pPassing;
+    CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 };
 

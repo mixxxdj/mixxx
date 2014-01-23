@@ -14,7 +14,7 @@
 #include "errordialoghandler.h"
 
 #include <QFile>
-#include <QDebug>
+#include <QtDebug>
 
 XmlParse::XmlParse() {
 }
@@ -30,7 +30,7 @@ float XmlParse::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode)
     return selectNode(nodeHeader, sNode).toElement().text().toFloat();
 }
 
-QDomNode XmlParse::selectNode(const QDomNode &nodeHeader, const QString sNode) {
+QDomNode XmlParse::selectNode(const QDomNode& nodeHeader, const QString sNode) {
     QDomNode node = nodeHeader.firstChild();
     while (!node.isNull()) {
         if (node.nodeName() == sNode)
@@ -38,6 +38,21 @@ QDomNode XmlParse::selectNode(const QDomNode &nodeHeader, const QString sNode) {
         node = node.nextSibling();
     }
     return node;
+}
+
+QDomElement XmlParse::selectElement(const QDomNode &nodeHeader, const QString& sNode) {
+    QDomNode node = nodeHeader.firstChild();
+    while (!node.isNull()) {
+        if (node.nodeName() == sNode) {
+            if (node.isElement()) {
+                return node.toElement();
+            } else {
+                break;
+            }
+        }
+        node = node.nextSibling();
+    }
+    return QDomElement();
 }
 
 QString XmlParse::selectNodeQString(const QDomNode &nodeHeader, const QString sNode) {
@@ -99,7 +114,7 @@ QVector<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, con
 
     hexdata = node.toElement().text();
     int wavebytes = hexdata.length() / 2;
-    if (wavebytes == 0) { 
+    if (wavebytes == 0) {
         return 0;
     }
 
@@ -141,11 +156,11 @@ QDomElement XmlParse::openXMLFile(QString path, QString name) {
     {
         QString errorString = QString("%1 at line %2, column %3")
                                 .arg(error).arg(line).arg(col);
-        
+
         QString errorLog = QString("Error parsing XML file %1: %2")
                             .arg(file.fileName(), errorString);
         qWarning() << errorLog;
-        
+
         // Set up error dialog
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
@@ -159,7 +174,7 @@ QDomElement XmlParse::openXMLFile(QString path, QString name) {
         if (dialogHandler) {
             dialogHandler->requestErrorDialog(props);
         }
-        
+
         file.close();
         return QDomElement();
     }
@@ -236,4 +251,3 @@ QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QStr
     return element;
    }
  */
-

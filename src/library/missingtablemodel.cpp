@@ -1,10 +1,8 @@
-#include <QtCore>
-#include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
-#include "mixxxutils.cpp"
 
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
 
@@ -38,15 +36,13 @@ void MissingTableModel::setTableModel(int id) {
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollection->getTrackSource("default"));
-
-    initHeaderData();
+             m_pTrackCollection->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 
@@ -82,10 +78,9 @@ bool MissingTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    }
+    Q_UNUSED(column);
     return false;
 }
 

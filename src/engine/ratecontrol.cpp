@@ -5,14 +5,21 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
+#include "controlobjectslave.h"
 #include "rotary.h"
 #include "mathstuff.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
+#include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
-#include <QDebug>
+#ifdef __VINYLCONTROL__
+#include "engine/vinylcontrolcontrol.h"
+#endif
+
+#include <QtDebug>
 
 // Static default values for rate buttons (percents)
 double RateControl::m_dTemp = 4.00; //(eg. 4.00%)
@@ -26,8 +33,7 @@ enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATE
 RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config)
     : EngineControl(_group, _config),
-      m_bVinylControlEnabled(false),
-      m_bVinylControlScratching(false),
+      m_pBpmControl(NULL),
       m_ePbCurrent(0),
       m_ePbPressed(0),
       m_bTempStarted(false),
@@ -62,6 +68,17 @@ RateControl::RateControl(const char* _group,
             this, SLOT(slotControlFastBack(double)),
             Qt::DirectConnection);
     m_pBackButton->set(0);
+
+    m_pReverseRollButton = new ControlPushButton(ConfigKey(_group, "reverseroll"));
+    connect(m_pReverseRollButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReverseRollActivate(double)),
+            Qt::DirectConnection);
+
+    m_pSlipEnabled = new ControlObjectSlave(_group, "slip_enabled", this);
+
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
+    m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
+    m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
 
     // Permanent rate-change buttons
     buttonRatePermDown =
@@ -144,39 +161,19 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
-#ifdef __VINYLCONTROL__
-    ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(pVCEnabled);
-    connect(pVCEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlVinyl(double)),
-            Qt::DirectConnection);
-    connect(pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotControlVinyl(double)),
-            Qt::DirectConnection);
-
-    ControlObject* pVCScratching = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_scratching"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(pVCScratching);
-    connect(pVCScratching, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlVinylScratching(double)),
-            Qt::DirectConnection);
-    connect(pVCScratching, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotControlVinylScratching(double)),
-            Qt::DirectConnection);
-#endif
+    m_pSyncMode = new ControlObjectSlave(_group, "sync_mode", this);
 }
 
 RateControl::~RateControl() {
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
+    delete m_pSyncMode;
 
     delete m_pRateSearch;
 
     delete m_pReverseButton;
+    delete m_pReverseRollButton;
     delete m_pForwardButton;
     delete m_pBackButton;
 
@@ -196,6 +193,10 @@ RateControl::~RateControl() {
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
+}
+
+void RateControl::setBpmControl(BpmControl* bpmcontrol) {
+    m_pBpmControl = bpmcontrol;
 }
 
 void RateControl::setRateRamp(bool linearMode)
@@ -233,6 +234,16 @@ void RateControl::setPerm(double v) {
 
 void RateControl::setPermSmall(double v) {
     m_dPermSmall = v;
+}
+
+void RateControl::slotReverseRollActivate(double v) {
+    if (v > 0.0) {
+        m_pSlipEnabled->set(1);
+        m_pReverseButton->set(1);
+    } else {
+        m_pReverseButton->set(0);
+        m_pSlipEnabled->set(0);
+    }
 }
 
 void RateControl::slotControlFastForward(double v)
@@ -346,17 +357,29 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-double RateControl::getRawRate() {
+void RateControl::trackLoaded(TrackPointer pTrack) {
+    if (m_pTrack) {
+        trackUnloaded(m_pTrack);
+    }
+    m_pTrack = pTrack;
+}
+
+void RateControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
+    m_pTrack.clear();
+}
+
+double RateControl::getRawRate() const {
     return m_pRateSlider->get() *
         m_pRateRange->get() *
         m_pRateDir->get();
 }
 
-double RateControl::getWheelFactor() {
+double RateControl::getWheelFactor() const {
     return m_pWheel->get();
 }
 
-double RateControl::getJogFactor() {
+double RateControl::getJogFactor() const {
     // FIXME: Sensitivity should be configurable separately?
     const double jogSensitivity = 0.1;  // Nudges during playback
     double jogValue = m_pJog->get();
@@ -369,14 +392,18 @@ double RateControl::getJogFactor() {
     double jogFactor = jogValueFiltered * jogSensitivity;
 
     if (isnan(jogValue) || isnan(jogFactor)) {
-        jogFactor = 0.0f;
+        jogFactor = 0.0;
     }
 
     return jogFactor;
 }
 
-double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
-                                  bool* isScratching) {
+SyncMode RateControl::getSyncMode() const {
+    return syncModeFromDouble(m_pSyncMode->get());
+}
+
+double RateControl::calculateRate(double baserate, bool paused,
+                                  int iSamplesPerBuffer, bool* isScratching) {
     double rate = (paused ? 0 : 1.0);
 
     double searching = m_pRateSearch->get();
@@ -384,12 +411,10 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {
-
-
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
-        bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
-
+        bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
+        bool scratchEnable = m_pScratchToggle->get() != 0 || bVinylControlEnabled;
 
         double scratchFactor = m_pScratch->get();
         // Don't trust values from m_pScratch
@@ -405,7 +430,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         }
 
         // If vinyl control is enabled and scratching then also set isScratching
-        if (m_bVinylControlEnabled && m_bVinylControlScratching) {
+        bool bVinylControlScratching = m_pVCScratching && m_pVCScratching->get() > 0.0;
+        if (bVinylControlEnabled && bVinylControlScratching) {
             *isScratching = true;
         }
 
@@ -445,10 +471,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
 
             rate += jogFactor;
 
-            // If we are reversing (and not scratching,) flip the rate.
-            if (!scratchEnable && m_pReverseButton->get()) {
-                rate = -rate;
-            }
         }
 
         double currentSample = getCurrentSample();
@@ -459,10 +481,31 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             rate = m_pScratchController->getRate();
             *isScratching = true;
         }
-    }
 
-    // Scale the rate by the engine samplerate
-    rate *= baserate;
+        // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+        if (getSyncMode() == SYNC_FOLLOWER && !paused &&
+            !bVinylControlEnabled && !*isScratching) {
+            if (m_pBpmControl == NULL) {
+                qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                return 1.0;
+            }
+
+            rate = m_pBpmControl->getSyncedRate();
+            double userTweak = getTempRate() + wheelFactor + jogFactor;
+            bool userTweakingSync = userTweak != 0.0;
+            rate += userTweak;
+
+            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
+        }
+        // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
+        // Reverse with vinyl is only ok if absolute mode isn't on.
+        int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+        if (m_pReverseButton->get()
+                && !m_pScratchToggle->get()
+                && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+            rate = -rate;
+        }
+    }
 
     return rate;
 }
@@ -478,8 +521,8 @@ double RateControl::process(const double rate,
     /*
      * Code to handle temporary rate change buttons.
      *
-     * We support two behaviours, the standard ramped pitch bending
-     * and pitch shift stepping, which is the old behaviour.
+     * We support two behaviors, the standard ramped pitch bending
+     * and pitch shift stepping, which is the old behavior.
      */
 
     /*
@@ -499,7 +542,7 @@ double RateControl::process(const double rate,
 
         if ( m_eRateRampMode == RATERAMP_STEP )
         {
-            // old temporary pitch shift behaviour
+            // old temporary pitch shift behavior
             double range = m_pRateRange->get();
 
             // Avoid Division by Zero
@@ -616,14 +659,6 @@ void RateControl::subRateTemp(double v)
 void RateControl::resetRateTemp(void)
 {
     setRateTemp(0.0);
-}
-
-void RateControl::slotControlVinyl(double toggle) {
-    m_bVinylControlEnabled = (bool)toggle;
-}
-
-void RateControl::slotControlVinylScratching(double toggle) {
-    m_bVinylControlScratching = (bool)toggle;
 }
 
 void RateControl::notifySeek(double playPos) {

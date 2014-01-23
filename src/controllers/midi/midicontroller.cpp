@@ -347,7 +347,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
         // computeValue not (yet) done on pitch messages because it all assumes 7-bit numbers
     } else {
-        double currMixxxControlValue = pCO->getValueToMidi();
+        double currMixxxControlValue = pCO->getMidiParameter();
         newValue = computeValue(options, currMixxxControlValue, value);
     }
 
@@ -549,6 +549,5 @@ void MidiController::receive(QByteArray data) {
 void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
     unsigned int word = (((unsigned int)byte2) << 16) |
             (((unsigned int)byte1) << 8) | status;
-    send(word);
+    sendWord(word);
 }
-

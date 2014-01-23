@@ -1,18 +1,15 @@
-
 #include "library/trackcollection.h"
 #include "widget/wanalysislibrarytableview.h"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
                                                    ConfigObject<ConfigValue>* pConfig,
                                                    TrackCollection* pTrackCollection)
-        : WTrackTableView(parent, pConfig, pTrackCollection)
-{
+        : WTrackTableView(parent, pConfig, pTrackCollection) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }
 
-WAnalysisLibraryTableView::~WAnalysisLibraryTableView()
-{
+WAnalysisLibraryTableView::~WAnalysisLibraryTableView() {
 }
 
 void WAnalysisLibraryTableView::onSearchStarting() {

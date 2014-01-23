@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QDebug>
+#include <QtDebug>
 
 #include <signal.h>
 
@@ -39,7 +39,7 @@
 
 #define TIMEOUT 10
 
-EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
+EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
         : m_pTextCodec(NULL),
           m_pMetaData(),
           m_pShout(NULL),
@@ -148,7 +148,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    m_pUpdateShoutcastFromPrefs->slotSet(0.0f);
+    m_pUpdateShoutcastFromPrefs->slotSet(0.0);
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -204,7 +204,7 @@ void EngineShoutcast::updateFromPreferences() {
 
     // Dynamic Ogg metadata update
     m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
-	        ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+            ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
@@ -512,7 +512,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     // If we aren't connected or the user has changed their preferences,
     // disconnect, update from prefs, and reconnect.
-    if (!connected || m_pUpdateShoutcastFromPrefs->get() > 0.0f) {
+    if (!connected || m_pUpdateShoutcastFromPrefs->get() > 0.0) {
         if (connected) {
             serverDisconnect();
         }
@@ -598,12 +598,12 @@ void EngineShoutcast::updateMetaData() {
             QString title = m_pMetaData->getTitle();
 
             // shoutcast uses only "song" as field for "artist - title".
-            // icecast2 supports separate fields for "artist" and "title", 
+            // icecast2 supports separate fields for "artist" and "title",
             // which will get displayed accordingly if the streamingformat and
             // player supports it. ("song" is treated as an alias for "title")
-            // 
-            // Note (EinWesen): 
-            // Currently that seems to be OGG only, although it is no problem 
+            //
+            // Note (EinWesen):
+            // Currently that seems to be OGG only, although it is no problem
             // setting both fields for MP3, tested players do not show anything different.
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.

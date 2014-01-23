@@ -6,8 +6,8 @@
 #include "engine/enginebuffer.h"
 #include "playermanager.h"
 
-EngineControl::EngineControl(const char * _group,
-                             ConfigObject<ConfigValue> * _config)
+EngineControl::EngineControl(const char* _group,
+                             ConfigObject<ConfigValue>* _config)
         : m_pGroup(_group),
           m_pConfig(_config),
           m_dTotalSamples(0),
@@ -21,9 +21,9 @@ EngineControl::~EngineControl() {
 }
 
 double EngineControl::process(const double,
-                               const double,
-                               const double,
-                               const int) {
+                              const double,
+                              const double,
+                              const int) {
     return kNoTrigger;
 }
 
@@ -71,7 +71,7 @@ double EngineControl::getTotalSamples() const {
     return m_dTotalSamples;
 }
 
-const char* EngineControl::getGroup() {
+const char* EngineControl::getGroup() const {
     return m_pGroup;
 }
 
@@ -90,6 +90,12 @@ EngineBuffer* EngineControl::getEngineBuffer() {
 void EngineControl::seekAbs(double fractionalPosition) {
     if (m_pEngineBuffer) {
         m_pEngineBuffer->slotControlSeekAbs(fractionalPosition);
+    }
+}
+
+void EngineControl::seekExact(double fractionalPosition) {
+    if (m_pEngineBuffer) {
+        m_pEngineBuffer->slotControlSeekExact(fractionalPosition);
     }
 }
 

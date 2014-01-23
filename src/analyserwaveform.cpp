@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QTime>
 #include <QMutexLocker>
-#include <QDebug>
+#include <QtDebug>
 #include <time.h>
 
 #include "analyserwaveform.h"
@@ -187,7 +187,7 @@ void AnalyserWaveform::destroyFilters() {
     }
 }
 
-void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
+void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
     if (m_skipProcessing || !m_waveform || !m_waveformSummary)
         return;
 
@@ -294,13 +294,14 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
     m_waveform->setCompletion(m_waveform->getDataSize());
     m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
     m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
+    waveformLocker.unlock();
 
     QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
     // Force completion to waveform size
     m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
     m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
     m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
-
+    waveformSummaryLocker.unlock();
 
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");

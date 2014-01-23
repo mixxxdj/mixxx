@@ -41,7 +41,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
     }
     version_label->setText(version.join(" "));
 
-    QString s_devTeam = QString(tr("Mixxx %1 Development Team")).arg(mixxxVersion);
+    QString s_devTeam = tr("Mixxx %1 Development Team").arg(mixxxVersion);
     QString s_contributions = tr("With contributions from:");
     QString s_specialThanks = tr("And special thanks to:");
     QString s_pastDevs = tr("Past Developers");
@@ -135,6 +135,10 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
 "Florian Kiekh&auml;fer<br>"
 "Michael Sawyer<br>"
 "Nicu Badescu<br>"
+"Tuukka Pasanen<br>"
+"Uwe Klotz<br>"
+"Quentin Faidide<br>"
+"Peter G. Marczis<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -225,4 +229,3 @@ void DlgAbout::slotApply() {
 
 void DlgAbout::slotUpdate() {
 }
-

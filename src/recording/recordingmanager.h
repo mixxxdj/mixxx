@@ -1,15 +1,13 @@
 #ifndef RECORDINGMANAGER_H
 #define RECORDINGMANAGER_H
 
-#include <QDesktopServices>
 #include <QDateTime>
 #include <QObject>
-
+#include <QString>
 
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
-#include "controlobjectthreadmain.h"
 #include "recording/defs_recording.h"
 
 //
@@ -25,7 +23,6 @@
 
 class EngineMaster;
 class ControlPushButton;
-class ControlObjectThreadMain;
 
 class RecordingManager : public QObject
 {

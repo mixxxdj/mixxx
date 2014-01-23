@@ -100,10 +100,10 @@ void PositionScratchController::process(double currentSample, double releaseRate
         int iBufferSize, double baserate) {
     bool scratchEnable = m_pScratchEnable->get() != 0;
 
-   	if (!m_bScratching && !scratchEnable) {
+    if (!m_bScratching && !scratchEnable) {
         // We were not previously in scratch mode are still not in scratch
         // mode. Do nothing
-   	    return;
+        return;
     }
 
     // The latency or time difference between process calls.
@@ -119,10 +119,10 @@ void PositionScratchController::process(double currentSample, double releaseRate
     const int callsPerDt = ceil(m_dMouseSampeIntervall/dt);
     double scratchPosition = 0;
     m_dMouseSampeTime += dt;
-   	if (m_dMouseSampeTime >= m_dMouseSampeIntervall || !m_bScratching) {
-   	    scratchPosition = m_pScratchPosition->get();
-   	    m_dMouseSampeTime = 0;
-   	}
+    if (m_dMouseSampeTime >= m_dMouseSampeIntervall || !m_bScratching) {
+        scratchPosition = m_pScratchPosition->get();
+        m_dMouseSampeTime = 0;
+    }
 
     // Tweak PD controller for different latencies
     double p = 0.3;
@@ -241,7 +241,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
             // We were previously in scratch mode and are no longer in scratch
             // mode. Disable everything, or optionally enable inertia mode if
             // the previous rate was high enough to count as a 'throw'
-            
+
             // The rate threshold above which disabling position scratching will enable
             // an 'inertia' mode.
             const double kThrowThreshold = 2.5;
@@ -280,7 +280,7 @@ double PositionScratchController::getRate() {
 }
 
 void PositionScratchController::notifySeek(double currentSample) {
-    // scratching continues after seek due to calculating the relative distance traveled 
-    // in m_dPositionDeltaSum   
+    // scratching continues after seek due to calculating the relative distance traveled
+    // in m_dPositionDeltaSum
     m_dLastPlaypos = currentSample;
 }

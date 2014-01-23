@@ -13,7 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QDebug>
+#include <QtDebug>
 #include <QMessageBox>
 #include "dlgprefsound.h"
 #include "dlgprefsounditem.h"
@@ -27,16 +27,15 @@
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
  */
-DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
-                           PlayerManager* pPlayerManager, ConfigObject<ConfigValue> *pConfig)
-        : QWidget(pParent)
-        , m_pSoundManager(pSoundManager)
-        , m_pPlayerManager(pPlayerManager)
-        , m_pConfig(pConfig)
-        , m_settingsModified(false)
-        , m_loading(false)
-        , m_forceApply(false)
-{
+DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
+                           PlayerManager* pPlayerManager, ConfigObject<ConfigValue>* pConfig)
+        : DlgPreferencePage(pParent),
+          m_pSoundManager(pSoundManager),
+          m_pPlayerManager(pPlayerManager),
+          m_pConfig(pConfig),
+          m_settingsModified(false),
+          m_loading(false),
+          m_forceApply(false) {
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
@@ -57,7 +56,7 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
         if (srate > 0) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
-            sampleRateComboBox->addItem(QString(tr("%1 Hz")).arg(srate), srate);
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(srate), srate);
         }
     }
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
@@ -82,9 +81,9 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
     connect(resetButton, SIGNAL(clicked()),
             this, SLOT(resetClicked()));
 
-    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, const AudioSource*)),
+    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(addPath(AudioOutput)));
-    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, const AudioSource*)),
+    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(loadSettings()));
 
     connect(m_pSoundManager, SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
@@ -105,7 +104,7 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
-    
+
     if (RLimit::isRtPrioAllowed()) {
         limitsHint->hide();
     }
@@ -153,15 +152,15 @@ void DlgPrefSound::slotApply() {
         QString detailedError(tr("An unknown error occurred"));
         SoundDevice *device = m_pSoundManager->getErrorDevice();
         if (device != NULL) {
-            deviceName = QString(tr("sound device \"%1\"")).arg(device->getDisplayName());
+            deviceName = tr("sound device \"%1\"").arg(device->getDisplayName());
             detailedError = device->getError();
         }
         switch (err) {
         case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
-            error = QString(tr("Two outputs cannot share channels on %1")).arg(deviceName);
+            error = tr("Two outputs cannot share channels on %1").arg(deviceName);
             break;
         default:
-            error = QString(tr("Error opening %1\n%2")).arg(deviceName, detailedError);
+            error = tr("Error opening %1\n%2").arg(deviceName, detailedError);
             break;
         }
         QMessageBox::warning(NULL, tr("Configuration error"), error);
@@ -398,12 +397,12 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     // no div-by-0 in the next line because we don't allow srates of 0 in our
     // srate list when we construct it in the ctor -- bkgood
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
-    }    
+    }
     audioBufferComboBox->clear();
     for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex; ++i) {
         float latency = framesPerBuffer / sampleRate * 1000;
         // i + 1 in the next line is a latency index as described in SSConfig
-        audioBufferComboBox->addItem(QString(tr("%1 ms")).arg(latency,0,'g',3), i + 1);
+        audioBufferComboBox->addItem(tr("%1 ms").arg(latency,0,'g',3), i + 1);
         framesPerBuffer <<= 1; // *= 2
     }
     if (oldSizeIndex < audioBufferComboBox->count() && oldSizeIndex >= 0) {
@@ -474,4 +473,3 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
     currentLatency->setText(QString("%1 ms").arg(latency));
     update();
 }
-

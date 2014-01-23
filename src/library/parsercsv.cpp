@@ -11,13 +11,13 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include <QTextStream>
-#include <QDebug>
-#include <QDir>
-#include <QMessageBox>
-#include <QUrl>
 
 #include "library/parsercsv.h"
+
+#include <QTextStream>
+#include <QtDebug>
+#include <QDir>
+#include <QMessageBox>
 
 ParserCsv::ParserCsv() : Parser() {
 }
@@ -95,14 +95,14 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
                 quotes = false;
             }
         } else if (!quotes && c == delimiter) {
-            if (isUtf8(field.data())) {
+            if (isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));
             }
             field.clear();
         } else if (!quotes && (c == '\r' || c == '\n')) {
-            if (isUtf8(field.data())) {
+            if (isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));

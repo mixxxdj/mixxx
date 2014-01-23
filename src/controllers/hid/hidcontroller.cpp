@@ -1,6 +1,6 @@
 /**
   * @file hidcontroller.cpp
-  * @author Sean M. Pappalardo	spappalardo@mixxx.org
+  * @author Sean M. Pappalardo  spappalardo@mixxx.org
   * @date Sun May 1 2011
   * @brief HID controller backend
   *
@@ -13,6 +13,7 @@
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/defs_controllers.h"
 #include "util/compatibility.h"
+#include "util/trace.h"
 
 HidReader::HidReader(hid_device* device)
         : QThread(),
@@ -34,7 +35,9 @@ void HidReader::run() {
         // This relieves that at the cost of higher CPU usage since we only
         // block for a short while (500ms)
         int result = hid_read_timeout(m_pHidDevice, data, 255, 500);
+        Trace timeout("HidReader timeout");
         if (result > 0) {
+            Trace process("HidReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData(reinterpret_cast<char*>(data), result);
             emit(incomingData(outData));

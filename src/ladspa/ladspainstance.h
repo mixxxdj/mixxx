@@ -10,13 +10,14 @@
 #ifndef LADSPAINSTANCE_H
 #define LADSPAINSTANCE_H
 
-#include <QtCore>
+#include <QList>
+#include <QLinkedList>
+#include <QVector>
 
 #include <ladspa.h>
 
 #include <defs.h>
 #include <controlobject.h>
-#include <controlobjectthreadmain.h>
 
 class LADSPAInstance
 {

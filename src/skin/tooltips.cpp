@@ -212,6 +212,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Tempo")
             << tempoDisplay;
 
+    add("visual_key")
+            //: The musical key of a track
+            << tr("Key")
+            << tr("Displays the current musical key of the loaded track after pitch shifting.");
+
     add("bpm_tap")
             << tr("BPM Tap")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
@@ -242,9 +247,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggles quantization.")
             << tr("Loops and cues snap to the nearest beat when quantization is enabled.");
 
+    // Reverse and reverseroll (censor)
     add("reverse")
-            << tr("Reverse")
-            << tr("Reverses track playback during regular playback.");
+    << tr("Reverse")
+            << QString("%1: %2").arg(leftClick, tr("Reverses track playback during regular playback."))
+            << QString("%1: %2").arg(rightClick, tr("Puts a track into reverse while being held (Censor)."))
+            << tr("Playback continues where the track would have been if it had not been temporarily reversed.");
 
     // Currently used for samplers
     add("play_start")
@@ -271,7 +279,7 @@ void Tooltips::addStandardTooltips() {
 
     add("pfl")
             << tr("Headphone")
-            << tr("Sends the selected channel's audio to the headphone output.")
+            << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
 
     add("back_start")
@@ -296,8 +304,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Decks can't sync to samplers and samplers can only sync to decks.");
 
     add("rate")
+            << tr("Speed Control")
+            << tr("Changes the track playback speed (affects both the tempo and the pitch). If key-lock is enabled, only the tempo is affected.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("pitch")
             << tr("Pitch Control")
-            << tr("Changes the track playback rate.")
+            << tr("Changes the track pitch independent of the tempo.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("rate_display")
@@ -329,8 +342,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Vinyl Status")
             << tr("Provides visual feedback for vinyl control status:")
             << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Red for needle skip detected.");
+            << tr("Blinking yellow for when the needle reaches the end of the record.");
 
     add("loop_in")
             << tr("Loop-In Marker")
@@ -368,7 +380,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Reloop/Exit")
             << tr("Toggles the current loop on or off.")
             << tr("Works only if Loop-In and Loop-Out marker are set.");
-    
+
     add("slip_mode")
             << tr("Slip Mode")
             << tr("When active, the playback continues muted in the background during a loop, reverse, scratch etc.")

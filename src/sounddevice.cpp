@@ -16,7 +16,6 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
 
 #include "sounddevice.h"
 
@@ -31,7 +30,7 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
           m_strDisplayName("Unknown Soundcard"),
           m_iNumOutputChannels(2),
           m_iNumInputChannels(2),
-          m_dSampleRate(44100.0f),
+          m_dSampleRate(44100.0),
           m_hostAPI("Unknown API"),
           m_framesPerBuffer(0) {
 }

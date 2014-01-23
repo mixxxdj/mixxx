@@ -18,41 +18,46 @@
 #ifndef DLGPREFCROSSFADER_H
 #define DLGPREFCROSSFADER_H
 
+#include <QWidget>
+
 #include "ui_dlgprefcrossfaderdlg.h"
 #include "configobject.h"
 #include "controlobjectthread.h"
+#include "preferences/dlgpreferencepage.h"
 
-#define MIXXX_XFADER_STEEPNESS_COEFF 8.0f
+#define MIXXX_XFADER_STEEPNESS_COEFF 8.0
 
-class QWidget;
 /**
   *@author John Sully
   */
 
-class DlgPrefCrossfader : public QWidget, public Ui::DlgPrefCrossfaderDlg  {
+class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfaderDlg  {
     Q_OBJECT
-public: 
+  public:
     DlgPrefCrossfader(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefCrossfader();
-public slots:
-	/** Update X-Fader */
-	void slotUpdateXFader();
+    virtual ~DlgPrefCrossfader();
+
+  public slots:
+    /** Update X-Fader */
+    void slotUpdateXFader();
     /** Apply changes to widget */
     void slotApply();
-	void slotUpdate();
-	void setDefaults();
-signals:
+    void slotUpdate();
+    void setDefaults();
+
+  signals:
     void apply(const QString &);
-private:
-	void loadSettings();
-	void drawXfaderDisplay();
-	
+
+  private:
+    void loadSettings();
+    void drawXfaderDisplay();
+
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
 
-	QGraphicsScene *m_pxfScene;
+    QGraphicsScene *m_pxfScene;
 
-	/** X-fader values */
+    /** X-fader values */
     double m_xFaderMode, m_transform, m_cal;
 
     ControlObjectThread m_COTMode;

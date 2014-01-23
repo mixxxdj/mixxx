@@ -18,32 +18,52 @@
 #ifndef WPUSHBUTTON_H
 #define WPUSHBUTTON_H
 
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qstring.h>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QString>
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QFocusEvent>
+#include <QTimer>
+#include <QVector>
 
 #include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
 #include "controlpushbutton.h"
+#include "skin/skincontext.h"
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
-class WPushButton : public WWidget
-{
+class WPushButton : public WWidget {
     Q_OBJECT
   public:
-    WPushButton(QWidget *parent=0);
-    ~WPushButton();
-    void setup(QDomNode node);
+    WPushButton(QWidget* pParent = NULL);
+    // Used by WPushButtonTest.
+    WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
+                ControlPushButton::ButtonMode rightButtonMode);
+    virtual ~WPushButton();
+
+    Q_PROPERTY(bool pressed READ isPressed);
+
+    bool isPressed() const {
+        return m_bPressed;
+    }
+
+    void setup(QDomNode node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
     void setStates(int iStatesW);
 
+  public slots:
+    void onConnectedControlValueChanged(double);
+
+  protected:
+    virtual void paintEvent(QPaintEvent*);
+    virtual void mousePressEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
+    virtual void focusOutEvent(QFocusEvent* e);
+    void fillDebugTooltip(QStringList* debug);
+
+  private:
     // Associates a pixmap of a given state of the button with the widget
     void setPixmap(int iState, bool bPressed, const QString &filename);
 
@@ -51,30 +71,24 @@ class WPushButton : public WWidget
     // the button pixmaps contains alpha channel values.
     void setPixmapBackground(const QString &filename);
 
-  public slots:
-    void setValue(double);
-
-  protected:
-    virtual void paintEvent(QPaintEvent*);
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void focusOutEvent(QFocusEvent* e);
+    bool m_bLeftClickForcePush;
+    bool m_bRightClickForcePush;
 
     // True, if the button is currently pressed
-    // left button is the primary button which is reflected in the GUI
-    bool m_leftPressed;
-    bool m_rightPressed;
+    bool m_bPressed;
 
-  private:
-    bool m_bLeftClickForcePush, m_bRightClickForcePush;
-    // Number of states associated with this button
-    int m_iNoStates;
     // Array of associated pixmaps
-    QPixmap** m_pPixmaps;
+    int m_iNoStates;
+    QVector<QString> m_text;
+    QVector<PaintablePointer> m_pressedPixmaps;
+    QVector<PaintablePointer> m_unpressedPixmaps;
+
     // Associated background pixmap
-    QPixmap* m_pPixmapBack;
-    /** short click toggle button long click push button **/
-    ControlPushButton::ButtonMode m_leftButtonMode, m_rightButtonMode;
+    PaintablePointer m_pPixmapBack;
+
+    // short click toggle button long click push button
+    ControlPushButton::ButtonMode m_leftButtonMode;
+    ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
 };
 

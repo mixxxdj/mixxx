@@ -56,8 +56,8 @@ int SoundSourceCoreAudio::open() {
 
     if (err != noErr) {
         qDebug() << "SSCA: Error opening file " << m_qFilename;
-		return ERR;
-	}
+        return ERR;
+    }
 
     // get the input file format
     CAStreamBasicDescription inputFormat;
@@ -66,7 +66,7 @@ int SoundSourceCoreAudio::open() {
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
     if (err != noErr) {
         qDebug() << "SSCA: Error getting file format (" << m_qFilename << ")";
-		return ERR;
+        return ERR;
     }
 
     //Debugging:
@@ -142,10 +142,10 @@ long SoundSourceCoreAudio::seek(long filepos) {
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
     //qDebug() << "SSCA: Seeking to" << segmentStart;
 
-	//err = ExtAudioFileSeek(m_audioFile, filepos / 2);
+    //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
     if (err != noErr) {
         qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
-	}
+    }
     return filepos;
 }
 
@@ -198,8 +198,7 @@ int SoundSourceCoreAudio::parseHeader() {
     bool result = false;
 
     if (getType() == "m4a") {
-        // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
-        TagLib::MP4::File f(getFilename().toUtf8().constData());
+        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
         result = processTaglibFile(f);
         TagLib::MP4::Tag* tag = f.tag();
         if (tag) {
@@ -207,7 +206,7 @@ int SoundSourceCoreAudio::parseHeader() {
         }
     } else if (getType() == "mp3") {
         // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
-        TagLib::MPEG::File f(getFilename().toUtf8().constData());
+        TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
 
         // Takes care of all the default metadata
         result = processTaglibFile(f);

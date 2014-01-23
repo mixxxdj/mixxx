@@ -60,6 +60,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckAndSamplerAndPreviewDeckControl("start", tr("Jump to start of track"), transportMenu);
     addDeckControl("end", tr("Jump to end of track"), transportMenu);
     addDeckControl("reverse", tr("Play reverse button"), transportMenu);
+    addDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("pfl", tr("Headphone listen button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
@@ -79,7 +80,8 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     // Rate
     QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
     addDeckAndSamplerControl("keylock", tr("Toggle keylock mode"), rateMenu);
-    addDeckAndSamplerControl("rate", tr("Pitch control slider"), rateMenu, true);
+    addDeckAndSamplerControl("rate", tr("Speed control slider"), rateMenu, true);
+    addDeckAndSamplerControl("pitch", tr("Pitch control slider"), rateMenu, true);
     addDeckControl("rate_perm_up", tr("Adjust rate up (coarse)"), rateMenu);
     addDeckControl("rate_perm_up_small", tr("Adjust rate up (fine)"), rateMenu);
     addDeckControl("rate_perm_down", tr("Adjust rate down (coarse)"), rateMenu);
@@ -408,4 +410,3 @@ QMenu* DlgControllerLearning::addSubmenu(QString title, QMenu* pParent) {
     pParent->addMenu(subMenu);
     return subMenu;
 }
-

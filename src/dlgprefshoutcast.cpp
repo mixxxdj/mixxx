@@ -18,18 +18,15 @@
  ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
-#include <QtGui>
 
 #include "defs_urls.h"
 #include "dlgprefshoutcast.h"
 #include "shoutcast/defs_shoutcast.h"
+#include "controlobjectthread.h"
 
 DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           m_pConfig(_config) {
-    int tmp_index = 0;  //Used for finding the index of an element by name in a combobox.
-    QString tmp_string;
     setupUi(this);
 
     m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
@@ -44,7 +41,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     comboBoxServerType->addItem(tr("Shoutcast"), SHOUTCAST_SERVER_SHOUTCAST);
     comboBoxServerType->addItem(tr("Icecast 1"), SHOUTCAST_SERVER_ICECAST1);
 
-    tmp_index = comboBoxServerType->findData(m_pConfig->getValueString(
+    int tmp_index = comboBoxServerType->findData(m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"servertype")));
     if (tmp_index < 0) //Set default if invalid.
         tmp_index = 0;
@@ -59,7 +56,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
         ConfigKey(SHOUTCAST_PREF_KEY,"host")));
 
     // Port
-    tmp_string = m_pConfig->getValueString(
+    QString tmp_string = m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"port"));
     if (tmp_string.isEmpty())
         tmp_string = QString(SHOUTCAST_DEFAULT_PORT);
@@ -85,8 +82,11 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     stream_website->setText(tmp_string);
 
     // Stream description
-    stream_desc->setText(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY,"stream_desc")));
+    tmp_string = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY,"stream_desc"));
+    if (tmp_string.isEmpty())
+        tmp_string = tr("This stream is online for testing purposes!");
+    stream_desc->setText(tmp_string);
 
     // Stream genre
     tmp_string = m_pConfig->getValueString(
@@ -177,7 +177,8 @@ DlgPrefShoutcast::~DlgPrefShoutcast()
 
 void DlgPrefShoutcast::slotUpdate()
 {
-    enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
+    enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
 }
 
 void DlgPrefShoutcast::slotApply()
@@ -222,5 +223,5 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
 
     //Tell the EngineShoutcast object to update with these values by toggling this control object.
-    m_pUpdateShoutcastFromPrefs->slotSet(1.0f);
+    m_pUpdateShoutcastFromPrefs->slotSet(1.0);
 }

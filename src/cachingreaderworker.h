@@ -1,10 +1,11 @@
 #ifndef CACHINGREADERWORKER_H
 #define CACHINGREADERWORKER_H
 
-#include <QDebug>
+#include <QtDebug>
 #include <QMutex>
 #include <QSemaphore>
 #include <QThread>
+#include <QString>
 
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
@@ -87,6 +88,7 @@ class CachingReaderWorker : public EngineWorker {
   private:
 
     const char* m_pGroup;
+    QString m_tag;
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.

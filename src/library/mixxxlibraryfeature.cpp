@@ -34,14 +34,17 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
             << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_ALBUMARTIST
             << "library." + LIBRARYTABLE_YEAR
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
             << "library." + LIBRARYTABLE_COMPOSER
+            << "library." + LIBRARYTABLE_GROUPING
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_KEY_ID
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "library." + LIBRARYTABLE_BPM
             << "library." + LIBRARYTABLE_BPM_LOCK
@@ -89,10 +92,10 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
-    pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
+    pTrackCollection->setTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
+    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,

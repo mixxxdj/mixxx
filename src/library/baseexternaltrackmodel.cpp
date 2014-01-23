@@ -4,24 +4,16 @@
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
                                                TrackCollection* pTrackCollection,
-                                               QString settingsNamespace,
-                                               QString trackTable,
-                                               QString trackSource)
+                                               const char* settingsNamespace,
+                                               const QString& trackTable,
+                                               QSharedPointer<BaseTrackCache> trackSource)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
-          m_trackTable(trackTable),
-          m_trackSource(trackSource) {
-    setTableModel();
-}
-
-void BaseExternalTrackModel::setTableModel(int id) {
-    Q_UNUSED(id);
+          m_trackTable(trackTable) {
     QStringList columns;
     columns << "id";
     // TODO(XXX) preview column, needs a temporary view
-    setTable(m_trackTable, columns[0], columns,
-             m_pTrackCollection->getTrackSource(m_trackSource));
+    setTable(m_trackTable, columns[0], columns, trackSource);
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
-    initHeaderData();
 }
 
 BaseExternalTrackModel::~BaseExternalTrackModel() {
@@ -51,7 +43,6 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     }
 
     TrackPointer pTrack;
-
     if (track_id < 0) {
         // Add Track to library failed, create a transient TrackInfoObject
         pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);

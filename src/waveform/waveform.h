@@ -1,7 +1,6 @@
 #ifndef WAVEFORM_H
 #define WAVEFORM_H
 
-#include <qglobal.h>
 #include <QMutex>
 #include <QByteArray>
 #include <QString>

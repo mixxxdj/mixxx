@@ -6,45 +6,33 @@
 #include <QtSql>
 
 #include "util.h"
+#include "trackinfoobject.h"
+#include "library/searchquery.h"
 
 class SearchQueryParser {
   public:
     SearchQueryParser(QSqlDatabase& database);
     virtual ~SearchQueryParser();
 
-    QString parseQuery(const QString& query,
-                       const QStringList& searchColumns,
-                       const QString& extraFilter) const;
+    QueryNode* parseQuery(const QString& query,
+                          const QStringList& searchColumns,
+                          const QString& extraFilter) const;
 
   private:
-    bool searchFieldsForPhrase(const QString& phrase,
-                               const QStringList& fields,
-                               QStringList* output) const;
-
     void parseTokens(QStringList tokens,
                      QStringList searchColumns,
-                     QStringList* output) const;
+                     AndNode* pQuery) const;
 
     QString getTextArgument(QString argument,
                             QStringList* tokens) const;
 
-    bool parseFuzzyMatch(QString field, QStringList* output) const;
-    bool parseTextFilter(QString field, QString argument,
-                         QStringList* tokens, QStringList* output) const;
-    bool parseNumericFilter(QString field, QString argument,
-                            QStringList* tokens, QStringList* output) const;
-    bool parseSpecialFilter(QString field, QString argument,
-                            QStringList* tokens, QStringList* output) const;
-
     QSqlDatabase m_database;
-
     QStringList m_textFilters;
     QStringList m_numericFilters;
     QStringList m_specialFilters;
     QStringList m_allFilters;
-    QHash<QString, QString> m_fieldToSqlColumn;
+    QHash<QString, QStringList> m_fieldToSqlColumns;
 
-    QRegExp m_operatorMatcher;
     QRegExp m_fuzzyMatcher;
     QRegExp m_textFilterMatcher;
     QRegExp m_numericFilterMatcher;

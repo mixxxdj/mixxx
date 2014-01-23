@@ -18,9 +18,11 @@
 #ifndef IMGSOURCE_H
 #define IMGSOURCE_H
 
-#include <qimage.h>
-#include <qcolor.h>
-#include <QDebug>
+#include <QImage>
+#include <QColor>
+#include <QString>
+#include <QRgb>
+#include <QtDebug>
 
 class ImgSource {
   public:
@@ -42,7 +44,7 @@ class ImgProcessor : public ImgSource {
     virtual void correctImageColors(QImage* p) { (void)p; };
 
   protected:
-	ImgSource* m_parent;
+    ImgSource* m_parent;
 };
 
 class ImgColorProcessor : public ImgProcessor {
@@ -106,7 +108,7 @@ public:
         //         << img << " bpp: "
         //         << bytesPerPixel << " format: " << i->format();
 
-        if(bytesPerPixel < 4) {
+        if (bytesPerPixel < 4) {
             // Handling Indexed color or mono colors requires different logic
             qDebug() << "ImgColorProcessor aborting on unsupported color format:"
                      << i->format();
@@ -132,4 +134,3 @@ public:
 };
 
 #endif
-

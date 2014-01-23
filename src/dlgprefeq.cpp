@@ -15,40 +15,31 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qslider.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qgraphicsscene.h>
-
-#include <assert.h>
+#include <QWidget>
+#include <QString>
 
 #include "dlgprefeq.h"
 #include "engine/enginefilteriir.h"
 #include "controlobject.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
+#define ENABLE_INTERNAL_EQ "EnableEQs"
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-DlgPrefEQ::DlgPrefEQ(QWidget *pParent, ConfigObject<ConfigValue> *pConfig)
-        : QWidget(pParent),
-#ifndef __LOFI__
+DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
+        : DlgPreferencePage(pParent),
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
-          m_COTLoFi(CONFIG_KEY, "LoFiEQs")
-#endif
-{
-    m_pConfig = pConfig;
-
+          m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
+          m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
+          m_pConfig(pConfig),
+          m_lowEqFreq(0.0),
+          m_highEqFreq(0.0) {
     setupUi(this);
 
     // Connection
-#ifndef __LOFI__
     connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
     connect(SliderHiEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));
     connect(SliderHiEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateHiEQ()));
@@ -58,15 +49,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget *pParent, ConfigObject<ConfigValue> *pConfig)
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
-#else
-    CheckBoxLoFi->setChecked(true);
-    slotLoFiChanged();
-    CheckBoxLoFi->setEnabled(false);
-#endif
+    connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
     connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
-
-    m_lowEqFreq = 0;
-    m_highEqFreq = 0;
 
     loadSettings();
 }
@@ -107,11 +91,12 @@ void DlgPrefEQ::loadSettings()
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
 
-    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")) {
-        CheckBoxLoFi->setChecked(true);
-    } else {
-        CheckBoxLoFi->setChecked(false);
-    }
+    CheckBoxLoFi->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"));
+
+    // Default internal EQs to enabled.
+    CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes"));
 
     slotUpdate();
     slotApply();
@@ -130,6 +115,11 @@ void DlgPrefEQ::setDefaultShelves()
 void DlgPrefEQ::reset() {
     setDefaultShelves();
     loadSettings();
+}
+
+void DlgPrefEQ::slotEnaEQChanged() {
+    m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ),
+                   CheckBoxEnbEQ->isChecked() ? QString("yes") : QString("no"));
 }
 
 void DlgPrefEQ::slotLoFiChanged()
@@ -205,11 +195,10 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
 
 void DlgPrefEQ::slotApply()
 {
-#ifndef __LOFI__
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
     m_COTLoFi.slotSet(CheckBoxLoFi->isChecked());
-#endif
+    m_COTEnableEq.slotSet(CheckBoxEnbEQ->isChecked());
 }
 
 void DlgPrefEQ::slotUpdate()
@@ -217,6 +206,7 @@ void DlgPrefEQ::slotUpdate()
     slotUpdateLoEQ();
     slotUpdateHiEQ();
     slotLoFiChanged();
+    slotEnaEQChanged();
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {

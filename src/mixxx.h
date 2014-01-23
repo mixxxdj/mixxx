@@ -48,11 +48,12 @@ class ControlPushButton;
 #include "util/timer.h"
 
 class ControlObjectThread;
+class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
-// window and providing a menu bar.
-// For the main view, an instance of class QWidget is
-// created which holds the view.
+// window and providing a menubar.
+// For the main view, an instance of class MixxxView is
+// created which creates your view.
 class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -65,10 +66,8 @@ class MixxxMainWindow : public QMainWindow {
     // initMenuBar creates the menu_bar and inserts the menuitems
     void initMenuBar();
 
-    void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
-
     void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; };
+    inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
   public slots:
@@ -83,10 +82,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotFileQuit();
 
     // toggle vinyl control - Don't #ifdef this because MOC is dumb
-    void slotControlVinylControl(double toggle);
-    void slotCheckboxVinylControl(bool toggle);
-    void slotControlVinylControl2(double toggle);
-    void slotCheckboxVinylControl2(bool toggle);
+    void slotControlVinylControl(int);
+    void slotCheckboxVinylControl(int);
     // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
@@ -121,6 +118,9 @@ class MixxxMainWindow : public QMainWindow {
 
     void onNewSkinLoaded();
 
+    // Activated when the number of decks changed, so we can update the UI.
+    void slotNumDecksChanged(double);
+
   signals:
     void newSkinLoaded();
 
@@ -135,11 +135,13 @@ class MixxxMainWindow : public QMainWindow {
     void initializeWindow();
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
+    bool loadTranslations(const QLocale& systemLocale, QString userLocale,
+                          const QString& translation, const QString& prefix,
+                          const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
 
     // Pointer to the root GUI widget
-    QWidget* m_pView;
     QWidget* m_pWidgetParent;
 
     // The mixing engine.
@@ -193,8 +195,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pLibraryRescan;
 #ifdef __VINYLCONTROL__
     QMenu* m_pVinylControlMenu;
-    QAction* m_pOptionsVinylControl;
-    QAction* m_pOptionsVinylControl2;
+    QList<QAction*> m_pOptionsVinylControl;
 #endif
     QAction* m_pOptionsRecord;
     QAction* m_pOptionsKeyboard;
@@ -237,8 +238,11 @@ class MixxxMainWindow : public QMainWindow {
     const CmdlineArgs& m_cmdLineArgs;
 
     ControlPushButton* m_pTouchShift;
-    ControlObjectThread* m_pVinylcontrol1Enabled;
-    ControlObjectThread* m_pVinylcontrol2Enabled;
+    QList<ControlObjectThread*> m_pVinylControlEnabled;
+    ControlObjectThread* m_pNumDecks;
+    int m_iNumConfiguredDecks;
+    QSignalMapper* m_VCControlMapper;
+    QSignalMapper* m_VCCheckboxMapper;
 };
 
 #endif

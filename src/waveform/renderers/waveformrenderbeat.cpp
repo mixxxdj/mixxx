@@ -5,7 +5,7 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "track/beats.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -28,8 +28,8 @@ bool WaveformRenderBeat::init() {
     return m_pBeatActive->valid();
 }
 
-void WaveformRenderBeat::setup(const QDomNode& node) {
-    m_beatColor.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
+void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
+    m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor);
 
     if (m_beatColor.alphaF() > 0.99)
@@ -70,18 +70,17 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidth(1.5);
+    beatPen.setWidthF(1.5);
 
     while (it->hasNext()) {
         int beatPosition = it->next();
-        m_waveformRenderer->regulateVisualSample(beatPosition);
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
         painter->setPen(beatPen);
 
         painter->drawLine(QPointF(xBeatPoint, 0.f),
                           QPointF(xBeatPoint,
-                                  (float)m_waveformRenderer->getHeight()));
+                          (float)m_waveformRenderer->getHeight()));
     }
 
     painter->restore();

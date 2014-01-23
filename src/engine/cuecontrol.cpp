@@ -12,8 +12,8 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
-CueControl::CueControl(const char * _group,
-                       ConfigObject<ConfigValue> * _config) :
+CueControl::CueControl(const char* _group,
+                       ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_bHotcueCancel(false),
         m_bPreviewing(false),
@@ -192,7 +192,7 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
     } else {
-        m_pCuePoint->set(0.0f);
+        m_pCuePoint->set(0.0);
     }
 
     int cueRecall = getConfig()->getValueString(
@@ -205,7 +205,7 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     }
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-    seekAbs(loadCuePoint);
+    seekExact(loadCuePoint);
 }
 
 void CueControl::trackUnloaded(TrackPointer pTrack) {
@@ -218,7 +218,7 @@ void CueControl::trackUnloaded(TrackPointer pTrack) {
     // Store the cue point in a load cue.
     double cuePoint = m_pCuePoint->get();
 
-    if (cuePoint != -1 && cuePoint != 0.0f) {
+    if (cuePoint != -1 && cuePoint != 0.0) {
         Cue* loadCue = NULL;
         const QList<Cue*>& cuePoints = pTrack->getCuePoints();
         QListIterator<Cue*> it(cuePoints);
@@ -327,6 +327,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     bool playing = m_pPlayButton->get() > 0;
     if (!playing && m_pQuantizeEnabled->get() > 0.0) {
         lock.unlock();  // prevent deadlock.
+        // Enginebuffer will quantize more exactly than we can.
         seekAbs(cuePosition);
     }
 }
@@ -369,7 +370,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
         int position = pCue->getPosition();
         if (position != -1) {
             m_pPlayButton->set(0.0);
-            seekAbs(position);
+            seekExact(position);
         }
     }
 }
@@ -414,7 +415,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(pControl, v);
             } else {
-                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0f) {
+                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0) {
                     hotcueGoto(pControl, v);
                 } else {
                     hotcueActivatePreview(pControl, v);
@@ -485,7 +486,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                     m_pPlayButton->set(0.0);
                     // Need to unlock before emitting any signals to prevent deadlock.
                     lock.unlock();
-                    seekAbs(iPosition);
+                    seekExact(iPosition);
                 }
             }
         }
@@ -617,7 +618,7 @@ void CueControl::cueGotoAndStop(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekAbs(cuePoint);
+    seekExact(cuePoint);
 }
 
 void CueControl::cuePreview(double v)
@@ -647,7 +648,7 @@ void CueControl::cueSimple(double v) {
     QMutexLocker lock(&m_mutex);
     // Simple cueing is if the player is not playing, set the cue point --
     // otherwise seek to the cue point.
-    if (m_pPlayButton->get() == 0.0f) {
+    if (m_pPlayButton->get() == 0.0) {
         return cueSet(v);
     }
 
@@ -682,7 +683,7 @@ void CueControl::cueCDJ(double v) {
 
             seekAbs(cuePoint);
         } else {
-            if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
+            if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0) {
                 m_pPlayButton->set(1.0);
                 m_bPreviewing = true;
             } else {
@@ -694,6 +695,7 @@ void CueControl::cueCDJ(double v) {
                 // necessarily where we currently are
                 if (m_pQuantizeEnabled->get() > 0.0) {
                     lock.unlock();  // prevent deadlock.
+                    // Enginebuffer will quantize more exactly than we can.
                     seekAbs(m_pCuePoint->get());
                 }
             }
@@ -733,7 +735,7 @@ bool CueControl::isCuePreviewing() {
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
-    if (m_pCueMode->get() == 0.0f) {
+    if (m_pCueMode->get() == 0.0) {
         cueCDJ(v);
     } else {
         cueSimple(v);

@@ -7,22 +7,22 @@
 
 #include <QSet>
 
-#include "util/sleepableqthread.h"
+#include "util/trace.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
-    #include "controllers/midi/hss1394enumerator.h"
+#include "controllers/midi/hss1394enumerator.h"
 #endif
 
 #ifdef __HID__
-    #include "controllers/hid/hidenumerator.h"
+#include "controllers/hid/hidenumerator.h"
 #endif
 
 #ifdef __BULK__
-#    include "controllers/bulk/bulkenumerator.h"
+#include "controllers/bulk/bulkenumerator.h"
 #endif
 
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
@@ -270,6 +270,7 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
+    Trace tracer("ControllerManager::pollDevices");
     bool eventsProcessed(false);
     // Continue to poll while any device returned data.
     do {

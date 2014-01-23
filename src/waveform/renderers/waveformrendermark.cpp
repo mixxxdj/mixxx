@@ -4,7 +4,7 @@
 
 #include "waveform/renderers/waveformrendermark.h"
 
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -12,14 +12,13 @@
 #include "widget/wwidget.h"
 #include "widget/wimagestore.h"
 
-
-
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-void WaveformRenderMark::setup( const QDomNode& node) {
-    m_marks.setup(m_waveformRenderer->getGroup(), node, *m_waveformRenderer->getWaveformSignalColors());
+void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+    m_marks.setup(m_waveformRenderer->getGroup(), node, context,
+                  *m_waveformRenderer->getWaveformSignalColors());
 }
 
 void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
@@ -48,8 +47,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
         }
 
         int samplePosition = mark.m_pointControl->get();
-        if (samplePosition >= 0.0) {
-            m_waveformRenderer->regulateVisualSample(samplePosition);
+        if (samplePosition > 0.0) {
             double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
             // NOTE: vRince I guess image width is odd to display the center on the exact line !
@@ -68,7 +66,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
 void WaveformRenderMark::generateMarkImage( WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if( mark.m_pixmapPath != "") {
-        QString path =  WWidget::getPath(mark.m_pixmapPath);
+        QString path =  mark.m_pixmapPath;
         QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.

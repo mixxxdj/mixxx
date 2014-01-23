@@ -3,9 +3,10 @@
 #ifndef WNUMBERPOS_H
 #define WNUMBERPOS_H
 
+#include <QMouseEvent>
+
 #include "wnumber.h"
 
-class ControlObjectThreadWidget;
 class ControlObjectThread;
 
 class WNumberPos : public WNumber {
@@ -14,7 +15,6 @@ class WNumberPos : public WNumber {
     WNumberPos(const char *group, QWidget *parent=0);
     virtual ~WNumberPos();
 
-    void setValue(double dValue);
     // Set if the display shows remaining time (true) or position (false)
     void setRemain(bool bRemain);
 
@@ -22,6 +22,7 @@ class WNumberPos : public WNumber {
     void mousePressEvent(QMouseEvent* pEvent);
 
   private slots:
+    void setValue(double dValue);
     void slotSetValue(double);
     void slotSetRemain(double dRemain);
     void slotSetTrackSampleRate(double dSampleRate);
@@ -37,8 +38,8 @@ class WNumberPos : public WNumber {
     ControlObjectThread* m_pShowTrackTimeRemaining;
     // Pointer to control object for position, rate, and track info
     ControlObjectThread* m_pVisualPlaypos;
-    ControlObjectThreadWidget* m_pTrackSamples;
-    ControlObjectThreadWidget* m_pTrackSampleRate;
+    ControlObjectThread* m_pTrackSamples;
+    ControlObjectThread* m_pTrackSampleRate;
 };
 
 #endif

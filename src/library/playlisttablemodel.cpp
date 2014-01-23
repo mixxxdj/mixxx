@@ -1,23 +1,22 @@
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
-                                    TrackCollection* pTrackCollection,
-                                    QString settingsNamespace,
-                                    bool showAll)
+                                       TrackCollection* pTrackCollection,
+                                       const char* settingsNamespace,
+                                       bool showAll)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
-                            m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
-                            m_iPlaylistId(-1),
-                            m_showAll(showAll) {
+          m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
+          m_iPlaylistId(-1),
+          m_showAll(showAll) {
 }
 
 PlaylistTableModel::~PlaylistTableModel() {
 }
 
 void PlaylistTableModel::setTableModel(int playlistId) {
-    //qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+    //qDebug() << "PlaylistTableModel::setTableModel" << playlistId;
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;
@@ -56,8 +55,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = "preview";
     setTable(playlistTableName, columns[0], columns,
-             m_pTrackCollection->getTrackSource("default"));
-    initHeaderData();
+            m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
@@ -66,7 +64,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             this, SLOT(playlistChanged(int)));
 }
 
-int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int PlaylistTableModel::addTracks(const QModelIndex& index,
+                                  const QList<QString>& locations) {
     if (locations.size() == 0) {
         return 0;
     }
@@ -204,9 +203,7 @@ bool PlaylistTableModel::isColumnInternal(int column) {
 }
 
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
         return true;
     }
     return false;

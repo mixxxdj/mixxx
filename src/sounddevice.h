@@ -18,6 +18,9 @@
 #ifndef SOUNDDEVICE_H
 #define SOUNDDEVICE_H
 
+#include <QString>
+#include <QList>
+
 #include "soundmanager.h"
 
 //Forward declarations
@@ -52,6 +55,13 @@ class SoundDevice {
     int getNumInputChannels() const;
     SoundDeviceError addOutput(const AudioOutputBuffer& out);
     SoundDeviceError addInput(const AudioInputBuffer& in);
+    const QList<AudioInputBuffer>& inputs() const {
+        return m_audioInputs;
+    }
+    const QList<AudioOutputBuffer>& outputs() const {
+        return m_audioOutputs;
+    }
+
     void clearOutputs();
     void clearInputs();
     bool operator==(const SoundDevice &other) const;

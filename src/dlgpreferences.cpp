@@ -18,7 +18,6 @@
 #include <QTabWidget>
 #include <QTabBar>
 #include <QDialog>
-#include <QtGui>
 #include <QEvent>
 #include <QScrollArea>
 #include <QDesktopWidget>
@@ -32,17 +31,18 @@
 #ifdef __SHOUTCAST__
 #include "dlgprefshoutcast.h"
 #endif
+
 #include "dlgprefbeats.h"
+#include "dlgprefkey.h"
 
 #ifdef __MODPLUG__
-    #include "dlgprefmodplug.h"
+#include "dlgprefmodplug.h"
 #endif
 
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
-#include "controllers/dlgprefmappablecontroller.h"
-#include "controllers/dlgprefnocontrollers.h"
-#include "dlgprefplaylist.h"
+#include "controllers/dlgprefcontrollers.h"
+#include "dlgpreflibrary.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
@@ -56,131 +56,79 @@
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue> * _config)
+                               ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
         : m_pageSizeHint(QSize(0, 0)),
-          m_pConfig(_config),
-          m_pControllerManager(controllers),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated")) {
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
 #endif
 
-    setWindowTitle(tr("Preferences"));
     createIcons();
 
     while (pagesWidget->count() > 0) {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
 
-    // Construct widgets for use in tabs
-    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
-    addPageWidget(m_wsound);
-    m_wplaylist = new DlgPrefPlaylist(this, m_pConfig);
-    addPageWidget(m_wplaylist);
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
-    addPageWidget(m_wcontrols);
-    m_weq = new DlgPrefEQ(this, m_pConfig);
-    addPageWidget(m_weq);
-    m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
-    addPageWidget(m_wcrossfader);
+    // Construct widgets for use in tabs.
 
-    m_wbeats = new DlgPrefBeats(this, m_pConfig);
-    addPageWidget (m_wbeats);
-    m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
-    addPageWidget(m_wreplaygain);
-    m_wrecord = new DlgPrefRecord(this, m_pConfig);
-    addPageWidget(m_wrecord);
 #ifdef __VINYLCONTROL__
-    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, m_pConfig);
+    // It's important for this to be before the connect for wsound.
+    // TODO(rryan) determine why/if this is still true
+    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, pConfig);
     addPageWidget(m_wvinylcontrol);
 #else
-    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, m_pConfig);
+    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, pConfig);
     addPageWidget(m_wnovinylcontrol);
 #endif
+    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, pConfig);
+    addPageWidget(m_wsound);
+    m_wlibrary = new DlgPrefLibrary(this, pConfig, pLibrary);
+    addPageWidget(m_wlibrary);
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, pConfig);
+    addPageWidget(m_wcontrols);
+    m_weq = new DlgPrefEQ(this, pConfig);
+    addPageWidget(m_weq);
+    m_wcrossfader = new DlgPrefCrossfader(this, pConfig);
+    addPageWidget(m_wcrossfader);
+
+    m_wbeats = new DlgPrefBeats(this, pConfig);
+    addPageWidget (m_wbeats);
+    m_wkey = new DlgPrefKey(this, pConfig);
+    addPageWidget(m_wkey);
+    m_wreplaygain = new DlgPrefReplayGain(this, pConfig);
+    addPageWidget(m_wreplaygain);
+    m_wrecord = new DlgPrefRecord(this, pConfig);
+    addPageWidget(m_wrecord);
 #ifdef __SHOUTCAST__
-    m_wshoutcast = new DlgPrefShoutcast(this, m_pConfig);
+    m_wshoutcast = new DlgPrefShoutcast(this, pConfig);
     addPageWidget(m_wshoutcast);
 #endif
 #ifdef __MODPLUG__
-    m_wmodplug = new DlgPrefModplug(this, m_pConfig);
+    m_wmodplug = new DlgPrefModplug(this, pConfig);
     addPageWidget(m_wmodplug);
 #endif
-    m_wNoControllers = new DlgPrefNoControllers(this, m_pConfig);
-    addPageWidget(m_wNoControllers);
-    setupControllerWidgets();
+    m_wcontrollers = new DlgPrefControllers(this, pConfig, controllers,
+                                            m_pControllerTreeItem);
+    addPageWidget(m_wcontrollers);
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
 
-    // Connections
-    connect(m_pControllerManager, SIGNAL(devicesChanged()), this, SLOT(rescanControllers()));
-
-    connect(this, SIGNAL(showDlg()), m_wcontrols, SLOT(onShow()));
-    connect(this, SIGNAL(closeDlg()), m_wcontrols, SLOT(onHide()));
-
-    connect(this, SIGNAL(showDlg()), m_wsound,     SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), m_wplaylist,  SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), m_wcontrols,  SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), m_weq,        SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), m_wcrossfader, SLOT(slotUpdate()));
-
-    connect(this, SIGNAL(showDlg()),
-            m_wbeats, SLOT(slotUpdate()));
-
-    connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), m_wrecord,    SLOT(slotUpdate()));
-
-#ifdef __VINYLCONTROL__
-    connect(this, SIGNAL(showDlg()), m_wvinylcontrol, SLOT(slotShow()));
-    connect(this, SIGNAL(closeDlg()), m_wvinylcontrol,SLOT(slotClose()));
-    connect(this, SIGNAL(showDlg()), m_wvinylcontrol,    SLOT(slotUpdate()));
-    //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
-#endif
-#ifdef __SHOUTCAST__
-    connect(this, SIGNAL(showDlg()), m_wshoutcast,SLOT(slotUpdate()));
-#endif
-
-#ifdef __MODPLUG__
-    connect(this, SIGNAL(showDlg()), m_wmodplug,SLOT(slotUpdate()));
-#endif
-
-#ifdef __VINYLCONTROL__
-    connect(buttonBox, SIGNAL(accepted()), m_wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
-                                                                                 //connect for wsound...
-#endif
-    connect(buttonBox, SIGNAL(accepted()), m_wsound,    SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_wplaylist, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_wcontrols, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_weq,       SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_wcrossfader,SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
-
-    connect(buttonBox, SIGNAL(accepted()), m_wbeats,      SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_wreplaygain,SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_wrecord,   SLOT(slotApply()));
-#ifdef __SHOUTCAST__
-    connect(buttonBox, SIGNAL(accepted()), m_wshoutcast,SLOT(slotApply()));
-#endif
-#ifdef __MODPLUG__
-    connect(buttonBox, SIGNAL(accepted()), m_wmodplug,SLOT(slotApply()));
-#endif
-
-    //Update the library when you change the options
-    /*if (m_pTrack && wplaylist)
-    {
-        connect(wplaylist, SIGNAL(apply()), m_pTrack, SLOT(slotScanLibrary()));
-    }*/
-    //FIXME: Disabled due to library reworking
+    // If we don't call this explicitly, then we default to showing the sound
+    // hardware page but the tree item is not selected.
+    showSoundHardwarePage();
 }
 
-DlgPreferences::~DlgPreferences()
-{
-    destroyControllerWidgets();
+DlgPreferences::~DlgPreferences() {
+    // Need to explicitly delete rather than relying on child auto-deletion
+    // because otherwise the QStackedWidget will delete the controller
+    // preference pages (and DlgPrefControllers dynamically generates and
+    // deletes them).
+    delete m_wcontrollers;
 }
 
-void DlgPreferences::createIcons()
-{
+void DlgPreferences::createIcons() {
     m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pSoundButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_soundhardware.png"));
     m_pSoundButton->setText(0, tr("Sound Hardware"));
@@ -193,11 +141,11 @@ void DlgPreferences::createIcons()
     m_pControllerTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pControllerTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pPlaylistButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pPlaylistButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
-    m_pPlaylistButton->setText(0, tr("Library"));
-    m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pLibraryButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pLibraryButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
+    m_pLibraryButton->setText(0, tr("Library"));
+    m_pLibraryButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pLibraryButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
@@ -224,11 +172,18 @@ void DlgPreferences::createIcons()
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 
-    m_pAnalysersButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pAnalysersButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
-    m_pAnalysersButton->setText(0, tr("Beat Detection"));
-    m_pAnalysersButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pAnalysersButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
+    m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
+    m_pBeatDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pBeatDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pKeyDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pKeyDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pKeyDetectionButton->setText(0, tr("Key Detection"));
+    m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
     m_pReplayGainButton->setText(0, tr("Normalization"));
@@ -270,79 +225,59 @@ void DlgPreferences::createIcons()
 #endif
 
     connect(contentsTreeWidget,
-            SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
-            this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
+            SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+            this, SLOT(changePage(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
 
-void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * previous)
-{
+void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
     if (!current)
         current = previous;
 
     if (current == m_pSoundButton) {
-    	m_wsound->slotUpdate();
-    	pagesWidget->setCurrentWidget(m_wsound->parentWidget()->parentWidget());
-    } else if (current == m_pPlaylistButton) {
-    	pagesWidget->setCurrentWidget(m_wplaylist->parentWidget()->parentWidget());
+        m_wsound->slotUpdate();
+      switchToPage(m_wsound);
+    } else if (current == m_pLibraryButton) {
+        switchToPage(m_wlibrary);
     } else if (current == m_pControlsButton) {
-    	pagesWidget->setCurrentWidget(m_wcontrols->parentWidget()->parentWidget());
+        switchToPage(m_wcontrols);
     } else if (current == m_pEqButton) {
-    	pagesWidget->setCurrentWidget(m_weq->parentWidget()->parentWidget());
+        switchToPage(m_weq);
     } else if (current == m_pCrossfaderButton) {
-    	pagesWidget->setCurrentWidget(m_wcrossfader->parentWidget()->parentWidget());
+        switchToPage(m_wcrossfader);
     } else if (current == m_pRecordingButton) {
-    	pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
-    } else if (current == m_pAnalysersButton ) {
-        pagesWidget->setCurrentWidget(m_wbeats->parentWidget()->parentWidget());
+        switchToPage(m_wrecord);
+    } else if (current == m_pBeatDetectionButton) {
+        switchToPage(m_wbeats);
+    } else if (current == m_pKeyDetectionButton) {
+        switchToPage(m_wkey);
     } else if (current == m_pReplayGainButton) {
-    	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
-
+        switchToPage(m_wreplaygain);
 #ifdef __VINYLCONTROL__
     } else if (current == m_pVinylControlButton) {
-    	pagesWidget->setCurrentWidget(m_wvinylcontrol->parentWidget()->parentWidget());
+        switchToPage(m_wvinylcontrol);
 #else
     } else if (current == m_pVinylControlButton) {
-           pagesWidget->setCurrentWidget(m_wnovinylcontrol->parentWidget()->parentWidget());
+        switchToPage(m_wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
     } else if (current == m_pShoutcastButton) {
-           pagesWidget->setCurrentWidget(m_wshoutcast->parentWidget()->parentWidget());
+        switchToPage(m_wshoutcast);
 #endif
 #ifdef __MODPLUG__
     } else if (current == m_pModplugButton) {
-           pagesWidget->setCurrentWidget(m_wmodplug->parentWidget()->parentWidget());
+        switchToPage(m_wmodplug);
 #endif
-    //Handle selection of controller items
-    } else if (m_controllerWindowLinks.indexOf(current) >= 0) {
-           int index = m_controllerWindowLinks.indexOf(current);
-           pagesWidget->setCurrentWidget(m_controllerWindows.value(index)->parentWidget()->parentWidget());
-           //Manually fire this slot since it doesn't work right...
-           m_controllerWindows.value(index)->slotUpdate();
-    }
-
-    else if (current == m_pControllerTreeItem) {
-        //If the root "Controllers" item is clicked, select the first Controller instead.
-        //If there is no first controller, display a page that says so (just so we don't not change the page)
-        if (m_controllerWindows.count() > 0)
-        {
-            //Expand the Controller subtree
-            contentsTreeWidget->setItemExpanded(m_pControllerTreeItem, true);
-        }
-        else
-        {
-            pagesWidget->setCurrentWidget(m_wNoControllers->parentWidget()->parentWidget());
-        }
+    } else if (m_wcontrollers->handleTreeItemClick(current)) {
+        // Do nothing. m_wcontrolles handled this click.
     }
 }
 
-void DlgPreferences::showSoundHardwarePage()
-{
-    pagesWidget->setCurrentWidget(m_wsound->parentWidget()->parentWidget());
+void DlgPreferences::showSoundHardwarePage() {
+    switchToPage(m_wsound);
     contentsTreeWidget->setCurrentItem(m_pSoundButton);
 }
 
-bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
-{
+bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide) {
         onHide();
@@ -364,7 +299,6 @@ void DlgPreferences::onHide() {
     // preferences are likely changed.
     m_preferencesUpdated.set(1);
 }
-
 
 void DlgPreferences::onShow() {
     QSize optimumSize;
@@ -395,118 +329,32 @@ void DlgPreferences::onShow() {
     emit(showDlg());
 }
 
-void DlgPreferences::rescanControllers()
-{
-    destroyControllerWidgets();
-    setupControllerWidgets();
-}
-
-void DlgPreferences::destroyControllerWidgets()
-{
-    //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
-
-    m_controllerWindowLinks.clear();
-
-    while (!m_controllerWindows.isEmpty())
-    {
-        DlgPrefController* controllerDlg = m_controllerWindows.takeLast();
-        pagesWidget->removeWidget(controllerDlg);
-        delete controllerDlg;
-    }
-
-    while(m_pControllerTreeItem->childCount() > 0)
-    {
-        QTreeWidgetItem* controllerWindowLink = m_pControllerTreeItem->takeChild(0);
-        //qDebug() << " Q|T|r\e\eWidgetItem point is " << controllerWindowLink;
-        m_pControllerTreeItem->removeChild(controllerWindowLink);
-        delete controllerWindowLink;
-    }
-}
-
-void DlgPreferences::setupControllerWidgets()
-{
-    //For each controller, create a dialog and put a little link to it in the treepane on the left
-    QList<Controller*> controllerList = m_pControllerManager->getControllerList(false, true);
-    qSort(
-        controllerList.begin(),
-        controllerList.end(),
-        controllerCompare
-    );
-    QListIterator<Controller*> ctrlr(controllerList);
-    while (ctrlr.hasNext())
-    {
-        Controller* currentDevice = ctrlr.next();
-        QString curDeviceName = currentDevice->getName();
-        //qDebug() << "curDeviceName: " << curDeviceName;
-        if (currentDevice->isMappable()) {
-            DlgPrefMappableController* controllerDlg =
-                new DlgPrefMappableController(this, currentDevice,
-                                              m_pControllerManager, m_pConfig);
-            connect(controllerDlg, SIGNAL(mappingStarted()),
-                    this, SLOT(hide()));
-            connect(controllerDlg, SIGNAL(mappingEnded()),
-                    this, SLOT(show()));
-            m_controllerWindows.append(controllerDlg);
-            addPageWidget(controllerDlg);
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
-            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
-            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
-        } else {
-            DlgPrefController* controllerDlg =
-                new DlgPrefController(this, currentDevice, m_pControllerManager,
-                                      m_pConfig);
-            m_controllerWindows.append(controllerDlg);
-            addPageWidget(controllerDlg);
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
-            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
-            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)),
-                    this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
-        }
-
-        QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
-        //qDebug() << curDeviceName << " QTreeWidgetItem point is " << controllerWindowLink;
-        controllerWindowLink->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
-        controllerWindowLink->setText(0, curDeviceName);
-        controllerWindowLink->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-        controllerWindowLink->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-        m_pControllerTreeItem->addChild(controllerWindowLink);
-        m_controllerWindowLinks.append(controllerWindowLink);
-
-        // Set the font correctly
-        QFont temp = controllerWindowLink->font(0);
-        if (currentDevice->isOpen()) temp.setBold(true);
-        else temp.setBold(false);
-        controllerWindowLink->setFont(0,temp);
-    }
-}
-
-void DlgPreferences::slotApply()
-{
-    m_pControllerManager->savePresets();
-}
-
-void DlgPreferences::slotHighlightDevice(DlgPrefController* dialog, bool enabled)
-{
-    QTreeWidgetItem * controllerWindowLink = m_controllerWindowLinks.at(m_controllerWindows.indexOf(dialog));
-    QFont temp = controllerWindowLink->font(0);
-    if (enabled) temp.setBold(true);
-    else temp.setBold(false);
-    controllerWindowLink->setFont(0,temp);
-}
-
-int DlgPreferences::addPageWidget(QWidget* w) {
-    int iret;
+void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
+    connect(this, SIGNAL(showDlg()),
+            pWidget, SLOT(slotShow()));
+    connect(this, SIGNAL(closeDlg()),
+            pWidget, SLOT(slotHide()));
+    connect(this, SIGNAL(showDlg()),
+            pWidget, SLOT(slotUpdate()));
+    connect(buttonBox, SIGNAL(accepted()),
+            pWidget, SLOT(slotApply()));
 
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
 
-    sa->setWidget(w);
-    iret = pagesWidget->addWidget(sa);
+    sa->setWidget(pWidget);
+    pagesWidget->addWidget(sa);
 
     int iframe = 2 * sa->frameWidth();
-    m_pageSizeHint = m_pageSizeHint.expandedTo(w->sizeHint()+QSize(iframe, iframe));
+    m_pageSizeHint = m_pageSizeHint.expandedTo(
+            pWidget->sizeHint()+QSize(iframe, iframe));
 
-    return iret;
+}
+
+void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
+    pagesWidget->removeWidget(pWidget->parentWidget()->parentWidget());
+}
+
+void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
+    pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
 }

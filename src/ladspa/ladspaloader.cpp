@@ -7,14 +7,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <qapplication.h>
+#include <QApplication>
 #include "ladspaloader.h"
 
 LADSPALoader::LADSPALoader()
 {
     m_PluginCount = 0;
-    
+
     QStringList plugin_paths;
 
 
@@ -24,7 +23,7 @@ LADSPALoader::LADSPALoader()
         QDir dir(* path);
 
         qDebug() << "Looking for plugins in directory:" << dir.absolutePath();
-    
+
         // get the list of files in the directory
         QFileInfoList files = dir.entryInfoList();
 
@@ -38,25 +37,25 @@ LADSPALoader::LADSPALoader()
                 continue;
             }
 
-			try {
-				LADSPALibrary * library = new LADSPALibrary ((*file).absoluteFilePath());
+            try {
+                LADSPALibrary * library = new LADSPALibrary ((*file).absoluteFilePath());
 
-				// add the library to the list of all libraries
-				m_Libraries.append (library);
+                // add the library to the list of all libraries
+                m_Libraries.append (library);
 
-				const LADSPAPluginList * plugins = library->pluginList();
+                const LADSPAPluginList * plugins = library->pluginList();
 
-				//m_Plugins.resize(m_PluginCount + library->pluginCount());
+                //m_Plugins.resize(m_PluginCount + library->pluginCount());
 
-				// add each plugin in the library to the vector of all plugins
-				for (LADSPAPluginList::const_iterator plugin = plugins->begin(); plugin != plugins->end(); plugin++)
-				{
-	                m_PluginCount++;
-					m_Plugins.push_back(*plugin);
-				}
-			} catch (QString& s) {
-				qDebug() << s;
-			}
+                // add each plugin in the library to the vector of all plugins
+                for (LADSPAPluginList::const_iterator plugin = plugins->begin(); plugin != plugins->end(); plugin++)
+                {
+                    m_PluginCount++;
+                    m_Plugins.push_back(*plugin);
+                }
+            } catch (QString& s) {
+                qDebug() << s;
+            }
         }
     }
 }

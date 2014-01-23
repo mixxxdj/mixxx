@@ -18,24 +18,25 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
- #include <QDialog>
+#include <QDialog>
+#include <QEvent>
 
-#include <qevent.h>
-#include <QtGui>
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
 #include "controlpushbutton.h"
+#include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
 class DlgPrefController;
-class DlgPrefNoControllers;
-class DlgPrefPlaylist;
+class DlgPrefControllers;
+class DlgPrefLibrary;
 class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
+class DlgPrefKey;
 class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
@@ -44,31 +45,28 @@ class DlgPrefReplayGain;
 class ControllerManager;
 class SkinLoader;
 class PlayerManager;
+class Library;
 class VinylControlManager;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
 #endif
-
-/**
-  *@author Tue & Ken Haste Andersen
-  */
 
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
     DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config);
+                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* pConfig,
+                   Library *pLibrary);
     virtual ~DlgPreferences();
 
-    void createIcons();
+    void addPageWidget(DlgPreferencePage* pWidget);
+    void removePageWidget(DlgPreferencePage* pWidget);
+    void switchToPage(DlgPreferencePage* pWidget);
 
   public slots:
-    void rescanControllers();
-    void slotApply();
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
-    void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 
   signals:
     void closeDlg();
@@ -78,21 +76,18 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     bool eventFilter(QObject*, QEvent*);
 
   private:
-    void destroyControllerWidgets();
-    void setupControllerWidgets();
-    int addPageWidget(QWidget* w);
+    void createIcons();
     void onShow();
     void onHide();
 
-    QList<DlgPrefController*> m_controllerWindows;
-    
     DlgPrefSound* m_wsound;
-    DlgPrefPlaylist* m_wplaylist;
-    DlgPrefNoControllers *m_wNoControllers;
+    DlgPrefLibrary* m_wlibrary;
+    DlgPrefControllers *m_wcontrollers;
     DlgPrefControls* m_wcontrols;
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
+    DlgPrefKey* m_wkey;
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;
@@ -102,29 +97,14 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefModplug* m_wmodplug;
 #endif
 
-    /*
-    QScrollArea* m_sasound;
-    QScrollArea* m_saplaylist;
-//     QScrollArea* m_saNoMidi;
-    QScrollArea* m_sacontrols;
-    QScrollArea* m_saeq;
-    QScrollArea* m_sacrossfader;
-    QScrollArea* m_sarecord;
-    QScrollArea* m_sabpm;
-    QScrollArea* m_savinylcontrol;
-    QScrollArea* m_sanovinylcontrol;
-    QScrollArea* m_sashoutcast;
-    QScrollArea* m_sareplaygain;
-	*/
-
     QTreeWidgetItem* m_pSoundButton;
-    QTreeWidgetItem* m_pPlaylistButton;
+    QTreeWidgetItem* m_pLibraryButton;
     QTreeWidgetItem* m_pControlsButton;
     QTreeWidgetItem* m_pEqButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
-    QTreeWidgetItem* m_pBPMdetectButton;
-    QTreeWidgetItem* m_pAnalysersButton;
+    QTreeWidgetItem* m_pBeatDetectionButton;
+    QTreeWidgetItem* m_pKeyDetectionButton;
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
@@ -132,12 +112,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pModplugButton;
 #endif
     QTreeWidgetItem* m_pControllerTreeItem;
-    QList<QTreeWidgetItem*> m_controllerWindowLinks;
 
     QSize m_pageSizeHint;
 
-    ConfigObject<ConfigValue>* m_pConfig;
-    ControllerManager* m_pControllerManager;
     ControlPushButton m_preferencesUpdated;
 };
 

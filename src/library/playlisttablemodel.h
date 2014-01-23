@@ -8,7 +8,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
-                       QString settingsNamespace, bool showAll=false);
+                       const char* settingsNamespace, bool showAll = false);
     virtual ~PlaylistTableModel();
     void setTableModel(int playlistId = -1);
 
@@ -23,8 +23,8 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void removeTracks(const QModelIndexList& indices);
     // Adding multiple tracks at one to a playlist. Returns the number of
     // successful additions.
-    int addTracks(const QModelIndex& index, QList<QString> locations);
-    bool appendTrack(int trackId);
+    int addTracks(const QModelIndex& index, const QList<QString>& locations);
+    bool appendTrack(const int trackId);
     void moveTrack(const QModelIndex& sourceIndex,
                    const QModelIndex& destIndex);
     bool isLocked();

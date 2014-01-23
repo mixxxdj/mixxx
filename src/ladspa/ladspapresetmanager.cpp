@@ -7,9 +7,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <QtXml>
-
 #include "ladspapresetmanager.h"
 #include "ladspaloader.h"
 #include "widget/wwidget.h"
@@ -21,7 +18,7 @@ LADSPAPresetManager::LADSPAPresetManager()
 
     LADSPALoader * loader = new LADSPALoader();
 
-    QDir dir(WWidget::getPath(QString("../../ladspa_presets"))); // TODO
+    QDir dir("ladspa_presets"); // TODO
     QFileInfoList files = dir.entryInfoList();
     m_Presets.resize(files.count());
     for (QFileInfoList::iterator fileIter = files.begin(); fileIter != files.end(); fileIter++)

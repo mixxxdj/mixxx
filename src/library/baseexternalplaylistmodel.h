@@ -3,7 +3,9 @@
 
 #include <QtSql>
 #include <QItemDelegate>
-#include <QtCore>
+#include <QString>
+#include <QObject>
+#include <QModelIndex>
 
 #include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
@@ -15,22 +17,22 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     BaseExternalPlaylistModel(QObject* pParent, TrackCollection* pTrackCollection,
-                              QString settingsNamespace, QString playlistsTable,
-                              QString playlistTracksTable, QString trackSource);
+                              const char* settingsNamespace, const QString& playlistsTable,
+                              const QString& playlistTracksTable, QSharedPointer<BaseTrackCache> trackSource);
+
     virtual ~BaseExternalPlaylistModel();
 
-    void setTableModel(int id=-1);
     virtual TrackPointer getTrack(const QModelIndex& index) const;
-    bool isColumnInternal(int column);
-    bool isColumnHiddenByDefault(int column);
+    virtual bool isColumnInternal(int column);
+    virtual bool isColumnHiddenByDefault(int column);
     Qt::ItemFlags flags(const QModelIndex &index) const;
     void setPlaylist(QString path_name);
-    TrackModel::CapabilitiesFlags getCapabilities() const;
+    virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private:
     QString m_playlistsTable;
     QString m_playlistTracksTable;
-    QString m_trackSource;
+    QSharedPointer<BaseTrackCache> m_trackSource;
 };
 
 #endif /* BASEEXTERNALPLAYLISTMODEL_H */

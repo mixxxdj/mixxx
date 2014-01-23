@@ -1,27 +1,15 @@
-
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpushbutton.h>
-#include <qlcdnumber.h>
-#include <qslider.h>
-#include <QtCore>
-#include <QMessageBox>
-#include "controlobject.h"
-
 #include "dlgprefreplaygain.h"
+
+#include "controlobject.h"
 
 #define CONFIG_KEY "[ReplayGain]"
 
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        :  QWidget(parent),
-          m_COTInitialBoost(CONFIG_KEY, "InitialReplayGainBoost"),
-          m_COTEnabled(CONFIG_KEY, "ReplayGainEnabled") {
-    config = _config;
-
+        :  DlgPreferencePage(parent),
+           config(_config),
+           m_COTInitialBoost(CONFIG_KEY, "InitialReplayGainBoost"),
+           m_COTEnabled(CONFIG_KEY, "ReplayGainEnabled") {
     setupUi(this);
 
     //Connections
@@ -115,4 +103,3 @@ void DlgPrefReplayGain::slotApply() {
     if (EnableGain->isChecked()) iRGenabled = 1;
     m_COTEnabled.slotSet(iRGenabled);
 }
-

@@ -15,7 +15,6 @@ class PlaylistTableModel;
 class WTrackTableView;
 class AnalyserQueue;
 class QSqlTableModel;
-class ControlObjectThreadMain;
 class ControlObjectThread;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
@@ -80,7 +79,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 
     // Makes our Auto DJ logic assume the next track that should be played is
     // already loaded. We need this flag to make our
-    // first-track-gets-loaded-but- not-removed-from-the-queue behaviour work.
+    // first-track-gets-loaded-but- not-removed-from-the-queue behavior work.
     bool m_bNextTrackAlreadyLoaded;
 
     bool m_bFadeNow;
@@ -127,5 +126,3 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 #define _blah if ((QDate::currentDate().day() == 1) && (QDate::currentDate().month() == 4)) \
         pushButtonAutoDJ->setText("\x45\x6e\x61\x62\x6c\x65\x20\x50\x65\x65" \
                                   "\x20\x42\x72\x65\x61\x6b\x20\x4d\x6f\x64\x65")
-
-
