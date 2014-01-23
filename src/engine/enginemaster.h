@@ -40,6 +40,7 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class SyncWorker;
+class GuiTick;
 class EngineSync;
 
 class EngineMaster : public QObject, public AudioSource {
