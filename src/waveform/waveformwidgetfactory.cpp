@@ -652,8 +652,8 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(MixxxApp *mixxxApp) {
-    m_vsyncThread = new VSyncThread(mixxxApp);
+void WaveformWidgetFactory::startVSync(MixxxMainWindow* mixxxMainWindow) {
+    m_vsyncThread = new VSyncThread(mixxxMainWindow);
     m_vsyncThread->start();
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),

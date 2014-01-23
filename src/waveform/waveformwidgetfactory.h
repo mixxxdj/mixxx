@@ -5,7 +5,7 @@
 #include <QTime>
 #include <QVector>
 
-#include "singleton.h"
+#include "util/singleton.h"
 #include "configobject.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/waveform.h"
@@ -15,7 +15,7 @@ class WWaveformViewer;
 class WaveformWidgetAbstract;
 class QTimer;
 class VSyncThread;
-class MixxxApp;
+class MixxxMainWindow;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -96,7 +96,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(MixxxApp* mixxxApp);
+    void startVSync(MixxxMainWindow* mixxxApp);
     void setVSyncType(int vsType);
     int getVSyncType();
 

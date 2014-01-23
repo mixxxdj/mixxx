@@ -328,7 +328,7 @@ int main(int argc, char * argv[])
      }
 #endif
 
-    MixxxApp* mixxx = new MixxxApp(&a, args);
+    MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
 
     //a.setMainWidget(mixxx);
     QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));

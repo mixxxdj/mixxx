@@ -22,8 +22,8 @@
    extern const QX11Info *qt_x11Info(const QPaintDevice *pd);
 #endif
 
-VSyncThread::VSyncThread(MixxxApp* mixxxApp)
-        : QThread(mixxxApp),
+VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
+        : QThread(mixxxMainWindow),
           m_vSyncTypeChanged(false),
           m_usSyncIntervalTime(33333),
           m_vSyncMode(ST_TIMER),
@@ -32,7 +32,7 @@ VSyncThread::VSyncThread(MixxxApp* mixxxApp)
           m_swapWait(0),
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1),
-          m_pGuiTick(mixxxApp->getGuiTick()){
+          m_pGuiTick(mixxxMainWindow->getGuiTick()){
     doRendering = true;
 }
 

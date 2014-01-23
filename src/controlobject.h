@@ -31,7 +31,8 @@ class ControlObject : public QObject {
   public:
     ControlObject();
     ControlObject(ConfigKey key,
-                  bool bIgnoreNops=true, bool bTrack=false);
+                  bool bIgnoreNops=true, bool bTrack=false,
+                  bool bPersist=false);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
@@ -113,7 +114,8 @@ class ControlObject : public QObject {
     void privateValueChanged(double value, QObject* pSetter);
 
   private:
-    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack);
+    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
+                    bool bPersist);
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }

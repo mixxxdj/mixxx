@@ -40,7 +40,7 @@
 #include "mixxx.h"
 #include "defs_urls.h"
 
-DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
+DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
@@ -251,12 +251,20 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     ComboBoxSkinconf->clear();
 
-    QDir dir(m_pConfig->getResourcePath() + "skins/");
-    dir.setFilter(QDir::Dirs);
+    QDir skinsDir(m_pConfig->getResourcePath() + "skins/");
+    skinsDir.setFilter(QDir::Dirs);
+
+    QList<QFileInfo> list = skinsDir.entryInfoList();
+
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        // Show developer skins
+        QDir developerSkinsDir(m_pConfig->getResourcePath() + "developer_skins/");
+        developerSkinsDir.setFilter(QDir::Dirs);
+        list += developerSkinsDir.entryInfoList();
+    }
 
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
     {
@@ -272,6 +280,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ++j;
         }
     }
+
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));

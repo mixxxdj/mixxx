@@ -31,7 +31,7 @@
 
 class QGLWidget;
 class GuiTick;
-class MixxxApp;
+class MixxxMainWindow;
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -47,7 +47,7 @@ class VSyncThread : public QThread {
 
     static void swapGl(QGLWidget* glw, int index);
 
-    VSyncThread(MixxxApp* mixxApp);
+    VSyncThread(MixxxMainWindow* mixxMainWindow);
     ~VSyncThread();
 
     void run();
