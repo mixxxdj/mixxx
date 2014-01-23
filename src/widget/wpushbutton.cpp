@@ -71,20 +71,17 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
             int iState = context.selectInt(state, "Number");
-            if (iState >= m_iNoStates) {
-                qDebug() << "WPushButton provided state info for invalid state:" << iState;
-                continue;
+            if (iState < m_iNoStates) {
+                if (context.hasNode(state, "Pressed")) {
+                    setPixmap(iState, true,
+                              context.getSkinPath(context.selectString(state, "Pressed")));
+                }
+                if (context.hasNode(state, "Unpressed")) {
+                    setPixmap(iState, false,
+                              context.getSkinPath(context.selectString(state, "Unpressed")));
+                }
+                m_text.replace(iState, context.selectString(state, "Text"));
             }
-
-            if (context.hasNode(state, "Pressed")) {
-                setPixmap(iState, true,
-                          context.getSkinPath(context.selectString(state, "Pressed")));
-            }
-            if (context.hasNode(state, "Unpressed")) {
-                setPixmap(iState, false,
-                          context.getSkinPath(context.selectString(state, "Unpressed")));
-            }
-            m_text.replace(iState, context.selectString(state, "Text"));
         }
         state = state.nextSibling();
     }
