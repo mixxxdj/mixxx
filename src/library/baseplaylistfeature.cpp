@@ -331,12 +331,12 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
+    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
 
     QString lastPlaylistDirectory = m_pConfig->getValueString(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
                 QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
-    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
     // name to the playlist name.
