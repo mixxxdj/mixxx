@@ -84,7 +84,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 setPixmap(iState, false,
                           context.getSkinPath(context.selectString(state, "Unpressed")));
             }
-            m_text[iState] = context.selectString(state, "Text");
+            m_text.replace(iState, context.selectString(state, "Text"));
         }
         state = state.nextSibling();
     }
@@ -135,16 +135,9 @@ void WPushButton::setStates(int iStates) {
     m_bPressed = false;
     m_iNoStates = iStates;
 
-    // Clear existing pixmaps.
-    m_pressedPixmaps.resize(0);
-    m_unpressedPixmaps.resize(0);
-    m_text.resize(0);
-
-    if (iStates > 0) {
-        m_pressedPixmaps.resize(iStates);
-        m_unpressedPixmaps.resize(iStates);
-        m_text.resize(iStates);
-    }
+    m_pressedPixmaps.resize(iStates);
+    m_unpressedPixmaps.resize(iStates);
+    m_text.resize(iStates);
 }
 
 void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) {
@@ -161,11 +154,10 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << "WPushButton: Error loading pixmap:" << filename;
     } else {
-        pixmaps[iState] = pPixmap;
-
         // Set size of widget equal to pixmap size
         setFixedSize(pPixmap->size());
     }
+    pixmaps.replace(iState, pPixmap);
 }
 
 void WPushButton::setPixmapBackground(const QString &filename) {
@@ -199,22 +191,23 @@ void WPushButton::paintEvent(QPaintEvent* e) {
             m_pressedPixmaps : m_unpressedPixmaps;
 
     int idx = static_cast<int>(value) % m_iNoStates;
-
     // Just in case m_iNoStates is somehow different from pixmaps.size().
-    if (idx < 0 || idx >= pixmaps.size()) {
-        return;
+    if (idx < 0){
+        idx = 0;
+    } else if (idx >= pixmaps.size()) {
+        idx = pixmaps.size() - 1;
     }
 
     if (m_pPixmapBack) {
         m_pPixmapBack->draw(0, 0, &p);
     }
 
-    PaintablePointer pPixmap = pixmaps[idx];
+    PaintablePointer pPixmap = pixmaps.at(idx);
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         pPixmap->draw(0, 0, &p);
     }
 
-    QString text = m_text[idx];
+    QString text = m_text.at(idx);
     if (!text.isEmpty()) {
         p.drawText(rect(), Qt::AlignCenter, text);
     }
