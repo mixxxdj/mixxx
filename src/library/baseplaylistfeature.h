@@ -88,8 +88,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QString getRootViewHtml() const = 0;
 
     QString m_rootViewName;
-    QString m_importPlaylistDirectory;
-    QString m_exportPlaylistDirectory;
+    QString m_lastPlaylistDirectory;
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */
