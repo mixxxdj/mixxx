@@ -29,6 +29,11 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 
     QString s = QFileDialog::getSaveFileName(NULL, tr("Save Sampler Bank"));
 
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
+
     QFile file(s);
     if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(NULL,
@@ -67,6 +72,11 @@ void SamplerBank::slotLoadSamplerBank(double v) {
         return;
 
     QString s = QFileDialog::getOpenFileName(NULL, tr("Load Sampler Bank"));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
 
     QFile file(s);
     if (!file.open(QIODevice::WriteOnly)) {

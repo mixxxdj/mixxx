@@ -304,6 +304,11 @@ void BasePlaylistFeature::slotImportPlaylist() {
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
 
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
+
     Parser* playlist_parser = NULL;
 
     if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
@@ -356,6 +361,11 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QFileInfo fileName(file_location);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
 
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default

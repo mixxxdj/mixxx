@@ -491,7 +491,12 @@ void CrateFeature::slotImportPlaylist() {
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
-                ConfigValue(fileName.dir().absolutePath()));
+                   ConfigValue(fileName.dir().absolutePath()));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
 
     Parser* playlist_parser = NULL;
 
@@ -550,6 +555,11 @@ void CrateFeature::slotExportPlaylist() {
     QFileInfo fileName(file_location);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
 
     // check config if relative paths are desired
     bool useRelativePath = static_cast<bool>(
