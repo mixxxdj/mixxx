@@ -79,6 +79,24 @@ class OpenGL(Dependence):
             raise Exception('Did not find GLU development files')
 
 
+class SecurityFramework(Dependence):
+    """The iOS/OS X security framework is used to implement sandboxing."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/Security.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework Security')
+
+
+class CoreServices(Dependence):
+    """The iOS/OS X security framework is used to implement sandboxing."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework CoreServices')
+
+
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
@@ -1034,7 +1052,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
