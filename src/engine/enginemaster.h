@@ -163,11 +163,7 @@ class EngineMaster : public QObject, public AudioSource {
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
-    struct OutputBus {
-        CSAMPLE* m_pBuffer;
-        OrientationVolumeGainCalculator m_gain;
-        QList<CSAMPLE> m_gainCache;
-    } m_outputBus[3];
+    CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
 
