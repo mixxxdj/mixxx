@@ -67,7 +67,7 @@ void BrowseThread::destroyInstance()
     s_Mutex.unlock();
 }
 
-void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(const QString& path, BrowseTableModel* client) {
     m_path_mutex.lock();
     m_path = path;
     m_model_observer = client;

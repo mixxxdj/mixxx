@@ -23,7 +23,7 @@ class BrowseTableModel;
 class BrowseThread : public QThread {
     Q_OBJECT
   public:
-    void executePopulation(QString& path, BrowseTableModel* client);
+    void executePopulation(const QString& path, BrowseTableModel* client);
     void run();
     static BrowseThread* getInstance();
     static void destroyInstance();
