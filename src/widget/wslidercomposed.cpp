@@ -159,13 +159,6 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
 void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
     if (!m_bEventWhileDrag) {
         mouseMoveEvent(e);
-
-        if (e->button() == Qt::RightButton) {
-            setControlParameterRightUp(getControlParameterRight());
-        } else {
-            setControlParameterLeftUp(getControlParameterLeft());
-        }
-
         m_bDrag = false;
     }
     if (e->button() == Qt::RightButton) {
