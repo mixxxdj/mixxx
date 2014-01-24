@@ -46,6 +46,7 @@ Sandbox::Sandbox()
 Sandbox::~Sandbox() {
     if (m_pSandboxPermissions) {
         m_pSandboxPermissions->Save();
+        delete m_pSandboxPermissions;
     }
 }
 
