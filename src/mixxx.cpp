@@ -63,6 +63,7 @@
 #include "util/time.h"
 #include "util/version.h"
 #include "util/compatibility.h"
+#include "util/sandbox.h"
 #include "playerinfo.h"
 #include "waveform/guitick.h"
 
@@ -86,11 +87,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     Time::start();
     initializeWindow();
 
-    // Only record stats in developer mode.
-    if (m_cmdLineArgs.getDeveloper()) {
-        StatsManager::create();
-    }
-
     //Reset pointer to players
     m_pSoundManager = NULL;
     m_pPrefDlg = NULL;
@@ -106,8 +102,15 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
-    QString resourcePath = m_pConfig->getResourcePath();
+    Sandbox* pSandbox = Sandbox::create();
+    pSandbox->setPermissionsFile(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
 
+    // Only record stats in developer mode.
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::create();
+    }
+
+    QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
 
     // Set the visibility of tooltips, default "1" = ON
@@ -480,6 +483,8 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
+    Sandbox::destroy();
+
     ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
 
