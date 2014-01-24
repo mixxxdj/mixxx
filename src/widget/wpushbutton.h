@@ -71,9 +71,6 @@ class WPushButton : public WWidget {
     // the button pixmaps contains alpha channel values.
     void setPixmapBackground(const QString &filename);
 
-    bool m_bLeftClickForcePush;
-    bool m_bRightClickForcePush;
-
     // True, if the button is currently pressed
     bool m_bPressed;
 
