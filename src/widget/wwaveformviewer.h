@@ -14,6 +14,7 @@
 #include "skin/skincontext.h"
 
 class ControlObjectThread;
+class ControlObjectSlave;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
 
@@ -65,6 +66,7 @@ private:
     ControlObjectThread* m_pZoom;
     ControlObjectThread* m_pScratchPositionEnable;
     ControlObjectThread* m_pScratchPosition;
+    ControlObjectSlave* m_pWheel;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;

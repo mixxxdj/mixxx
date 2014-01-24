@@ -752,13 +752,6 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
-    // Connect control proxy to widget, so delete can be handled by the QT object tree
-    ControlObjectSlave* p = new ControlObjectSlave(
-            channelStr, "wheel", viewer);
-    ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-        viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
-    viewer->addRightConnection(pConnection);
-
     setupBaseWidget(node, viewer);
     setupWidget(node, viewer);
 

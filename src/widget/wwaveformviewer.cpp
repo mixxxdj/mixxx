@@ -9,6 +9,7 @@
 
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "trackinfoobject.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
@@ -32,6 +33,8 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
             group, "scratch_position_enable");
     m_pScratchPosition = new ControlObjectThread(
             group, "scratch_position");
+    m_pWheel = new ControlObjectSlave(
+            group, "wheel");
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 
@@ -45,6 +48,7 @@ WWaveformViewer::~WWaveformViewer() {
     delete m_pZoom;
     delete m_pScratchPositionEnable;
     delete m_pScratchPosition;
+    delete m_pWheel;
 }
 
 void WWaveformViewer::setup(QDomNode node, const SkinContext& context) {
@@ -66,7 +70,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         // If we are pitch-bending then disable and reset because the two
         // shouldn't be used at once.
         if (m_bBending) {
-            setControlParameterRightDown(0.5);
+            m_pWheel->setParameter(0.5);
             m_bBending = false;
         }
         m_bScratching = true;
@@ -81,7 +85,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_pScratchPositionEnable->slotSet(0.0);
             m_bScratching = false;
         }
-        setControlParameterRightDown(0.5);
+        m_pWheel->setParameter(0.5);
         m_bBending = true;
     }
 
@@ -109,7 +113,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         double v = 0.5 + (diff.x() / 1270.0);
         // clamp to [0.0, 1.0]
         v = math_min(1.0, math_max(0.0, v));
-        setControlParameterRightDown(v);
+        m_pWheel->setParameter(v);
     }
 }
 
@@ -119,7 +123,7 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
         m_bScratching = false;
     }
     if (m_bBending) {
-        setControlParameterRightDown(0.5);
+        m_pWheel->setParameter(0.5);
         m_bBending = false;
     }
     m_mouseAnchor = QPoint();
