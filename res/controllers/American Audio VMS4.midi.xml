@@ -166,75 +166,33 @@
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>VMS4.cue</key>
+            <key>cue_default</key>
             <status>0x90</status>
             <midino>0x0C</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>VMS4.cue</key>
+            <key>cue_default</key>
             <status>0x80</status>
             <midino>0x0C</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>VMS4.play</key>
+            <key>play</key>
             <status>0x90</status>
             <midino>0x0D</midino>
-            <options>
-               <Script-Binding/>
-            </options>
-         </control>
-         <control><!-- off -->
-            <group>[Channel1]</group>
-            <key>VMS4.play</key>
-            <status>0x80</status>
-            <midino>0x0D</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>VMS4.play</key>
+            <key>start_play</key>
             <status>0x91</status>
             <midino>0x0D</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>VMS4.play</key>
+            <key>start_play</key>
             <status>0x81</status>
             <midino>0x0D</midino>
-            <options>
-               <Script-Binding/>
-            </options>
-         </control>
-         <control><!-- on -->
-            <group>[Channel1]</group>
-            <key>VMS4.pause</key>
-            <status>0x90</status>
-            <midino>0x0E</midino>
-            <options>
-               <Script-Binding/>
-            </options>
-         </control>
-         <control><!-- off -->
-            <group>[Channel1]</group>
-            <key>VMS4.pause</key>
-            <status>0x80</status>
-            <midino>0x0E</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <!-- Hot Cues, deck 1 -->
          <control><!-- on -->
@@ -786,75 +744,27 @@
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>VMS4.cue</key>
+            <key>cue_default</key>
             <status>0x90</status>
             <midino>0x2E</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>VMS4.cue</key>
+            <key>cue_default</key>
             <status>0x80</status>
             <midino>0x2E</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>VMS4.play</key>
+            <key>play</key>
             <status>0x90</status>
             <midino>0x2F</midino>
-            <options>
-               <Script-Binding/>
-            </options>
-         </control>
-         <control><!-- off -->
-            <group>[Channel2]</group>
-            <key>VMS4.play</key>
-            <status>0x80</status>
-            <midino>0x2F</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel2]</group>
-            <key>VMS4.play</key>
+            <key>start_play</key>
             <status>0x91</status>
             <midino>0x2F</midino>
-            <options>
-               <Script-Binding/>
-            </options>
-         </control>
-         <control><!-- Shifted Play -->
-            <group>[Channel2]</group>
-            <key>VMS4.play</key>
-            <status>0x81</status>
-            <midino>0x2F</midino>
-            <options>
-               <Script-Binding/>
-            </options>
-         </control>
-         <control><!-- on -->
-            <group>[Channel2]</group>
-            <key>VMS4.pause</key>
-            <status>0x90</status>
-            <midino>0x30</midino>
-            <options>
-               <Script-Binding/>
-            </options>
-         </control>
-         <control><!-- off -->
-            <group>[Channel2]</group>
-            <key>VMS4.pause</key>
-            <status>0x80</status>
-            <midino>0x30</midino>
-            <options>
-               <Script-Binding/>
-            </options>
          </control>
         <!-- Hot Cues, deck 2 -->
          <control><!-- on -->
