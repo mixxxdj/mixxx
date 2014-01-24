@@ -11,22 +11,22 @@
 
 class Trace {
   public:
-    explicit Trace(const QString& tag, bool stdout=false, bool time=true)
+    explicit Trace(const QString& tag, bool writeToStdout=false, bool time=true)
             : m_tag(tag),
-              m_stdout(stdout),
+              m_writeToStdout(writeToStdout),
               m_time(time) {
         Event::start(m_tag);
         if (m_time) {
             m_timer.start();
         }
-        if (m_stdout) {
+        if (m_writeToStdout) {
             qDebug() << "START [" << m_tag << "]";
         }
     }
     virtual ~Trace() {
         Event::end(m_tag);
         qint64 elapsed = m_time ? m_timer.elapsed() : 0;
-        if (m_stdout) {
+        if (m_writeToStdout) {
             if (m_time) {
                 qDebug() << "END [" << m_tag << "]"
                          << QString("elapsed: %1ns").arg(elapsed);
@@ -45,7 +45,7 @@ class Trace {
 
   private:
     const QString m_tag;
-    const bool m_stdout, m_time;
+    const bool m_writeToStdout, m_time;
     PerformanceTimer m_timer;
 
 };
