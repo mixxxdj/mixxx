@@ -105,30 +105,6 @@ void WBaseWidget::setControlParameter(double v) {
     }
 }
 
-void WBaseWidget::setControlParameterDown(double v) {
-    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
-        pControlConnection->setControlParameterDown(v);
-    }
-    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
-        pControlConnection->setControlParameterDown(v);
-    }
-    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->setControlParameterDown(v);
-    }
-}
-
-void WBaseWidget::setControlParameterUp(double v) {
-    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
-        pControlConnection->setControlParameterUp(v);
-    }
-    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
-        pControlConnection->setControlParameterUp(v);
-    }
-    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->setControlParameterUp(v);
-    }
-}
-
 void WBaseWidget::setControlParameterLeftDown(double v) {
     foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
         pControlConnection->setControlParameterDown(v);
