@@ -6,6 +6,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
+#include "controlobjectthread.h"
 
 #define MAX3(a, b, c)  ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
@@ -84,12 +85,20 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Per-band gain from the EQ knobs.
+    float lowGain(1.0), midGain(1.0), highGain(1.0);
+    if (m_pLowFilterControlObject && m_pMidFilterControlObject && m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
+    }
+
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
+    lowGain  *= factory->getVisualGain(WaveformWidgetFactory::Low);
+    midGain  *= factory->getVisualGain(WaveformWidgetFactory::Mid);
+    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
 
-    unsigned char low  = 0;
-    unsigned char mid  = 0;
-    unsigned char high = 0;
     unsigned char allA = 0;
     unsigned char allB = 0;
 
@@ -130,17 +139,18 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 if( visualIndex > dataSize - 1)
                     break;
 
-                low  = math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
-                mid  = math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);
-                high = math_max(data[visualIndex].filtered.high, data[visualIndex+1].filtered.high);
                 allA = data[visualIndex].filtered.all;
                 allB = data[visualIndex+1].filtered.all;
 
-                int red   = low * m_lowColor.red()   + mid * m_midColor.red()   + high * m_highColor.red();
-                int green = low * m_lowColor.green() + mid * m_midColor.green() + high * m_highColor.green();
-                int blue  = low * m_lowColor.blue()  + mid * m_midColor.blue()  + high * m_highColor.blue();
+                float low  = lowGain  * (float) math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
+                float mid  = midGain  * (float) math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);
+                float high = highGain * (float) math_max(data[visualIndex].filtered.high, data[visualIndex+1].filtered.high);
 
-                float max = (float) MAX3(red, green, blue);
+                float red   = low * m_lowColor.red()   + mid * m_midColor.red()   + high * m_highColor.red();
+                float green = low * m_lowColor.green() + mid * m_midColor.green() + high * m_highColor.green();
+                float blue  = low * m_lowColor.blue()  + mid * m_midColor.blue()  + high * m_highColor.blue();
+
+                float max = MAX3(red, green, blue);
                 if (max > 0.0f) {  // Prevent division by zero
                     glColor4f(red / max, green / max, blue / max, 0.9f);
                     glVertex2f(visualIndex, allA);
@@ -180,17 +190,18 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 if( visualIndex > dataSize - 1)
                     break;
 
-                low  = math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
-                mid  = math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);
-                high = math_max(data[visualIndex].filtered.high, data[visualIndex+1].filtered.high);
                 allA = data[visualIndex].filtered.all;
                 allB = data[visualIndex+1].filtered.all;
 
-                int red   = low * m_lowColor.red()   + mid * m_midColor.red()   + high * m_highColor.red();
-                int green = low * m_lowColor.green() + mid * m_midColor.green() + high * m_highColor.green();
-                int blue  = low * m_lowColor.blue()  + mid * m_midColor.blue()  + high * m_highColor.blue();
+                float low  = lowGain  * (float) math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
+                float mid  = midGain  * (float) math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);
+                float high = highGain * (float) math_max(data[visualIndex].filtered.high, data[visualIndex+1].filtered.high);
 
-                float max = (float) MAX3(red, green, blue);
+                float red   = low * m_lowColor.red()   + mid * m_midColor.red()   + high * m_highColor.red();
+                float green = low * m_lowColor.green() + mid * m_midColor.green() + high * m_highColor.green();
+                float blue  = low * m_lowColor.blue()  + mid * m_midColor.blue()  + high * m_highColor.blue();
+
+                float max = MAX3(red, green, blue);
                 if (max > 0.0f) {  // Prevent division by zero
                     glColor4f(red / max, green / max, blue / max, 0.9f);
                     glVertex2f(float(visualIndex), 0.0f);
