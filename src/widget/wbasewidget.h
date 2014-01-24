@@ -44,7 +44,8 @@ class WBaseWidget {
         Q_UNUSED(v);
     }
 
-    void resetControlParameters();
+    void resetControlParameter();
+    void setControlParameter(double v);
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
     void setControlParameterLeftDown(double v);

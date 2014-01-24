@@ -81,7 +81,7 @@ double WBaseWidget::getControlParameterDisplay() const {
     return 0.0;
 }
 
-void WBaseWidget::resetControlParameters() {
+void WBaseWidget::resetControlParameter() {
     foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
         pControlConnection->resetControl();
     }
@@ -90,6 +90,18 @@ void WBaseWidget::resetControlParameters() {
     }
     foreach (ControlWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->resetControl();
+    }
+}
+
+void WBaseWidget::setControlParameter(double v) {
+    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+        pControlConnection->setControlParameter(v);
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
+        pControlConnection->setControlParameter(v);
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
+        pControlConnection->setControlParameter(v);
     }
 }
 

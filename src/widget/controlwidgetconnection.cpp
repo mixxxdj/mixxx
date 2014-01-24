@@ -64,6 +64,12 @@ void ControlParameterWidgetConnection::resetControl() {
     }
 }
 
+void ControlParameterWidgetConnection::setControlParameter(double v) {
+    if (m_bConnectValueFromWidget) {
+        m_pControl->setParameter(v);
+    }
+}
+
 void ControlParameterWidgetConnection::setControlParameterDown(double v) {
     if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_PRESS) {
         m_pControl->setParameter(v);
@@ -107,6 +113,11 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
 
 void ControlWidgetPropertyConnection::resetControl() {
     // Do nothing.
+}
+
+void ControlWidgetPropertyConnection::setControlParameter(double v) {
+    // Do nothing.
+    Q_UNUSED(v);
 }
 
 void ControlWidgetPropertyConnection::setControlParameterDown(double v) {

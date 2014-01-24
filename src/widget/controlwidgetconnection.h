@@ -42,6 +42,7 @@ class ControlWidgetConnection : public QObject {
     double getControlParameter() const;
 
     virtual void resetControl() = 0;
+    virtual void setControlParameter(double v) = 0;
     virtual void setControlParameterDown(double v) = 0;
     virtual void setControlParameterUp(double v) = 0;
 
@@ -68,9 +69,10 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     QString toDebugString() const;
 
   protected:
-    void resetControl();
-    void setControlParameterDown(double v);
-    void setControlParameterUp(double v);
+    virtual void resetControl();
+    virtual void setControlParameter(double v);
+    virtual void setControlParameterDown(double v);
+    virtual void setControlParameterUp(double v);
 
   private slots:
     void slotControlValueChanged(double v);
@@ -92,9 +94,10 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     QString toDebugString() const;
 
   protected:
-    void resetControl();
-    void setControlParameterDown(double v);
-    void setControlParameterUp(double v);
+    virtual void resetControl();
+    virtual void setControlParameter(double v);
+    virtual void setControlParameterDown(double v);
+    virtual void setControlParameterUp(double v);
 
   private slots:
     void slotControlValueChanged(double v);

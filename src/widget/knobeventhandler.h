@@ -50,7 +50,7 @@ class KnobEventHandler {
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         switch (e->button()) {
             case Qt::RightButton:
-                pWidget->resetControlParameters();
+                pWidget->resetControlParameter();
                 m_bRightButtonPressed = true;
                 break;
             case Qt::LeftButton:
