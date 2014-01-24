@@ -8,7 +8,6 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "trackinfoobject.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
@@ -24,14 +23,12 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     m_bScratching = false;
     m_bBending = false;
 
-    m_pZoom = new ControlObjectThread(group, "waveform_zoom");
+    m_pZoom = new ControlObjectSlave(group, "waveform_zoom");
+    m_pZoom->connectValueChanged(this, SLOT(onZoomChange(double)));
 
-    connect(m_pZoom, SIGNAL(valueChanged(double)),
-            this, SLOT(onZoomChange(double)));
-
-    m_pScratchPositionEnable = new ControlObjectThread(
+    m_pScratchPositionEnable = new ControlObjectSlave(
             group, "scratch_position_enable");
-    m_pScratchPosition = new ControlObjectThread(
+    m_pScratchPosition = new ControlObjectSlave(
             group, "scratch_position");
     m_pWheel = new ControlObjectSlave(
             group, "wheel");
