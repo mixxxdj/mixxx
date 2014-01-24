@@ -127,11 +127,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
-            if (e->button() == Qt::RightButton) {
-                setControlParameterRightUp(newValue);
-            } else {
-                setControlParameterLeftUp(newValue);
-            }
+            setControlParameterLeftUp(newValue);
         }
 
         // Update display
