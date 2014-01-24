@@ -94,6 +94,8 @@ public:
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
+    QString getCanonicalLocation() const;
+
     // Returns the absolute path to the directory containing the file
     QString getDirectory() const;
     // Returns the filename of the file.

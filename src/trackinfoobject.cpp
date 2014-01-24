@@ -247,6 +247,11 @@ QString TrackInfoObject::getLocation() const {
     return m_fileInfo.absoluteFilePath();
 }
 
+QString TrackInfoObject::getCanonicalLocation() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_fileInfo.canonicalFilePath();
+}
+
 QString TrackInfoObject::getDirectory() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.absolutePath();
