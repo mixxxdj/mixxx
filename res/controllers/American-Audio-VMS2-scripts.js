@@ -88,11 +88,9 @@ VMS2.Button.prototype.setLed = function(ledState) {
 VMS2.Deck = Deck;
 VMS2.Deck.jogMsb = 0x00;
 VMS2.Deck.scratchMode = false;
-VMS2.Deck.scratchncue = false;
 VMS2.Deck.hotCueDeleted = false;
 VMS2.Deck.keylockButton = false;
 VMS2.Deck.vinylButton = false;
-VMS2.Deck.cueButton = false;
 VMS2.Deck.hotCuePressed = false;
 VMS2.Deck.pitchLock = false;
 
@@ -143,11 +141,6 @@ VMS2.Deck.prototype.jogTouchHandler = function(value) {
     if((value === ButtonState.pressed) && this.vinylButton) {
         engine.scratchEnable(this.deckNumber, 3000, 45, 1.0/8, (1.0/8)/32);
         this.scratchMode = true;
-        // Recall the cue point if in "scratch & cue" mode only when playing
-        if (this.scratchncue && engine.getValue(this.group,"play")===1) {
-            engine.setValue(this.group,"cue_goto",1);
-            engine.setValue(this.group,"cue_goto",0);
-        }
     } else {
         engine.scratchDisable(this.deckNumber);
         this.scratchMode = false;
