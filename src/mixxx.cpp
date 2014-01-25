@@ -64,6 +64,7 @@
 #include "util/version.h"
 #include "util/compatibility.h"
 #include "playerinfo.h"
+#include "waveform/guitick.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -169,6 +170,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Register TrackPointer as a metatype since we use it in signals/slots
     // regularly.
     qRegisterMetaType<TrackPointer>("TrackPointer");
+
+    m_pGuiTick = new GuiTick();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, m_pConfig, m_pSoundManager);
@@ -481,6 +484,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pConfig;
 
     PlayerInfo::destroy();
+    WaveformWidgetFactory::destroy();
+
+    delete m_pGuiTick;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
@@ -489,7 +495,8 @@ MixxxMainWindow::~MixxxMainWindow() {
     ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
+        qDebug() << "WARNING: The following" << leakedControls.size() 
+                 << "controls were leaked:";
         foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
             if (pCDP.isNull()) {
                 continue;
@@ -516,7 +523,6 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pKbdConfig;
     delete m_pKbdConfigEmpty;
 
-    WaveformWidgetFactory::destroy();
     t.elapsed(true);
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);

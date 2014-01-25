@@ -47,6 +47,8 @@ class ReadAheadManager;
 class ControlObject;
 class ControlObjectSlave;
 class ControlPushButton;
+class ControlIndicator;
+class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
@@ -73,10 +75,10 @@ const int audioBeatMarkLen = 40;
 // Temporary buffer length
 const int kiTempLength = 200000;
 
-// Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
-const int kiUpdateRate = 10;
+// Rate at which the playpos slider is updated
+const int kiPlaypositionUpdateRate = 10; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateRate = 40 / kiUpdateRate; //about 2.5 updates per sec
+const int kiBpmUpdateCnt = 4; // about 2.5 updates per sec
 
 // End of track mode constants
 const int TRACK_END_MODE_STOP = 0;
