@@ -896,7 +896,7 @@ class MixxxCore(Feature):
         map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
-            sources.append("util/battery/batterywin.cpp")
+            sources.append("util/battery/batterywindows.cpp")
             # Add Windows resource file with icons and such
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
