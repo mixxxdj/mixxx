@@ -194,13 +194,13 @@ void WBaseWidget::fillDebugTooltip(QStringList* debug) {
     QSizePolicy policy = m_pWidget->sizePolicy();
     *debug << QString("ClassName: %1").arg(m_pWidget->metaObject()->className())
            << QString("ObjectName: %1").arg(m_pWidget->objectName())
-//           << QString("Position: %1").arg(toDebugString(m_pWidget->pos()))
+           << QString("Position: %1").arg(toDebugString(m_pWidget->pos()))
            << QString("SizePolicy: %1,%2").arg(toDebugString(policy.horizontalPolicy()),
                                                toDebugString(policy.verticalPolicy()))
-//           << QString("Size: %1").arg(toDebugString(m_pWidget->size()))
-//           << QString("SizeHint: %1").arg(toDebugString(m_pWidget->sizeHint()))
-//           << QString("MinimumSizeHint: %1").arg(toDebugString(m_pWidget->minimumSizeHint()));
-;
+           << QString("Size: %1").arg(toDebugString(m_pWidget->size()))
+           << QString("SizeHint: %1").arg(toDebugString(m_pWidget->sizeHint()))
+           << QString("MinimumSizeHint: %1").arg(toDebugString(m_pWidget->minimumSizeHint()));
+
     foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
         *debug << QString("LeftConnection: %1").arg(pControlConnection->toDebugString());
     }
