@@ -114,21 +114,22 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             // Based on whether the control is mapped to the left or right button,
             // record the button mode.
             if (isLeftButton) {
-            	if (leftClickForcePush) {
-            		m_leftButtonMode = ControlPushButton::PUSH;
-            	} else {
-            		m_leftButtonMode = p->getButtonMode();
-            	}
+                if (leftClickForcePush) {
+                    m_leftButtonMode = ControlPushButton::PUSH;
+                } else {
+                    m_leftButtonMode = p->getButtonMode();
+                }
             } else if (isRightButton) {
-            	if (rightClickForcePush) {
-            		m_rightButtonMode = ControlPushButton::PUSH;
-            	} else {
-            		m_rightButtonMode = p->getButtonMode();
-            		if (m_rightButtonMode != ControlPushButton::PUSH) {
-            			qWarning() << "WPushButton::setup: Connecting a Pushbutton not in PUSH mode is not implemented\n"
-            					   << "Please set <RightClickIsPushButton>true</RightClickIsPushButton>";
-            		}
-            	}
+                if (rightClickForcePush) {
+                    m_rightButtonMode = ControlPushButton::PUSH;
+                } else {
+                    m_rightButtonMode = p->getButtonMode();
+                    if (m_rightButtonMode != ControlPushButton::PUSH) {
+                        qWarning()
+                                << "WPushButton::setup: Connecting a Pushbutton not in PUSH mode is not implemented\n"
+                                << "Please set <RightClickIsPushButton>true</RightClickIsPushButton>";
+                    }
+                }
             }
         }
         con = con.nextSibling();
