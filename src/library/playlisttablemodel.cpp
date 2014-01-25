@@ -1,6 +1,5 @@
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,

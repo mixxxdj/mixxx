@@ -18,7 +18,7 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
-#include "circularbuffer.h"
+#include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"

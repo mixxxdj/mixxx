@@ -5,7 +5,7 @@
 #ifndef ENGINEPASSTHROUGH_H
 #define ENGINEPASSTHROUGH_H
 
-#include "circularbuffer.h"
+#include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"

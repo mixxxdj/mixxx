@@ -33,8 +33,7 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "util/compatibility.h"
-#include "mixxxutils.cpp"
-
+#include "util/time.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file, bool parseHeader)
         : m_fileInfo(file),
@@ -60,7 +59,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
     QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;    
+    QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;
     m_fileInfo = QFileInfo(location);
 
     // We don't call initialize() here because it would end up calling parse()
@@ -179,14 +178,14 @@ QString TrackInfoObject::getDurationStr() const {
     int iDuration = m_iDuration;
     lock.unlock();
 
-    return MixxxUtils::secondsToMinutes(iDuration, true);
+    return Time::formatSeconds(iDuration, true);
 }
 
 void TrackInfoObject::setLocation(const QString& location) {
     QMutexLocker lock(&m_qMutex);
     QFileInfo newFileInfo(location);
     if (newFileInfo != m_fileInfo) {
-        m_fileInfo = newFileInfo; 
+        m_fileInfo = newFileInfo;
         m_bLocationChanged = true;
         setDirty(true);
     }
@@ -571,7 +570,7 @@ void TrackInfoObject::setSampleRate(int iSampleRate) {
     if (m_iSampleRate != iSampleRate) {
         m_iSampleRate = iSampleRate;
         setDirty(true);
-    }   
+    }
 }
 
 int TrackInfoObject::getSampleRate() const {

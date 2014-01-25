@@ -9,8 +9,8 @@
 #include "library/browse/browsethread.h"
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
-#include "mixxxutils.cpp"
-
+#include "util/time.h"
+#include "util/trace.h"
 
 BrowseThread* BrowseThread::m_instance = NULL;
 static QMutex s_Mutex;
@@ -77,9 +77,11 @@ void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
 
 void BrowseThread::run() {
     m_mutex.lock();
-    while(!m_bStopThread) {
+
+    while (!m_bStopThread) {
         //Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
+        Trace trace("BrowseThread");
 
         //Terminate thread if Mixxx closes
         if(m_bStopThread) {
@@ -171,7 +173,8 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+        QString duration = Time::formatSeconds(qVariantValue<int>(
+                tio.getDuration()), false);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         row_data.insert(COLUMN_DURATION, item);
