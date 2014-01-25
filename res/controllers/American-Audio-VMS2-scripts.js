@@ -135,36 +135,8 @@ VMS2.Deck.prototype.pitchCenterHandler = function(value) {
     }
 }
 
-VMS2.Deck.prototype.playHandler = function(value) {
-    if(value === ButtonState.pressed) {
-        var currentlyPlaying = engine.getValue(this.group,"play");
-        // Only do stutter play when currently playing and not previewing
-        if (currentlyPlaying && !this.cueButton && !this.hotCuePressed) {
-            engine.setValue(this.group, "start_play", 1);
-        }
-        else engine.setValue(this.group,"play", 1);
-    }
-    else engine.setValue(this.group, "start_play", 0);
-}
-
 VMS2.Deck.prototype.pauseHandler = function(value) {
     engine.setValue(this.group, "play", 0);
-}
-
-VMS2.Deck.prototype.cueHandler = function(value) {
-    if(value === ButtonState.pressed) {
-        this.cueButton = true;
-        if (this.vinylButton) {
-            // Toggle scratch & cue mode
-            if (this.scratchncue) this.scratchncue = false;
-            else this.scratchncue = true;
-        }
-        else engine.setValue(this.group,"cue_default",1);
-    }
-    else {
-        engine.setValue(this.group, "cue_default", 0);
-        this.cueButton = false;
-    }
 }
 
 VMS2.Deck.prototype.jogTouchHandler = function(value) {
@@ -285,9 +257,7 @@ VMS2.getDeck = function(group) {
 
 VMS2.Decks.Left.addButton("RateRange", new VMS2.Button(0x11), "rateRangeHandler");
 VMS2.Decks.Left.addButton("PitchCenter", new VMS2.Button(), "pitchCenterHandler");
-VMS2.Decks.Left.addButton("Play", new VMS2.Button(), "playHandler");
 VMS2.Decks.Left.addButton("Pause", new VMS2.Button(), "pauseHandler");
-VMS2.Decks.Left.addButton("Cue", new VMS2.Button(), "cueHandler");
 VMS2.Decks.Left.addButton("JogTouch", new VMS2.Button(), "jogTouchHandler");
 VMS2.Decks.Left.addButton("Vinyl", new VMS2.Button(0x27), "vinylButtonHandler");
 VMS2.Decks.Left.addButton("KeyLock", new VMS2.Button(), "keyLockButtonHandler");
@@ -297,9 +267,7 @@ VMS2.Decks.Left.addButton("KillLow", new VMS2.Button(0x23), "killLowHandler");
 
 VMS2.Decks.Right.addButton("RateRange", new VMS2.Button(0x33), "rateRangeHandler");
 VMS2.Decks.Right.addButton("PitchCenter", new VMS2.Button(), "pitchCenterHandler");
-VMS2.Decks.Right.addButton("Play", new VMS2.Button(), "playHandler");
 VMS2.Decks.Right.addButton("Pause", new VMS2.Button(), "pauseHandler");
-VMS2.Decks.Right.addButton("Cue", new VMS2.Button(), "cueHandler");
 VMS2.Decks.Right.addButton("JogTouch", new VMS2.Button(), "jogTouchHandler");
 VMS2.Decks.Right.addButton("Vinyl", new VMS2.Button(0x49), "vinylButtonHandler");
 VMS2.Decks.Right.addButton("KeyLock", new VMS2.Button(), "keyLockButtonHandler");
@@ -331,19 +299,9 @@ VMS2.pitchCenter = function(channel, control, value, status, group) {
     deck.Buttons.PitchCenter.handleEvent(value);
 }
 
-VMS2.play = function(channel, control, value, status, group) {
-    var deck = VMS2.getDeck(group);
-    deck.Buttons.Play.handleEvent(value);
-}
-
 VMS2.pause = function(channel, control, value, status, group) {
     var deck = VMS2.getDeck(group);
     deck.Buttons.Pause.handleEvent(value);
-}
-
-VMS2.cue = function(channel, control, value, status, group) {
-    var deck = VMS2.getDeck(group);
-    deck.Buttons.Cue.handleEvent(value);
 }
 
 VMS2.jog_touch = function(channel, control, value, status, group) {
