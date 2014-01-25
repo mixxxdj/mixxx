@@ -766,6 +766,12 @@
             <status>0x91</status>
             <midino>0x2F</midino>
          </control>
+         <control><!-- Shifted Play -->
+            <group>[Channel2]</group>
+            <key>start_play</key>
+            <status>0x81</status>
+            <midino>0x2F</midino>
+         </control>
         <!-- Hot Cues, deck 2 -->
          <control><!-- on -->
             <group>[Channel2]</group>
