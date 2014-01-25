@@ -110,11 +110,14 @@ void DlgPrefEQ::setDefaultShelves()
     m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"), ConfigValue(250.0));
 }
 
-/** Resets settings, leaves LOFI box checked asis.
- */
+/** Resets settings */
 void DlgPrefEQ::reset() {
     setDefaultShelves();
+    CheckBoxEnbEQ->setChecked(true);
+    CheckBoxLoFi->setChecked(true);
     loadSettings();
+    slotUpdate();
+    slotApply();
 }
 
 void DlgPrefEQ::slotEnaEQChanged() {
