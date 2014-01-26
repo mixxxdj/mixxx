@@ -119,6 +119,15 @@ bool SkinContext::selectBool(const QDomNode& node,
     return defaultValue;
 }
 
+int SkinContext::selectBoolOrNone(const QDomNode& node,
+                             const QString& nodeName) const {
+    if (hasNode(node, nodeName)) {
+        QString stringValue = selectString(node, nodeName);
+        return stringValue.contains("true", Qt::CaseInsensitive) ? 1 : 0;
+    }
+    return -1;
+}
+
 bool SkinContext::selectAttributeBool(const QDomElement& element,
                                       const QString& attributeName,
                                       bool defaultValue) const {

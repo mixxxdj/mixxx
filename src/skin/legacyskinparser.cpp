@@ -1480,16 +1480,26 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 control->setParent(pConnection);
             }
         } else {
-            // Default to emit on press
-            ControlWidgetConnection::EmitOption emitOption =
-                    ControlWidgetConnection::EMIT_ON_PRESS;
-
-            // Get properties from XML, or use defaults
-            if (m_pContext->selectBool(con, "EmitOnPressAndRelease", false))
-                emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
-
-            if (!m_pContext->selectBool(con, "EmitOnDownPress", true))
+            ControlWidgetConnection::EmitOption emitOption;
+            switch (m_pContext->selectBoolOrNone(con, "EmitOnDownPress")) {
+            case 0:
                 emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
+                break;
+            case 1:
+                emitOption = ControlWidgetConnection::EMIT_ON_PRESS;
+                break;
+            default:
+                if (m_pContext->selectBoolOrNone(con, "EmitOnPressAndRelease") == 1) {
+                    // if EmitOnPressAndRelease is explicit set to true
+                    emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+                } else {
+                    // default:
+                    // no emit option is set or
+                    // EmitOnDownPress is set to true
+                    emitOption = ControlWidgetConnection::EMIT_ON_PRESS;
+                }
+                break;
+            }
 
             bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
             bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
