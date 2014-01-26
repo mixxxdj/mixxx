@@ -29,6 +29,7 @@
 #include <taglib/wavpackfile.h>
 
 #include "soundsource.h"
+#include "util/sandbox.h"
 
 namespace Mixxx
 {
@@ -49,18 +50,21 @@ const bool SoundSource::s_bDebugMetadata = false;
    return type is int: 0 for OK, -1 for an error.
  */
 SoundSource::SoundSource(QString qFilename)
-    : m_qFilename(qFilename)
-{
-    m_iSampleRate = 0;
-    m_fBPM = 0.0f;
-    m_fReplayGain = 0.0f;
-    m_iDuration = 0;
-    m_iBitrate = 0;
-    m_iChannels = 0;
+        : m_qFilename(qFilename),
+          m_fReplayGain(0.0f),
+          m_fBPM(0.0f),
+          m_iDuration(0),
+          m_iBitrate(0),
+          m_iSampleRate(0),
+          m_iChannels(0),
+          m_pSecurityToken(NULL) {
+    // Open a security token for the file if we are in a sandbox.
+    QFileInfo info(m_qFilename);
+    m_pSecurityToken = Sandbox::instance()->openSecurityToken(info, true);
 }
 
-SoundSource::~SoundSource()
-{
+SoundSource::~SoundSource() {
+    Sandbox::instance()->closeSecurityToken(m_pSecurityToken);
 }
 
 
