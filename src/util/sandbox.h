@@ -54,6 +54,11 @@ class Sandbox {
         return result;
     }
 
+    static bool canAccessPath(const QString& canonicalPath) {
+        QByteArray pathEncoded = canonicalPath.toLocal8Bit();
+        return access(pathEncoded.constData(), R_OK) == 0;
+    }
+
     static bool createSecurityToken(const QFileInfo& info) {
         return createSecurityToken(info.canonicalFilePath(), info.isDir());
     }
@@ -76,11 +81,6 @@ class Sandbox {
 
     // Creates a security token. s_mutex is not needed for this method.
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
-
-    static bool canAccessPath(const QString& canonicalPath) {
-        QByteArray pathEncoded = canonicalPath.toLocal8Bit();
-        return access(pathEncoded.constData(), R_OK) == 0;
-    }
 
     static QMutex s_mutex;
     static bool s_bInSandbox;
