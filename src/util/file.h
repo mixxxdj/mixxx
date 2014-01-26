@@ -21,6 +21,10 @@ class MFile {
         return m_file;
     }
 
+    SecurityTokenPointer token() {
+        return m_pSecurityToken;
+    }
+
     MFile& operator=(const MFile& other);
 
   private:
@@ -42,6 +46,10 @@ class MDir {
 
     const QDir& dir() const {
         return m_dir;
+    }
+
+    SecurityTokenPointer token() {
+        return m_pSecurityToken;
     }
 
     MDir& operator=(const MDir& other);
