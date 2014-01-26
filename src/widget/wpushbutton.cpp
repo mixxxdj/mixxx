@@ -84,6 +84,8 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     bool leftClickForcePush = context.selectBool(node, "LeftClickIsPushButton", false);
     bool rightClickForcePush = context.selectBool(node, "RightClickIsPushButton", false);
 
+    bool explicitLeftFound = false;
+
     QDomNode con = context.selectNode(node, "Connection");
     while (!con.isNull()) {
         // Get ConfigKey
@@ -119,6 +121,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 } else {
                     m_leftButtonMode = p->getButtonMode();
                 }
+                explicitLeftFound = true;
             } else if (isRightButton) {
                 if (rightClickForcePush) {
                     m_rightButtonMode = ControlPushButton::PUSH;
@@ -130,7 +133,19 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                                 << "Please set <RightClickIsPushButton>true</RightClickIsPushButton>";
                     }
                 }
+            } else {
+                // This is a left button connection if no connection is other connection is explicit "LeftButton"
+                if (!explicitLeftFound) {
+                    if (leftClickForcePush) {
+                        m_leftButtonMode = ControlPushButton::PUSH;
+                    } else {
+                        m_leftButtonMode = p->getButtonMode();
+                    }
+                }
             }
+        } else {
+            // No ControlPushButton Connection Probably a display connection
+            //qDebug() << "WPushButton::setup: Connected a non push button" << configKey.group << configKey.item;
         }
         con = con.nextSibling();
     }
