@@ -202,7 +202,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     QString path = item->dataPath().toString();
 
-    if (path == QUICK_LINK_NODE || path == DEVICE_NODE || path == "/") {
+    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         return;
     }
 
