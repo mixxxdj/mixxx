@@ -11,6 +11,8 @@
 #include <QStandardItem>
 #include <QList>
 
+#include "util/file.h"
+
 // This class is a singleton and represents a thread
 // that is used to read ID3 metadata
 // from a particular folder.
@@ -23,7 +25,7 @@ class BrowseTableModel;
 class BrowseThread : public QThread {
     Q_OBJECT
   public:
-    void executePopulation(const QString& path, BrowseTableModel* client);
+    void executePopulation(const MDir& path, BrowseTableModel* client);
     void run();
     static BrowseThread* getInstance();
     static void destroyInstance();
@@ -44,7 +46,7 @@ class BrowseThread : public QThread {
 
     // You must hold m_path_mutex to touch m_path or m_model_observer
     QMutex m_path_mutex;
-    QString m_path;
+    MDir m_path;
     BrowseTableModel* m_model_observer;
 
     static BrowseThread* m_instance;

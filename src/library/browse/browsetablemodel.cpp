@@ -89,8 +89,7 @@ void BrowseTableModel::setPath(QString absPath) {
     }
 
     m_current_directory = MDir(absPath);
-    BrowseThread::getInstance()->executePopulation(
-            m_current_directory.dir().canonicalPath(), this);
+    BrowseThread::getInstance()->executePopulation(m_current_directory, this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -215,8 +214,8 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Repopulate model if any tracks were actually deleted
     if (any_deleted) {
-        BrowseThread::getInstance()->executePopulation(
-                m_current_directory.dir().canonicalPath(), this);
+        BrowseThread::getInstance()->executePopulation(m_current_directory,
+                                                       this);
     }
 }
 
