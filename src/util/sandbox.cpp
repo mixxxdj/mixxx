@@ -271,6 +271,9 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
 SandboxSecurityToken::SandboxSecurityToken(const QString& path, CFURLRef url)
         : m_path(path),
           m_url(url) {
+    if (m_url) {
+        qDebug() << "SandboxSecurityToken successfully created for" << path;
+    }
 }
 #endif
 
