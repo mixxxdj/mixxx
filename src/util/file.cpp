@@ -17,14 +17,12 @@ MFile::MFile(const MFile& other)
 }
 
 MFile::~MFile() {
-    Sandbox::closeSecurityToken(m_pSecurityToken);
 }
 
 MFile& MFile::operator=(const MFile& other) {
-    Sandbox::closeSecurityToken(m_pSecurityToken);
     m_fileName = other.m_fileName;
     m_file.setFileName(m_fileName);
-    m_pSecurityToken = Sandbox::openSecurityToken(m_file, true);
+    m_pSecurityToken = other.m_pSecurityToken;
     return *this;
 }
 
@@ -45,13 +43,11 @@ MDir::MDir(const MDir& other)
 }
 
 MDir::~MDir() {
-    Sandbox::closeSecurityToken(m_pSecurityToken);
 }
 
 MDir& MDir::operator=(const MDir& other) {
-    Sandbox::closeSecurityToken(m_pSecurityToken);
     m_dirPath = other.m_dirPath;
     m_dir = QDir(m_dirPath);
-    m_pSecurityToken = Sandbox::openSecurityToken(m_dir, true);
+    m_pSecurityToken = other.m_pSecurityToken;
     return *this;
 }

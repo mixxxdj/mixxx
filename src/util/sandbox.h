@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
+#include <QSharedPointer>
 
 #include "configobject.h"
 
@@ -22,6 +23,9 @@ struct SandboxSecurityToken {
 #endif
 };
 
+// Reference counted pointer to SandboxSecurityToken.
+typedef QSharedPointer<SandboxSecurityToken> SecurityTokenPointer;
+
 class Sandbox {
   public:
     static void initialize(const QString& permissionsFile);
@@ -36,16 +40,14 @@ class Sandbox {
     static bool askForAccess(const QString& canonicalPath);
 
     static bool canAccessFile(const QFileInfo& file) {
-        SandboxSecurityToken* pToken = openSecurityToken(file, true);
+        SecurityTokenPointer pToken = openSecurityToken(file, true);
         bool result = canAccessPath(file.absoluteFilePath());
-        closeSecurityToken(pToken);
         return result;
     }
 
     static bool canAccessFile(const QDir& dir) {
-        SandboxSecurityToken* pToken = openSecurityToken(dir, true);
+        SecurityTokenPointer pToken = openSecurityToken(dir, true);
         bool result = canAccessPath(dir.canonicalPath());
-        closeSecurityToken(pToken);
         return result;
     }
 
@@ -57,16 +59,15 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-    static SandboxSecurityToken* openSecurityToken(const QFileInfo& info, bool create);
-    static SandboxSecurityToken* openSecurityToken(const QDir& dir, bool create);
-    static bool closeSecurityToken(SandboxSecurityToken* pToken);
+    static SecurityTokenPointer openSecurityToken(const QFileInfo& info, bool create);
+    static SecurityTokenPointer openSecurityToken(const QDir& dir, bool create);
 
   private:
     Sandbox() {}
 
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
-    static SandboxSecurityToken* openTokenFromBookmark(const QString& canonicalPath,
-                                                       const QString& bookmarkBase64);
+    static SecurityTokenPointer openTokenFromBookmark(const QString& canonicalPath,
+                                                      const QString& bookmarkBase64);
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
 
     static bool canAccessPath(const QString& canonicalPath) {

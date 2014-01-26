@@ -26,7 +26,7 @@ class MFile {
   private:
     QString m_fileName;
     QFile m_file;
-    SandboxSecurityToken* m_pSecurityToken;
+    SecurityTokenPointer m_pSecurityToken;
 };
 
 class MDir {
@@ -49,7 +49,7 @@ class MDir {
   private:
     QString m_dirPath;
     QDir m_dir;
-    SandboxSecurityToken* m_pSecurityToken;
+    SecurityTokenPointer m_pSecurityToken;
 };
 
 #endif /* FILE_H */
