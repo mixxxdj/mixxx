@@ -10,11 +10,21 @@ class MFile {
   public:
     MFile();
     MFile(const QString& name);
+    MFile(const MFile& other);
     virtual ~MFile();
 
-    QFile& file();
+    QFile& file() {
+        return m_file;
+    }
+
+    const QFile& file() const {
+        return m_file;
+    }
+
+    MFile& operator=(const MFile& other);
 
   private:
+    QString m_fileName;
     QFile m_file;
     SandboxSecurityToken* m_pSecurityToken;
 };
@@ -23,13 +33,21 @@ class MDir {
   public:
     MDir();
     MDir(const QString& name);
+    MDir(const MDir& other);
     virtual ~MDir();
 
     QDir& dir() {
         return m_dir;
     }
 
+    const QDir& dir() const {
+        return m_dir;
+    }
+
+    MDir& operator=(const MDir& other);
+
   private:
+    QString m_dirPath;
     QDir m_dir;
     SandboxSecurityToken* m_pSecurityToken;
 };
