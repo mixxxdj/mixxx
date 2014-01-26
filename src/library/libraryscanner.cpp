@@ -26,6 +26,7 @@
 #include "library/queryutil.h"
 #include "trackinfoobject.h"
 #include "util/trace.h"
+#include "util/file.h"
 
 LibraryScanner::LibraryScanner(TrackCollection* collection)
               : m_pCollection(collection),
