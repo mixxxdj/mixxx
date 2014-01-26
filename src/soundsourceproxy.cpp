@@ -45,6 +45,7 @@
 #endif
 #include "soundsourceflac.h"
 #include "util/cmdlineargs.h"
+#include "util/sandbox.h"
 
 //Static memory allocation
 QRegExp SoundSourceProxy::m_supportedFileRegex;
@@ -57,17 +58,31 @@ QMutex SoundSourceProxy::m_extensionsMutex;
 SoundSourceProxy::SoundSourceProxy(QString qFilename)
     : Mixxx::SoundSource(qFilename),
       m_pSoundSource(NULL),
-      m_pTrack() {
+      m_pSecurityToken(NULL) {
+    // Open a security token for the file if we are in a sandbox.
+    QFileInfo info(m_qFilename);
+    m_pSecurityToken = Sandbox::instance()->openSecurityToken(info, true);
+
+    // Create the underlying SoundSource.
     m_pSoundSource = initialize(qFilename);
 }
 
 //Other constructor
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
     : SoundSource(pTrack->getLocation()),
-      m_pSoundSource(NULL) {
+      m_pSoundSource(NULL),
+      m_pTrack(pTrack),
+      m_pSecurityToken(NULL) {
+    // Open a security token for the file if we are in a sandbox.
+    QFileInfo info(pTrack->getFileInfo());
+    m_pSecurityToken = Sandbox::instance()->openSecurityToken(info, true);
 
     m_pSoundSource = initialize(pTrack->getLocation());
-    m_pTrack = pTrack;
+}
+
+SoundSourceProxy::~SoundSourceProxy() {
+    delete m_pSoundSource;
+    Sandbox::instance()->closeSecurityToken(m_pSecurityToken);
 }
 
 // static
@@ -163,11 +178,6 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
     } else { //Unsupported filetype
         return NULL;
     }
-}
-
-SoundSourceProxy::~SoundSourceProxy()
-{
-    delete m_pSoundSource;
 }
 
 // static

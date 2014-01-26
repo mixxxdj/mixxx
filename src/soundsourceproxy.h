@@ -27,7 +27,7 @@
 #include "soundsource.h"
 #include "trackinfoobject.h"
 
-class QLibrary;
+struct SandboxSecurityToken;
 
 /**
   *@author Tue Haste Andersen
@@ -69,6 +69,7 @@ private:
 
     SoundSource *m_pSoundSource;
     TrackPointer m_pTrack;
+    SandboxSecurityToken* m_pSecurityToken;
 
     static QRegExp m_supportedFileRegex;
     static QMap<QString, QLibrary*> m_plugins;

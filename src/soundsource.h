@@ -28,8 +28,6 @@
 
 #include "defs.h"
 
-struct SandboxSecurityToken;
-
 #define MIXXX_SOUNDSOURCE_API_VERSION 5
 /** @note SoundSource API Version history:
            1 - Mixxx 1.8.0 Beta 2
@@ -146,8 +144,6 @@ protected:
     unsigned int m_iSampleRate;
     int m_iChannels;
     //Dontcha be forgettin' to initialize these variables.... arr
-
-    SandboxSecurityToken* m_pSecurityToken;
 
     static const bool s_bDebugMetadata;
 };

@@ -56,17 +56,11 @@ SoundSource::SoundSource(QString qFilename)
           m_iDuration(0),
           m_iBitrate(0),
           m_iSampleRate(0),
-          m_iChannels(0),
-          m_pSecurityToken(NULL) {
-    // Open a security token for the file if we are in a sandbox.
-    QFileInfo info(m_qFilename);
-    m_pSecurityToken = Sandbox::instance()->openSecurityToken(info, true);
+          m_iChannels(0) {
 }
 
 SoundSource::~SoundSource() {
-    Sandbox::instance()->closeSecurityToken(m_pSecurityToken);
 }
-
 
 QList<long> *SoundSource::getCuePoints()
 {

@@ -252,6 +252,13 @@ QString TrackInfoObject::getCanonicalLocation() const {
     return m_fileInfo.canonicalFilePath();
 }
 
+QFileInfo TrackInfoObject::getFileInfo() const {
+    // No need for locking since we are passing a copy by value. Qt doesn't say
+    // that QFileInfo is thread-safe but its copy constructor just copies the
+    // d_ptr.
+    return m_fileInfo;
+}
+
 QString TrackInfoObject::getDirectory() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.absolutePath();
