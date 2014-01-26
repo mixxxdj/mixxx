@@ -17,6 +17,7 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
+#include "util/sandbox.h"
 
 const QString kQuickLinksSeparator = "-+-";
 
@@ -181,7 +182,13 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " "
              << item->dataPath();
-    m_browseModel.setPath(item->dataPath().toString());
+
+    QString path = item->dataPath().toString();
+    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        m_browseModel.setPath("");
+    } else {
+        m_browseModel.setPath(path);
+    }
     emit(showTrackModel(&m_proxyModel));
 }
 
