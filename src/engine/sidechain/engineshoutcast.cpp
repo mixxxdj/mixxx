@@ -616,7 +616,6 @@ void EngineShoutcast::updateMetaData() {
             } else {
                 m_metadataFormat.replace(QString("$artist"), artist);
                 m_metadataFormat.replace(QString("$title"), title);
-                qWarning() << m_metadataFormat;
                 QByteArray baSong = encodeString(m_metadataFormat);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
