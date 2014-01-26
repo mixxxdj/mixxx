@@ -39,7 +39,7 @@
 class SoundSourceProxy : public Mixxx::SoundSource
 {
 public:
-    SoundSourceProxy(QString qFilename);
+    SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
     SoundSourceProxy(TrackPointer pTrack);
     ~SoundSourceProxy();
     static void loadPlugins();
@@ -66,7 +66,7 @@ private:
     //void initPlugin(QString lib_filename, QString track_filename);
     static QLibrary* getPlugin(QString lib_filename);
 
-    SoundSource *m_pSoundSource;
+    SoundSource* m_pSoundSource;
     TrackPointer m_pTrack;
     SecurityTokenPointer m_pSecurityToken;
 

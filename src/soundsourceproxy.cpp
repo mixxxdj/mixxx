@@ -55,12 +55,15 @@ QMutex SoundSourceProxy::m_extensionsMutex;
 
 
 //Constructor
-SoundSourceProxy::SoundSourceProxy(QString qFilename)
+SoundSourceProxy::SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken)
     : Mixxx::SoundSource(qFilename),
-      m_pSoundSource(NULL) {
-    // Open a security token for the file if we are in a sandbox.
-    QFileInfo info(m_qFilename);
-    m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+      m_pSoundSource(NULL),
+      m_pSecurityToken(pToken) {
+    if (pToken.isNull()) {
+	// Open a security token for the file if we are in a sandbox.
+	QFileInfo info(m_qFilename);
+	m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+    }
 
     // Create the underlying SoundSource.
     m_pSoundSource = initialize(qFilename);
@@ -70,10 +73,13 @@ SoundSourceProxy::SoundSourceProxy(QString qFilename)
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
     : SoundSource(pTrack->getLocation()),
       m_pSoundSource(NULL),
-      m_pTrack(pTrack) {
-    // Open a security token for the file if we are in a sandbox.
-    QFileInfo info(pTrack->getFileInfo());
-    m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+      m_pTrack(pTrack),
+      m_pSecurityToken(pTrack->getSecurityToken()) {
+    if (m_pSecurityToken.isNull()) {
+	// Open a security token for the file if we are in a sandbox.
+	QFileInfo info(m_qFilename);
+	m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+    }
 
     m_pSoundSource = initialize(pTrack->getLocation());
 }

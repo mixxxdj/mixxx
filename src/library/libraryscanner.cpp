@@ -231,7 +231,8 @@ void LibraryScanner::run() {
         // directory.
         MDir dir(dirPath);
 
-        bScanFinishedCleanly = recursiveScan(dirPath, verifiedDirectories);
+        bScanFinishedCleanly = recursiveScan(dirPath, verifiedDirectories,
+                                             dir.token());
         if (bScanFinishedCleanly) {
             qDebug() << "Recursive scanning (" << dirPath << ") finished cleanly.";
         } else {
@@ -336,7 +337,8 @@ void LibraryScanner::resetCancel() {
     m_bCancelLibraryScan = false;
 }
 
-bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories) {
+bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories,
+                                   SecurityTokenPointer pToken) {
     QDirIterator it(dir.path(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     QFileInfo currentFileInfo;
@@ -380,9 +382,10 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
     if (prevHash != newHash) {
         // Rescan that mofo! If importing fails then the scan was cancelled so
         // we return immediately.
-        if (!importFiles(filesToImport)) {
+        if (!importFiles(filesToImport, pToken)) {
             return false;
         }
+
         // If we didn't know about this directory before...
         // save the hash after we imported everything in it
         if (!prevHashExists) {
@@ -408,7 +411,7 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
-        if (!recursiveScan(nextDir, verifiedDirectories)) {
+        if (!recursiveScan(nextDir, verifiedDirectories, pToken)) {
             return false;
         }
     }
@@ -437,8 +440,9 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files) {
         if (!m_trackDao.trackExistsInDatabase(filePath)) {
             emit(progressLoading(file.fileName()));
 
-            TrackPointer pTrack = TrackPointer(new TrackInfoObject(filePath),
-                                               &QObject::deleteLater);
+            TrackPointer pTrack = TrackPointer(
+                    new TrackInfoObject(filePath, true, pToken),
+                    &QObject::deleteLater);
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successfully added. Signal the main instance of TrackDAO,
                 // that there is a new track in the database.
