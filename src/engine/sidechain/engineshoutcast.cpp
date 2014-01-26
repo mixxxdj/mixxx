@@ -213,6 +213,9 @@ void EngineShoutcast::updateFromPreferences() {
     m_customArtist = m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
 
+    m_metadataFormat = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"));
+
     int format;
     int protocol;
 
@@ -611,7 +614,10 @@ void EngineShoutcast::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
-                QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
+                m_metadataFormat.replace(QString("$artist"), artist);
+                m_metadataFormat.replace(QString("$title"), title);
+                qWarning() << m_metadataFormat;
+                QByteArray baSong = encodeString(m_metadataFormat);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
             shout_set_metadata(m_pShout, m_pShoutMetaData);
