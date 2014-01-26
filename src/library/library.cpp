@@ -95,7 +95,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     qDebug() << "Checking for access to user's library directories:";
     foreach (QString directoryPath, directories) {
         QFileInfo directory(directoryPath);
-        bool hasAccess = Sandbox::instance()->askForAccess(directory.canonicalFilePath());
+        bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
 }
@@ -248,7 +248,7 @@ void Library::slotRequestAddDir(QString dir) {
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
     QDir directory(dir);
-    Sandbox::instance()->createSecurityToken(directory);
+    Sandbox::createSecurityToken(directory);
 
     if (!m_pTrackCollection->getDirectoryDAO().addDirectory(dir)) {
         QMessageBox::information(0, tr("Add Directory to Library"),
@@ -307,7 +307,7 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
     QDir directory(newDir);
-    Sandbox::instance()->createSecurityToken(directory);
+    Sandbox::createSecurityToken(directory);
 
     QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
 

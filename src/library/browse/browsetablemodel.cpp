@@ -83,7 +83,7 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 
 void BrowseTableModel::setPath(QString absPath) {
-    if (!Sandbox::instance()->askForAccess(absPath)) {
+    if (!Sandbox::askForAccess(absPath)) {
         // TODO(rryan): Activate an info page about sandboxing.
         return;
     }

@@ -102,8 +102,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
-    Sandbox* pSandbox = Sandbox::create();
-    pSandbox->setPermissionsFile(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
+    Sandbox::initialize(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
 
     // Only record stats in developer mode.
     if (m_cmdLineArgs.getDeveloper()) {
@@ -483,7 +482,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
-    Sandbox::destroy();
+    Sandbox::shutdown();
 
     ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
@@ -1311,7 +1310,8 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
         // we can access the folder on future runs. We need to canonicalize the
         // path so we first wrap the directory string with a QDir.
         QFileInfo trackInfo(s);
-        Sandbox::instance()->createSecurityToken(trackInfo);
+        Sandbox::createSecurityToken(trackInfo);
+
         m_pPlayerManager->slotLoadToDeck(s, deck);
     }
 }

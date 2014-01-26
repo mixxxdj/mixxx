@@ -16,9 +16,13 @@
 #endif
 #endif
 
-Sandbox::Sandbox()
-        : m_bInSandbox(false),
-          m_pSandboxPermissions(NULL) {
+bool Sandbox::s_bInSandbox = false;
+ConfigObject<ConfigValue>* Sandbox::s_pSandboxPermissions = NULL;
+
+// static
+void Sandbox::initialize(const QString& permissionsFile) {
+    s_pSandboxPermissions = new ConfigObject<ConfigValue>(permissionsFile);
+
 #ifdef Q_OS_MAC
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
     // If we are running on at least 10.7.0 and have the com.apple.security.app-sandbox
@@ -33,7 +37,7 @@ Sandbox::Sandbox()
                                            &sandboxReq) == errSecSuccess) {
             if (SecCodeCheckValidity(secCodeSelf, kSecCSDefaultFlags,
                                      sandboxReq) == errSecSuccess) {
-                m_bInSandbox = true;
+                s_bInSandbox = true;
             }
             CFRelease(sandboxReq);
         }
@@ -43,13 +47,17 @@ Sandbox::Sandbox()
 #endif
 }
 
-Sandbox::~Sandbox() {
-    if (m_pSandboxPermissions) {
-        m_pSandboxPermissions->Save();
-        delete m_pSandboxPermissions;
+// static
+void Sandbox::shutdown() {
+    ConfigObject<ConfigValue>* pSandboxPermissions = s_pSandboxPermissions;
+    s_pSandboxPermissions = NULL;
+    if (pSandboxPermissions) {
+        pSandboxPermissions->Save();
+        delete pSandboxPermissions;
     }
 }
 
+// static
 bool Sandbox::askForAccess(const QString& canonicalPath) {
     qDebug() << "Sandbox::askForAccess" << canonicalPath;
     QFileInfo info(canonicalPath);
@@ -108,19 +116,17 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
     return createSecurityToken(resultInfo);
 }
 
-ConfigKey Sandbox::keyForCanonicalPath(const QString& canonicalPath) const {
+// static
+ConfigKey Sandbox::keyForCanonicalPath(const QString& canonicalPath) {
     return ConfigKey("[OSXBookmark]",
                      QString(canonicalPath.toLocal8Bit().toBase64()));
 }
 
-void Sandbox::setPermissionsFile(const QString& path) {
-    m_pSandboxPermissions = new ConfigObject<ConfigValue>(path);
-}
-
+// static
 bool Sandbox::createSecurityToken(const QString& canonicalPath,
                                   bool isDirectory) {
     qDebug() << "createSecurityToken" << canonicalPath << isDirectory;
-    if (m_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions == NULL) {
         return false;
     }
     CFURLRef url = CFURLCreateWithFileSystemPath(
@@ -139,7 +145,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
 
             QString bookmarkBase64 = QString(bookmarkBA.toBase64());
 
-            m_pSandboxPermissions->set(keyForCanonicalPath(canonicalPath),
+            s_pSandboxPermissions->set(keyForCanonicalPath(canonicalPath),
                                        bookmarkBase64);
             CFRelease(bookmark);
             return true;
@@ -155,9 +161,10 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
     return false;
 }
 
+// static
 SandboxSecurityToken* Sandbox::openSecurityToken(const QFileInfo& file, bool create) {
     qDebug() << "openSecurityToken QFileInfo" << file.canonicalFilePath() << create;
-    if (m_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions == NULL) {
         return NULL;
     }
 
@@ -167,10 +174,10 @@ SandboxSecurityToken* Sandbox::openSecurityToken(const QFileInfo& file, bool cre
 
     // First, check for a bookmark of the key itself.
     ConfigKey key = keyForCanonicalPath(file.canonicalFilePath());
-    if (m_pSandboxPermissions->exists(key)) {
+    if (s_pSandboxPermissions->exists(key)) {
         return openTokenFromBookmark(
                 file.canonicalFilePath(),
-                m_pSandboxPermissions->getValueString(key));
+                s_pSandboxPermissions->getValueString(key));
     }
 
     // Next, try to open a bookmark for an existing directory but don't create a
@@ -190,28 +197,29 @@ SandboxSecurityToken* Sandbox::openSecurityToken(const QFileInfo& file, bool cre
     if (created) {
         return openTokenFromBookmark(
                 file.canonicalFilePath(),
-                m_pSandboxPermissions->getValueString(key));
+                s_pSandboxPermissions->getValueString(key));
     }
     return NULL;
 }
 
+// static
 SandboxSecurityToken* Sandbox::openSecurityToken(const QDir& dir, bool create) {
     qDebug() << "openSecurityToken QDir" << dir.canonicalPath() << create;
-    if (m_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions == NULL) {
         return NULL;
     }
 
     QDir walkDir = dir;
     ConfigKey key = keyForCanonicalPath(walkDir.canonicalPath());
 
-    while (!m_pSandboxPermissions->exists(key)) {
+    while (!s_pSandboxPermissions->exists(key)) {
         // There's nothing higher. Bail.
         if (!walkDir.cdUp()) {
             if (create && createSecurityToken(dir.canonicalPath(), true)) {
                 key = keyForCanonicalPath(dir.canonicalPath());
                 return openTokenFromBookmark(
                         dir.canonicalPath(),
-                        m_pSandboxPermissions->getValueString(key));
+                        s_pSandboxPermissions->getValueString(key));
             }
             return NULL;
         }
@@ -219,9 +227,9 @@ SandboxSecurityToken* Sandbox::openSecurityToken(const QDir& dir, bool create) {
         key = keyForCanonicalPath(walkDir.canonicalPath());
     }
 
-    // At this point, key is present in m_pSandboxPermissions.
+    // At this point, key is present in s_pSandboxPermissions.
     return openTokenFromBookmark(dir.canonicalPath(),
-                                 m_pSandboxPermissions->getValueString(key));
+                                 s_pSandboxPermissions->getValueString(key));
 }
 
 SandboxSecurityToken* Sandbox::openTokenFromBookmark(const QString& canonicalPath,
@@ -258,6 +266,7 @@ SandboxSecurityToken* Sandbox::openTokenFromBookmark(const QString& canonicalPat
     return NULL;
 }
 
+// static
 bool Sandbox::closeSecurityToken(SandboxSecurityToken* pToken) {
     if (pToken) {
         qDebug() << "closeSecurityToken" << pToken->m_path;;

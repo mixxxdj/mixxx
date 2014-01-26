@@ -244,7 +244,7 @@ void DlgPrefRecord::slotBrowseRecordingsDir() {
         // that we can access the folder on future runs. We need to canonicalize
         // the path so we first wrap the directory string with a QDir.
         QDir directory(fd);
-        Sandbox::instance()->createSecurityToken(directory);
+        Sandbox::createSecurityToken(directory);
         LineEditRecordings->setText(fd);
     }
 }

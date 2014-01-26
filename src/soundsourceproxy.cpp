@@ -61,7 +61,7 @@ SoundSourceProxy::SoundSourceProxy(QString qFilename)
       m_pSecurityToken(NULL) {
     // Open a security token for the file if we are in a sandbox.
     QFileInfo info(m_qFilename);
-    m_pSecurityToken = Sandbox::instance()->openSecurityToken(info, true);
+    m_pSecurityToken = Sandbox::openSecurityToken(info, true);
 
     // Create the underlying SoundSource.
     m_pSoundSource = initialize(qFilename);
@@ -75,14 +75,14 @@ SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
       m_pSecurityToken(NULL) {
     // Open a security token for the file if we are in a sandbox.
     QFileInfo info(pTrack->getFileInfo());
-    m_pSecurityToken = Sandbox::instance()->openSecurityToken(info, true);
+    m_pSecurityToken = Sandbox::openSecurityToken(info, true);
 
     m_pSoundSource = initialize(pTrack->getLocation());
 }
 
 SoundSourceProxy::~SoundSourceProxy() {
     delete m_pSoundSource;
-    Sandbox::instance()->closeSecurityToken(m_pSecurityToken);
+    Sandbox::closeSecurityToken(m_pSecurityToken);
 }
 
 // static

@@ -562,7 +562,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     // We may not have access to this directory since it is in the user's
     // Documents folder. Ask for access if we don't have it.
     if (ni_directory.exists()) {
-        Sandbox::instance()->askForAccess(ni_directory.canonicalPath());
+        Sandbox::askForAccess(ni_directory.canonicalPath());
     }
 
     //Iterate over the subfolders

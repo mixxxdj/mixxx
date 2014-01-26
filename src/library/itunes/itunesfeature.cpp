@@ -134,7 +134,7 @@ void ITunesFeature::activate(bool forceReload) {
             // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
             // and using a custom iTunes path then we have to ask for access to this
             // file.
-            Sandbox::instance()->askForAccess(m_dbfile);
+            Sandbox::askForAccess(m_dbfile);
         } else {
             // if the path we got between the default and the database doesn't
             // exist, ask for a new one and use/save it if it exists
@@ -151,7 +151,7 @@ void ITunesFeature::activate(bool forceReload) {
             // this folder. Create a security bookmark while we have permission so
             // that we can access the folder on future runs. We need to canonicalize
             // the path so we first wrap the directory string with a QDir.
-            Sandbox::instance()->createSecurityToken(dbFile);
+            Sandbox::createSecurityToken(dbFile);
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
         }
         m_isActivated =  true;
@@ -213,7 +213,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         // this folder. Create a security bookmark while we have permission so
         // that we can access the folder on future runs. We need to canonicalize
         // the path so we first wrap the directory string with a QDir.
-        Sandbox::instance()->createSecurityToken(dbFileInfo);
+        Sandbox::createSecurityToken(dbFileInfo);
 
         settings.setValue(ITDB_PATH_KEY, dbfile);
         activate(true); // clears tables before parsing

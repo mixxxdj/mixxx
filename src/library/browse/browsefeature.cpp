@@ -259,7 +259,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
             TreeItem* driveLetter = new TreeItem(
                 drive.canonicalPath(), // displays C:
                 drive.filePath(), //Displays C:/
-                this ,
+                this,
                 item);
             folders << driveLetter;
         }
@@ -355,7 +355,7 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     foreach (QString dirPath, mixxxMusicDirs) {
         QDir dir(dirPath);
         // Skip directories we don't have permission to.
-        if (!Sandbox::instance()->canAccessFile(dir)) {
+        if (!Sandbox::canAccessFile(dir)) {
             continue;
         }
         if (dir == osMusicDir) {
@@ -373,22 +373,22 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
         result << dir.canonicalPath() + "/";
     }
 
-    if (!osMusicDirIncluded && Sandbox::instance()->canAccessFile(osMusicDir)) {
+    if (!osMusicDirIncluded && Sandbox::canAccessFile(osMusicDir)) {
         result << osMusicDir.canonicalPath() + "/";
     }
 
     if (downloadsExists && !osDownloadsDirIncluded &&
-            Sandbox::instance()->canAccessFile(osDownloadsDir)) {
+            Sandbox::canAccessFile(osDownloadsDir)) {
         result << osDownloadsDir.canonicalPath() + "/";
     }
 
     if (!osDesktopDirIncluded &&
-            Sandbox::instance()->canAccessFile(osDesktopDir)) {
+            Sandbox::canAccessFile(osDesktopDir)) {
         result << osDesktopDir.canonicalPath() + "/";
     }
 
     if (!osDocumentsDirIncluded &&
-            Sandbox::instance()->canAccessFile(osDocumentsDir)) {
+            Sandbox::canAccessFile(osDocumentsDir)) {
         result << osDocumentsDir.canonicalPath() + "/";
     }
 
