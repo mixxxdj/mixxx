@@ -259,8 +259,9 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
-        QDir dir(path);
-        QFileInfoList all = dir.entryInfoList(
+        MDir dir(path);
+
+        QFileInfoList all = dir.dir().entryInfoList(
             QDir::Dirs | QDir::NoDotAndDotDot);
 
         // loop through all the item and construct the childs
