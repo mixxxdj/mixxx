@@ -1,11 +1,11 @@
+// tell windows we target XP and later
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa372693(v=vs.85).aspx
+#define _WIN32_WINNT 0x0400
 #include <windows.h>
 #include <QDebug>
 #include <QString>
 
 #include "util/battery/batterywindows.h"
-// tell windows we target XP and later
-// http://msdn.microsoft.com/en-us/library/windows/desktop/aa372693(v=vs.85).aspx
-#define _WIN32_WINNT 0x0400
 
 BatteryWindows::BatteryWindows(QObject* pParent)
         : Battery(pParent) {
