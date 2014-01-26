@@ -307,69 +307,8 @@ long unsigned SoundSourceProxy::length()
     return m_pSoundSource->length();
 }
 
-int SoundSourceProxy::parseHeader()
-{
-    //TODO: Reorganize code so that the static ParseHeader isn't needed, and use this function instead?
-    return 0;
-}
-
-// static
-int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
-{
-    QString qFilename = p->getLocation();
-
-    // Log parsing of header information in developer mode. This is useful for
-    // tracking down corrupt files.
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
-    }
-
-    SoundSource* sndsrc = initialize(qFilename);
-    if (sndsrc == NULL)
-        return ERR;
-
-    if (sndsrc->parseHeader() == OK) {
-        //Dump the metadata from the soundsource into the TIO
-        //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make sure we've actually parsed metadata and not the filename
-
-        // If Artist, Title and Type fields are not blank, modify them.
-        // Otherwise, keep the values extracted by the function TrackInfoObject::parseFilename()
-        if (!(sndsrc->getArtist().isEmpty())) {
-            p->setArtist(sndsrc->getArtist());
-        }
-
-        if (!(sndsrc->getTitle().isEmpty())) {
-            p->setTitle(sndsrc->getTitle());
-        }
-
-        if (!(sndsrc->getType().isEmpty())) {
-            p->setType(sndsrc->getType());
-        }
-
-        p->setAlbum(sndsrc->getAlbum());
-        p->setAlbumArtist(sndsrc->getAlbumArtist());
-        p->setYear(sndsrc->getYear());
-        p->setGenre(sndsrc->getGenre());
-        p->setComposer(sndsrc->getComposer());
-        p->setGrouping(sndsrc->getGrouping());
-        p->setComment(sndsrc->getComment());
-        p->setTrackNumber(sndsrc->getTrackNumber());
-        p->setReplayGain(sndsrc->getReplayGain());
-        p->setBpm(sndsrc->getBPM());
-        p->setDuration(sndsrc->getDuration());
-        p->setBitrate(sndsrc->getBitrate());
-        p->setSampleRate(sndsrc->getSampleRate());
-        p->setChannels(sndsrc->getChannels());
-        p->setKeyText(sndsrc->getKey(),
-              mixxx::track::io::key::FILE_METADATA);
-        p->setHeaderParsed(true);
-    } else {
-        qDebug() << "SoundSourceProxy::ParseHeader() error at file " << qFilename;
-        p->setHeaderParsed(false);
-    }
-    delete sndsrc;
-
-    return OK;
+int SoundSourceProxy::parseHeader() {
+    return m_pSoundSource ? m_pSoundSource->parseHeader() : ERR;
 }
 
 // static
