@@ -12,6 +12,7 @@
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
+#include "util/sandbox.h"
 
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -82,8 +83,14 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 
 void BrowseTableModel::setPath(QString absPath) {
-    m_current_path = absPath;
-    BrowseThread::getInstance()->executePopulation(m_current_path, this);
+    if (!Sandbox::instance()->askForAccess(absPath)) {
+        // TODO(rryan): Activate an info page about sandboxing.
+        return;
+    }
+
+    m_current_directory = MDir(absPath);
+    BrowseThread::getInstance()->executePopulation(
+            m_current_directory.dir().canonicalPath(), this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -208,7 +215,8 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Repopulate model if any tracks were actually deleted
     if (any_deleted) {
-        BrowseThread::getInstance()->executePopulation(m_current_path, this);
+        BrowseThread::getInstance()->executePopulation(
+                m_current_directory.dir().canonicalPath(), this);
     }
 }
 
