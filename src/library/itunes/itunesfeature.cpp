@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QUrl>
+#include <QFileInfo>
 
 #include "library/itunes/itunesfeature.h"
 
@@ -15,6 +16,7 @@
 #include "library/baseexternalplaylistmodel.h"
 #include "library/queryutil.h"
 #include "util/lcs.h"
+#include "util/sandbox.h"
 
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
@@ -126,15 +128,30 @@ void ITunesFeature::activate(bool forceReload) {
             // No Path in settings, try the default
             m_dbfile = getiTunesMusicPath();
         }
-        // if the path we got between the default and the database doesn't
-        // exist, ask for a new one and use/save it if it exists
-        if (!QFile::exists(m_dbfile)) {
+
+        QFileInfo dbFile(m_dbfile);
+        if (!m_dbfile.isEmpty() && dbFile.exists()) {
+            // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
+            // and using a custom iTunes path then we have to ask for access to this
+            // file.
+            Sandbox::instance()->askForAccess(m_dbfile);
+        } else {
+            // if the path we got between the default and the database doesn't
+            // exist, ask for a new one and use/save it if it exists
             m_dbfile = QFileDialog::getOpenFileName(
                 NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
-            if (m_dbfile.isEmpty() || !QFile::exists(m_dbfile)) {
+            QFileInfo dbFile(m_dbfile);
+            if (m_dbfile.isEmpty() || !dbFile.exists()) {
                 emit(showTrackModel(m_pITunesTrackModel));
                 return;
             }
+
+            // The user has picked a new directory via a file dialog. This means the
+            // system sandboxer (if we are sandboxed) has granted us permission to
+            // this folder. Create a security bookmark while we have permission so
+            // that we can access the folder on future runs. We need to canonicalize
+            // the path so we first wrap the directory string with a QDir.
+            Sandbox::instance()->createSecurityToken(dbFile);
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
         }
         m_isActivated =  true;
@@ -186,9 +203,18 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         SettingsDAO settings(m_database);
         QString dbfile = QFileDialog::getOpenFileName(
             NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
-        if (dbfile.isEmpty() || !QFile::exists(dbfile)) {
+
+        QFileInfo dbFileInfo(dbfile);
+        if (dbfile.isEmpty() || !dbFileInfo.exists()) {
             return;
         }
+        // The user has picked a new directory via a file dialog. This means the
+        // system sandboxer (if we are sandboxed) has granted us permission to
+        // this folder. Create a security bookmark while we have permission so
+        // that we can access the folder on future runs. We need to canonicalize
+        // the path so we first wrap the directory string with a QDir.
+        Sandbox::instance()->createSecurityToken(dbFileInfo);
+
         settings.setValue(ITDB_PATH_KEY, dbfile);
         activate(true); // clears tables before parsing
     }
@@ -521,13 +547,13 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
             break;
         }
     }
-    
+
     // If file is a remote file from iTunes Match, don't save it to the database.
     // There's no way that mixxx can access it.
     if (tracktype == "Remote") {
         return;
     }
-    
+
     // If we reach the end of <dict>
     // Save parsed track to database
     query.bindValue(":id", id);
