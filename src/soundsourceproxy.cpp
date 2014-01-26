@@ -16,6 +16,15 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QLibrary>
+#include <QMutexLocker>
+#include <QMutex>
+#include <QtDebug>
+#include <QDir>
+#include <QDesktopServices>
+#include <QCoreApplication>
+#include <QApplication>
+
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #ifdef __MAD__
@@ -36,16 +45,6 @@
 #endif
 #include "soundsourceflac.h"
 #include "util/cmdlineargs.h"
-
-#include <QLibrary>
-#include <QMutexLocker>
-#include <QMutex>
-#include <QtDebug>
-#include <QDir>
-#include <QDesktopServices>
-#include <QCoreApplication>
-#include <QApplication>
-
 
 //Static memory allocation
 QRegExp SoundSourceProxy::m_supportedFileRegex;
