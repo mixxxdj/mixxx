@@ -863,6 +863,7 @@ class MixxxCore(Feature):
                    "util/rlimit.cpp",
                    "util/valuetransformer.cpp",
                    "util/sandbox.cpp",
+                   "util/file.cpp",
                    "util/mac.cpp",
 
                    '#res/mixxx.qrc'
