@@ -7,6 +7,8 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QSharedPointer>
+#include <QHash>
+#include <QMutex>
 
 #include "configobject.h"
 
@@ -25,6 +27,7 @@ struct SandboxSecurityToken {
 
 // Reference counted pointer to SandboxSecurityToken.
 typedef QSharedPointer<SandboxSecurityToken> SecurityTokenPointer;
+typedef QWeakPointer<SandboxSecurityToken> SecurityTokenWeakPointer;
 
 class Sandbox {
   public:
@@ -66,8 +69,12 @@ class Sandbox {
     Sandbox() {}
 
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
+
+    // Must hold s_mutex to call this.
     static SecurityTokenPointer openTokenFromBookmark(const QString& canonicalPath,
                                                       const QString& bookmarkBase64);
+
+    // Creates a security token. s_mutex is not needed for this method.
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
 
     static bool canAccessPath(const QString& canonicalPath) {
@@ -75,8 +82,10 @@ class Sandbox {
         return access(pathEncoded.constData(), R_OK) == 0;
     }
 
+    static QMutex s_mutex;
     static bool s_bInSandbox;
     static ConfigObject<ConfigValue>* s_pSandboxPermissions;
+    static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;
 };
 
 

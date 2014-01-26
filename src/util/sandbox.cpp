@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QObject>
+#include <QMutexLocker>
 
 #include "util/mac.h"
 
@@ -16,11 +17,14 @@
 #endif
 #endif
 
+QMutex Sandbox::s_mutex(QMutex::Recursive);
 bool Sandbox::s_bInSandbox = false;
 ConfigObject<ConfigValue>* Sandbox::s_pSandboxPermissions = NULL;
+QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;
 
 // static
 void Sandbox::initialize(const QString& permissionsFile) {
+    QMutexLocker locker(&s_mutex);
     s_pSandboxPermissions = new ConfigObject<ConfigValue>(permissionsFile);
 
 #ifdef Q_OS_MAC
@@ -49,6 +53,7 @@ void Sandbox::initialize(const QString& permissionsFile) {
 
 // static
 void Sandbox::shutdown() {
+    QMutexLocker locker(&s_mutex);
     ConfigObject<ConfigValue>* pSandboxPermissions = s_pSandboxPermissions;
     s_pSandboxPermissions = NULL;
     if (pSandboxPermissions) {
@@ -125,6 +130,7 @@ ConfigKey Sandbox::keyForCanonicalPath(const QString& canonicalPath) {
 // static
 bool Sandbox::createSecurityToken(const QString& canonicalPath,
                                   bool isDirectory) {
+    QMutexLocker locker(&s_mutex);
     qDebug() << "createSecurityToken" << canonicalPath << isDirectory;
     if (s_pSandboxPermissions == NULL) {
         return false;
@@ -163,20 +169,33 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
 
 // static
 SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool create) {
-    qDebug() << "openSecurityToken QFileInfo" << file.canonicalFilePath() << create;
+    QMutexLocker locker(&s_mutex);
+    const QString& canonicalFilePath = file.canonicalFilePath();
+    qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath << create;
     if (s_pSandboxPermissions == NULL) {
         return SecurityTokenPointer();
     }
 
+    QHash<QString, SecurityTokenWeakPointer>::iterator it = s_activeTokens
+            .find(canonicalFilePath);
+    if (it != s_activeTokens.end()) {
+        SecurityTokenPointer pToken(it.value());
+        if (pToken) {
+            qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath
+                     << "using cached token for" << pToken->m_path;
+            return pToken;
+        }
+    }
+
     if (file.isDir()) {
-        return openSecurityToken(QDir(file.canonicalFilePath()), create);
+        return openSecurityToken(QDir(canonicalFilePath), create);
     }
 
     // First, check for a bookmark of the key itself.
-    ConfigKey key = keyForCanonicalPath(file.canonicalFilePath());
+    ConfigKey key = keyForCanonicalPath(canonicalFilePath);
     if (s_pSandboxPermissions->exists(key)) {
         return openTokenFromBookmark(
-                file.canonicalFilePath(),
+                canonicalFilePath,
                 s_pSandboxPermissions->getValueString(key));
     }
 
@@ -196,7 +215,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
 
     if (created) {
         return openTokenFromBookmark(
-                file.canonicalFilePath(),
+                canonicalFilePath,
                 s_pSandboxPermissions->getValueString(key));
     }
     return SecurityTokenPointer();
@@ -204,36 +223,60 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
 
 // static
 SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
-    qDebug() << "openSecurityToken QDir" << dir.canonicalPath() << create;
+    QMutexLocker locker(&s_mutex);
+    QDir walkDir = dir;
+    QString walkDirCanonicalPath = walkDir.canonicalPath();
+
+    qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath << create;
     if (s_pSandboxPermissions == NULL) {
         return SecurityTokenPointer();
     }
 
-    QDir walkDir = dir;
-    ConfigKey key = keyForCanonicalPath(walkDir.canonicalPath());
-
-    while (!s_pSandboxPermissions->exists(key)) {
-        // There's nothing higher. Bail.
-        if (!walkDir.cdUp()) {
-            if (create && createSecurityToken(dir.canonicalPath(), true)) {
-                key = keyForCanonicalPath(dir.canonicalPath());
-                return openTokenFromBookmark(
-                        dir.canonicalPath(),
-                        s_pSandboxPermissions->getValueString(key));
+    while (true) {
+        // Look for a valid token in the cache.
+        QHash<QString, SecurityTokenWeakPointer>::iterator it = s_activeTokens
+                .find(walkDirCanonicalPath);
+        if (it != s_activeTokens.end()) {
+            SecurityTokenPointer pToken(it.value());
+            if (pToken) {
+                qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath
+                         << "using cached token for" << pToken->m_path;
+                return pToken;
             }
-            return SecurityTokenPointer();
         }
 
-        key = keyForCanonicalPath(walkDir.canonicalPath());
+        // Next, check if the key exists in the config.
+        ConfigKey key = keyForCanonicalPath(walkDirCanonicalPath);
+        if (s_pSandboxPermissions->exists(key)) {
+            SecurityTokenPointer pToken = openTokenFromBookmark(
+                    dir.canonicalPath(),
+                    s_pSandboxPermissions->getValueString(key));
+            if (pToken) {
+                return pToken;
+            }
+        }
+
+        // Go one step higher and repeat.
+        if (!walkDir.cdUp()) {
+            // There's nothing higher. Bail.
+            break;
+        }
+        walkDirCanonicalPath = walkDir.canonicalPath();
     }
 
-    // At this point, key is present in s_pSandboxPermissions.
-    return openTokenFromBookmark(dir.canonicalPath(),
-                                 s_pSandboxPermissions->getValueString(key));
+    // Last chance: Try to create a token for this directory.
+    if (create && createSecurityToken(dir.canonicalPath(), true)) {
+        ConfigKey key = keyForCanonicalPath(dir.canonicalPath());
+        return openTokenFromBookmark(
+                dir.canonicalPath(),
+                s_pSandboxPermissions->getValueString(key));
+    }
+    return SecurityTokenPointer();
 }
 
 SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
-                                                     const QString& bookmarkBase64) {
+                                                    const QString& bookmarkBase64) {
+
     QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
 #ifdef Q_OS_MAC
     if (!bookmarkBA.isEmpty()) {
@@ -256,8 +299,10 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
                 qDebug() << "CFURLStartAccessingSecurityScopedResource failed for"
                          << canonicalPath;
             } else {
-                return SecurityTokenPointer(new SandboxSecurityToken(
-                        canonicalPath, url));
+                SecurityTokenPointer pToken = SecurityTokenPointer(
+                    new SandboxSecurityToken(canonicalPath, url));
+                s_activeTokens[canonicalPath] = pToken;
+                return pToken;
             }
         } else {
             qDebug() << "Cannot resolve security-scoped bookmark for" << canonicalPath;
