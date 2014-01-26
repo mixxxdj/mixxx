@@ -223,12 +223,18 @@ void LibraryScanner::run() {
     QStringList dirs = m_directoryDao.getDirs();
     bool bScanFinishedCleanly = false;
     // Recursivly scan each directory in the directories table.
-    foreach (const QString& dir, dirs) {
-        bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
+    foreach (const QString& dirPath, dirs) {
+        // Acquire a security bookmark for this directory if we are in a
+        // sandbox. For speed we avoid opening security bookmarks when recursive
+        // scanning so that relies on having an open bookmark for the containing
+        // directory.
+        MDir dir(dirPath);
+
+        bScanFinishedCleanly = recursiveScan(dirPath, verifiedDirectories);
         if (bScanFinishedCleanly) {
-            qDebug() << "Recursive scanning (" << dir << ") finished cleanly.";
+            qDebug() << "Recursive scanning (" << dirPath << ") finished cleanly.";
         } else {
-            qDebug() << "Recursive scanning (" << dir << ") interrupted.";
+            qDebug() << "Recursive scanning (" << dirPath << ") interrupted.";
         }
     }
 
