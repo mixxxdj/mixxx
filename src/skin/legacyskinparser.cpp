@@ -1480,7 +1480,20 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 control->setParent(pConnection);
             }
         } else {
-            ControlWidgetConnection::EmitOption emitOption;
+            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
+            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
+
+            Qt::MouseButton state = Qt::NoButton;
+            if (m_pContext->hasNode(con, "ButtonState")) {
+                if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
+                    state = Qt::LeftButton;
+                } else if (m_pContext->selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
+                    state = Qt::RightButton;
+                }
+            }
+
+            ControlWidgetConnection::EmitOption emitOption =
+                    ControlWidgetConnection::EMIT_ON_PRESS;
             switch (m_pContext->selectBoolOrNone(con, "EmitOnDownPress")) {
             case 0:
                 emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
@@ -1494,23 +1507,14 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                     emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
                 } else {
                     // default:
-                    // no emit option is set or
-                    // EmitOnDownPress is set to true
-                    emitOption = ControlWidgetConnection::EMIT_ON_PRESS;
+                    // no emit option is set
+                    WPushButton* pPushbutton = dynamic_cast<WPushButton*>(pWidget);
+                    if (pPushbutton) {
+                        // Calculate the default emit style form the button mode
+                        emitOption = pPushbutton->getDefaultEmitOption(state);
+                    }
                 }
                 break;
-            }
-
-            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
-            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
-
-            Qt::MouseButton state = Qt::NoButton;
-            if (m_pContext->hasNode(con, "ButtonState")) {
-                if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
-                    state = Qt::LeftButton;
-                } else if (m_pContext->selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
-                    state = Qt::RightButton;
-                }
             }
 
             // Connect control proxy to widget. Parented to pWidget so it is not
@@ -1529,26 +1533,26 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             }
 
             switch (state) {
-                case Qt::NoButton:
-                    pWidget->addConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastLeftOrNoButtonConnection = pConnection;
-                    }
-                    break;
-                case Qt::LeftButton:
-                    pWidget->addLeftConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastLeftOrNoButtonConnection = pConnection;
-                    }
-                    break;
-                case Qt::RightButton:
-                    pWidget->addRightConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastRightButtonConnection = pConnection;
-                    }
-                    break;
-                default:
-                    break;
+            case Qt::NoButton:
+                pWidget->addConnection(pConnection);
+                if (connectValueToWidget) {
+                    pLastLeftOrNoButtonConnection = pConnection;
+                }
+                break;
+            case Qt::LeftButton:
+                pWidget->addLeftConnection(pConnection);
+                if (connectValueToWidget) {
+                    pLastLeftOrNoButtonConnection = pConnection;
+                }
+                break;
+            case Qt::RightButton:
+                pWidget->addRightConnection(pConnection);
+                if (connectValueToWidget) {
+                    pLastRightButtonConnection = pConnection;
+                }
+                break;
+            default:
+                break;
             }
 
             // We only add info for controls that this widget affects, not

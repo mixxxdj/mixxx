@@ -31,6 +31,7 @@
 #include "widget/wpixmapstore.h"
 #include "controlpushbutton.h"
 #include "skin/skincontext.h"
+#include "controlwidgetconnection.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -52,6 +53,8 @@ class WPushButton : public WWidget {
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
     void setStates(int iStatesW);
+
+    ControlWidgetConnection::EmitOption getDefaultEmitOption(Qt::MouseButton state);
 
   public slots:
     void onConnectedControlValueChanged(double);

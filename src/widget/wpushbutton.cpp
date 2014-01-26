@@ -136,6 +136,21 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
+ControlWidgetConnection::EmitOption WPushButton::getDefaultEmitOption(Qt::MouseButton state) {
+    if (state == Qt::RightButton) {
+        return ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+    } else {
+        switch (m_leftButtonMode) {
+        case ControlPushButton::PUSH:
+        case ControlPushButton::LONGPRESSLATCHING:
+        case ControlPushButton::POWERWINDOW:
+            return ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+        default:
+            return ControlWidgetConnection::EMIT_ON_PRESS;
+        }
+    }
+}
+
 void WPushButton::setStates(int iStates) {
     m_bPressed = false;
     m_iNoStates = iStates;
