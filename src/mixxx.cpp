@@ -1305,6 +1305,13 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
 
 
     if (!s.isNull()) {
+        // The user has picked a file via a file dialog. This means the system
+        // sandboxer (if we are sandboxed) has granted us permission to this
+        // folder. Create a security bookmark while we have permission so that
+        // we can access the folder on future runs. We need to canonicalize the
+        // path so we first wrap the directory string with a QDir.
+        QFileInfo trackInfo(s);
+        Sandbox::instance()->createSecurityToken(trackInfo);
         m_pPlayerManager->slotLoadToDeck(s, deck);
     }
 }
