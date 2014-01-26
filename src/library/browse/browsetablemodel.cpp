@@ -12,8 +12,6 @@
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
-#include "util/sandbox.h"
-
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
@@ -82,13 +80,8 @@ void BrowseTableModel::addSearchColumn(int index) {
     m_searchColumns.push_back(index);
 }
 
-void BrowseTableModel::setPath(QString absPath) {
-    if (!Sandbox::askForAccess(absPath)) {
-        // TODO(rryan): Activate an info page about sandboxing.
-        return;
-    }
-
-    m_current_directory = MDir(absPath);
+void BrowseTableModel::setPath(const MDir& path) {
+    m_current_directory = path;
     BrowseThread::getInstance()->executePopulation(m_current_directory, this);
 }
 

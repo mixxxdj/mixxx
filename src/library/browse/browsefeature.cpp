@@ -185,9 +185,19 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
     QString path = item->dataPath().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
-        m_browseModel.setPath("");
+        m_browseModel.setPath(MDir());
     } else {
-        m_browseModel.setPath(path);
+        MDir dir(path);
+        if (!dir.canAccess()) {
+            if (!Sandbox::askForAccess(path)) {
+                // TODO(rryan): Activate an info page about sandboxing?
+                return;
+            } else {
+                // Re-create to get a new token.
+                dir = MDir(path);
+            }
+        }
+        m_browseModel.setPath(dir);
     }
     emit(showTrackModel(&m_proxyModel));
 }

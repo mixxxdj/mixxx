@@ -37,7 +37,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
   public:
     BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
     virtual ~BrowseTableModel();
-    void setPath(QString absPath);
+    void setPath(const MDir& path);
     //reimplemented from TrackModel class
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
