@@ -25,6 +25,8 @@ class MFile {
         return m_pSecurityToken;
     }
 
+    bool canAccess();
+
     MFile& operator=(const MFile& other);
 
   private:
@@ -51,6 +53,8 @@ class MDir {
     SecurityTokenPointer token() {
         return m_pSecurityToken;
     }
+
+    bool canAccess();
 
     MDir& operator=(const MDir& other);
 
