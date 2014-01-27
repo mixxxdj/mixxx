@@ -24,14 +24,12 @@ double ControlWidgetConnection::getControlParameter() const {
 
 ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
                                                                    ControlObjectSlave* pControl,
-                                                                   bool connectValueFromWidget,
-                                                                   bool connectValueToWidget,
+                                                                   DirectionOption directionOption,
                                                                    EmitOption emitOption)
         : ControlWidgetConnection(pBaseWidget, pControl),
-          m_bConnectValueFromWidget(connectValueFromWidget),
-          m_bConnectValueToWidget(connectValueToWidget),
+          m_directionOption(directionOption),
           m_emitOption(emitOption) {
-    if (m_bConnectValueToWidget) {
+    if (directionOption & DIR_TO_WIDGET) {
         slotControlValueChanged(m_pControl->get());
     }
 }
@@ -41,16 +39,15 @@ ControlParameterWidgetConnection::~ControlParameterWidgetConnection() {
 
 QString ControlParameterWidgetConnection::toDebugString() const {
     const ConfigKey& key = m_pControl->getKey();
-    return QString("%1,%2 Parameter: %3 ToWidget: %4 FromWidget %5 Emit: %6")
+    return QString("%1,%2 Parameter: %3 Direction: %4 Emit: %5")
             .arg(key.group, key.item,
                  QString::number(m_pControl->getParameter()),
-                 ::toDebugString(m_bConnectValueToWidget),
-                 ::toDebugString(m_bConnectValueFromWidget),
+                 directionOptionToString(m_directionOption),
                  emitOptionToString(m_emitOption));
 }
 
 void ControlParameterWidgetConnection::slotControlValueChanged(double v) {
-    if (m_bConnectValueToWidget) {
+    if (m_directionOption & DIR_TO_WIDGET) {
         m_pWidget->onConnectedControlValueChanged(
                 m_pControl->getParameterForValue(v));
         // TODO(rryan): copied from WWidget. Keep?
@@ -59,25 +56,25 @@ void ControlParameterWidgetConnection::slotControlValueChanged(double v) {
 }
 
 void ControlParameterWidgetConnection::resetControl() {
-    if (m_bConnectValueFromWidget) {
+    if (m_directionOption & DIR_FROM_WIDGET) {
         m_pControl->reset();
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameter(double v) {
-    if (m_bConnectValueFromWidget) {
+    if (m_directionOption & DIR_FROM_WIDGET) {
         m_pControl->setParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterDown(double v) {
-    if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_PRESS) {
+    if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_PRESS)) {
         m_pControl->setParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterUp(double v) {
-    if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_RELEASE) {
+    if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_RELEASE)) {
         m_pControl->setParameter(v);
     }
 }

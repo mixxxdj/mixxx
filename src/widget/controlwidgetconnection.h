@@ -34,6 +34,28 @@ class ControlWidgetConnection : public QObject {
         }
     }
 
+    enum DirectionOption {
+        DIR_NON                  = 0x00,
+        DIR_FROM_WIDGET          = 0x01,
+        DIR_TO_WIDGET            = 0x02,
+        DIR_FROM_AND_TO_WIDGET   = 0x03
+    };
+
+    static QString directionOptionToString(DirectionOption option) {
+        switch (option) {
+            case DIR_NON:
+                return "NON";
+            case DIR_FROM_WIDGET:
+                return "FROM_WIDGET";
+            case DIR_TO_WIDGET:
+                return "TO_WIDGET";
+            case DIR_FROM_AND_TO_WIDGET:
+                return "FROM_AND_TO_WIDGET";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
     // Takes ownership of pControl.
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
                             ControlObjectSlave* pControl);
@@ -61,8 +83,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
   public:
     ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
                                      ControlObjectSlave* pControl,
-                                     bool connectValueFromWidget,
-                                     bool connectValueToWidget,
+                                     DirectionOption directionOption,
                                      EmitOption emitOption);
     virtual ~ControlParameterWidgetConnection();
 
@@ -78,8 +99,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     void slotControlValueChanged(double v);
 
   private:
-    bool m_bConnectValueFromWidget;
-    bool m_bConnectValueToWidget;
+    DirectionOption m_directionOption;
     EmitOption m_emitOption;
 };
 

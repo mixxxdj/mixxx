@@ -174,6 +174,15 @@ ControlWidgetConnection::EmitOption WPushButton::getDefaultEmitOption(Qt::MouseB
     }
 }
 
+ControlWidgetConnection::DirectionOption WPushButton::getDefaultDirectionOption(Qt::MouseButton state) {
+    // Default connection strategy:
+    // Only a Left or NoButton Connection -> FROM_AND_TO_WIDGET
+    // In case of Left And NoButton Connection -> Left: FROM_WIDGET NoButton: TO_WIDGET
+    // Right Button connection -> FROM_WIDGET
+
+    return ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+}
+
 void WPushButton::setStates(int iStates) {
     m_bPressed = false;
     m_iNoStates = iStates;

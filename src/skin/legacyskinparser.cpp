@@ -1480,9 +1480,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 control->setParent(pConnection);
             }
         } else {
-            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
-            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
-
             Qt::MouseButton state = Qt::NoButton;
             if (m_pContext->hasNode(con, "ButtonState")) {
                 if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
@@ -1491,6 +1488,46 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                     state = Qt::RightButton;
                 }
             }
+
+            int directionOptionSet = 2;
+            int directionOption = ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+            switch (m_pContext->selectBoolOrNone(con, "ConnectValueFromWidget")) {
+            case 0:
+                directionOption = directionOption & ~ControlWidgetConnection::DIR_FROM_WIDGET;
+                break;
+            case 1:
+                directionOption = directionOption | ControlWidgetConnection::DIR_FROM_WIDGET;
+                break;
+            default:
+                --directionOptionSet;
+                break;
+            }
+
+            switch (m_pContext->selectBoolOrNone(con, "ConnectValueToWidget")) {
+            case 0:
+                directionOption &= ~ControlWidgetConnection::DIR_TO_WIDGET;
+                break;
+            case 1:
+                directionOption |= ControlWidgetConnection::DIR_TO_WIDGET;
+                break;
+            default:
+                --directionOptionSet;
+                break;
+            }
+
+            if (!directionOptionSet) {
+                // default:
+                // no direction option is set
+                WPushButton* pPushbutton = dynamic_cast<WPushButton*>(pWidget);
+                if (pPushbutton) {
+                    // Calculate the default emit style form the button mode
+                    directionOption = pPushbutton->getDefaultDirectionOption(state);
+                }
+            }
+
+
+            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
+            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
 
             ControlWidgetConnection::EmitOption emitOption =
                     ControlWidgetConnection::EMIT_ON_PRESS;
@@ -1520,10 +1557,11 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
             ControlObjectSlave* pControlWidget = new ControlObjectSlave(
-                control->getKey(), pWidget->toQWidget());
+                    control->getKey(), pWidget->toQWidget());
             ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                pWidget, pControlWidget, connectValueFromWidget,
-                connectValueToWidget, emitOption);
+                    pWidget, pControlWidget,
+                    static_cast<ControlWidgetConnection::DirectionOption>(directionOption),
+                    emitOption);
 
             // If we created this control, bind it to the
             // ControlWidgetConnection so that it is deleted when the connection
