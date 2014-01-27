@@ -61,6 +61,12 @@ if build.platform_is_windows:
         mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+elif build.platform_is_osx:
+        # Bug #1258435: executable name must match CFBundleExecutable in the
+        # Info.plist. For codesigned bundles it seems the CFBundleExecutable
+        # must match the bundle name or else we SIGILL at startup (not sure
+        # why).
+        mixxx_bin = env.Program('Mixxx', sources)
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
@@ -380,9 +386,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                    File("#README"),
                    File("#LICENSE")]
         bundle = env.App(
-                # Bug #1258435. This must be lower case as it is the binary
-                # name.
-                "mixxx",
+                "Mixxx_bundle",
                 sources,
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
@@ -414,7 +418,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # that changse. Otherwise SCons will think the CodeSign target is up to
         # date and not run it.
         codesign = env.CodeSign(
-                'Mixxx',
+                'Mixxx_codesign',
                 sources,
                 CODESIGN_INSTALLER_IDENTITY=codesign_installer_identity,
                 CODESIGN_APPLICATION_IDENTITY=codesign_application_identity,
