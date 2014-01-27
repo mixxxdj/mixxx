@@ -36,7 +36,8 @@ const int PB_SHORTKLICKTIME = 200;
 WPushButton::WPushButton(QWidget* pParent)
         : WWidget(pParent),
           m_leftButtonMode(ControlPushButton::PUSH),
-          m_rightButtonMode(ControlPushButton::PUSH) {
+          m_rightButtonMode(ControlPushButton::PUSH),
+          m_hasDisplayConnection(false) {
     setStates(0);
 }
 
@@ -107,8 +108,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         }
 
         ControlPushButton* p = dynamic_cast<ControlPushButton*>(
-            ControlObject::getControl(configKey));
-
+                ControlObject::getControl(configKey));
         if (p) {
             // A NULL here either means that this control is not a
             // ControlPushButton or it does not exist. This logic is

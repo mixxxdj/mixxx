@@ -278,8 +278,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObjectThread cot(configKey);
-            cot.slotSet(value);
+            ControlObject::set(configKey, value);
         }
     }
 
