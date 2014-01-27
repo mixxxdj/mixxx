@@ -44,7 +44,8 @@ WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftBut
                          ControlPushButton::ButtonMode rightButtonMode)
         : WWidget(pParent),
           m_leftButtonMode(leftButtonMode),
-          m_rightButtonMode(rightButtonMode) {
+          m_rightButtonMode(rightButtonMode),
+          m_hasDisplayConnection(false) {
     setStates(0);
 }
 
@@ -141,11 +142,18 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                     } else {
                         m_leftButtonMode = p->getButtonMode();
                     }
+                } else {
+                    m_hasDisplayConnection = true;
                 }
             }
         } else {
             // No ControlPushButton Connection Probably a display connection
             //qDebug() << "WPushButton::setup: Connected a non push button" << configKey.group << configKey.item;
+            if (isLeftButton) {
+                explicitLeftFound = true;
+            } else if (!isRightButton && explicitLeftFound) {
+                m_hasDisplayConnection = true;
+            }
         }
         con = con.nextSibling();
     }
@@ -179,8 +187,21 @@ ControlWidgetConnection::DirectionOption WPushButton::getDefaultDirectionOption(
     // Only a Left or NoButton Connection -> FROM_AND_TO_WIDGET
     // In case of Left And NoButton Connection -> Left: FROM_WIDGET NoButton: TO_WIDGET
     // Right Button connection -> FROM_WIDGET
-
-    return ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+    if (state == Qt::LeftButton) {
+        if (m_hasDisplayConnection) {
+            return ControlWidgetConnection::DIR_FROM_WIDGET;
+        } else {
+            return ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+        }
+    } else if (state == Qt::RightButton) {
+        return ControlWidgetConnection::DIR_FROM_WIDGET;
+    } else {
+        if (m_hasDisplayConnection) {
+            return ControlWidgetConnection::DIR_TO_WIDGET;
+        } else {
+            return ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+        }
+    }
 }
 
 void WPushButton::setStates(int iStates) {

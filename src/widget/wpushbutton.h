@@ -92,6 +92,7 @@ class WPushButton : public WWidget {
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;
+    bool m_hasDisplayConnection;
     QTimer m_clickTimer;
 };
 
