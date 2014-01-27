@@ -334,7 +334,6 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
     QDirIterator it(dir.path(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     QFileInfo currentFileInfo;
-    bool bScanFinishedCleanly = true;
     QLinkedList<QFileInfo> filesToImport;
     QLinkedList<QDir> dirsToScan;
 
@@ -383,8 +382,11 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
             m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
         }
 
-        // Rescan that mofo!
-        bScanFinishedCleanly = importFiles(filesToImport);
+        // Rescan that mofo! If importing fails then the scan was cancelled so
+        // we return immediately.
+        if (!importFiles(filesToImport)) {
+            return false;
+        }
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified
@@ -400,16 +402,11 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
-        if (!bScanFinishedCleanly) {
-            break;
-        }
-
         if (!recursiveScan(nextDir, verifiedDirectories)) {
-            bScanFinishedCleanly = false;
+            return false;
         }
     }
-
-    return bScanFinishedCleanly;
+    return true;
 }
 
 bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files) {
@@ -423,27 +420,22 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files) {
         //qDebug() << "TrackCollection::importFiles" << filePath;
 
         // If the track is in the database, mark it as existing. This code gets
-        // exectuted when other files in the same directory have changed (the
+        // executed when other files in the same directory have changed (the
         // directory hash has changed).
         m_trackDao.markTrackLocationAsVerified(filePath);
 
-        // If the file already exists in the database, continue and go on to the
-        // next file.
-
-        // If the file doesn't already exist in the database, then add it. If it
-        // does exist in the database, then it is either in the user's library
-        // OR the user has "removed" the track via "Right-Click ->
-        // Remove". These tracks stay in the library, but their mixxx_deleted
-        // column is 1.
+        // If the file does not exist in the database then add it. If it does
+        // then it is either in the user's library OR the user has "removed" the
+        // track via "Right-Click -> Remove". These tracks stay in the library,
+        // but their mixxx_deleted column is 1.
         if (!m_trackDao.trackExistsInDatabase(filePath)) {
             emit(progressLoading(file.fileName()));
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(filePath),
                                                &QObject::deleteLater);
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
-                // Successful added
-                // signal the main instance of TrackDao, that there is a
-                // new Track in the database
+                // Successfully added. Signal the main instance of TrackDAO,
+                // that there is a new track in the database.
                 m_pCollection->getTrackDAO().databaseTrackAdded(pTrack);
             } else {
                 qDebug() << "Track ("+filePath+") could not be added";
