@@ -584,7 +584,7 @@ class MixxxCore(Feature):
                    "engine/cuecontrol.cpp",
                    "engine/quantizecontrol.cpp",
                    "engine/clockcontrol.cpp",
-                   "engine/readaheadmanager.cpp", 
+                   "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
                    "cachingreaderworker.cpp",
 
@@ -918,11 +918,6 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
             build.env.Append(CCFLAGS='-g')
-
-            # Check that g++ is present (yeah, SCONS is a bit dumb here)
-            # returns a non zeros return code if g++ is found
-            if os.system("which g++ > /dev/null"):
-                raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
             mixxx_lib_path = SCons.ARGUMENTS.get(

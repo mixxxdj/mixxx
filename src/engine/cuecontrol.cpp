@@ -41,7 +41,7 @@ CueControl::CueControl(const char* _group,
 
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
     m_pCuePoint->set(-1.0);
-    
+
     m_pCueMode = new ControlObject(ConfigKey(_group, "cue_mode"));
     // 0.0 -> Pioneer mode
     // 1.0 -> Denon mode
@@ -103,7 +103,6 @@ CueControl::~CueControl() {
     delete m_pCuePreview;
     delete m_pCueCDJ;
     delete m_pCueDefault;
-    delete m_pStopButton;
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;

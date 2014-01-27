@@ -58,6 +58,8 @@ QString SkinLoader::getConfiguredSkinPath() {
             else {
                 defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
             }
+            qSkinPath = m_pConfig->getResourcePath();
+            qSkinPath.append("skins/");
             qSkinPath.append(defaultSkin);
         }
     }

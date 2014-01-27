@@ -70,9 +70,7 @@ class TrackCollection : public QObject
     }
 
   signals:
-    void startedLoading();
     void progressLoading(QString path);
-    void finishedLoading();
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

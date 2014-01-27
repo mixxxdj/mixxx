@@ -125,7 +125,6 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
                                       volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
-    emit(startedLoading());
     // QFileInfoList files;
 
     //get a list of the contents of the directory and go through it.
@@ -167,7 +166,6 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             }
         }
     }
-    emit(finishedLoading());
     return true;
 }
 
