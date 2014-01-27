@@ -888,6 +888,9 @@ class Opus(Feature):
                            (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 0)
 
     def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
         # Supported for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
         if build.platform_is_linux or build.platform_is_osx \
