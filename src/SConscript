@@ -427,7 +427,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 CODESIGN_ENTITLEMENTS=codesign_entitlements)
         env.AlwaysBuild(codesign)
         env.Alias('sign', codesign)
-        env.AlwaysBuild(codesign)
 
         package_name = 'mixxx'
         package_version = osx_construct_version(build, mixxx_version, branch_name, vcs_revision)

@@ -418,7 +418,8 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
     return true;
 }
 
-bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files) {
+bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
+                                 SecurityTokenPointer pToken) {
     foreach (const QFileInfo& file, files) {
         // If a flag was raised telling us to cancel the library scan then stop.
         if (m_bCancelLibraryScan) {
