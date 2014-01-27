@@ -2,7 +2,7 @@
 // Create by 14/01/2013 Tuukka Pasanen
 // Based on work 2003 by Svein Magne Bang
 
-#ifndef __OPUSFILETAGS__
+#if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
 #include <taglib/opusfile.h>
 #endif
 
@@ -198,7 +198,7 @@ int SoundSourceOpus::parseHeader() {
     this->setType("opus");
 
 // If we don't have new enough Taglib we use libopusfile parser!
-#ifndef __OPUSFILETAGS__
+#if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata
@@ -258,7 +258,7 @@ int SoundSourceOpus::parseHeader() {
 #endif
     
     
-#ifndef __OPUSFILETAGS__
+#if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
     return result ? OK : ERR;
 #endif
   
