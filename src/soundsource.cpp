@@ -29,7 +29,6 @@
 #include <taglib/wavpackfile.h>
 
 #include "soundsource.h"
-#include "util/sandbox.h"
 
 namespace Mixxx
 {

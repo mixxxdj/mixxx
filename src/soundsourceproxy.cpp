@@ -45,7 +45,6 @@
 #endif
 #include "soundsourceflac.h"
 #include "util/cmdlineargs.h"
-#include "util/sandbox.h"
 
 //Static memory allocation
 QRegExp SoundSourceProxy::m_supportedFileRegex;
@@ -53,16 +52,15 @@ QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
 QMap<QString, getSoundSourceFunc> SoundSourceProxy::m_extensionsSupportedByPlugins;
 QMutex SoundSourceProxy::m_extensionsMutex;
 
-
 //Constructor
 SoundSourceProxy::SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken)
     : Mixxx::SoundSource(qFilename),
       m_pSoundSource(NULL),
       m_pSecurityToken(pToken) {
     if (pToken.isNull()) {
-	// Open a security token for the file if we are in a sandbox.
-	QFileInfo info(m_qFilename);
-	m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+        // Open a security token for the file if we are in a sandbox.
+        QFileInfo info(m_qFilename);
+        m_pSecurityToken = Sandbox::openSecurityToken(info, true);
     }
 
     // Create the underlying SoundSource.
@@ -76,9 +74,9 @@ SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
       m_pTrack(pTrack),
       m_pSecurityToken(pTrack->getSecurityToken()) {
     if (m_pSecurityToken.isNull()) {
-	// Open a security token for the file if we are in a sandbox.
-	QFileInfo info(m_qFilename);
-	m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+        // Open a security token for the file if we are in a sandbox.
+        QFileInfo info(m_qFilename);
+        m_pSecurityToken = Sandbox::openSecurityToken(info, true);
     }
 
     m_pSoundSource = initialize(pTrack->getLocation());

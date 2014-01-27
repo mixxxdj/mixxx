@@ -32,7 +32,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
-#include "util/sandbox.h"
 
 class TrackInfoObject;
 
