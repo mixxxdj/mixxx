@@ -187,6 +187,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         m_browseModel.setPath(MDir());
     } else {
+        // Open a security token for this path and if we do not have access, ask
+        // for it.
         MDir dir(path);
         if (!dir.canAccess()) {
             if (!Sandbox::askForAccess(path)) {
