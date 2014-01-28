@@ -1479,6 +1479,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 control->setParent(pConnection);
             }
         } else {
+            bool nodeValue;
             Qt::MouseButton state = Qt::NoButton;
             if (m_pContext->hasNode(con, "ButtonState")) {
                 if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
@@ -1488,30 +1489,26 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 }
             }
 
-            int directionOptionSet = 2;
+            bool directionOptionSet = false;
             int directionOption = ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
-            switch (m_pContext->selectBoolOrNone(con, "ConnectValueFromWidget")) {
-            case 0:
-                directionOption = directionOption & ~ControlWidgetConnection::DIR_FROM_WIDGET;
-                break;
-            case 1:
-                directionOption = directionOption | ControlWidgetConnection::DIR_FROM_WIDGET;
-                break;
-            default:
-                --directionOptionSet;
-                break;
+            if(m_pContext->hasNodeSelectBool(
+                    con, "ConnectValueFromWidget", &nodeValue)) {
+                if (nodeValue) {
+                    directionOption = directionOption | ControlWidgetConnection::DIR_FROM_WIDGET;
+                } else {
+                    directionOption = directionOption & ~ControlWidgetConnection::DIR_FROM_WIDGET;
+                }
+                directionOptionSet = true;
             }
 
-            switch (m_pContext->selectBoolOrNone(con, "ConnectValueToWidget")) {
-            case 0:
-                directionOption &= ~ControlWidgetConnection::DIR_TO_WIDGET;
-                break;
-            case 1:
-                directionOption |= ControlWidgetConnection::DIR_TO_WIDGET;
-                break;
-            default:
-                --directionOptionSet;
-                break;
+            if(m_pContext->hasNodeSelectBool(
+                    con, "ConnectValueToWidget", &nodeValue)) {
+                if (nodeValue) {
+                    directionOption = directionOption | ControlWidgetConnection::DIR_TO_WIDGET;
+                } else {
+                    directionOption = directionOption & ~ControlWidgetConnection::DIR_TO_WIDGET;
+                }
+                directionOptionSet = true;
             }
 
             if (!directionOptionSet) {
@@ -1526,27 +1523,28 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
             ControlWidgetConnection::EmitOption emitOption =
                     ControlWidgetConnection::EMIT_ON_PRESS;
-            switch (m_pContext->selectBoolOrNone(con, "EmitOnDownPress")) {
-            case 0:
-                emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
-                break;
-            case 1:
-                emitOption = ControlWidgetConnection::EMIT_ON_PRESS;
-                break;
-            default:
-                if (m_pContext->selectBoolOrNone(con, "EmitOnPressAndRelease") == 1) {
-                    // if EmitOnPressAndRelease is explicit set to true
+            if(m_pContext->hasNodeSelectBool(
+                    con, "EmitOnDownPress", &nodeValue)) {
+                if (nodeValue) {
+                    emitOption = ControlWidgetConnection::EMIT_ON_PRESS;
+                } else {
+                    emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
+                }
+            } else  if(m_pContext->hasNodeSelectBool(
+                    con, "EmitOnPressAndRelease", &nodeValue)) {
+                if (nodeValue) {
                     emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
                 } else {
-                    // default:
-                    // no emit option is set
-                    WPushButton* pPushbutton = dynamic_cast<WPushButton*>(pWidget);
-                    if (pPushbutton) {
-                        // Calculate the default emit style form the button mode
-                        emitOption = pPushbutton->getDefaultEmitOption(state);
-                    }
+                    qWarning() << "LegacySkinParser::setupConnections(): EmitOnPressAndRelease must not set false";
                 }
-                break;
+            } else {
+                // default:
+                // no emit option is set
+                WPushButton* pPushbutton = dynamic_cast<WPushButton*>(pWidget);
+                if (pPushbutton) {
+                    // Calculate the default emit style form the button mode
+                    emitOption = pPushbutton->getDefaultEmitOption(state);
+                }
             }
 
             // Connect control proxy to widget. Parented to pWidget so it is not
