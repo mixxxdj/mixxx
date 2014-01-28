@@ -319,7 +319,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     int row = index.row();
     int col = index.column();
     QString track_location = getTrackLocation(index);
-    AudioTagger tagger(track_location);
+    AudioTagger tagger(track_location, m_current_directory.token());
 
     // set tagger information
     tagger.setArtist(this->index(row, COLUMN_ARTIST).data().toString());

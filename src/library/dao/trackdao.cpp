@@ -1453,7 +1453,7 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
 
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-        AudioTagger tagger(pTrack->getLocation());
+        AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
 
         tagger.setArtist(pTrack->getArtist());
         tagger.setTitle(pTrack->getTitle());
