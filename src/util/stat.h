@@ -15,9 +15,34 @@ class Stat {
         DURATION_MSEC,
         DURATION_NANOSEC,
         DURATION_SEC,
-        TRACE_START,
-        TRACE_FINISH,
+        EVENT,
+        EVENT_START,
+        EVENT_END,
     };
+
+    static QString statTypeToString(StatType type) {
+        switch (type) {
+            case UNSPECIFIED:
+                return "UNSPECIFIED";
+            case COUNTER:
+                return "COUNTER";
+            case DURATION_MSEC:
+                return "DURATION_MSEC";
+            case DURATION_NANOSEC:
+                return "DURATION_NANOSEC";
+            case DURATION_SEC:
+                return "DURATION_SEC";
+            case EVENT:
+                return "EVENT";
+            case EVENT_START:
+                return "START";
+            case EVENT_END:
+                return "END";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
     enum ComputeTypes {
         NONE            = 0x0000,
         // O(1) in time and space.
@@ -76,10 +101,10 @@ QDebug operator<<(QDebug dbg, const Stat &stat);
 
 struct StatReport {
     char* tag;
+    qint64 time;
     Stat::StatType type;
     Stat::ComputeFlags compute;
     double value;
-    // TODO(XXX): time?
 };
 
 #endif /* STAT_H */

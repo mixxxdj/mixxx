@@ -18,8 +18,6 @@
 #ifndef WVUMETER_H
 #define WVUMETER_H
 
-#include "widget/wwidget.h"
-
 #include <QPixmap>
 #include <QString>
 #include <QPaintEvent>
@@ -27,23 +25,26 @@
 #include <QWidget>
 #include <QDomNode>
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
+#include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 class WVuMeter : public WWidget  {
    Q_OBJECT
-public:
+  public:
     WVuMeter(QWidget *parent=0);
-    ~WVuMeter();
-    void setup(QDomNode node);
-    void setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal=false);
-    void setValue(double fValue);
+    virtual ~WVuMeter();
 
-protected slots:
+    void setup(QDomNode node, const SkinContext& context);
+    void setPixmapBackground(const QString& filename);
+    void setPixmaps(const QString &vuFilename,
+                    bool bHorizontal=false);
+    void onConnectedControlValueChanged(double fValue);
+
+  protected slots:
     void updateState(int msecsElapsed);
 
-private:
+  private:
     /** Set position number to zero and deallocate pixmaps */
     void resetPositions();
     void paintEvent(QPaintEvent *);
@@ -54,7 +55,8 @@ private:
     /** Number of positions associated with this knob */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmap *m_pPixmapBack, *m_pPixmapVu;
+    PaintablePointer m_pPixmapBack;
+    PaintablePointer m_pPixmapVu;
     /** True if it's a horizontal vu meter */
     bool m_bHorizontal;
 

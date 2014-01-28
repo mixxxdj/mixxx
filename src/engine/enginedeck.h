@@ -18,7 +18,7 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
-#include "circularbuffer.h"
+#include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
@@ -41,20 +41,21 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const char *group, ConfigObject<ConfigValue>* pConfig, EngineMaster* pMixingEngine,
+    EngineDeck(const char* group, ConfigObject<ConfigValue>* pConfig, EngineMaster* pMixingEngine,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 
-    virtual void process(const CSAMPLE *pInput, const CSAMPLE *pOutput, const int iBufferSize);
+    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
 
-    virtual bool isActive();
+    virtual bool isActive() const;
 
     // This is called by SoundManager whenever there are new samples from the
     // deck to be processed.
-    virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int nFrames);
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.
@@ -65,7 +66,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual void onInputDisconnected(AudioInput input);
 
     // Return whether or not passthrough is active
-    bool isPassthroughActive();
+    bool isPassthroughActive() const;
 
   public slots:
     void slotPassingToggle(double v);

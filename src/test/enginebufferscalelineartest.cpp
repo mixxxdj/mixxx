@@ -70,11 +70,11 @@ class EngineBufferScaleLinearTest : public MixxxTest {
     }
 
     void SetRate(double rate) {
-        double rate_adjust = rate;
-        double tempo_adjust = 1.0;
+        double speed_adjust = rate;
         double pitch_adjust = 0.0;
         m_pScaler->setScaleParameters(
-            44100, &rate_adjust, &tempo_adjust, &pitch_adjust);
+            44100, 1.0, true,
+            &speed_adjust, &pitch_adjust);
     }
 
     void SetRateNoLerp(double rate) {
@@ -176,8 +176,8 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
 
 TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
     // Starting from a rate of 0.0, we'll go to a rate of 1.0
-    SetRate(0.0f);
-    SetRate(1.0f);
+    SetRate(0.0);
+    SetRate(1.0);
 
     const int bufferSize = kiLinearScaleReadAheadLength;
 
@@ -195,7 +195,7 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
-    SetRateNoLerp(2.0f);
+    SetRateNoLerp(2.0);
     const int bufferSize = kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
@@ -224,7 +224,7 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
-    SetRateNoLerp(0.5f);
+    SetRateNoLerp(0.5);
     const int bufferSize = kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
@@ -254,7 +254,7 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
-    SetRateNoLerp(0.5f);
+    SetRateNoLerp(0.5);
     const int bufferSize = kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative

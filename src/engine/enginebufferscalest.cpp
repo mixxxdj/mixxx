@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "enginebufferscalest.h"
+#include "engine/enginebufferscalest.h"
 
 // Fixes redefinition warnings from SoundTouch.
 #undef TRUE
@@ -32,11 +32,13 @@ using namespace soundtouch;
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
       m_bBackwards(false),
+      m_dRateOld(1.0),
+      m_dTempoOld(1.0),
       m_pReadAheadManager(pReadAheadManager) {
     m_pSoundTouch = new soundtouch::SoundTouch();
     m_pSoundTouch->setChannels(2);
-    m_pSoundTouch->setRate(1.0);
-    m_pSoundTouch->setTempo(1.0);
+    m_pSoundTouch->setRate(m_dRateOld);
+    m_pSoundTouch->setTempo(m_dTempoOld);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
 
@@ -49,44 +51,52 @@ EngineBufferScaleST::~EngineBufferScaleST() {
 }
 
 void EngineBufferScaleST::setScaleParameters(int iSampleRate,
-                                             double* rate_adjust,
-                                             double* tempo_adjust,
+                                             double base_rate,
+                                             bool speed_affects_pitch,
+                                             double* speed_adjust,
                                              double* pitch_adjust) {
     if (m_iSampleRate != iSampleRate) {
         m_pSoundTouch->setSampleRate(iSampleRate > 0 ? iSampleRate : 44100);
         m_iSampleRate = iSampleRate;
     }
 
-    // Assumes rate_adjust is just baserate (which cannot be negative) and
-    // pitch_adjust cannot be negative because octave change conversion to pitch
-    // ratio is an exp(x) function.
-    m_bBackwards = (*tempo_adjust * *rate_adjust) < 0;
+    // Negative speed means we are going backwards. pitch_adjust does not affect
+    // the playback direction.
+    m_bBackwards = *speed_adjust < 0;
 
     // It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to
     // SoundTouch (see definition of MIN_SEEK_SPEED for more details).
-    double tempo_abs = fabs(*tempo_adjust);
-    if (tempo_abs > MAX_SEEK_SPEED) {
-        tempo_abs = MAX_SEEK_SPEED;
-    } else if (tempo_abs < MIN_SEEK_SPEED) {
-        tempo_abs = 0;
+    double speed_abs = fabs(*speed_adjust);
+    if (speed_abs > MAX_SEEK_SPEED) {
+        speed_abs = MAX_SEEK_SPEED;
+    } else if (speed_abs < MIN_SEEK_SPEED) {
+        speed_abs = 0;
     }
 
-    // Let the caller know we clamped their value.
-    *tempo_adjust = m_bBackwards ? -tempo_abs : tempo_abs;
+    // Let the caller know if we clamped their value.
+    *speed_adjust = m_bBackwards ? -speed_abs : speed_abs;
 
-    double rate_abs = fabs(*rate_adjust);
+    // Include baserate in rate_abs so that we do samplerate conversion as part
+    // of rate adjustment.
+    double rate_abs = base_rate;
+    double tempo_abs = 1.0;
+    if (speed_affects_pitch) {
+        rate_abs *= speed_abs;
+    } else {
+        tempo_abs *= speed_abs;
+    }
 
     // Note that we do not set the tempo if it is zero. This is because of the
     // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
     // we should handle this better but I have left the logic in place. rryan
     // 4/2013.
-    if (tempo_abs != m_dTempoAdjust && tempo_abs != 0) {
+    if (tempo_abs != m_dTempoOld && tempo_abs != 0.0) {
         m_pSoundTouch->setTempo(tempo_abs);
-        m_dTempoAdjust = tempo_abs;
+        m_dTempoOld = tempo_abs;
     }
-    if (rate_abs != m_dRateAdjust) {
+    if (rate_abs != m_dRateOld) {
         m_pSoundTouch->setRate(rate_abs);
-        m_dRateAdjust = rate_abs;
+        m_dRateOld = rate_abs;
     }
     if (*pitch_adjust != m_dPitchAdjust) {
         m_pSoundTouch->setPitch(
@@ -96,6 +106,12 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
     // changed direction. I removed it because this is handled by EngineBuffer.
+
+    // Used by other methods so we need to keep them up to date.
+    m_dBaseRate = base_rate;
+    m_bSpeedAffectsPitch = speed_affects_pitch;
+    m_dSpeedAdjust = speed_abs;
+    m_dPitchAdjust = *pitch_adjust;
 }
 
 void EngineBufferScaleST::clear() {
@@ -105,7 +121,7 @@ void EngineBufferScaleST::clear() {
 CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
 
-    if (m_dPitchAdjust == 0 || m_dRateAdjust == 0 || m_dTempoAdjust == 0) {
+    if (m_dRateOld == 0 || m_dTempoOld == 0) {
         memset(m_buffer, 0, sizeof(m_buffer[0]) * buf_size);
         m_samplesRead = buf_size;
         return m_buffer;
@@ -131,7 +147,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
                     ->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
-                        (m_bBackwards ? -1.0f : 1.0f) * m_dRateAdjust * m_dTempoAdjust,
+                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dSpeedAdjust,
                         buffer_back,
                         iLenFrames * iNumChannels);
             unsigned long iAvailFrames = iAvailSamples / iNumChannels;
@@ -163,7 +179,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
-    m_samplesRead = m_dTempoAdjust * m_dRateAdjust *
+    m_samplesRead = m_dBaseRate * m_dSpeedAdjust *
             total_received_frames * iNumChannels;
 
     return m_buffer;

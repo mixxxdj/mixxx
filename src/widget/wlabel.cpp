@@ -15,50 +15,63 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QVBoxLayout>
-
 #include "widget/wlabel.h"
+
+#include <QFont>
+
 #include "widget/wskincolor.h"
 
-WLabel::WLabel(QWidget * parent) : WWidget(parent)
-{
-    m_pLabel = new QLabel(this);
-    QLayout* pLayout = new QVBoxLayout(this);
-    pLayout->setContentsMargins(0, 0, 0, 0);
-    pLayout->addWidget(m_pLabel);
-    setLayout(pLayout);
-    m_qsText = "";
+WLabel::WLabel(QWidget* pParent)
+        : QLabel(pParent),
+          WBaseWidget(this),
+          m_qsText("") {
 }
 
 WLabel::~WLabel() {
-    delete m_pLabel;
 }
 
-void WLabel::setup(QDomNode node)
-{
+void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Colors
-    QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
-    if (!WWidget::selectNode(node, "BgColor").isNull()) {
-        m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-        palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
-        m_pLabel->setAutoFillBackground(true);
+    QPalette pal = palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    if (context.hasNode(node, "BgColor")) {
+        m_qBgColor.setNamedColor(context.selectString(node, "BgColor"));
+        pal.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
+        setAutoFillBackground(true);
     }
-    m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-    palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
-    m_pLabel->setPalette(palette);
+    m_qFgColor.setNamedColor(context.selectString(node, "FgColor"));
+    pal.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
+    setPalette(pal);
 
     // Text
-    if (!selectNode(node, "Text").isNull())
-        m_qsText = selectNodeQString(node, "Text");
-    m_pLabel->setText(m_qsText);
+    if (context.hasNode(node, "Text"))
+        m_qsText = context.selectString(node, "Text");
+    setText(m_qsText);
+
+    // Font size
+    if (context.hasNode(node, "FontSize")) {
+        int fontsize = 9;
+        fontsize = context.selectString(node, "FontSize").toInt();
+        setFont( QFont("Helvetica",fontsize,QFont::Normal) );
+    }
 
     // Alignment
-    if (!selectNode(node, "Alignment").isNull()) {
-        if (selectNodeQString(node, "Alignment")=="right")
-            m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-        // FWI: Begin of font alignment patch
-        else if (selectNodeQString(node, "Alignment")=="center")
-            m_pLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
-        // FWI: End of font alignment patch
+    if (context.hasNode(node, "Alignment")) {
+        if (context.selectString(node, "Alignment") == "right") {
+            setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        } else if (context.selectString(node, "Alignment") == "center") {
+            setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        }
     }
+}
+
+bool WLabel::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QLabel::event(pEvent);
+}
+
+void WLabel::fillDebugTooltip(QStringList* debug) {
+    WBaseWidget::fillDebugTooltip(debug);
+    *debug << QString("Text: \"%1\"").arg(text());
 }

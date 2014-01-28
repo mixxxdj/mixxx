@@ -7,7 +7,6 @@
 #include "library/cratetablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent,
@@ -60,9 +59,7 @@ void CrateTableModel::setTableModel(int crateId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = "preview";
     setTable(tableName, columns[0], columns,
-             m_pTrackCollection->getTrackSource("default"));
-    // BaseSqlTableModel sets up the header names
-    initHeaderData();
+             m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }

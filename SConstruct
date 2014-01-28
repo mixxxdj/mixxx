@@ -32,8 +32,7 @@ machine = ARGUMENTS.get('machine', None)
 build_type = ARGUMENTS.get('build', None)
 toolchain = ARGUMENTS.get('toolchain', None)
 
-available_features = [features.HifiEq,
-                      features.Mad,
+available_features = [features.Mad,
                       features.CoreAudio,
                       features.MediaFoundation,
                       features.HSS1394,
@@ -55,6 +54,8 @@ available_features = [features.HifiEq,
                       features.MSVSHacks,
                       features.Vamp,
                       features.AutoDjCrates,
+                      features.ColorDiagnostics,
+                      features.AddressSanitizer,
 
                       # "Features" of dubious quality
                       features.PerfTools,

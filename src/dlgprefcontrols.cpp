@@ -28,7 +28,6 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "controlobjectthreadmain.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
@@ -39,8 +38,9 @@
 #include "playermanager.h"
 #include "controlobject.h"
 #include "mixxx.h"
+#include "defs_urls.h"
 
-DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
+DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
@@ -54,11 +54,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::DirectConnection);
+    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
     slotNumDecksChanged(m_pNumDecks->get());
 
     m_pNumSamplers = new ControlObjectSlave("[Master]", "num_samplers", this);
-    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)), Qt::DirectConnection);
+    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
     slotNumSamplersChanged(m_pNumSamplers->get());
 
     // Position display configuration
@@ -72,12 +72,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
     {
         ComboBoxPosition->setCurrentIndex(1);
-        m_pControlPositionDisplay->set(1.0f);
+        m_pControlPositionDisplay->set(1.0);
     }
     else
     {
         ComboBoxPosition->setCurrentIndex(0);
-        m_pControlPositionDisplay->set(0.0f);
+        m_pControlPositionDisplay->set(0.0);
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
 
@@ -164,20 +164,27 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             this, SLOT(slotSetLocale(int)));
 
     //
-    // Default Cue Behavior
+    // Cue Mode
     //
 
+    // Add "(?)" with a manual link to the label
+    labelCueMode->setText(
+            labelCueMode->text() +
+            " <a href=\"" +
+            MIXXX_MANUAL_URL +
+            "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
+
     // Set default value in config file and control objects, if not present
-    QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"));
-    if(cueDefault.length() == 0) {
-        m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(0));
-        cueDefault = "0";
-    }
+    // Default is "0" = Mixxx Mode
+    QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"), "0");
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
-    ComboBoxCueDefault->addItem(tr("CDJ Mode"));
-    ComboBoxCueDefault->addItem(tr("Simple"));
+    ComboBoxCueDefault->addItem(tr("Mixxx mode"));
+    ComboBoxCueDefault->addItem(tr("Pioneer mode"));
+    ComboBoxCueDefault->addItem(tr("Denon mode"));
+    ComboBoxCueDefault->addItem(tr("Numark mode"));
+
     ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
 
     slotSetCueDefault(cueDefaultValue);
@@ -239,24 +246,32 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Skin configurations
     //
     QString warningString = "<img src=\":/images/preferences/ic_preferences_warning.png\") width=16 height=16 />"
-        + tr("The selected skin is bigger than your screen resolution.");
+        + tr("The minimum size of the selected skin is bigger than your screen resolution.");
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
 
-    QDir dir(m_pConfig->getResourcePath() + "skins/");
-    dir.setFilter(QDir::Dirs);
+    QDir skinsDir(m_pConfig->getResourcePath() + "skins/");
+    skinsDir.setFilter(QDir::Dirs);
+
+    QList<QFileInfo> list = skinsDir.entryInfoList();
+
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        // Show developer skins
+        QDir developerSkinsDir(m_pConfig->getResourcePath() + "developer_skins/");
+        developerSkinsDir.setFilter(QDir::Dirs);
+        list += developerSkinsDir.entryInfoList();
+    }
 
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
     {
         if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
         {
             checkSkinResolution(list.at(i).fileName())
-                    ? ComboBoxSkinconf->insertItem(i, QIcon(":/trolltech/styles/commonstyle/images/standardbutton-apply-32.png"), list.at(i).fileName())
+                    ? ComboBoxSkinconf->insertItem(i, list.at(i).fileName())
                     : ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
 
             if (list.at(i).filePath() == configuredSkinPath) {
@@ -265,6 +280,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ++j;
         }
     }
+
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
@@ -394,11 +410,11 @@ void DlgPrefControls::slotSetLocale(int pos) {
 
 void DlgPrefControls::slotSetRateRange(int pos)
 {
-    float range = (float)(pos-1)/10.;
-    if (pos==0)
-        range = 0.06f;
-    if (pos==1)
-        range = 0.08f;
+    double range = static_cast<double>(pos-1) / 10.0;
+    if (pos == 0)
+        range = 0.06;
+    if (pos == 1)
+        range = 0.08;
 
     // Set rate range for every group
     foreach (ControlObjectThread* pControl, m_rateRangeControls) {
@@ -768,7 +784,7 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         return;
     }
 
-    for (int i = m_rateControls.size(); i < m_iNumConfiguredSamplers; ++i) {
+    for (int i = m_iNumConfiguredSamplers; i < numsamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
         m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));

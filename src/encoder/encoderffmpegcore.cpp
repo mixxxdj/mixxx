@@ -137,12 +137,13 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     unsigned int l_iBufPos = 0;
     unsigned int l_iPos = 0;
 
+    // TODO(XXX): Get rid of repeated malloc here!
     float *l_fNormalizedSamples = (float *)malloc(size * sizeof(float));
 
-    // Because of normalization to SHORT_MAX = 0x7FFF we have to make this not to clip!
-    // Comments also: https://bugs.launchpad.net/mixxx/+bug/1204039
+    // We use normalized floats in the engine [-1.0, 1.0] and FFMPEG expects
+    // samples in the range [-1.0, 1.0] so no conversion is required.
     for (j = 0; j < size; j++) {
-        l_fNormalizedSamples[j] = samples[j] / 0x7FFF;
+        l_fNormalizedSamples[j] = samples[j];
     }
 
     // In MP3 this writes Header same In ogg

@@ -8,7 +8,7 @@ EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManag
     : EngineBufferScale(),
       m_pReadAheadManager(pReadAheadManager)
 {
-    m_samplesRead = 0.0f;
+    m_samplesRead = 0.0;
 }
 
 EngineBufferScaleDummy::~EngineBufferScaleDummy()
@@ -26,10 +26,10 @@ void EngineBufferScaleDummy::clear()
 }
 
 
-CSAMPLE *EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
+CSAMPLE* EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
-    double rate = m_dRateAdjust * m_dTempoAdjust * m_dPitchAdjust;
-    if (rate == 0.0f) {
+    double rate = m_dBaseRate * m_dSpeedAdjust;
+    if (rate == 0.0) {
         memset(m_buffer, 0, sizeof(CSAMPLE) * buf_size);
         return m_buffer;
     }

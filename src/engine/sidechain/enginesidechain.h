@@ -30,7 +30,7 @@
 class EngineSideChain : public QThread {
     Q_OBJECT
   public:
-    EngineSideChain(ConfigObject<ConfigValue> * pConfig);
+    EngineSideChain(ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSideChain();
 
     // Not thread-safe, wait-free. Submit buffer of samples to the sidechain for

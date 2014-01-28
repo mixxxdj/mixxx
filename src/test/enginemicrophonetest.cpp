@@ -16,7 +16,7 @@ class EngineMicrophoneTest : public testing::Test {
     virtual void SetUp() {
         inputLength = MAX_BUFFER_LEN/2;
         outputLength = MAX_BUFFER_LEN;
-        input = new short[inputLength];
+        input = SampleUtil::alloc(inputLength);
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);
 
@@ -25,7 +25,7 @@ class EngineMicrophoneTest : public testing::Test {
     }
 
     virtual void TearDown() {
-        delete [] input;
+        SampleUtil::free(input);
         SampleUtil::free(output);
         SampleUtil::free(test);
         delete m_pMicrophone;
@@ -45,7 +45,7 @@ class EngineMicrophoneTest : public testing::Test {
     template <typename T>
     void FillSequentialWithStride(T* pBuffer, T initial, T increment, T max,
                                   unsigned int stride, unsigned int length) {
-        Q_ASSERT(length % stride == 0);
+        ASSERT_EQ(0, length % stride);
         T value = initial;
         for (unsigned int i = 0; i < length/stride; ++i) {
             for (unsigned int j = 0; j < stride; ++j) {
@@ -59,20 +59,20 @@ class EngineMicrophoneTest : public testing::Test {
 
     void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
-            EXPECT_FLOAT_EQ(value, pBuffer[i]);
+            ASSERT_FLOAT_EQ(value, pBuffer[i]);
         }
     }
 
     template <typename T>
     void AssertBuffersEqual(const T* pBuffer, const T* pExpected, int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
-            EXPECT_FLOAT_EQ(pExpected[i], pBuffer[i]);
+            ASSERT_FLOAT_EQ(pExpected[i], pBuffer[i]);
         }
     }
 
     unsigned int inputLength;
     unsigned int outputLength;
-    short* input;
+    CSAMPLE* input;
     CSAMPLE* output;
     CSAMPLE* test;
     EngineMicrophone* m_pMicrophone;
@@ -80,25 +80,25 @@ class EngineMicrophoneTest : public testing::Test {
 };
 
 TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
-    FillBuffer<short>(input, 1, inputLength);
+    FillBuffer<CSAMPLE>(input, 0.1f, inputLength);
     SampleUtil::applyGain(output, 0.0f, outputLength);
 
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
-    m_pTalkover->set(1.0f);
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
+    m_pTalkover->set(1.0);
 
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
     m_pMicrophone->process(output, output, outputLength);
 
     // Check that the output matches the input data.
-    AssertWholeBufferEquals(output, 1.0f, outputLength);
+    AssertWholeBufferEquals(output, 0.1f, outputLength);
 }
 
 TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
     SampleUtil::applyGain(output, 0.0f, outputLength);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
 
-    m_pTalkover->set(0.0f);
-    FillBuffer<short>(input, 1, inputLength);
+    m_pTalkover->set(0.0);
+    FillBuffer<CSAMPLE>(input, 0.1f, inputLength);
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
     m_pMicrophone->process(output, output, outputLength);
     // Check that the output matches the input data.
@@ -106,24 +106,22 @@ TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
 
     // Now fill the buffer with 2's and turn talkover on. Verify that 2's come
     // out.
-    m_pTalkover->set(1.0f);
-    FillBuffer<short>(input, 2, inputLength);
+    m_pTalkover->set(1.0);
+    FillBuffer<CSAMPLE>(input, 0.2f, inputLength);
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
     m_pMicrophone->process(output, output, outputLength);
     // Check that the output matches the input data.
-    AssertWholeBufferEquals(output, 2.0f, outputLength);
+    AssertWholeBufferEquals(output, 0.2f, outputLength);
 }
 
 TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
     SampleUtil::applyGain(output, 0.0f, outputLength);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
-    m_pTalkover->set(1.0f);
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
+    m_pTalkover->set(1.0);
 
     for (int i = 0; i < 10; i++) {
-        // We have to limit it since short wraps around at 32768 and float
-        // doesn't.
-        FillSequentialWithStride<short>(input, 0, 1, 30000, 1, inputLength);
-        FillSequentialWithStride<CSAMPLE>(test, 0, 1.0f, 30000.0f, 2, outputLength);
+        FillSequentialWithStride<CSAMPLE>(input, 0, 0.001f, 1.0f, 1, inputLength);
+        FillSequentialWithStride<CSAMPLE>(test, 0, 0.001f, 1.0f, 2, outputLength);
 
         m_pMicrophone->receiveBuffer(micInput, input, inputLength);
         m_pMicrophone->process(output, output, outputLength);

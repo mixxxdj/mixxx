@@ -9,7 +9,9 @@
 
 const int expand_time = 250;
 
-WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
+WLibrarySidebar::WLibrarySidebar(QWidget* parent)
+        : QTreeView(parent),
+          WBaseWidget(this) {
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -176,4 +178,11 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
         expand(index.parent());
     }
     scrollTo(index);
+}
+
+bool WLibrarySidebar::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QTreeView::event(pEvent);
 }

@@ -1,10 +1,9 @@
 #include "qtwaveformrendererfilteredsignal.h"
 
-#include "controlobjectthreadmain.h"
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "defs.h"
 

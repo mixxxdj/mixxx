@@ -14,9 +14,9 @@
 
 #include "waveformrendererabstract.h"
 #include "waveformmarkrange.h"
+#include "skin/skincontext.h"
 
 class ConfigKey;
-class ControlObjectThreadMain;
 class ControlObject;
 
 class WaveformRenderMarkRange : public WaveformRendererAbstract {
@@ -24,7 +24,7 @@ class WaveformRenderMarkRange : public WaveformRendererAbstract {
     explicit WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRenderMarkRange();
 
-    virtual void setup(const QDomNode& node);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:

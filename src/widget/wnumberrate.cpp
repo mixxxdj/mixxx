@@ -9,10 +9,13 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+
+#include "widget/wnumberrate.h"
+
 #include <math.h>
-#include "wnumberrate.h"
+
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {
@@ -45,5 +48,6 @@ void WNumberRate::setValue(double) {
         sign = '-';
     }
 
-    m_pLabel->setText(QString(m_qsText).append(sign).append("%1").arg(fabs(vsign)*100., 0, 'f', 2));
+    setText(QString(m_qsText).append(sign)
+            .append("%1").arg(fabs(vsign)*100., 0, 'f', m_iNoDigits));
 }

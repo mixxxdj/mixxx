@@ -18,8 +18,8 @@
 #ifndef ENGINEBUFFERSCALELINEAR_H
 #define ENGINEBUFFERSCALELINEAR_H
 
-#include "enginebufferscale.h"
-#include "readaheadmanager.h"
+#include "engine/enginebufferscale.h"
+#include "engine/readaheadmanager.h"
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -31,19 +31,21 @@ const int kiLinearScaleReadAheadLength = 10240;
 
 
 class EngineBufferScaleLinear : public EngineBufferScale  {
-public:
+  public:
     EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
-    ~EngineBufferScaleLinear();
-    CSAMPLE *getScaled(unsigned long buf_size);
+    virtual ~EngineBufferScaleLinear();
+
+    CSAMPLE* getScaled(unsigned long buf_size);
     void clear();
 
     void setScaleParameters(int iSampleRate,
-                            double* rate_adjust,
-                            double* tempo_adjust,
+                            double base_rate,
+                            bool speed_affects_pitch,
+                            double* speed_adjust,
                             double* pitch_adjust);
 
   private:
-    CSAMPLE *do_scale(CSAMPLE* buf, unsigned long buf_size,
+    CSAMPLE* do_scale(CSAMPLE* buf, unsigned long buf_size,
                       int *samples_read);
 
     /** Holds playback direction */
@@ -53,7 +55,7 @@ public:
     double m_dOldRate;
 
     /** Buffer for handling calls to ReadAheadManager */
-    CSAMPLE *buffer_int;
+    CSAMPLE* buffer_int;
     int buffer_int_size;
     CSAMPLE m_fPrevSample[2];
     // The read-ahead manager that we use to fetch samples

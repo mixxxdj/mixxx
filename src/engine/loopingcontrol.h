@@ -22,7 +22,7 @@ class BeatLoopingControl;
 class LoopingControl : public EngineControl {
     Q_OBJECT
   public:
-    LoopingControl(const char * _group, ConfigObject<ConfigValue> * _config);
+    LoopingControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~LoopingControl();
 
     // process() updates the internal state of the LoopingControl to reflect the
@@ -93,6 +93,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
 
     bool m_bLoopingEnabled;
+    bool m_bLoopRollActive;
     int m_iLoopEndSample;
     int m_iLoopStartSample;
     int m_iCurrentSample;
@@ -141,7 +142,7 @@ class BeatLoopingControl : public QObject {
   private:
     // Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO
     // ConfigKeys.
-    ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
+    ConfigKey keyForControl(const char* _group, QString ctrlName, double num);
     double m_dBeatLoopSize;
     bool m_bActive;
     ControlPushButton* m_pLegacy;

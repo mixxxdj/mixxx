@@ -76,7 +76,15 @@ public:
     static AudioPathType getTypeFromString(QString string);
     static bool isIndexed(AudioPathType type);
     static AudioPathType getTypeFromInt(int typeInt);
-    static unsigned char channelsNeededForType(AudioPathType type);
+
+    // Returns the minimum number of channels needed on a sound device for an
+    // AudioPathType.
+    static unsigned char minChannelsForType(AudioPathType type);
+
+    // Returns the maximum number of channels needed on a sound device for an
+    // AudioPathType.
+    static unsigned char maxChannelsForType(AudioPathType type);
+
 protected:
     virtual void setType(AudioPathType type) = 0;
     AudioPathType m_type;
@@ -93,6 +101,7 @@ protected:
 class AudioOutput : public AudioPath {
   public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
+                unsigned char channels = 0,
                 unsigned char index = 0);
     virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;
@@ -124,7 +133,7 @@ class AudioOutputBuffer : public AudioOutput {
 class AudioInput : public AudioPath {
   public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-               unsigned char index = 0);
+               unsigned char channels = 0, unsigned char index = 0);
     virtual ~AudioInput();
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
@@ -136,14 +145,14 @@ class AudioInput : public AudioPath {
 // This class is required to add the buffer, without changing the hash used as ID
 class AudioInputBuffer : public AudioInput {
   public:
-    AudioInputBuffer(const AudioInput& id, SAMPLE* pBuffer)
+    AudioInputBuffer(const AudioInput& id, CSAMPLE* pBuffer)
             : AudioInput(id),
               m_pBuffer(pBuffer) {
 
     };
-    inline SAMPLE* getBuffer() const { return m_pBuffer; };
+    inline CSAMPLE* getBuffer() const { return m_pBuffer; };
  private:
-    SAMPLE* m_pBuffer;
+    CSAMPLE* m_pBuffer;
 };
 
 
@@ -156,7 +165,8 @@ public:
 
 class AudioDestination {
 public:
-    virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumFrames) = 0;
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int iNumFrames) = 0;
     virtual void onInputConnected(AudioInput input) { Q_UNUSED(input); };
     virtual void onInputDisconnected(AudioInput input) { Q_UNUSED(input); };
 };

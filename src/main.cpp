@@ -45,7 +45,7 @@ extern "C" {
 #include <ladspa/ladspaloader.h>
 #endif
 
-#ifdef Q_OS_LINUX 
+#ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
 #endif
 
@@ -158,7 +158,7 @@ void MessageHandler(QtMsgType type,
 int main(int argc, char * argv[])
 {
 
-#ifdef Q_OS_LINUX 
+#ifdef Q_OS_LINUX
     XInitThreads();
 #endif
 
@@ -168,7 +168,12 @@ int main(int argc, char * argv[])
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
-    QCoreApplication::setOrganizationName("Mixxx");
+
+    // Setting the organization name results in a QDesktopStorage::DataLocation
+    // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
+    // organization name blank.
+    //QCoreApplication::setOrganizationName("Mixxx");
+
     QCoreApplication::setApplicationName("Mixxx");
     QString mixxxVersion = Version::version();
     QByteArray mixxxVersionBA = mixxxVersion.toLocal8Bit();
@@ -205,7 +210,7 @@ int main(int argc, char * argv[])
     --settingsPath PATH     Top-level directory where Mixxx should look\n\
                             for settings. Default is:\n", stdout);
         fprintf(stdout, "\
-                            %s\n", args.getSettingsPath().toLocal8Bit().data());
+                            %s\n", args.getSettingsPath().toLocal8Bit().constData());
         fputs("\
 \n\
     --controllerDebug       Causes Mixxx to display/log all of the controller\n\
@@ -328,7 +333,7 @@ int main(int argc, char * argv[])
      }
 #endif
 
-    MixxxApp* mixxx = new MixxxApp(&a, args);
+    MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
 
     //a.setMainWidget(mixxx);
     QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));

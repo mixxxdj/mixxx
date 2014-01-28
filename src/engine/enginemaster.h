@@ -18,6 +18,8 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
+#include <QObject>
+
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
@@ -38,9 +40,10 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class SyncWorker;
+class GuiTick;
 class EngineSync;
 
-class EngineMaster : public EngineObject, public AudioSource {
+class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
@@ -53,7 +56,15 @@ class EngineMaster : public EngineObject, public AudioSource {
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
 
-    void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
+    // WARNING: These methods are called by the main thread. They should only
+    // touch the volatile bool connected indicators (see below). However, when
+    // these methods are called the callback is guaranteed to be inactive
+    // (SoundManager closes all devices before calling these). This may change
+    // in the future.
+    virtual void onOutputConnected(AudioOutput output);
+    virtual void onOutputDisconnected(AudioOutput output);
+
+    void process(const int iBufferSize);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
@@ -152,11 +163,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
-    struct OutputBus {
-        CSAMPLE* m_pBuffer;
-        OrientationVolumeGainCalculator m_gain;
-        QList<CSAMPLE> m_gainCache;
-    } m_outputBus[3];
+    CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
 
@@ -186,11 +193,16 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlPotmeter* m_pXFaderCurve;
     ControlPotmeter* m_pXFaderCalibration;
     ControlPotmeter* m_pXFaderReverse;
+    ControlPushButton* m_pHeadSplitEnabled;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
+
+    volatile bool m_bMasterOutputConnected;
+    volatile bool m_bHeadphoneOutputConnected;
+    volatile bool m_bBusOutputConnected[3];
 };
 
 #endif
