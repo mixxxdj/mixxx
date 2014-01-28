@@ -1524,10 +1524,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 }
             }
 
-
-            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
-            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
-
             ControlWidgetConnection::EmitOption emitOption =
                     ControlWidgetConnection::EMIT_ON_PRESS;
             switch (m_pContext->selectBoolOrNone(con, "EmitOnDownPress")) {
@@ -1572,19 +1568,19 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             switch (state) {
             case Qt::NoButton:
                 pWidget->addConnection(pConnection);
-                if (connectValueToWidget) {
+                if (directionOption & ControlWidgetConnection::DIR_TO_WIDGET) {
                     pLastLeftOrNoButtonConnection = pConnection;
                 }
                 break;
             case Qt::LeftButton:
                 pWidget->addLeftConnection(pConnection);
-                if (connectValueToWidget) {
+                if (directionOption & ControlWidgetConnection::DIR_TO_WIDGET) {
                     pLastLeftOrNoButtonConnection = pConnection;
                 }
                 break;
             case Qt::RightButton:
                 pWidget->addRightConnection(pConnection);
-                if (connectValueToWidget) {
+                if (directionOption & ControlWidgetConnection::DIR_TO_WIDGET) {
                     pLastRightButtonConnection = pConnection;
                 }
                 break;
@@ -1594,13 +1590,11 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.
-            if (connectValueFromWidget) {
+            if (directionOption & ControlWidgetConnection::DIR_FROM_WIDGET) {
                 m_pControllerManager->getControllerLearningEventFilter()
                         ->addWidgetClickInfo(pWidget->toQWidget(), state, control, emitOption);
-            }
 
-            // Add keyboard shortcut info to tooltip string
-            if (connectValueFromWidget) {
+                // Add keyboard shortcut info to tooltip string
                 QString key = m_pContext->selectString(con, "ConfigKey");
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 
