@@ -614,8 +614,30 @@ void EngineShoutcast::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
-                m_metadataFormat.replace(QString("$artist"), artist);
-                m_metadataFormat.replace(QString("$title"), title);
+                // we are going to take the metadata format and replace all
+                // the references to $title and $artist by doing a single
+                // pass over the string
+                int replaceIndex = 0;
+                do {
+                    // find the next occurrence 
+                    replaceIndex = m_metadataFormat.indexOf(
+                                      QRegExp("\\$artist|\\$title"),
+                                      replaceIndex);
+                  
+                    if (replaceIndex != -1) {
+                        if (m_metadataFormat.indexOf(
+                                          QRegExp("\\$artist"), replaceIndex)
+                                          == replaceIndex) {
+                            m_metadataFormat.replace(replaceIndex, 7, artist);
+                            // skip to the end of the replacement
+                            replaceIndex += artist.length();
+                        } else {
+                            m_metadataFormat.replace(replaceIndex, 6, title);
+                            replaceIndex += title.length();
+                        }
+                    }
+               } while (replaceIndex != -1);
+
                 QByteArray baSong = encodeString(m_metadataFormat);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
