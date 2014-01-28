@@ -169,7 +169,6 @@ ControlWidgetConnection::EmitOption WPushButton::getDefaultEmitOption(Qt::MouseB
         default:
             return ControlWidgetConnection::EMIT_ON_PRESS;
         }
-        return ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
     } else {
         switch (m_leftButtonMode) {
         case ControlPushButton::PUSH:
