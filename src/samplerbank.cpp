@@ -27,18 +27,19 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     if (v == 0.0)
         return;
 
-    QString s = QFileDialog::getSaveFileName(NULL, tr("Save Sampler Bank"));
+    QString samplerBankPath = QFileDialog::getSaveFileName(NULL, tr("Save Sampler Bank"));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    QFile file(s);
+    QFile file(samplerBankPath);
     if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(NULL,
                              tr("Error Saving Sampler Bank"),
-                             tr("Could not write the sampler bank to '%1'.").arg(s));
+                             tr("Could not write the sampler bank to '%1'.")
+                             .arg(samplerBankPath));
         return;
     }
 
@@ -71,18 +72,19 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     if (v == 0.0)
         return;
 
-    QString s = QFileDialog::getOpenFileName(NULL, tr("Load Sampler Bank"));
+    QString samplerBankPath = QFileDialog::getOpenFileName(NULL, tr("Load Sampler Bank"));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    QFile file(s);
+    QFile file(samplerBankPath);
     if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(NULL,
                              tr("Error Reading Sampler Bank"),
-                             tr("Could not open the sampler bank file '%1'.").arg(s));
+                             tr("Could not open the sampler bank file '%1'.")
+                             .arg(samplerBankPath));
         return;
     }
 
@@ -91,7 +93,8 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     if (!doc.setContent(file.readAll())) {
         QMessageBox::warning(NULL,
                              tr("Error Reading Sampler Bank"),
-                             tr("Could not read the sampler bank file '%1'.").arg(s));
+                             tr("Could not read the sampler bank file '%1'.")
+                             .arg(samplerBankPath));
         return;
     }
 
@@ -99,7 +102,8 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     if(root.tagName() != "samplerbank") {
         QMessageBox::warning(NULL,
                              tr("Error Reading Sampler Bank"),
-                             tr("Could not read the sampler bank file '%1'.").arg(s));
+                             tr("Could not read the sampler bank file '%1'.")
+                             .arg(samplerBankPath));
         return;
     }
 

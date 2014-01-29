@@ -191,12 +191,12 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         // for it.
         MDir dir(path);
         if (!dir.canAccess()) {
-            if (!Sandbox::askForAccess(path)) {
-                // TODO(rryan): Activate an info page about sandboxing?
-                return;
-            } else {
+            if (Sandbox::askForAccess(path)) {
                 // Re-create to get a new token.
                 dir = MDir(path);
+            } else {
+                // TODO(rryan): Activate an info page about sandboxing?
+                return;
             }
         }
         m_browseModel.setPath(dir);

@@ -89,7 +89,6 @@ class SecurityFramework(Dependence):
 
 
 class CoreServices(Dependence):
-    """The iOS/OS X security framework is used to implement sandboxing."""
     def configure(self, build, conf):
         if not build.platform_is_osx:
             return

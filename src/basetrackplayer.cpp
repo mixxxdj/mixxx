@@ -102,8 +102,9 @@ BaseTrackPlayer::~BaseTrackPlayer()
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
-    // Before loading the track, ensure we have access:
-    if (track && !Sandbox::askForAccess(track->getCanonicalLocation())) {
+    // Before loading the track, ensure we have access. This uses lazy
+    // evaluation to make sure track isn't NULL before we dereference it.
+    if (!track.isNull() && !Sandbox::askForAccess(track->getCanonicalLocation())) {
         // We don't have access.
         return;
     }

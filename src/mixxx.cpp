@@ -1294,7 +1294,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             return;
     }
 
-    QString s =
+    QString trackPath =
         QFileDialog::getOpenFileName(
             this,
             loadTrackText,
@@ -1303,16 +1303,16 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
 
-    if (!s.isNull()) {
+    if (!trackPath.isNull()) {
         // The user has picked a file via a file dialog. This means the system
         // sandboxer (if we are sandboxed) has granted us permission to this
         // folder. Create a security bookmark while we have permission so that
         // we can access the folder on future runs. We need to canonicalize the
         // path so we first wrap the directory string with a QDir.
-        QFileInfo trackInfo(s);
+        QFileInfo trackInfo(trackPath);
         Sandbox::createSecurityToken(trackInfo);
 
-        m_pPlayerManager->slotLoadToDeck(s, deck);
+        m_pPlayerManager->slotLoadToDeck(trackPath, deck);
     }
 }
 

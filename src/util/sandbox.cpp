@@ -65,6 +65,9 @@ void Sandbox::shutdown() {
 // static
 bool Sandbox::askForAccess(const QString& canonicalPath) {
     qDebug() << "Sandbox::askForAccess" << canonicalPath;
+    if (!enabled()) {
+        return false;
+    }
     QFileInfo info(canonicalPath);
 
     // We always want read/write access because we wouldn't want to have to
@@ -77,7 +80,7 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
     QString title = QObject::tr("Mixxx Needs Access to: %1")
             .arg(info.fileName());
 
-    QMessageBox::StandardButton button = QMessageBox::question(
+    QMessageBox::question(
         NULL, title,
         QObject::tr(
             "Due to Mac Sandboxing, we need your permission to access this file:"
@@ -130,11 +133,16 @@ ConfigKey Sandbox::keyForCanonicalPath(const QString& canonicalPath) {
 // static
 bool Sandbox::createSecurityToken(const QString& canonicalPath,
                                   bool isDirectory) {
-    QMutexLocker locker(&s_mutex);
     qDebug() << "createSecurityToken" << canonicalPath << isDirectory;
+    if (!enabled()) {
+        return false;
+    }
+    QMutexLocker locker(&s_mutex);
     if (s_pSandboxPermissions == NULL) {
         return false;
     }
+
+#ifdef Q_OS_MAC
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(canonicalPath),
             kCFURLPOSIXPathStyle, isDirectory);
@@ -164,14 +172,20 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
     } else {
         qDebug() << "Failed to create security-scoped bookmark URL for" << canonicalPath;
     }
+#endif
     return false;
 }
 
 // static
 SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool create) {
-    QMutexLocker locker(&s_mutex);
     const QString& canonicalFilePath = file.canonicalFilePath();
     qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath << create;
+
+    if (!enabled()) {
+        return SecurityTokenPointer();
+    }
+
+    QMutexLocker locker(&s_mutex);
     if (s_pSandboxPermissions == NULL) {
         return SecurityTokenPointer();
     }
@@ -223,11 +237,15 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
 
 // static
 SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
-    QMutexLocker locker(&s_mutex);
     QDir walkDir = dir;
     QString walkDirCanonicalPath = walkDir.canonicalPath();
-
     qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath << create;
+
+    if (!enabled()) {
+        return SecurityTokenPointer();
+    }
+
+    QMutexLocker locker(&s_mutex);
     if (s_pSandboxPermissions == NULL) {
         return SecurityTokenPointer();
     }
@@ -276,9 +294,8 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
 
 SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
                                                     const QString& bookmarkBase64) {
-
-    QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
 #ifdef Q_OS_MAC
+    QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
     if (!bookmarkBA.isEmpty()) {
         CFDataRef bookmarkData = CFDataCreate(
                 kCFAllocatorDefault, reinterpret_cast<const UInt8*>(bookmarkBA.constData()),
