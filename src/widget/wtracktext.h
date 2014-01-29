@@ -1,7 +1,9 @@
 #ifndef WTRACKTEXT_H
 #define WTRACKTEXT_H
 
+#include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QMouseEvent>
 
 #include "widget/wlabel.h"
 #include "trackinfoobject.h"
@@ -9,9 +11,10 @@
 class WTrackText : public WLabel {
     Q_OBJECT
   public:
-    WTrackText(QWidget *parent);
+    WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget *parent);
     virtual ~WTrackText();
 
+    void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 
   signals:
@@ -25,6 +28,8 @@ class WTrackText : public WLabel {
     void updateLabel(TrackInfoObject*);
 
   private:
+    const char* m_pGroup;
+    ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
 };
 

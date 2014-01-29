@@ -753,13 +753,18 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
 QWidget* LegacySkinParser::parseText(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(m_pParent);
+    WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
+
+    connect(p, SIGNAL(trackDropped(QString,QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
+
     setupWidget(node, p);
     // NOTE(rryan): To support color schemes, the WWidget::setup() call must
     // come first. This is because WNumber/WLabel both change the palette based
