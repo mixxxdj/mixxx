@@ -66,7 +66,8 @@ void Sandbox::shutdown() {
 bool Sandbox::askForAccess(const QString& canonicalPath) {
     qDebug() << "Sandbox::askForAccess" << canonicalPath;
     if (!enabled()) {
-        return false;
+        // Pretend we have access.
+        return true;
     }
     QFileInfo info(canonicalPath);
 
