@@ -59,6 +59,7 @@
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
+#include "util/valuetransformer.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -756,7 +757,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     ControlObjectSlave* p = new ControlObjectSlave(
             channelStr, "wheel", viewer);
     ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-        viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
+        viewer, p, NULL, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
     viewer->addRightConnection(pConnection);
 
     setupBaseWidget(node, viewer);
@@ -1467,6 +1468,13 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
         ControlObject* control = controlFromConfigNode(
                 con.toElement(), "ConfigKey", &created);
 
+
+        ValueTransformer* pTransformer = NULL;
+        if (m_pContext->hasNode(con, "Transform")) {
+            QDomElement element = m_pContext->selectElement(con, "Transform");
+            pTransformer = ValueTransformer::parseFromXml(element, *m_pContext);
+        }
+
         if (m_pContext->hasNode(con, "BindProperty")) {
             QString property = m_pContext->selectString(con, "BindProperty");
             qDebug() << "Making property connection for" << property;
@@ -1477,7 +1485,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
             ControlWidgetConnection* pConnection =
                     new ControlWidgetPropertyConnection(pWidget, pControlWidget,
-                                                        property);
+                                                        pTransformer, property);
             pWidget->addConnection(pConnection);
 
             // If we created this control, bind it to the
@@ -1515,7 +1523,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             ControlObjectSlave* pControlWidget = new ControlObjectSlave(
                 control->getKey(), pWidget->toQWidget());
             ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                pWidget, pControlWidget, connectValueFromWidget,
+                pWidget, pControlWidget, pTransformer, connectValueFromWidget,
                 connectValueToWidget, emitOption);
 
             // If we created this control, bind it to the
