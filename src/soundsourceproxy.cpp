@@ -87,49 +87,56 @@ SoundSourceProxy::~SoundSourceProxy() {
 }
 
 // static
-void SoundSourceProxy::loadPlugins()
-{
-    /** Scan for and initialize all plugins */
-
+void SoundSourceProxy::loadPlugins() {
+    // Scan for and initialize all plugins.
     QList<QDir> pluginDirs;
     QStringList nameFilters;
 
     const QString& pluginPath = CmdlineArgs::Instance().getPluginPath();
-
     if (!pluginPath.isEmpty()) {
         qDebug() << "Adding plugin path from commandline arg:" << pluginPath;
-        pluginDirs.append(QDir(pluginPath));
+        pluginDirs << QDir(pluginPath);
     }
+
 #ifdef __LINUX__
-    QDir libPath(UNIX_LIB_PATH);
-    if (libPath.cd("plugins") && libPath.cd("soundsource")) {
-    pluginDirs.append(libPath.absolutePath());
+    // TODO(rryan): Why can't we use applicationDirPath() and assume it's in the
+    // 'bin' folder of $PREFIX, so we just traverse
+    // ../lib/mixxx/plugins/soundsource.
+    QDir libPluginDir(UNIX_LIB_PATH);
+    if (libPluginDir.cd("plugins") && libPluginDir.cd("soundsource")) {
+	pluginDirs << libPluginDir
     }
-    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/plugins/soundsource/"));
+
+    QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("soundsource")) {
+	pluginDirs << dataPluginDir;
+    }
 #elif __WINDOWS__
-    pluginDirs.append(QDir(QCoreApplication::applicationDirPath() + "/plugins/soundsource/"));
+    QDir appPluginDir(QCoreApplication::applicationDirPath());
+    if (appPluginDir.cd("plugins") && appPluginDir.cd("soundsource")) {
+	pluginDirs << appPluginDir;
+    }
 #elif __APPLE__
-    QString bundlePluginDir = QCoreApplication::applicationDirPath(); //blah/Mixxx.app/Contents/MacOS
-    bundlePluginDir.remove("MacOS");
+    // blah/Mixxx.app/Contents/MacOS/../PlugIns/
+    // TODO(XXX): Our SCons bundle target doesn't handle plugin subdirectories
+    // :( so we can't do:
     //blah/Mixxx.app/Contents/PlugIns/soundsource
-    //bundlePluginDir.append("PlugIns/soundsource");  //Our SCons bundle target doesn't handle plugin subdirectories :(
-    bundlePluginDir.append("PlugIns/");
-    pluginDirs.append(QDir(bundlePluginDir));
-    // Do we ever put stuff here? I think this was meant to be
-    // ~/Library/Application Support/Mixxx/Plugins rryan 04/2012
-    pluginDirs.append(QDir("/Library/Application Support/Mixxx/Plugins/soundsource/"));
-    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) +
-               "/Library/Application Support/Mixxx/Plugins/soundsource/"));
+    QDir bundlePluginDir(QCoreApplication::applicationDirPath());
+    if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
+	pluginDirs << bundlePluginDir;
+    }
+
+    QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("soundsource")) {
+	pluginDirs << dataPluginDir;
+    }
+
     nameFilters << "libsoundsource*";
 #endif
 
-    QDir dir;
-    foreach(dir, pluginDirs)
-    {
+    foreach(QDir dir, pluginDirs) {
         QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
-        QString file;
-        foreach (file, files)
-        {
+        foreach (const QString& file, files) {
             getPlugin(dir.filePath(file));
         }
     }
