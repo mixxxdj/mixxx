@@ -102,20 +102,9 @@ void ControlParameterWidgetConnection::setControlParameterUp(double v) {
 ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                                                  ControlObjectSlave* pControl,
                                                                  ValueTransformer* pTransformer,
-                                                                 ConfigObject<ConfigValue>* pConfig,
                                                                  const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
-          m_pConfig(pConfig),
           m_propertyName(propertyName.toAscii()) {
-    // Behavior copied from PropertyBinder: load config value for the control on
-    // creation.
-    // TODO(rryan): Remove this in favor of a better solution. See discussion on
-    // Bug #1091147.
-    bool ok = false;
-    double dValue = m_pConfig->getValueString(m_pControl->getKey()).toDouble(&ok);
-    if (ok) {
-        setControlParameter(dValue);
-    }
     slotControlValueChanged(m_pControl->get());
 }
 
@@ -138,12 +127,6 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
         qDebug() << "Setting property" << m_propertyName
                  << "to widget failed. Value:" << dParameter;
     }
-
-    // Behavior copied from PropertyBinder: save config value for the control on
-    // every change.
-    // TODO(rryan): Remove this in favor of a better solution. See discussion on
-    // Bug #1091147.
-    m_pConfig->set(m_pControl->getKey(), QString::number(dParameter));
 }
 
 void ControlWidgetPropertyConnection::resetControl() {

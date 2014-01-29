@@ -517,6 +517,7 @@ class MixxxCore(Feature):
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
+                   "controlindicator.cpp",
                    "controlttrotary.cpp",
 
                    "preferences/dlgpreferencepage.cpp",
@@ -755,6 +756,7 @@ class MixxxCore(Feature):
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/vsyncthread.cpp",
+                   "waveform/guitick.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",
@@ -836,6 +838,7 @@ class MixxxCore(Feature):
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",
                    "util/stat.cpp",
+                   "util/time.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
                    "util/version.cpp",
@@ -916,11 +919,6 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
             build.env.Append(CCFLAGS='-g')
-
-            # Check that g++ is present (yeah, SCONS is a bit dumb here)
-            # returns a non zeros return code if g++ is found
-            if os.system("which g++ > /dev/null"):
-                raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
             mixxx_lib_path = SCons.ARGUMENTS.get(

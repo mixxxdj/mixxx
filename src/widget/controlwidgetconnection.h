@@ -6,8 +6,6 @@
 #include <QScopedPointer>
 #include <QByteArray>
 
-#include "configobject.h"
-
 class ControlObjectSlave;
 class WBaseWidget;
 class ValueTransformer;
@@ -95,7 +93,6 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                     ControlObjectSlave* pControl,
                                     ValueTransformer* pTransformer,
-                                    ConfigObject<ConfigValue>* pConfig,
                                     const QString& property);
     virtual ~ControlWidgetPropertyConnection();
 
@@ -110,10 +107,7 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     void slotControlValueChanged(double v);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
     QByteArray m_propertyName;
 };
-
-
 
 #endif /* CONTROLWIDGETCONNECTION_H */

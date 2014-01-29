@@ -199,8 +199,9 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
 void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 {
     // Read the tags if required
-    if(!m_pLoadedTrack->getHeaderParsed())
-        SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
+    if (!m_pLoadedTrack->getHeaderParsed()) {
+        m_pLoadedTrack->parse();
+    }
 
     // m_pLoadedTrack->setPlayedAndUpdatePlaycount(true); // Actually the song is loaded but not played
 
