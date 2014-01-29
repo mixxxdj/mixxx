@@ -368,7 +368,7 @@ void DlgTrackInfo::slotBpmTap() {
 void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
-                                                true, m_pLoadedTrack->getSecurityToken()));
+                                                m_pLoadedTrack->getSecurityToken()));
         populateFields(pTrack);
     }
 }

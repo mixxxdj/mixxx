@@ -115,7 +115,8 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
 
     foreach (const MusicBrainzClient::Result& result, results) {
         TrackPointer track(new TrackInfoObject(originalTrack->getLocation(),
-                                               false, originalTrack->getSecurityToken()),
+                                               originalTrack->getSecurityToken(),
+                                               false),
                            &QObject::deleteLater);
         track->setTitle(result.m_title);
         track->setArtist(result.m_artist);

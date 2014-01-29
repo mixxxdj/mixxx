@@ -442,7 +442,7 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             emit(progressLoading(file.fileName()));
 
             TrackPointer pTrack = TrackPointer(
-                    new TrackInfoObject(filePath, true, pToken),
+                    new TrackInfoObject(filePath, pToken),
                     &QObject::deleteLater);
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successfully added. Signal the main instance of TrackDAO,

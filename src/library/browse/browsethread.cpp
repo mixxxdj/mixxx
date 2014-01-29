@@ -127,7 +127,7 @@ void BrowseThread::populateModel() {
         }
 
         QString filepath = fileIt.next();
-        TrackInfoObject tio(filepath, true, thisPath.token());
+        TrackInfoObject tio(filepath, thisPath.token());
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem(tio.getFilename());

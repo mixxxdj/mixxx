@@ -36,8 +36,9 @@
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 
-TrackInfoObject::TrackInfoObject(const QString& file, bool parseHeader,
-                                 SecurityTokenPointer pToken)
+TrackInfoObject::TrackInfoObject(const QString& file,
+                                 SecurityTokenPointer pToken,
+                                 bool parseHeader)
         : m_fileInfo(file),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
@@ -48,8 +49,9 @@ TrackInfoObject::TrackInfoObject(const QString& file, bool parseHeader,
     initialize(parseHeader);
 }
 
-TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader,
-                                 SecurityTokenPointer pToken)
+TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
+                                 SecurityTokenPointer pToken,
+                                 bool parseHeader)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
