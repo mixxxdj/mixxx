@@ -52,7 +52,8 @@ class MixxxBuild(object):
                                    'kfreebsd-amd64', 'kfreebsd-i386',
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
-                                   'amd64', 'amd64', 'em64t', 'intel64']:
+                                   'amd64', 'em64t', 'intel64', 'arm64',
+                                   'ppc64el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
