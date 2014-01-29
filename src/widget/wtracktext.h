@@ -13,10 +13,6 @@ class WTrackText : public WLabel {
   public:
     WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget *parent);
     virtual ~WTrackText();
-
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-
   signals:
     void trackDropped(QString fileName, QString group);
 
@@ -28,9 +24,14 @@ class WTrackText : public WLabel {
     void updateLabel(TrackInfoObject*);
 
   private:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
 };
+
 
 #endif /* WTRACKTEXT_H */

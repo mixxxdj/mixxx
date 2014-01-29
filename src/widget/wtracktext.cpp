@@ -39,6 +39,21 @@ void WTrackText::updateLabel(TrackInfoObject*) {
     }
 }
 
+void WTrackText::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton && m_pCurrentTrack) {
+        QList<QUrl> locationUrls;
+        locationUrls.append(QUrl::fromLocalFile(m_pCurrentTrack->getLocation()));
+
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setUrls(locationUrls);
+
+        QDrag* drag = new QDrag(this);
+        drag->setMimeData(mimeData);
+        drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
+        drag->exec(Qt::CopyAction);
+    }
+}
+
 void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
     if (event->mimeData()->hasUrls() &&
             event->mimeData()->urls().size() > 0) {
