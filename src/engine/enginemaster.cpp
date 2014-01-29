@@ -117,8 +117,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pMicBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pHead, 0, MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
+    SampleUtil::applyGain(m_pMicBuffer, 0, MAX_BUFFER_LEN);
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {

@@ -166,6 +166,7 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
+    CSAMPLE* m_pMicBuffer;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
