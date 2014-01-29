@@ -20,6 +20,7 @@
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection,
@@ -114,13 +115,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
-        //     QUrl::toLocalFile() vs. QUrl::toString() usage.
-        files.append(url.toLocalFile());
-    }
-
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     QList<int> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);

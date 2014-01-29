@@ -16,6 +16,7 @@
 #include "dlgtrackinfo.h"
 #include "soundsourceproxy.h"
 #include "playermanager.h"
+#include "util/dnd.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -902,20 +903,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         event->ignore();
         return;
     }
-    QList<QUrl> urls(event->mimeData()->urls());
-    QUrl url;
-    QModelIndex selectedIndex; //Index of a selected track (iterator)
-
-    // Filter out invalid URLs (eg. files that aren't supported audio filetypes, etc.)
-    QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(),
-                    Qt::CaseInsensitive);
-    for (int i = 0; i < urls.size(); ++i) {
-        if (fileRx.indexIn(urls.at(i).path()) == -1) {
-            // remove invalid urls and decrease i because the size of
-            // urls has changed.
-            urls.removeAt(--i);
-        }
-    }
 
     // Save the vertical scrollbar position. Adding new tracks and moving tracks in
     // the SQL data models causes a select() (ie. generation of a new result set),
@@ -1038,9 +1025,18 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         // clears them)
         this->selectionModel()->clear();
 
+        // Add all the dropped URLs/tracks to the track model (playlist/crate)
+        QList<QFileInfo> fileList = DragAndDropHelper::supportedTracksFromUrls(
+            event->mimeData()->urls(), false, true);
+
+        QList<QString> fileLocationList;
+        foreach (const QFileInfo& fileInfo, fileList) {
+            fileLocationList.append(fileInfo.canonicalFilePath());
+        }
+
         // Drag-and-drop from an external application
         // eg. dragging a track from Windows Explorer onto the track table.
-        int numNewRows = urls.count();
+        int numNewRows = fileLocationList.count();
 
         // Have to do this here because the index is invalid after
         // addTrack
@@ -1061,12 +1057,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
             selectionStartRow = model()->rowCount();
         }
 
-        // Add all the dropped URLs/tracks to the track model (playlist/crate)
-        QList<QString> fileLocationList;
-        foreach(url, urls) {
-            QString file(url.toLocalFile());
-            fileLocationList.append(file);
-        }
         // calling the addTracks returns number of failed additions
         int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
 

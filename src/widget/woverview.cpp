@@ -27,6 +27,7 @@
 #include "trackinfoobject.h"
 #include "mathstuff.h"
 #include "util/timer.h"
+#include "util/dnd.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -499,18 +500,14 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        QList<QUrl> urls(event->mimeData()->urls());
-        QUrl url = urls.first();
-        QString name = url.toLocalFile();
-        //If the file is on a network share, try just converting the URL to a string...
-        if (name == "") {
-            name = url.toString();
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
         }
-        event->accept();
-        emit(trackDropped(name, m_group));
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }
