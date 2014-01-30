@@ -371,20 +371,20 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 
     // Compare the hashes, and if they don't match, rescan the files in that directory!
     if (prevHash != newHash) {
-        //If we didn't know about this directory before...
-        if (!prevHashExists) {
-            m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
-        } else {
-            // Contents of a known directory have changed. Just need to update
-            // the old hash in the database and then rescan it.
-            qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
-            m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
-        }
-
         // Rescan that mofo! If importing fails then the scan was cancelled so
         // we return immediately.
         if (!importFiles(filesToImport)) {
             return false;
+        }
+        // If we didn't know about this directory before...
+        // save the hash after we imported everything in it
+        if (!prevHashExists) {
+            m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
+        } else {
+            // Contents of a known directory have changed. Just need to update
+            // the old hash in the database
+            qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
+            m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
         }
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
