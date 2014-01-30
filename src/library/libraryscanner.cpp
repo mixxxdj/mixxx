@@ -42,8 +42,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 // conn is in the right thread.
                 m_extensionFilter(SoundSourceProxy::supportedFileExtensionsRegex(),
                                   Qt::CaseInsensitive),
-    m_bCancelLibraryScan(false) {
-
+                m_bCancelLibraryScan(false) {
     qDebug() << "Constructed LibraryScanner";
 
     // Force the GUI thread's TrackInfoObject cache to be cleared when a library
@@ -137,7 +136,7 @@ LibraryScanner::~LibraryScanner() {
 void LibraryScanner::run() {
     Trace trace("LibraryScanner");
     unsigned static id = 0; // the id of this thread, for debugging purposes
-            //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
@@ -226,10 +225,10 @@ void LibraryScanner::run() {
     // Recursivly scan each directory in the directories table.
     foreach (const QString& dir, dirs) {
         bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
-        if (!bScanFinishedCleanly) {
-            qDebug() << "Recursive scaning (" << dir << ") interrupted.";
+        if (bScanFinishedCleanly) {
+            qDebug() << "Recursive scanning (" << dir << ") finished cleanly.";
         } else {
-            qDebug() << "Recursive scaning (" << dir << ") finished cleanly.";
+            qDebug() << "Recursive scanning (" << dir << ") interrupted.";
         }
     }
 
@@ -242,8 +241,8 @@ void LibraryScanner::run() {
     }
 
     // Clean up and commit or rollback the transaction depending on
-    // bScanFinishedCleanly.
-    m_trackDao.addTracksFinish(!bScanFinishedCleanly);
+    // bScanFinishedCleanly or if the scan was canceled..
+    m_trackDao.addTracksFinish(!(m_bCancelLibraryScan || bScanFinishedCleanly));
 
     // At the end of a scan, mark all tracks and directories that
     // weren't "verified" as "deleted" (as long as the scan wasn't canceled
