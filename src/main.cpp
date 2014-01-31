@@ -168,7 +168,12 @@ int main(int argc, char * argv[])
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
-    QCoreApplication::setOrganizationName("Mixxx");
+
+    // Setting the organization name results in a QDesktopStorage::DataLocation
+    // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
+    // organization name blank.
+    //QCoreApplication::setOrganizationName("Mixxx");
+
     QCoreApplication::setApplicationName("Mixxx");
     QString mixxxVersion = Version::version();
     QByteArray mixxxVersionBA = mixxxVersion.toLocal8Bit();
@@ -328,7 +333,7 @@ int main(int argc, char * argv[])
      }
 #endif
 
-    MixxxApp* mixxx = new MixxxApp(&a, args);
+    MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
 
     //a.setMainWidget(mixxx);
     QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));

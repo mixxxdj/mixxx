@@ -63,23 +63,20 @@ class PortMIDI(Dependence):
 class OpenGL(Dependence):
 
     def configure(self, build, conf):
-        # Check for OpenGL (it's messy to do it for all three platforms) XXX
-        # this should *NOT* have hardcoded paths like this
+        if build.platform_is_osx:
+            build.env.AppendUnique(FRAMEWORKS='OpenGL')
+
+        # Check for OpenGL (it's messy to do it for all three platforms).
         if (not conf.CheckLib('GL') and
                 not conf.CheckLib('opengl32') and
-                not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and
+                not conf.CheckCHeader('OpenGL/gl.h') and
                 not conf.CheckCHeader('GL/gl.h')):
             raise Exception('Did not find OpenGL development files')
 
         if (not conf.CheckLib('GLU') and
                 not conf.CheckLib('glu32') and
-                not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h')):
+                not conf.CheckCHeader('OpenGL/glu.h')):
             raise Exception('Did not find GLU development files')
-
-        if build.platform_is_osx:
-            build.env.Append(
-                CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
-            build.env.Append(LINKFLAGS='-framework OpenGL')
 
 
 class OggVorbis(Dependence):
@@ -517,6 +514,7 @@ class MixxxCore(Feature):
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
+                   "controlindicator.cpp",
                    "controlttrotary.cpp",
 
                    "preferences/dlgpreferencepage.cpp",
@@ -755,6 +753,7 @@ class MixxxCore(Feature):
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/vsyncthread.cpp",
+                   "waveform/guitick.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",
@@ -841,10 +840,12 @@ class MixxxCore(Feature):
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",
                    "util/stat.cpp",
+                   "util/time.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
+                   "util/valuetransformer.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -920,11 +921,6 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
             build.env.Append(CCFLAGS='-g')
-
-            # Check that g++ is present (yeah, SCONS is a bit dumb here)
-            # returns a non zeros return code if g++ is found
-            if os.system("which g++ > /dev/null"):
-                raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
             mixxx_lib_path = SCons.ARGUMENTS.get(

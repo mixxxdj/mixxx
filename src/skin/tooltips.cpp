@@ -271,9 +271,9 @@ void Tooltips::addStandardTooltips() {
     QString whileStopped = tr("(while stopped)");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
-            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."))
-            << tr("Change the default cue behavior in Preferences -> Interface.")
-            << QString("%1 %2: %3").arg(leftClick, whileStopped, cueSet)
+            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point."))
+            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx mode) OR preview from it (Denon mode)."))
+            << tr("Hint: Change the default cue mode in Preferences -> Interface.")
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue-point and stops."));
 

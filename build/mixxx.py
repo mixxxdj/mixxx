@@ -52,7 +52,8 @@ class MixxxBuild(object):
                                    'kfreebsd-amd64', 'kfreebsd-i386',
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
-                                   'amd64', 'amd64', 'em64t', 'intel64']:
+                                   'amd64', 'em64t', 'intel64', 'arm64',
+                                   'ppc64el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -200,6 +201,8 @@ class MixxxBuild(object):
             elif flags_force64:
                 self.env.Append(CCFLAGS='-m64')
 
+        self.setup_sysroot()
+
         if self.platform_is_osx:
             if self.architecture_is_powerpc:
                 self.env.Append(CCFLAGS='-arch ppc')
@@ -242,6 +245,51 @@ class MixxxBuild(object):
 
     def detect_machine(self):
         return platform.machine()
+
+    def setup_sysroot(self):
+        sysroot = Script.ARGUMENTS.get('sysroot', '')
+        if sysroot:
+            env.Append(CCFLAGS=['-isysroot', sysroot])
+
+        # If no sysroot was specified, pick one automatically. The only platform
+        # we pick one automatically on is OS X.
+        if self.platform_is_osx:
+            if '-isysroot' in self.env['CXXFLAGS'] or '-isysroot' in self.env['CFLAGS']:
+                print 'Skipping OS X automatic sysroot selection because -isysroot is in your CCFLAGS.'
+                return
+
+            print 'Automatically detecting Mac OS X SDK.'
+
+            # SDK versions in order of precedence.
+            sdk_versions = ['10.9', '10.8', '10.7', '10.6', '10.5']
+            min_sdk_version = '10.5'
+
+            print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
+            for sdk in sdk_versions:
+                sdk_path = os.popen(
+                    'xcodebuild -version -sdk macosx%s Path' % sdk).readline().strip()
+                if sdk_path:
+                    print "Automatically selected OS X SDK:", sdk_path
+
+                    # NOTE(rryan): A quick note about mmacosx-version-min. With
+                    # the OS X 10.9 SDK Clang changed the standard library from
+                    # libstdc++ to libc++. If you set -mmacosx-version-min=<10.9
+                    # then this uses libstdc++. libstdc++ and libc++ are not
+                    # binary compatible so if you want to build Mixxx with
+                    # libc++ then all dependencies have to be built with
+                    # libc++.
+
+                    common_flags = ['-isysroot', sdk_path,
+                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                    link_flags = ['-Wl,-syslibroot,' + sdk_path]
+                    self.env.Append(CCFLAGS=common_flags)
+                    self.env.Append(LINKFLAGS=common_flags + link_flags)
+                    return
+
+            print 'Could not find a supported Mac OS X SDK.'
+            print ('Make sure that XCode is installed, you have installed '
+                   'the command line tools, and have selected an SDK path with '
+                   'xcode-select.')
 
     def read_environment_variables(self):
         # Import environment variables from the terminal. Note that some
@@ -301,6 +349,7 @@ class MixxxBuild(object):
                  'Set the path to the root of a cross-compile sandbox.', '')
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
+        vars.Add('sysroot', 'Specify a custom sysroot', '')
 
         for feature_class in self.available_features:
             # Instantiate the feature
