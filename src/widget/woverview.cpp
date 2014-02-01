@@ -21,7 +21,7 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "trackinfoobject.h"
@@ -67,20 +67,20 @@ WOverview::~WOverview() {
     }
 }
 
-void WOverview::setup(QDomNode node) {
-    m_signalColors.setup(node);
+void WOverview::setup(QDomNode node, const SkinContext& context) {
+    m_signalColors.setup(node, context);
 
     m_qColorBackground = m_signalColors.getBgColor();
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
-    m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
+    m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
-        m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
+        m_backgroundPixmap = QPixmap(context.getSkinPath(m_backgroundPixmapPath));
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
-    const QString endOfTrackColorName = WWidget::selectNodeQString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
@@ -91,7 +91,7 @@ void WOverview::setup(QDomNode node) {
     setPalette(palette);
 
     //setup hotcues and cue and loop(s)
-    m_marks.setup(m_group, node, m_signalColors);
+    m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
@@ -104,7 +104,7 @@ void WOverview::setup(QDomNode node) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_group, child, m_signalColors);
+            markRange.setup(m_group, child, context, m_signalColors);
 
             connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
                      this, SLOT(onMarkRangeChange(double)));
@@ -120,14 +120,14 @@ void WOverview::setup(QDomNode node) {
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 }
 
-void WOverview::setValue(double fValue) {
+void WOverview::onConnectedControlValueChanged(double dValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
-        int iPos = valueToPosition(fValue);
+        int iPos = valueToPosition(dValue);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::setValue" << fValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
             update();
         }
     }
@@ -247,14 +247,14 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
 
-    float fValue = positionToValue(m_iPos);
+    double dValue = positionToValue(m_iPos);
 
-    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
+    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::RightButton) {
-        emit(valueChangedRightUp(fValue));
+        setControlParameterRightUp(dValue);
     } else {
-        emit(valueChangedLeftUp(fValue));
+        setControlParameterLeftUp(dValue);
     }
     m_bDrag = false;
 }
@@ -466,9 +466,21 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    //Those coeficient map position from [0;width-1] to value [14;114]
-    m_a = (float)((width()-1))/( 114.f - 14.f);
-    m_b = 14.f * m_a;
+    // Play-position potmeters range from -0.14 to 1.14. This is to give VC and
+    // MIDI control access to the pre-roll area.
+    // TODO(rryan): get these limits from the CO itself.
+    const double kMaxPlayposRange = 1.14;
+    const double kMinPlayposRange = -0.14;
+
+    // Values of zero and one in normalized space.
+    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+
+    // These coeficients convert between widget space and normalized value
+    // space.
+    m_a = (width() - 1) / (one - zero);
+    m_b = zero * m_a;
+
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
 }

@@ -1,15 +1,15 @@
 #include "waveformsignalcolors.h"
 
+#include <QDomNode>
+
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-
-#include <QDomNode>
 
 WaveformSignalColors::WaveformSignalColors()
 {
 }
 
-bool WaveformSignalColors::setup(const QDomNode &node)
+bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& context)
 {
 /*
     QString string;
@@ -18,31 +18,31 @@ bool WaveformSignalColors::setup(const QDomNode &node)
     qDebug() << string;
 */
 
-    m_signalColor.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
+    m_signalColor.setNamedColor(context.selectString(node, "SignalColor"));
     m_signalColor = WSkinColor::getCorrectColor(m_signalColor);
 
-    m_lowColor.setNamedColor(WWidget::selectNodeQString(node, "SignalLowColor"));
+    m_lowColor.setNamedColor(context.selectString(node, "SignalLowColor"));
     m_lowColor = WSkinColor::getCorrectColor(m_lowColor);
 
-    m_midColor.setNamedColor(WWidget::selectNodeQString(node, "SignalMidColor"));
+    m_midColor.setNamedColor(context.selectString(node, "SignalMidColor"));
     m_midColor = WSkinColor::getCorrectColor(m_midColor);
 
-    m_highColor.setNamedColor(WWidget::selectNodeQString(node, "SignalHighColor"));
+    m_highColor.setNamedColor(context.selectString(node, "SignalHighColor"));
     m_highColor = WSkinColor::getCorrectColor(m_highColor);
 
-    m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
+    m_axesColor.setNamedColor(context.selectString(node, "AxesColor"));
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);
     }
     m_axesColor = WSkinColor::getCorrectColor(m_axesColor);
 
-    m_playPosColor.setNamedColor(WWidget::selectNodeQString(node, "PlayPosColor"));
+    m_playPosColor.setNamedColor(context.selectString(node, "PlayPosColor"));
     m_playPosColor = WSkinColor::getCorrectColor(m_playPosColor);
     if (!m_playPosColor.isValid()) {
         m_playPosColor = m_axesColor;
     }
 
-    m_bgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    m_bgColor.setNamedColor(context.selectString(node, "BgColor"));
     if (!m_bgColor.isValid()) {
         m_bgColor = QColor(0, 0, 0);
     }
@@ -50,11 +50,11 @@ bool WaveformSignalColors::setup(const QDomNode &node)
 
     bool filteredColorValid = m_lowColor.isValid() && m_midColor.isValid() && m_highColor.isValid();
 
-    if( m_signalColor.isValid() && filteredColorValid)
+    if (m_signalColor.isValid() && filteredColorValid) {
         return true; //default
+    }
 
-    if( m_signalColor.isValid() && !filteredColorValid)
-    {
+    if (m_signalColor.isValid() && !filteredColorValid) {
         fallBackFromSignalColor(); //pre waveform-2.0 skins
         return false;
     }
@@ -68,14 +68,16 @@ void WaveformSignalColors::fallBackFromSignalColor()
     qWarning() << "WaveformSignalColors::fallBackFromSignalColor - " \
                   "skin do not provide low/mid/high signal colors";
 
-    double h,s,l,a;
+    // NOTE(rryan): On ARM, qreal is float so it's important we use qreal here
+    // and not double or float or else we will get build failures on ARM.
+    qreal h, s, l, a;
     m_signalColor.getHslF(&h,&s,&l,&a);
 
     const double analogousAngle = 1.0/12.0;
 
     if( s < 0.1) // gray
     {
-        const double sMax = 1.0 - h;
+        const qreal sMax = 1.0 - h;
         m_lowColor.setHslF(h,s,l);
         m_midColor.setHslF(h,s+sMax*0.2,l);
         m_highColor.setHslF(h,s+sMax*0.4,l);
@@ -84,28 +86,28 @@ void WaveformSignalColors::fallBackFromSignalColor()
     {
         if( l < 0.1) // ~white
         {
-            const double lMax = 1.0 - l;
+            const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l+lMax*0.2);
             m_highColor.setHslF(h,s,l+lMax*0.4);
         }
         else if( l < 0.5)
         {
-            const double lMax = 1.0 - l;
+            const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
         }
         else if ( l < 0.9)
         {
-            const double lMin = l;
+            const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l-lMin*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l-lMin*0.4);
         }
         else // ~black
         {
-            const double lMin = l;
+            const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l-lMin*0.2);
             m_highColor.setHslF(h,s,l-lMin*0.4);

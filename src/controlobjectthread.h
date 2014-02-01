@@ -39,6 +39,8 @@ class ControlObjectThread : public QObject {
     bool connectValueChanged(
             const char* method, Qt::ConnectionType type = Qt::AutoConnection );
 
+    QString name() const;
+    QString description() const;
 
     /** Called from update(); */
     void emitValueChanged();

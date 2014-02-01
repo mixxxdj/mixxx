@@ -19,6 +19,12 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
     m_pControlTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
+
+    // You normally don't expect to hear yourself in the headphones. Default PFL
+    // setting for mic to false. User can over-ride by setting the "pfl" or
+    // "master" controls.
+    setMaster(true);
+    setPFL(false);
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -28,51 +34,40 @@ EngineMicrophone::~EngineMicrophone() {
     delete m_pControlTalkover;
 }
 
-bool EngineMicrophone::isActive() {
+bool EngineMicrophone::isActive() const {
     bool enabled = m_pEnabled->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
 }
 
-bool EngineMicrophone::isPFL() {
-    // You normally don't expect to hear yourself in the headphones
-    return false;
-}
-
-bool EngineMicrophone::isMaster() {
-    return true;
-}
-
 void EngineMicrophone::onInputConnected(AudioInput input) {
-    if (input.getType() != AudioPath::MICROPHONE ||
-        AudioInput::channelsNeededForType(input.getType()) != 1) {
+    if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(1.0f);
+    m_pEnabled->set(1.0);
 }
 
 void EngineMicrophone::onInputDisconnected(AudioInput input) {
-    if (input.getType() != AudioPath::MICROPHONE ||
-        AudioInput::channelsNeededForType(input.getType()) != 1) {
+    if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(0.0f);
+    m_pEnabled->set(0.0);
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                      unsigned int nFrames) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type!";
         return;
     }
 
-    const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
+    const unsigned int iChannels = input.getChannelGroup().getChannelCount();
 
     // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
@@ -119,7 +114,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.
-    if (m_pControlTalkover->get() > 0.0f) {
+    if (m_pControlTalkover->get() > 0.0) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This

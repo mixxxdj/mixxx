@@ -1,8 +1,11 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <QDebug>
 
 #include "track/keyutils.h"
 #include "proto/keys.pb.h"
+
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -139,6 +142,33 @@ TEST_F(KeyUtilsTest, ShortestStepsToKey) {
         start_key_minor = KeyUtils::scaleKeySteps(start_key_minor, 1);
         start_key_major = KeyUtils::scaleKeySteps(start_key_major, 1);
     }
+}
+
+TEST_F(KeyUtilsTest, GetCompatibleKeys) {
+    // The relative major, the perfect 4th and the perfect 5th are all
+    // compatible. This is easily checked with the Circle of Fifths.
+
+    // Test keys on the boundary between 1 and 12 to check that wrap-around
+    // works.
+    mixxx::track::io::key::ChromaticKey key =
+            mixxx::track::io::key::A_MINOR;
+    QList<mixxx::track::io::key::ChromaticKey> compatible =
+            KeyUtils::getCompatibleKeys(key);
+    qSort(compatible);
+    EXPECT_THAT(compatible, ElementsAre(
+        mixxx::track::io::key::C_MAJOR,
+        mixxx::track::io::key::D_MINOR,
+        mixxx::track::io::key::E_MINOR,
+        mixxx::track::io::key::A_MINOR));
+
+    key = mixxx::track::io::key::F_MAJOR;
+    compatible = KeyUtils::getCompatibleKeys(key);
+    qSort(compatible);
+    EXPECT_THAT(compatible, ElementsAre(
+        mixxx::track::io::key::C_MAJOR,
+        mixxx::track::io::key::F_MAJOR,
+        mixxx::track::io::key::B_FLAT_MAJOR,
+        mixxx::track::io::key::D_MINOR));
 }
 
 }  // namespace

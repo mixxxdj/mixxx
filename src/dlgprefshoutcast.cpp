@@ -22,6 +22,7 @@
 #include "defs_urls.h"
 #include "dlgprefshoutcast.h"
 #include "shoutcast/defs_shoutcast.h"
+#include "controlobjectthread.h"
 
 DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config)
         : DlgPreferencePage(parent),
@@ -222,5 +223,5 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
 
     //Tell the EngineShoutcast object to update with these values by toggling this control object.
-    m_pUpdateShoutcastFromPrefs->slotSet(1.0f);
+    m_pUpdateShoutcastFromPrefs->slotSet(1.0);
 }

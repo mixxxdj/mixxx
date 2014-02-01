@@ -148,7 +148,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    m_pUpdateShoutcastFromPrefs->slotSet(0.0f);
+    m_pUpdateShoutcastFromPrefs->slotSet(0.0);
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -512,7 +512,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     // If we aren't connected or the user has changed their preferences,
     // disconnect, update from prefs, and reconnect.
-    if (!connected || m_pUpdateShoutcastFromPrefs->get() > 0.0f) {
+    if (!connected || m_pUpdateShoutcastFromPrefs->get() > 0.0) {
         if (connected) {
             serverDisconnect();
         }

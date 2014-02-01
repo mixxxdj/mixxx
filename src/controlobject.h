@@ -31,7 +31,8 @@ class ControlObject : public QObject {
   public:
     ControlObject();
     ControlObject(ConfigKey key,
-                  bool bIgnoreNops=true, bool bTrack=false);
+                  bool bIgnoreNops=true, bool bTrack=false,
+                  bool bPersist=false);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
@@ -43,6 +44,26 @@ class ControlObject : public QObject {
     static inline ControlObject* getControl(const char* group, const char* item, bool warn = true) {
         ConfigKey key(group, item);
         return getControl(key, warn);
+    }
+
+    QString name() const {
+        return m_pControl ?  m_pControl->name() : QString();
+    }
+
+    void setName(const QString& name) {
+        if (m_pControl) {
+            m_pControl->setName(name);
+        }
+    }
+
+    const QString description() const {
+        return m_pControl ?  m_pControl->description() : QString();
+    }
+
+    void setDescription(const QString& description) {
+        if (m_pControl) {
+            m_pControl->setDescription(description);
+        }
     }
 
     // Return the key of the object
@@ -82,7 +103,7 @@ class ControlObject : public QObject {
     // DEPRECATED: Called to set the control value from the controller
     // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
-    virtual double getValueToMidi() const;
+    virtual double getMidiParameter() const;
 
   protected:
     // Key of the object
@@ -93,7 +114,8 @@ class ControlObject : public QObject {
     void privateValueChanged(double value, QObject* pSetter);
 
   private:
-    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack);
+    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
+                    bool bPersist);
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }

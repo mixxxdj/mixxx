@@ -20,6 +20,12 @@
 #include <QDataStream>
 #include <QFile>
 
+#ifdef Q_OS_WIN
+//Enable unicode in libsndfile on Windows
+//(sf_open uses UTF-8 otherwise)
+#include <windows.h>
+#define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#endif
 #include <sndfile.h>
 
 #include "encoder/encodercallback.h"

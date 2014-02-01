@@ -1,4 +1,4 @@
-#include "wimagestore.h"
+#include "widget/wimagestore.h"
 
 #include <QtDebug>
 
@@ -21,11 +21,11 @@ QImage * WImageStore::getImage(const QString &fileName) {
 
     // Image wasn't found, construct it
     //qDebug() << "WImageStore Loading Image from file" << fileName;
-    
-    QImage* loadedImage = getImageNoCache(fileName); 
+
+    QImage* loadedImage = getImageNoCache(fileName);
 
     if (loadedImage == NULL) {
-        return NULL; 
+        return NULL;
     }
 
 
@@ -50,10 +50,10 @@ QImage * WImageStore::getImageNoCache(const QString& fileName) {
     } else {
         pImage = new QImage(fileName);
     }
-    return pImage; 
+    return pImage;
 }
 
-// static 
+// static
 void WImageStore::deleteImage(QImage * p)
 {
     // Search for Image in list
@@ -88,5 +88,3 @@ void WImageStore::correctImageColors(QImage* p) {
 void WImageStore::setLoader(QSharedPointer<ImgSource> ld) {
     m_loader = ld;
 }
-
-

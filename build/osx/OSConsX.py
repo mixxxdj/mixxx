@@ -348,7 +348,7 @@ def emit_app(target, source, env):
     #it seems that if we tell Builder "suffix = '.app'" then it _at that point_ assumes that $NAME.app is a file, which then causes "TypeError: Tried to lookup File 'Mixxx.app' as a Dir.:"
     #so just work around that here
     if type(bundle) != Bundle:
-        bundle = Bundle(str(bundle)+".app")
+        bundle = Bundle(str(bundle).replace('_bundle', '')+".app")
 
     bundle_identifier = env['IDENTIFIER']
     bundle_version = env['VERSION']
@@ -381,8 +381,9 @@ def emit_app(target, source, env):
     #So, we use the first four characters of the app
     env.Writer(File(os.path.join(str(contents),"PkgInfo")), [], DATA = "%s%s" % (bundle_type, bundle_signature))
 
-    #.title() in the next line is used to make sure the titlebar on OS X has the capitalized name of the app
-    plist_data = {'CFBundleExecutable': binary.name.title(),
+    # Bug #1258435: executable name must match CFBundleExecutable otherwise
+    # case-sensitive file systems break. Don't use binary.name.title() here.
+    plist_data = {'CFBundleExecutable': binary.name,
                   'CFBundleIconFile': icon,
                   'CFBundlePackageType': bundle_type,
                   'CFBundleSignature': bundle_signature,
@@ -445,7 +446,7 @@ def codesign_path(identity, keychain, entitlements, path):
 def do_codesign(target, source, env):
     # target[0] is a File object, coerce to string to get its path (usually
     # something like osxXX_build/Mixxx)
-    bundle = str(target[0])
+    bundle = str(target[0]).replace('_codesign', '')
 
     # HACK(XXX) SCons can't have a Dir which is a target so we append .app here
     # since our actual target (the thing we want to codesign) is the bundle
@@ -528,5 +529,3 @@ def generate(env):
 
 def exists(env):
     return os.platform == 'darwin'
-
-

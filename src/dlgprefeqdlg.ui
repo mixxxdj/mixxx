@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
+    <width>575</width>
     <height>520</height>
    </rect>
   </property>
@@ -15,11 +15,27 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QCheckBox" name="CheckBoxEnbEQ">
+       <property name="toolTip">
+        <string>Disable Mixxx` internal equalizers if you prefer to use equalizers on connected hardware mixers, and to lower CPU utilization.</string>
+       </property>
+       <property name="text">
+        <string>Enable Equalizers</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QCheckBox" name="CheckBoxLoFi">
+       <property name="toolTip">
+        <string>Use this option if you prefer lower CPU utilization over better sound.</string>
+       </property>
        <property name="text">
-        <string>Static EQs (for slower CPUs)</string>
+        <string>Use Static Equalizers</string>
        </property>
       </widget>
      </item>

@@ -1,6 +1,6 @@
 #include "test/mixxxtest.h"
 
-#include "singleton.h"
+#include "util/singleton.h"
 
 // Specialize the Singleton template for QApplication because it doesn't have a
 // 0-args constructor.
@@ -21,14 +21,20 @@ MixxxTest::MixxxTest() {
     m_pApplication = Singleton<QApplication>::create();
     m_pConfig.reset(new ConfigObject<ConfigValue>(
         QDir::currentPath().append("/src/test/test_data/test.cfg")));
+
 }
 
 MixxxTest::~MixxxTest() {
     // Mixxx leaks a ton of COs normally. To make new tests not affected by
     // previous tests, we clear our all COs after every MixxxTest completion.
-    QList<ControlDoublePrivate*> leakedControls;
+    QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
     ControlDoublePrivate::getControls(&leakedControls);
-    foreach (ControlDoublePrivate* pCDP, leakedControls) {
+    foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
+        if (pCDP.isNull()) {
+            continue;
+        }
+        ConfigKey key = pCDP->getKey();
+        qDebug() << "Warning: Test leaked control:" << key.group << key.item;
         delete pCDP->getCreatorCO();
     }
 }

@@ -20,6 +20,7 @@
 
 #include "engine/engineobject.h"
 
+class ControlObjectSlave;
 class ControlLogpotmeter;
 class ControlPotmeter;
 class ControlPushButton;
@@ -50,10 +51,13 @@ class EngineFilterBlock : public EngineObject {
     EngineObject *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
+    ControlObjectSlave* m_pSampleRate;
 
     static ControlPotmeter *s_loEqFreq, *s_hiEqFreq;
     static ControlPushButton *s_lofiEq;
+    static ControlPushButton *s_EnableEq;
 
+    int m_iOldSampleRate;
     double old_low, old_mid, old_high;
 
     int ilowFreq, ihighFreq;

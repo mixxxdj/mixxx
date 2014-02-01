@@ -61,16 +61,15 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis()
 
 int SoundSourceOggVorbis::open()
 {
-#ifdef __WINDOWS__
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
-    if(ov_fopen(qBAFilename.data(), &vf) < 0) {
+#ifdef __WINDOWS__
+    if(ov_fopen(qBAFilename.constData(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
         return ERR;
     }
 #else
-    QByteArray qBAFilename = m_qFilename.toUtf8();
-    FILE *vorbisfile =  fopen(qBAFilename.data(), "r");
+    FILE *vorbisfile =  fopen(qBAFilename.constData(), "r");
 
     if (!vorbisfile) {
         qDebug() << "oggvorbis: cannot open" << m_qFilename;
@@ -230,20 +229,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
  */
 int SoundSourceOggVorbis::parseHeader() {
     setType("ogg");
-
-#ifdef __WINDOWS__
-    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
-     * If you try this conversion, f.isValid() will return false in many cases
-     * and processTaglibFile() will fail
-     *
-     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
-     * The returned byte array is undefined if the string contains characters not supported
-     * by the local 8-bit encoding.
-     */
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
-#else
-    QByteArray qBAFilename = m_qFilename.toUtf8();
-#endif
     TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata

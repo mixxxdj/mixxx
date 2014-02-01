@@ -27,6 +27,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 class WVuMeter : public WWidget  {
    Q_OBJECT
@@ -34,10 +35,11 @@ class WVuMeter : public WWidget  {
     WVuMeter(QWidget *parent=0);
     virtual ~WVuMeter();
 
-    void setup(QDomNode node);
-    void setPixmaps(const QString &backFilename, const QString &vuFilename,
+    void setup(QDomNode node, const SkinContext& context);
+    void setPixmapBackground(const QString& filename);
+    void setPixmaps(const QString &vuFilename,
                     bool bHorizontal=false);
-    void setValue(double fValue);
+    void onConnectedControlValueChanged(double fValue);
 
   protected slots:
     void updateState(int msecsElapsed);
@@ -53,8 +55,8 @@ class WVuMeter : public WWidget  {
     /** Number of positions associated with this knob */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmapPointer m_pPixmapBack;
-    QPixmapPointer m_pPixmapVu;
+    PaintablePointer m_pPixmapBack;
+    PaintablePointer m_pPixmapVu;
     /** True if it's a horizontal vu meter */
     bool m_bHorizontal;
 

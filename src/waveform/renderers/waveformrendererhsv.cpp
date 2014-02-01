@@ -10,8 +10,6 @@
 
 #include "defs.h"
 
-#include "controlobjectthreadmain.h"
-
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase( waveformWidgetRenderer) {
@@ -68,11 +66,13 @@ void WaveformRendererHSV::draw(QPainter* painter,
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
 
-    // Save HSV of waveform color
-    double h,s,v;
+    // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
+    // important we use qreal here and not double or float or else we will get
+    // build failures on ARM.
+    qreal h, s, v;
 
     // Get base color of waveform in the HSV format (s and v isn't use)
-    m_pColors->getLowColor().getHsvF(&h,&s,&v);
+    m_pColors->getLowColor().getHsvF(&h, &s, &v);
 
     QColor color;
     float lo, hi, total;

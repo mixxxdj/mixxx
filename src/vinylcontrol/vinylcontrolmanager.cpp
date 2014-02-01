@@ -6,6 +6,7 @@
 
 #include "controlobject.h"
 #include "controlobjectslave.h"
+#include "controlobjectthread.h"
 #include "playermanager.h"
 #include "soundmanager.h"
 #include "util/timer.h"
@@ -28,7 +29,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, i), m_pProcessor);
+            AudioInput(AudioInput::VINYLCONTROL, 0, 0, i), m_pProcessor);
     }
 }
 

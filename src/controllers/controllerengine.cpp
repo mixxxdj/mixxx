@@ -526,14 +526,14 @@ bool ControllerEngine::checkException() {
         error << (filename.isEmpty() ? "" : filename) << errorMessage << QString(line);
         m_scriptErrors.insert((filename.isEmpty() ? "passed code" : filename), error);
 
-        QString errorText = QString(tr("Uncaught exception at line %1 in file %2: %3"))
-                            .arg(QString::number(line),
-                                (filename.isEmpty() ? "" : filename),
-                                errorMessage);
+        QString errorText = tr("Uncaught exception at line %1 in file %2: %3")
+                .arg(QString::number(line),
+                     (filename.isEmpty() ? "" : filename),
+                     errorMessage);
 
         if (filename.isEmpty())
-            errorText = QString(tr("Uncaught exception at line %1 in passed code: %2"))
-                        .arg(QString::number(line), errorMessage);
+            errorText = tr("Uncaught exception at line %1 in passed code: %2")
+                    .arg(QString::number(line), errorMessage);
 
         scriptErrorDialog(m_bDebug ? QString("%1\nBacktrace:\n%2")
                           .arg(errorText, backtrace.join("\n")) : errorText);
