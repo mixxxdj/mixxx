@@ -50,7 +50,7 @@ int SoundSourceOpus::open() {
     int error = 0;
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 
-    m_ptrOpusFile = op_open_file(qBAFilename.data(), &error);
+    m_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     if ( m_ptrOpusFile == NULL ) {
         qDebug() << "opus: Input does not appear to be an Opus bitstream.";
         m_lFilelength = 0;
@@ -176,7 +176,7 @@ int SoundSourceOpus::parseHeader() {
 
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 
-    OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.data(), &error);
+    OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
     this->setSampleRate(48000);
     this->setChannels(2);
