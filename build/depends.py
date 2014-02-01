@@ -63,23 +63,20 @@ class PortMIDI(Dependence):
 class OpenGL(Dependence):
 
     def configure(self, build, conf):
-        # Check for OpenGL (it's messy to do it for all three platforms) XXX
-        # this should *NOT* have hardcoded paths like this
+        if build.platform_is_osx:
+            build.env.AppendUnique(FRAMEWORKS='OpenGL')
+
+        # Check for OpenGL (it's messy to do it for all three platforms).
         if (not conf.CheckLib('GL') and
                 not conf.CheckLib('opengl32') and
-                not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and
+                not conf.CheckCHeader('OpenGL/gl.h') and
                 not conf.CheckCHeader('GL/gl.h')):
             raise Exception('Did not find OpenGL development files')
 
         if (not conf.CheckLib('GLU') and
                 not conf.CheckLib('glu32') and
-                not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h')):
+                not conf.CheckCHeader('OpenGL/glu.h')):
             raise Exception('Did not find GLU development files')
-
-        if build.platform_is_osx:
-            build.env.Append(
-                CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
-            build.env.Append(LINKFLAGS='-framework OpenGL')
 
 
 class OggVorbis(Dependence):
