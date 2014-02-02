@@ -1284,7 +1284,7 @@ void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
     }
 }
 
-// Look for moved files. Look for files that have been marked as "deleted on disk"
+// Look for moved files. Look for files that have been marked as "need verification"
 // and see if another "file" with the same name and filesize exists in the track_locations
 // table. That means the file has moved instead of being deleted outright, and so
 // we can salvage your existing metadata that you have in your DB (like cue points, etc.).
@@ -1304,7 +1304,7 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
 
     query.prepare("SELECT track_locations.id, filename, duration FROM track_locations "
                   "INNER JOIN library ON track_locations.id=library.location "
-                  "WHERE fs_deleted=1");
+                  "WHERE needs_verification=1");
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -1312,7 +1312,7 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
 
     query2.prepare("SELECT track_locations.id FROM track_locations "
                    "INNER JOIN library ON track_locations.id=library.location "
-                   "WHERE fs_deleted=0 AND "
+                   "WHERE needs_verification=0 AND "
                    "filename=:filename AND "
                    "duration=:duration");
 

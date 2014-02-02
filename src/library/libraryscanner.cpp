@@ -42,8 +42,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 // conn is in the right thread.
                 m_extensionFilter(SoundSourceProxy::supportedFileExtensionsRegex(),
                                   Qt::CaseInsensitive),
-    m_bCancelLibraryScan(false) {
-
+                m_bCancelLibraryScan(false) {
     qDebug() << "Constructed LibraryScanner";
 
     // Force the GUI thread's TrackInfoObject cache to be cleared when a library
@@ -137,7 +136,7 @@ LibraryScanner::~LibraryScanner() {
 void LibraryScanner::run() {
     Trace trace("LibraryScanner");
     unsigned static id = 0; // the id of this thread, for debugging purposes
-            //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
@@ -226,10 +225,10 @@ void LibraryScanner::run() {
     // Recursivly scan each directory in the directories table.
     foreach (const QString& dir, dirs) {
         bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
-        if (!bScanFinishedCleanly) {
-            qDebug() << "Recursive scaning (" << dir << ") interrupted.";
+        if (bScanFinishedCleanly) {
+            qDebug() << "Recursive scanning (" << dir << ") finished cleanly.";
         } else {
-            qDebug() << "Recursive scaning (" << dir << ") finished cleanly.";
+            qDebug() << "Recursive scanning (" << dir << ") interrupted.";
         }
     }
 
@@ -242,8 +241,24 @@ void LibraryScanner::run() {
     }
 
     // Clean up and commit or rollback the transaction depending on
-    // bScanFinishedCleanly.
-    m_trackDao.addTracksFinish(!bScanFinishedCleanly);
+    // bScanFinishedCleanly or if the scan was canceled..
+    m_trackDao.addTracksFinish(!(m_bCancelLibraryScan || bScanFinishedCleanly));
+
+    // remove duplicate tracks if the scan was canceled or finished cleanly
+    QSet<int> tracksMovedSetOld;
+    QSet<int> tracksMovedSetNew;
+    if (m_bCancelLibraryScan || bScanFinishedCleanly) {
+        // mark scanned folders and tracks as verified
+        ScopedTransaction transaction(m_database);
+        qDebug() << "Marking unchanged directories and tracks as verified";
+        m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
+        m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
+        // Check to see if the "unverified" tracks showed up in another location,
+        // and if so, do some magic to update all our tables.
+        qDebug() << "Detecting moved files.";
+        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
+        transaction.commit();
+    }
 
     // At the end of a scan, mark all tracks and directories that
     // weren't "verified" as "deleted" (as long as the scan wasn't canceled
@@ -251,33 +266,19 @@ void LibraryScanner::run() {
     // algorithm starts by marking all tracks and dirs as unverified, so a
     // canceled scan might leave half of your library as unverified. Don't
     // want to mark those tracks/dirs as deleted in that case) :)
-    QSet<int> tracksMovedSetOld;
-    QSet<int> tracksMovedSetNew;
     if (bScanFinishedCleanly) {
         // Start a transaction for all the library hashing (moved file detection)
         // stuff.
         ScopedTransaction transaction(m_database);
-
-        qDebug() << "Marking unchanged directories and tracks as verified";
-        m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
-        m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
-
         qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
         qDebug() << "Marking unverified directories as deleted.";
         m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
-
-        // Check to see if the "deleted" tracks showed up in another location,
-        // and if so, do some magic to update all our tables.
-        qDebug() << "Detecting moved files.";
-        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
-
         // Remove the hashes for any directories that have been
         // marked as deleted to clean up. We need to do this otherwise
         // we can skip over songs if you move a set of songs from directory
         // A to B, then back to A.
         m_libraryHashDao.removeDeletedDirectoryHashes();
-
         transaction.commit();
         qDebug() << "Scan finished cleanly";
     } else {
@@ -372,20 +373,20 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 
     // Compare the hashes, and if they don't match, rescan the files in that directory!
     if (prevHash != newHash) {
-        //If we didn't know about this directory before...
-        if (!prevHashExists) {
-            m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
-        } else {
-            // Contents of a known directory have changed. Just need to update
-            // the old hash in the database and then rescan it.
-            qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
-            m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
-        }
-
         // Rescan that mofo! If importing fails then the scan was cancelled so
         // we return immediately.
         if (!importFiles(filesToImport)) {
             return false;
+        }
+        // If we didn't know about this directory before...
+        // save the hash after we imported everything in it
+        if (!prevHashExists) {
+            m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
+        } else {
+            // Contents of a known directory have changed. Just need to update
+            // the old hash in the database
+            qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
+            m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
         }
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
