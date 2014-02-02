@@ -2,9 +2,6 @@
 // Create by 14/01/2013 Tuukka Pasanen
 // Based on work 2003 by Svein Magne Bang
 
-#if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
-#include <taglib/opusfile.h>
-#endif
 
 #include "trackinfoobject.h"
 #include "soundsourceopus.h"
@@ -16,6 +13,11 @@
 #include <CoreFoundation/CFByteOrder.h>
 #elif __LINUX__
 #include <endian.h>
+#endif
+
+// Include this if taglib if new enough (version 1.9.1 have opusfile)
+#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
+#include <taglib/opusfile.h>
 #endif
 
 inline int getByteOrder() {
@@ -185,7 +187,7 @@ int SoundSourceOpus::parseHeader() {
     this->setType("opus");
 
 // If we don't have new enough Taglib we use libopusfile parser!
-#if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
+#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata
