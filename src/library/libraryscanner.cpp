@@ -244,39 +244,41 @@ void LibraryScanner::run() {
     // bScanFinishedCleanly or if the scan was canceled..
     m_trackDao.addTracksFinish(!(m_bCancelLibraryScan || bScanFinishedCleanly));
 
+    // remove duplicate tracks if the scan was canceled or finished cleanly
+    QSet<int> tracksMovedSetOld;
+    QSet<int> tracksMovedSetNew;
+    if (m_bCancelLibraryScan || bScanFinishedCleanly) {
+        // mark scanned folders and tracks as verified
+        ScopedTransaction transaction(m_database);
+        qDebug() << "Marking unchanged directories and tracks as verified";
+        m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
+        m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
+        // Check to see if the "unverified" tracks showed up in another location,
+        // and if so, do some magic to update all our tables.
+        qDebug() << "Detecting moved files.";
+        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
+        transaction.commit();
+    }
+
     // At the end of a scan, mark all tracks and directories that
     // weren't "verified" as "deleted" (as long as the scan wasn't canceled
     // half way through. This condition is important because our rescanning
     // algorithm starts by marking all tracks and dirs as unverified, so a
     // canceled scan might leave half of your library as unverified. Don't
     // want to mark those tracks/dirs as deleted in that case) :)
-    QSet<int> tracksMovedSetOld;
-    QSet<int> tracksMovedSetNew;
     if (bScanFinishedCleanly) {
         // Start a transaction for all the library hashing (moved file detection)
         // stuff.
         ScopedTransaction transaction(m_database);
-
-        qDebug() << "Marking unchanged directories and tracks as verified";
-        m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
-        m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
-
         qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
         qDebug() << "Marking unverified directories as deleted.";
         m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
-
-        // Check to see if the "deleted" tracks showed up in another location,
-        // and if so, do some magic to update all our tables.
-        qDebug() << "Detecting moved files.";
-        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
-
         // Remove the hashes for any directories that have been
         // marked as deleted to clean up. We need to do this otherwise
         // we can skip over songs if you move a set of songs from directory
         // A to B, then back to A.
         m_libraryHashDao.removeDeletedDirectoryHashes();
-
         transaction.commit();
         qDebug() << "Scan finished cleanly";
     } else {
