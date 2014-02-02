@@ -13,6 +13,15 @@ class EngineSideChainCompressor : public EngineObject {
     EngineSideChainCompressor(ConfigObject<ConfigValue>* pConfig, const char* group);
     virtual ~EngineSideChainCompressor() { };
 
+    void setParameters(CSAMPLE threshold, CSAMPLE strength,
+                       unsigned int attack_time, unsigned int decay_time) {
+        m_threshold = threshold;
+        m_strength = strength;
+        m_attackTime = attack_time;
+        m_decayTime = decay_time;
+        calculateRates();
+    }
+
     void setThreshold(CSAMPLE threshold) {
         m_threshold = threshold;
         calculateRates();

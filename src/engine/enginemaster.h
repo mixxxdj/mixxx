@@ -39,6 +39,7 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
+class EngineSideChainCompressor;
 class SyncWorker;
 class GuiTick;
 class EngineSync;
@@ -180,6 +181,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlPotmeter* m_pMasterRate;
     EngineClipping* m_pClipping;
     EngineClipping* m_pHeadClipping;
+    EngineSideChainCompressor* m_pSideChainCompressor;
 
 #ifdef __LADSPA__
     EngineLADSPA* m_pLadspa;

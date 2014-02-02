@@ -19,6 +19,7 @@
 #include <QList>
 #include <QPair>
 
+#include "controlgroupdelegate.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
 #include "controllogpotmeter.h"
@@ -29,6 +30,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
+#include "engine/enginesidechaincompressor.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
@@ -113,6 +115,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
 
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
+
+    m_pSideChainCompressor = new EngineSideChainCompressor(_config, group);
+    // Set compressor threshold to .5 of full volume, strength .75, and .1
+    // second attack and 1 sec decay.
+    m_pSideChainCompressor->setParameters(0.5, 0.75, 44100 / 2 * .1, 44100 / 2);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -269,6 +276,10 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
+        if (pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
+            m_pSideChainCompressor->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+        }
+
         // Process the buffer if necessary
         if (needsProcessing) {
             pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
@@ -356,6 +367,10 @@ void EngineMaster::process(const int iBufferSize) {
                               m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
                               m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
                               iBufferSize);
+
+    // TODO(owilliams): Ramp compression, and also only apply if microphone
+    // is active.
+    m_pSideChainCompressor->process(m_pMaster, m_pMaster, iBufferSize);
 
 #ifdef __LADSPA__
     // LADPSA master effects

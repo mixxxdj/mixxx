@@ -1,4 +1,5 @@
 #include "controlobject.h"
+#include "sampleutil.h"
 #include "engine/enginesidechaincompressor.h"
 
 EngineSideChainCompressor::EngineSideChainCompressor(
@@ -25,9 +26,9 @@ void EngineSideChainCompressor::calculateRates() {
         m_attackPerFrame = m_strength / m_attackTime;
     }
     if (m_decayTime == 0) {
-        m_decayPerFrame = m_strength / m_decayTime;
-    } else {
         m_decayPerFrame = m_strength;
+    } else {
+        m_decayPerFrame = m_strength / m_decayTime;
     }
     if (m_attackPerFrame <= 0) {
         m_attackPerFrame = 0.005;
@@ -35,6 +36,8 @@ void EngineSideChainCompressor::calculateRates() {
     if (m_decayPerFrame <= 0) {
         m_decayPerFrame = 0.005;
     }
+    qDebug() << "Compressor attack per frame: " << m_attackPerFrame
+             << "decay per frame: " << m_decayPerFrame;
 }
 
 void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBufferSize) {
@@ -52,8 +55,9 @@ void EngineSideChainCompressor::process(
         const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) {
     for (int i = 0; i + 1 < iBufferSize; i += 2) {
         m_compressRatio = calculateCompression(m_compressRatio, m_bAboveThreshold);
-        pOut[i] = pIn[i] / (1. - m_compressRatio);
-        pOut[i + 1] = pIn[i + 1] / (1. - m_compressRatio);
+        const CSAMPLE logRatio = SampleUtil::linearToLog(m_compressRatio);
+        pOut[i] = pIn[i] * (1. - logRatio);
+        pOut[i + 1] = pIn[i + 1] * (1. - logRatio);
     }
 }
 
