@@ -45,23 +45,22 @@ void WStatusLight::setNoPos(int iNoPos) {
         iNoPos = 2;
     }
     m_pixmaps.resize(iNoPos);
-    m_value = 0.;
 }
 
-void WStatusLight::setup(QDomNode node) {
+void WStatusLight::setup(QDomNode node, const SkinContext& context) {
     // Number of states. Add one to account for the background.
-    setNoPos(selectNodeInt(node, "NumberPos") + 1);
+    setNoPos(context.selectInt(node, "NumberPos") + 1);
 
     // Set pixmaps
     for (int i = 0; i < m_pixmaps.size(); ++i) {
         // Accept either PathStatusLight or PathStatusLight1 for value 1,
         QString nodeName = QString("PathStatusLight%1").arg(i);
-        if (!selectNode(node, nodeName).isNull()) {
-            setPixmap(i, getPath(selectNodeQString(node, nodeName)));
-        } else if (i == 0 && !selectNode(node, "PathBack").isNull()) {
-            setPixmap(i, getPath(selectNodeQString(node, "PathBack")));
-        } else if (i == 1 && !selectNode(node, "PathStatusLight").isNull()) {
-            setPixmap(i, getPath(selectNodeQString(node, "PathStatusLight")));
+        if (context.hasNode(node, nodeName)) {
+            setPixmap(i, context.getSkinPath(context.selectString(node, nodeName)));
+        } else if (i == 0 && context.hasNode(node, "PathBack")) {
+            setPixmap(i, context.getSkinPath(context.selectString(node, "PathBack")));
+        } else if (i == 1 && context.hasNode(node, "PathStatusLight")) {
+            setPixmap(i, context.getSkinPath(context.selectString(node, "PathStatusLight")));
         } else {
             m_pixmaps[i].clear();
         }
@@ -73,7 +72,7 @@ void WStatusLight::setPixmap(int iState, const QString& filename) {
         return;
     }
 
-    QPixmapPointer pPixmap = WPixmapStore::getPixmap(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
 
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         m_pixmaps[iState] = pPixmap;
@@ -86,7 +85,7 @@ void WStatusLight::setPixmap(int iState, const QString& filename) {
     }
 }
 
-void WStatusLight::setValue(double v) {
+void WStatusLight::onConnectedControlValueChanged(double v) {
     int val = static_cast<int>(v);
     if (m_iPos == val) {
         return;
@@ -116,11 +115,11 @@ void WStatusLight::paintEvent(QPaintEvent *) {
         return;
     }
 
-    QPixmapPointer pPixmap = m_pixmaps[m_iPos];
+    PaintablePointer pPixmap = m_pixmaps[m_iPos];
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         return;
     }
 
-    p.drawPixmap(0, 0, *pPixmap);
+    pPixmap->draw(0, 0, &p);
 }

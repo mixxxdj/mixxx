@@ -93,6 +93,12 @@ void EngineControl::seekAbs(double fractionalPosition) {
     }
 }
 
+void EngineControl::seekExact(double fractionalPosition) {
+    if (m_pEngineBuffer) {
+        m_pEngineBuffer->slotControlSeekExact(fractionalPosition);
+    }
+}
+
 void EngineControl::seek(double sample) {
     if (m_pEngineBuffer) {
         m_pEngineBuffer->slotControlSeek(sample);

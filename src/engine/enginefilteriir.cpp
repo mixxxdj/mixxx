@@ -121,13 +121,4 @@ void EngineFilterIIR::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iB
             pOutput[i+1] = yv2[4];
         }
     }
-
-// Check for denormals
-    for (i=0; i<=order; ++i)
-    {
-        xv1[i] = zap_denormal(xv1[i]);
-        yv1[i] = zap_denormal(yv1[i]);
-        xv2[i] = zap_denormal(xv2[i]);
-        yv2[i] = zap_denormal(yv2[i]);
-    }
 }

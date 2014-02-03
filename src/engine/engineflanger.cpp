@@ -109,7 +109,7 @@ void EngineFlanger::process(const CSAMPLE* pIn,
     CSAMPLE delayed_sample,prev,next;
     FLOAT_TYPE frac;
 
-    if (m_pFlangerEnable->get() == 0.0f) {
+    if (m_pFlangerEnable->get() == 0.0) {
         // SampleUtil handles shortcuts when aliased, and gains of 1.0, etc.
         return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
     }

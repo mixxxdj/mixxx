@@ -27,6 +27,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 /**
   * A widget for a slider composed of a background pixmap and a handle.
@@ -36,11 +37,13 @@
 
 class WSliderComposed : public WWidget  {
     Q_OBJECT
-public:
+  public:
     WSliderComposed(QWidget *parent=0);
-    ~WSliderComposed();
-    void setup(QDomNode node);
-    void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
+    virtual ~WSliderComposed();
+
+    void setup(QDomNode node, const SkinContext& context);
+    void setSliderPixmap(const QString& filenameSlider);
+    void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
@@ -48,16 +51,16 @@ public:
     void wheelEvent(QWheelEvent *e);
     inline bool isHorizontal() const { return m_bHorizontal; };
 public slots:
-    void setValue(double);
+    void onConnectedControlValueChanged(double);
+    void fillDebugTooltip(QStringList* debug);
 private:
     void unsetPixmaps();
 
+    double m_dOldValue;
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
     /** Internal storage of slider position in pixels */
     int m_iPos, m_iStartHandlePos, m_iStartMousePos;
-    /** Length of slider in pixels */
-    int m_iSliderLength;
     /** Length of handle in pixels */
     int m_iHandleLength;
     /** True if it's a horizontal slider */
@@ -67,9 +70,9 @@ private:
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Pointer to pixmap of the slider */
-    QPixmapPointer m_pSlider;
+    PaintablePointer m_pSlider;
     /** Pointer to pixmap of the handle */
-    QPixmapPointer m_pHandle;
+    PaintablePointer m_pHandle;
 };
 
 #endif

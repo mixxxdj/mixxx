@@ -28,12 +28,12 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
+    Q_ASSERT(box); // Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pAnalysisLibraryTableView);
 
-    m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this, pTrackCollection);
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pTrackCollection);
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),

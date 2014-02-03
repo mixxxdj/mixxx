@@ -30,6 +30,7 @@
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "controlpushbutton.h"
+#include "skin/skincontext.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -46,20 +47,21 @@ class WPushButton : public WWidget {
         return m_bPressed;
     }
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
     void setStates(int iStatesW);
 
   public slots:
-    void setValue(double);
+    void onConnectedControlValueChanged(double);
 
   protected:
     virtual void paintEvent(QPaintEvent *);
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void focusOutEvent(QFocusEvent* e);
+    void fillDebugTooltip(QStringList* debug);
 
   private:
     // Associates a pixmap of a given state of the button with the widget
@@ -78,11 +80,11 @@ class WPushButton : public WWidget {
     // Array of associated pixmaps
     int m_iNoStates;
     QVector<QString> m_text;
-    QVector<QPixmapPointer> m_pressedPixmaps;
-    QVector<QPixmapPointer> m_unpressedPixmaps;
+    QVector<PaintablePointer> m_pressedPixmaps;
+    QVector<PaintablePointer> m_unpressedPixmaps;
 
     // Associated background pixmap
-    QPixmapPointer m_pPixmapBack;
+    PaintablePointer m_pPixmapBack;
 
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;

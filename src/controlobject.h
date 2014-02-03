@@ -45,6 +45,26 @@ class ControlObject : public QObject {
         return getControl(key, warn);
     }
 
+    QString name() const {
+        return m_pControl ?  m_pControl->name() : QString();
+    }
+
+    void setName(const QString& name) {
+        if (m_pControl) {
+            m_pControl->setName(name);
+        }
+    }
+
+    const QString description() const {
+        return m_pControl ?  m_pControl->description() : QString();
+    }
+
+    void setDescription(const QString& description) {
+        if (m_pControl) {
+            m_pControl->setDescription(description);
+        }
+    }
+
     // Return the key of the object
     inline ConfigKey getKey() const { return m_key; }
     // Returns the value of the ControlObject
@@ -82,7 +102,7 @@ class ControlObject : public QObject {
     // DEPRECATED: Called to set the control value from the controller
     // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
-    virtual double getValueToMidi() const;
+    virtual double getMidiParameter() const;
 
   protected:
     // Key of the object

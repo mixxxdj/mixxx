@@ -7,23 +7,24 @@
 
 #include "util.h"
 #include "waveformrendererabstract.h"
+#include "skin/skincontext.h"
 
 class ControlObject;
 class ControlObjectThread;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
-public:
+  public:
     static const int s_maxAlpha = 125;
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererEndOfTrack();
 
     virtual bool init();
-    virtual void setup(const QDomNode& node);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void onResize();
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
-private:
+  private:
     ControlObjectThread*  m_pEndOfTrackControl;
     bool m_endOfTrackEnabled;
 

@@ -48,7 +48,12 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            bool bRampingGain)
         : m_bRampingGain(bRampingGain),
           m_headphoneMasterGainOld(0.0),
-          m_headphoneVolumeOld(1.0) {
+          m_headphoneVolumeOld(1.0),
+          m_bMasterOutputConnected(false),
+          m_bHeadphoneOutputConnected(false) {
+    m_bBusOutputConnected[0] = false;
+    m_bBusOutputConnected[1] = false;
+    m_bBusOutputConnected[2] = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
@@ -99,6 +104,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
+
+    // Master / Headphone split-out mode (for devices with only one output).
+    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
+    m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pHeadSplitEnabled->set(0.0);
 
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
@@ -400,6 +410,16 @@ void EngineMaster::process(const int iBufferSize) {
     m_headphoneVolumeOld = headphoneVolume;
     m_pHeadClipping->process(m_pHead, m_pHead, iBufferSize);
 
+    // If Head Split is enabled, replace the left channel of the pfl buffer
+    // with a mono mix of the headphone buffer, and the right channel of the pfl
+    // buffer with a mono mix of the master output buffer.
+    if (m_pHeadSplitEnabled->get()) {
+        for (int i = 0; i + 1 < iBufferSize; i += 2) {
+            m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
+            m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
+        }
+    }
+
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
 
@@ -478,5 +498,43 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
         break;
     default:
         return NULL;
+    }
+}
+
+void EngineMaster::onOutputConnected(AudioOutput output) {
+    switch (output.getType()) {
+        case AudioOutput::MASTER:
+            m_bMasterOutputConnected = true;
+            break;
+        case AudioOutput::HEADPHONES:
+            m_bHeadphoneOutputConnected = true;
+            break;
+        case AudioOutput::BUS:
+            m_bBusOutputConnected[output.getIndex()] = true;
+            break;
+        case AudioOutput::DECK:
+            // We don't track enabled decks.
+            break;
+        default:
+            break;
+    }
+}
+
+void EngineMaster::onOutputDisconnected(AudioOutput output) {
+    switch (output.getType()) {
+        case AudioOutput::MASTER:
+            m_bMasterOutputConnected = false;
+            break;
+        case AudioOutput::HEADPHONES:
+            m_bHeadphoneOutputConnected = false;
+            break;
+        case AudioOutput::BUS:
+            m_bBusOutputConnected[output.getIndex()] = false;
+            break;
+        case AudioOutput::DECK:
+            // We don't track enabled decks.
+            break;
+        default:
+            break;
     }
 }

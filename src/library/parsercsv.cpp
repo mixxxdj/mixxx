@@ -95,14 +95,14 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
                 quotes = false;
             }
         } else if (!quotes && c == delimiter) {
-            if (isUtf8(field.data())) {
+            if (isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));
             }
             field.clear();
         } else if (!quotes && (c == '\r' || c == '\n')) {
-            if (isUtf8(field.data())) {
+            if (isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));

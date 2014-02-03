@@ -29,6 +29,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 class WStatusLight : public WWidget  {
    Q_OBJECT
@@ -36,10 +37,10 @@ class WStatusLight : public WWidget  {
     WStatusLight(QWidget *parent=0);
     virtual ~WStatusLight();
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void setValue(double v);
+    void onConnectedControlValueChanged(double v);
 
   protected:
     void paintEvent(QPaintEvent *);
@@ -51,10 +52,10 @@ class WStatusLight : public WWidget  {
     // Current position
     int m_iPos;
 
-    QPixmapPointer m_pPixmapBackground;
+    PaintablePointer m_pPixmapBackground;
 
     // Associated pixmaps
-    QVector<QPixmapPointer> m_pixmaps;
+    QVector<PaintablePointer> m_pixmaps;
 };
 
 #endif

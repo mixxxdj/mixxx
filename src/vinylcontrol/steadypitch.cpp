@@ -24,10 +24,10 @@
 SteadyPitch::SteadyPitch(double threshold)
 {
     m_dPitchThreshold = threshold; //variation above which we say we aren't steady
-    m_dOldSteadyPitch = 1.0f;  //last-known steady pitch value
-    m_dSteadyPitchTime = 0.0f; //last track location we had a steady pitch
-    m_dLastSteadyDur = 0.0f;   //last known duration of steadiness
-    m_dLastTime = 0.0f;        //track location of previous call
+    m_dOldSteadyPitch = 1.0;   //last-known steady pitch value
+    m_dSteadyPitchTime = 0.0;  //last track location we had a steady pitch
+    m_dLastSteadyDur = 0.0;    //last known duration of steadiness
+    m_dLastTime = 0.0;         //track location of previous call
     m_iPlayDirection = 1;      //1=forward, -1=backward
 }
 
@@ -76,13 +76,13 @@ double SteadyPitch::check(double pitch, double time, bool looping=false)
         reset(pitch, time);
         return 0.0;
     }
-    
+
     if (resyncDetected(time))
     {
         m_dLastTime = time;
         if (looping)
         {
-            //if looping, rereport the last value since we don't know where the 
+            //if looping, rereport the last value since we don't know where the
             //loop actually is
             if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
             {

@@ -9,7 +9,7 @@
 #include "mathstuff.h"
 #include "wimagestore.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "sharedglcontext.h"
 #include "visualplayposition.h"
 #include "widget/wspinny.h"
@@ -18,6 +18,7 @@
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
+          WBaseWidget(this),
           m_pBgImage(NULL),
           m_pFgImage(NULL),
           m_pGhostImage(NULL),
@@ -110,15 +111,15 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 #endif
 }
 
-void WSpinny::setup(QDomNode node, QString group) {
+void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_group = group;
 
     // Set images
-    m_pBgImage = WImageStore::getImage(WWidget::getPath(WWidget::selectNodeQString(node,
+    m_pBgImage = WImageStore::getImage(context.getSkinPath(context.selectString(node,
                                                     "PathBackground")));
-    m_pFgImage = WImageStore::getImage(WWidget::getPath(WWidget::selectNodeQString(node,
+    m_pFgImage = WImageStore::getImage(context.getSkinPath(context.selectString(node,
                                                     "PathForeground")));
-    m_pGhostImage = WImageStore::getImage(WWidget::getPath(WWidget::selectNodeQString(node,
+    m_pGhostImage = WImageStore::getImage(context.getSkinPath(context.selectString(node,
                                                     "PathGhost")));
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
@@ -262,7 +263,7 @@ double WSpinny::calculateAngle(double playpos) {
     double trackSampleRate = m_pTrackSampleRate->get();
     if (isnan(playpos) || isnan(trackFrames) || isnan(trackSampleRate) ||
         trackFrames <= 0 || trackSampleRate <= 0) {
-        return 0.0f;
+        return 0.0;
     }
 
     // Convert playpos to seconds.
@@ -270,7 +271,7 @@ double WSpinny::calculateAngle(double playpos) {
 
     // Bad samplerate or number of track samples.
     if (isnan(t)) {
-        return 0.0f;
+        return 0.0;
     }
 
     //33 RPM is approx. 0.5 rotations per second.
@@ -308,7 +309,7 @@ double WSpinny::calculateAngle(double playpos) {
 int WSpinny::calculateFullRotations(double playpos)
 {
     if (isnan(playpos))
-        return 0.0f;
+        return 0;
     //Convert playpos to seconds.
     double t = playpos * (m_pTrackSamples->get() / 2 /  // Stereo audio!
                           m_pTrackSampleRate->get());
@@ -324,7 +325,7 @@ int WSpinny::calculateFullRotations(double playpos)
 double WSpinny::calculatePositionFromAngle(double angle)
 {
     if (isnan(angle)) {
-        return 0.0f;
+        return 0.0;
     }
 
     //33 RPM is approx. 0.5 rotations per second.
@@ -334,7 +335,7 @@ double WSpinny::calculatePositionFromAngle(double angle)
     double trackSampleRate = m_pTrackSampleRate->get();
     if (isnan(trackFrames) || isnan(trackSampleRate) ||
         trackFrames <= 0 || trackSampleRate <= 0) {
-        return 0.0f;
+        return 0.0;
     }
 
     // Convert t from seconds into a normalized playposition value.
@@ -377,7 +378,7 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
     //Coordinates from center of widget
     double c_x = x - width()/2;
     double c_y = y - height()/2;
-    double theta = (180.0f/M_PI)*atan2(c_x, -c_y);
+    double theta = (180.0/M_PI)*atan2(c_x, -c_y);
 
     //qDebug() << "c_x:" << c_x << "c_y:" << c_y <<
     //            "dX:" << dX << "dY:" << dY;
@@ -427,14 +428,14 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
         // Coordinates from center of widget
         double c_x = x - width()/2;
         double c_y = y - height()/2;
-        double theta = (180.0f/M_PI)*atan2(c_x, -c_y);
+        double theta = (180.0/M_PI)*atan2(c_x, -c_y);
         m_dPrevTheta = theta;
         m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
         theta += m_iFullRotations * 360.0;
         m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples->get();
 
         m_pScratchPos->slotSet(0);
-        m_pScratchToggle->slotSet(1.0f);
+        m_pScratchToggle->slotSet(1.0);
 
         if (e->button() == Qt::RightButton) {
             m_pSlipEnabled->slotSet(1.0);
@@ -449,25 +450,12 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
 {
     if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
         QApplication::restoreOverrideCursor();
-        m_pScratchToggle->slotSet(0.0f);
+        m_pScratchToggle->slotSet(0.0);
         m_iFullRotations = 0;
         if (e->button() == Qt::RightButton) {
             m_pSlipEnabled->slotSet(0.0);
         }
     }
-}
-
-void WSpinny::wheelEvent(QWheelEvent *e)
-{
-    Q_UNUSED(e); //ditch unused param warning
-
-    /*
-    double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
-
-    e->accept();
-    */
 }
 
 void WSpinny::showEvent(QShowEvent* event) {
@@ -487,6 +475,13 @@ void WSpinny::hideEvent(QHideEvent* event) {
     }
     // fill with transparent black
     m_qImage.fill(qRgba(0,0,0,0));
+}
+
+bool WSpinny::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QGLWidget::event(pEvent);
 }
 
 /** DRAG AND DROP **/

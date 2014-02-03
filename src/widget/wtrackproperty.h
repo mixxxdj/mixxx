@@ -3,6 +3,7 @@
 
 #include "widget/wlabel.h"
 #include "trackinfoobject.h"
+#include "skin/skincontext.h"
 
 class WTrackProperty : public WLabel {
     Q_OBJECT
@@ -10,7 +11,7 @@ class WTrackProperty : public WLabel {
     WTrackProperty(QWidget* pParent);
     virtual ~WTrackProperty();
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

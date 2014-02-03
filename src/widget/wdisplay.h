@@ -25,14 +25,15 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
-class WDisplay : public WWidget  {
+class WDisplay : public WWidget {
    Q_OBJECT
   public:
     WDisplay(QWidget *parent=NULL);
     virtual ~WDisplay();
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
   protected:
     void paintEvent(QPaintEvent*);
@@ -42,30 +43,29 @@ class WDisplay : public WWidget  {
     }
 
   private:
-
-    void setPixmap(QVector<QPixmapPointer>* pPixmaps, int iPos,
+    void setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
                    const QString& filename);
 
     void setPixmapBackground(const QString& filename);
 
     void setPositions(int iNoPos);
 
-    virtual int getActivePixmapIndex() const;
+    int getActivePixmapIndex() const;
 
     // Free existing pixmaps.
     void resetPositions();
 
     // Associated background pixmap
-    QPixmapPointer m_pPixmapBack;
+    PaintablePointer m_pPixmapBack;
 
     // List of associated pixmaps.
-    QVector<QPixmapPointer> m_pixmaps;
+    QVector<PaintablePointer> m_pixmaps;
 
     // Whether disabled pixmaps are loaded.
     bool m_bDisabledLoaded;
 
     // List of disabled pixmaps.
-    QVector<QPixmapPointer> m_disabledPixmaps;
+    QVector<PaintablePointer> m_disabledPixmaps;
 };
 
 #endif

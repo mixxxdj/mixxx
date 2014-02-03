@@ -66,6 +66,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pConfig(_config),
     m_pLoopingControl(NULL),
     m_pSyncControl(NULL),
+    m_pVinylControlControl(NULL),
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
     m_pKeyControl(NULL),
@@ -89,7 +90,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pScaleRB(NULL),
     m_bScalerChanged(false),
     m_bScalerOverride(false),
-    m_bSeekQueued(0),
+    m_iSeekQueued(NO_SEEK),
     m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
     m_iTrackLoading(0),
@@ -180,8 +181,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
 
-    // Slider to show and change song position
-    //these bizarre choices map conveniently to the 0-127 range of midi
+    // Slider to show and change song position. kMinPlayposRange and
+    // kMaxPlayposRange map conveniently to the 0-127 range of 7-bit MIDI.
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),
@@ -224,7 +225,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
-    addControl(new VinylControlControl(_group, _config));
+    m_pVinylControlControl = new VinylControlControl(_group, _config);
+    addControl(m_pVinylControlControl);
 #endif
 
     m_pRateControl = new RateControl(_group, _config);
@@ -338,6 +340,11 @@ void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
     // interpolation code (EngineBufferScaleLinear). It is faster and sounds
     // much better for scratching.
 
+    // If scaler is over-ridden then don't switch anything.
+    if (m_bScalerOverride) {
+        return;
+    }
+
     if (bEnable && m_pScale != m_pScaleRB) {
         m_pScale = m_pScaleRB;
         m_bScalerChanged = true;
@@ -364,11 +371,22 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     m_engineLock.unlock();
 }
 
-void EngineBuffer::queueNewPlaypos(double newpos) {
+void EngineBuffer::queueNewPlaypos(double newpos, bool exact) {
     // Temp Workaround: All seeks need to be done in the Engine thread so queue
     // it up.
     m_dQueuedPosition = newpos;
-    m_bSeekQueued.fetchAndStoreRelease(1);
+    if (exact) {
+        m_iSeekQueued.fetchAndStoreRelease(SEEK_EXACT);
+    } else {
+        m_iSeekQueued.fetchAndStoreRelease(SEEK_STANDARD);
+    }
+}
+
+void EngineBuffer::requestSyncPhase() {
+    if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
+        // Only honor phase syncing if quantize is on and playing.
+        m_iSeekQueued = SEEK_PHASE;
+    }
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -455,7 +473,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
-    m_playButton->set(0.0f);
+    m_playButton->set(0.0);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -482,15 +500,28 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
-    slotControlSeek(0.);
+    doSeek(0., /* exact */ true);
     m_pause.unlock();
 
     emit(trackUnloaded(pTrack));
 }
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
-void EngineBuffer::slotControlSeek(double change)
-{
+void EngineBuffer::slotControlSeek(double change) {
+    doSeek(change, /* exact */ false);
+}
+
+// WARNING: This method runs from SyncWorker and Engine Worker
+void EngineBuffer::slotControlSeekAbs(double abs) {
+    doSeek(abs / m_file_length_old, /* exact */ false);
+}
+
+// WARNING: This method runs from SyncWorker and Engine Worker
+void EngineBuffer::slotControlSeekExact(double abs) {
+    doSeek(abs / m_file_length_old, /* exact */ true);
+}
+
+void EngineBuffer::doSeek(double change, bool exact) {
     if(isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
         // This seek is ridiculous.
         return;
@@ -508,13 +539,13 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    queueNewPlaypos(new_playpos);
-}
+    // Notify the vinyl control that a seek has taken place in case it is in
+    // absolute mode and needs be switched to relative.
+    if (m_pVinylControlControl) {
+        m_pVinylControlControl->notifySeek();
+    }
 
-// WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekAbs(double abs)
-{
-    slotControlSeek(abs / m_file_length_old);
+    queueNewPlaypos(new_playpos, exact);
 }
 
 void EngineBuffer::slotControlPlayRequest(double v)
@@ -538,21 +569,21 @@ void EngineBuffer::slotControlPlayRequest(double v)
 void EngineBuffer::slotControlStart(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(0.);
+        doSeek(0., /* exact */ true);
     }
 }
 
 void EngineBuffer::slotControlEnd(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(1.);
+        doSeek(1., /* exact */ true);
     }
 }
 
 void EngineBuffer::slotControlPlayFromStart(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(0.);
+        doSeek(0., /* exact */ true);
         m_playButton->set(1);
     }
 }
@@ -560,7 +591,7 @@ void EngineBuffer::slotControlPlayFromStart(double v)
 void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
-        slotControlSeek(0.);
+        doSeek(0., /* exact */ true);
         m_playButton->set(0);
     }
 }
@@ -606,12 +637,12 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
 
-        double baserate = 0.0f;
+        double baserate = 0.0;
         if (sr > 0) {
             baserate = ((double)m_file_srate_old / sr);
         }
 
-        bool paused = m_playButton->get() != 0.0f ? false : true;
+        bool paused = m_playButton->get() == 0.0;
         bool is_scratching = false;
         bool keylock_enabled = m_pKeylock->get() > 0;
 
@@ -628,20 +659,12 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
         // need to use pitch and time scaling. Scratching always disables
         // keylock because keylock sounds terrible when not going at a constant
         // rate.
-        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0);
+        // High seek speeds also disables keylock.
+        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0) &&
+                                          fabs(speed) < 1.5;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
-        if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
-            // If we are playing and quantize is on, match phase when seeking.
-            if (!paused && m_pQuantize->get() > 0.0) {
-                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
-                if (!even(offset)) {
-                    offset--;
-                }
-                m_dQueuedPosition += offset;
-            }
-            setNewPlaypos(m_dQueuedPosition);
-        }
+        processSeek();
 
         // If the baserate, speed, or pitch has changed, we need to update the
         // scaler. Also, if we have changed scalers then we need to update the
@@ -801,7 +824,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
         at_start = m_filepos_play <= 0;
         at_end = m_filepos_play >= m_file_length_old;
 
-        bool repeat_enabled = m_pRepeat->get() != 0.0f;
+        bool repeat_enabled = m_pRepeat->get() != 0.0;
 
         bool end_of_track = //(at_start && backwards) ||
             (at_end && !backwards);
@@ -811,7 +834,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
                 && end_of_track) {
             if (repeat_enabled) {
                 double seekPosition = at_start ? m_file_length_old : 0;
-                slotControlSeek(seekPosition);
+                doSeek(seekPosition, /* exact */ false);
             } else {
                 m_playButton->set(0.);
             }
@@ -913,7 +936,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_dSlipRate = m_rate_old;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
-            slotControlSeekAbs(m_dSlipPosition);
+            slotControlSeekExact(m_dSlipPosition);
             m_dSlipPosition = 0;
         }
         m_bSlipToggled = false;
@@ -925,6 +948,46 @@ void EngineBuffer::processSlip(int iBufferSize) {
     }
 }
 
+void EngineBuffer::processSeek() {
+    SeekRequest seek_type =
+            static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
+    switch (seek_type) {
+    case NO_SEEK:
+        return;
+    case SEEK_EXACT:
+        setNewPlaypos(m_dQueuedPosition);
+        break;
+    case SEEK_STANDARD: {
+        bool paused = m_playButton->get() == 0.0;
+        // If we are playing and quantize is on, match phase when seeking.
+        if (!paused && m_pQuantize->get() > 0.0) {
+            int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
+            if (!even(offset)) {
+                offset--;
+            }
+            m_dQueuedPosition += offset;
+        }
+        setNewPlaypos(m_dQueuedPosition);
+        break;
+    }
+    case SEEK_PHASE: {
+        // XXX: syncPhase is private in bpmcontrol, so we seek directly.
+        double dThisPosition = m_pBpmControl->getCurrentSample();
+        double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
+        if (offset != 0.0) {
+            double dNewPlaypos = round(dThisPosition + offset);
+            if (!even(dNewPlaypos)) {
+                dNewPlaypos--;
+            }
+            setNewPlaypos(dNewPlaypos);
+        }
+        break;
+    }
+    default:
+        qWarning() << "Unhandled seek request type: " << seek_type;
+        return;
+    }
+}
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 

@@ -26,7 +26,6 @@
 
 #include "sounddeviceportaudio.h"
 
-#include "controlobjectthreadmain.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "soundmanagerutil.h"
@@ -127,7 +126,7 @@ int SoundDevicePortAudio::open() {
 
     // Sample rate
     if (m_dSampleRate <= 0) {
-        m_dSampleRate = 44100.0f;
+        m_dSampleRate = 44100.0;
     }
 
     // Get latency in milleseconds
@@ -276,11 +275,6 @@ QString SoundDevicePortAudio::getError() const {
     return m_lastError;
 }
 
-/** -------- ------------------------------------------------------
-        Purpose: This callback function gets called everytime the sound device runs
-                 out of samples (ie. when it needs more sound to play)
-        -------- ------------------------------------------------------
- */
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
                                           float *output, float *in,
                                           const PaStreamCallbackTimeInfo *timeInfo,
@@ -340,13 +334,6 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     return paContinue;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Wrapper function to call processing loop function,
-            implemented as a method in a class. Used in PortAudio,
-            which knows nothing about C++.
-   Input:   .
-   Output:  -
-   -------- ------------------------------------------------------ */
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,

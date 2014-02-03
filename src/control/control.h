@@ -26,7 +26,23 @@ class ControlDoublePrivate : public QObject {
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
-    static void getControls(QList<ControlDoublePrivate*>* pControlsList);
+    static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
+
+    const QString& name() const {
+        return m_name;
+    }
+
+    void setName(const QString& name) {
+        m_name = name;
+    }
+
+    const QString& description() const {
+        return m_description;
+    }
+
+    void setDescription(const QString& description) {
+        m_description = description;
+    }
 
     // Sets the control value.
     void set(double value, QObject* pSender);
@@ -44,8 +60,9 @@ class ControlDoublePrivate : public QObject {
     // by this function.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
-    void setWidgetParameter(double dParam, QObject* pSender);
-    double getWidgetParameter() const;
+    void setParameter(double dParam, QObject* pSender);
+    double getParameter() const;
+    double getParameterForValue(double value) const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;
@@ -96,6 +113,13 @@ class ControlDoublePrivate : public QObject {
     void setInner(double value, QObject* pSender);
 
     ConfigKey m_key;
+
+    // User-visible, i18n name for what the control is.
+    QString m_name;
+
+    // User-visible, i18n descripton for what the control does.
+    QString m_description;
+
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
 
@@ -116,9 +140,9 @@ class ControlDoublePrivate : public QObject {
     ControlObject* m_pCreatorCO;
 
     // Hash of ControlDoublePrivate instantiations.
-    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > m_sqCOHash;
+    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
     // Mutex guarding access to the ControlDoublePrivate hash.
-    static QMutex m_sqCOHashMutex;
+    static QMutex s_qCOHashMutex;
 };
 
 

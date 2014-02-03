@@ -25,6 +25,7 @@ ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
 }
 
 void ControlObjectSlave::initialize(const ConfigKey& key) {
+    m_key = key;
     m_pControl = ControlDoublePrivate::getControl(key);
 }
 
@@ -54,9 +55,16 @@ bool ControlObjectSlave::connectValueChanged(
     return connectValueChanged(parent(), method, type);
 }
 
-
-double ControlObjectSlave::get() {
+double ControlObjectSlave::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
+}
+
+double ControlObjectSlave::getParameter() const {
+    return m_pControl ? m_pControl->getParameter() : 0.0;
+}
+
+double ControlObjectSlave::getParameterForValue(double value) const {
+    return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
 void ControlObjectSlave::slotSet(double v) {
@@ -66,6 +74,12 @@ void ControlObjectSlave::slotSet(double v) {
 void ControlObjectSlave::set(double v) {
     if (m_pControl) {
         m_pControl->set(v, this);
+    }
+}
+
+void ControlObjectSlave::setParameter(double v) {
+    if (m_pControl) {
+        m_pControl->setParameter(v, this);
     }
 }
 

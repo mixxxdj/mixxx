@@ -8,6 +8,7 @@
 #include "controlobjectslave.h"
 #include "rotary.h"
 #include "mathstuff.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 #include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
@@ -77,6 +78,7 @@ RateControl::RateControl(const char* _group,
 
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
+    m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
 
     // Permanent rate-change buttons
     buttonRatePermDown =
@@ -390,7 +392,7 @@ double RateControl::getJogFactor() const {
     double jogFactor = jogValueFiltered * jogSensitivity;
 
     if (isnan(jogValue) || isnan(jogFactor)) {
-        jogFactor = 0.0f;
+        jogFactor = 0.0;
     }
 
     return jogFactor;
@@ -496,7 +498,11 @@ double RateControl::calculateRate(double baserate, bool paused,
             rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
         }
         // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
-        if (!scratchEnable && m_pReverseButton->get()) {
+        // Reverse with vinyl is only ok if absolute mode isn't on.
+        int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+        if (m_pReverseButton->get()
+                && !m_pScratchToggle->get()
+                && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
             rate = -rate;
         }
     }

@@ -21,6 +21,7 @@ LoopingControl::LoopingControl(const char* _group,
                                ConfigObject<ConfigValue>* _config)
         : EngineControl(_group, _config) {
     m_bLoopingEnabled = false;
+    m_bLoopRollActive = false;
     m_iLoopStartSample = kNoTrigger;
     m_iLoopEndSample = kNoTrigger;
     m_iCurrentSample = 0.;
@@ -52,7 +53,7 @@ LoopingControl::LoopingControl(const char* _group,
     m_pReloopExitButton->set(0);
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(_group, "loop_enabled"));
-    m_pCOLoopEnabled->set(0.0f);
+    m_pCOLoopEnabled->set(0.0);
 
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(_group, "loop_start_position"));
@@ -190,7 +191,7 @@ void LoopingControl::slotLoopHalve(double v) {
 }
 
 void LoopingControl::slotLoopDouble(double v) {
-    if (v > 0.0f) {
+    if (v > 0.0) {
         // If a beatloop is active then double should deactive the current
         // beatloop and activate the next one.
         if (m_pActiveBeatLoop != NULL) {
@@ -417,6 +418,11 @@ void LoopingControl::slotReloopExit(double val) {
     if (val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
+            // If loop roll was active, also disable slip.
+            if (m_bLoopRollActive) {
+                m_pSlipEnabled->set(0);
+                m_bLoopRollActive = false;
+            }
             setLoopingEnabled(false);
             //qDebug() << "reloop_exit looping off";
         } else {
@@ -448,7 +454,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
     clearActiveBeatLoop();
 
-    if (pos == -1.0f) {
+    if (pos == -1.0) {
         setLoopingEnabled(false);
     }
 
@@ -488,7 +494,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
 
     clearActiveBeatLoop();
 
-    if (pos == -1.0f) {
+    if (pos == -1.0) {
         setLoopingEnabled(false);
     }
     m_iLoopEndSample = newpos;
@@ -569,6 +575,7 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
     //Disregard existing loops
     m_pSlipEnabled->set(1);
     slotBeatLoop(pBeatLoopControl->getSize(), false);
+    m_bLoopRollActive = true;
 }
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
@@ -580,6 +587,7 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
     m_pSlipEnabled->set(0);
+    m_bLoopRollActive = false;
 }
 
 void LoopingControl::clearActiveBeatLoop() {
