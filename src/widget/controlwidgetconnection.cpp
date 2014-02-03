@@ -3,11 +3,14 @@
 #include "widget/wbasewidget.h"
 #include "controlobjectslave.h"
 #include "util/debug.h"
+#include "util/valuetransformer.h"
 
 ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                 ControlObjectSlave* pControl)
+                                                 ControlObjectSlave* pControl,
+                                                 ValueTransformer* pTransformer)
         : m_pWidget(pBaseWidget),
-          m_pControl(pControl) {
+          m_pControl(pControl),
+          m_pValueTransformer(pTransformer) {
     // If pControl is NULL then the creator of ControlWidgetConnection has
     // screwed up badly enough that we should just crash. This will not go
     // unnoticed in development.
@@ -18,15 +21,35 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
 ControlWidgetConnection::~ControlWidgetConnection() {
 }
 
+void ControlWidgetConnection::setControlParameter(double parameter) {
+    if (m_pValueTransformer != NULL) {
+        parameter = m_pValueTransformer->transformInverse(parameter);
+    }
+    m_pControl->setParameter(parameter);
+}
+
 double ControlWidgetConnection::getControlParameter() const {
-    return m_pControl->getParameter();
+    double parameter = m_pControl->getParameter();
+    if (m_pValueTransformer != NULL) {
+        parameter = m_pValueTransformer->transform(parameter);
+    }
+    return parameter;
+}
+
+double ControlWidgetConnection::getControlParameterForValue(double value) const {
+    double parameter = m_pControl->getParameterForValue(value);
+    if (m_pValueTransformer != NULL) {
+        parameter = m_pValueTransformer->transform(parameter);
+    }
+    return parameter;
 }
 
 ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
                                                                    ControlObjectSlave* pControl,
+                                                                   ValueTransformer* pTransformer,
                                                                    DirectionOption directionOption,
                                                                    EmitOption emitOption)
-        : ControlWidgetConnection(pBaseWidget, pControl),
+        : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
     if (directionOption & DIR_TO_WIDGET) {
@@ -81,8 +104,9 @@ void ControlParameterWidgetConnection::setControlParameterUp(double v) {
 
 ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                                                  ControlObjectSlave* pControl,
+                                                                 ValueTransformer* pTransformer,
                                                                  const QString& propertyName)
-        : ControlWidgetConnection(pBaseWidget, pControl),
+        : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
           m_propertyName(propertyName.toAscii()) {
     slotControlValueChanged(m_pControl->get());
 }
@@ -99,7 +123,7 @@ QString ControlWidgetPropertyConnection::toDebugString() const {
 }
 
 void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
-    double dParameter = m_pControl->getParameterForValue(v);
+    double dParameter = getControlParameterForValue(v);
 
     if (!m_pWidget->toQWidget()->setProperty(m_propertyName.constData(),
                                              QVariant(dParameter))) {

@@ -50,10 +50,6 @@ class TrackCollection : public QObject
     ~TrackCollection();
     bool checkForTables();
 
-    /** Import the files in a given diretory, without recursing into subdirectories */
-    bool importDirectory(const QString& directory, TrackDAO& trackDao,
-                         const QStringList& nameFilters, volatile bool* cancel);
-
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
 
@@ -68,9 +64,6 @@ class TrackCollection : public QObject
     ConfigObject<ConfigValue>* getConfig() {
         return m_pConfig;
     }
-
-  signals:
-    void progressLoading(QString path);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

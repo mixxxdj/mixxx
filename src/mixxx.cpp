@@ -237,7 +237,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             this, tr("Choose music library directory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
         if (!fd.isEmpty()) {
-            //adds Folder to database
+            // adds Folder to database.
             m_pLibrary->slotRequestAddDir(fd);
             hasChanged_MusicDir = true;
         }
@@ -495,7 +495,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size() 
+        qDebug() << "WARNING: The following" << leakedControls.size()
                  << "controls were leaked:";
         foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
             if (pCDP.isNull()) {
@@ -574,6 +574,13 @@ void MixxxMainWindow::logBuildDetails() {
     // This is the first line in mixxx.log
     qDebug() << "Mixxx" << version << buildInfoFormatted << "is starting...";
     qDebug() << "Qt version is:" << qVersion();
+
+    qDebug() << "QDesktopServices::storageLocation(HomeLocation):"
+             << QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    qDebug() << "QDesktopServices::storageLocation(DataLocation):"
+             << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    qDebug() << "QCoreApplication::applicationDirPath()"
+             << QCoreApplication::applicationDirPath();
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -1290,6 +1297,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
             QString("Audio (%1)")
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
+
 
     if (!s.isNull()) {
         m_pPlayerManager->slotLoadToDeck(s, deck);

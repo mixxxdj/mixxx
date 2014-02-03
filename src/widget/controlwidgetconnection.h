@@ -8,6 +8,7 @@
 
 class ControlObjectSlave;
 class WBaseWidget;
+class ValueTransformer;
 
 class ControlWidgetConnection : public QObject {
     Q_OBJECT
@@ -56,15 +57,17 @@ class ControlWidgetConnection : public QObject {
         }
     }
 
-    // Takes ownership of pControl.
+    // Takes ownership of pControl and pTransformer.
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                            ControlObjectSlave* pControl);
+                            ControlObjectSlave* pControl,
+                            ValueTransformer* pTransformer);
     virtual ~ControlWidgetConnection();
 
     double getControlParameter() const;
+    void setControlParameter(double v);
+    double getControlParameterForValue(double value) const;
 
     virtual void resetControl() = 0;
-    virtual void setControlParameter(double v) = 0;
     virtual void setControlParameterDown(double v) = 0;
     virtual void setControlParameterUp(double v) = 0;
 
@@ -76,6 +79,7 @@ class ControlWidgetConnection : public QObject {
   protected:
     WBaseWidget* m_pWidget;
     QScopedPointer<ControlObjectSlave> m_pControl;
+    QScopedPointer<ValueTransformer> m_pValueTransformer;
 };
 
 class ControlParameterWidgetConnection : public ControlWidgetConnection {
@@ -83,6 +87,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
   public:
     ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
                                      ControlObjectSlave* pControl,
+                                     ValueTransformer* pTransformer,
                                      DirectionOption directionOption,
                                      EmitOption emitOption);
     virtual ~ControlParameterWidgetConnection();
@@ -108,6 +113,7 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
   public:
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                     ControlObjectSlave* pControl,
+                                    ValueTransformer* pTransformer,
                                     const QString& property);
     virtual ~ControlWidgetPropertyConnection();
 
