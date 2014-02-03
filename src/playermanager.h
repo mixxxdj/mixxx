@@ -117,14 +117,15 @@ class PlayerManager : public QObject {
         // Just take the first order in the list is default.  Make sure it's the natural ordering
         // "ABCD..."
         deck_order_t getDefaultOrder(int deck_count) {
+            // Don't access the hash directly in case we need to generate a default order.
+            return getDeckOrderings(deck_count).at(0);
+        }
+
+        const QList<deck_order_t> getDeckOrderings(int deck_count) {
             orders_hash_t::const_iterator it = m_hOrdersHash.find(deck_count);
             if (it == m_hOrdersHash.end()) {
                 m_hOrdersHash[deck_count].push_back(makeDefaultOrder(deck_count));
             }
-            return m_hOrdersHash[deck_count].at(0);
-        }
-
-        const QList<deck_order_t> getDeckOrderings(int deck_count) const {
             return m_hOrdersHash[deck_count];
         }
 
@@ -158,6 +159,10 @@ class PlayerManager : public QObject {
 
     static const QList<DeckOrderingManager::deck_order_t> getDeckOrderings(int deck_count) {
         return s_deckOrderingManager.getDeckOrderings(deck_count);
+    }
+
+    static const DeckOrderingManager::deck_order_t getDefaultOrder(int deck_count) {
+        return s_deckOrderingManager.getDefaultOrder(deck_count);
     }
 
     void setDeckOrder(QString order);

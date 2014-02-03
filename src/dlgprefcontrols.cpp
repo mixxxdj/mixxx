@@ -807,7 +807,16 @@ void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
     // will get called, and then we'll set the proper ordering. Since we update the config
     // every time they change the value, this shouldn't cause weird overwrites.
 
-    QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
+    // Temporarily, all 4-deck setups will use the same order
+    QString config_order;
+    if (deck_count == 4) {
+        config_order = "CABD";
+    } else {
+        config_order = PlayerManager::getDefaultOrder(deck_count).label;
+    }
+
+    // Eventually, load from config:
+    //QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
     //textDeckOrder->setVisible(deck_count != 0);
     //ComboBoxDeckOrder->setVisible(deck_count != 0);
     ComboBoxDeckOrder->clear();
@@ -834,4 +843,3 @@ void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
         m_pPlayerManager->setDeckOrder(config_order);
     }
 }
-
