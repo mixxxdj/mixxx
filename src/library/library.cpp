@@ -19,6 +19,9 @@
 #include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
+#ifdef __IPOD__
+#include "library/ipod/ipodfeature.h"
+#endif // __IPOD__
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
@@ -81,6 +84,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
         pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     }
+#ifdef __IPOD__
+    if (IPodFeature::isSupported() && 
+        pConfig->getValueString(ConfigKey("[Library]","ShowIpod"),"1").toInt()) {
+        addFeature(new IPodFeature(this, m_pTrackCollection));
+    }
+#endif // __IPOD__
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));

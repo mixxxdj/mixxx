@@ -53,6 +53,10 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     connect(pushButtonExtraPlugins, SIGNAL(clicked()),
             this, SLOT(slotExtraPlugins()));
 
+#ifndef __IPOD__
+    checkBox_show_ipod->hide();
+#endif // __IPOD__
+
     // plugins are loaded in src/main.cpp way early in boot so this is safe
     // here, doesn't need done at every slotUpdate
     QStringList plugins(SoundSourceProxy::supportedFileExtensionsByPlugins());
@@ -104,6 +108,10 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt());
     checkBox_show_itunes->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
+    #ifdef __IPOD__
+    checkBox_show_ipod->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","ShowIpod"),"1").toInt());
+    #endif // __IPOD__
     checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
 }
@@ -212,6 +220,10 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_banshee->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
+    #ifdef __IPOD__
+    m_pconfig->set(ConfigKey("[Library]","ShowIpod"),
+                ConfigValue((int)checkBox_show_ipod->isChecked()));
+    #endif // __IPOD__   
     m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
 

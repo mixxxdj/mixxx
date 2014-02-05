@@ -308,7 +308,7 @@ class LADSPA(Feature):
 
 class IPod(Feature):
     def description(self):
-        return "NOT-WORKING iPod Support"
+        return "Guest's iPod Support"
 
     def enabled(self, build):
         build.flags['ipod'] = util.get_flags(build.env, 'ipod', 0)
@@ -323,7 +323,12 @@ class IPod(Feature):
         if not self.enabled(build):
             return
 
-        build.env.Append(CPPDEFINES='__IPOD__')
+        gpod_found = conf.CheckLib(['libgpod','gpod'])
+        build.env.Append(CPPDEFINES = '__IPOD__')
+
+        if not gpod_found:
+            raise Exception('Could not find libgpod or its development headers. Please install it or compile Mixxx without iPod support using the ipod=0 flag.')
+
         if build.platform_is_windows:
             build.env.Append(LIBS='gpod')
             # You must check v-this-v directory out from
@@ -346,7 +351,9 @@ class IPod(Feature):
                 'pkg-config glib-2.0 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        return ['wipodtracksmodel.cpp']
+        return ['library/ipod/ipodfeature.cpp',
+                'library/ipod/ipodplaylistmodel.cpp',
+                'library/ipod/gpoditdb.cpp']
 
 
 class MSVCDebug(Feature):
