@@ -8,11 +8,13 @@
 #include <QResizeEvent>
 #include <QString>
 #include <QWidget>
+#include <QEvent>
 
+#include "widget/wbasewidget.h"
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
 
-class WWidgetGroup : public QFrame {
+class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT
   public:
     WWidgetGroup(QWidget* pParent=NULL);
@@ -47,6 +49,8 @@ class WWidgetGroup : public QFrame {
   protected:
     virtual void paintEvent(QPaintEvent* pe);
     virtual void resizeEvent(QResizeEvent* re);
+    bool event(QEvent* pEvent);
+    void fillDebugTooltip(QStringList* debug);
 
   private:
     // Associated background pixmap

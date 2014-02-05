@@ -9,7 +9,7 @@
 ClockControl::ClockControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)
         : EngineControl(pGroup, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(pGroup, "beat_active"));
-    m_pCOBeatActive->set(0.0f);
+    m_pCOBeatActive->set(0.0);
     m_pCOSampleRate = new ControlObjectSlave("[Master]","samplerate");
 }
 
@@ -19,7 +19,7 @@ ClockControl::~ClockControl() {
 
 void ClockControl::trackLoaded(TrackPointer pTrack) {
     // Clear on-beat control
-    m_pCOBeatActive->set(0.0f);
+    m_pCOBeatActive->set(0.0);
 
     // Disconnect any previously loaded track/beats
     if (m_pTrack) {

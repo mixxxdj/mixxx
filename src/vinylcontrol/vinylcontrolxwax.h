@@ -96,17 +96,15 @@ class VinylControlXwax : public VinylControl {
     // How much of the pitch ring buffer is "filled" versus empty (used before
     // it fills up completely).
     int m_iPitchRingFilled;
+    // A smoothed pitch value to show to the user.
+    double m_dDisplayPitch;
 
     // Steady pitch trackers.
     SteadyPitch* m_pSteadySubtle;
     SteadyPitch* m_pSteadyGross;
-    QTime m_timeSinceSteadyPitch;
 
     // Whether the configured timecode is CD-based or not.
     bool m_bCDControl;
-
-    // Whether the needle-skip prevention user-preference is enabled.
-    bool m_bNeedleSkipPrevention;
 
     // Whether track select mode is enabled.
     bool m_bTrackSelectMode;

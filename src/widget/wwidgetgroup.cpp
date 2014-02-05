@@ -6,9 +6,11 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "util/debug.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
+          WBaseWidget(this),
           m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
@@ -80,7 +82,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(WWidget::getPath(context.selectString(node, "BackPath")));
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
     }
 
     QLayout* pLayout = NULL;
@@ -148,4 +150,18 @@ void WWidgetGroup::paintEvent(QPaintEvent* pe) {
 void WWidgetGroup::resizeEvent(QResizeEvent* re) {
     // Paint things styled by style sheet
     QFrame::resizeEvent(re);
+}
+
+bool WWidgetGroup::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QFrame::event(pEvent);
+}
+
+void WWidgetGroup::fillDebugTooltip(QStringList* debug) {
+    WBaseWidget::fillDebugTooltip(debug);
+    *debug << QString("LayoutAlignment: %1").arg(toDebugString(layoutAlignment()))
+           << QString("LayoutContentsMargins: %1").arg(toDebugString(layoutContentsMargins()))
+           << QString("LayoutSpacing: %1").arg(layoutSpacing());
 }

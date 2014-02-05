@@ -28,7 +28,6 @@
 
 // Waveform overview display
 // @author Tue Haste Andersen
-class ControlObjectThreadMain;
 class Waveform;
 
 class WOverview : public WWidget {
@@ -40,7 +39,7 @@ class WOverview : public WWidget {
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void setValue(double);
+    void onConnectedControlValueChanged(double);
     void slotLoadNewTrack(TrackPointer pTrack);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);

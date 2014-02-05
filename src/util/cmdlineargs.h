@@ -32,8 +32,13 @@ class CmdlineArgs {
                 }
             } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
                 m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
+                i++;
             } else if (argv[i] == QString("--pluginPath") && i+1 < argc) {
                 m_pluginPath = QString::fromLocal8Bit(argv[i+1]);
+                i++;
+            } else if (argv[i] == QString("--timelinePath") && i+1 < argc) {
+                m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
+                i++;
             } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||
                        QString::fromLocal8Bit(argv[i]).contains("--controllerDebug", Qt::CaseInsensitive)) {
                 m_midiDebug = true;
@@ -49,10 +54,12 @@ class CmdlineArgs {
     bool getStartInFullscreen() const { return m_startInFullscreen; }
     bool getMidiDebug() const { return m_midiDebug; }
     bool getDeveloper() const { return m_developer; }
+    bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getPluginPath() const { return m_pluginPath; }
+    const QString& getTimelinePath() const { return m_timelinePath; }
 
   private:
     CmdlineArgs() :
@@ -71,6 +78,7 @@ class CmdlineArgs {
     QString m_settingsPath;
     QString m_resourcePath;
     QString m_pluginPath;
+    QString m_timelinePath;
 };
 
 #endif /* CMDLINEARGS_H */

@@ -18,7 +18,7 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
-#include "circularbuffer.h"
+#include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
@@ -50,7 +50,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
 
-    virtual bool isActive();
+    virtual bool isActive() const;
 
     // This is called by SoundManager whenever there are new samples from the
     // deck to be processed.
@@ -66,7 +66,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual void onInputDisconnected(AudioInput input);
 
     // Return whether or not passthrough is active
-    bool isPassthroughActive();
+    bool isPassthroughActive() const;
 
   public slots:
     void slotPassingToggle(double v);

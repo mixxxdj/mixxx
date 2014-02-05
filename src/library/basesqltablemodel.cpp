@@ -12,10 +12,10 @@
 #include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 #include "playerinfo.h"
 #include "track/keyutils.h"
+#include "util/time.h"
 
 const bool sDebug = false;
 
@@ -481,7 +481,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = MixxxUtils::secondsToMinutes(duration);
+                    value = Time::formatSeconds(duration, false);
                 } else {
                     value = QString();
                 }

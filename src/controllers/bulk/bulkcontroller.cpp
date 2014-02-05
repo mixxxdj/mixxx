@@ -12,6 +12,7 @@
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "util/compatibility.h"
+#include "util/trace.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread(),
@@ -46,7 +47,9 @@ void BulkReader::run() {
                                       m_in_epaddr,
                                       data, sizeof(data),
                                       &transferred, 500);
+        Trace timeout("BulkReader timeout");
         if (result >= 0) {
+            Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
             emit(incomingData(outData));

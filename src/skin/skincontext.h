@@ -18,6 +18,17 @@ class SkinContext {
 
     SkinContext& operator=(const SkinContext& other);
 
+    // Gets a path relative to the skin path.
+    QString getSkinPath(const QString& relativePath) const {
+        QString l(relativePath);
+        return l.prepend(m_skinBasePath);
+    }
+
+    // Sets the base path used by getSkinPath.
+    void setSkinBasePath(const QString& skinBasePath) {
+        m_skinBasePath = skinBasePath;
+    }
+
     // Variable lookup and modification methods.
     QString variable(const QString& name) const;
     const QHash<QString, QString>& variables() const {
@@ -39,6 +50,10 @@ class SkinContext {
     float selectFloat(const QDomNode& node, const QString& nodeName) const;
     double selectDouble(const QDomNode& node, const QString& nodeName) const;
     int selectInt(const QDomNode& node, const QString& nodeName) const;
+    bool selectBool(const QDomNode& node, const QString& nodeName, bool defaultValue) const;
+    bool selectAttributeBool(const QDomElement& element,
+                             const QString& attributeName,
+                             bool defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
 
   private:
@@ -46,6 +61,7 @@ class SkinContext {
 
     mutable QScriptEngine m_scriptEngine;
     QHash<QString, QString> m_variables;
+    QString m_skinBasePath;
 };
 
 #endif /* SKINCONTEXT_H */

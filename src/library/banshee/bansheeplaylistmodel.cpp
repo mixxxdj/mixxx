@@ -5,7 +5,6 @@
 #include "library/banshee/bansheeplaylistmodel.h"
 #include "library/banshee/bansheedbconnection.h"
 #include "library/queryutil.h"
-#include "mixxxutils.cpp"
 #include "library/starrating.h"
 #include "library/previewbuttondelegate.h"
 #include "track/beatfactory.h"
@@ -330,7 +329,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setComposer(getFieldString(index, CLM_COMPOSER));
         // If the track has a BPM, then give it a static beatgrid.
         if (bpm > 0) {
-            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0f);
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
             pTrack->setBeats(pBeats);
         }
 

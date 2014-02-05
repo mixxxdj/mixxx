@@ -17,7 +17,6 @@
 #include "skin/skincontext.h"
 
 class ConfigKey;
-class ControlObjectThreadMain;
 class ControlObject;
 
 class WaveformRenderMarkRange : public WaveformRendererAbstract {

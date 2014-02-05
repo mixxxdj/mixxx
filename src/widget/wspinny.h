@@ -5,16 +5,18 @@
 #include <QGLWidget>
 #include <QShowEvent>
 #include <QHideEvent>
+#include <QEvent>
 
 #include "widget/wwidget.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
 
 class ControlObjectThread;
 class VisualPlayPosition;
 class VinylControlManager;
 
-class WSpinny : public QGLWidget, public VinylSignalQualityListener {
+class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, VinylControlManager* pVCMan);
@@ -40,9 +42,9 @@ class WSpinny : public QGLWidget, public VinylSignalQualityListener {
     void mouseMoveEvent(QMouseEvent * e);
     void mousePressEvent(QMouseEvent * e);
     void mouseReleaseEvent(QMouseEvent * e);
-    void wheelEvent(QWheelEvent *e);
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);
+    bool event(QEvent* pEvent);
 
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);

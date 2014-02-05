@@ -35,6 +35,7 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
                            ControlObject* pNextControl,
                            ControlObject* pPrevControl)
         : QStackedWidget(pParent),
+          WBaseWidget(this),
           m_nextControl(pNextControl ? pNextControl->getKey() : ConfigKey()),
           m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
@@ -100,4 +101,11 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
         connect(this, SIGNAL(currentChanged(int)),
                 pListener, SLOT(onCurrentWidgetChanged(int)));
     }
+}
+
+bool WWidgetStack::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QFrame::event(pEvent);
 }

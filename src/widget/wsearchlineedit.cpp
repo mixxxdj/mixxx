@@ -8,7 +8,9 @@
 #include <QShortcut>
 
 WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
-                                 QWidget* pParent) : QLineEdit(pParent) {
+                                 QWidget* pParent)
+        : QLineEdit(pParent),
+          WBaseWidget(this) {
 
     QString skinpath = pConfig->getResourcePath();
     m_clearButton = new QToolButton(this);
@@ -182,4 +184,11 @@ void WSearchLineEdit::showPlaceholder() {
 void WSearchLineEdit::updateCloseButton(const QString& text)
 {
     m_clearButton->setVisible(!text.isEmpty() && !m_place);
+}
+
+bool WSearchLineEdit::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QLineEdit::event(pEvent);
 }

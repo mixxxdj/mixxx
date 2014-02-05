@@ -5,9 +5,11 @@
 #include <QObject>
 #include <QSignalMapper>
 #include <QStackedWidget>
+#include <QEvent>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
+#include "widget/wbasewidget.h"
 
 class WidgetStackControlListener : public QObject {
     Q_OBJECT
@@ -31,7 +33,7 @@ class WidgetStackControlListener : public QObject {
     const int m_index;
 };
 
-class WWidgetStack : public QStackedWidget {
+class WWidgetStack : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WWidgetStack(QWidget* pParent,
@@ -47,6 +49,9 @@ class WWidgetStack : public QStackedWidget {
     QSize minimumSizeHint() const;
 
     void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl);
+
+  protected:
+    bool event(QEvent* pEvent);
 
   private slots:
     void onNextControlChanged(double v);

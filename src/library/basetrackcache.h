@@ -18,6 +18,7 @@
 #include "util.h"
 
 class SearchQueryParser;
+class QueryNode;
 class TrackCollection;
 
 // BaseTrackCache is a cache of all of the values in certain table. It supports
@@ -73,10 +74,10 @@ class BaseTrackCache : public QObject {
     void updateTrackInIndex(int trackId);
     void updateTracksInIndex(QSet<int> trackIds);
     void getTrackValueForColumn(TrackPointer pTrack, int column,
-                                    QVariant& trackValue) const;
+                                QVariant& trackValue) const;
 
-    QString filterClause(QString query, QString extraFilter,
-                         QStringList idStrings) const;
+    QueryNode* parseQuery(QString query, QString extraFilter,
+                          QStringList idStrings) const;
     QString orderByClause(int sortColumn, Qt::SortOrder sortOrder) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
@@ -113,11 +114,6 @@ class BaseTrackCache : public QObject {
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
     SearchQueryParser* m_pQueryParser;
-    
-    QStringList m_numericFilters;
-    QRegExp m_operatorMatcher;
-    QRegExp m_numericFilterMatcher;
-    QRegExp m_stringFilterMatcher;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

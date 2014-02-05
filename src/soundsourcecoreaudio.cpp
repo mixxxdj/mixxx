@@ -21,20 +21,16 @@
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
         : Mixxx::SoundSource(filename),
-          m_file(filename),
           m_samples(0),
           m_headerFrames(0) {
 }
 
 SoundSourceCoreAudio::~SoundSourceCoreAudio() {
     ExtAudioFileDispose(m_audioFile);
-
 }
 
 // soundsource overrides
 int SoundSourceCoreAudio::open() {
-    //m_file.open(QIODevice::ReadOnly);
-
     //Open the audio file.
     OSStatus err;
 

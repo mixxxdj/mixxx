@@ -25,7 +25,7 @@
 #include "controlobjectthread.h"
 #include "preferences/dlgpreferencepage.h"
 
-#define MIXXX_XFADER_STEEPNESS_COEFF 8.0f
+#define MIXXX_XFADER_STEEPNESS_COEFF 8.0
 
 /**
   *@author John Sully

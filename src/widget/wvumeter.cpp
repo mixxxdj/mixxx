@@ -51,10 +51,10 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
-        setPixmapBackground(getPath(context.selectString(node, "PathBack")));
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "PathBack")));
     }
 
-    setPixmaps(getPath(context.selectString(node, "PathVu")), bHorizontal);
+    setPixmaps(context.getSkinPath(context.selectString(node, "PathVu")), bHorizontal);
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
@@ -103,7 +103,7 @@ void WVuMeter::setPixmaps(const QString &vuFilename,
     }
 }
 
-void WVuMeter::setValue(double dValue) {
+void WVuMeter::onConnectedControlValueChanged(double dValue) {
     int idx = static_cast<int>(dValue * m_iNoPos);
     // Range check
     if (idx > m_iNoPos)
@@ -112,7 +112,6 @@ void WVuMeter::setValue(double dValue) {
         idx = 0;
 
     setPeak(idx);
-    m_value = dValue;
 
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
@@ -159,7 +158,7 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
-        int idx = static_cast<int>(m_value * m_iNoPos);
+        int idx = static_cast<int>(getControlParameterDisplay() * m_iNoPos);
 
         // Range check
         if (idx > m_iNoPos)

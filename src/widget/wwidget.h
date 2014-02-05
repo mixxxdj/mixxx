@@ -19,10 +19,11 @@
 #define WWIDGET_H
 
 #include <QWidget>
+#include <QEvent>
 #include <QString>
-#include <QDomNode>
 
 #include "configobject.h"
+#include "widget/wbasewidget.h"
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -34,62 +35,18 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WWidget : public QWidget  {
+class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
 public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
-    // Sets the path used to find pixmaps
-    static void setPixmapPath(QString qPath);
+    Q_PROPERTY(double value READ getControlParameterDisplay);
 
-    // Given a filename of a pixmap, returns its path
-    static const QString getPath(QString location);
-
-    // Sometimes WWidget's compose a QWidget (like a label). This is used during
-    // skin parsing to style and size the composed widget.
-    virtual QWidget* getComposedWidget() { return NULL; }
-
-    Q_PROPERTY(bool disabled READ isDisabled);
-    Q_PROPERTY(double value READ getValue);
-
-    bool isDisabled() const {
-        return m_bOff;
-    }
-
-    double getValue() const {
-        return m_value;
-    }
-
-  public slots:
-    virtual void setValue(double value);
-    void updateValue(double value);
-    void setOnOff(double);
-
-  private slots:
-    void slotReEmitValueDown(double);
-    void slotReEmitValueUp(double);
-
-  signals:
-    void valueReset();
-    void valueChangedDown(double);
-    void valueChangedUp(double);
-    void valueChangedLeftDown(double);
-    void valueChangedLeftUp(double);
-    void valueChangedRightDown(double);
-    void valueChangedRightUp(double);
+    virtual void onConnectedControlValueChanged(double value);
 
   protected:
-    // Value/state of widget
-    double m_value;
-    // Is true if widget is off
-    bool m_bOff;
-
-  private:
-    // Variable containing the path to the pixmaps
-    static QString m_qPath;
-    // Property used when connecting to ControlObject
-    //bool m_bEmitOnDownPress;
+    bool event(QEvent* pEvent);
 };
 
 #endif

@@ -9,7 +9,6 @@
 
 #include "library/baseplaylistfeature.h"
 #include "configobject.h"
-#include "controlobjectthreadmain.h"
 
 class TrackCollection;
 class TreeItem;

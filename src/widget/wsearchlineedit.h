@@ -7,11 +7,13 @@
 #include <QTimer>
 #include <QDomNode>
 #include <QColor>
+#include <QEvent>
 
 #include "configobject.h"
 #include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
 
-class WSearchLineEdit : public QLineEdit {
+class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
     WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
@@ -24,6 +26,7 @@ class WSearchLineEdit : public QLineEdit {
     void resizeEvent(QResizeEvent*);
     virtual void focusInEvent(QFocusEvent*);
     virtual void focusOutEvent(QFocusEvent*);
+    bool event(QEvent* pEvent);
 
   signals:
     void search(const QString& text);

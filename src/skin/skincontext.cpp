@@ -8,7 +8,8 @@ SkinContext::SkinContext() {
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
-        : m_variables(parent.variables()) {
+        : m_variables(parent.variables()),
+          m_skinBasePath(parent.m_skinBasePath) {
     QScriptValue context = m_scriptEngine.currentContext()->activationObject();
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
@@ -106,6 +107,26 @@ int SkinContext::selectInt(const QDomNode& node,
     bool ok = false;
     int conv = nodeToString(selectElement(node, nodeName)).toInt(&ok);
     return ok ? conv : 0;
+}
+
+bool SkinContext::selectBool(const QDomNode& node,
+                             const QString& nodeName,
+                             bool defaultValue) const {
+    if (hasNode(node, nodeName)) {
+        QString stringValue = selectString(node, nodeName);
+        return stringValue.contains("true", Qt::CaseInsensitive);
+    }
+    return defaultValue;
+}
+
+bool SkinContext::selectAttributeBool(const QDomElement& element,
+                                      const QString& attributeName,
+                                      bool defaultValue) const {
+    if (element.hasAttribute(attributeName)) {
+        QString stringValue = element.attribute(attributeName);
+        return stringValue.contains("true", Qt::CaseInsensitive);
+    }
+    return defaultValue;
 }
 
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {

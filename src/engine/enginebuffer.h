@@ -39,6 +39,7 @@ class BpmControl;
 class KeyControl;
 class RateControl;
 class SyncControl;
+class VinylControlControl;
 class LoopingControl;
 class ClockControl;
 class CueControl;
@@ -46,6 +47,7 @@ class ReadAheadManager;
 class ControlObject;
 class ControlObjectSlave;
 class ControlPushButton;
+class ControlIndicator;
 class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
@@ -73,10 +75,10 @@ const int audioBeatMarkLen = 40;
 // Temporary buffer length
 const int kiTempLength = 200000;
 
-// Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
-const int kiUpdateRate = 10;
+// Rate at which the playpos slider is updated
+const int kiPlaypositionUpdateRate = 10; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateRate = 40 / kiUpdateRate; //about 2.5 updates per sec
+const int kiBpmUpdateCnt = 4; // about 2.5 updates per sec
 
 // End of track mode constants
 const int TRACK_END_MODE_STOP = 0;
@@ -202,6 +204,7 @@ class EngineBuffer : public EngineObject {
     LoopingControl* m_pLoopingControl;
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
+    VinylControlControl* m_pVinylControlControl;
     RateControl* m_pRateControl;
     BpmControl* m_pBpmControl;
     KeyControl* m_pKeyControl;
@@ -284,9 +287,6 @@ class EngineBuffer : public EngineObject {
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
-
-    ControlObject* m_pVinylStatus;  // Status of vinyl control
-    ControlObject* m_pVinylSeek;
 
     // Fwd and back controls, start and end of track control
     ControlPushButton* m_startButton;

@@ -21,27 +21,30 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
-#include "controlevent.h"
 #include "control/control.h"
 #include "util/stat.h"
 #include "util/timer.h"
 
-ControlObject::ControlObject()
-        : m_pControl(NULL) {
+ControlObject::ControlObject() {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack, bool bPersist)
         : m_pControl(NULL) {
-    initialize(key, bIgnoreNops, bTrack);
+    initialize(key, bIgnoreNops, bTrack, bPersist);
 }
 
 ControlObject::~ControlObject() {
-    m_pControl->removeCreatorCO();
+    if (m_pControl) {
+        m_pControl->removeCreatorCO();
+    }
 }
 
-void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
+void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
+                               bool bPersist) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(m_key, true, this, bIgnoreNops, bTrack);
+    m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
+                                                  bIgnoreNops, bTrack,
+                                                  bPersist);
     connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);

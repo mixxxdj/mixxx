@@ -16,30 +16,33 @@ class KnobEventHandler {
             : m_bRightButtonPressed(false) {
     }
 
+    double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
+        QPoint cur(e->globalPos());
+        QPoint diff(cur - m_startPos);
+        double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
+        bool y_dominant = abs(diff.y()) > abs(diff.x());
+
+        // if y is dominant, then thread an increase in dy as negative (y is
+        // pointed downward). Otherwise, if y is not dominant and x has
+        // decreased, then thread it as negative.
+        if ((y_dominant && diff.y() > 0) || (!y_dominant && diff.x() < 0)) {
+            dist = -dist;
+        }
+
+        // For legacy (MIDI) reasons this is tuned to 127.
+        double value = pWidget->getControlParameterLeft() + dist / 127.0;
+
+        // Clamp to [0.0, 1.0]
+        value = math_max(0.0, math_min(1.0, value));
+
+        return value;
+    }
+
     void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
         if (!m_bRightButtonPressed) {
-            QPoint cur(e->globalPos());
-            QPoint diff(cur - m_startPos);
-            double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
-            bool y_dominant = abs(diff.y()) > abs(diff.x());
-
-            // if y is dominant, then thread an increase in dy as negative (y is
-            // pointed downward). Otherwise, if y is not dominant and x has
-            // decreased, then thread it as negative.
-            if ((y_dominant && diff.y() > 0) || (!y_dominant && diff.x() < 0)) {
-                dist = -dist;
-            }
-
-            double value = pWidget->getValue();
-            // For legacy (MIDI) reasons this is tuned to 127.
-            value += dist / 127.0;
             QCursor::setPos(m_startPos);
-
-            // Clamp to [0.0, 1.0]
-            value = math_max(0.0, math_min(1.0, value));
-
-            pWidget->setValue(value);
-            emit(pWidget->valueChangedLeftDown(value));
+            double value = valueFromMouseEvent(pWidget, e);
+            pWidget->setControlParameterLeftDown(value);
             pWidget->update();
         }
     }
@@ -47,7 +50,7 @@ class KnobEventHandler {
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         switch (e->button()) {
             case Qt::RightButton:
-                emit(pWidget->valueReset());
+                pWidget->resetControlParameters();
                 m_bRightButtonPressed = true;
                 break;
             case Qt::LeftButton:
@@ -61,16 +64,19 @@ class KnobEventHandler {
     }
 
     void mouseReleaseEvent(T* pWidget, QMouseEvent* e) {
+        double value = 0.0;
         switch (e->button()) {
             case Qt::LeftButton:
             case Qt::MidButton:
                 QCursor::setPos(m_startPos);
                 QApplication::restoreOverrideCursor();
-                emit(pWidget->valueChangedLeftUp(pWidget->getValue()));
+                value = valueFromMouseEvent(pWidget, e);
+                pWidget->setControlParameterLeftUp(value);
+                pWidget->update();
                 break;
             case Qt::RightButton:
                 m_bRightButtonPressed = false;
-                //emit(pWidget->valueChangedRightUp(m_fValue));
+                //pWidget->setControlParameterRightUp(pWidget->getValue());
                 break;
             default:
                 break;
@@ -81,12 +87,14 @@ class KnobEventHandler {
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // For legacy (MIDI) reasons this is tuned to 127.
         double wheelDirection = e->delta() / (120.0 * 127.0);
-        double newValue = pWidget->getValue() + wheelDirection;
+        double newValue = pWidget->getControlParameter() + wheelDirection;
 
         // Clamp to [0.0, 1.0]
         newValue = math_max(0.0, math_min(1.0, newValue));
 
-        pWidget->updateValue(newValue);
+        pWidget->setControlParameterDown(newValue);
+        pWidget->setControlParameterUp(newValue);
+        pWidget->update();
         e->accept();
     }
 
