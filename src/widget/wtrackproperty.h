@@ -5,9 +5,10 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 
-#include "widget/wlabel.h"
-#include "trackinfoobject.h"
+#include "configobject.h"
 #include "skin/skincontext.h"
+#include "trackinfoobject.h"
+#include "widget/wlabel.h"
 
 class WTrackProperty : public WLabel {
     Q_OBJECT

@@ -406,12 +406,14 @@ void Tooltips::addStandardTooltips() {
     add("track_artist")
             << tr("Track Artist")
             << tr("Displays the artist of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("track_album")
             << tr("Track Album")
@@ -427,7 +429,8 @@ void Tooltips::addStandardTooltips() {
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("flanger")
             << tr("Flanger")

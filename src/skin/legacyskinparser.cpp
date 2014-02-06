@@ -790,19 +790,7 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
         return NULL;
 
     WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
-
-    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
-    // come first. This is because WNumber/WLabel both change the palette based
-    // on the node and setupWidget() will set the widget style. If the style is
-    // set before the palette is set then the custom palette will not take
-    // effect which breaks color scheme support.
-    p->setup(node, *m_pContext);
-    if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget(), false);
-    }
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
-    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
@@ -810,8 +798,6 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
             p, SLOT(slotTrackUnloaded(TrackPointer)));
     connect(p, SIGNAL(trackDropped(QString,QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
-
-    setupLabelWidget(node, p);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -831,19 +817,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
         return NULL;
 
     WTrackProperty* p = new WTrackProperty(pSafeChannelStr, m_pConfig, m_pParent);
-
-    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
-    // come first. This is because WNumber/WLabel both change the palette based
-    // on the node and setupWidget() will set the widget style. If the style is
-    // set before the palette is set then the custom palette will not take
-    // effect which breaks color scheme support.
-    p->setup(node, *m_pContext);
-    if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget(), false);
-    }
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
-    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
@@ -851,8 +825,6 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
             p, SLOT(slotTrackUnloaded(TrackPointer)));
     connect(p, SIGNAL(trackDropped(QString,QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
-
-    setupLabelWidget(node, p);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {

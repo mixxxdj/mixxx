@@ -5,8 +5,9 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 
-#include "widget/wlabel.h"
+#include "configobject.h"
 #include "trackinfoobject.h"
+#include "widget/wlabel.h"
 
 class WTrackText : public WLabel {
     Q_OBJECT
