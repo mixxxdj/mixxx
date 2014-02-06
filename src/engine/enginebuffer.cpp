@@ -371,16 +371,12 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     m_engineLock.unlock();
 }
 
-void EngineBuffer::queueNewPlaypos(double newpos, bool exact) {
+void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race 
     // condition effect 
     m_queuedPosition.setValue(newpos);
-    if (exact) {
-        m_iSeekQueued.fetchAndStoreRelease(SEEK_EXACT);
-    } else {
-        m_iSeekQueued.fetchAndStoreRelease(SEEK_STANDARD);
-    }
+    m_iSeekQueued.fetchAndStoreRelease(seekType);
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -504,7 +500,7 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
-    doSeek(0., /* exact */ true);
+    doSeek(0., SEEK_EXACT);
     m_pause.unlock();
 
     emit(trackUnloaded(pTrack));
@@ -512,20 +508,20 @@ void EngineBuffer::ejectTrack() {
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change) {
-    doSeek(change, /* exact */ false);
+    doSeek(change, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double abs) {
-    doSeek(abs / m_file_length_old, /* exact */ false);
+    doSeek(abs / m_file_length_old, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekExact(double abs) {
-    doSeek(abs / m_file_length_old, /* exact */ true);
+    doSeek(abs / m_file_length_old, SEEK_EXACT);
 }
 
-void EngineBuffer::doSeek(double change, bool exact) {
+void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
     if (isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
         // This seek is ridiculous.
         return;
@@ -549,7 +545,7 @@ void EngineBuffer::doSeek(double change, bool exact) {
         m_pVinylControlControl->notifySeek();
     }
 
-    queueNewPlaypos(new_playpos, exact);
+    queueNewPlaypos(new_playpos, seekType);
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
@@ -572,21 +568,21 @@ void EngineBuffer::slotControlPlayRequest(double v) {
 void EngineBuffer::slotControlStart(double v)
 {
     if (v > 0.0) {
-        doSeek(0., /* exact */ true);
+        doSeek(0., SEEK_EXACT);
     }
 }
 
 void EngineBuffer::slotControlEnd(double v)
 {
     if (v > 0.0) {
-        doSeek(1., /* exact */ true);
+        doSeek(1., SEEK_EXACT);
     }
 }
 
 void EngineBuffer::slotControlPlayFromStart(double v)
 {
     if (v > 0.0) {
-        doSeek(0., /* exact */ true);
+        doSeek(0., SEEK_EXACT);
         m_playButton->set(1);
     }
 }
@@ -594,7 +590,7 @@ void EngineBuffer::slotControlPlayFromStart(double v)
 void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
-        doSeek(0., /* exact */ true);
+        doSeek(0., SEEK_EXACT);
         m_playButton->set(0);
     }
 }
@@ -837,7 +833,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
                 && end_of_track) {
             if (repeat_enabled) {
                 double seekPosition = at_start ? m_file_length_old : 0;
-                doSeek(seekPosition, /* exact */ false);
+                doSeek(seekPosition, SEEK_STANDARD);
             } else {
                 m_playButton->set(0.);
             }
@@ -952,13 +948,13 @@ void EngineBuffer::processSlip(int iBufferSize) {
 }
 
 void EngineBuffer::processSeek() {
-    // We need to read position just after reading seek_type, to ensure that we read 
+    // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
     // the later case is ok, because we will pocess the new seek in the next call anyway. 
-    SeekRequest seek_type =
+    SeekRequest seekType =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     double position = m_queuedPosition.getValue();
-    switch (seek_type) {
+    switch (seekType) {
     case NO_SEEK:
         return;
     case SEEK_EXACT:
@@ -991,7 +987,7 @@ void EngineBuffer::processSeek() {
         break;
     }
     default:
-        qWarning() << "Unhandled seek request type: " << seek_type;
+        qWarning() << "Unhandled seek request type: " << seekType;
         return;
     }
 }

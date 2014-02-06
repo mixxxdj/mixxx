@@ -96,6 +96,13 @@ const int ENGINE_RAMP_UP = 1;
 class EngineBuffer : public EngineObject {
      Q_OBJECT
   public:
+    enum SeekRequest {
+        NO_SEEK,
+        SEEK_STANDARD,
+        SEEK_EXACT,
+        SEEK_PHASE
+    };
+
     EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
@@ -115,7 +122,7 @@ class EngineBuffer : public EngineObject {
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
-    void queueNewPlaypos(double newpos, bool exact);
+    void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
 
     // Reset buffer playpos and set file playpos. This must only be called
@@ -175,13 +182,6 @@ class EngineBuffer : public EngineObject {
                              QString reason);
 
   private:
-    enum SeekRequest {
-        NO_SEEK,
-        SEEK_STANDARD,
-        SEEK_EXACT,
-        SEEK_PHASE
-    };
-
     void enablePitchAndTimeScaling(bool bEnable);
 
     void updateIndicators(double rate, int iBufferSize);
@@ -192,7 +192,7 @@ class EngineBuffer : public EngineObject {
 
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
-    void doSeek(double change, bool exact);
+    void doSeek(double change, enum SeekRequest seekType);
 
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
