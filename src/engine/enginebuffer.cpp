@@ -422,7 +422,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
         pControl->notifySeek(m_filepos_play);
     }
 
-    slotControlPlayRequest(m_playButton->get()); // verify or update play button and indicator
+    verifyPlay(); // verify or update play button and indicator
 
     m_engineLock.unlock();
 }
@@ -555,7 +555,7 @@ void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
     queueNewPlaypos(new_playpos, seekType);
 }
 
-void EngineBuffer::slotControlPlayRequest(double v) {
+double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
@@ -566,10 +566,21 @@ void EngineBuffer::slotControlPlayRequest(double v) {
         playPossible = false;
     }
 
-    v = m_pCueControl->updateIndicatorsAndModifyPlay(v, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(v, playPossible);
+}
 
-    // set and confirm must be called in any case to update the widget toggle state
-    m_playButton->setAndConfirm(v);
+void EngineBuffer::verifyPlay() {
+    double play = m_playButton->get();
+    double verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    if (play != verifiedPlay) {
+        m_playButton->setAndConfirm(verifiedPlay);
+    }
+}
+
+void EngineBuffer::slotControlPlayRequest(double v) {
+    double verifiedPlay = updateIndicatorsAndModifyPlay(v);
+    // set and confirm must be called here in any case to update the widget toggle state
+    m_playButton->setAndConfirm(verifiedPlay);
 }
 
 void EngineBuffer::slotControlStart(double v)

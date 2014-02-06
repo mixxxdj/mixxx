@@ -196,6 +196,9 @@ class EngineBuffer : public EngineObject {
 
     void processSeek();
 
+    double updateIndicatorsAndModifyPlay(double v);
+    void verifyPlay();
+
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
     QMutex m_engineLock;
