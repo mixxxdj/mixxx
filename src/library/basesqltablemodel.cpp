@@ -91,29 +91,6 @@ void BaseSqlTableModel::initHeaderData() {
 
     setHeaderData(fieldIndex("preview"),
                   Qt::Horizontal, tr("Preview"));
-
-
-#define CLM_VIEW_ORDER "view_order"
-#define CLM_ARTIST "artist"
-#define CLM_TITLE "title"
-#define CLM_DURATION "duration"
-#define CLM_URI "uri"
-#define CLM_ALBUM "album"
-#define CLM_ALBUM_ARTIST "album_artist"
-#define CLM_YEAR "year"
-#define CLM_RATING "rating"
-#define CLM_GENRE "genre"
-#define CLM_GROUPING "grouping"
-#define CLM_TRACKNUMBER "tracknumber"
-#define CLM_DATEADDED "dateadded"
-#define CLM_BPM "bpm"
-#define CLM_BITRATE "bitrate"
-#define CLM_COMMENT "comment"
-#define CLM_PLAYCOUNT "playcount"
-#define CLM_COMPOSER "composer"
-#define CLM_PREVIEW "preview"
-
-
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
