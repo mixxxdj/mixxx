@@ -26,6 +26,7 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "rotary.h"
+#include "control/controlvalue.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -91,13 +92,6 @@ const int ENGINE_RAMP_NONE = 0;
 const int ENGINE_RAMP_UP = 1;
 
 //const int kiRampLength = 3;
-
-enum SeekRequest {
-    NO_SEEK,
-    SEEK_STANDARD,
-    SEEK_EXACT,
-    SEEK_PHASE
-};
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -181,6 +175,13 @@ class EngineBuffer : public EngineObject {
                              QString reason);
 
   private:
+    enum SeekRequest {
+        NO_SEEK,
+        SEEK_STANDARD,
+        SEEK_EXACT,
+        SEEK_PHASE
+    };
+
     void enablePitchAndTimeScaling(bool bEnable);
 
     void updateIndicators(double rate, int iBufferSize);
@@ -306,14 +307,7 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
-    // TODO(XXX) make a macro or something.
-#if defined(__GNUC__)
-    double m_dQueuedPosition __attribute__ ((aligned(sizeof(double))));
-#elif defined(_MSC_VER)
-    double __declspec(align(8)) m_dQueuedPosition;
-#else
-    double m_dQueuedPosition;
-#endif
+    ControlValueAtomic<double> m_queuedPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to
     // zero in case of an immediate stop of the playback

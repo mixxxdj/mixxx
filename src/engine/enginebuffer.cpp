@@ -61,48 +61,47 @@ const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 
 EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
-                           EngineChannel* pChannel, EngineMaster* pMixingEngine) :
-    m_engineLock(QMutex::Recursive),
-    m_group(_group),
-    m_pConfig(_config),
-    m_pLoopingControl(NULL),
-    m_pSyncControl(NULL),
-    m_pVinylControlControl(NULL),
-    m_pRateControl(NULL),
-    m_pBpmControl(NULL),
-    m_pKeyControl(NULL),
-    m_pReadAheadManager(NULL),
-    m_pReader(NULL),
-    m_filepos_play(0.),
-    m_speed_old(0),
-    m_pitch_old(0),
-    m_baserate_old(0),
-    m_rate_old(0.),
-    m_file_length_old(-1),
-    m_file_srate_old(0),
-    m_iSamplesCalculated(0),
-    m_iUiSlowTick(0),
-    m_pRepeat(NULL),
-    m_startButton(NULL),
-    m_endButton(NULL),
-    m_pScale(NULL),
-    m_pScaleLinear(NULL),
-    m_pScaleST(NULL),
-    m_pScaleRB(NULL),
-    m_bScalerChanged(false),
-    m_bScalerOverride(false),
-    m_iSeekQueued(NO_SEEK),
-    m_dQueuedPosition(0),
-    m_bLastBufferPaused(true),
-    m_iTrackLoading(0),
-    m_bPlayAfterLoading(false),
-    m_fRampValue(0.0),
-    m_iRampState(ENGINE_RAMP_NONE),
-    m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-    m_iDitherBufferReadIndex(0),
-    m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-    m_iCrossFadeSamples(0),
-    m_iLastBufferSize(0) {
+                           EngineChannel* pChannel, EngineMaster* pMixingEngine)
+        : m_engineLock(QMutex::Recursive),
+          m_group(_group),
+          m_pConfig(_config),
+          m_pLoopingControl(NULL),
+          m_pSyncControl(NULL),
+          m_pVinylControlControl(NULL),
+          m_pRateControl(NULL),
+          m_pBpmControl(NULL),
+          m_pKeyControl(NULL),
+          m_pReadAheadManager(NULL),
+          m_pReader(NULL),
+          m_filepos_play(0.),
+          m_speed_old(0),
+          m_pitch_old(0),
+          m_baserate_old(0),
+          m_rate_old(0.),
+          m_file_length_old(-1),
+          m_file_srate_old(0),
+          m_iSamplesCalculated(0),
+          m_iUiSlowTick(0),
+          m_pRepeat(NULL),
+          m_startButton(NULL),
+          m_endButton(NULL),
+          m_pScale(NULL),
+          m_pScaleLinear(NULL),
+          m_pScaleST(NULL),
+          m_pScaleRB(NULL),
+          m_bScalerChanged(false),
+          m_bScalerOverride(false),
+          m_iSeekQueued(NO_SEEK),
+          m_bLastBufferPaused(true),
+          m_iTrackLoading(0),
+          m_bPlayAfterLoading(false),
+          m_fRampValue(0.0),
+          m_iRampState(ENGINE_RAMP_NONE),
+          m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+          m_iDitherBufferReadIndex(0),
+          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+          m_iCrossFadeSamples(0),
+          m_iLastBufferSize(0) {
 
     // Generate dither values. When engine samples used to be within [SHRT_MIN,
     // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
@@ -373,9 +372,10 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
 }
 
 void EngineBuffer::queueNewPlaypos(double newpos, bool exact) {
-    // Temp Workaround: All seeks need to be done in the Engine thread so queue
-    // it up.
-    m_dQueuedPosition = newpos;
+    // All seeks need to be done in the Engine thread so queue it up.
+    // Write the position before the seek type, to reduce a possible race 
+    // condition effect 
+    m_queuedPosition.setValue(newpos);
     if (exact) {
         m_iSeekQueued.fetchAndStoreRelease(SEEK_EXACT);
     } else {
@@ -952,25 +952,29 @@ void EngineBuffer::processSlip(int iBufferSize) {
 }
 
 void EngineBuffer::processSeek() {
+    // We need to read position just after reading seek_type, to ensure that we read 
+    // the matching poition to seek_typ or a position from a new seek just queued from an other thread
+    // the later case is ok, because we will pocess the new seek in the next call anyway. 
     SeekRequest seek_type =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
+    double position = m_queuedPosition.getValue();
     switch (seek_type) {
     case NO_SEEK:
         return;
     case SEEK_EXACT:
-        setNewPlaypos(m_dQueuedPosition);
+        setNewPlaypos(position);
         break;
     case SEEK_STANDARD: {
         bool paused = m_playButton->get() == 0.0;
         // If we are playing and quantize is on, match phase when seeking.
         if (!paused && m_pQuantize->get() > 0.0) {
-            int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
+            int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(position));
             if (!even(offset)) {
                 offset--;
             }
-            m_dQueuedPosition += offset;
+            position += offset;
         }
-        setNewPlaypos(m_dQueuedPosition);
+        setNewPlaypos(position);
         break;
     }
     case SEEK_PHASE: {
