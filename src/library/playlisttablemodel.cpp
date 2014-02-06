@@ -53,11 +53,11 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
 
     columns[0] = LIBRARYTABLE_ID;
-    columns[3] = "preview";
+    columns[3] = LIBRARYTABLE_PREVIEW;
     setTable(playlistTableName, columns[0], columns,
             m_pTrackCollection->getTrackSource());
     setSearch("");
-    setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 
     connect(&m_playlistDao, SIGNAL(changed(int)),
@@ -70,7 +70,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         return 0;
     }
 
-    const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();
 
     // Handle weird cases like a drag and drop to an invalid index
@@ -108,7 +108,7 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
         return;
     }
 
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int positionColumnIndex = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
 }
@@ -118,7 +118,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         return;
     }
 
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int positionColumnIndex = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
     QList<int> trackPositions;
     foreach (QModelIndex index, indices) {
@@ -132,7 +132,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
                                    const QModelIndex& destIndex) {
 
-    int playlistPositionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int playlistPositionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
     int newPosition = destIndex.sibling(destIndex.row(), playlistPositionColumn).data().toInt();
     int oldPosition = sourceIndex.sibling(sourceIndex.row(), playlistPositionColumn).data().toInt();
@@ -161,7 +161,7 @@ bool PlaylistTableModel::isLocked(){
 
 void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
     QList<int> positions;
-    const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     int excludePos = -1;
     if (exclude.row() > -1) {
         // this is uses to exclude the already loaded track at pos #1 if used from running Auto-DJ
@@ -190,20 +190,21 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
-        column == fieldIndex(LIBRARYTABLE_PLAYED) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
     }
     return false;
 }
 
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+    if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
         return true;
     }
     return false;

@@ -364,7 +364,8 @@ void BasePlaylistFeature::slotExportPlaylist() {
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
-    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
+            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistTableModel->select();
 
     // check config if relative paths are desired

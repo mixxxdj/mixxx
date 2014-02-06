@@ -69,11 +69,11 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
 
 
 bool MissingTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_PLAYED) ||
-        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
     return false;
