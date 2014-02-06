@@ -386,26 +386,33 @@ void EngineBuffer::requestSyncPhase() {
     }
 }
 
+void EngineBuffer::clearScale() {
+    // This is called when seeking, after scaler change and direction change
+    // Read extra buffer with the original scale for crossfading with new one
+    CSAMPLE* fadeout = m_pScale->getScaled(m_iLastBufferSize);
+    m_iCrossFadeSamples = m_iLastBufferSize;
+    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
+
+    if (m_pScale) {
+        m_pScale->clear();
+    }
+    // restore the original position that was lost due to getScaled() above
+    m_pReadAheadManager->notifySeek(m_filepos_play);
+}
+
+
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << m_group << "engine new pos " << newpos;
 
-    // Before seeking, read extra buffer for crossfading
-    CSAMPLE* fadeout = m_pScale->getScaled(m_iLastBufferSize);
-    m_iCrossFadeSamples = m_iLastBufferSize;
-    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
-
     m_filepos_play = newpos;
+
+    // Before seeking, read extra buffer for crossfading
+    clearScale();
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
-
-    // The right place to do this?
-    if (m_pScale) {
-        m_pScale->clear();
-    }
-    m_pReadAheadManager->notifySeek(m_filepos_play);
 
     // Must hold the engineLock while using m_engineControls
     m_engineLock.lock();
@@ -675,13 +682,13 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
             if (m_bScalerChanged) {
-                setNewPlaypos(m_filepos_play);
+                clearScale();
             } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if ((m_speed_old <= 0 && speed > 0) ||
                     (m_speed_old >= 0 && speed < 0)) {
-                    setNewPlaypos(m_filepos_play);
+                    clearScale();
                 }
             }
 

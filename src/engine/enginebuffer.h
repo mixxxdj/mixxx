@@ -125,14 +125,9 @@ class EngineBuffer : public EngineObject {
     void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
 
-    // Reset buffer playpos and set file playpos. This must only be called
-    // while holding the pause mutex
-    void setNewPlaypos(double playpos);
-
     // The process methods all run in the audio callback.
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
-    void processSeek();
 
     const char* getGroup();
     bool isTrackLoaded();
@@ -193,6 +188,13 @@ class EngineBuffer : public EngineObject {
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
     void doSeek(double change, enum SeekRequest seekType);
+
+    void clearScale();
+
+    // Reset buffer playpos and set file playpos.
+    void setNewPlaypos(double playpos);
+
+    void processSeek();
 
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
