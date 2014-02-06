@@ -13,15 +13,6 @@ namespace {
 
 const bool sDebug = false;
 
-const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
-    int i = 0;
-    QHash<QString, int> index;
-    foreach (const QString item, items) {
-        index[item] = i++;
-    }
-    return index;
-}
-
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
@@ -34,7 +25,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_idColumn(idColumn),
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
-          m_columnIndex(buildReverseIndex(columns)),
+          m_columnCache(columns),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_trackDAO(pTrackCollection->getTrackDAO()),
@@ -53,7 +44,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     // them a bunch.
     m_searchColumnIndices.resize(m_searchColumns.size());
     for (int i = 0; i < m_searchColumns.size(); ++i) {
-        m_searchColumnIndices[i] = m_columnIndex.value(m_searchColumns[i], -1);
+        m_searchColumnIndices[i] = m_columnCache.fieldIndex(m_searchColumns[i]);
     }
 }
 
@@ -65,8 +56,12 @@ int BaseTrackCache::columnCount() const {
     return m_columnCount;
 }
 
-int BaseTrackCache::fieldIndex(const QString columnName) const {
-    return m_columnIndex.value(columnName, -1);
+int BaseTrackCache::fieldIndex(ColumnCache::Column column) const {
+    return m_columnCache.fieldIndex(column);
+}
+
+int BaseTrackCache::fieldIndex(const QString& columnName) const {
+    return m_columnCache.fieldIndex(columnName);
 }
 
 void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {

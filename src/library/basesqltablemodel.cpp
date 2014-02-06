@@ -239,7 +239,7 @@ void BaseSqlTableModel::select() {
 
     QLinkedList<int> tableColumnIndices;
     foreach (QString column, m_tableColumns) {
-        Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
+        Q_ASSERT(record.indexOf(column) == m_tableColumnCache.fieldIndex(column));
         tableColumnIndices.push_back(record.indexOf(column));
     }
 
@@ -354,10 +354,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
-    m_tableColumnIndex.clear();
-    for (int i = 0; i < m_tableColumns.size(); ++i) {
-        m_tableColumnIndex[m_tableColumns[i]] = i;
-    }
+    m_tableColumnCache.setColumns(m_tableColumns);
 
     initHeaderData();
 
@@ -439,8 +436,26 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
     return count;
 }
 
+int BaseSqlTableModel::fieldIndex(ColumnCache::Column column) const {
+    int tableIndex = m_tableColumnCache.fieldIndex(column);
+    if (tableIndex > -1) {
+        return tableIndex;
+    }
+
+    if (m_trackSource) {
+        // We need to account for the case where the field name is not a table
+        // column or a source column.
+        int sourceTableIndex = m_trackSource->fieldIndex(column);
+        if (sourceTableIndex > -1) {
+            // Subtract one from the fieldIndex() result to account for the id column
+            return m_tableColumns.size() + sourceTableIndex - 1;
+        }
+    }
+    return -1;
+}
+
 int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
-    int tableIndex = m_tableColumnIndex.value(fieldName, -1);
+    int tableIndex = m_tableColumnCache.fieldIndex(fieldName);
     if (tableIndex > -1) {
         return tableIndex;
     }
