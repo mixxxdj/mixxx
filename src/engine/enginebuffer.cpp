@@ -669,7 +669,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-            pitch != m_pitch_old || m_bScalerChanged) {
+                pitch != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -955,40 +955,40 @@ void EngineBuffer::processSeek() {
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     double position = m_queuedPosition.getValue();
     switch (seekType) {
-    case NO_SEEK:
-        return;
-    case SEEK_EXACT:
-        setNewPlaypos(position);
-        break;
-    case SEEK_STANDARD: {
-        bool paused = m_playButton->get() == 0.0;
-        // If we are playing and quantize is on, match phase when seeking.
-        if (!paused && m_pQuantize->get() > 0.0) {
-            int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(position));
-            if (!even(offset)) {
-                offset--;
+        case NO_SEEK:
+            return;
+        case SEEK_EXACT:
+            setNewPlaypos(position);
+            break;
+        case SEEK_STANDARD: {
+            bool paused = m_playButton->get() == 0.0;
+            // If we are playing and quantize is on, match phase when seeking.
+            if (!paused && m_pQuantize->get() > 0.0) {
+                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(position));
+                if (!even(offset)) {
+                    offset--;
+                }
+                position += offset;
             }
-            position += offset;
+            setNewPlaypos(position);
+            break;
         }
-        setNewPlaypos(position);
-        break;
-    }
-    case SEEK_PHASE: {
-        // XXX: syncPhase is private in bpmcontrol, so we seek directly.
-        double dThisPosition = m_pBpmControl->getCurrentSample();
-        double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
-        if (offset != 0.0) {
-            double dNewPlaypos = round(dThisPosition + offset);
-            if (!even(dNewPlaypos)) {
-                dNewPlaypos--;
+        case SEEK_PHASE: {
+            // XXX: syncPhase is private in bpmcontrol, so we seek directly.
+            double dThisPosition = m_pBpmControl->getCurrentSample();
+            double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
+            if (offset != 0.0) {
+                double dNewPlaypos = round(dThisPosition + offset);
+                if (!even(dNewPlaypos)) {
+                    dNewPlaypos--;
+                }
+                setNewPlaypos(dNewPlaypos);
             }
-            setNewPlaypos(dNewPlaypos);
+            break;
         }
-        break;
-    }
-    default:
-        qWarning() << "Unhandled seek request type: " << seekType;
-        return;
+        default:
+            qWarning() << "Unhandled seek request type: " << seekType;
+            return;
     }
 }
 
