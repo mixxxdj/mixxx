@@ -184,24 +184,32 @@ ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
 
 void ControlPushButtonBehavior::setValueFromMidiParameter(
         MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
+    // Calculate pressed State of the midi Button
+    // Some controller like the RMX2 are sending always MIDI_NOTE_ON
+    // with a changed dParam 127 for pressed an 0 for released.
+    // Other controller like the VMS4 are using MIDI_NOTE_ON
+    // And MIDI_NOTE_OFF and a velocity value like a piano keyboard
+    bool pressed = true;
+    if (o == MIDI_NOTE_OFF || dParam == 0) {
+        // MIDI_NOTE_ON + 0 should be interpreted a released according to
+        // http://de.wikipedia.org/wiki/Musical_Instrument_Digital_Interface
+        // looking for MIDI_NOTE_ON doesn't seem to work...
+        pressed = false;
+    }
+
     // This block makes push-buttons act as power window buttons.
     if (m_buttonMode == POWERWINDOW && m_iNumStates == 2) {
-        if (o == MIDI_NOTE_ON) {
-            if (dParam > 0.) {
-                double value = pControl->get();
-                pControl->set(!value, NULL);
-                m_pushTimer.setSingleShot(true);
-                m_pushTimer.start(kPowerWindowTimeMillis);
-            }
-        } else if (o == MIDI_NOTE_OFF) {
-            if (!m_pushTimer.isActive()) {
-                pControl->set(0.0, NULL);
-            }
+        if (pressed) {
+            pControl->set(1., NULL);
+            m_pushTimer.setSingleShot(true);
+            m_pushTimer.start(kPowerWindowTimeMillis);
+        } else if (!m_pushTimer.isActive()) {
+            pControl->set(0., NULL);
         }
     } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {
         // This block makes push-buttons act as toggle buttons.
         if (m_iNumStates > 1) { // multistate button
-            if (dParam > 0.) { // looking for NOTE_ON doesn't seem to work...
+            if (pressed) {
                 // This is a possibly race condition if another writer wants
                 // to change the value at the same time. We allow the race here,
                 // because this is possibly what the user expects if he changes
@@ -213,22 +221,22 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
                     m_pushTimer.setSingleShot(true);
                     m_pushTimer.start(kLongPressLatchingTimeMillis);
                 }
-            } else if (o == MIDI_NOTE_OFF) {
+            } else {
                 double value = pControl->get();
                 if (m_buttonMode == LONGPRESSLATCHING &&
-                        m_pushTimer.isActive() && value >= 1.0) {
+                        m_pushTimer.isActive() && value >= 1.) {
                     // revert toggle if button is released too early
-                    value = (int)(value - 1.0) % m_iNumStates;
+                    value = (int)(value - 1.) % m_iNumStates;
                     pControl->set(value, NULL);
                 }
             }
         }
     } else { // Not a toggle button (trigger only when button pushed)
-        if (o == MIDI_NOTE_ON) {
-            double value = pControl->get();
-            pControl->set(!value, NULL);
-        } else if (o == MIDI_NOTE_OFF) {
-            pControl->set(0.0, NULL);
+        if (pressed) {
+            pControl->set(1., NULL);
+        } else {
+            pControl->set(0., NULL);
         }
     }
 }
+
