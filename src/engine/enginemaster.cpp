@@ -63,6 +63,12 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
     m_pMasterSampleRate->set(44100.);
+    m_pMasterSampleRate->connect(
+            m_pMasterSampleRate, SIGNAL(valueChanged(double)),
+            SLOT(slotSampleRateChanged(double)));
+    m_pMasterSampleRate->connect(
+            m_pMasterSampleRate, SIGNAL(valueChangedFromEngine(double)),
+            SLOT(slotSampleRateChanged(double)));
 
     // Latency control
     m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"), true, true);
@@ -119,7 +125,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pSideChainCompressor = new EngineSideChainCompressor(_config, group);
     // Set compressor threshold to .5 of full volume, strength .75, and .1
     // second attack and 1 sec decay.
-    m_pSideChainCompressor->setParameters(0.5, 0.75, 44100 / 2 * .1, 44100 / 2);
+    m_pSideChainCompressor->setParameters(
+            0.5, 0.75,
+            m_pMasterSampleRate->get() / 2 * .1,
+            m_pMasterSampleRate->get() / 2);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -338,6 +347,7 @@ void EngineMaster::process(const int iBufferSize) {
 
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
+    master_gain *= m_pSideChainCompressor->calculateCompressedGain(iBufferSize / 2);
     m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
@@ -359,16 +369,13 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     // Mix the three channels together. We already mixed the busses together
-    // with the channel gains and overall master gain.
+    // with the channel gains and overall master gain.  This excludes the
+    // BYPASS-oriented channels.
     SampleUtil::copy3WithGain(m_pMaster,
                               m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
                               m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
                               m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
                               iBufferSize);
-
-    // TODO(owilliams): Ramp compression, and also only apply if microphone
-    // is active.
-    m_pSideChainCompressor->process(m_pMaster, m_pMaster, iBufferSize);
 
 #ifdef __LADSPA__
     // LADPSA master effects
@@ -550,4 +557,9 @@ void EngineMaster::onOutputDisconnected(AudioOutput output) {
         default:
             break;
     }
+}
+
+void EngineMaster::slotSampleRateChanged(double samplerate) {
+    m_pSideChainCompressor->setParameters(
+            0.5, 0.75, samplerate / 2 * .1, samplerate / 2);
 }

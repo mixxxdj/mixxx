@@ -3,12 +3,8 @@
 
 #include "defs.h"
 #include "configobject.h"
-#include "engine/engineobject.h"
 
-class ControlObject;
-
-class EngineSideChainCompressor : public EngineObject {
-    Q_OBJECT
+class EngineSideChainCompressor {
   public:
     EngineSideChainCompressor(ConfigObject<ConfigValue>* pConfig, const char* group);
     virtual ~EngineSideChainCompressor() { };
@@ -46,15 +42,13 @@ class EngineSideChainCompressor : public EngineObject {
     // the compressor the input key signal.
     void processKey(const CSAMPLE* pIn, const int iBufferSize);
 
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    // Calculates a new gain value based on the current compression ratio
+    // over the given number of frames and whether the current input is above threshold.
+    double calculateCompressedGain(int frames);
 
   private:
     // Update the attack and decay rates.
     void calculateRates();
-
-    // Calculates a new compression value for the next frame
-    // based on the current compression ratio and whether the current input is above threshold.
-    inline double calculateCompression(CSAMPLE currentRatio, bool aboveThreshold) const;
 
     ConfigObject<ConfigValue>* m_pConfig;
 

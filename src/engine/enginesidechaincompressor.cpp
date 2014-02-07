@@ -1,4 +1,3 @@
-#include "controlobject.h"
 #include "sampleutil.h"
 #include "engine/enginesidechaincompressor.h"
 
@@ -51,43 +50,31 @@ void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBuffer
     m_bAboveThreshold = false;
 }
 
-void EngineSideChainCompressor::process(
-        const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) {
-    for (int i = 0; i + 1 < iBufferSize; i += 2) {
-        m_compressRatio = calculateCompression(m_compressRatio, m_bAboveThreshold);
-        const CSAMPLE logRatio = SampleUtil::linearToLog(m_compressRatio);
-        pOut[i] = pIn[i] * (1. - logRatio);
-        pOut[i + 1] = pIn[i + 1] * (1. - logRatio);
-    }
-}
-
-// Called for every frame, so inline.
-inline double EngineSideChainCompressor::calculateCompression(
-        CSAMPLE currentRatio, bool aboveThreshold) const {
-    if (aboveThreshold) {
-        if (currentRatio < m_strength) {
-            currentRatio += m_attackPerFrame;
-            if (currentRatio > m_strength) {
+double EngineSideChainCompressor::calculateCompressedGain(int frames) {
+    if (m_bAboveThreshold) {
+        if (m_compressRatio < m_strength) {
+            m_compressRatio += m_attackPerFrame * frames;
+            if (m_compressRatio > m_strength) {
                 // If we overshot, clamp.
-                currentRatio = m_strength;
+                m_compressRatio = m_strength;
             }
-        } else if (currentRatio > m_strength) {
+        } else if (m_compressRatio > m_strength) {
             // If the strength param was changed, we might be compressing too much.
-            currentRatio -= m_decayPerFrame;
+            m_compressRatio -= m_decayPerFrame * frames;
         }
     } else {
-        if (currentRatio > 0) {
-            currentRatio -= m_decayPerFrame;
-            if (currentRatio < 0) {
+        if (m_compressRatio > 0) {
+            m_compressRatio -= m_decayPerFrame * frames;
+            if (m_compressRatio < 0) {
                 // If we overshot, clamp.
-                currentRatio = 0;
+                m_compressRatio = 0;
             }
-        } else if (currentRatio < 0) {
+        } else if (m_compressRatio < 0) {
             // Complain loudly.
             qWarning() << "Programming error, below-zero compression detected.";
-            currentRatio += m_attackPerFrame;
+            m_compressRatio += m_attackPerFrame * frames;
         }
     }
-    return currentRatio;
+    return (1. - m_compressRatio);
 }
 

@@ -148,6 +148,11 @@ class EngineMaster : public QObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
+  public slots:
+    void slotSampleRateChanged(double);
+
+  private:
+
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
 
