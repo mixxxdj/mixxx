@@ -115,8 +115,8 @@ class EngineMaster : public QObject, public AudioSource {
     class ConstantGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            Q_UNUSED(pChannelInfo);
-            return m_dGain;
+            // If the channel is set to bypass, ignore gain setting.
+            return pChannelInfo->m_pChannel->isBypass() ? 1.0 : m_dGain;
         }
         inline void setGain(double dGain) {
             m_dGain = dGain;
@@ -130,6 +130,10 @@ class EngineMaster : public QObject, public AudioSource {
                 : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0) { }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
+            // If the channel is set to bypass, ignore gain setting.
+            if (pChannelInfo->m_pChannel->isBypass()) {
+                return 1.0;
+            }
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
                 pChannelInfo->m_pChannel->getOrientation(),

@@ -25,6 +25,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
     // "master" controls.
     setMaster(true);
     setPFL(false);
+    setBypass(true);
 }
 
 EngineMicrophone::~EngineMicrophone() {

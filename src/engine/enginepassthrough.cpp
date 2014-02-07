@@ -25,6 +25,7 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
     setPFL(false);
+    setBypass(false);
 }
 
 EnginePassthrough::~EnginePassthrough() {

@@ -52,6 +52,8 @@ class EngineChannel : public EngineObject {
     virtual bool isPFL() const;
     void setMaster(bool enabled);
     virtual bool isMaster() const;
+    void setBypass(bool enabled);
+    virtual bool isBypass() const;
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) = 0;
 
@@ -69,6 +71,7 @@ class EngineChannel : public EngineObject {
     const QString m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
+    ControlPushButton* m_pBypass;
     ControlObject* m_pOrientation;
     ControlPushButton* m_pOrientationLeft;
     ControlPushButton* m_pOrientationRight;

@@ -377,6 +377,7 @@ void EngineMaster::process(const int iBufferSize) {
                               m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
                               iBufferSize);
 
+
 #ifdef __LADSPA__
     // LADPSA master effects
     m_pLadspa->process(m_pMaster, m_pMaster, iBufferSize);
