@@ -518,7 +518,7 @@ void SoundManager::requestBuffer(
         // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
         // output then we need to downsample.
         if (iChannelCount == 1) {
-            for (int i = 0; i < iFramesPerBuffer; ++i) {
+            for (unsigned int i = 0; i < iFramesPerBuffer; ++i) {
                 m_pDownmixBuffer[i] = (pAudioOutputBuffer[i*2] +
                                        pAudioOutputBuffer[i*2 + 1]) / 2.0f;
             }
