@@ -163,7 +163,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
     case MICROPHONE:
         return QString::fromAscii("Microphone");
     case AUX:
-        return QString::fromAscii("AUX");
+        return QString::fromAscii("Auxilliary");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
 }
@@ -202,7 +202,7 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case MICROPHONE:
         return QObject::tr("Microphone");
     case AUX:
-        return QString("%1 %2").arg(QObject::tr("AUX"),
+        return QString("%1 %2").arg(QObject::tr("Auxilliary"),
                                     QString::number(index + 1));
     }
     return QObject::tr("Unknown path type %1").arg(type);
