@@ -47,4 +47,4 @@ class EngineAux : public EngineChannel, public AudioDestination {
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 };
 
-#endif // ENGINEAUX
+#endif // ENGINEAUX_H
