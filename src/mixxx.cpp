@@ -131,7 +131,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
-    // TODO(rryan): Fold microphone and passthrough creation into a manager
+    // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
@@ -140,17 +140,17 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
-    EngineAux* pPassthrough1 = new EngineAux("[Passthrough1]");
+    EngineAux* pAux1 = new EngineAux("[Aux1]");
     // What should channelbase be?
-    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 0);
-    m_pEngine->addChannel(pPassthrough1);
-    m_pSoundManager->registerInput(passthroughInput1, pPassthrough1);
+    AudioInput auxInput1 = AudioInput(AudioPath::AUX, 0, 0, 0);
+    m_pEngine->addChannel(pAux1);
+    m_pSoundManager->registerInput(auxInput1, pAux1);
 
-    EngineAux* pPassthrough2 = new EngineAux("[Passthrough2]");
+    EngineAux* pAux2 = new EngineAux("[Aux2]");
     // What should channelbase be?
-    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 1);
-    m_pEngine->addChannel(pPassthrough2);
-    m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
+    AudioInput auxInput2 = AudioInput(AudioPath::AUX, 0, 0, 1);
+    m_pEngine->addChannel(pAux2);
+    m_pSoundManager->registerInput(auxInput2, pAux2);
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track

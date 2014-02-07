@@ -162,7 +162,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Vinyl Control");
     case MICROPHONE:
         return QString::fromAscii("Microphone");
-    case EXTPASSTHROUGH:
+    case AUX:
         return QString::fromAscii("Passthrough");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
@@ -201,7 +201,7 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
                                     QString::number(index + 1));
     case MICROPHONE:
         return QObject::tr("Microphone");
-    case EXTPASSTHROUGH:
+    case AUX:
         return QString("%1 %2").arg(QObject::tr("Passthrough"),
                                     QString::number(index + 1));
     }
@@ -226,8 +226,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::VINYLCONTROL;
     } else if (string == AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
         return AudioPath::MICROPHONE;
-    } else if (string == AudioPath::getStringFromType(AudioPath::EXTPASSTHROUGH).toLower()) {
-        return AudioPath::EXTPASSTHROUGH;
+    } else if (string == AudioPath::getStringFromType(AudioPath::AUX).toLower()) {
+        return AudioPath::AUX;
     } else {
         return AudioPath::INVALID;
     }
@@ -242,7 +242,7 @@ bool AudioPath::isIndexed(AudioPathType type) {
     case BUS:
     case DECK:
     case VINYLCONTROL:
-    case EXTPASSTHROUGH:
+    case AUX:
         return true;
     case MICROPHONE:
     default:
@@ -421,7 +421,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
 #endif
-    types.append(EXTPASSTHROUGH);
+    types.append(AUX);
     types.append(MICROPHONE);
     return types;
 }

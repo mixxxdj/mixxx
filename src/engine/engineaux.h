@@ -30,11 +30,11 @@ class EngineAux : public EngineChannel, public AudioDestination {
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int nFrames);
 
-    // Called by SoundManager whenever the passthrough input is connected to a
+    // Called by SoundManager whenever the aux input is connected to a
     // soundcard input.
     virtual void onInputConnected(AudioInput input);
 
-    // Called by SoundManager whenever the passthrough input is disconnected from
+    // Called by SoundManager whenever the aux input is disconnected from
     // a soundcard input.
     virtual void onInputDisconnected(AudioInput input);
 

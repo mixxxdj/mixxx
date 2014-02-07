@@ -40,7 +40,7 @@ bool EngineAux::isActive() const {
 }
 
 void EngineAux::onInputConnected(AudioInput input) {
-    if (input.getType() != AudioPath::EXTPASSTHROUGH) {
+    if (input.getType() != AudioPath::AUX) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
         return;
@@ -50,7 +50,7 @@ void EngineAux::onInputConnected(AudioInput input) {
 }
 
 void EngineAux::onInputDisconnected(AudioInput input) {
-    if (input.getType() != AudioPath::EXTPASSTHROUGH) {
+    if (input.getType() != AudioPath::AUX) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
         return;
@@ -65,7 +65,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
         return;
     }
 
-    if (input.getType() != AudioPath::EXTPASSTHROUGH) {
+    if (input.getType() != AudioPath::AUX) {
         // This is an error!
         qDebug() << "WARNING: EngineAux receieved an AudioInput for a non-passthrough type!";
         return;
