@@ -4,7 +4,7 @@
 
 #include <QtDebug>
 
-#include "engine/enginepassthrough.h"
+#include "engine/engineaux.h"
 
 #include "configobject.h"
 #include "sampleutil.h"
