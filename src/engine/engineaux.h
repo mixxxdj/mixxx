@@ -2,8 +2,8 @@
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // unapologetically copied from enginemicrophone.h from RJ
 
-#ifndef ENGINEPASSTHROUGH_H
-#define ENGINEPASSTHROUGH_H
+#ifndef ENGINEAUX_H
+#define ENGINEAUX_H
 
 #include "util/circularbuffer.h"
 #include "controlpushbutton.h"
@@ -14,11 +14,11 @@
 
 // EnginePassthrough is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager
-class EnginePassthrough : public EngineChannel, public AudioDestination {
+class EngineAux : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EnginePassthrough(const char* pGroup);
-    virtual ~EnginePassthrough();
+    EngineAux(const char* pGroup);
+    virtual ~EngineAux();
 
     bool isActive() const;
 
@@ -47,4 +47,4 @@ class EnginePassthrough : public EngineChannel, public AudioDestination {
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 };
 
-#endif /* ENGINEPASSTHROUGH_H */
+#endif // ENGINEAUX
