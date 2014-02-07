@@ -1,4 +1,4 @@
-// enginepassthrough.h
+// engineaux.h
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // unapologetically copied from enginemicrophone.h from RJ
 
@@ -12,7 +12,7 @@
 #include "engine/enginevumeter.h"
 #include "soundmanagerutil.h"
 
-// EnginePassthrough is an EngineChannel that implements a mixing source whose
+// EngineAux is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager
 class EngineAux : public EngineChannel, public AudioDestination {
     Q_OBJECT

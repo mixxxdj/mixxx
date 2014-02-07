@@ -1,4 +1,4 @@
-// enginepassthrough.cpp
+// engineaux.cpp
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // shameless stolen from enginemicrophone.cpp (from RJ)
 
@@ -28,7 +28,7 @@ EngineAux::EngineAux(const char* pGroup)
 }
 
 EngineAux::~EngineAux() {
-    qDebug() << "~EnginePassthrough()";
+    qDebug() << "~EngineAux()";
     SampleUtil::free(m_pConversionBuffer);
     delete m_pEnabled;
     delete m_pPassing;
@@ -42,7 +42,7 @@ bool EngineAux::isActive() const {
 void EngineAux::onInputConnected(AudioInput input) {
     if (input.getType() != AudioPath::EXTPASSTHROUGH) {
         // This is an error!
-        qDebug() << "WARNING: EnginePassthrough connected to AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
         return;
     }
     m_sampleBuffer.clear();
@@ -52,7 +52,7 @@ void EngineAux::onInputConnected(AudioInput input) {
 void EngineAux::onInputDisconnected(AudioInput input) {
     if (input.getType() != AudioPath::EXTPASSTHROUGH) {
         // This is an error!
-        qDebug() << "WARNING: EnginePassthrough connected to AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
         return;
     }
     m_sampleBuffer.clear();
@@ -67,7 +67,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 
     if (input.getType() != AudioPath::EXTPASSTHROUGH) {
         // This is an error!
-        qDebug() << "WARNING: EnginePassthrough receieved an AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EngineAux receieved an AudioInput for a non-passthrough type!";
         return;
     }
 
@@ -76,7 +76,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
     // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
     if (nFrames > MAX_BUFFER_LEN / iChannels) {
-        qDebug() << "WARNING: Dropping passthrough samples because the input buffer is too large.";
+        qDebug() << "WARNING: Dropping aux samples because the input buffer is too large.";
         nFrames = MAX_BUFFER_LEN / iChannels;
     }
 
@@ -96,7 +96,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
         pWriteBuffer = pBuffer;
         samplesToWrite = nFrames * iChannels;
     } else {
-        qWarning() << "EnginePassthrough got greater than stereo input. Not currently handled.";
+        qWarning() << "EngineAux got greater than stereo input. Not currently handled.";
     }
 
 
@@ -109,7 +109,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
             // Buffer overflow. We aren't processing samples fast enough. This
             // shouldn't happen since the deck spits out samples just as fast as they
             // come in, right?
-            qWarning() << "ERROR: Buffer overflow in EnginePassthrough. Dropping samples on the floor.";
+            qWarning() << "ERROR: Buffer overflow in EngineAux. Dropping samples on the floor.";
         }
     }
 }
@@ -125,7 +125,7 @@ void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferS
             // Buffer underflow. There aren't getting samples fast enough. This
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
-            qWarning() << "ERROR: Buffer underflow in EnginePassthrough. Playing silence.";
+            qWarning() << "ERROR: Buffer underflow in EngineAux. Playing silence.";
             SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
         }
     } else {
