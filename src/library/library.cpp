@@ -230,7 +230,9 @@ void Library::onSkinLoadFinished() {
 void Library::slotRequestAddDir(QString dir) {
     if (!m_pTrackCollection->getDirectoryDAO().addDirectory(dir)) {
         QMessageBox::information(0, tr("Add Directory to Library"),
-                tr("This directory is already in your library."));
+                tr("Could not add the directory to your library. Either this "
+                    "directory is already in your library or you are currently "
+                    "rescanning your library."));
     }
     // set at least on directory in the config file so that it will be possible
     // to downgrade from 1.12
