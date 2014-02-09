@@ -114,6 +114,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
+    // Channels set with the bypass flag should not be mixed with the headphone
+    // signal.
+    m_headphoneGain.setBypassGain(0.0);
+
     // Master / Headphone split-out mode (for devices with only one output).
     m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -126,7 +130,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Set compressor threshold to .5 of full volume, strength .75, and .1
     // second attack and 1 sec decay.
     m_pSideChainCompressor->setParameters(
-            0.5, 0.75,
+            0.1, 0.90,
             m_pMasterSampleRate->get() / 2 * .1,
             m_pMasterSampleRate->get() / 2);
 
@@ -348,7 +352,9 @@ void EngineMaster::process(const int iBufferSize) {
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
     master_gain *= m_pSideChainCompressor->calculateCompressedGain(iBufferSize / 2);
-    m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain);
+    // Channels with the bypass flag should be mixed with the master signal at
+    // full volume.
+    m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain, 1.0);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
     // master volume, the channel volume, and the orientation gain.

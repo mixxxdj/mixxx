@@ -116,23 +116,28 @@ class EngineMaster : public QObject, public AudioSource {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
             // If the channel is set to bypass, ignore gain setting.
-            return pChannelInfo->m_pChannel->isBypass() ? 1.0 : m_dGain;
+            return pChannelInfo->m_pChannel->isBypass() ? m_dBypassGain : m_dGain;
         }
         inline void setGain(double dGain) {
             m_dGain = dGain;
         }
+        inline void setBypassGain(double dGain) {
+            m_dBypassGain = dGain;
+        }
       private:
         double m_dGain;
+        double m_dBypassGain;
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
-                : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0) { }
+                : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0),
+                  m_dBypassGain(1.0) { }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
             // If the channel is set to bypass, ignore gain setting.
             if (pChannelInfo->m_pChannel->isBypass()) {
-                return 1.0;
+                return m_dBypassGain;
             }
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
@@ -141,15 +146,17 @@ class EngineMaster : public QObject, public AudioSource {
             return m_dVolume * channelVolume * orientationGain;
         }
 
-        inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
+        inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain,
+                             double bypassGain) {
             m_dVolume = dVolume;
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
+            m_dBypassGain = bypassGain;
         }
 
       private:
-        double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
+        double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain, m_dBypassGain;
     };
 
   public slots:
