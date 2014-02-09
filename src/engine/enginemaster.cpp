@@ -133,6 +133,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
             0.1, 0.90,
             m_pMasterSampleRate->get() / 2 * .1,
             m_pMasterSampleRate->get() / 2);
+    m_pMicDucking = new ControlPushButton(ConfigKey(group, "micDucking"));
+    m_pMicDucking->setButtonMode(ControlPushButton::TOGGLE);
+
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -167,6 +170,8 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadMix;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
+    delete m_pMicDucking;
+    delete m_pSideChainCompressor;
     delete m_pClipping;
     delete m_pVumeter;
     delete m_pHeadClipping;
@@ -287,7 +292,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
-        if (pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
+        if (m_pMicDucking->get() && pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
             m_pSideChainCompressor->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
 
@@ -351,7 +356,9 @@ void EngineMaster::process(const int iBufferSize) {
 
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
-    master_gain *= m_pSideChainCompressor->calculateCompressedGain(iBufferSize / 2);
+    if (m_pMicDucking->get()) {
+        master_gain *= m_pSideChainCompressor->calculateCompressedGain(iBufferSize / 2);
+    }
     // Channels with the bypass flag should be mixed with the master signal at
     // full volume.
     m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain, 1.0);
