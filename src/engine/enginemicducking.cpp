@@ -1,18 +1,23 @@
 #include "controlobjectslave.h"
 #include "engine/enginemicducking.h"
 
+#define MIC_DUCK_THRESHOLD 0.1
+
 EngineMicDucking::EngineMicDucking(
         ConfigObject<ConfigValue>* pConfig, const char* group)
     : EngineSideChainCompressor(pConfig, group),
       m_pConfig(pConfig),
       m_group(group) {
+    m_pMasterSampleRate = new ControlObjectSlave(m_group, "samplerate");
+    m_pMasterSampleRate->connectValueChanged(this, SLOT(slotSampleRateChanged(double)));
+
     // Set compressor threshold to .5 of full volume, strength .75, and .1
     // second attack and 1 sec decay.
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
     m_pDuckStrength->set(
             m_pConfig->getValueString(ConfigKey(m_group, "duckStrength"), "90").toDouble() / 100);
-    m_pDuckStrength->connect(this, SIGNAL(valueChanged(double)),
-                             SLOT(slotDuckStrengthChanged(double)));
+    connect(m_pDuckStrength, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDuckStrengthChanged(double)));
     setParameters(
             MIC_DUCK_THRESHOLD,
             m_pDuckStrength->get(),
@@ -25,12 +30,8 @@ EngineMicDucking::EngineMicDucking(
     // Default to Auto ducking.
     m_pMicDucking->set(
             m_pConfig->getValueString(ConfigKey(m_group, "duckMode"), "1").toDouble());
-    m_pMicDucking->connect(this, SIGNAL(valueChanged(double)),
-                           SLOT(slotDuckModeChanged(double)));
-
-    m_pMasterSampleRate = new ControlObjectSlave(m_group, "samplerate");
-    m_pMasterSampleRate->connectValueChanged(this, SLOT(slotSampleRateChanged(double)));
-
+    connect(m_pMicDucking, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDuckModeChanged(double)));
 }
 
 EngineMicDucking::~EngineMicDucking() {
@@ -56,4 +57,18 @@ void EngineMicDucking::slotDuckStrengthChanged(double strength) {
 
 void EngineMicDucking::slotDuckModeChanged(double mode) {
    m_pConfig->set(ConfigKey(m_group, "duckMode"), ConfigValue(mode));
+}
+
+CSAMPLE EngineMicDucking::getGain(int numFrames) {
+    // Apply microphone ducking.
+    switch (getMode()) {
+      case EngineMicDucking::OFF:
+        return 1.0;
+      case EngineMicDucking::AUTO:
+        return calculateCompressedGain(numFrames);
+      case EngineMicDucking::MANUAL:
+        return m_pDuckStrength->get();
+    }
+    qWarning() << "Invalid ducking mode, returning 1.0";
+    return 1.0;
 }

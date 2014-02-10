@@ -8,7 +8,6 @@ class ControlObjectSlave;
 class EngineMicDucking : public QObject, public EngineSideChainCompressor {
   Q_OBJECT
   public:
-    #define MIC_DUCK_THRESHOLD 0.1
 
     enum MicDuckSetting {
         OFF = 0,
@@ -19,8 +18,9 @@ class EngineMicDucking : public QObject, public EngineSideChainCompressor {
     EngineMicDucking(ConfigObject<ConfigValue>* pConfig, const char* group);
     virtual ~EngineMicDucking();
 
-    bool getMode() const { return static_cast<int>(m_pMicDucking->get()); }
-    CSAMPLE getMaxStrength() const { return m_pDuckStrength->get(); }
+    MicDuckSetting getMode() const { return static_cast<MicDuckSetting>(m_pMicDucking->get()); }
+
+    CSAMPLE getGain(int numFrames);
 
   public slots:
     void slotSampleRateChanged(double);

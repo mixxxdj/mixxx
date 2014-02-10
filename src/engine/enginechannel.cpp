@@ -29,6 +29,7 @@ EngineChannel::EngineChannel(const char* pGroup,
     m_pMaster->setButtonMode(ControlPushButton::TOGGLE);
     m_pBypass = new ControlPushButton(ConfigKey(m_group, "bypass"));
     m_pBypass->setButtonMode(ControlPushButton::TOGGLE);
+    setBypass(false);
     m_pOrientation = new ControlObject(ConfigKey(m_group, "orientation"));
     m_pOrientation->set(defaultOrientation);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(m_group, "orientation_left"));

@@ -108,10 +108,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
-    // Channels set with the bypass flag should not be mixed with the headphone
-    // signal.
-    m_headphoneGain.setBypassGain(0.0);
-
     // Master / Headphone split-out mode (for devices with only one output).
     m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -276,7 +272,8 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
-        if (m_pMicDucking->getMode() != 0 && pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
+        if (m_pMicDucking->getMode() != EngineMicDucking::OFF &&
+                pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
             m_pMicDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
 
@@ -341,18 +338,10 @@ void EngineMaster::process(const int iBufferSize) {
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
 
-    // Apply microphone ducking.
-    switch (m_pMicDucking->getMode()) {
-      case EngineMicDucking::AUTO:
-        master_gain *= m_pMicDucking->calculateCompressedGain(iBufferSize / 2);
-        break;
-      case EngineMicDucking::MANUAL:
-        master_gain *= m_pMicDucking->getMaxStrength();
-    }
-
     // Channels with the bypass flag should be mixed with the master signal at
-    // full volume.
-    m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain, 1.0);
+    // full master volume.  All other channels should be adjusted by ducking gain.
+    m_masterGain.setGains(master_gain * m_pMicDucking->getGain(iBufferSize / 2),
+                          c1_gain, 1.0, c2_gain, master_gain);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
     // master volume, the channel volume, and the orientation gain.
