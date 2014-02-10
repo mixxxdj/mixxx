@@ -104,17 +104,17 @@ void SoundSourceProxy::loadPlugins() {
     // ../lib/mixxx/plugins/soundsource.
     QDir libPluginDir(UNIX_LIB_PATH);
     if (libPluginDir.cd("plugins") && libPluginDir.cd("soundsource")) {
-	pluginDirs << libPluginDir;
+        pluginDirs << libPluginDir;
     }
 
     QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
     if (dataPluginDir.cd("plugins") && dataPluginDir.cd("soundsource")) {
-	pluginDirs << dataPluginDir;
+        pluginDirs << dataPluginDir;
     }
 #elif __WINDOWS__
     QDir appPluginDir(QCoreApplication::applicationDirPath());
     if (appPluginDir.cd("plugins") && appPluginDir.cd("soundsource")) {
-	pluginDirs << appPluginDir;
+        pluginDirs << appPluginDir;
     }
 #elif __APPLE__
     // blah/Mixxx.app/Contents/MacOS/../PlugIns/
@@ -123,12 +123,12 @@ void SoundSourceProxy::loadPlugins() {
     //blah/Mixxx.app/Contents/PlugIns/soundsource
     QDir bundlePluginDir(QCoreApplication::applicationDirPath());
     if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
-	pluginDirs << bundlePluginDir;
+        pluginDirs << bundlePluginDir;
     }
 
     QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
     if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("soundsource")) {
-	pluginDirs << dataPluginDir;
+        pluginDirs << dataPluginDir;
     }
 
     nameFilters << "libsoundsource*";
