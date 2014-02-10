@@ -104,7 +104,7 @@ void SoundSourceProxy::loadPlugins() {
     // ../lib/mixxx/plugins/soundsource.
     QDir libPluginDir(UNIX_LIB_PATH);
     if (libPluginDir.cd("plugins") && libPluginDir.cd("soundsource")) {
-	pluginDirs << libPluginDir
+	pluginDirs << libPluginDir;
     }
 
     QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
