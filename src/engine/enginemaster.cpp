@@ -30,7 +30,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
-#include "engine/enginesidechaincompressor.h"
+#include "engine/enginemicducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
@@ -49,9 +49,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
                            bool bEnableSidechain,
                            bool bRampingGain)
-        : m_pConfig(_config),
-          m_sGroup(group),
-          m_bRampingGain(bRampingGain),
+        : m_bRampingGain(bRampingGain),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0),
           m_bMasterOutputConnected(false),
@@ -63,29 +61,23 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pWorkerScheduler->start();
 
     // Master sample rate
-    m_pMasterSampleRate = new ControlObject(ConfigKey(m_sGroup, "samplerate"), true, true);
+    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
     m_pMasterSampleRate->set(44100.);
-    m_pMasterSampleRate->connect(
-            m_pMasterSampleRate, SIGNAL(valueChanged(double)),
-            SLOT(slotSampleRateChanged(double)));
-    m_pMasterSampleRate->connect(
-            m_pMasterSampleRate, SIGNAL(valueChangedFromEngine(double)),
-            SLOT(slotSampleRateChanged(double)));
 
     // Latency control
-    m_pMasterLatency = new ControlObject(ConfigKey(m_sGroup, "latency"), true, true);
-    m_pMasterAudioBufferSize = new ControlObject(ConfigKey(m_sGroup, "audio_buffer_size"));
-    m_pMasterUnderflowCount = new ControlObject(ConfigKey(m_sGroup, "underflow_count"), true, true);
+    m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"), true, true);
+    m_pMasterAudioBufferSize = new ControlObject(ConfigKey(group, "audio_buffer_size"));
+    m_pMasterUnderflowCount = new ControlObject(ConfigKey(group, "underflow_count"), true, true);
 
     // Master rate
-    m_pMasterRate = new ControlPotmeter(ConfigKey(m_sGroup, "rate"), -1.0, 1.0);
+    m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
 
     // Master sync controller
-    m_pMasterSync = new EngineSync(m_pConfig);
+    m_pMasterSync = new EngineSync(_config);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
-    double default_bpm = m_pConfig->getValueString(ConfigKey("[InternalClock]", "bpm"),
-                                                   "124.0").toDouble();
+    double default_bpm = _config->getValueString(ConfigKey("[InternalClock]", "bpm"),
+                                                 "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
 #ifdef __LADSPA__
@@ -94,25 +86,25 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
 #endif
 
     // Crossfader
-    m_pCrossfader = new ControlPotmeter(ConfigKey(m_sGroup, "crossfader"), -1., 1.);
+    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
 
     // Balance
-    m_pBalance = new ControlPotmeter(ConfigKey(m_sGroup, "balance"), -1., 1.);
+    m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
     // Master volume
-    m_pMasterVolume = new ControlLogpotmeter(ConfigKey(m_sGroup, "volume"), 5.);
+    m_pMasterVolume = new ControlLogpotmeter(ConfigKey(group, "volume"), 5.);
 
     // Clipping
-    m_pClipping = new EngineClipping(m_sGroup);
+    m_pClipping = new EngineClipping(group);
 
     // VU meter:
-    m_pVumeter = new EngineVuMeter(m_sGroup);
+    m_pVumeter = new EngineVuMeter(group);
 
     // Headphone volume
-    m_pHeadVolume = new ControlLogpotmeter(ConfigKey(m_sGroup, "headVolume"), 5.);
+    m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
 
     // Headphone mix (left/right)
-    m_pHeadMix = new ControlPotmeter(ConfigKey(m_sGroup, "headMix"),-1.,1.);
+    m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
@@ -121,34 +113,14 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_headphoneGain.setBypassGain(0.0);
 
     // Master / Headphone split-out mode (for devices with only one output).
-    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(m_sGroup, "headSplit"));
+    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pHeadSplitEnabled->set(0.0);
 
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
 
-    m_pSideChainCompressor = new EngineSideChainCompressor(m_pConfig, m_sGroup);
-    // Set compressor threshold to .5 of full volume, strength .75, and .1
-    // second attack and 1 sec decay.
-    m_pDuckStrength = new ControlPotmeter(ConfigKey(m_sGroup, "duckStrength"), 0.0, 1.0);
-    m_pDuckStrength->set(
-            m_pConfig->getValueString(ConfigKey(m_sGroup, "duckStrength"), "90").toDouble() / 100);
-    m_pDuckStrength->connect(this, SIGNAL(valueChanged(double)),
-                             SLOT(slotDuckStrengthChanged(double)));
-    m_pSideChainCompressor->setParameters(
-            MIC_DUCK_THRESHOLD,
-            m_pDuckStrength->get(),
-            m_pMasterSampleRate->get() / 2 * .1,
-            m_pMasterSampleRate->get() / 2);
-    m_pMicDucking = new ControlPushButton(ConfigKey(m_sGroup, "micDucking"));
-    m_pMicDucking->setButtonMode(ControlPushButton::TOGGLE);
-    m_pMicDucking->setStates(3);
-    // Default to Auto ducking.
-    m_pMicDucking->set(
-            m_pConfig->getValueString(ConfigKey(m_sGroup, "duckMode"), "1").toDouble());
-    m_pMicDucking->connect(this, SIGNAL(valueChanged(double)),
-                           SLOT(slotDuckModeChanged(double)));
+    m_pMicDucking = new EngineMicDucking(_config, group);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -163,7 +135,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     }
 
     // Starts a thread for recording and shoutcast
-    m_pSideChain = bEnableSidechain ? new EngineSideChain(m_pConfig) : NULL;
+    m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPotmeter(
@@ -183,11 +155,7 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadMix;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
-    m_pConfig->set(ConfigKey(m_sGroup, "duckStrength"), ConfigValue(m_pDuckStrength->get() * 100));
-    delete m_pDuckStrength;
-    m_pConfig->set(ConfigKey(m_sGroup, "duckMode"), ConfigValue(m_pMicDucking->get()));
     delete m_pMicDucking;
-    delete m_pSideChainCompressor;
     delete m_pClipping;
     delete m_pVumeter;
     delete m_pHeadClipping;
@@ -308,8 +276,8 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
-        if (m_pMicDucking->get() == 1 && pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
-            m_pSideChainCompressor->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+        if (m_pMicDucking->getMode() != 0 && pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
+            m_pMicDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
 
         // Process the buffer if necessary
@@ -372,12 +340,16 @@ void EngineMaster::process(const int iBufferSize) {
 
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
-    double duck_mode = m_pMicDucking->get();
-    if (duck_mode == 1.0) {
-        master_gain *= m_pSideChainCompressor->calculateCompressedGain(iBufferSize / 2);
-    } else if (duck_mode == 2.0) {
-        master_gain *= m_pDuckStrength->get();
+
+    // Apply microphone ducking.
+    switch (m_pMicDucking->getMode()) {
+      case EngineMicDucking::AUTO:
+        master_gain *= m_pMicDucking->calculateCompressedGain(iBufferSize / 2);
+        break;
+      case EngineMicDucking::MANUAL:
+        master_gain *= m_pMicDucking->getMaxStrength();
     }
+
     // Channels with the bypass flag should be mixed with the master signal at
     // full volume.
     m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain, 1.0);
@@ -408,7 +380,6 @@ void EngineMaster::process(const int iBufferSize) {
                               m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
                               m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
                               iBufferSize);
-
 
 #ifdef __LADSPA__
     // LADPSA master effects
@@ -590,21 +561,4 @@ void EngineMaster::onOutputDisconnected(AudioOutput output) {
         default:
             break;
     }
-}
-
-void EngineMaster::slotSampleRateChanged(double samplerate) {
-    m_pSideChainCompressor->setParameters(
-            MIC_DUCK_THRESHOLD, m_pDuckStrength->get(),
-            samplerate / 2 * .1, samplerate / 2);
-}
-
-void EngineMaster::slotDuckStrengthChanged(double strength) {
-    m_pSideChainCompressor->setParameters(
-            MIC_DUCK_THRESHOLD, strength,
-            m_pMasterSampleRate->get() / 2 * .1, m_pMasterSampleRate->get() / 2);
-    m_pConfig->set(ConfigKey(m_sGroup, "duckStrength"), ConfigValue(strength * 100));
-}
-
-void EngineMaster::slotDuckModeChanged(double mode) {
-   m_pConfig->set(ConfigKey(m_sGroup, "duckMode"), ConfigValue(mode));
 }

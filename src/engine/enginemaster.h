@@ -39,23 +39,14 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
-class EngineSideChainCompressor;
 class SyncWorker;
 class GuiTick;
 class EngineSync;
-
-#define MIC_DUCK_THRESHOLD 0.1
-
+class EngineMicDucking;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
-    enum MicDuckSetting {
-        OFF = 0,
-        AUTO,
-        MANUAL,
-    };
-
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
                  bool bEnableSidechain,
@@ -168,11 +159,6 @@ class EngineMaster : public QObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain, m_dBypassGain;
     };
 
-  public slots:
-    void slotSampleRateChanged(double);
-    void slotDuckStrengthChanged(double);
-    void slotDuckModeChanged(double);
-
   private:
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
@@ -185,8 +171,6 @@ class EngineMaster : public QObject, public AudioSource {
                          unsigned int* headphoneOutput,
                          int iBufferSize);
 
-    ConfigObject<ConfigValue>* m_pConfig;
-    const char* m_sGroup;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelMasterGainCache;
@@ -208,7 +192,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlPotmeter* m_pMasterRate;
     EngineClipping* m_pClipping;
     EngineClipping* m_pHeadClipping;
-    EngineSideChainCompressor* m_pSideChainCompressor;
+    EngineMicDucking* m_pMicDucking;
 
 #ifdef __LADSPA__
     EngineLADSPA* m_pLadspa;
@@ -224,8 +208,6 @@ class EngineMaster : public QObject, public AudioSource {
     ControlPotmeter* m_pXFaderCalibration;
     ControlPotmeter* m_pXFaderReverse;
     ControlPushButton* m_pHeadSplitEnabled;
-    ControlPotmeter* m_pDuckStrength;
-    ControlPushButton* m_pMicDucking;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
