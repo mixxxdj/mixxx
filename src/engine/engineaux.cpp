@@ -117,22 +117,14 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferSize) {
     Q_UNUSED(pInput);
 
-    // If passthrough is enabled, then read into the output buffer. Otherwise,
-    // skip the appropriate number of samples to throw them away.
-    if (m_pPassing->get() > 0.0) {
-        int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
-        if (samplesRead < iBufferSize) {
-            // Buffer underflow. There aren't getting samples fast enough. This
-            // shouldn't happen since PortAudio should feed us samples just as fast
-            // as we consume them, right?
-            qWarning() << "ERROR: Buffer underflow in EngineAux. Playing silence.";
-            SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
-        }
-    } else {
-        SampleUtil::applyGain(pOut, 0.0, iBufferSize);
-        m_sampleBuffer.skip(iBufferSize);
+    int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
+    if (samplesRead < iBufferSize) {
+        // Buffer underflow. There aren't getting samples fast enough. This
+        // shouldn't happen since PortAudio should feed us samples just as fast
+        // as we consume them, right?
+        qWarning() << "ERROR: Buffer underflow in EngineAux. Playing silence.";
+        SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
     }
-
     // Apply clipping
     m_clipping.process(pOut, pOut, iBufferSize);
     // Update VU meter
