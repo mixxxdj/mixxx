@@ -16,6 +16,7 @@
 #include "playerinfo.h"
 #include "track/keyutils.h"
 #include "util/time.h"
+#include "util/dnd.h"
 
 const bool sDebug = false;
 
@@ -852,7 +853,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
             continue;
         }
         rows.insert(index.row());
-        QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+        QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
         if (!url.isValid()) {
             qDebug() << this << "ERROR: invalid url" << url;
             continue;

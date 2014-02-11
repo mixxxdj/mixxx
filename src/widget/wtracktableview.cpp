@@ -808,31 +808,16 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         return;
     // qDebug() << "MouseMoveEvent";
     // Iterate over selected rows and append each item's location url to a list.
-    QList<QUrl> locationUrls;
+    QList<QString> locations;
     QModelIndexList indices = selectionModel()->selectedRows();
+
     foreach (QModelIndex index, indices) {
         if (!index.isValid()) {
             continue;
         }
-        QUrl url = QUrl::fromLocalFile(trackModel->getTrackLocation(index));
-        if (!url.isValid()) {
-            qDebug() << this << "ERROR: invalid url" << url;
-            continue;
-        }
-        locationUrls.append(url);
+        locations.append(trackModel->getTrackLocation(index));
     }
-
-    if (locationUrls.empty()) {
-        return;
-    }
-
-    QMimeData* mimeData = new QMimeData();
-    mimeData->setUrls(locationUrls);
-
-    QDrag* drag = new QDrag(this);
-    drag->setMimeData(mimeData);
-    drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
-    drag->exec(Qt::CopyAction);
+    DragAndDropHelper::dragTrackLocations(locations, this);
 }
 
 // Drag enter event, happens when a dragged item hovers over the track table view

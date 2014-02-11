@@ -12,6 +12,7 @@
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
+#include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
@@ -231,13 +232,12 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+                QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
                 if (!url.isValid()) {
-                    qDebug() << "ERROR invalid url\n";
-                } else {
-                    urls.append(url);
-                    qDebug() << "Appending URL:" << url;
+                    qDebug() << "ERROR invalid url" << url;
+                    continue;
                 }
+                urls.append(url);
             }
         }
     }

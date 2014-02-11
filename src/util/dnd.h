@@ -2,6 +2,8 @@
 #define DND_H
 
 #include <QUrl>
+#include <QDrag>
+#include <QMimeData>
 #include <QList>
 #include <QString>
 #include <QFileInfo>
@@ -67,7 +69,42 @@ class DragAndDropHelper {
         return fileLocations;
     }
 
+    static QDrag* dragTrack(TrackPointer pTrack, QWidget* pDragSource) {
+        QList<QUrl> locationUrls;
+        locationUrls.append(urlFromLocation(pTrack->getLocation()));
+        return dragUrls(locationUrls, pDragSource);
+    }
+
+    static QDrag* dragTrackLocations(const QList<QString>& locations,
+                                     QWidget* pDragSource) {
+        QList<QUrl> locationUrls;
+        foreach (QString location, locations) {
+            locationUrls.append(urlFromLocation(location));
+        }
+        return dragUrls(locationUrls, pDragSource);
+    }
+
+    static QUrl urlFromLocation(const QString& trackLocation) {
+        return QUrl::fromLocalFile(trackLocation);
+    }
+
   private:
+    static QDrag* dragUrls(const QList<QUrl>& locationUrls,
+                           QWidget* pDragSource) {
+        if (locationUrls.isEmpty()) {
+            return NULL;
+        }
+
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setUrls(locationUrls);
+
+        QDrag* drag = new QDrag(pDragSource);
+        drag->setMimeData(mimeData);
+        drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
+        drag->exec(Qt::CopyAction);
+
+        return drag;
+    }
 
     static bool addFileToList(const QString& file, QList<QFileInfo>* files) {
         QFileInfo fileInfo(file);
