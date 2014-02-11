@@ -17,7 +17,8 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(MAX_BUFFER_LEN+1) {
+          m_sampleBuffer(MAX_BUFFER_LEN+1),
+          m_wasActive(false) {
     m_pControlTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 
     // You normally don't expect to hear yourself in the headphones. Default PFL
@@ -35,8 +36,15 @@ EngineMicrophone::~EngineMicrophone() {
 }
 
 bool EngineMicrophone::isActive() {
-    bool enabled = m_pConfigured->get() > 0.0;
-    return enabled && !m_sampleBuffer.isEmpty();
+    bool configured = m_pConfigured->get() > 0.0;
+    bool samplesAvailable = !m_sampleBuffer.isEmpty();
+    if (configured && samplesAvailable) {
+        m_wasActive = true;
+    } else if (m_wasActive) {
+        m_vuMeter.reset();
+        m_wasActive = false;
+    }
+    return m_wasActive;
 }
 
 void EngineMicrophone::onInputConnected(AudioInput input) {
@@ -61,6 +69,10 @@ void EngineMicrophone::onInputDisconnected(AudioInput input) {
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                      unsigned int nFrames) {
+    if (m_pControlTalkover->get() == 0.0) {
+        return;
+    }
+
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type!";

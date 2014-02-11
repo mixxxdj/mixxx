@@ -47,6 +47,8 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     ControlPushButton* m_pControlTalkover;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
+
+    bool m_wasActive;
 };
 
 #endif /* ENGINEMICROPHONE_H */
