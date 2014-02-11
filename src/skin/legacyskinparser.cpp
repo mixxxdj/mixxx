@@ -782,19 +782,22 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
 QWidget* LegacySkinParser::parseText(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(m_pParent);
+    WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(p, SIGNAL(trackDropped(QString,QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -806,20 +809,22 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 
 QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
-
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackProperty* p = new WTrackProperty(m_pParent);
+    WTrackProperty* p = new WTrackProperty(pSafeChannelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(p, SIGNAL(trackDropped(QString,QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
