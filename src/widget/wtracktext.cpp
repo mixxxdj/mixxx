@@ -39,8 +39,8 @@ void WTrackText::updateLabel(TrackInfoObject*) {
     }
 }
 
-void WTrackText::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton && m_pCurrentTrack) {
+void WTrackText::mouseMoveEvent(QMouseEvent *event) {
+    if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
         QList<QUrl> locationUrls;
         locationUrls.append(QUrl::fromLocalFile(m_pCurrentTrack->getLocation()));
 

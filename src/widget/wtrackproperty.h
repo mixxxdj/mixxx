@@ -31,7 +31,7 @@ class WTrackProperty : public WLabel {
   private:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
