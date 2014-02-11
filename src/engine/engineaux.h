@@ -41,7 +41,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
   private:
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pEnabled;
+    ControlObject* m_pConfigured;
     ControlPushButton* m_pPassing;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;

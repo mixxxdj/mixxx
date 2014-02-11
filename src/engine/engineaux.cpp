@@ -13,7 +13,7 @@ EngineAux::EngineAux(const char* pGroup)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
-          m_pEnabled(new ControlObject(ConfigKey(pGroup, "passthrough_enabled"))),
+          m_pConfigured(new ControlObject(ConfigKey(pGroup, "configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
@@ -30,13 +30,13 @@ EngineAux::EngineAux(const char* pGroup)
 EngineAux::~EngineAux() {
     qDebug() << "~EngineAux()";
     SampleUtil::free(m_pConversionBuffer);
-    delete m_pEnabled;
+    delete m_pConfigured;
     delete m_pPassing;
 }
 
 bool EngineAux::isActive() const {
-    bool enabled = m_pEnabled->get() > 0.0;
-    return enabled && !m_sampleBuffer.isEmpty();
+    bool configured = m_pConfigured->get() > 0.0;
+    return configured && !m_sampleBuffer.isEmpty();
 }
 
 void EngineAux::onInputConnected(AudioInput input) {
@@ -46,7 +46,7 @@ void EngineAux::onInputConnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(1.0);
+    m_pConfigured->set(1.0);
 }
 
 void EngineAux::onInputDisconnected(AudioInput input) {
@@ -56,7 +56,7 @@ void EngineAux::onInputDisconnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(0.0);
+    m_pConfigured->set(0.0);
 }
 
 void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
@@ -67,7 +67,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 
     if (input.getType() != AudioPath::AUXILLIARY) {
         // This is an error!
-        qDebug() << "WARNING: EngineAux receieved an AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EngineAux received an AudioInput for a non-auxilliary type!";
         return;
     }
 
