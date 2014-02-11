@@ -111,7 +111,13 @@ void WVuMeter::onConnectedControlValueChanged(double dValue) {
     else if (idx < 0)
         idx = 0;
 
-    setPeak(idx);
+    if (dValue > 0.) {
+        setPeak(idx);
+    } else {
+        // A 0.0 value is very unlikely except when the VU Meter is disabled
+        m_iPeakPos = 0;
+    }
+
 
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
