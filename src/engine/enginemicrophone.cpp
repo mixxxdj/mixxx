@@ -12,7 +12,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
-          m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
+          m_pConfigured(new ControlObject(ConfigKey(pGroup, "configured"))),
           m_pControlTalkover(new ControlPushButton(ConfigKey(pGroup, "talkover"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
@@ -30,12 +30,12 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
 EngineMicrophone::~EngineMicrophone() {
     qDebug() << "~EngineMicrophone()";
     SampleUtil::free(m_pConversionBuffer);
-    delete m_pEnabled;
+    delete m_pConfigured;
     delete m_pControlTalkover;
 }
 
 bool EngineMicrophone::isActive() {
-    bool enabled = m_pEnabled->get() > 0.0;
+    bool enabled = m_pConfigured->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
 }
 
@@ -46,7 +46,7 @@ void EngineMicrophone::onInputConnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(1.0);
+    m_pConfigured->set(1.0);
 }
 
 void EngineMicrophone::onInputDisconnected(AudioInput input) {
@@ -56,7 +56,7 @@ void EngineMicrophone::onInputDisconnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(0.0);
+    m_pConfigured->set(0.0);
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
