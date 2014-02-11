@@ -19,7 +19,7 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     EngineMicrophone(const char* pGroup);
     virtual ~EngineMicrophone();
 
-    bool isActive() const;
+    bool isActive();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);

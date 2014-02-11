@@ -34,7 +34,7 @@ EngineMicrophone::~EngineMicrophone() {
     delete m_pControlTalkover;
 }
 
-bool EngineMicrophone::isActive() const {
+bool EngineMicrophone::isActive() {
     bool enabled = m_pEnabled->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
 }

@@ -18,7 +18,8 @@ EngineAux::EngineAux(const char* pGroup)
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(MAX_BUFFER_LEN+1) {
+          m_sampleBuffer(MAX_BUFFER_LEN+1),
+          m_wasActive(false) {
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 
     // Default passthrough to enabled on the master and disabled on PFL. User
@@ -34,9 +35,16 @@ EngineAux::~EngineAux() {
     delete m_pPassing;
 }
 
-bool EngineAux::isActive() const {
+bool EngineAux::isActive() {
     bool configured = m_pConfigured->get() > 0.0;
-    return configured && !m_sampleBuffer.isEmpty();
+    bool samplesAvailable = !m_sampleBuffer.isEmpty();
+    if (configured && samplesAvailable) {
+        m_wasActive = true;
+    } else if (m_wasActive) {
+        m_vuMeter.reset();
+        m_wasActive = false;
+    }
+    return m_wasActive;
 }
 
 void EngineAux::onInputConnected(AudioInput input) {
