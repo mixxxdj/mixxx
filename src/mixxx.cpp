@@ -140,15 +140,15 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
-    EngineAux* pAux1 = new EngineAux("[Aux1]");
+    EngineAux* pAux1 = new EngineAux("[Auxilliary1]");
     // What should channelbase be?
-    AudioInput auxInput1 = AudioInput(AudioPath::AUX, 0, 0, 0);
+    AudioInput auxInput1 = AudioInput(AudioPath::AUXILLIARY, 0, 0, 0);
     m_pEngine->addChannel(pAux1);
     m_pSoundManager->registerInput(auxInput1, pAux1);
 
-    EngineAux* pAux2 = new EngineAux("[Aux2]");
+    EngineAux* pAux2 = new EngineAux("[Auxilliary2]");
     // What should channelbase be?
-    AudioInput auxInput2 = AudioInput(AudioPath::AUX, 0, 0, 1);
+    AudioInput auxInput2 = AudioInput(AudioPath::AUXILLIARY, 0, 0, 1);
     m_pEngine->addChannel(pAux2);
     m_pSoundManager->registerInput(auxInput2, pAux2);
 
