@@ -20,7 +20,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     EngineAux(const char* pGroup);
     virtual ~EngineAux();
 
-    bool isActive() const;
+    bool isActive();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
@@ -41,10 +41,11 @@ class EngineAux : public EngineChannel, public AudioDestination {
   private:
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pEnabled;
+    ControlObject* m_pConfigured;
     ControlPushButton* m_pPassing;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
+    bool m_wasActive;
 };
 
 #endif // ENGINEAUX_H

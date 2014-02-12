@@ -50,7 +50,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
 
-    virtual bool isActive() const;
+    virtual bool isActive();
 
     // This is called by SoundManager whenever there are new samples from the
     // deck to be processed.

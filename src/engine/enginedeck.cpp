@@ -121,7 +121,7 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
     return m_pBuffer;
 }
 
-bool EngineDeck::isActive() const {
+bool EngineDeck::isActive() {
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
         return true;
     }
