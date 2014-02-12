@@ -44,8 +44,8 @@ class AudioTagger {
     QString m_bpm;
     QString m_tracknumber;
 
-    SecurityTokenPointer m_pSecurityToken;
     QFileInfo m_file;
+    SecurityTokenPointer m_pSecurityToken;
 
     /** adds or modifies the ID3v2 tag to include BPM and KEY information **/
     void addID3v2Tag(TagLib::ID3v2::Tag* id3v2);

@@ -27,7 +27,7 @@ MFile& MFile::operator=(const MFile& other) {
 
 bool MFile::canAccess() {
     QFileInfo info(m_file);
-    return Sandbox::canAccessPath(info.canonicalFilePath());
+    return Sandbox::canAccessFile(info);
 }
 
 MDir::MDir() {
@@ -56,5 +56,5 @@ MDir& MDir::operator=(const MDir& other) {
 }
 
 bool MDir::canAccess() {
-    return Sandbox::canAccessPath(m_dir.canonicalPath());
+    return Sandbox::canAccessFile(m_dir);
 }
