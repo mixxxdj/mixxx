@@ -47,7 +47,7 @@ bool EngineMicrophone::isActive() {
     return m_wasActive;
 }
 
-void EngineMicrophone::onInputConnected(AudioInput input) {
+void EngineMicrophone::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
@@ -57,7 +57,7 @@ void EngineMicrophone::onInputConnected(AudioInput input) {
     m_pConfigured->set(1.0);
 }
 
-void EngineMicrophone::onInputDisconnected(AudioInput input) {
+void EngineMicrophone::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";

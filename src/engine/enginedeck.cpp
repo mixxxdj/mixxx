@@ -183,7 +183,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
     }
 }
 
-void EngineDeck::onInputConnected(AudioInput input) {
+void EngineDeck::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
@@ -192,7 +192,7 @@ void EngineDeck::onInputConnected(AudioInput input) {
     m_sampleBuffer.clear();
 }
 
-void EngineDeck::onInputDisconnected(AudioInput input) {
+void EngineDeck::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";

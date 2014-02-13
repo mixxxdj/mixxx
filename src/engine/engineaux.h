@@ -32,11 +32,11 @@ class EngineAux : public EngineChannel, public AudioDestination {
 
     // Called by SoundManager whenever the aux input is connected to a
     // soundcard input.
-    virtual void onInputConnected(AudioInput input);
+    virtual void onInputConfigured(AudioInput input);
 
     // Called by SoundManager whenever the aux input is disconnected from
     // a soundcard input.
-    virtual void onInputDisconnected(AudioInput input);
+    virtual void onInputUnconfigured(AudioInput input);
 
   private:
     EngineClipping m_clipping;
