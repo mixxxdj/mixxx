@@ -69,8 +69,8 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
         // Pretend we have access.
         return true;
     }
-    QFileInfo info(canonicalPath);
 
+    QFileInfo info(canonicalPath);
     // We always want read/write access because we wouldn't want to have to
     // re-ask for access in the future if we need to write.
     if (canAccessFile(info)) {
@@ -85,10 +85,10 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
         NULL, title,
         QObject::tr(
             "Due to Mac Sandboxing, we need your permission to access this file:"
-            "\n %1\n"
+            "\n\n%1\n\n"
             "After clicking OK, you will see a file picker. "
-            "To give Mixxx permission, you must select '%2' to proceed."
-            "If you do not want to grant Mixxx access, click Cancel on the file dialog."
+            "To give Mixxx permission, you must select '%2' to proceed. "
+            "If you do not want to grant Mixxx access click Cancel on the file picker. "
             "We're sorry for this inconvenience.\n\n"
             "To abort this action, press Cancel on the file dialog.")
         .arg(canonicalPath, info.fileName()));
@@ -100,7 +100,6 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
             result = QFileDialog::getOpenFileName(NULL, title, canonicalPath);
         } else if (info.isDir()) {
             result = QFileDialog::getExistingDirectory(NULL, title, canonicalPath);
-
         }
 
         if (result.isNull()) {
