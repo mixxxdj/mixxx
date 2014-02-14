@@ -33,6 +33,7 @@
 #include "track/keys.h"
 #include "proto/keys.pb.h"
 #include "library/dao/cue.h"
+#include "util/sandbox.h"
 
 class QString;
 class QDomElement;
@@ -53,9 +54,13 @@ class TrackInfoObject : public QObject
     Q_OBJECT
 public:
     // Initialize a new track with the filename.
-    TrackInfoObject(const QString& file="", bool parseHeader=true);
+    TrackInfoObject(const QString& file="",
+                    SecurityTokenPointer pToken=SecurityTokenPointer(),
+                    bool parseHeader=true);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
+    TrackInfoObject(const QFileInfo& fileInfo,
+                    SecurityTokenPointer pToken=SecurityTokenPointer(),
+                    bool parseHeader=true);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
@@ -94,6 +99,10 @@ public:
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
+    QString getCanonicalLocation() const;
+    QFileInfo getFileInfo() const;
+    SecurityTokenPointer getSecurityToken();
+
     // Returns the absolute path to the directory containing the file
     QString getDirectory() const;
     // Returns the filename of the file.
@@ -306,6 +315,8 @@ public:
 
     // The file
     QFileInfo m_fileInfo;
+
+    SecurityTokenPointer m_pSecurityToken;
 
     // Metadata
     // Album

@@ -4,10 +4,6 @@
 #include <QFileInfo>
 
 #include "library/playlistfeature.h"
-#include "library/parser.h"
-#include "library/parserm3u.h"
-#include "library/parserpls.h"
-#include "library/parsercsv.h"
 
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -17,6 +13,7 @@
 #include "library/treeitem.h"
 #include "mixxxkeyboard.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
@@ -90,29 +87,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        // XXX: Possible WTF alert - Previously we thought we needed toString() here
-        // but what you actually want in any case when converting a QUrl to a file
-        // system path is QUrl::toLocalFile(). This is the second time we have
-        // flip-flopped on this, but I think toLocalFile() should work in any
-        // case. toString() absolutely does not work when you pass the result to a
-        if (url.toString().endsWith(".m3u") || url.toString().endsWith(".m3u8")) {
-            QScopedPointer<ParserM3u> playlist_parser(new ParserM3u());
-            QList<QString> track_list = playlist_parser->parse(url.toLocalFile());
-            for (int i = 0; i < track_list.size(); i++) {
-                files.append(track_list.at(i));
-            }
-        } else if (url.toString().endsWith(".pls")) {
-            QScopedPointer<ParserPls> playlist_parser(new ParserPls());
-            QList<QString> track_list = playlist_parser->parse(url.toLocalFile());
-            for (int i = 0; i < track_list.size(); i++) {
-                files.append(track_list.at(i));
-            }
-        } else {
-            files.append(url.toLocalFile());
-        }
-    }
+
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
     QList<int> trackIds;
     if (pSource) {

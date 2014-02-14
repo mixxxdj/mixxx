@@ -4,8 +4,11 @@
 
 #include "controlobject.h"
 #include "widget/wtrackproperty.h"
+#include "util/dnd.h"
 
-WTrackProperty::WTrackProperty(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget* pParent)
+WTrackProperty::WTrackProperty(const char* group,
+                               ConfigObject<ConfigValue>* pConfig,
+                               QWidget* pParent)
         : WLabel(pParent),
           m_pGroup(group),
           m_pConfig(pConfig) {
@@ -13,7 +16,6 @@ WTrackProperty::WTrackProperty(const char* group, ConfigObject<ConfigValue>* pCo
 }
 
 WTrackProperty::~WTrackProperty() {
-
 }
 
 void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
@@ -51,16 +53,7 @@ void WTrackProperty::updateLabel(TrackInfoObject*) {
 
 void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
-        QList<QUrl> locationUrls;
-        locationUrls.append(QUrl::fromLocalFile(m_pCurrentTrack->getLocation()));
-
-        QMimeData* mimeData = new QMimeData();
-        mimeData->setUrls(locationUrls);
-
-        QDrag* drag = new QDrag(this);
-        drag->setMimeData(mimeData);
-        drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
-        drag->exec(Qt::CopyAction);
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this);
     }
 }
 
@@ -78,17 +71,14 @@ void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
 }
 
 void WTrackProperty::dropEvent(QDropEvent *event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        QUrl url = event->mimeData()->urls().first();
-        QString filename = url.toLocalFile();
-        // If the file is on a network share, try just converting the URL to a string
-        if (filename == "") {
-            filename = url.toString();
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
+            return;
         }
-        event->accept();
-        emit(trackDropped(filename, m_pGroup));
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }

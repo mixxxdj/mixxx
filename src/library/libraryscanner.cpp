@@ -26,6 +26,7 @@
 #include "library/queryutil.h"
 #include "trackinfoobject.h"
 #include "util/trace.h"
+#include "util/file.h"
 
 LibraryScanner::LibraryScanner(TrackCollection* collection)
               : m_pCollection(collection),
@@ -223,12 +224,19 @@ void LibraryScanner::run() {
     QStringList dirs = m_directoryDao.getDirs();
     bool bScanFinishedCleanly = false;
     // Recursivly scan each directory in the directories table.
-    foreach (const QString& dir, dirs) {
-        bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
+    foreach (const QString& dirPath, dirs) {
+        // Acquire a security bookmark for this directory if we are in a
+        // sandbox. For speed we avoid opening security bookmarks when recursive
+        // scanning so that relies on having an open bookmark for the containing
+        // directory.
+        MDir dir(dirPath);
+
+        bScanFinishedCleanly = recursiveScan(dirPath, verifiedDirectories,
+                                             dir.token());
         if (bScanFinishedCleanly) {
-            qDebug() << "Recursive scanning (" << dir << ") finished cleanly.";
+            qDebug() << "Recursive scanning (" << dirPath << ") finished cleanly.";
         } else {
-            qDebug() << "Recursive scanning (" << dir << ") interrupted.";
+            qDebug() << "Recursive scanning (" << dirPath << ") interrupted.";
         }
     }
 
@@ -329,7 +337,8 @@ void LibraryScanner::resetCancel() {
     m_bCancelLibraryScan = false;
 }
 
-bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories) {
+bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories,
+                                   SecurityTokenPointer pToken) {
     QDirIterator it(dir.path(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     QFileInfo currentFileInfo;
@@ -373,9 +382,10 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
     if (prevHash != newHash) {
         // Rescan that mofo! If importing fails then the scan was cancelled so
         // we return immediately.
-        if (!importFiles(filesToImport)) {
+        if (!importFiles(filesToImport, pToken)) {
             return false;
         }
+
         // If we didn't know about this directory before...
         // save the hash after we imported everything in it
         if (!prevHashExists) {
@@ -401,14 +411,15 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
-        if (!recursiveScan(nextDir, verifiedDirectories)) {
+        if (!recursiveScan(nextDir, verifiedDirectories, pToken)) {
             return false;
         }
     }
     return true;
 }
 
-bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files) {
+bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
+                                 SecurityTokenPointer pToken) {
     foreach (const QFileInfo& file, files) {
         // If a flag was raised telling us to cancel the library scan then stop.
         if (m_bCancelLibraryScan) {
@@ -430,8 +441,9 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files) {
         if (!m_trackDao.trackExistsInDatabase(filePath)) {
             emit(progressLoading(file.fileName()));
 
-            TrackPointer pTrack = TrackPointer(new TrackInfoObject(filePath),
-                                               &QObject::deleteLater);
+            TrackPointer pTrack = TrackPointer(
+                    new TrackInfoObject(filePath, pToken),
+                    &QObject::deleteLater);
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successfully added. Signal the main instance of TrackDAO,
                 // that there is a new track in the database.

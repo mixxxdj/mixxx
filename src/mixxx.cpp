@@ -63,6 +63,7 @@
 #include "util/time.h"
 #include "util/version.h"
 #include "util/compatibility.h"
+#include "util/sandbox.h"
 #include "playerinfo.h"
 #include "waveform/guitick.h"
 
@@ -86,11 +87,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     Time::start();
     initializeWindow();
 
-    // Only record stats in developer mode.
-    if (m_cmdLineArgs.getDeveloper()) {
-        StatsManager::create();
-    }
-
     //Reset pointer to players
     m_pSoundManager = NULL;
     m_pPrefDlg = NULL;
@@ -106,8 +102,14 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
-    QString resourcePath = m_pConfig->getResourcePath();
+    Sandbox::initialize(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
 
+    // Only record stats in developer mode.
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::create();
+    }
+
+    QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
 
     // Set the visibility of tooltips, default "1" = ON
@@ -480,6 +482,8 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
+    Sandbox::shutdown();
+
     ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
 
@@ -1290,7 +1294,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             return;
     }
 
-    QString s =
+    QString trackPath =
         QFileDialog::getOpenFileName(
             this,
             loadTrackText,
@@ -1299,8 +1303,16 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
 
-    if (!s.isNull()) {
-        m_pPlayerManager->slotLoadToDeck(s, deck);
+    if (!trackPath.isNull()) {
+        // The user has picked a file via a file dialog. This means the system
+        // sandboxer (if we are sandboxed) has granted us permission to this
+        // folder. Create a security bookmark while we have permission so that
+        // we can access the folder on future runs. We need to canonicalize the
+        // path so we first wrap the directory string with a QDir.
+        QFileInfo trackInfo(trackPath);
+        Sandbox::createSecurityToken(trackInfo);
+
+        m_pPlayerManager->slotLoadToDeck(trackPath, deck);
     }
 }
 

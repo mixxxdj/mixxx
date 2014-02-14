@@ -39,6 +39,7 @@
 #include "library/dao/analysisdao.h"
 #include "libraryscannerdlg.h"
 #include "trackcollection.h"
+#include "util/sandbox.h"
 
 class TrackInfoObject;
 
@@ -66,11 +67,13 @@ class LibraryScanner : public QThread {
     // directories that have already been scanned and have not changed. Changes
     // are tracked by performing a hash of the directory's file list, and those
     // hashes are stored in the database.
-    bool recursiveScan(const QDir& dirPath, QStringList& verifiedDirectories);
+    bool recursiveScan(const QDir& dirPath, QStringList& verifiedDirectories,
+                       SecurityTokenPointer pToken);
 
     // Import the provided files. Returns true if the scan completed without
     // being cancelled. False if the scan was cancelled part-way through.
-    bool importFiles(const QLinkedList<QFileInfo>& files);
+    bool importFiles(const QLinkedList<QFileInfo>& files,
+                     SecurityTokenPointer pToken);
 
     // The library trackcollection
     TrackCollection* m_pCollection;
