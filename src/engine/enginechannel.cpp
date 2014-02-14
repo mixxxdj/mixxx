@@ -44,6 +44,7 @@ EngineChannel::EngineChannel(const char* pGroup,
     // the CO "talkover" is already claimed by enginemicrophone for triggering
     // microphone mode.
     m_pTalkover = new ControlPushButton(ConfigKey(pGroup, "talkover_channel"));
+    m_pTalkover->setButtonMode(ControlPushButton::TOGGLE);
     setTalkover(false);
 }
 
