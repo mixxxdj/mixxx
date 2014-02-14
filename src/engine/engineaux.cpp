@@ -26,7 +26,6 @@ EngineAux::EngineAux(const char* pGroup)
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
     setPFL(false);
-    setAuxiliary(true);
 }
 
 EngineAux::~EngineAux() {

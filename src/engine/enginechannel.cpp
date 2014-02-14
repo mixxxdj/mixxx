@@ -27,9 +27,6 @@ EngineChannel::EngineChannel(const char* pGroup,
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(m_group, "master"));
     m_pMaster->setButtonMode(ControlPushButton::TOGGLE);
-    m_pAuxiliary = new ControlPushButton(ConfigKey(m_group, "auxiliary"));
-    m_pAuxiliary->setButtonMode(ControlPushButton::TOGGLE);
-    setAuxiliary(false);
     m_pOrientation = new ControlObject(ConfigKey(m_group, "orientation"));
     m_pOrientation->set(defaultOrientation);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(m_group, "orientation_left"));
@@ -49,7 +46,6 @@ EngineChannel::EngineChannel(const char* pGroup,
 }
 
 EngineChannel::~EngineChannel() {
-    delete m_pAuxiliary;
     delete m_pMaster;
     delete m_pPFL;
     delete m_pOrientation;
@@ -77,14 +73,6 @@ void EngineChannel::setMaster(bool enabled) {
 
 bool EngineChannel::isMaster() const {
     return m_pMaster->get() > 0.0;
-}
-
-void EngineChannel::setAuxiliary(bool enabled) {
-    m_pAuxiliary->set(enabled ? 1.0 : 0.0);
-}
-
-bool EngineChannel::isAuxiliary() const {
-    return m_pAuxiliary->get() > 0.0;
 }
 
 void EngineChannel::setTalkover(bool enabled) {

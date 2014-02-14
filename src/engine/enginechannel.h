@@ -52,8 +52,6 @@ class EngineChannel : public EngineObject {
     virtual bool isPFL() const;
     void setMaster(bool enabled);
     virtual bool isMaster() const;
-    void setAuxiliary(bool enabled);
-    virtual bool isAuxiliary() const;
     void setTalkover(bool enabled);
     virtual bool isTalkover() const;
 
@@ -73,7 +71,6 @@ class EngineChannel : public EngineObject {
     const QString m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
-    ControlPushButton* m_pAuxiliary;
     ControlObject* m_pOrientation;
     ControlPushButton* m_pOrientationLeft;
     ControlPushButton* m_pOrientationRight;
