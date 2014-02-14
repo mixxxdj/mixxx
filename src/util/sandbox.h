@@ -1,8 +1,6 @@
 #ifndef SANDBOX_H
 #define SANDBOX_H
 
-#include <unistd.h>
-
 #include <QFile>
 #include <QDir>
 #include <QFileInfo>
@@ -44,19 +42,13 @@ class Sandbox {
 
     static bool canAccessFile(const QFileInfo& file) {
         SecurityTokenPointer pToken = openSecurityToken(file, true);
-        bool result = canAccessPath(file.absoluteFilePath());
-        return result;
+        return file.isReadable();
     }
 
     static bool canAccessFile(const QDir& dir) {
         SecurityTokenPointer pToken = openSecurityToken(dir, true);
-        bool result = canAccessPath(dir.canonicalPath());
-        return result;
-    }
-
-    static bool canAccessPath(const QString& canonicalPath) {
-        QByteArray pathEncoded = canonicalPath.toLocal8Bit();
-        return access(pathEncoded.constData(), R_OK) == 0;
+        QFileInfo info(dir.canonicalPath());
+        return info.isReadable();
     }
 
     static bool createSecurityToken(const QFileInfo& info) {
