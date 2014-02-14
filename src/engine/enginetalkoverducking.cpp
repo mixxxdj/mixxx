@@ -9,13 +9,16 @@ EngineTalkoverDucking::EngineTalkoverDucking(
       m_pConfig(pConfig),
       m_group(group) {
     m_pMasterSampleRate = new ControlObjectSlave(m_group, "samplerate");
-    m_pMasterSampleRate->connectValueChanged(this, SLOT(slotSampleRateChanged(double)));
+    m_pMasterSampleRate->connectValueChanged(this,
+                                             SLOT(slotSampleRateChanged(double)),
+                                             Qt::DirectConnection);
 
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
     m_pDuckStrength->set(
             m_pConfig->getValueString(ConfigKey(m_group, "duckStrength"), "90").toDouble() / 100);
     connect(m_pDuckStrength, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDuckStrengthChanged(double)));
+            this, SLOT(slotDuckStrengthChanged(double)),
+            Qt::DirectConnection);
 
     // We only allow the strength to be configurable for now.  The next most likely
     // candidate for customization is the threshold, which may be too low for
@@ -33,7 +36,8 @@ EngineTalkoverDucking::EngineTalkoverDucking(
             m_pConfig->getValueString(
                     ConfigKey(m_group, "duckMode"), QString(AUTO)).toDouble());
     connect(m_pTalkoverDucking, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDuckModeChanged(double)));
+            this, SLOT(slotDuckModeChanged(double)),
+            Qt::DirectConnection);
 }
 
 EngineTalkoverDucking::~EngineTalkoverDucking() {
