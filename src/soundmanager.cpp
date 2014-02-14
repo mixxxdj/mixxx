@@ -155,7 +155,7 @@ void SoundManager::closeDevices() {
             for (QHash<AudioInput, AudioDestination*>::const_iterator it =
                          m_registeredDestinations.find(in);
                  it != m_registeredDestinations.end() && it.key() == in; ++it) {
-                it.value()->onInputDisconnected(in);
+                it.value()->onInputUnconfigured(in);
             }
         }
         foreach (AudioOutput out, pDevice->outputs()) {
@@ -344,7 +344,7 @@ int SoundManager::setupDevices() {
             for (QHash<AudioInput, AudioDestination*>::const_iterator it =
                          m_registeredDestinations.find(in);
                  it != m_registeredDestinations.end() && it.key() == in; ++it) {
-                it.value()->onInputConnected(in);
+                it.value()->onInputConfigured(in);
             }
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {

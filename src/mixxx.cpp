@@ -34,7 +34,7 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
-#include "engine/enginepassthrough.h"
+#include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryscanner.h"
@@ -131,7 +131,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
-    // TODO(rryan): Fold microphone and passthrough creation into a manager
+    // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
@@ -140,17 +140,17 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
-    EnginePassthrough* pPassthrough1 = new EnginePassthrough("[Passthrough1]");
+    EngineAux* pAux1 = new EngineAux("[Auxilliary1]");
     // What should channelbase be?
-    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 0);
-    m_pEngine->addChannel(pPassthrough1);
-    m_pSoundManager->registerInput(passthroughInput1, pPassthrough1);
+    AudioInput auxInput1 = AudioInput(AudioPath::AUXILLIARY, 0, 0, 0);
+    m_pEngine->addChannel(pAux1);
+    m_pSoundManager->registerInput(auxInput1, pAux1);
 
-    EnginePassthrough* pPassthrough2 = new EnginePassthrough("[Passthrough2]");
+    EngineAux* pAux2 = new EngineAux("[Auxilliary2]");
     // What should channelbase be?
-    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 1);
-    m_pEngine->addChannel(pPassthrough2);
-    m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
+    AudioInput auxInput2 = AudioInput(AudioPath::AUXILLIARY, 0, 0, 1);
+    m_pEngine->addChannel(pAux2);
+    m_pSoundManager->registerInput(auxInput2, pAux2);
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
