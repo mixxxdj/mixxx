@@ -139,6 +139,13 @@ class SampleUtil {
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                 int iNumSamples);
 
+    // Convert 0-1.0 range gain from linear to log value.
+    static CSAMPLE linearToLog(CSAMPLE linear) {
+        linear = math_max(0.0, math_min(1.0, linear));
+        static const CSAMPLE dB = log10(2.0) / 1.0;
+        return log10(linear + 1.0) / dB;
+    }
+
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)
     #include "sampleutil_autogen.h"
