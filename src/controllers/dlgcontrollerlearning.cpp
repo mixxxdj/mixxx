@@ -200,6 +200,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     QMenu* microphoneMenu = addSubmenu(tr("Microphone"));
     addControl("[Microphone]", "talkover", tr("Microphone on/off"), microphoneMenu);
     addControl("[Microphone]", "volume", tr("Microphone volume"), microphoneMenu, true);
+    addControl("[Microphone]", "orientation", tr("Microphone channel orientation (e.g. left, right, center)"), microphoneMenu);
 
     // AutoDJ Controls
     QMenu* autodjMenu = addSubmenu(tr("Auto DJ"));

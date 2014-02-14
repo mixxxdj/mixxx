@@ -115,7 +115,7 @@ class EngineMaster : public QObject, public AudioSource {
     class ConstantGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            // If the channel is set to bypass, ignore gain setting.
+            // If the channel is set to talkover, use talkover gain setting.
             return pChannelInfo->m_pChannel->isTalkover() ? m_dTalkoverGain : m_dGain;
         }
         inline void setGain(double dGain) {

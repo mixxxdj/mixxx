@@ -19,7 +19,6 @@
 #include <QList>
 #include <QPair>
 
-#include "controlgroupdelegate.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
 #include "controllogpotmeter.h"

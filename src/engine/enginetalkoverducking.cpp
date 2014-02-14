@@ -1,7 +1,7 @@
 #include "controlobjectslave.h"
 #include "engine/enginetalkoverducking.h"
 
-#define MIC_DUCK_THRESHOLD 0.1
+#define DUCK_THRESHOLD 0.1
 
 EngineTalkoverDucking::EngineTalkoverDucking(
         ConfigObject<ConfigValue>* pConfig, const char* group)
@@ -19,12 +19,12 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     connect(m_pDuckStrength, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckStrengthChanged(double)));
     setParameters(
-            MIC_DUCK_THRESHOLD,
+            DUCK_THRESHOLD,
             m_pDuckStrength->get(),
             m_pMasterSampleRate->get() / 2 * .1,
             m_pMasterSampleRate->get() / 2);
 
-    m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "micDucking"));
+    m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
     m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
     m_pTalkoverDucking->setStates(3);
     // Default to Auto ducking.
@@ -44,13 +44,13 @@ EngineTalkoverDucking::~EngineTalkoverDucking() {
 
 void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
     setParameters(
-            MIC_DUCK_THRESHOLD, m_pDuckStrength->get(),
+            DUCK_THRESHOLD, m_pDuckStrength->get(),
             samplerate / 2 * .1, samplerate / 2);
 }
 
 void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
     setParameters(
-            MIC_DUCK_THRESHOLD, strength,
+            DUCK_THRESHOLD, strength,
             m_pMasterSampleRate->get() / 2 * .1, m_pMasterSampleRate->get() / 2);
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
 }
