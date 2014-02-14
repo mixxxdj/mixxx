@@ -11,13 +11,15 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pMasterSampleRate = new ControlObjectSlave(m_group, "samplerate");
     m_pMasterSampleRate->connectValueChanged(this, SLOT(slotSampleRateChanged(double)));
 
-    // Set compressor threshold to .5 of full volume, strength .75, and .1
-    // second attack and 1 sec decay.
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
     m_pDuckStrength->set(
             m_pConfig->getValueString(ConfigKey(m_group, "duckStrength"), "90").toDouble() / 100);
     connect(m_pDuckStrength, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckStrengthChanged(double)));
+
+    // We only allow the strength to be configurable for now.  The next most likely
+    // candidate for customization is the threshold, which may be too low for
+    // noisy club situations.
     setParameters(
             DUCK_THRESHOLD,
             m_pDuckStrength->get(),
