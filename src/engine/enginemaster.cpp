@@ -204,6 +204,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
 
+    // Clear talkover compressor for the next round of gain calculation.
+    m_pTalkoverDucking->clearKeys();
+
     // Find the Sync Master and process it first then process all the slaves
     // (and skip the master).
 
