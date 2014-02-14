@@ -30,7 +30,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
-#include "engine/enginemicducking.h"
+#include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
@@ -116,7 +116,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
 
-    m_pMicDucking = new EngineMicDucking(_config, group);
+    m_pTalkoverDucking = new EngineTalkoverDucking(_config, group);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -151,7 +151,7 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadMix;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
-    delete m_pMicDucking;
+    delete m_pTalkoverDucking;
     delete m_pClipping;
     delete m_pVumeter;
     delete m_pHeadClipping;
@@ -272,9 +272,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
-        if (m_pMicDucking->getMode() != EngineMicDucking::OFF &&
-                pChannel->getGroup() == CONTROLGROUP_MICROPHONE_STRING) {
-            m_pMicDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                pChannel->isTalkover()) {
+            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
 
         // Process the buffer if necessary
@@ -338,9 +338,9 @@ void EngineMaster::process(const int iBufferSize) {
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
 
-    // Channels with the bypass flag should be mixed with the master signal at
+    // Channels with the talkover flag should be mixed with the master signal at
     // full master volume.  All other channels should be adjusted by ducking gain.
-    m_masterGain.setGains(master_gain * m_pMicDucking->getGain(iBufferSize / 2),
+    m_masterGain.setGains(master_gain * m_pTalkoverDucking->getGain(iBufferSize / 2),
                           c1_gain, 1.0, c2_gain, master_gain);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
@@ -362,8 +362,7 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     // Mix the three channels together. We already mixed the busses together
-    // with the channel gains and overall master gain.  This excludes the
-    // BYPASS-oriented channels.
+    // with the channel gains and overall master gain.
     SampleUtil::copy3WithGain(m_pMaster,
                               m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
                               m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,

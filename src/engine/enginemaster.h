@@ -42,7 +42,7 @@ class EngineSideChain;
 class SyncWorker;
 class GuiTick;
 class EngineSync;
-class EngineMicDucking;
+class EngineTalkoverDucking;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
@@ -116,28 +116,28 @@ class EngineMaster : public QObject, public AudioSource {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
             // If the channel is set to bypass, ignore gain setting.
-            return pChannelInfo->m_pChannel->isBypass() ? m_dBypassGain : m_dGain;
+            return pChannelInfo->m_pChannel->isTalkover() ? m_dTalkoverGain : m_dGain;
         }
         inline void setGain(double dGain) {
             m_dGain = dGain;
         }
-        inline void setBypassGain(double dGain) {
-            m_dBypassGain = dGain;
+        inline void setTalkoverGain(double dGain) {
+            m_dTalkoverGain = dGain;
         }
       private:
         double m_dGain;
-        double m_dBypassGain;
+        double m_dTalkoverGain;
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
                 : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0),
-                  m_dBypassGain(1.0) { }
+                  m_dTalkoverGain(1.0) { }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
             // If the channel is set to bypass, ignore gain setting.
-            if (pChannelInfo->m_pChannel->isBypass()) {
-                return m_dBypassGain;
+            if (pChannelInfo->m_pChannel->isTalkover()) {
+                return m_dTalkoverGain;
             }
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
@@ -147,16 +147,16 @@ class EngineMaster : public QObject, public AudioSource {
         }
 
         inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain,
-                             double bypassGain) {
+                             double talkoverGain) {
             m_dVolume = dVolume;
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
-            m_dBypassGain = bypassGain;
+            m_dTalkoverGain = talkoverGain;
         }
 
       private:
-        double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain, m_dBypassGain;
+        double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain, m_dTalkoverGain;
     };
 
   private:
@@ -192,7 +192,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlPotmeter* m_pMasterRate;
     EngineClipping* m_pClipping;
     EngineClipping* m_pHeadClipping;
-    EngineMicDucking* m_pMicDucking;
+    EngineTalkoverDucking* m_pTalkoverDucking;
 
 #ifdef __LADSPA__
     EngineLADSPA* m_pLadspa;

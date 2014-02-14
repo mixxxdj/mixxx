@@ -1,9 +1,9 @@
 #include "controlobjectslave.h"
-#include "engine/enginemicducking.h"
+#include "engine/enginetalkoverducking.h"
 
 #define MIC_DUCK_THRESHOLD 0.1
 
-EngineMicDucking::EngineMicDucking(
+EngineTalkoverDucking::EngineTalkoverDucking(
         ConfigObject<ConfigValue>* pConfig, const char* group)
     : EngineSideChainCompressor(pConfig, group),
       m_pConfig(pConfig),
@@ -24,49 +24,49 @@ EngineMicDucking::EngineMicDucking(
             m_pMasterSampleRate->get() / 2 * .1,
             m_pMasterSampleRate->get() / 2);
 
-    m_pMicDucking = new ControlPushButton(ConfigKey(m_group, "micDucking"));
-    m_pMicDucking->setButtonMode(ControlPushButton::TOGGLE);
-    m_pMicDucking->setStates(3);
+    m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "micDucking"));
+    m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
+    m_pTalkoverDucking->setStates(3);
     // Default to Auto ducking.
-    m_pMicDucking->set(
+    m_pTalkoverDucking->set(
             m_pConfig->getValueString(ConfigKey(m_group, "duckMode"), "1").toDouble());
-    connect(m_pMicDucking, SIGNAL(valueChanged(double)),
+    connect(m_pTalkoverDucking, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckModeChanged(double)));
 }
 
-EngineMicDucking::~EngineMicDucking() {
+EngineTalkoverDucking::~EngineTalkoverDucking() {
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(m_pDuckStrength->get() * 100));
-    m_pConfig->set(ConfigKey(m_group, "duckMode"), ConfigValue(m_pMicDucking->get()));
+    m_pConfig->set(ConfigKey(m_group, "duckMode"), ConfigValue(m_pTalkoverDucking->get()));
 
     delete m_pDuckStrength;
-    delete m_pMicDucking;
+    delete m_pTalkoverDucking;
 }
 
-void EngineMicDucking::slotSampleRateChanged(double samplerate) {
+void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
     setParameters(
             MIC_DUCK_THRESHOLD, m_pDuckStrength->get(),
             samplerate / 2 * .1, samplerate / 2);
 }
 
-void EngineMicDucking::slotDuckStrengthChanged(double strength) {
+void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
     setParameters(
             MIC_DUCK_THRESHOLD, strength,
             m_pMasterSampleRate->get() / 2 * .1, m_pMasterSampleRate->get() / 2);
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
 }
 
-void EngineMicDucking::slotDuckModeChanged(double mode) {
+void EngineTalkoverDucking::slotDuckModeChanged(double mode) {
    m_pConfig->set(ConfigKey(m_group, "duckMode"), ConfigValue(mode));
 }
 
-CSAMPLE EngineMicDucking::getGain(int numFrames) {
+CSAMPLE EngineTalkoverDucking::getGain(int numFrames) {
     // Apply microphone ducking.
     switch (getMode()) {
-      case EngineMicDucking::OFF:
+      case EngineTalkoverDucking::OFF:
         return 1.0;
-      case EngineMicDucking::AUTO:
+      case EngineTalkoverDucking::AUTO:
         return calculateCompressedGain(numFrames);
-      case EngineMicDucking::MANUAL:
+      case EngineTalkoverDucking::MANUAL:
         return m_pDuckStrength->get();
     }
     qWarning() << "Invalid ducking mode, returning 1.0";

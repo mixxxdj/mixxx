@@ -5,20 +5,22 @@
 class ConfigValue;
 class ControlObjectSlave;
 
-class EngineMicDucking : public QObject, public EngineSideChainCompressor {
+class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
   Q_OBJECT
   public:
 
-    enum MicDuckSetting {
+    enum TalkoverDuckSetting {
         OFF = 0,
         AUTO,
         MANUAL,
     };
 
-    EngineMicDucking(ConfigObject<ConfigValue>* pConfig, const char* group);
-    virtual ~EngineMicDucking();
+    EngineTalkoverDucking(ConfigObject<ConfigValue>* pConfig, const char* group);
+    virtual ~EngineTalkoverDucking();
 
-    MicDuckSetting getMode() const { return static_cast<MicDuckSetting>(m_pMicDucking->get()); }
+    TalkoverDuckSetting getMode() const {
+        return static_cast<TalkoverDuckSetting>(m_pTalkoverDucking->get());
+    }
 
     CSAMPLE getGain(int numFrames);
 
@@ -33,5 +35,5 @@ class EngineMicDucking : public QObject, public EngineSideChainCompressor {
 
     ControlObjectSlave* m_pMasterSampleRate;
     ControlPotmeter* m_pDuckStrength;
-    ControlPushButton* m_pMicDucking;
+    ControlPushButton* m_pTalkoverDucking;
 };
