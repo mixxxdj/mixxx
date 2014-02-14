@@ -71,10 +71,8 @@ QString ControlParameterWidgetConnection::toDebugString() const {
 
 void ControlParameterWidgetConnection::slotControlValueChanged(double v) {
     if (m_directionOption & DIR_TO_WIDGET) {
-        m_pWidget->onConnectedControlValueChanged(
-                m_pControl->getParameterForValue(v));
-        // TODO(rryan): copied from WWidget. Keep?
-        //m_pWidget->toQWidget()->update();
+        double parameter = getControlParameterForValue(v);
+        m_pWidget->onConnectedControlValueChanged(parameter);
     }
 }
 
