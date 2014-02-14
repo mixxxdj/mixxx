@@ -17,6 +17,8 @@
 #endif
 #endif
 
+const bool sDebug = false;
+
 QMutex Sandbox::s_mutex(QMutex::Recursive);
 bool Sandbox::s_bInSandbox = false;
 ConfigObject<ConfigValue>* Sandbox::s_pSandboxPermissions = NULL;
@@ -64,7 +66,9 @@ void Sandbox::shutdown() {
 
 // static
 bool Sandbox::askForAccess(const QString& canonicalPath) {
-    qDebug() << "Sandbox::askForAccess" << canonicalPath;
+    if (sDebug) {
+        qDebug() << "Sandbox::askForAccess" << canonicalPath;
+    }
     if (!enabled()) {
         // Pretend we have access.
         return true;
@@ -77,7 +81,9 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
         return true;
     }
 
-    qDebug() << "Sandbox: Requesting user access to" << canonicalPath;
+    if (sDebug) {
+        qDebug() << "Sandbox: Requesting user access to" << canonicalPath;
+    }
     QString title = QObject::tr("Mixxx Needs Access to: %1")
             .arg(info.fileName());
 
@@ -103,17 +109,23 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
         }
 
         if (result.isNull()) {
-            qDebug() << "Sandbox: User rejected access to" << canonicalPath;
+            if (sDebug) {
+                qDebug() << "Sandbox: User rejected access to" << canonicalPath;
+            }
             return false;
         }
 
-        qDebug() << "Sandbox: User selected" << result;
+        if (sDebug) {
+            qDebug() << "Sandbox: User selected" << result;
+        }
         resultInfo = QFileInfo(result);
         if (resultInfo == info) {
             break;
         }
 
-        qDebug() << "User selected the wrong file.";
+        if (sDebug) {
+            qDebug() << "User selected the wrong file.";
+        }
         QMessageBox::question(
             NULL, title,
             QObject::tr("You selected the wrong file. To grant Mixxx access, "
@@ -133,7 +145,9 @@ ConfigKey Sandbox::keyForCanonicalPath(const QString& canonicalPath) {
 // static
 bool Sandbox::createSecurityToken(const QString& canonicalPath,
                                   bool isDirectory) {
-    qDebug() << "createSecurityToken" << canonicalPath << isDirectory;
+    if (sDebug) {
+        qDebug() << "createSecurityToken" << canonicalPath << isDirectory;
+    }
     if (!enabled()) {
         return false;
     }
@@ -164,13 +178,17 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
             CFRelease(bookmark);
             return true;
         } else {
-            qDebug() << "Failed to create security-scoped bookmark for" << canonicalPath;
-            if (error != NULL) {
-                qDebug() << "Error:" << CFStringToQString(CFErrorCopyDescription(error));
+            if (sDebug) {
+                qDebug() << "Failed to create security-scoped bookmark for" << canonicalPath;
+                if (error != NULL) {
+                    qDebug() << "Error:" << CFStringToQString(CFErrorCopyDescription(error));
+                }
             }
         }
     } else {
-        qDebug() << "Failed to create security-scoped bookmark URL for" << canonicalPath;
+        if (sDebug) {
+            qDebug() << "Failed to create security-scoped bookmark URL for" << canonicalPath;
+        }
     }
 #endif
     return false;
@@ -179,7 +197,9 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
 // static
 SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool create) {
     const QString& canonicalFilePath = file.canonicalFilePath();
-    qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath << create;
+    if (sDebug) {
+        qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath << create;
+    }
 
     if (!enabled()) {
         return SecurityTokenPointer();
@@ -195,8 +215,10 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
     if (it != s_activeTokens.end()) {
         SecurityTokenPointer pToken(it.value());
         if (pToken) {
-            qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath
-                     << "using cached token for" << pToken->m_path;
+            if (sDebug) {
+                qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath
+                         << "using cached token for" << pToken->m_path;
+            }
             return pToken;
         }
     }
@@ -239,7 +261,9 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
 SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
     QDir walkDir = dir;
     QString walkDirCanonicalPath = walkDir.canonicalPath();
-    qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath << create;
+    if (sDebug) {
+        qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath << create;
+    }
 
     if (!enabled()) {
         return SecurityTokenPointer();
@@ -257,8 +281,10 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
         if (it != s_activeTokens.end()) {
             SecurityTokenPointer pToken(it.value());
             if (pToken) {
-                qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath
-                         << "using cached token for" << pToken->m_path;
+                if (sDebug) {
+                    qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath
+                             << "using cached token for" << pToken->m_path;
+                }
                 return pToken;
             }
         }
@@ -307,14 +333,18 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
                 kCFURLBookmarkResolutionWithSecurityScope, NULL, NULL,
                 &stale, &error);
         if (error != NULL) {
-            qDebug() << "Error creating URL from bookmark data:"
-                     << CFStringToQString(CFErrorCopyDescription(error));
+            if (sDebug) {
+                qDebug() << "Error creating URL from bookmark data:"
+                         << CFStringToQString(CFErrorCopyDescription(error));
+            }
         }
         CFRelease(bookmarkData);
         if (url != NULL) {
             if (!CFURLStartAccessingSecurityScopedResource(url)) {
-                qDebug() << "CFURLStartAccessingSecurityScopedResource failed for"
-                         << canonicalPath;
+                if (sDebug) {
+                    qDebug() << "CFURLStartAccessingSecurityScopedResource failed for"
+                             << canonicalPath;
+                }
             } else {
                 SecurityTokenPointer pToken = SecurityTokenPointer(
                     new SandboxSecurityToken(canonicalPath, url));
@@ -322,7 +352,9 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
                 return pToken;
             }
         } else {
-            qDebug() << "Cannot resolve security-scoped bookmark for" << canonicalPath;
+            if (sDebug) {
+                qDebug() << "Cannot resolve security-scoped bookmark for" << canonicalPath;
+            }
         }
     }
 #endif
@@ -334,14 +366,18 @@ SandboxSecurityToken::SandboxSecurityToken(const QString& path, CFURLRef url)
         : m_path(path),
           m_url(url) {
     if (m_url) {
-        qDebug() << "SandboxSecurityToken successfully opened for" << path;
+        if (sDebug) {
+            qDebug() << "SandboxSecurityToken successfully opened for" << path;
+        }
     }
 }
 #endif
 
 SandboxSecurityToken::~SandboxSecurityToken() {
 #ifdef Q_OS_MAC
-    qDebug() << "~SandboxSecurityToken" << m_path;
+    if (sDebug) {
+        qDebug() << "~SandboxSecurityToken" << m_path;
+    }
     if (m_url) {
         CFURLStopAccessingSecurityScopedResource(m_url);
         CFRelease(m_url);
