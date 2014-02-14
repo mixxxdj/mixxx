@@ -39,6 +39,7 @@ class ShoutcastManager;
 class SkinLoader;
 class EffectsManager;
 class VinylControlManager;
+class GuiTick;
 class DlgPreferences;
 class SoundManager;
 
@@ -47,18 +48,19 @@ class SoundManager;
 #include "util/timer.h"
 
 class ControlObjectThread;
+class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
 // For the main view, an instance of class MixxxView is
 // created which creates your view.
-class MixxxApp : public QMainWindow {
+class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
 
   public:
     // Construtor. files is a list of command line arguments
-    MixxxApp(QApplication *app, const CmdlineArgs& args);
-    virtual ~MixxxApp();
+    MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
+    virtual ~MixxxMainWindow();
     // initializes all QActions of the application
     void initActions();
     // initMenuBar creates the menu_bar and inserts the menuitems
@@ -67,6 +69,8 @@ class MixxxApp : public QMainWindow {
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
+
+    inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
 
@@ -124,14 +128,17 @@ class MixxxApp : public QMainWindow {
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
-    bool eventFilter(QObject *obj, QEvent *event);
-    void closeEvent(QCloseEvent *event);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
 
   private:
     void logBuildDetails();
     void initializeWindow();
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
+    bool loadTranslations(const QLocale& systemLocale, QString userLocale,
+                          const QString& translation, const QString& prefix,
+                          const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
 
@@ -160,6 +167,8 @@ class MixxxApp : public QMainWindow {
     ControllerManager* m_pControllerManager;
 
     ConfigObject<ConfigValue>* m_pConfig;
+
+    GuiTick* m_pGuiTick;
 
     VinylControlManager* m_pVCManager;
 

@@ -82,6 +82,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
+    m_pJoinWithPreviousAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 

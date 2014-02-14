@@ -64,14 +64,16 @@
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
+#include "util/valuetransformer.h"
 
 using mixxx::skin::SkinManifest;
 
 QList<const char*> LegacySkinParser::s_channelStrs;
 QMutex LegacySkinParser::s_safeStringMutex;
 
-ControlObject* controlFromConfigKey(ConfigKey configKey, bool* created) {
-    ControlObject* pControl = ControlObject::getControl(configKey);
+ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
+                                    bool* created) {
+    ControlObject* pControl = ControlObject::getControl(key);
 
     if (pControl) {
         if (created) {
@@ -82,16 +84,32 @@ ControlObject* controlFromConfigKey(ConfigKey configKey, bool* created) {
 
     // TODO(rryan): Make this configurable by the skin.
     qWarning() << "Requested control does not exist:"
-               << QString("%1,%2").arg(configKey.group, configKey.item)
+               << QString("%1,%2").arg(key.group, key.item)
                << "Creating it.";
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
-    ControlPushButton* controlButton = new ControlPushButton(configKey);
+    ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
     controlButton->setButtonMode(ControlPushButton::TOGGLE);
     if (created) {
         *created = true;
     }
     return controlButton;
+}
+
+ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
+                                                       const QString& nodeName,
+                                                       bool* created) {
+    if (element.isNull() || !m_pContext->hasNode(element, nodeName)) {
+        return NULL;
+    }
+
+    QDomElement keyElement = m_pContext->selectElement(element, nodeName);
+    QString name = m_pContext->nodeToString(keyElement);
+    ConfigKey key = ConfigKey::parseCommaSeparated(name);
+
+    bool bPersist = m_pContext->selectAttributeBool(keyElement, "persist", false);
+
+    return controlFromConfigKey(key, bPersist, created);
 }
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
@@ -281,7 +299,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // don't parent till here so the first opengl waveform doesn't screw
     // up --bkgood
     // I'm disregarding this return value because I want to return the
-    // created parent so MixxxApp can use it for nefarious purposes (
+    // created parent so MixxxMainWindow can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
     m_pContext = new SkinContext();
@@ -523,21 +541,13 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
-    ControlObject* pNextControl = NULL;
-    QString nextControl = m_pContext->selectString(node, "NextControl");
     bool createdNext = false;
-    if (nextControl.length() > 0) {
-        ConfigKey nextConfigKey = ConfigKey::parseCommaSeparated(nextControl);
-        pNextControl = controlFromConfigKey(nextConfigKey, &createdNext);
-    }
+    ControlObject* pNextControl = controlFromConfigNode(
+            node.toElement(), "NextControl", &createdNext);
 
-    ControlObject* pPrevControl = NULL;
     bool createdPrev = false;
-    QString prevControl = m_pContext->selectString(node, "PrevControl");
-    if (prevControl.length() > 0) {
-        ConfigKey prevConfigKey = ConfigKey::parseCommaSeparated(prevControl);
-        pPrevControl = controlFromConfigKey(prevConfigKey, &createdPrev);
-    }
+    ControlObject* pPrevControl = controlFromConfigNode(
+            node.toElement(), "PrevControl", &createdPrev);
 
     WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
     pStack->setObjectName("WidgetStack");
@@ -593,7 +603,9 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             if (trigger_configkey.length() > 0) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
-                pControl = controlFromConfigKey(configKey, &created);
+                // TODO(rryan): Allow persist enabling. Not sure what the best
+                // option is -- need to think about it.
+                pControl = controlFromConfigKey(configKey, false, &created);
                 if (created) {
                     // If we created the control, parent it to the child widget so
                     // it doesn't leak.
@@ -758,7 +770,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     ControlObjectSlave* p = new ControlObjectSlave(
             channelStr, "wheel", viewer);
     ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-        viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
+        viewer, p, NULL, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
     viewer->addRightConnection(pConnection);
 
     setupBaseWidget(node, viewer);
@@ -783,19 +795,22 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
 QWidget* LegacySkinParser::parseText(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(m_pParent);
+    WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(p, SIGNAL(trackDropped(QString,QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -807,20 +822,22 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 
 QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
-
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackProperty* p = new WTrackProperty(m_pParent);
+    WTrackProperty* p = new WTrackProperty(pSafeChannelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(p, SIGNAL(trackDropped(QString,QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -1481,16 +1498,18 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     ControlWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
     ControlWidgetConnection* pLastRightButtonConnection = NULL;
 
-    while (!con.isNull())
-    {
-        // Get ConfigKey
-        QString key = m_pContext->selectString(con, "ConfigKey");
-
-        ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
-
+    while (!con.isNull()) {
         // Check that the control exists
         bool created = false;
-        ControlObject* control = controlFromConfigKey(configKey, &created);
+        ControlObject* control = controlFromConfigNode(
+                con.toElement(), "ConfigKey", &created);
+
+
+        ValueTransformer* pTransformer = NULL;
+        if (m_pContext->hasNode(con, "Transform")) {
+            QDomElement element = m_pContext->selectElement(con, "Transform");
+            pTransformer = ValueTransformer::parseFromXml(element, *m_pContext);
+        }
 
         if (m_pContext->hasNode(con, "BindProperty")) {
             QString property = m_pContext->selectString(con, "BindProperty");
@@ -1502,7 +1521,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
             ControlWidgetConnection* pConnection =
                     new ControlWidgetPropertyConnection(pWidget, pControlWidget,
-                                                        m_pConfig, property);
+                                                        pTransformer, property);
             pWidget->addConnection(pConnection);
 
             // If we created this control, bind it to the
@@ -1540,7 +1559,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             ControlObjectSlave* pControlWidget = new ControlObjectSlave(
                 control->getKey(), pWidget->toQWidget());
             ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                pWidget, pControlWidget, connectValueFromWidget,
+                pWidget, pControlWidget, pTransformer, connectValueFromWidget,
                 connectValueToWidget, emitOption);
 
             // If we created this control, bind it to the
@@ -1582,6 +1601,9 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
             // Add keyboard shortcut info to tooltip string
             if (connectValueFromWidget) {
+                QString key = m_pContext->selectString(con, "ConfigKey");
+                ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
+
                 // do not add Shortcut string for feedback connections
                 QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
                 addShortcutToToolTip(pWidget, shortcut, QString(""));

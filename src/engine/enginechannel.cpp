@@ -38,6 +38,11 @@ EngineChannel::EngineChannel(const char* pGroup,
     m_pOrientationCenter = new ControlPushButton(ConfigKey(m_group, "orientation_center"));
     connect(m_pOrientationCenter, SIGNAL(valueChanged(double)),
             this, SLOT(slotOrientationCenter(double)), Qt::DirectConnection);
+    // the CO "talkover" is already claimed by enginemicrophone for triggering
+    // microphone mode.
+    m_pTalkover = new ControlPushButton(ConfigKey(pGroup, "talkover_channel"));
+    m_pTalkover->setButtonMode(ControlPushButton::TOGGLE);
+    setTalkover(false);
 }
 
 EngineChannel::~EngineChannel() {
@@ -47,6 +52,7 @@ EngineChannel::~EngineChannel() {
     delete m_pOrientationLeft;
     delete m_pOrientationRight;
     delete m_pOrientationCenter;
+    delete m_pTalkover;
 }
 
 const QString& EngineChannel::getGroup() const {
@@ -67,6 +73,14 @@ void EngineChannel::setMaster(bool enabled) {
 
 bool EngineChannel::isMaster() const {
     return m_pMaster->get() > 0.0;
+}
+
+void EngineChannel::setTalkover(bool enabled) {
+    m_pTalkover->set(enabled ? 1.0 : 0.0);
+}
+
+bool EngineChannel::isTalkover() const {
+    return m_pTalkover->get() > 0.0;
 }
 
 void EngineChannel::slotOrientationLeft(double v) {

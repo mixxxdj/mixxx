@@ -59,6 +59,13 @@ bool ControlObjectThread::connectValueChanged(
     return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
 }
 
+QString ControlObjectThread::name() const {
+    return m_pControl ? m_pControl->name() : QString();
+}
+
+QString ControlObjectThread::description() const {
+    return m_pControl ? m_pControl->description() : QString();
+}
 
 double ControlObjectThread::get() {
     return m_pControl ? m_pControl->get() : 0.0;

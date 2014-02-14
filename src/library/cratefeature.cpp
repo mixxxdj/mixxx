@@ -20,6 +20,7 @@
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection,
@@ -114,13 +115,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
-        //     QUrl::toLocalFile() vs. QUrl::toString() usage.
-        files.append(url.toLocalFile());
-    }
-
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     QList<int> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
@@ -476,14 +471,27 @@ void CrateFeature::clearChildModel() {
 void CrateFeature::slotImportPlaylist() {
     qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
+    QString lastCrateDirectory = m_pConfig->getValueString(
+            ConfigKey("[Library]", "LastImportExportCrateDirectory"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
     QString playlist_file = QFileDialog::getOpenFileName(
         NULL,
         tr("Import Playlist"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        lastCrateDirectory,
         tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
+
+    // Update the import/export crate directory
+    QFileInfo fileName(playlist_file);
+    m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
+                   ConfigValue(fileName.dir().absolutePath()));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
 
     Parser* playlist_parser = NULL;
 
@@ -523,15 +531,31 @@ void CrateFeature::slotAnalyzeCrate() {
 
 void CrateFeature::slotExportPlaylist() {
     qDebug() << "Export crate" << m_lastRightClickedIndex.data();
+
+    QString lastCrateDirectory = m_pConfig->getValueString(
+            ConfigKey("[Library]", "LastImportExportCrateDirectory"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+
     QString file_location = QFileDialog::getSaveFileName(
         NULL,
         tr("Export Crate"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        lastCrateDirectory,
         tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
     }
+
+    // Update the import/export crate directory
+    QFileInfo fileName(file_location);
+    m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
+                ConfigValue(fileName.dir().absolutePath()));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
+
     // check config if relative paths are desired
     bool useRelativePath = static_cast<bool>(
         m_pConfig->getValueString(

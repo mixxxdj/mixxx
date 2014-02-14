@@ -9,8 +9,8 @@
 #include "library/browse/browsethread.h"
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
-#include "mixxxutils.cpp"
-
+#include "util/time.h"
+#include "util/trace.h"
 
 BrowseThread* BrowseThread::m_instance = NULL;
 static QMutex s_Mutex;
@@ -67,7 +67,7 @@ void BrowseThread::destroyInstance()
     s_Mutex.unlock();
 }
 
-void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
     m_path_mutex.lock();
     m_path = path;
     m_model_observer = client;
@@ -77,9 +77,11 @@ void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
 
 void BrowseThread::run() {
     m_mutex.lock();
-    while(!m_bStopThread) {
+
+    while (!m_bStopThread) {
         //Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
+        Trace trace("BrowseThread");
 
         //Terminate thread if Mixxx closes
         if(m_bStopThread) {
@@ -93,14 +95,15 @@ void BrowseThread::run() {
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
-    QString thisPath = m_path;
+    MDir thisPath = m_path;
     BrowseTableModel* thisModelObserver = m_model_observer;
     m_path_mutex.unlock();
 
     // Refresh the name filters in case we loaded new SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
 
-    QDirIterator fileIt(thisPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator fileIt(thisPath.dir().canonicalPath(), nameFilters,
+                        QDir::Files | QDir::NoDotAndDotDot);
 
     // remove all rows
     // This is a blocking operation
@@ -115,16 +118,16 @@ void BrowseThread::populateModel() {
         // If a user quickly jumps through the folders
         // the current task becomes "dirty"
         m_path_mutex.lock();
-        QString newPath = m_path;
+        MDir newPath = m_path;
         m_path_mutex.unlock();
 
-        if(thisPath != newPath) {
+        if (thisPath.dir() != newPath.dir()) {
             qDebug() << "Abort populateModel()";
             return populateModel();
         }
 
         QString filepath = fileIt.next();
-        TrackInfoObject tio(filepath);
+        TrackInfoObject tio(filepath, thisPath.token());
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem(tio.getFilename());
@@ -171,7 +174,8 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+        QString duration = Time::formatSeconds(qVariantValue<int>(
+                tio.getDuration()), false);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         row_data.insert(COLUMN_DURATION, item);

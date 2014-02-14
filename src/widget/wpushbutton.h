@@ -35,7 +35,7 @@
 class WPushButton : public WWidget {
     Q_OBJECT
   public:
-    WPushButton(QWidget* pParent=NULL);
+    WPushButton(QWidget* pParent = NULL);
     // Used by WPushButtonTest.
     WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
                 ControlPushButton::ButtonMode rightButtonMode);
@@ -57,9 +57,9 @@ class WPushButton : public WWidget {
     void onConnectedControlValueChanged(double);
 
   protected:
-    virtual void paintEvent(QPaintEvent *);
-    virtual void mousePressEvent(QMouseEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
+    virtual void paintEvent(QPaintEvent*);
+    virtual void mousePressEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void focusOutEvent(QFocusEvent* e);
     void fillDebugTooltip(QStringList* debug);
 

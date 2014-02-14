@@ -3,11 +3,14 @@
 #include "widget/wbasewidget.h"
 #include "controlobjectslave.h"
 #include "util/debug.h"
+#include "util/valuetransformer.h"
 
 ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                 ControlObjectSlave* pControl)
+                                                 ControlObjectSlave* pControl,
+                                                 ValueTransformer* pTransformer)
         : m_pWidget(pBaseWidget),
-          m_pControl(pControl) {
+          m_pControl(pControl),
+          m_pValueTransformer(pTransformer) {
     // If pControl is NULL then the creator of ControlWidgetConnection has
     // screwed up badly enough that we should just crash. This will not go
     // unnoticed in development.
@@ -18,16 +21,36 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
 ControlWidgetConnection::~ControlWidgetConnection() {
 }
 
+void ControlWidgetConnection::setControlParameter(double parameter) {
+    if (m_pValueTransformer != NULL) {
+        parameter = m_pValueTransformer->transformInverse(parameter);
+    }
+    m_pControl->setParameter(parameter);
+}
+
 double ControlWidgetConnection::getControlParameter() const {
-    return m_pControl->getParameter();
+    double parameter = m_pControl->getParameter();
+    if (m_pValueTransformer != NULL) {
+        parameter = m_pValueTransformer->transform(parameter);
+    }
+    return parameter;
+}
+
+double ControlWidgetConnection::getControlParameterForValue(double value) const {
+    double parameter = m_pControl->getParameterForValue(value);
+    if (m_pValueTransformer != NULL) {
+        parameter = m_pValueTransformer->transform(parameter);
+    }
+    return parameter;
 }
 
 ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
                                                                    ControlObjectSlave* pControl,
+                                                                   ValueTransformer* pTransformer,
                                                                    bool connectValueFromWidget,
                                                                    bool connectValueToWidget,
                                                                    EmitOption emitOption)
-        : ControlWidgetConnection(pBaseWidget, pControl),
+        : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
           m_bConnectValueFromWidget(connectValueFromWidget),
           m_bConnectValueToWidget(connectValueToWidget),
           m_emitOption(emitOption) {
@@ -51,8 +74,8 @@ QString ControlParameterWidgetConnection::toDebugString() const {
 
 void ControlParameterWidgetConnection::slotControlValueChanged(double v) {
     if (m_bConnectValueToWidget) {
-        m_pWidget->onConnectedControlValueChanged(
-                m_pControl->getParameterForValue(v));
+        double parameter = getControlParameterForValue(v);
+        m_pWidget->onConnectedControlValueChanged(parameter);
         // TODO(rryan): copied from WWidget. Keep?
         //m_pWidget->toQWidget()->update();
     }
@@ -66,32 +89,22 @@ void ControlParameterWidgetConnection::resetControl() {
 
 void ControlParameterWidgetConnection::setControlParameterDown(double v) {
     if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_PRESS) {
-        m_pControl->setParameter(v);
+        setControlParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterUp(double v) {
     if (m_bConnectValueFromWidget && m_emitOption & EMIT_ON_RELEASE) {
-        m_pControl->setParameter(v);
+        setControlParameter(v);
     }
 }
 
 ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                                                  ControlObjectSlave* pControl,
-                                                                 ConfigObject<ConfigValue>* pConfig,
+                                                                 ValueTransformer* pTransformer,
                                                                  const QString& propertyName)
-        : ControlWidgetConnection(pBaseWidget, pControl),
-          m_pConfig(pConfig),
+        : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
           m_propertyName(propertyName.toAscii()) {
-    // Behavior copied from PropertyBinder: load config value for the control on
-    // creation.
-    // TODO(rryan): Remove this in favor of a better solution. See discussion on
-    // Bug #1091147.
-    bool ok = false;
-    double dValue = m_pConfig->getValueString(m_pControl->getKey()).toDouble(&ok);
-    if (ok) {
-        m_pControl->setParameter(dValue);
-    }
     slotControlValueChanged(m_pControl->get());
 }
 
@@ -107,19 +120,13 @@ QString ControlWidgetPropertyConnection::toDebugString() const {
 }
 
 void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
-    double dParameter = m_pControl->getParameterForValue(v);
+    double dParameter = getControlParameterForValue(v);
 
     if (!m_pWidget->toQWidget()->setProperty(m_propertyName.constData(),
                                              QVariant(dParameter))) {
         qDebug() << "Setting property" << m_propertyName
                  << "to widget failed. Value:" << dParameter;
     }
-
-    // Behavior copied from PropertyBinder: save config value for the control on
-    // every change.
-    // TODO(rryan): Remove this in favor of a better solution. See discussion on
-    // Bug #1091147.
-    m_pConfig->set(m_pControl->getKey(), QString::number(dParameter));
 }
 
 void ControlWidgetPropertyConnection::resetControl() {

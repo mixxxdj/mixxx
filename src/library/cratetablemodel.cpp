@@ -7,7 +7,6 @@
 #include "library/cratetablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent,
@@ -58,7 +57,7 @@ void CrateTableModel::setTableModel(int crateId) {
     }
 
     columns[0] = LIBRARYTABLE_ID;
-    columns[1] = "preview";
+    columns[1] = LIBRARYTABLE_PREVIEW;
     setTable(tableName, columns[0], columns,
              m_pTrackCollection->getTrackSource());
     setSearch("");
@@ -131,13 +130,14 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
 }
 
 bool CrateTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(CRATETRACKSTABLE_TRACKID) ||
-        column == fieldIndex(LIBRARYTABLE_PLAYED) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_CRATETRACKSTABLE_TRACKID) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
     }
     return false;

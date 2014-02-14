@@ -143,38 +143,6 @@ VMS4.Deck.prototype.pitchCenterHandler = function(value) {
     }
 }
 
-VMS4.Deck.prototype.playHandler = function(value) {
-    if(value == ButtonState.pressed) {
-        var currentlyPlaying = engine.getValue(this.group,"play");
-        // Only do stutter play when currently playing and not previewing
-        if (currentlyPlaying && !this.cueButton && !this.hotCuePressed) {
-            engine.setValue(this.group, "start_play", 1);
-        }
-        else engine.setValue(this.group,"play", 1);
-    }
-    else engine.setValue(this.group, "start_play", 0);
-}
-
-VMS4.Deck.prototype.pauseHandler = function(value) {
-   engine.setValue(this.group, "play", 0);
-}
-
-VMS4.Deck.prototype.cueHandler = function(value) {
-    if(value == ButtonState.pressed) {
-        this.cueButton=true;
-        if (this.vinylButton) {
-            // Toggle scratch & cue mode
-            if (this.scratchncue) this.scratchncue=false;
-            else this.scratchncue=true;
-        }
-        else engine.setValue(this.group,"cue_default",1);
-    }
-    else {
-        engine.setValue(this.group, "cue_default", 0);
-        this.cueButton=false;
-    }
-}
-
 VMS4.Deck.prototype.effectSelectHandler = function(value) {
     if (this.effectSelect == -1) this.effectSelect = value;
     
@@ -278,9 +246,6 @@ VMS4.GetDeck = function(group) {
 
 VMS4.Decks.Left.addButton("RateRange", new VMS4.Button(0x11), "rateRangeHandler");
 VMS4.Decks.Left.addButton("PitchCenter", new VMS4.Button(), "pitchCenterHandler");
-VMS4.Decks.Left.addButton("Play", new VMS4.Button(), "playHandler");
-VMS4.Decks.Left.addButton("Pause", new VMS4.Button(), "pauseHandler");
-VMS4.Decks.Left.addButton("Cue", new VMS4.Button(), "cueHandler");
 VMS4.Decks.Left.addButton("JogTouch", new VMS4.Button(), "jogTouchHandler");
 VMS4.Decks.Left.addButton("EffectSelect", new VMS4.Button(), "effectSelectHandler");
 VMS4.Decks.Left.addButton("EffectSelectPress", new VMS4.Button(), "effectSelectPressHandler");
@@ -289,9 +254,6 @@ VMS4.Decks.Left.addButton("KeyLock", new VMS4.Button(), "keyLockButtonHandler");
 
 VMS4.Decks.Right.addButton("RateRange", new VMS4.Button(0x33), "rateRangeHandler");
 VMS4.Decks.Right.addButton("PitchCenter", new VMS4.Button(), "pitchCenterHandler");
-VMS4.Decks.Right.addButton("Play", new VMS4.Button(), "playHandler");
-VMS4.Decks.Right.addButton("Pause", new VMS4.Button(), "pauseHandler");
-VMS4.Decks.Right.addButton("Cue", new VMS4.Button(), "cueHandler");
 VMS4.Decks.Right.addButton("JogTouch", new VMS4.Button(), "jogTouchHandler");
 VMS4.Decks.Right.addButton("EffectSelect", new VMS4.Button(), "effectSelectHandler");
 VMS4.Decks.Right.addButton("EffectSelectPress", new VMS4.Button(), "effectSelectPressHandler");
@@ -319,21 +281,6 @@ VMS4.pitch = function(channel, control, value, status, group) {
 VMS4.pitchCenter = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
     deck.Buttons.PitchCenter.handleEvent(value);
-}
-
-VMS4.play = function(channel, control, value, status, group) {
-   var deck = VMS4.GetDeck(group);
-   deck.Buttons.Play.handleEvent(value);
-}
-
-VMS4.pause = function(channel, control, value, status, group) {
-   var deck = VMS4.GetDeck(group);
-   deck.Buttons.Pause.handleEvent(value);
-}
-
-VMS4.cue = function(channel, control, value, status, group) {
-    var deck = VMS4.GetDeck(group);
-    deck.Buttons.Cue.handleEvent(value);
 }
 
 VMS4.effectSelect = function(channel, control, value, status, group) {
