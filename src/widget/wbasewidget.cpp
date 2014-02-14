@@ -24,6 +24,19 @@ WBaseWidget::~WBaseWidget() {
     }
 }
 
+ControlWidgetConnection::EmitOption WBaseWidget::getDefaultEmitOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::EMIT_ON_PRESS;
+}
+
+ControlWidgetConnection::DirectionOption WBaseWidget::getDefaultDirectionOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+}
+
+
 void WBaseWidget::setDisplayConnection(ControlWidgetConnection* pConnection) {
     //qDebug() << "WBaseWidget::setDisplayConnection()" << pConnection->toDebugString();
     m_pDisplayConnection = pConnection;
