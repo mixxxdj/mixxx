@@ -29,9 +29,9 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
     m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
     m_pTalkoverDucking->setStates(3);
-    // Default to Auto ducking.
     m_pTalkoverDucking->set(
-            m_pConfig->getValueString(ConfigKey(m_group, "duckMode"), "1").toDouble());
+            m_pConfig->getValueString(
+                    ConfigKey(m_group, "duckMode"), QString(AUTO)).toDouble());
     connect(m_pTalkoverDucking, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckModeChanged(double)));
 }
