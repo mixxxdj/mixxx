@@ -127,7 +127,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
-            setControlParameter(newValue);
+            setControlParameterLeftUp(newValue);
         }
 
         // Update display

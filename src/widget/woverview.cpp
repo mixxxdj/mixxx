@@ -249,7 +249,12 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
     double dValue = positionToValue(m_iPos);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
-    setControlParameter(dValue);
+
+    if (e->button() == Qt::RightButton) {
+        setControlParameterRightUp(dValue);
+    } else {
+        setControlParameterLeftUp(dValue);
+    }
     m_bDrag = false;
 }
 
