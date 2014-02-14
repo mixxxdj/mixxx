@@ -127,11 +127,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
-            if (e->button() == Qt::RightButton) {
-                setControlParameterRightUp(newValue);
-            } else {
-                setControlParameterLeftUp(newValue);
-            }
+            setControlParameter(newValue);
         }
 
         // Update display
@@ -147,8 +143,7 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // Clamp to [0.0, 1.0]
     newValue = math_max(0.0, math_min(1.0, newValue));
 
-    setControlParameterDown(newValue);
-    setControlParameterUp(newValue);
+    setControlParameter(newValue);
     onConnectedControlValueChanged(newValue);
     update();
 
@@ -160,13 +155,6 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
 void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
     if (!m_bEventWhileDrag) {
         mouseMoveEvent(e);
-
-        if (e->button() == Qt::RightButton) {
-            setControlParameterRightUp(getControlParameterRight());
-        } else {
-            setControlParameterLeftUp(getControlParameterLeft());
-        }
-
         m_bDrag = false;
     }
     if (e->button() == Qt::RightButton) {
@@ -182,7 +170,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
         m_bDrag = true;
     } else {
         if (e->button() == Qt::RightButton) {
-            resetControlParameters();
+            resetControlParameter();
             m_bRightButtonPressed = true;
         } else {
             if (m_bHorizontal) {

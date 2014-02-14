@@ -31,6 +31,7 @@
 #include "widget/wpixmapstore.h"
 #include "controlpushbutton.h"
 #include "skin/skincontext.h"
+#include "controlwidgetconnection.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -53,6 +54,11 @@ class WPushButton : public WWidget {
     // associated pixmaps.
     void setStates(int iStatesW);
 
+    ControlWidgetConnection::EmitOption
+            getDefaultEmitOption(Qt::MouseButton state);
+    ControlWidgetConnection::DirectionOption
+            getDefaultDirectionOption(Qt::MouseButton state);
+
   public slots:
     void onConnectedControlValueChanged(double);
 
@@ -71,9 +77,6 @@ class WPushButton : public WWidget {
     // the button pixmaps contains alpha channel values.
     void setPixmapBackground(const QString &filename);
 
-    bool m_bLeftClickForcePush;
-    bool m_bRightClickForcePush;
-
     // True, if the button is currently pressed
     bool m_bPressed;
 
@@ -89,6 +92,7 @@ class WPushButton : public WWidget {
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;
+    bool m_hasDisplayConnection;
     QTimer m_clickTimer;
 };
 

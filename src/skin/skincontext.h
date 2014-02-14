@@ -51,6 +51,7 @@ class SkinContext {
     double selectDouble(const QDomNode& node, const QString& nodeName) const;
     int selectInt(const QDomNode& node, const QString& nodeName) const;
     bool selectBool(const QDomNode& node, const QString& nodeName, bool defaultValue) const;
+    bool hasNodeSelectBool(const QDomNode& node, const QString& nodeName, bool *value) const;
     bool selectAttributeBool(const QDomElement& element,
                              const QString& attributeName,
                              bool defaultValue) const;
