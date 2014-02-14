@@ -234,6 +234,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                     needsProcessing = true;
                 }
 
+                if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                        pChannel->isTalkover()) {
+                    m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+                }
+
                 // Process the buffer if necessary, which it damn well better be
                 if (needsProcessing) {
                     pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
