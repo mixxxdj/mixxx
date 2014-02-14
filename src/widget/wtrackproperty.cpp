@@ -1,12 +1,21 @@
+
+#include <QDebug>
+#include <QUrl>
+
+#include "controlobject.h"
 #include "widget/wtrackproperty.h"
+#include "util/dnd.h"
 
-WTrackProperty::WTrackProperty(QWidget* pParent)
-        : WLabel(pParent) {
-
+WTrackProperty::WTrackProperty(const char* group,
+                               ConfigObject<ConfigValue>* pConfig,
+                               QWidget* pParent)
+        : WLabel(pParent),
+          m_pGroup(group),
+          m_pConfig(pConfig) {
+    setAcceptDrops(true);
 }
 
 WTrackProperty::~WTrackProperty() {
-
 }
 
 void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
@@ -40,4 +49,36 @@ void WTrackProperty::updateLabel(TrackInfoObject*) {
             setText(property.toString());
         }
     }
+}
+
+void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
+    if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this);
+    }
+}
+
+void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
+    if (event->mimeData()->hasUrls() &&
+            event->mimeData()->urls().size() > 0) {
+        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
+        if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
+             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
+            event->acceptProposedAction();
+        } else {
+            event->ignore();
+        }
+    }
+}
+
+void WTrackProperty::dropEvent(QDropEvent *event) {
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
+            return;
+        }
+    }
+    event->ignore();
 }

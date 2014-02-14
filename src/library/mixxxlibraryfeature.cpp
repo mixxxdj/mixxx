@@ -14,6 +14,7 @@
 #include "treeitem.h"
 #include "soundsourceproxy.h"
 #include "widget/wlibrary.h"
+#include "util/dnd.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection,
@@ -162,15 +163,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files;
-        foreach (QUrl url, urls) {
-            // XXX: Possible WTF alert - Previously we thought we needed toString() here
-            // but what you actually want in any case when converting a QUrl to a file
-            // system path is QUrl::toLocalFile(). This is the second time we have
-            // flip-flopped on this, but I think toLocalFile() should work in any
-            // case. toString() absolutely does not work when you pass the result to a
-            files.append(url.toLocalFile());
-        }
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<int> trackIds = m_trackDao.addTracks(files, true);

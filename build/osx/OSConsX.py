@@ -476,14 +476,16 @@ def do_codesign(target, source, env):
             # Don't descend.
             del dirs[:]
 
-        # Codesign binaries.
-        for root, dirs, files in os.walk(binary_path):
-            for filename in files:
-                codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
         # Codesign plugins.
         for root, dirs, files in os.walk(plugins_path):
             for filename in files:
                 codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
+
+        # Codesign binaries.
+        for root, dirs, files in os.walk(binary_path):
+            for filename in files:
+                codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
+
         # Codesign the bundle.
         codesign_path(application_identity, keychain, entitlements, bundle)
 CodeSign = Builder(action = do_codesign)

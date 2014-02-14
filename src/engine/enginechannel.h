@@ -47,11 +47,13 @@ class EngineChannel : public EngineObject {
     virtual ChannelOrientation getOrientation() const;
     virtual const QString& getGroup() const;
 
-    virtual bool isActive() const = 0;
+    virtual bool isActive() = 0;
     void setPFL(bool enabled);
     virtual bool isPFL() const;
     void setMaster(bool enabled);
     virtual bool isMaster() const;
+    void setTalkover(bool enabled);
+    virtual bool isTalkover() const;
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) = 0;
 
@@ -73,6 +75,7 @@ class EngineChannel : public EngineObject {
     ControlPushButton* m_pOrientationLeft;
     ControlPushButton* m_pOrientationRight;
     ControlPushButton* m_pOrientationCenter;
+    ControlPushButton* m_pTalkover;
 };
 
 #endif

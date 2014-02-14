@@ -1,9 +1,9 @@
-// enginepassthrough.h
+// engineaux.h
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // unapologetically copied from enginemicrophone.h from RJ
 
-#ifndef ENGINEPASSTHROUGH_H
-#define ENGINEPASSTHROUGH_H
+#ifndef ENGINEAUX_H
+#define ENGINEAUX_H
 
 #include "util/circularbuffer.h"
 #include "controlpushbutton.h"
@@ -12,15 +12,15 @@
 #include "engine/enginevumeter.h"
 #include "soundmanagerutil.h"
 
-// EnginePassthrough is an EngineChannel that implements a mixing source whose
+// EngineAux is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager
-class EnginePassthrough : public EngineChannel, public AudioDestination {
+class EngineAux : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EnginePassthrough(const char* pGroup);
-    virtual ~EnginePassthrough();
+    EngineAux(const char* pGroup);
+    virtual ~EngineAux();
 
-    bool isActive() const;
+    bool isActive();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
@@ -30,21 +30,22 @@ class EnginePassthrough : public EngineChannel, public AudioDestination {
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int nFrames);
 
-    // Called by SoundManager whenever the passthrough input is connected to a
+    // Called by SoundManager whenever the aux input is connected to a
     // soundcard input.
-    virtual void onInputConnected(AudioInput input);
+    virtual void onInputConfigured(AudioInput input);
 
-    // Called by SoundManager whenever the passthrough input is disconnected from
+    // Called by SoundManager whenever the aux input is disconnected from
     // a soundcard input.
-    virtual void onInputDisconnected(AudioInput input);
+    virtual void onInputUnconfigured(AudioInput input);
 
   private:
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pEnabled;
+    ControlObject* m_pConfigured;
     ControlPushButton* m_pPassing;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
+    bool m_wasActive;
 };
 
-#endif /* ENGINEPASSTHROUGH_H */
+#endif // ENGINEAUX_H
