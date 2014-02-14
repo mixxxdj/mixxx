@@ -549,7 +549,7 @@ void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
     // Notify the vinyl control that a seek has taken place in case it is in
     // absolute mode and needs be switched to relative.
     if (m_pVinylControlControl) {
-        m_pVinylControlControl->notifySeek();
+        m_pVinylControlControl->notifySeekQueued();
     }
 
     queueNewPlaypos(new_playpos, seekType);
