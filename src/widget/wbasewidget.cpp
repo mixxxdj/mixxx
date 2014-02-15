@@ -42,12 +42,6 @@ void WBaseWidget::addRightConnection(ControlWidgetConnection* pConnection) {
 }
 
 double WBaseWidget::getControlParameter() const {
-    if (!m_leftConnections.isEmpty()) {
-        return m_leftConnections.at(0)->getControlParameter();
-    }
-    if (!m_rightConnections.isEmpty()) {
-        return m_rightConnections.at(0)->getControlParameter();
-    }
     if (!m_connections.isEmpty()) {
         return m_connections.at(0)->getControlParameter();
     }
@@ -67,9 +61,6 @@ double WBaseWidget::getControlParameterLeft() const {
 double WBaseWidget::getControlParameterRight() const {
     if (!m_rightConnections.isEmpty()) {
         return m_rightConnections.at(0)->getControlParameter();
-    }
-    if (!m_connections.isEmpty()) {
-        return m_connections.at(0)->getControlParameter();
     }
     return 0.0;
 }
@@ -94,20 +85,26 @@ void WBaseWidget::setControlParameter(double v) {
 }
 
 void WBaseWidget::setControlParameterLeftDown(double v) {
-    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
-        pControlConnection->setControlParameterDown(v);
-    }
-    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->setControlParameterDown(v);
+    if (!m_leftConnections.isEmpty()) {
+        foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+            pControlConnection->setControlParameterDown(v);
+        }
+    } else {
+        foreach (ControlWidgetConnection* pControlConnection, m_connections) {
+            pControlConnection->setControlParameterDown(v);
+        }
     }
 }
 
 void WBaseWidget::setControlParameterLeftUp(double v) {
-    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
-        pControlConnection->setControlParameterUp(v);
-    }
-    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->setControlParameterUp(v);
+    if (!m_leftConnections.isEmpty()) {
+        foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+            pControlConnection->setControlParameterUp(v);
+        }
+    } else {
+        foreach (ControlWidgetConnection* pControlConnection, m_connections) {
+            pControlConnection->setControlParameterUp(v);
+        }
     }
 }
 
@@ -115,16 +112,10 @@ void WBaseWidget::setControlParameterRightDown(double v) {
     foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
         pControlConnection->setControlParameterDown(v);
     }
-    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->setControlParameterDown(v);
-    }
 }
 
 void WBaseWidget::setControlParameterRightUp(double v) {
     foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
-        pControlConnection->setControlParameterUp(v);
-    }
-    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->setControlParameterUp(v);
     }
 }
