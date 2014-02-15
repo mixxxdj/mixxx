@@ -91,6 +91,19 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
     }
 }
 
+void Paintable::drawTiled(const QRectF& targetRect, QPainter* pPainter) {
+    if (!targetRect.isValid()) {
+        return;
+    }
+
+    if (!m_pPixmap.isNull() && !m_pPixmap->isNull()) {
+        pPainter->drawTiledPixmap(targetRect, *m_pPixmap, QPoint(0,0));
+    } else if (!m_pSvg.isNull() && m_pSvg->isValid()) {
+        m_pSvg->render(pPainter, targetRect);
+    }
+}
+
+
 void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
                      const QRectF& sourceRect) {
     if (!targetRect.isValid() || !sourceRect.isValid()) {

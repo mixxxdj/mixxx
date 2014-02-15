@@ -45,6 +45,7 @@ class Paintable {
     void draw(const QPointF& point, QPainter* pPainter,
               const QRectF& sourceRect);
     void draw(const QRectF& targetRect, QPainter* pPainter);
+    void drawTiled(const QRectF& targetRect, QPainter* pPainter);
     void draw(const QRectF& targetRect, QPainter* pPainter,
               const QRectF& sourceRect);
     bool isNull() const;

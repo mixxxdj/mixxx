@@ -143,7 +143,7 @@ void WWidgetGroup::paintEvent(QPaintEvent* pe) {
 
     if (m_pPixmapBack) {
         QStylePainter p(this);
-        m_pPixmapBack->draw(rect(), &p);
+        m_pPixmapBack->drawTiled(rect(), &p);
     }
 }
 
