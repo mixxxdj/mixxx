@@ -1457,7 +1457,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     QDomNode con = m_pContext->selectNode(node, "Connection");
 
     ControlWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
-    ControlWidgetConnection* pLastRightButtonConnection = NULL;
 
     while (!con.isNull()) {
         // Check that the control exists
@@ -1591,9 +1590,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 break;
             case Qt::RightButton:
                 pWidget->addRightConnection(pConnection);
-                if (directionOption & ControlWidgetConnection::DIR_TO_WIDGET) {
-                    pLastRightButtonConnection = pConnection;
-                }
                 break;
             default:
                 break;
@@ -1687,8 +1683,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     // display connection.
     if (pLastLeftOrNoButtonConnection != NULL) {
         pWidget->setDisplayConnection(pLastLeftOrNoButtonConnection);
-    } else if (pLastRightButtonConnection != NULL) {
-        pWidget->setDisplayConnection(pLastRightButtonConnection);
     }
 }
 
