@@ -36,6 +36,8 @@ class ControlWidgetConnection : public QObject {
   protected:
     WBaseWidget* m_pWidget;
     QScopedPointer<ControlObjectSlave> m_pControl;
+
+  private:
     QScopedPointer<ValueTransformer> m_pValueTransformer;
 };
 
@@ -104,12 +106,12 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     void setEmitOption(enum EmitOption v) { m_emitOption = v; };
 
     void resetControl();
-    void setControlParameter(double v);
+    void setControlParameterFromWidget(double v);
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
 
   private slots:
-    void slotControlValueChanged(double v);
+    virtual void slotControlValueChanged(double v);
 
   private:
     DirectionOption m_directionOption;
@@ -128,7 +130,7 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     QString toDebugString() const;
 
   private slots:
-    void slotControlValueChanged(double v);
+    virtual void slotControlValueChanged(double v);
 
   private:
     QByteArray m_propertyName;

@@ -87,7 +87,7 @@ void WBaseWidget::resetControlParameter() {
 
 void WBaseWidget::setControlParameter(double v) {
     foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->setControlParameter(v);
+        pControlConnection->setControlParameterFromWidget(v);
     }
 }
 

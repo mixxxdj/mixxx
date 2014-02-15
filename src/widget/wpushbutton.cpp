@@ -95,7 +95,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         bool leftClickForcePush = context.selectBool(node, "LeftClickIsPushButton", false);
         m_leftButtonMode = ControlPushButton::PUSH;
         if (!leftClickForcePush) {
-            const ConfigKey configKey = leftConnection->getKey();
+            const ConfigKey& configKey = leftConnection->getKey();
             ControlPushButton* p = dynamic_cast<ControlPushButton*>(
                     ControlObject::getControl(configKey));
             if (p) {

@@ -59,7 +59,7 @@ ControlParameterWidgetConnection::~ControlParameterWidgetConnection() {
 }
 
 QString ControlParameterWidgetConnection::toDebugString() const {
-    const ConfigKey& key = m_pControl->getKey();
+    const ConfigKey& key = getKey();
     return QString("%1,%2 Parameter: %3 Direction: %4 Emit: %5")
             .arg(key.group, key.item,
                  QString::number(m_pControl->getParameter()),
@@ -80,21 +80,21 @@ void ControlParameterWidgetConnection::resetControl() {
     }
 }
 
-void ControlParameterWidgetConnection::setControlParameter(double v) {
+void ControlParameterWidgetConnection::setControlParameterFromWidget(double v) {
     if (m_directionOption & DIR_FROM_WIDGET) {
-        m_pControl->setParameter(v);
+        setControlParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterDown(double v) {
     if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_PRESS)) {
-        m_pControl->setParameter(v);
+        setControlParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterUp(double v) {
     if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_RELEASE)) {
-        m_pControl->setParameter(v);
+        setControlParameter(v);
     }
 }
 
@@ -111,7 +111,7 @@ ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() {
 }
 
 QString ControlWidgetPropertyConnection::toDebugString() const {
-    const ConfigKey& key = m_pControl->getKey();
+    const ConfigKey& key = getKey();
     return QString("%1,%2 Parameter: %3 Property: %4 Value: %5").arg(
         key.group, key.item, QString::number(m_pControl->getParameter()), m_propertyName,
         m_pWidget->toQWidget()->property(
