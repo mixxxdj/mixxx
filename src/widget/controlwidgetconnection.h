@@ -14,6 +14,34 @@ class ValueTransformer;
 class ControlWidgetConnection : public QObject {
     Q_OBJECT
   public:
+    // Takes ownership of pControl and pTransformer.
+    ControlWidgetConnection(WBaseWidget* pBaseWidget,
+                            ControlObjectSlave* pControl,
+                            ValueTransformer* pTransformer);
+    virtual ~ControlWidgetConnection();
+
+    double getControlParameter() const;
+    void setControlParameter(double v);
+    double getControlParameterForValue(double value) const;
+
+    const ConfigKey& getKey() const {
+        return m_pControl->getKey();
+    }
+
+    virtual QString toDebugString() const = 0;
+
+  protected slots:
+    virtual void slotControlValueChanged(double v) = 0;
+
+  protected:
+    WBaseWidget* m_pWidget;
+    QScopedPointer<ControlObjectSlave> m_pControl;
+    QScopedPointer<ValueTransformer> m_pValueTransformer;
+};
+
+class ControlParameterWidgetConnection : public ControlWidgetConnection {
+    Q_OBJECT
+  public:
     enum EmitOption {
         EMIT_NEVER                = 0x00,
         EMIT_ON_PRESS             = 0x01,
@@ -60,38 +88,6 @@ class ControlWidgetConnection : public QObject {
         }
     }
 
-    // Takes ownership of pControl and pTransformer.
-    ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                            ControlObjectSlave* pControl,
-                            ValueTransformer* pTransformer);
-    virtual ~ControlWidgetConnection();
-
-    double getControlParameter() const;
-    void setControlParameter(double v);
-    double getControlParameterForValue(double value) const;
-
-    const ConfigKey& getKey() const {
-        return m_pControl->getKey();
-    }
-
-    virtual void resetControl() = 0;
-    virtual void setControlParameterDown(double v) = 0;
-    virtual void setControlParameterUp(double v) = 0;
-
-    virtual QString toDebugString() const = 0;
-
-  protected slots:
-    virtual void slotControlValueChanged(double v) = 0;
-
-  protected:
-    WBaseWidget* m_pWidget;
-    QScopedPointer<ControlObjectSlave> m_pControl;
-    QScopedPointer<ValueTransformer> m_pValueTransformer;
-};
-
-class ControlParameterWidgetConnection : public ControlWidgetConnection {
-    Q_OBJECT
-  public:
     ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
                                      ControlObjectSlave* pControl,
                                      ValueTransformer* pTransformer,
@@ -101,11 +97,16 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
 
     QString toDebugString() const;
 
-  protected:
-    virtual void resetControl();
-    virtual void setControlParameter(double v);
-    virtual void setControlParameterDown(double v);
-    virtual void setControlParameterUp(double v);
+    int getDirectionOption() const { return m_directionOption; };
+    int getEmitOption() const { return m_emitOption; };
+
+    void setDirectionOption(enum DirectionOption v) { m_directionOption = v; };
+    void setEmitOption(enum EmitOption v) { m_emitOption = v; };
+
+    void resetControl();
+    void setControlParameter(double v);
+    void setControlParameterDown(double v);
+    void setControlParameterUp(double v);
 
   private slots:
     void slotControlValueChanged(double v);
@@ -125,12 +126,6 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     virtual ~ControlWidgetPropertyConnection();
 
     QString toDebugString() const;
-
-  protected:
-    virtual void resetControl();
-    virtual void setControlParameter(double v);
-    virtual void setControlParameterDown(double v);
-    virtual void setControlParameterUp(double v);
 
   private slots:
     void slotControlValueChanged(double v);

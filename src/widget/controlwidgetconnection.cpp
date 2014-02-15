@@ -52,9 +52,7 @@ ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* 
         : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
-    if (directionOption & DIR_TO_WIDGET) {
-        slotControlValueChanged(m_pControl->get());
-    }
+    slotControlValueChanged(m_pControl->get());
 }
 
 ControlParameterWidgetConnection::~ControlParameterWidgetConnection() {
@@ -128,23 +126,4 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
         qDebug() << "Setting property" << m_propertyName
                  << "to widget failed. Value:" << dParameter;
     }
-}
-
-void ControlWidgetPropertyConnection::resetControl() {
-    // Do nothing.
-}
-
-void ControlWidgetPropertyConnection::setControlParameter(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
-}
-
-void ControlWidgetPropertyConnection::setControlParameterDown(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
-}
-
-void ControlWidgetPropertyConnection::setControlParameterUp(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
 }

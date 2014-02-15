@@ -54,11 +54,6 @@ class WPushButton : public WWidget {
     // associated pixmaps.
     void setStates(int iStatesW);
 
-    ControlWidgetConnection::EmitOption
-            getDefaultEmitOption(Qt::MouseButton state);
-    ControlWidgetConnection::DirectionOption
-            getDefaultDirectionOption(Qt::MouseButton state);
-
   public slots:
     void onConnectedControlValueChanged(double);
 
@@ -92,7 +87,6 @@ class WPushButton : public WWidget {
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;
-    bool m_hasDisplayConnection;
     QTimer m_clickTimer;
 };
 
