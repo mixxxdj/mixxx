@@ -7,8 +7,8 @@
 #include "util/debug.h"
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
-        : m_pWidget(pWidget),
-          m_pDisplayConnection(NULL) {
+        : m_pDisplayConnection(NULL),
+          m_pWidget(pWidget) {
 }
 
 WBaseWidget::~WBaseWidget() {

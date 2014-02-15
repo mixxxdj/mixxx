@@ -654,10 +654,10 @@ QWidget* LegacySkinParser::parseStandardWidget(QDomElement element,
     if (timerListener) {
         WaveformWidgetFactory::instance()->addTimerListener(pWidget);
     }
+    setupConnections(element, pWidget);
     setupBaseWidget(element, pWidget);
     setupWidget(element, pWidget);
     pWidget->setup(element, *m_pContext);
-    setupConnections(element, pWidget);
     pWidget->installEventFilter(m_pKeyboard);
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
@@ -1525,15 +1525,12 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
             if (!directionOptionSet) {
                 // default:
-                // no direction option is set
-                WPushButton* pPushbutton = dynamic_cast<WPushButton*>(pWidget);
-                if (pPushbutton) {
-                    // Calculate the default emit style form the button mode
-                    directionOption = pPushbutton->getDefaultDirectionOption(state);
-                }
+                // no direction option is explicite set
+                // Set default flag to allow the widget to change this during setup
+                directionOption |= ControlWidgetConnection::DIR_DEFAULT;
             }
 
-            ControlWidgetConnection::EmitOption emitOption =
+            int emitOption =
                     ControlWidgetConnection::EMIT_ON_PRESS;
             if(m_pContext->hasNodeSelectBool(
                     con, "EmitOnDownPress", &nodeValue)) {
@@ -1552,11 +1549,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             } else {
                 // default:
                 // no emit option is set
-                WPushButton* pPushbutton = dynamic_cast<WPushButton*>(pWidget);
-                if (pPushbutton) {
-                    // Calculate the default emit style form the button mode
-                    emitOption = pPushbutton->getDefaultEmitOption(state);
-                }
+                // Allow to change the emitOption from Widget
+                emitOption |= ControlWidgetConnection::EMIT_DEFAULT;
             }
 
             // Connect control proxy to widget. Parented to pWidget so it is not
@@ -1566,7 +1560,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
                     pWidget, pControlWidget, pTransformer,
                     static_cast<ControlWidgetConnection::DirectionOption>(directionOption),
-                    emitOption);
+                    static_cast<ControlWidgetConnection::EmitOption>(emitOption));
 
             // If we created this control, bind it to the
             // ControlWidgetConnection so that it is deleted when the connection
@@ -1599,7 +1593,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             // controls that only affect the widget.
             if (directionOption & ControlWidgetConnection::DIR_FROM_WIDGET) {
                 m_pControllerManager->getControllerLearningEventFilter()
-                        ->addWidgetClickInfo(pWidget->toQWidget(), state, control, emitOption);
+                        ->addWidgetClickInfo(pWidget->toQWidget(), state, control,
+                                static_cast<ControlWidgetConnection::EmitOption>(emitOption));
 
                 // Add keyboard shortcut info to tooltip string
                 QString key = m_pContext->selectString(con, "ConfigKey");

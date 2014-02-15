@@ -58,13 +58,15 @@ class WBaseWidget {
     void updateTooltip();
     virtual void fillDebugTooltip(QStringList* debug);
 
-  private:
-    QWidget* m_pWidget;
-    QString m_baseTooltip;
+  protected:
     QList<ControlWidgetConnection*> m_connections;
     ControlWidgetConnection* m_pDisplayConnection;
     QList<ControlWidgetConnection*> m_leftConnections;
     QList<ControlWidgetConnection*> m_rightConnections;
+
+  private:
+    QWidget* m_pWidget;
+    QString m_baseTooltip;
 
     friend class ControlParameterWidgetConnection;
 };

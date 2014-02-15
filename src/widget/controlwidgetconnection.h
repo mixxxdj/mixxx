@@ -6,7 +6,8 @@
 #include <QScopedPointer>
 #include <QByteArray>
 
-class ControlObjectSlave;
+#include "controlobjectslave.h"
+
 class WBaseWidget;
 class ValueTransformer;
 
@@ -17,11 +18,12 @@ class ControlWidgetConnection : public QObject {
         EMIT_NEVER                = 0x00,
         EMIT_ON_PRESS             = 0x01,
         EMIT_ON_RELEASE           = 0x02,
-        EMIT_ON_PRESS_AND_RELEASE = 0x03
+        EMIT_ON_PRESS_AND_RELEASE = 0x03,
+        EMIT_DEFAULT              = 0x04
     };
 
     static QString emitOptionToString(EmitOption option) {
-        switch (option) {
+        switch (option & EMIT_ON_PRESS_AND_RELEASE) {
             case EMIT_NEVER:
                 return "NEVER";
             case EMIT_ON_PRESS:
@@ -39,11 +41,12 @@ class ControlWidgetConnection : public QObject {
         DIR_NON                  = 0x00,
         DIR_FROM_WIDGET          = 0x01,
         DIR_TO_WIDGET            = 0x02,
-        DIR_FROM_AND_TO_WIDGET   = 0x03
+        DIR_FROM_AND_TO_WIDGET   = 0x03,
+        DIR_DEFAULT              = 0x04
     };
 
     static QString directionOptionToString(DirectionOption option) {
-        switch (option) {
+        switch (option & DIR_FROM_AND_TO_WIDGET) {
             case DIR_NON:
                 return "NON";
             case DIR_FROM_WIDGET:
@@ -66,6 +69,10 @@ class ControlWidgetConnection : public QObject {
     double getControlParameter() const;
     void setControlParameter(double v);
     double getControlParameterForValue(double value) const;
+
+    const ConfigKey& getKey() const {
+        return m_pControl->getKey();
+    }
 
     virtual void resetControl() = 0;
     virtual void setControlParameterDown(double v) = 0;
