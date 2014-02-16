@@ -8,35 +8,17 @@
     SquareButtonSize: the button size
 -->
 <Template>
-  <PushButton>
-    <ObjectName>HotcueButton</ObjectName>
-    <Size><Variable name="SquareButtonSize"/></Size>
-    <NumberStates>2</NumberStates>
-    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
-    <State>
-      <Number>0</Number>
-      <Text><Variable name="hotcue"/></Text>
-    </State>
-    <State>
-      <Number>1</Number>
-      <Text><Variable name="hotcue"/></Text>
-    </State>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-      <ButtonState>LeftButton</ButtonState>
-      <ConnectValueToWidget>false</ConnectValueToWidget>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-      <ButtonState>RightButton</ButtonState>
-      <ConnectValueToWidget>false</ConnectValueToWidget>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</ConfigKey>
-      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-    </Connection>
-  </PushButton>
+  <Template src="skin:left_right_display_button.xml">
+    <SetVariable name="ObjectName">HotcueButton</SetVariable>
+    <SetVariable name="Size"><Variable name="SquareButtonSize"/></SetVariable>
+    <SetVariable name="state_0_pressed"></SetVariable>
+    <SetVariable name="state_0_unpressed"></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="hotcue"/></SetVariable>
+    <SetVariable name="state_1_pressed"></SetVariable>
+    <SetVariable name="state_1_unpressed"></SetVariable>
+    <SetVariable name="state_1_text"><Variable name="hotcue"/></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</SetVariable>
+    <SetVariable name="right_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</SetVariable>
+    <SetVariable name="display_connection_control"><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</SetVariable>
+  </Template>
 </Template>

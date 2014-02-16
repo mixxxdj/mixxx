@@ -9,33 +9,17 @@
     SquareButtonSize: the button size
 -->
 <Template>
-  <PushButton>
-    <ObjectName>BeatLoopButton</ObjectName>
-    <Size><Variable name="SquareButtonSize"/></Size>
-    <NumberStates>2</NumberStates>
-    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
-    <State>
-      <Number>0</Number>
-      <Text><Variable name="text_length"/></Text>
-    </State>
-    <State>
-      <Number>1</Number>
-      <Text><Variable name="text_length"/></Text>
-    </State>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,beatloop_<Variable name="control_length"/>_toggle</ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-      <ButtonState>LeftButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,beatlooproll_<Variable name="control_length"/>_activate</ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-      <ButtonState>RightButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,beatloop_<Variable name="control_length"/>_enabled</ConfigKey>
-      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-    </Connection>
-  </PushButton>
+  <Template src="skin:left_right_display_button.xml">
+    <SetVariable name="ObjectName">BeatLoopButton</SetVariable>
+    <SetVariable name="Size"><Variable name="SquareButtonSize"/></SetVariable>
+    <SetVariable name="state_0_pressed"></SetVariable>
+    <SetVariable name="state_0_unpressed"></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="text_length"/></SetVariable>
+    <SetVariable name="state_1_pressed"></SetVariable>
+    <SetVariable name="state_1_unpressed"></SetVariable>
+    <SetVariable name="state_1_text"><Variable name="text_length"/></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,beatloop_<Variable name="control_length"/>_toggle</SetVariable>
+    <SetVariable name="right_connection_control"><Variable name="group"/>,beatlooproll_<Variable name="control_length"/>_activate</SetVariable>
+    <SetVariable name="display_connection_control"><Variable name="group"/>,beatloop_<Variable name="control_length"/>_enabled</SetVariable>
+  </Template>
 </Template>
