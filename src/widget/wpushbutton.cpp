@@ -30,6 +30,7 @@
 #include "controlpushbutton.h"
 #include "control/controlbehavior.h"
 #include "util/debug.h"
+#include "skin/legacyskinparser.h"
 
 const int PB_SHORTKLICKTIME = 200;
 
@@ -92,20 +93,11 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     while (!con.isNull()) {
         // Get ConfigKey
         QString key = context.selectString(con, "ConfigKey");
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 
-        ConfigKey configKey;
-        configKey.group = key.left(key.indexOf(","));
-        configKey.item = key.mid(key.indexOf(",")+1);
-
-        bool isLeftButton = false;
-        bool isRightButton = false;
-        if (context.hasNode(con, "ButtonState")) {
-            if (context.selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
-                isLeftButton = true;
-            } else if (context.selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
-                isRightButton = true;
-            }
-        }
+        Qt::MouseButton button = LegacySkinParser::parseButtonState(con, context);
+        bool isLeftButton = button == Qt::LeftButton;
+        bool isRightButton = button == Qt::RightButton;
 
         ControlPushButton* p = dynamic_cast<ControlPushButton*>(
                 ControlObject::getControl(configKey));
