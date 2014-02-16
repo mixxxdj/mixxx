@@ -44,11 +44,6 @@ class WBaseWidget {
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
 
-    virtual ControlWidgetConnection::EmitOption getDefaultEmitOption(
-        Qt::MouseButton state);
-    virtual ControlWidgetConnection::DirectionOption getDefaultDirectionOption(
-        Qt::MouseButton state);
-
   protected:
     virtual void onConnectedControlValueChanged(double v) {
         Q_UNUSED(v);
