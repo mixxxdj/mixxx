@@ -213,7 +213,8 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) 
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+                                                          Paintable::STRETCH);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << "WPushButton: Error loading pixmap:" << filename;
@@ -226,7 +227,8 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) 
 
 void WPushButton::setPixmapBackground(const QString &filename) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename,
+                                               Paintable::TILE);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << "WPushButton: Error loading background pixmap:" << filename;
     }

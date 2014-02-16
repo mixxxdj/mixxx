@@ -40,7 +40,7 @@ void WKnobComposed::clear() {
 }
 
 void WKnobComposed::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename, Paintable::TILE);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << filename;
@@ -48,7 +48,7 @@ void WKnobComposed::setPixmapBackground(const QString& filename) {
 }
 
 void WKnobComposed::setPixmapKnob(const QString& filename) {
-    m_pKnob = WPixmapStore::getPaintable(filename);
+    m_pKnob = WPixmapStore::getPaintable(filename, Paintable::STRETCH);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading knob pixmap:" << filename;

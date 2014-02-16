@@ -65,7 +65,8 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
 }
 
 void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
-    m_pSlider = WPixmapStore::getPaintable(filenameSlider);
+    m_pSlider = WPixmapStore::getPaintable(filenameSlider,
+                                           Paintable::STRETCH);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
     } else {
@@ -76,7 +77,8 @@ void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
 
 void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameHandle) {
     m_bHorizontal = bHorizontal;
-    m_pHandle = WPixmapStore::getPaintable(filenameHandle);
+    m_pHandle = WPixmapStore::getPaintable(filenameHandle,
+                                           Paintable::STRETCH);
     if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
     } else {

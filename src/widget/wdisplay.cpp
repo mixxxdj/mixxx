@@ -84,7 +84,7 @@ void WDisplay::resetPositions() {
 }
 
 void WDisplay::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename, Paintable::TILE);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << filename;
@@ -97,7 +97,8 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+                                                          Paintable::TILE);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << metaObject()->className()

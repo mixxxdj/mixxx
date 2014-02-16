@@ -82,7 +82,19 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
+        QDomElement backpath = context.selectElement(node, "BackPath");
+        Paintable::DrawMode mode;
+        QString mode_str = backpath.attribute("mode", "TILE");
+        qDebug() << "DRAWMODE " << mode_str;
+        if (mode_str.toUpper() == "STRETCH") {
+            qDebug() << "selected stretch";
+            mode = Paintable::STRETCH;
+        } else {
+            qDebug() << "selected tile";
+            mode = Paintable::TILE;
+        }
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
+                            mode);
     }
 
     QLayout* pLayout = NULL;
@@ -123,9 +135,9 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(const QString &filename) {
+void WWidgetGroup::setPixmapBackground(const QString &filename, Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
     if (!m_pPixmapBack) {
         qDebug() << "WWidgetGroup: Error loading background pixmap:" << filename;
     }
@@ -143,7 +155,7 @@ void WWidgetGroup::paintEvent(QPaintEvent* pe) {
 
     if (m_pPixmapBack) {
         QStylePainter p(this);
-        m_pPixmapBack->drawTiled(rect(), &p);
+        m_pPixmapBack->draw(rect(), &p);
     }
 }
 
