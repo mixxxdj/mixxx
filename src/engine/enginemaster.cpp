@@ -204,6 +204,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
 
+    // Clear talkover compressor for the next round of gain calculation.
+    m_pTalkoverDucking->clearKeys();
+
     // Find the Sync Master and process it first then process all the slaves
     // (and skip the master).
 
@@ -232,6 +235,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                 if (pChannel->isPFL()) {
                     *headphoneOutput |= (1 << channel_number);
                     needsProcessing = true;
+                }
+
+                if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                        pChannel->isTalkover()) {
+                    m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
                 }
 
                 // Process the buffer if necessary, which it damn well better be

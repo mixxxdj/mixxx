@@ -13,27 +13,22 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pConfigured(new ControlObject(ConfigKey(pGroup, "configured"))),
-          m_pControlTalkover(new ControlPushButton(ConfigKey(pGroup, "talkover"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1),
           m_wasActive(false) {
-    m_pControlTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
-
     // You normally don't expect to hear yourself in the headphones. Default PFL
     // setting for mic to false. User can over-ride by setting the "pfl" or
     // "master" controls.
     setMaster(true);
     setPFL(false);
-    setTalkover(true);
 }
 
 EngineMicrophone::~EngineMicrophone() {
     qDebug() << "~EngineMicrophone()";
     SampleUtil::free(m_pConversionBuffer);
     delete m_pConfigured;
-    delete m_pControlTalkover;
 }
 
 bool EngineMicrophone::isActive() {
@@ -70,7 +65,7 @@ void EngineMicrophone::onInputUnconfigured(AudioInput input) {
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                      unsigned int nFrames) {
-    if (m_pControlTalkover->get() == 0.0) {
+    if (!isTalkover()) {
         return;
     }
 
@@ -127,7 +122,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.
-    if (m_pControlTalkover->get() > 0.0) {
+    if (isTalkover()) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This
