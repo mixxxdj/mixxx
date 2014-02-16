@@ -85,12 +85,9 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         QDomElement backpath = context.selectElement(node, "BackPath");
         Paintable::DrawMode mode;
         QString mode_str = backpath.attribute("mode", "TILE");
-        qDebug() << "DRAWMODE " << mode_str;
         if (mode_str.toUpper() == "STRETCH") {
-            qDebug() << "selected stretch";
             mode = Paintable::STRETCH;
         } else {
-            qDebug() << "selected tile";
             mode = Paintable::TILE;
         }
         setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),

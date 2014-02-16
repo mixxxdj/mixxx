@@ -17,7 +17,16 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
+        QDomElement backpath = context.selectElement(node, "BackPath");
+        Paintable::DrawMode mode;
+        QString mode_str = backpath.attribute("mode", "TILE");
+        if (mode_str.toUpper() == "STRETCH") {
+            mode = Paintable::STRETCH;
+        } else {
+            mode = Paintable::TILE;
+        }
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
+                            mode);
     }
 
     // Set background pixmap if available
@@ -39,8 +48,9 @@ void WKnobComposed::clear() {
     m_pKnob.clear();
 }
 
-void WKnobComposed::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, Paintable::TILE);
+void WKnobComposed::setPixmapBackground(const QString& filename,
+                                        Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << filename;
