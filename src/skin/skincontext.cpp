@@ -141,6 +141,16 @@ bool SkinContext::selectAttributeBool(const QDomElement& element,
     return defaultValue;
 }
 
+QString SkinContext::selectAttributeString(const QDomElement& element,
+                                           const QString& attributeName,
+                                           QString defaultValue) const {
+    if (element.hasAttribute(attributeName)) {
+        QString stringValue = element.attribute(attributeName);
+        return stringValue == "" ? defaultValue :stringValue;
+    }
+    return defaultValue;
+}
+
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
     if (variableNode.hasAttribute("expression")) {
         QScriptValue result = m_scriptEngine.evaluate(
