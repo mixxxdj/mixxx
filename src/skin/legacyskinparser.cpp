@@ -254,6 +254,21 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     return manifest;
 }
 
+// static
+Qt::MouseButton LegacySkinParser::parseButtonState(QDomNode node,
+                                                   const SkinContext& context) {
+    if (context.hasNode(node, "ButtonState")) {
+        if (context.selectString(node, "ButtonState")
+                .contains("LeftButton", Qt::CaseInsensitive)) {
+            return Qt::LeftButton;
+        } else if (context.selectString(node, "ButtonState")
+                       .contains("RightButton", Qt::CaseInsensitive)) {
+            return Qt::RightButton;
+        }
+    }
+    return Qt::NoButton;
+}
+
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
@@ -1500,14 +1515,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             }
         } else {
             bool nodeValue;
-            Qt::MouseButton state = Qt::NoButton;
-            if (m_pContext->hasNode(con, "ButtonState")) {
-                if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
-                    state = Qt::LeftButton;
-                } else if (m_pContext->selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
-                    state = Qt::RightButton;
-                }
-            }
+            Qt::MouseButton state = parseButtonState(con, *m_pContext);
 
             bool directionOptionSet = false;
             int directionOption = ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET;
