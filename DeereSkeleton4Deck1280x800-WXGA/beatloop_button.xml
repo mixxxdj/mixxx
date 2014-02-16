@@ -1,0 +1,41 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An individual beatloop button.
+  Variables:
+    group: The group for the controls.
+    control_length: The length as used in control names.
+    text_length: The length in text form.
+    SquareButtonSize: the button size
+-->
+<Template>
+  <PushButton>
+    <ObjectName>BeatLoopButton</ObjectName>
+    <Size><Variable name="SquareButtonSize"/></Size>
+    <NumberStates>2</NumberStates>
+    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="text_length"/></Text>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="text_length"/></Text>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,beatloop_<Variable name="control_length"/>_toggle</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,beatlooproll_<Variable name="control_length"/>_activate</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,beatloop_<Variable name="control_length"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+  </PushButton>
+</Template>

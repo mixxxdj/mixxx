@@ -33,124 +33,25 @@
             <ObjectName>BeatLoopUpperRow</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>1/8</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>1/8</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_0.125_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_0.125_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_0.125_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">0.125</SetVariable>
+                <SetVariable name="text_length">1/8</SetVariable>
+              </Template>
 
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>1/4</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>1/4</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_0.25_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_0.25_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection><ConfigKey><Variable name="group"/>,beatloop_0.25_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">0.25</SetVariable>
+                <SetVariable name="text_length">1/4</SetVariable>
+              </Template>
 
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>1/2</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>1/2</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_0.5_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_0.5_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_0.5_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">0.5</SetVariable>
+                <SetVariable name="text_length">1/2</SetVariable>
+              </Template>
 
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>1</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>1</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_1_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_1_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_1_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">1</SetVariable>
+                <SetVariable name="text_length">1</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
@@ -158,126 +59,25 @@
             <ObjectName>BeatLoopLowerRow</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>2</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>2</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_2_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_2_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_2_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">2</SetVariable>
+                <SetVariable name="text_length">2</SetVariable>
+              </Template>
 
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>4</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>4</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_4_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_4_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey>
-                    <Variable name="group"/>,beatloop_4_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">4</SetVariable>
+                <SetVariable name="text_length">4</SetVariable>
+              </Template>
 
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>8</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>8</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_8_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_8_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_8_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">8</SetVariable>
+                <SetVariable name="text_length">8</SetVariable>
+              </Template>
 
-              <PushButton>
-                <ObjectName>BeatLoopButton</ObjectName>
-                <Size><Variable name="SquareButtonSize"/></Size>
-                <NumberStates>2</NumberStates>
-                <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <State>
-                  <Number>0</Number>
-                  <Text>16</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>16</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_16_toggle</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatlooproll_16_activate</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatloop_16_enabled</ConfigKey>
-                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                </Connection>
-              </PushButton>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">16</SetVariable>
+                <SetVariable name="text_length">16</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>
