@@ -1,0 +1,42 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An individual hotcue button.
+  Variables:
+    group: The group for the controls.
+    hotcue: The 1-indexed number of the hotcue.
+    SquareButtonSize: the button size
+-->
+<Template>
+  <PushButton>
+    <ObjectName>HotcueButton</ObjectName>
+    <Size><Variable name="SquareButtonSize"/></Size>
+    <NumberStates>2</NumberStates>
+    <LeftClickIsPushButton>true</LeftClickIsPushButton>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="hotcue"/></Text>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="hotcue"/></Text>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+      <ConnectValueToWidget>false</ConnectValueToWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>RightButton</ButtonState>
+      <ConnectValueToWidget>false</ConnectValueToWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+  </PushButton>
+</Template>
