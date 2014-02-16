@@ -17,16 +17,10 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        QDomElement backpath = context.selectElement(node, "BackPath");
-        Paintable::DrawMode mode;
-        QString mode_str = backpath.attribute("mode", "TILE");
-        if (mode_str.toUpper() == "STRETCH") {
-            mode = Paintable::STRETCH;
-        } else {
-            mode = Paintable::TILE;
-        }
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "BackPath"), "mode", "TILE");
         setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
-                            mode);
+                            Paintable::DrawModeFromString(mode_str));
     }
 
     // Set background pixmap if available

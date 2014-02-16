@@ -29,6 +29,8 @@
 
 #include "skin/imgsource.h"
 
+class QString;
+
 // Wrapper around QImage and QSvgRenderer to support rendering SVG images in
 // high fidelity.
 class Paintable {
@@ -53,6 +55,7 @@ class Paintable {
     void draw(const QRectF& targetRect, QPainter* pPainter,
               const QRectF& sourceRect);
     bool isNull() const;
+    static DrawMode DrawModeFromString(QString str);
 
   private:
     void resizeSvgPixmap(const QRectF& targetRect, const QRectF& sourceRect);

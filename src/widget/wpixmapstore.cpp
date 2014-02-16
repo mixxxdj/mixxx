@@ -17,11 +17,22 @@
 
 #include "widget/wpixmapstore.h"
 
+#include <QString>
 #include <QtDebug>
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
 QSharedPointer<ImgSource> WPixmapStore::m_loader = QSharedPointer<ImgSource>();
+
+Paintable::DrawMode Paintable::DrawModeFromString(QString str) {
+    if (str.toUpper() == "TILE") {
+        return TILE;
+    } else if (str.toUpper() == "STRETCH") {
+        return STRETCH;
+    }
+    qWarning() << "Unknown string for drawing mode " << str << ", using TILE";
+    return TILE;
+}
 
 Paintable::Paintable(QImage* pImage, DrawMode mode)
         : m_draw_mode(mode) {
