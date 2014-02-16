@@ -52,10 +52,13 @@ ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* 
         : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
-    slotControlValueChanged(m_pControl->get());
 }
 
 ControlParameterWidgetConnection::~ControlParameterWidgetConnection() {
+}
+
+void ControlParameterWidgetConnection::Init() {
+    slotControlValueChanged(m_pControl->get());
 }
 
 QString ControlParameterWidgetConnection::toDebugString() const {

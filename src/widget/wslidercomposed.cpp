@@ -27,7 +27,7 @@
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_dOldValue(0.0),
+      m_dOldValue(-1.0), // virgin
       m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),

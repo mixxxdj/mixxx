@@ -97,6 +97,8 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
                                      EmitOption emitOption);
     virtual ~ControlParameterWidgetConnection();
 
+    void Init();
+
     QString toDebugString() const;
 
     int getDirectionOption() const { return m_directionOption; };

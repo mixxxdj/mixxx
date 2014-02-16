@@ -439,10 +439,11 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     WSplitter* pSplitter = new WSplitter(m_pParent);
+    setupConnections(node, pSplitter);
     setupBaseWidget(node, pSplitter);
     setupWidget(node, pSplitter);
     pSplitter->setup(node, *m_pContext);
-    setupConnections(node, pSplitter);
+    pSplitter->Init();
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     QWidget* pOldParent = m_pParent;
@@ -495,10 +496,11 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
+    setupConnections(node, pGroup);
     setupBaseWidget(node, pGroup);
     setupWidget(node, pGroup);
     pGroup->setup(node, *m_pContext);
-    setupConnections(node, pGroup);
+    pGroup->Init();
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
 
@@ -538,9 +540,11 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
+    setupConnections(node, pStack);
     setupBaseWidget(node, pStack);
     setupWidget(node, pStack);
-    setupConnections(node, pStack);
+    pStack->Init();
+
 
     if (createdNext && pNextControl) {
         pNextControl->setParent(pStack);
@@ -661,6 +665,7 @@ QWidget* LegacySkinParser::parseStandardWidget(QDomElement element,
     pWidget->installEventFilter(m_pKeyboard);
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
     return pWidget;
 }
 
@@ -678,12 +683,13 @@ void LegacySkinParser::setupLabelWidget(QDomElement element, WLabel* pLabel) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     pLabel->setup(element, *m_pContext);
+    setupConnections(element, pLabel);
     setupBaseWidget(element, pLabel);
     setupWidget(element, pLabel);
-    setupConnections(element, pLabel);
     pLabel->installEventFilter(m_pKeyboard);
     pLabel->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
+    pLabel->Init();
 }
 
 QWidget* LegacySkinParser::parseOverview(QDomElement node) {
@@ -709,12 +715,13 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
+    setupConnections(node, overviewWidget);
     setupBaseWidget(node, overviewWidget);
     setupWidget(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
-    setupConnections(node, overviewWidget);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    overviewWidget->Init();
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(loadTrack(TrackPointer)),
@@ -752,16 +759,16 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
+    setupConnections(node, viewer);
     setupBaseWidget(node, viewer);
     setupWidget(node, viewer);
+    viewer->Init();
 
     // connect display with loading/unloading of tracks
     QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
                      viewer, SLOT(onTrackLoaded(TrackPointer)));
     QObject::connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
                      viewer, SLOT(onTrackUnloaded(TrackPointer)));
-
-    setupConnections(node, viewer);
 
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
@@ -871,6 +878,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
+    setupConnections(node, spinny);
     setupBaseWidget(node, spinny);
     setupWidget(node, spinny);
 
@@ -879,9 +887,9 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
     spinny->setup(node, *m_pContext, pSafeChannelStr);
-    setupConnections(node, spinny);
     spinny->installEventFilter(m_pKeyboard);
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    spinny->Init();
     return spinny;
 }
 

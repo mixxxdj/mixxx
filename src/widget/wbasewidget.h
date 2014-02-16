@@ -13,6 +13,8 @@ class WBaseWidget {
     WBaseWidget(QWidget* pWidget);
     virtual ~WBaseWidget();
 
+    void Init();
+
     QWidget* toQWidget() {
         return m_pWidget;
     }

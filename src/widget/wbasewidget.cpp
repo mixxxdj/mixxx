@@ -27,6 +27,12 @@ WBaseWidget::~WBaseWidget() {
     }
 }
 
+void WBaseWidget::Init() {
+    if (m_pDisplayConnection) {
+        m_pDisplayConnection->Init();
+    }
+}
+
 void WBaseWidget::setDisplayConnection(ControlParameterWidgetConnection* pConnection) {
     //qDebug() << "WBaseWidget::setDisplayConnection()" << pConnection->toDebugString();
     m_pDisplayConnection = pConnection;
