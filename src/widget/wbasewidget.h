@@ -51,6 +51,8 @@ class WBaseWidget {
 
     void resetControlParameter();
     void setControlParameter(double v);
+    void setControlParameterDown(double v);
+    void setControlParameterUp(double v);
     void setControlParameterLeftDown(double v);
     void setControlParameterLeftUp(double v);
     void setControlParameterRightDown(double v);
