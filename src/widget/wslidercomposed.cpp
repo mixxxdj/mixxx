@@ -91,7 +91,7 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getControlParameterLeft());
+        onConnectedControlValueChanged(getControlParameter());
         update();
     }
 }
@@ -135,7 +135,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
-            setControlParameterLeftUp(newValue);
+            setControlParameterUp(newValue);
         }
 
         // Update display
