@@ -83,21 +83,21 @@ void ControlParameterWidgetConnection::resetControl() {
     }
 }
 
-void ControlParameterWidgetConnection::setControlParameterFromWidget(double v) {
+void ControlParameterWidgetConnection::setControlParameter(double v) {
     if (m_directionOption & DIR_FROM_WIDGET) {
-        setControlParameter(v);
+        ControlWidgetConnection::setControlParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterDown(double v) {
     if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_PRESS)) {
-        setControlParameter(v);
+        ControlWidgetConnection::setControlParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterUp(double v) {
     if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_RELEASE)) {
-        setControlParameter(v);
+        ControlWidgetConnection::setControlParameter(v);
     }
 }
 

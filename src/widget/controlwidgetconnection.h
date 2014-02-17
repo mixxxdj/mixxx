@@ -21,7 +21,6 @@ class ControlWidgetConnection : public QObject {
     virtual ~ControlWidgetConnection();
 
     double getControlParameter() const;
-    void setControlParameter(double v);
     double getControlParameterForValue(double value) const;
 
     const ConfigKey& getKey() const {
@@ -34,6 +33,8 @@ class ControlWidgetConnection : public QObject {
     virtual void slotControlValueChanged(double v) = 0;
 
   protected:
+    void setControlParameter(double v);
+
     WBaseWidget* m_pWidget;
     QScopedPointer<ControlObjectSlave> m_pControl;
 
@@ -108,7 +109,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     void setEmitOption(enum EmitOption v) { m_emitOption = v; };
 
     void resetControl();
-    void setControlParameterFromWidget(double v);
+    void setControlParameter(double v);
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
 
