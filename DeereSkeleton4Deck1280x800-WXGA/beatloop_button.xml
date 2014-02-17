@@ -9,7 +9,7 @@
     SmallSquareButtonSize: the button size
 -->
 <Template>
-  <Template src="skin:left_right_display_button.xml">
+  <Template src="skin:left_right_display_2state_button.xml">
     <SetVariable name="ObjectName">BeatLoopButton</SetVariable>
     <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
     <SetVariable name="state_0_pressed"></SetVariable>
