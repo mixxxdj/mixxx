@@ -16,7 +16,9 @@
         <Children>
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="ObjectName">FastBack</SetVariable>
-            <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">&lt;&lt;</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
@@ -26,7 +28,9 @@
 
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="ObjectName">FastFwd</SetVariable>
-            <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">&gt;&gt;</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
@@ -41,7 +45,9 @@
         <Children>
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="ObjectName">ReverseButton</SetVariable>
-            <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">◀</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
@@ -51,7 +57,9 @@
 
           <Template src="skin:left_right_2state_button.xml">
             <SetVariable name="ObjectName">PlayToggle</SetVariable>
-            <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">▶</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>

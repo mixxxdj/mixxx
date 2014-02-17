@@ -16,7 +16,9 @@
         <Children>
           <Template src="skin:left_1state_button.xml">
             <SetVariable name="ObjectName">LoopIn</SetVariable>
-            <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">IN</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
@@ -25,7 +27,9 @@
 
           <Template src="skin:left_1state_button.xml">
             <SetVariable name="ObjectName">LoopOut</SetVariable>
-            <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">OUT</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
@@ -39,7 +43,9 @@
         <Children>
           <Template src="skin:left_display_2state_button.xml">
             <SetVariable name="ObjectName">ReloopExit</SetVariable>
-            <SetVariable name="Size"><Variable name="WideButtonSize"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallHorizontalStretchButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">RELOOP</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>

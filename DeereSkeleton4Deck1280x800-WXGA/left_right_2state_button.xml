@@ -12,7 +12,9 @@
 <Template>
   <PushButton>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
-    <Size><Variable name="Size"/></Size>
+    <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
+    <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
+    <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>
