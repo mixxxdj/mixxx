@@ -21,7 +21,7 @@
           <Text>4DECK</Text>
         </State>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
         </Connection>
       </PushButton>
