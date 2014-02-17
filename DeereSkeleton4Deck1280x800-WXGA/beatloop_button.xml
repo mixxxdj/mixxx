@@ -6,12 +6,12 @@
     group: The group for the controls.
     control_length: The length as used in control names.
     text_length: The length in text form.
-    SquareButtonSize: the button size
+    SmallSquareButtonSize: the button size
 -->
 <Template>
   <Template src="skin:left_right_display_button.xml">
     <SetVariable name="ObjectName">BeatLoopButton</SetVariable>
-    <SetVariable name="Size"><Variable name="SquareButtonSize"/></SetVariable>
+    <SetVariable name="Size"><Variable name="SmallSquareButtonSize"/></SetVariable>
     <SetVariable name="state_0_pressed"></SetVariable>
     <SetVariable name="state_0_unpressed"></SetVariable>
     <SetVariable name="state_0_text"><Variable name="text_length"/></SetVariable>

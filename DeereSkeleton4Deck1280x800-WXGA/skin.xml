@@ -32,7 +32,9 @@
   <Layout>vertical</Layout>
 
   <Children>
-    <SetVariable name="SquareButtonSize">20f,20f</SetVariable>
+    <SetVariable name="SmallSquareButtonSize">20f,20f</SetVariable>
+    <SetVariable name="BigSquareButtonSize">40f,40f</SetVariable>
+
     <SetVariable name="TallButtonSize">20f,40f</SetVariable>
     <SetVariable name="WideButtonSize">40f,20f</SetVariable>
 
