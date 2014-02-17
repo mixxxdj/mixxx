@@ -55,6 +55,10 @@ WLabel {
   qproperty-alignment: 'AlignCenter';
 }
 
+#ControlsRow {
+  qproperty-layoutSpacing: 5;
+}
+
 /* Make the hotcue button grid have black borders between all buttons */
 #HotcueGrid {
   background-color: black;
