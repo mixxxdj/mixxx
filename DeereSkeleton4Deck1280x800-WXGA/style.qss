@@ -81,6 +81,19 @@ WLabel {
   background-color: green;
 }
 
+/* Make the transport button grid have black borders between all buttons */
+#TransportContainer {
+  background-color: black;
+  padding: 1px;
+  qproperty-layoutSpacing: 1;
+}
+#TransportContainer WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#TransportContainer WPushButton {
+  background-color: green;
+}
+
 /* All widget groups that are children of #DeckRows should AlignTop. */
 #DeckRows > WWidgetGroup {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
