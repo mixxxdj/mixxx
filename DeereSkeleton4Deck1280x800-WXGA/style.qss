@@ -55,6 +55,32 @@ WLabel {
   qproperty-alignment: 'AlignCenter';
 }
 
+/* Make the hotcue button grid have black borders between all buttons */
+#HotcueGrid {
+  background-color: black;
+  qproperty-layoutSpacing: 1;
+  padding: 1px;
+}
+#HotcueGrid WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#HotcueGrid WPushButton {
+  background-color: green;
+}
+
+/* Make the beatloop button grid have black borders between all buttons */
+#BeatLoopContainer {
+  background-color: black;
+  padding: 1px;
+  qproperty-layoutSpacing: 1;
+}
+#BeatLoopContainer WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#BeatLoopContainer WPushButton {
+  background-color: green;
+}
+
 /* All widget groups that are children of #DeckRows should AlignTop. */
 #DeckRows > WWidgetGroup {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';

@@ -13,7 +13,9 @@
     <Children>
       <PushButton>
         <ObjectName>LoopHalve</ObjectName>
-        <Size><Variable name="TallButtonSize"/></Size>
+        <!-- Grow to be as tall as the outer WidgetGroup -->
+        <MinimumSize><Variable name="SmallSquareButtonSideLength"/>,-1</MinimumSize>
+        <MaximumSize><Variable name="SmallSquareButtonSideLength"/>,-1</MaximumSize>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -85,7 +87,9 @@
 
       <PushButton>
         <ObjectName>LoopDouble</ObjectName>
-        <Size><Variable name="TallButtonSize"/></Size>
+        <!-- Grow to be as tall as the outer WidgetGroup -->
+        <MinimumSize><Variable name="SmallSquareButtonSideLength"/>,-1</MinimumSize>
+        <MaximumSize><Variable name="SmallSquareButtonSideLength"/>,-1</MaximumSize>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
