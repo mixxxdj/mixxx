@@ -30,7 +30,7 @@ Paintable::DrawMode Paintable::DrawModeFromString(QString str) {
     } else if (str.toUpper() == "STRETCH") {
         return STRETCH;
     }
-    qWarning() << "Unknown string for drawing mode " << str << ", using TILE";
+    qWarning() << "Unknown string for Paintable drawing mode " << str << ", using TILE";
     return TILE;
 }
 
