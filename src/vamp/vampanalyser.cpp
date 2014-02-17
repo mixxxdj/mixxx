@@ -93,7 +93,7 @@ void VampAnalyser::initializePluginPaths() {
         pathElements << developer32Root.absolutePath();
     }
     QDir developer64Root(applicationPath);
-    if (developer64Root.cd("lin32_build") && developer64Root.cd("vamp-plugins")) {
+    if (developer64Root.cd("lin64_build") && developer64Root.cd("vamp-plugins")) {
         pathElements << developer64Root.absolutePath();
     }
 #endif
