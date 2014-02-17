@@ -64,6 +64,12 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
+ControlWidgetConnection::EmitOption WSliderComposed::getDefaultEmitOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+}
+
 void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
     m_pSlider = WPixmapStore::getPaintable(filenameSlider,
                                            Paintable::STRETCH);
