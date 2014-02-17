@@ -98,6 +98,18 @@ WLabel {
   background-color: green;
 }
 
+#LoopingContainer {
+  background-color: black;
+  padding: 1px;
+  qproperty-layoutSpacing: 1;
+}
+#LoopingContainer WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#LoopingContainer WPushButton {
+  background-color: green;
+}
+
 /* All widget groups that are children of #DeckRows should AlignTop. */
 #DeckRows > WWidgetGroup {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
