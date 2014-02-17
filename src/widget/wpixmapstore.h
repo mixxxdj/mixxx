@@ -29,13 +29,20 @@
 
 #include "skin/imgsource.h"
 
+class QString;
+
 // Wrapper around QImage and QSvgRenderer to support rendering SVG images in
 // high fidelity.
 class Paintable {
   public:
+    enum DrawMode {
+        STRETCH,
+        TILE
+    };
+
     // Takes ownership of QImage.
-    Paintable(QImage* pImage);
-    Paintable(const QString& fileName);
+    Paintable(QImage* pImage, DrawMode mode);
+    Paintable(const QString& fileName, DrawMode mode);
 
     QSize size() const;
     int width() const;
@@ -48,6 +55,7 @@ class Paintable {
     void draw(const QRectF& targetRect, QPainter* pPainter,
               const QRectF& sourceRect);
     bool isNull() const;
+    static DrawMode DrawModeFromString(QString str);
 
   private:
     void resizeSvgPixmap(const QRectF& targetRect, const QRectF& sourceRect);
@@ -55,6 +63,7 @@ class Paintable {
     QScopedPointer<QPixmap> m_pPixmap;
     QScopedPointer<QSvgRenderer> m_pSvg;
     QScopedPointer<QPixmap> m_pPixmapSvg;
+    DrawMode m_draw_mode;
 };
 
 typedef QSharedPointer<Paintable> PaintablePointer;
@@ -62,7 +71,8 @@ typedef QWeakPointer<Paintable> WeakPaintablePointer;
 
 class WPixmapStore {
   public:
-    static PaintablePointer getPaintable(const QString& fileName);
+    static PaintablePointer getPaintable(const QString& fileName,
+                                         Paintable::DrawMode mode);
     static QPixmap* getPixmapNoCache(const QString& fileName);
     static void setLoader(QSharedPointer<ImgSource> ld);
 

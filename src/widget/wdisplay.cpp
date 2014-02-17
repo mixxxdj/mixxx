@@ -39,8 +39,10 @@ WDisplay::~WDisplay() {
 void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(context.getSkinPath(
-            context.selectString(node, "BackPath")));
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "BackPath"), "scalemode", "TILE");
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
+                            Paintable::DrawModeFromString(mode_str));
     }
 
     // Number of states
@@ -83,8 +85,9 @@ void WDisplay::resetPositions() {
     m_disabledPixmaps.resize(0);
 }
 
-void WDisplay::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+void WDisplay::setPixmapBackground(const QString& filename,
+                                   Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << filename;
@@ -97,7 +100,8 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+                                                          Paintable::TILE);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << metaObject()->className()

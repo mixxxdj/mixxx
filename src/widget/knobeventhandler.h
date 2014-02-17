@@ -42,7 +42,7 @@ class KnobEventHandler {
         if (!m_bRightButtonPressed) {
             QCursor::setPos(m_startPos);
             double value = valueFromMouseEvent(pWidget, e);
-            pWidget->setControlParameter(value);
+            pWidget->setControlParameterDown(value);
             pWidget->update();
         }
     }
@@ -71,7 +71,7 @@ class KnobEventHandler {
                 QCursor::setPos(m_startPos);
                 QApplication::restoreOverrideCursor();
                 value = valueFromMouseEvent(pWidget, e);
-                pWidget->setControlParameter(value);
+                pWidget->setControlParameterUp(value);
                 pWidget->update();
                 break;
             case Qt::RightButton:

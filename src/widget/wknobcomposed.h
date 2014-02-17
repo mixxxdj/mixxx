@@ -29,7 +29,7 @@ class WKnobComposed : public WWidget {
 
   private:
     void clear();
-    void setPixmapBackground(const QString& filename);
+    void setPixmapBackground(const QString& filename, Paintable::DrawMode mode);
     void setPixmapKnob(const QString& filename);
 
     PaintablePointer m_pKnob;
