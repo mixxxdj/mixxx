@@ -14,101 +14,61 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <PushButton>
-            <ObjectName>FastBack</ObjectName>
-            <Size>20f,20f</Size>
-            <NumberStates>1</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&lt;&lt;</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,back</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,start</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="ObjectName">FastBack</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">&lt;&lt;</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,back</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,start</SetVariable>
+          </Template>
 
-          <PushButton>
-            <ObjectName>FastFwd</ObjectName>
-            <Size>20f,20f</Size>
-            <NumberStates>1</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&gt;&gt;</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,fwd</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,end</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="ObjectName">FastFwd</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">&gt;&gt;</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,fwd</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,end</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <PushButton>
-            <ObjectName>ReverseButton</ObjectName>
-            <Size>20f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <LeftClickIsPushButton>true</LeftClickIsPushButton>
-            <RightClickIsPushButton>true</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-              <Text>◀</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>◀</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,reverse</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,reverseroll</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="ObjectName">ReverseButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">◀</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,reverse</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,reverseroll</SetVariable>
+          </Template>
 
-          <PushButton>
-            <ObjectName>PlayToggle</ObjectName>
-            <Size>20f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <RightClickIsPushButton>true</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-              <Text>▶</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>▶</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,play</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_right_2state_button.xml">
+            <SetVariable name="ObjectName">PlayToggle</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">▶</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_1_text">▶</SetVariable>
+            <SetVariable name="state_1_pressed"></SetVariable>
+            <SetVariable name="state_1_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
     </Children>

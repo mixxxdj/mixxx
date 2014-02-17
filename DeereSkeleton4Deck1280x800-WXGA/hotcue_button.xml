@@ -5,12 +5,14 @@
   Variables:
     group: The group for the controls.
     hotcue: The 1-indexed number of the hotcue.
-    SquareButtonSize: the button size
+    SmallSquareButtonSize: the button size
 -->
 <Template>
-  <Template src="skin:left_right_display_button.xml">
+  <Template src="skin:left_right_display_2state_button.xml">
     <SetVariable name="ObjectName">HotcueButton</SetVariable>
-    <SetVariable name="Size"><Variable name="SquareButtonSize"/></SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>m
+    <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>m
     <SetVariable name="state_0_pressed"></SetVariable>
     <SetVariable name="state_0_unpressed"></SetVariable>
     <SetVariable name="state_0_text"><Variable name="hotcue"/></SetVariable>

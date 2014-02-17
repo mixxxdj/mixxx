@@ -32,10 +32,26 @@
   <Layout>vertical</Layout>
 
   <Children>
-    <SetVariable name="SquareButtonSize">20f,20f</SetVariable>
-    <SetVariable name="TallButtonSize">20f,40f</SetVariable>
-    <SetVariable name="WideButtonSize">40f,20f</SetVariable>
+    <SetVariable name="SmallSquareButtonSideLength">15</SetVariable>
+    <SetVariable name="SmallSquareButtonMinimumSize">15,15</SetVariable>
+    <SetVariable name="SmallSquareButtonMaximumSize">15,15</SetVariable>
+    <SetVariable name="SmallSquareButtonSizePolicy">f,f</SetVariable>
 
+    <SetVariable name="SmallHorizontalStretchButtonSideLength">15</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonMinimumSize">-1,15</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonMaximumSize">-1,15</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,f</SetVariable>
+
+    <SetVariable name="SmallVerticalStretchButtonSideLength">15</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonMinimumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
+
+    <SetVariable name="TallButtonSize">20f,40f</SetVariable>
+
+    <SetVariable name="WideButtonMinimumSize">30,15</SetVariable>
+    <SetVariable name="WideButtonMaximumSize">30,15</SetVariable>
+    <SetVariable name="WideButtonSizePolicy">f,f</SetVariable>
     <Template src="skin:main_decks.xml"/>
     <Template src="skin:sample_decks.xml"/>
     <Template src="skin:effect_rack.xml"/>
