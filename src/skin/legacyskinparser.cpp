@@ -261,6 +261,21 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     return manifest;
 }
 
+// static
+Qt::MouseButton LegacySkinParser::parseButtonState(QDomNode node,
+                                                   const SkinContext& context) {
+    if (context.hasNode(node, "ButtonState")) {
+        if (context.selectString(node, "ButtonState")
+                .contains("LeftButton", Qt::CaseInsensitive)) {
+            return Qt::LeftButton;
+        } else if (context.selectString(node, "ButtonState")
+                       .contains("RightButton", Qt::CaseInsensitive)) {
+            return Qt::RightButton;
+        }
+    }
+    return Qt::NoButton;
+}
+
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
@@ -286,8 +301,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObjectThread cot(configKey);
-            cot.slotSet(value);
+            ControlObject::set(configKey, value);
         }
     }
 
@@ -765,13 +779,6 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-
-    // Connect control proxy to widget, so delete can be handled by the QT object tree
-    ControlObjectSlave* p = new ControlObjectSlave(
-            channelStr, "wheel", viewer);
-    ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-        viewer, p, NULL, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
-    viewer->addRightConnection(pConnection);
 
     setupBaseWidget(node, viewer);
     setupWidget(node, viewer);
@@ -1531,36 +1538,54 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 control->setParent(pConnection);
             }
         } else {
-            // Default to emit on press
+            bool nodeValue;
+            Qt::MouseButton state = parseButtonState(con, *m_pContext);
+
+            int directionOption = pWidget->getDefaultDirectionOption(state);
+            if(m_pContext->hasNodeSelectBool(
+                    con, "ConnectValueFromWidget", &nodeValue)) {
+                if (nodeValue) {
+                    directionOption = directionOption | ControlWidgetConnection::DIR_FROM_WIDGET;
+                } else {
+                    directionOption = directionOption & ~ControlWidgetConnection::DIR_FROM_WIDGET;
+                }
+            }
+
+            if(m_pContext->hasNodeSelectBool(
+                    con, "ConnectValueToWidget", &nodeValue)) {
+                if (nodeValue) {
+                    directionOption = directionOption | ControlWidgetConnection::DIR_TO_WIDGET;
+                } else {
+                    directionOption = directionOption & ~ControlWidgetConnection::DIR_TO_WIDGET;
+                }
+            }
+
             ControlWidgetConnection::EmitOption emitOption =
-                    ControlWidgetConnection::EMIT_ON_PRESS;
-
-            // Get properties from XML, or use defaults
-            if (m_pContext->selectBool(con, "EmitOnPressAndRelease", false))
-                emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
-
-            if (!m_pContext->selectBool(con, "EmitOnDownPress", true))
-                emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
-
-            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
-            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
-
-            Qt::MouseButton state = Qt::NoButton;
-            if (m_pContext->hasNode(con, "ButtonState")) {
-                if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
-                    state = Qt::LeftButton;
-                } else if (m_pContext->selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
-                    state = Qt::RightButton;
+                    pWidget->getDefaultEmitOption(state);
+            if (m_pContext->hasNodeSelectBool(
+                    con, "EmitOnDownPress", &nodeValue)) {
+                if (nodeValue) {
+                    emitOption = ControlWidgetConnection::EMIT_ON_PRESS;
+                } else {
+                    emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
+                }
+            } else if(m_pContext->hasNodeSelectBool(
+                    con, "EmitOnPressAndRelease", &nodeValue)) {
+                if (nodeValue) {
+                    emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+                } else {
+                    qWarning() << "LegacySkinParser::setupConnections(): EmitOnPressAndRelease must not set false";
                 }
             }
 
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
             ControlObjectSlave* pControlWidget = new ControlObjectSlave(
-                control->getKey(), pWidget->toQWidget());
+                    control->getKey(), pWidget->toQWidget());
             ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                pWidget, pControlWidget, pTransformer, connectValueFromWidget,
-                connectValueToWidget, emitOption);
+                    pWidget, pControlWidget, pTransformer,
+                    static_cast<ControlWidgetConnection::DirectionOption>(directionOption),
+                    emitOption);
 
             // If we created this control, bind it to the
             // ControlWidgetConnection so that it is deleted when the connection
@@ -1570,37 +1595,35 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             }
 
             switch (state) {
-                case Qt::NoButton:
-                    pWidget->addConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastLeftOrNoButtonConnection = pConnection;
-                    }
-                    break;
-                case Qt::LeftButton:
-                    pWidget->addLeftConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastLeftOrNoButtonConnection = pConnection;
-                    }
-                    break;
-                case Qt::RightButton:
-                    pWidget->addRightConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastRightButtonConnection = pConnection;
-                    }
-                    break;
-                default:
-                    break;
+            case Qt::NoButton:
+                pWidget->addConnection(pConnection);
+                if (directionOption & ControlWidgetConnection::DIR_TO_WIDGET) {
+                    pLastLeftOrNoButtonConnection = pConnection;
+                }
+                break;
+            case Qt::LeftButton:
+                pWidget->addLeftConnection(pConnection);
+                if (directionOption & ControlWidgetConnection::DIR_TO_WIDGET) {
+                    pLastLeftOrNoButtonConnection = pConnection;
+                }
+                break;
+            case Qt::RightButton:
+                pWidget->addRightConnection(pConnection);
+                if (directionOption & ControlWidgetConnection::DIR_TO_WIDGET) {
+                    pLastRightButtonConnection = pConnection;
+                }
+                break;
+            default:
+                break;
             }
 
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.
-            if (connectValueFromWidget) {
+            if (directionOption & ControlWidgetConnection::DIR_FROM_WIDGET) {
                 m_pControllerManager->getControllerLearningEventFilter()
                         ->addWidgetClickInfo(pWidget->toQWidget(), state, control, emitOption);
-            }
 
-            // Add keyboard shortcut info to tooltip string
-            if (connectValueFromWidget) {
+                // Add keyboard shortcut info to tooltip string
                 QString key = m_pContext->selectString(con, "ConfigKey");
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 

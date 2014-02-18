@@ -34,7 +34,7 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pTalkoverDucking->setStates(3);
     m_pTalkoverDucking->set(
             m_pConfig->getValueString(
-                    ConfigKey(m_group, "duckMode"), QString(AUTO)).toDouble());
+                ConfigKey(m_group, "duckMode"), QString::number(AUTO)).toDouble());
     connect(m_pTalkoverDucking, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckModeChanged(double)),
             Qt::DirectConnection);

@@ -200,10 +200,13 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
     // This block makes push-buttons act as power window buttons.
     if (m_buttonMode == POWERWINDOW && m_iNumStates == 2) {
         if (pressed) {
-            pControl->set(1., NULL);
+            // Toggle on press
+            double value = pControl->get();
+            pControl->set(!value, NULL);
             m_pushTimer.setSingleShot(true);
             m_pushTimer.start(kPowerWindowTimeMillis);
         } else if (!m_pushTimer.isActive()) {
+            // Disable after releasing a long press
             pControl->set(0., NULL);
         }
     } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {

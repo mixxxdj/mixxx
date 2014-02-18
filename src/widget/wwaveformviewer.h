@@ -13,7 +13,7 @@
 #include "widget/wwidget.h"
 #include "skin/skincontext.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
 
@@ -62,9 +62,10 @@ private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
-    ControlObjectThread* m_pZoom;
-    ControlObjectThread* m_pScratchPositionEnable;
-    ControlObjectThread* m_pScratchPosition;
+    ControlObjectSlave* m_pZoom;
+    ControlObjectSlave* m_pScratchPositionEnable;
+    ControlObjectSlave* m_pScratchPosition;
+    ControlObjectSlave* m_pWheel;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;

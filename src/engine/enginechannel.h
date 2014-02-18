@@ -69,7 +69,7 @@ class EngineChannel : public EngineObject {
     const QString m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
-    ControlObject* m_pOrientation;
+    ControlPushButton* m_pOrientation;
     ControlPushButton* m_pOrientationLeft;
     ControlPushButton* m_pOrientationRight;
     ControlPushButton* m_pOrientationCenter;

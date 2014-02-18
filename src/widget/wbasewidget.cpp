@@ -24,6 +24,19 @@ WBaseWidget::~WBaseWidget() {
     }
 }
 
+ControlWidgetConnection::EmitOption WBaseWidget::getDefaultEmitOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::EMIT_ON_PRESS;
+}
+
+ControlWidgetConnection::DirectionOption WBaseWidget::getDefaultDirectionOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+}
+
+
 void WBaseWidget::setDisplayConnection(ControlWidgetConnection* pConnection) {
     //qDebug() << "WBaseWidget::setDisplayConnection()" << pConnection->toDebugString();
     m_pDisplayConnection = pConnection;
@@ -81,7 +94,7 @@ double WBaseWidget::getControlParameterDisplay() const {
     return 0.0;
 }
 
-void WBaseWidget::resetControlParameters() {
+void WBaseWidget::resetControlParameter() {
     foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
         pControlConnection->resetControl();
     }
@@ -93,15 +106,15 @@ void WBaseWidget::resetControlParameters() {
     }
 }
 
-void WBaseWidget::setControlParameterDown(double v) {
+void WBaseWidget::setControlParameter(double v) {
     foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
-        pControlConnection->setControlParameterDown(v);
+        pControlConnection->setControlParameter(v);
     }
     foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
-        pControlConnection->setControlParameterDown(v);
+        pControlConnection->setControlParameter(v);
     }
     foreach (ControlWidgetConnection* pControlConnection, m_connections) {
-        pControlConnection->setControlParameterDown(v);
+        pControlConnection->setControlParameter(v);
     }
 }
 
@@ -114,6 +127,18 @@ void WBaseWidget::setControlParameterUp(double v) {
     }
     foreach (ControlWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->setControlParameterUp(v);
+    }
+}
+
+void WBaseWidget::setControlParameterDown(double v) {
+    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+        pControlConnection->setControlParameterDown(v);
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
+        pControlConnection->setControlParameterDown(v);
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_connections) {
+        pControlConnection->setControlParameterDown(v);
     }
 }
 

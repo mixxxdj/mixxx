@@ -8,8 +8,8 @@ EngineSideChainCompressor::EngineSideChainCompressor(
       m_bAboveThreshold(false),
       m_threshold(1.0),
       m_strength(0.0),
-      m_attackTime(0.001),
-      m_decayTime(0.001),
+      m_attackTime(0),
+      m_decayTime(0),
       m_attackPerFrame(0.0),
       m_decayPerFrame(0.0) {
     Q_UNUSED(group);
@@ -39,6 +39,10 @@ void EngineSideChainCompressor::calculateRates() {
              << "decay per frame: " << m_decayPerFrame;
 }
 
+void EngineSideChainCompressor::clearKeys() {
+    m_bAboveThreshold = false;
+}
+
 void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBufferSize) {
     for (int i = 0; i + 1 < iBufferSize; i += 2) {
         CSAMPLE val = (pIn[i] + pIn[i + 1]) / 2;
@@ -47,7 +51,6 @@ void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBuffer
             return;
         }
     }
-    m_bAboveThreshold = false;
 }
 
 double EngineSideChainCompressor::calculateCompressedGain(int frames) {
@@ -77,4 +80,3 @@ double EngineSideChainCompressor::calculateCompressedGain(int frames) {
     }
     return (1. - m_compressRatio);
 }
-

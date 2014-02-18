@@ -27,7 +27,9 @@ EngineChannel::EngineChannel(const char* pGroup,
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(m_group, "master"));
     m_pMaster->setButtonMode(ControlPushButton::TOGGLE);
-    m_pOrientation = new ControlObject(ConfigKey(m_group, "orientation"));
+    m_pOrientation = new ControlPushButton(ConfigKey(m_group, "orientation"));
+    m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
+    m_pOrientation->setStates(3);
     m_pOrientation->set(defaultOrientation);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(m_group, "orientation_left"));
     connect(m_pOrientationLeft, SIGNAL(valueChanged(double)),
@@ -38,11 +40,8 @@ EngineChannel::EngineChannel(const char* pGroup,
     m_pOrientationCenter = new ControlPushButton(ConfigKey(m_group, "orientation_center"));
     connect(m_pOrientationCenter, SIGNAL(valueChanged(double)),
             this, SLOT(slotOrientationCenter(double)), Qt::DirectConnection);
-    // the CO "talkover" is already claimed by enginemicrophone for triggering
-    // microphone mode.
-    m_pTalkover = new ControlPushButton(ConfigKey(pGroup, "talkover_channel"));
-    m_pTalkover->setButtonMode(ControlPushButton::TOGGLE);
-    setTalkover(false);
+    m_pTalkover = new ControlPushButton(ConfigKey(pGroup, "talkover"));
+    m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 }
 
 EngineChannel::~EngineChannel() {

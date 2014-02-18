@@ -155,6 +155,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
 
     // Start button
     m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
+    m_startButton->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_startButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlStart(double)),
             Qt::DirectConnection);

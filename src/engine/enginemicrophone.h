@@ -44,7 +44,6 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pConfigured;
-    ControlPushButton* m_pControlTalkover;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 
