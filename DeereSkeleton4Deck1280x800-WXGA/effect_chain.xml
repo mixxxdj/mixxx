@@ -129,101 +129,35 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <PushButton>
-            <Size>40f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>Head</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>Head</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,channel_[Headphone]</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">Head</SetVariable>
+            <SetVariable name="group_group">[Headphone]</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>40f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>Master</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>Master</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,channel_[Master]</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">Master</SetVariable>
+            <SetVariable name="group_group">[Master]</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>40f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>CH1</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>CH1</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,channel_[Channel1]</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH1</SetVariable>
+            <SetVariable name="group_group">[Channel1]</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>40f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>CH2</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>CH2</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,channel_[Channel2]</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH2</SetVariable>
+            <SetVariable name="group_group">[Channel2]</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>40f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>CH3</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>CH3</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,channel_[Channel3]</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH3</SetVariable>
+            <SetVariable name="group_group">[Channel3]</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>40f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>CH4</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>CH4</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,channel_[Channel4]</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH4</SetVariable>
+            <SetVariable name="group_group">[Channel4]</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
     </Children>
