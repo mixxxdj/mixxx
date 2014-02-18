@@ -151,7 +151,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // For legacy (MIDI) reasons this is tuned to 127.
     double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-    double newValue = getControlParameter() + wheelDirection;
+    double newValue = m_dOldValue + wheelDirection;
 
     // Clamp to [0.0, 1.0]
     newValue = math_max(0.0, math_min(1.0, newValue));
