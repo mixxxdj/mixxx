@@ -61,8 +61,8 @@ EffectManifest EchoEffect::getManifest() {
     time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    time->setMinimum(0.00);
-    time->setDefault(0.25);
+    time->setMinimum(0.0);
+    time->setDefault(0.0);
     time->setMaximum(1.0);
 
     return manifest;
