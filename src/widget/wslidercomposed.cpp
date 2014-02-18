@@ -23,6 +23,7 @@
 
 #include "defs.h"
 #include "widget/wpixmapstore.h"
+#include "widget/controlwidgetconnection.h"
 #include "util/debug.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
@@ -60,6 +61,16 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "EventWhileDrag")) {
         if (context.selectString(node, "EventWhileDrag").contains("no")) {
             m_bEventWhileDrag = false;
+        }
+    }
+
+    ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+    if (defaultConnection) {
+        if (defaultConnection->getEmitOption() &
+                ControlParameterWidgetConnection::EMIT_DEFAULT) {
+            // ON_PRESS means here value change on mouse move during press
+            defaultConnection->setEmitOption(
+                    ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
         }
     }
 }
