@@ -264,48 +264,6 @@ class MediaFoundation(Feature):
         return
 
 
-class LADSPA(Feature):
-
-    def description(self):
-        return "Experimental LADSPA Support"
-
-    def enabled(self, build):
-        enabled = util.get_flags(build.env, 'ladspa', 0)
-        build.flags['ladspa'] = enabled
-        return True if int(enabled) else False
-
-    def add_options(self, build, vars):
-        vars.Add('ladspa',
-                 '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPPATH=['#lib/ladspa'])
-        build.env.Append(CPPDEFINES='__LADSPA__')
-
-    def sources(self, build):
-        ladspa_plugins = SCons.SConscript(SCons.File('#lib/ladspa/SConscript'))
-        # build.env.Alias('plugins', ladspa_plugins)
-        sources = SCons.Split("""engine/engineladspa.cpp
-                            ladspa/ladspaloader.cpp
-                            ladspa/ladspalibrary.cpp
-                            ladspa/ladspaplugin.cpp
-                            ladspa/ladspainstance.cpp
-                            ladspa/ladspacontrol.cpp
-                            ladspa/ladspainstancestereo.cpp
-                            ladspa/ladspainstancemono.cpp
-                            ladspaview.cpp
-                            ladspa/ladspapreset.cpp
-                            ladspa/ladspapresetmanager.cpp
-                            ladspa/ladspapresetknob.cpp
-                            ladspa/ladspapresetinstance.cpp
-                            dlgladspa.cpp
-                            ladspa/ladspapresetslot.cpp
-                            """)
-        return ladspa_plugins + sources
-
-
 class IPod(Feature):
     def description(self):
         return "NOT-WORKING iPod Support"
