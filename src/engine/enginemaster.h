@@ -31,9 +31,6 @@ class EngineBuffer;
 class EngineChannel;
 class EngineClipping;
 class EngineFlanger;
-#ifdef __LADSPA__
-class EngineLADSPA;
-#endif
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
@@ -192,9 +189,6 @@ class EngineMaster : public QObject, public AudioSource {
     EngineClipping* m_pHeadClipping;
     EngineTalkoverDucking* m_pTalkoverDucking;
 
-#ifdef __LADSPA__
-    EngineLADSPA* m_pLadspa;
-#endif
     EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pSideChain;
 

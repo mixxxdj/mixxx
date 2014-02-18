@@ -40,10 +40,6 @@
 #include "playermanager.h"
 #include "engine/channelmixer.h"
 
-#ifdef __LADSPA__
-#include "engine/engineladspa.h"
-#endif
-
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
                            bool bEnableSidechain,
@@ -78,11 +74,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     double default_bpm = _config->getValueString(ConfigKey("[InternalClock]", "bpm"),
                                                  "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
-
-#ifdef __LADSPA__
-    // LADSPA
-    m_pLadspa = new EngineLADSPA();
-#endif
 
     // Crossfader
     m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
@@ -376,11 +367,6 @@ void EngineMaster::process(const int iBufferSize) {
                               m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
                               m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
                               iBufferSize);
-
-#ifdef __LADSPA__
-    // LADPSA master effects
-    m_pLadspa->process(m_pMaster, m_pMaster, iBufferSize);
-#endif
 
     // Clipping
     m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);

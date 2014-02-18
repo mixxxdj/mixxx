@@ -108,7 +108,6 @@ void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
     m_pPregain->process(pOut, pOut, iBufferSize);
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
-    // TODO(XXX) LADSPA
     m_pFlanger->process(pOut, pOut, iBufferSize);
     m_pFilterEffect->process(pOut, pOut, iBufferSize);
     // Apply clipping
