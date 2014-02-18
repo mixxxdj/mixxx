@@ -348,13 +348,10 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderReverse->get() == 1.0,
                                 &c1_gain, &c2_gain);
 
-    // And mix the 3 buses into the master.
-    CSAMPLE master_gain = m_pMasterVolume->get();
-
     // Channels with the talkover flag should be mixed with the master signal at
     // full master volume.  All other channels should be adjusted by ducking gain.
-    m_masterGain.setGains(master_gain * m_pTalkoverDucking->getGain(iBufferSize / 2),
-                          c1_gain, 1.0, c2_gain, master_gain);
+    m_masterGain.setGains(m_pTalkoverDucking->getGain(iBufferSize / 2),
+                          c1_gain, 1.0, c2_gain, 1.0);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
     // master volume, the channel volume, and the orientation gain.
