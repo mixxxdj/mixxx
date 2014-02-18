@@ -1,6 +1,7 @@
 #include "effects/effectchainslot.h"
 #include "sampleutil.h"
 #include "controlpotmeter.h"
+#include "controlpushbutton.h"
 
 EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
@@ -202,8 +203,9 @@ void EffectChainSlot::registerGroup(const QString& group) {
                  << group;
         return;
     }
-    ControlObject* pEnableControl = new ControlObject(
+    ControlPushButton* pEnableControl = new ControlPushButton(
         ConfigKey(m_group, QString("channel_%1").arg(group)));
+    pEnableControl->setButtonMode(ControlPushButton::TOGGLE);
     pEnableControl->set(0.0);
     m_groupEnableControls[group] = pEnableControl;
     m_groupStatusMapper.setMapping(pEnableControl, group);
