@@ -261,11 +261,12 @@ int main(int argc, char * argv[])
      avcodec_register_all();
 #endif
 
-     // Check if one of the command line arguments is "--no-visuals"
+    // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
 //    for (int i=0; i<argc; ++i)
 //        if(QString("--no-visuals")==argv[i])
 //            bVisuals = false;
+
 
 #ifdef __APPLE__
      QDir dir(QApplication::applicationDirPath());

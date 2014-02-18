@@ -36,13 +36,6 @@
 #include "engine/enginemicrophone.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
-
-// TODO(rryan) REMOVE THESE LATER
-#include "effects/effectchain.h"
-#include "effects/effectslot.h"
-#include "effects/effect.h"
-// TODO(rryan) REMOVE THESE LATER
-
 #include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -135,9 +128,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true, true);
 
-    // TODO(rryan) the only reason I'm creating the effects backends here is
-    // that I'm not totally confident some effect backend is going to want to
-    // look up a control that is produced by the engine.
+    // Create effect backends. We do this after creating EngineMaster to allow
+    // effect backends to refer to controls that are produced by the engine.
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
