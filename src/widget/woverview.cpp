@@ -24,6 +24,7 @@
 #include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
+#include "widget/controlwidgetconnection.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
 #include "util/timer.h"
@@ -119,6 +120,16 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+
+    ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+    if (defaultConnection) {
+        if (defaultConnection->getEmitOption() &
+                ControlParameterWidgetConnection::EMIT_DEFAULT) {
+            // ON_PRESS means here value change on mouse move during press
+            defaultConnection->setEmitOption(
+                    ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+        }
+    }
 }
 
 void WOverview::onConnectedControlValueChanged(double dValue) {
@@ -250,11 +261,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     double dValue = positionToValue(m_iPos);
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    if (e->button() == Qt::RightButton) {
-        setControlParameterRightUp(dValue);
-    } else {
-        setControlParameterLeftUp(dValue);
-    }
+    setControlParameterUp(dValue);
     m_bDrag = false;
 }
 
