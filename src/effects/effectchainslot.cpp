@@ -5,7 +5,7 @@
 
 EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
-        : QObject(),
+        : QObject(pParent),
           m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything
@@ -16,13 +16,12 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
             this, SLOT(slotControlClear(double)));
 
     m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
-    m_pControlNumEffects->set(0.0);
-    connect(m_pControlNumEffects, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlNumEffects(double)));
+    m_pControlNumEffects->connectValueChangeRequest(
+        this, SLOT(slotControlNumEffects(double)), Qt::AutoConnection);
 
     m_pControlChainEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
-    connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlChainEnabled(double)));
+    m_pControlChainEnabled->connectValueChangeRequest(
+        this, SLOT(slotControlChainEnabled(double)), Qt::AutoConnection);
 
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
@@ -32,11 +31,11 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainParameter(double)));
 
-    m_pControlChainNextPreset = new ControlObject(ConfigKey(m_group, "next_chain"));
+    m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
     connect(m_pControlChainNextPreset, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainNextPreset(double)));
 
-    m_pControlChainPrevPreset = new ControlObject(ConfigKey(m_group, "prev_chain"));
+    m_pControlChainPrevPreset = new ControlPushButton(ConfigKey(m_group, "prev_chain"));
     connect(m_pControlChainPrevPreset, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainPrevPreset(double)));
 
@@ -76,7 +75,7 @@ void EffectChainSlot::slotChainNameChanged(const QString&) {
 }
 
 void EffectChainSlot::slotChainEnabledChanged(bool bEnabled) {
-    m_pControlChainEnabled->set(bEnabled);
+    m_pControlChainEnabled->setAndConfirm(bEnabled);
     emit(updated());
 }
 
@@ -92,8 +91,11 @@ void EffectChainSlot::slotChainParameterChanged(double parameter) {
 
 void EffectChainSlot::slotChainGroupStatusChanged(const QString& group,
                                                   bool enabled) {
-    m_groupEnableControls[group]->set(enabled);
-    emit(updated());
+    ControlObject* pGroupControl = m_groupEnableControls.value(group, NULL);
+    if (pGroupControl != NULL) {
+        pGroupControl->set(enabled);
+        emit(updated());
+    }
 }
 
 void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
@@ -113,7 +115,7 @@ void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
             if (pSlot)
                 pSlot->loadEffect(pEffect);
         }
-        m_pControlNumEffects->set(m_pEffectChain->numEffects());
+        m_pControlNumEffects->setAndConfirm(m_pEffectChain->numEffects());
         if (shouldEmit) {
             emit(updated());
         }
@@ -144,7 +146,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         m_pEffectChain->setEnabled(true);
         m_pControlChainParameter->set(m_pEffectChain->parameter());
         m_pControlChainMix->set(m_pEffectChain->mix());
-        m_pControlChainEnabled->set(m_pEffectChain->enabled());
+        m_pControlChainEnabled->setAndConfirm(m_pEffectChain->enabled());
 
         for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
              it != m_groupEnableControls.end(); ++it) {
@@ -174,8 +176,8 @@ void EffectChainSlot::clear() {
         }
 
     }
-    m_pControlNumEffects->set(0.0);
-    m_pControlChainEnabled->set(0.0);
+    m_pControlNumEffects->setAndConfirm(0.0);
+    m_pControlChainEnabled->setAndConfirm(0.0);
     m_pControlChainMix->set(0.0);
     m_pControlChainParameter->set(0.0);
     emit(updated());
@@ -207,7 +209,6 @@ void EffectChainSlot::registerGroup(const QString& group) {
     ControlPushButton* pEnableControl = new ControlPushButton(
         ConfigKey(m_group, QString("channel_%1").arg(group)));
     pEnableControl->setButtonMode(ControlPushButton::TOGGLE);
-    pEnableControl->set(0.0);
     m_groupEnableControls[group] = pEnableControl;
     m_groupStatusMapper.setMapping(pEnableControl, group);
     connect(pEnableControl, SIGNAL(valueChanged(double)),
@@ -235,14 +236,15 @@ void EffectChainSlot::slotControlClear(double v) {
 }
 
 void EffectChainSlot::slotControlNumEffects(double v) {
+    // Ignore sets to num_effects.
     qDebug() << debugString() << "slotControlNumEffects" << v;
-    qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
+    qDebug() << "WARNING: num_effects is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainEnabled(double v) {
+    // Ignore sets to enabled.
     qDebug() << debugString() << "slotControlChainEnabled" << v;
-    qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
-    m_pControlChainEnabled->set(m_pEffectChain ? m_pEffectChain->enabled() : false);
+    qDebug() << "WARNING: enabled is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainMix(double v) {
@@ -289,11 +291,14 @@ void EffectChainSlot::slotControlChainPrevPreset(double v) {
 
 void EffectChainSlot::slotGroupStatusChanged(const QString& group) {
     if (m_pEffectChain) {
-        bool bEnable = m_groupEnableControls[group]->get() > 0;
-        if (bEnable) {
-            m_pEffectChain->enableForGroup(group);
-        } else {
-            m_pEffectChain->disableForGroup(group);
+        ControlObject* pGroupControl = m_groupEnableControls.value(group, NULL);
+        if (pGroupControl != NULL) {
+            bool bEnable = pGroupControl->get() > 0;
+            if (bEnable) {
+                m_pEffectChain->enableForGroup(group);
+            } else {
+                m_pEffectChain->disableForGroup(group);
+            }
         }
     }
 }
