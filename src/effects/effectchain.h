@@ -103,7 +103,7 @@ class EffectChain : public QObject {
     void enabledChanged(bool enabled);
     void mixChanged(double v);
     void parameterChanged(double v);
-    void insertionTypeChanged(InsertionType type);
+    void insertionTypeChanged(EffectChain::InsertionType type);
     void groupStatusChanged(const QString& group, bool enabled);
 
   private:

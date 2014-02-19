@@ -161,6 +161,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         m_pControlChainParameter->set(m_pEffectChain->parameter());
         m_pControlChainMix->set(m_pEffectChain->mix());
         m_pControlChainEnabled->setAndConfirm(m_pEffectChain->enabled());
+        m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
 
         for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
              it != m_groupEnableControls.end(); ++it) {
@@ -194,6 +195,7 @@ void EffectChainSlot::clear() {
     m_pControlChainEnabled->setAndConfirm(0.0);
     m_pControlChainMix->set(0.0);
     m_pControlChainParameter->set(0.0);
+    m_pControlChainInsertionType->set(EffectChain::INSERT);
     emit(updated());
 }
 
