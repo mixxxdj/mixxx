@@ -40,6 +40,7 @@ class EffectsManager : public QObject {
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
     void registerGroup(const QString& group);
 
+    EffectRackPointer addEffectRack();
     EffectRackPointer getEffectRack(int rack);
 
     const QSet<QString> getAvailableEffects() const;

@@ -33,7 +33,7 @@ int EffectRack::numEffectChainSlots() const {
     return m_effectChainSlots.size();
 }
 
-void EffectRack::addEffectChainSlot() {
+EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, m_iRackNumber, m_effectChainSlots.size());
 
@@ -57,7 +57,9 @@ void EffectRack::addEffectChainSlot() {
         pChainSlot->registerGroup(group);
     }
 
-    m_effectChainSlots.append(EffectChainSlotPointer(pChainSlot));
+    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
+    m_effectChainSlots.append(pChainSlotPointer);
+    return pChainSlotPointer;
 }
 
 EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {

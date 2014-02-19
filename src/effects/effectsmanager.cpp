@@ -77,6 +77,9 @@ EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     return EffectPointer();
 }
 
+EffectRackPointer EffectsManager::addEffectRack() {
+    return m_pEffectChainManager->addEffectRack();
+}
 
 EffectRackPointer EffectsManager::getEffectRack(int i) {
     return m_pEffectChainManager->getEffectRack(i);
@@ -85,7 +88,7 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
 void EffectsManager::setupDefaults() {
     //m_pEffectChainManager->loadEffectChains();
 
-    EffectRackPointer pRack = m_pEffectChainManager->addEffectRack();
+    EffectRackPointer pRack = addEffectRack();
     pRack->addEffectChainSlot();
     pRack->addEffectChainSlot();
     pRack->addEffectChainSlot();
