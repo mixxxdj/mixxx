@@ -120,14 +120,15 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
-
-    ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-    if (defaultConnection) {
-        if (defaultConnection->getEmitOption() &
-                ControlParameterWidgetConnection::EMIT_DEFAULT) {
-            // ON_PRESS means here value change on mouse move during press
-            defaultConnection->setEmitOption(
-                    ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+    if (!m_connections.isEmpty()) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            if (defaultConnection->getEmitOption() &
+                    ControlParameterWidgetConnection::EMIT_DEFAULT) {
+                // ON_PRESS means here value change on mouse move during press
+                defaultConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+            }
         }
     }
 }
