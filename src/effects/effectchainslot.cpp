@@ -11,7 +11,7 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(formatGroupString(iRackNumber, iChainNumber)) {
-    m_pControlClear = new ControlObject(ConfigKey(m_group, "clear"));
+    m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
     connect(m_pControlClear, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlClear(double)));
 
@@ -47,6 +47,7 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
 EffectChainSlot::~EffectChainSlot() {
     qDebug() << debugString() << "destroyed";
     clear();
+    delete m_pControlClear;
     delete m_pControlNumEffects;
     delete m_pControlChainEnabled;
     delete m_pControlChainMix;
