@@ -31,6 +31,12 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainParameter(double)));
 
+    m_pControlChainInsertionType = new ControlPushButton(ConfigKey(m_group, "insertion_type"));
+    m_pControlChainInsertionType->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlChainInsertionType->setStates(EffectChain::NUM_INSERTION_TYPES);
+    connect(m_pControlChainInsertionType, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlChainInsertionType(double)));
+
     m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
     connect(m_pControlChainNextPreset, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainNextPreset(double)));
@@ -51,6 +57,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainEnabled;
     delete m_pControlChainMix;
     delete m_pControlChainParameter;
+    delete m_pControlChainInsertionType;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
 
@@ -86,6 +93,11 @@ void EffectChainSlot::slotChainMixChanged(double mix) {
 
 void EffectChainSlot::slotChainParameterChanged(double parameter) {
     m_pControlChainParameter->set(parameter);
+    emit(updated());
+}
+
+void EffectChainSlot::slotChainInsertionTypeChanged(EffectChain::InsertionType type) {
+    m_pControlChainInsertionType->set(static_cast<double>(type));
     emit(updated());
 }
 
@@ -140,6 +152,8 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                 this, SLOT(slotChainParameterChanged(double)));
         connect(m_pEffectChain.data(), SIGNAL(mixChanged(double)),
                 this, SLOT(slotChainMixChanged(double)));
+        connect(m_pEffectChain.data(), SIGNAL(insertionTypeChanged(EffectChain::InsertionType)),
+                this, SLOT(slotChainInsertionTypeChanged(EffectChain::InsertionType)));
         connect(m_pEffectChain.data(), SIGNAL(groupStatusChanged(const QString&, bool)),
                 this, SLOT(slotChainGroupStatusChanged(const QString&, bool)));
 
@@ -272,6 +286,14 @@ void EffectChainSlot::slotControlChainParameter(double v) {
     }
     if (m_pEffectChain) {
         m_pEffectChain->setParameter(v);
+    }
+}
+
+void EffectChainSlot::slotControlChainInsertionType(double v) {
+    EffectChain::InsertionType type = static_cast<EffectChain::InsertionType>(v);
+    if (m_pEffectChain && type >= 0 &&
+            type < EffectChain::NUM_INSERTION_TYPES) {
+        m_pEffectChain->setInsertionType(type);
     }
 }
 

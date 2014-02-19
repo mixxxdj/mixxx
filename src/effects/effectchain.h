@@ -54,9 +54,10 @@ class EffectChain : public QObject {
     void setMix(const double& dMix);
 
     enum InsertionType {
-        UNKNOWN_INSERTION_TYPE = 0,
-        INSERT = 1,
-        SEND = 2
+        INSERT = 0,
+        SEND,
+        // The number of insertion types. Also used to represent "unknown".
+        NUM_INSERTION_TYPES
     };
     static QString insertionTypeToString(InsertionType type) {
         switch (type) {
@@ -74,10 +75,9 @@ class EffectChain : public QObject {
         } else if (typeStr == "SEND") {
             return SEND;
         } else {
-            return UNKNOWN_INSERTION_TYPE;
+            return NUM_INSERTION_TYPES;
         }
     }
-
 
     InsertionType insertionType() const;
     void setInsertionType(InsertionType type);
@@ -103,6 +103,7 @@ class EffectChain : public QObject {
     void enabledChanged(bool enabled);
     void mixChanged(double v);
     void parameterChanged(double v);
+    void insertionTypeChanged(InsertionType type);
     void groupStatusChanged(const QString& group, bool enabled);
 
   private:

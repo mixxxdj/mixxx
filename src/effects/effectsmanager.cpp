@@ -1,5 +1,7 @@
 #include "effects/effectsmanager.h"
 
+#include <QMetaType>
+
 #include "effects/effectchainmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 
@@ -7,6 +9,7 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
         : QObject(pParent),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0) {
+    qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
                 2048, 2048, false, false);

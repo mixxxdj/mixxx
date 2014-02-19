@@ -139,6 +139,7 @@ EffectChain::InsertionType EffectChain::insertionType() const {
 void EffectChain::setInsertionType(InsertionType insertionType) {
     m_insertionType = insertionType;
     sendParameterUpdate();
+    emit(insertionTypeChanged(insertionType));
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {
@@ -246,7 +247,7 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     pChain->setName(name);
     pChain->setDescription(description);
     InsertionType insertionType = insertionTypeFromString(insertionTypeStr);
-    if (insertionType != UNKNOWN_INSERTION_TYPE) {
+    if (insertionType != NUM_INSERTION_TYPES) {
         pChain->setInsertionType(insertionType);
     }
     bool ok = false;
