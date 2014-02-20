@@ -40,6 +40,7 @@ EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     // TODO(rryan) How many should we make default? They create controls that
     // the GUI may rely on, so the choice is important to communicate to skin
     // designers.
+    // TODO(rryan): This should not be done here.
     pChainSlot->addEffectSlot();
     pChainSlot->addEffectSlot();
     pChainSlot->addEffectSlot();

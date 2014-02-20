@@ -5,15 +5,15 @@ const unsigned int kDefaultMaxParameters = 32;
 
 EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
                        const unsigned int iChainNumber,
-                       const unsigned int iSlotNumber)
+                       const unsigned int iEffectnumber)
         : QObject(),
           m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
-          m_iSlotNumber(iSlotNumber),
+          m_iEffectNumber(iEffectnumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iSlotNumber)) {
+                                    m_iEffectNumber)) {
     m_pControlEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
 
@@ -34,7 +34,7 @@ EffectSlot::~EffectSlot() {
 
 void EffectSlot::addEffectParameterSlot() {
     EffectParameterSlot* pParameter = new EffectParameterSlot(
-        this, m_iRackNumber, m_iChainNumber, m_iSlotNumber,
+        this, m_iRackNumber, m_iChainNumber, m_iEffectNumber,
         m_parameters.size());
     m_parameters.append(EffectParameterSlotPointer(pParameter));
 }
@@ -72,11 +72,11 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             pParameter->loadEffect(m_pEffect);
         }
 
-        emit(effectLoaded(m_pEffect, m_iSlotNumber));
+        emit(effectLoaded(m_pEffect, m_iEffectNumber));
     } else {
         clear();
         // Broadcasts a null effect pointer
-        emit(effectLoaded(m_pEffect, m_iSlotNumber));
+        emit(effectLoaded(m_pEffect, m_iEffectNumber));
     }
     emit(updated());
 }

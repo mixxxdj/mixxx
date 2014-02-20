@@ -19,16 +19,16 @@ class EffectSlot : public QObject {
     EffectSlot(QObject* pParent,
                const unsigned int iRackNumber,
                const unsigned int iChainNumber,
-               const unsigned int iSlotNumber);
+               const unsigned int iEffectNumber);
     virtual ~EffectSlot();
 
     static QString formatGroupString(const unsigned int iRackNumber,
                                      const unsigned int iChainNumber,
-                                     const unsigned int iSlotNumber) {
+                                     const unsigned int iEffectNumber) {
         return QString("[EffectRack%1_EffectChain%2_Effect%3]").arg(
             QString::number(iRackNumber+1),
             QString::number(iChainNumber+1),
-            QString::number(iSlotNumber+1));
+            QString::number(iEffectNumber+1));
 
     }
 
@@ -45,16 +45,16 @@ class EffectSlot : public QObject {
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
-    // EffectSlot. The slotNumber is provided for the convenience of listeners.
-    // pEffect may be an invalid pointer, which indicates that a previously
-    // loaded effect was removed from the slot.
-    void effectLoaded(EffectPointer pEffect, unsigned int slotNumber);
+    // EffectSlot. The effectSlotNumber is provided for the convenience of
+    // listeners.  pEffect may be an invalid pointer, which indicates that a
+    // previously loaded effect was removed from the slot.
+    void effectLoaded(EffectPointer pEffect, unsigned int effectSlotNumber);
 
     void updated();
 
   private:
     QString debugString() const {
-        return QString("EffectSlot(%1,%2)").arg(m_iChainNumber).arg(m_iSlotNumber);
+        return QString("EffectSlot(%1,%2)").arg(m_iChainNumber).arg(m_iEffectNumber);
     }
 
     void addEffectParameterSlot();
@@ -64,7 +64,7 @@ class EffectSlot : public QObject {
 
     const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
-    const unsigned int m_iSlotNumber;
+    const unsigned int m_iEffectNumber;
     const QString m_group;
     EffectPointer m_pEffect;
 

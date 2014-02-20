@@ -86,8 +86,6 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
 TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
                                               "org.mixxx.test.chain1"));
-    pChain->setName("Test Chain");
-    pChain->setInsertionType(EffectChain::SEND);
 
     int iRackNumber = 0;
     int iChainNumber = 0;
@@ -97,6 +95,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
 
     QString group = EffectChainSlot::formatGroupString(iRackNumber,
                                                        iChainNumber);
+    EXPECT_FALSE(pChain->enabled());
     pSlot->loadEffectChain(pChain);
     EXPECT_TRUE(pChain->enabled());
     ControlObject::set(ConfigKey(group, "clear"), 1.0);
