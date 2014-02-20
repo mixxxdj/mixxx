@@ -1966,7 +1966,11 @@ void LegacySkinParser::setupBaseWidget(const QDomNode& node,
     if (m_pContext->hasNodeSelectString(node, "Tooltip", &toolTip)) {
         pBaseWidget->prependBaseTooltip(toolTip);
     } else if (m_pContext->hasNodeSelectString(node, "TooltipId", &toolTipId)) {
-        toolTip = m_tooltips.tooltipForId(toolTipId);
+        if (toolTipId == "default") {
+            toolTip = pBaseWidget->getDefaultBaseTooltip();
+        } else {
+            toolTip = m_tooltips.tooltipForId(toolTipId);
+        }
         if (!toolTip.isEmpty()) {
             pBaseWidget->prependBaseTooltip(toolTip);
         } else if (!toolTipId.isEmpty()) {

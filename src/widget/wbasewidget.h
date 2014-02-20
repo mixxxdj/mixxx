@@ -38,6 +38,8 @@ class WBaseWidget {
         return m_baseTooltip;
     }
 
+    virtual QString getDefaultBaseTooltip() const { return QString(); };
+
     void addLeftConnection(ControlParameterWidgetConnection* pConnection);
     void addRightConnection(ControlParameterWidgetConnection* pConnection);
     void addConnection(ControlParameterWidgetConnection* pConnection);
