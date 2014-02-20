@@ -79,7 +79,8 @@ void WVuMeter::resetPositions() {
 }
 
 void WVuMeter::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename,
+                                               Paintable::TILE);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << filename;
@@ -90,7 +91,8 @@ void WVuMeter::setPixmapBackground(const QString& filename) {
 
 void WVuMeter::setPixmaps(const QString &vuFilename,
                           bool bHorizontal) {
-    m_pPixmapVu = WPixmapStore::getPaintable(vuFilename);
+    m_pPixmapVu = WPixmapStore::getPaintable(vuFilename,
+                                             Paintable::STRETCH);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
     } else {
@@ -111,7 +113,13 @@ void WVuMeter::onConnectedControlValueChanged(double dValue) {
     else if (idx < 0)
         idx = 0;
 
-    setPeak(idx);
+    if (dValue > 0.) {
+        setPeak(idx);
+    } else {
+        // A 0.0 value is very unlikely except when the VU Meter is disabled
+        m_iPeakPos = 0;
+    }
+
 
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);

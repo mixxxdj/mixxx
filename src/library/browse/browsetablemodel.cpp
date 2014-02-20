@@ -12,7 +12,7 @@
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
-
+#include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
@@ -81,9 +81,9 @@ void BrowseTableModel::addSearchColumn(int index) {
     m_searchColumns.push_back(index);
 }
 
-void BrowseTableModel::setPath(QString absPath) {
-    m_current_path = absPath;
-    BrowseThread::getInstance()->executePopulation(m_current_path, this);
+void BrowseTableModel::setPath(const MDir& path) {
+    m_current_directory = path;
+    BrowseThread::getInstance()->executePopulation(m_current_directory, this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -208,7 +208,8 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Repopulate model if any tracks were actually deleted
     if (any_deleted) {
-        BrowseThread::getInstance()->executePopulation(m_current_path, this);
+        BrowseThread::getInstance()->executePopulation(m_current_directory,
+                                                       this);
     }
 }
 
@@ -231,13 +232,12 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+                QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
                 if (!url.isValid()) {
-                    qDebug() << "ERROR invalid url\n";
-                } else {
-                    urls.append(url);
-                    qDebug() << "Appending URL:" << url;
+                    qDebug() << "ERROR invalid url" << url;
+                    continue;
                 }
+                urls.append(url);
             }
         }
     }
@@ -319,7 +319,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     int row = index.row();
     int col = index.column();
     QString track_location = getTrackLocation(index);
-    AudioTagger tagger(track_location);
+    AudioTagger tagger(track_location, m_current_directory.token());
 
     // set tagger information
     tagger.setArtist(this->index(row, COLUMN_ARTIST).data().toString());

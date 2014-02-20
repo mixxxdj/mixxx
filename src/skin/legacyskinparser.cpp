@@ -59,6 +59,7 @@
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
+#include "util/valuetransformer.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -253,6 +254,21 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     return manifest;
 }
 
+// static
+Qt::MouseButton LegacySkinParser::parseButtonState(QDomNode node,
+                                                   const SkinContext& context) {
+    if (context.hasNode(node, "ButtonState")) {
+        if (context.selectString(node, "ButtonState")
+                .contains("LeftButton", Qt::CaseInsensitive)) {
+            return Qt::LeftButton;
+        } else if (context.selectString(node, "ButtonState")
+                       .contains("RightButton", Qt::CaseInsensitive)) {
+            return Qt::RightButton;
+        }
+    }
+    return Qt::NoButton;
+}
+
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
@@ -278,8 +294,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObjectThread cot(configKey);
-            cot.slotSet(value);
+            ControlObject::set(configKey, value);
         }
     }
 
@@ -439,10 +454,11 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     WSplitter* pSplitter = new WSplitter(m_pParent);
+    setupConnections(node, pSplitter);
     setupBaseWidget(node, pSplitter);
     setupWidget(node, pSplitter);
     pSplitter->setup(node, *m_pContext);
-    setupConnections(node, pSplitter);
+    pSplitter->Init();
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     QWidget* pOldParent = m_pParent;
@@ -495,10 +511,11 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
+    setupConnections(node, pGroup);
     setupBaseWidget(node, pGroup);
     setupWidget(node, pGroup);
     pGroup->setup(node, *m_pContext);
-    setupConnections(node, pGroup);
+    pGroup->Init();
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
 
@@ -538,9 +555,11 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
+    setupConnections(node, pStack);
     setupBaseWidget(node, pStack);
     setupWidget(node, pStack);
-    setupConnections(node, pStack);
+    pStack->Init();
+
 
     if (createdNext && pNextControl) {
         pNextControl->setParent(pStack);
@@ -654,13 +673,14 @@ QWidget* LegacySkinParser::parseStandardWidget(QDomElement element,
     if (timerListener) {
         WaveformWidgetFactory::instance()->addTimerListener(pWidget);
     }
+    setupConnections(element, pWidget);
     setupBaseWidget(element, pWidget);
     setupWidget(element, pWidget);
     pWidget->setup(element, *m_pContext);
-    setupConnections(element, pWidget);
     pWidget->installEventFilter(m_pKeyboard);
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
     return pWidget;
 }
 
@@ -678,12 +698,13 @@ void LegacySkinParser::setupLabelWidget(QDomElement element, WLabel* pLabel) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     pLabel->setup(element, *m_pContext);
+    setupConnections(element, pLabel);
     setupBaseWidget(element, pLabel);
     setupWidget(element, pLabel);
-    setupConnections(element, pLabel);
     pLabel->installEventFilter(m_pKeyboard);
     pLabel->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
+    pLabel->Init();
 }
 
 QWidget* LegacySkinParser::parseOverview(QDomElement node) {
@@ -709,12 +730,13 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
+    setupConnections(node, overviewWidget);
     setupBaseWidget(node, overviewWidget);
     setupWidget(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
-    setupConnections(node, overviewWidget);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    overviewWidget->Init();
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(loadTrack(TrackPointer)),
@@ -752,23 +774,16 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
-    // Connect control proxy to widget, so delete can be handled by the QT object tree
-    ControlObjectSlave* p = new ControlObjectSlave(
-            channelStr, "wheel", viewer);
-    ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-        viewer, p, true, false, ControlWidgetConnection::EMIT_ON_PRESS);
-    viewer->addRightConnection(pConnection);
-
+    setupConnections(node, viewer);
     setupBaseWidget(node, viewer);
     setupWidget(node, viewer);
+    viewer->Init();
 
     // connect display with loading/unloading of tracks
     QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
                      viewer, SLOT(onTrackLoaded(TrackPointer)));
     QObject::connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
                      viewer, SLOT(onTrackUnloaded(TrackPointer)));
-
-    setupConnections(node, viewer);
 
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
@@ -781,19 +796,22 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
 QWidget* LegacySkinParser::parseText(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(m_pParent);
+    WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(p, SIGNAL(trackDropped(QString,QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -805,20 +823,22 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 
 QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
-
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackProperty* p = new WTrackProperty(m_pParent);
+    WTrackProperty* p = new WTrackProperty(pSafeChannelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(p, SIGNAL(trackDropped(QString,QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -873,6 +893,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
+    setupConnections(node, spinny);
     setupBaseWidget(node, spinny);
     setupWidget(node, spinny);
 
@@ -881,9 +902,9 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
     spinny->setup(node, *m_pContext, pSafeChannelStr);
-    setupConnections(node, spinny);
     spinny->installEventFilter(m_pKeyboard);
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    spinny->Init();
     return spinny;
 }
 
@@ -1458,14 +1479,20 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     // For each connection
     QDomNode con = m_pContext->selectNode(node, "Connection");
 
-    ControlWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
-    ControlWidgetConnection* pLastRightButtonConnection = NULL;
+    ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
 
     while (!con.isNull()) {
         // Check that the control exists
         bool created = false;
         ControlObject* control = controlFromConfigNode(
                 con.toElement(), "ConfigKey", &created);
+
+
+        ValueTransformer* pTransformer = NULL;
+        if (m_pContext->hasNode(con, "Transform")) {
+            QDomElement element = m_pContext->selectElement(con, "Transform");
+            pTransformer = ValueTransformer::parseFromXml(element, *m_pContext);
+        }
 
         if (m_pContext->hasNode(con, "BindProperty")) {
             QString property = m_pContext->selectString(con, "BindProperty");
@@ -1475,10 +1502,10 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                     new ControlObjectSlave(control->getKey(),
                                            pWidget->toQWidget());
 
-            ControlWidgetConnection* pConnection =
+            ControlWidgetPropertyConnection* pConnection =
                     new ControlWidgetPropertyConnection(pWidget, pControlWidget,
-                                                        property);
-            pWidget->addConnection(pConnection);
+                                                        pTransformer, property);
+            pWidget->addPropertyConnection(pConnection);
 
             // If we created this control, bind it to the
             // ControlWidgetConnection so that it is deleted when the connection
@@ -1487,36 +1514,69 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 control->setParent(pConnection);
             }
         } else {
-            // Default to emit on press
-            ControlWidgetConnection::EmitOption emitOption =
-                    ControlWidgetConnection::EMIT_ON_PRESS;
+            bool nodeValue;
+            Qt::MouseButton state = parseButtonState(con, *m_pContext);
 
-            // Get properties from XML, or use defaults
-            if (m_pContext->selectBool(con, "EmitOnPressAndRelease", false))
-                emitOption = ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
-
-            if (!m_pContext->selectBool(con, "EmitOnDownPress", true))
-                emitOption = ControlWidgetConnection::EMIT_ON_RELEASE;
-
-            bool connectValueFromWidget = m_pContext->selectBool(con, "ConnectValueFromWidget", true);
-            bool connectValueToWidget = m_pContext->selectBool(con, "ConnectValueToWidget", true);
-
-            Qt::MouseButton state = Qt::NoButton;
-            if (m_pContext->hasNode(con, "ButtonState")) {
-                if (m_pContext->selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
-                    state = Qt::LeftButton;
-                } else if (m_pContext->selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
-                    state = Qt::RightButton;
+            bool directionOptionSet = false;
+            int directionOption = ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+            if(m_pContext->hasNodeSelectBool(
+                    con, "ConnectValueFromWidget", &nodeValue)) {
+                if (nodeValue) {
+                    directionOption = directionOption | ControlParameterWidgetConnection::DIR_FROM_WIDGET;
+                } else {
+                    directionOption = directionOption & ~ControlParameterWidgetConnection::DIR_FROM_WIDGET;
                 }
+                directionOptionSet = true;
+            }
+
+            if(m_pContext->hasNodeSelectBool(
+                    con, "ConnectValueToWidget", &nodeValue)) {
+                if (nodeValue) {
+                    directionOption = directionOption | ControlParameterWidgetConnection::DIR_TO_WIDGET;
+                } else {
+                    directionOption = directionOption & ~ControlParameterWidgetConnection::DIR_TO_WIDGET;
+                }
+                directionOptionSet = true;
+            }
+
+            if (!directionOptionSet) {
+                // default:
+                // no direction option is explicite set
+                // Set default flag to allow the widget to change this during setup
+                directionOption |= ControlParameterWidgetConnection::DIR_DEFAULT;
+            }
+
+            int emitOption =
+                    ControlParameterWidgetConnection::EMIT_ON_PRESS;
+            if(m_pContext->hasNodeSelectBool(
+                    con, "EmitOnDownPress", &nodeValue)) {
+                if (nodeValue) {
+                    emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS;
+                } else {
+                    emitOption = ControlParameterWidgetConnection::EMIT_ON_RELEASE;
+                }
+            } else if(m_pContext->hasNodeSelectBool(
+                    con, "EmitOnPressAndRelease", &nodeValue)) {
+                if (nodeValue) {
+                    emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+                } else {
+                    qWarning() << "LegacySkinParser::setupConnections(): EmitOnPressAndRelease must not set false";
+                }
+            } else {
+                // default:
+                // no emit option is set
+                // Allow to change the emitOption from Widget
+                emitOption |= ControlParameterWidgetConnection::EMIT_DEFAULT;
             }
 
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
             ControlObjectSlave* pControlWidget = new ControlObjectSlave(
-                control->getKey(), pWidget->toQWidget());
-            ControlWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                pWidget, pControlWidget, connectValueFromWidget,
-                connectValueToWidget, emitOption);
+                    control->getKey(), pWidget->toQWidget());
+            ControlParameterWidgetConnection* pConnection = new ControlParameterWidgetConnection(
+                    pWidget, pControlWidget, pTransformer,
+                    static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
+                    static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
 
             // If we created this control, bind it to the
             // ControlWidgetConnection so that it is deleted when the connection
@@ -1526,37 +1586,33 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             }
 
             switch (state) {
-                case Qt::NoButton:
-                    pWidget->addConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastLeftOrNoButtonConnection = pConnection;
-                    }
-                    break;
-                case Qt::LeftButton:
-                    pWidget->addLeftConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastLeftOrNoButtonConnection = pConnection;
-                    }
-                    break;
-                case Qt::RightButton:
-                    pWidget->addRightConnection(pConnection);
-                    if (connectValueToWidget) {
-                        pLastRightButtonConnection = pConnection;
-                    }
-                    break;
-                default:
-                    break;
+            case Qt::NoButton:
+                pWidget->addConnection(pConnection);
+                if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
+                    pLastLeftOrNoButtonConnection = pConnection;
+                }
+                break;
+            case Qt::LeftButton:
+                pWidget->addLeftConnection(pConnection);
+                if (directionOption & ControlParameterWidgetConnection::DIR_TO_WIDGET) {
+                    pLastLeftOrNoButtonConnection = pConnection;
+                }
+                break;
+            case Qt::RightButton:
+                pWidget->addRightConnection(pConnection);
+                break;
+            default:
+                break;
             }
 
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.
-            if (connectValueFromWidget) {
+            if (directionOption & ControlParameterWidgetConnection::DIR_FROM_WIDGET) {
                 m_pControllerManager->getControllerLearningEventFilter()
-                        ->addWidgetClickInfo(pWidget->toQWidget(), state, control, emitOption);
-            }
+                        ->addWidgetClickInfo(pWidget->toQWidget(), state, control,
+                                static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
 
-            // Add keyboard shortcut info to tooltip string
-            if (connectValueFromWidget) {
+                // Add keyboard shortcut info to tooltip string
                 QString key = m_pContext->selectString(con, "ConfigKey");
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 
@@ -1638,8 +1694,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
     // display connection.
     if (pLastLeftOrNoButtonConnection != NULL) {
         pWidget->setDisplayConnection(pLastLeftOrNoButtonConnection);
-    } else if (pLastRightButtonConnection != NULL) {
-        pWidget->setDisplayConnection(pLastRightButtonConnection);
     }
 }
 

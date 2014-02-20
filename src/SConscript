@@ -6,6 +6,7 @@ import SCons
 import shutil
 import subprocess
 import time
+import datetime
 import SCons.Script as SCons
 
 from build import util, depends
@@ -60,6 +61,12 @@ if build.platform_is_windows:
         mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+elif build.platform_is_osx:
+        # Bug #1258435: executable name must match CFBundleExecutable in the
+        # Info.plist. For codesigned bundles it seems the CFBundleExecutable
+        # must match the bundle name or else we SIGILL at startup (not sure
+        # why).
+        mixxx_bin = env.Program('Mixxx', sources)
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
@@ -184,9 +191,6 @@ keyboardmappings_files = Glob('#res/keyboard/*')
 #Promo tracks
 promotracks_files = Glob('#res/promo/*')
 
-#LADSPA shizzle
-ladspapresets_files = Glob('#res/ladspa_presets/*')
-
 #Documentation
 docs_files = Glob('#./LICENSE')
 docs_files += Glob('#./README')
@@ -273,9 +277,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
                 keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
-                if int(flags['ladspa']):
-                        ladspapresets = env.Install(
-                                os.path.join(unix_share_path, 'mixxx', 'ladspa_presets'), ladspapresets_files)
                 dotdesktop = env.Install(os.path.join(unix_share_path, 'applications'), dotdesktop_files)
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
@@ -289,8 +290,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', controllermappings)
                 env.Alias('install', translations)
                 env.Alias('install', keyboardmappings)
-                if int(flags['ladspa']):
-                        env.Alias('install', ladspapresets)
                 env.Alias('install', docs)
                 env.Alias('install', dotdesktop)
                 env.Alias('install', icon)
@@ -372,16 +371,13 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                    Dir('#res/controllers/'),
                    translation_files,
                    Dir('#res/keyboard/'),
-                   Dir('#res/ladspa_presets'),
                    Dir('#res/doc/'),
                    Dir('#res/promo/'),
                    Dir(menu_nib),
                    File("#README"),
                    File("#LICENSE")]
         bundle = env.App(
-                # Bug #1258435. This must be lower case as it is the binary
-                # name.
-                "mixxx",
+                "Mixxx_bundle",
                 sources,
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
@@ -392,7 +388,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 DISPLAY_NAME="Mixxx",
                 VERSION=mixxx_version,
                 SHORT_VERSION=mixxx_version,
-                COPYRIGHT="Copyright © 2011-2013 Mixxx Development Team", #FIXME: datetime.year()
+                COPYRIGHT="Copyright © 2001-%s Mixxx Development Team" % datetime.datetime.now().year,
                 # WARNING(rjryan): If you change this, you must also change it
                 # in the build/osx/product_definition.plist.
                 MINIMUM_OSX_VERSION="10.6.0",
@@ -413,13 +409,14 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # that changse. Otherwise SCons will think the CodeSign target is up to
         # date and not run it.
         codesign = env.CodeSign(
-                'Mixxx',
+                'Mixxx_codesign',
                 sources,
                 CODESIGN_INSTALLER_IDENTITY=codesign_installer_identity,
                 CODESIGN_APPLICATION_IDENTITY=codesign_application_identity,
                 CODESIGN_KEYCHAIN=codesign_keychain,
                 CODESIGN_KEYCHAIN_PASSWORD=codesign_keychain_password,
                 CODESIGN_ENTITLEMENTS=codesign_entitlements)
+        env.AlwaysBuild(codesign)
         env.Alias('sign', codesign)
 
         package_name = 'mixxx'
@@ -435,8 +432,6 @@ if build.platform_is_windows:
         controllermappings = env.Install(os.path.join(base_dist_dir, "controllers"), controllermappings_files)
         translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
         keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
-        if int(flags['ladspa']):
-                ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
         promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
@@ -453,8 +448,6 @@ if build.platform_is_windows:
         env.Alias('mixxx', controllermappings)
         env.Alias('mixxx', translations)
         env.Alias('mixxx', keyboardmappings)
-        if int(flags['ladspa']):
-                env.Alias('mixxx', ladspapresets)
         env.Alias('mixxx', promotracks)
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)

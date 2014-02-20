@@ -12,14 +12,12 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
-          m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
-          m_pControlTalkover(new ControlPushButton(ConfigKey(pGroup, "talkover"))),
+          m_pConfigured(new ControlObject(ConfigKey(pGroup, "configured"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(MAX_BUFFER_LEN+1) {
-    m_pControlTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
-
+          m_sampleBuffer(MAX_BUFFER_LEN+1),
+          m_wasActive(false) {
     // You normally don't expect to hear yourself in the headphones. Default PFL
     // setting for mic to false. User can over-ride by setting the "pfl" or
     // "master" controls.
@@ -30,37 +28,47 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
 EngineMicrophone::~EngineMicrophone() {
     qDebug() << "~EngineMicrophone()";
     SampleUtil::free(m_pConversionBuffer);
-    delete m_pEnabled;
-    delete m_pControlTalkover;
+    delete m_pConfigured;
 }
 
-bool EngineMicrophone::isActive() const {
-    bool enabled = m_pEnabled->get() > 0.0;
-    return enabled && !m_sampleBuffer.isEmpty();
+bool EngineMicrophone::isActive() {
+    bool configured = m_pConfigured->get() > 0.0;
+    bool samplesAvailable = !m_sampleBuffer.isEmpty();
+    if (configured && samplesAvailable) {
+        m_wasActive = true;
+    } else if (m_wasActive) {
+        m_vuMeter.reset();
+        m_wasActive = false;
+    }
+    return m_wasActive;
 }
 
-void EngineMicrophone::onInputConnected(AudioInput input) {
+void EngineMicrophone::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(1.0);
+    m_pConfigured->set(1.0);
 }
 
-void EngineMicrophone::onInputDisconnected(AudioInput input) {
+void EngineMicrophone::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(0.0);
+    m_pConfigured->set(0.0);
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                      unsigned int nFrames) {
+    if (!isTalkover()) {
+        return;
+    }
+
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type!";
@@ -114,7 +122,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.
-    if (m_pControlTalkover->get() > 0.0) {
+    if (isTalkover()) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This

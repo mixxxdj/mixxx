@@ -26,6 +26,7 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "rotary.h"
+#include "control/controlvalue.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -47,6 +48,8 @@ class ReadAheadManager;
 class ControlObject;
 class ControlObjectSlave;
 class ControlPushButton;
+class ControlIndicator;
+class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
@@ -73,10 +76,10 @@ const int audioBeatMarkLen = 40;
 // Temporary buffer length
 const int kiTempLength = 200000;
 
-// Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
-const int kiUpdateRate = 10;
+// Rate at which the playpos slider is updated
+const int kiPlaypositionUpdateRate = 10; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateRate = 40 / kiUpdateRate; //about 2.5 updates per sec
+const int kiBpmUpdateCnt = 4; // about 2.5 updates per sec
 
 // End of track mode constants
 const int TRACK_END_MODE_STOP = 0;
@@ -90,16 +93,16 @@ const int ENGINE_RAMP_UP = 1;
 
 //const int kiRampLength = 3;
 
-enum SeekRequest {
-    NO_SEEK,
-    SEEK_STANDARD,
-    SEEK_EXACT,
-    SEEK_PHASE
-};
-
 class EngineBuffer : public EngineObject {
      Q_OBJECT
   public:
+    enum SeekRequest {
+        NO_SEEK,
+        SEEK_STANDARD,
+        SEEK_EXACT,
+        SEEK_PHASE
+    };
+
     EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
@@ -119,17 +122,12 @@ class EngineBuffer : public EngineObject {
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
-    void queueNewPlaypos(double newpos, bool exact);
+    void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
-
-    // Reset buffer playpos and set file playpos. This must only be called
-    // while holding the pause mutex
-    void setNewPlaypos(double playpos);
 
     // The process methods all run in the audio callback.
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
-    void processSeek();
 
     const char* getGroup();
     bool isTrackLoaded();
@@ -189,7 +187,17 @@ class EngineBuffer : public EngineObject {
 
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
-    void doSeek(double change, bool exact);
+    void doSeek(double change, enum SeekRequest seekType);
+
+    void clearScale();
+
+    // Reset buffer playpos and set file playpos.
+    void setNewPlaypos(double playpos);
+
+    void processSeek();
+
+    double updateIndicatorsAndModifyPlay(double v);
+    void verifyPlay();
 
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
@@ -304,14 +312,7 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
-    // TODO(XXX) make a macro or something.
-#if defined(__GNUC__)
-    double m_dQueuedPosition __attribute__ ((aligned(sizeof(double))));
-#elif defined(_MSC_VER)
-    double __declspec(align(8)) m_dQueuedPosition;
-#else
-    double m_dQueuedPosition;
-#endif
+    ControlValueAtomic<double> m_queuedPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to
     // zero in case of an immediate stop of the playback

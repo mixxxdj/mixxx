@@ -29,6 +29,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
+#include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
@@ -38,10 +39,6 @@
 #include "util/trace.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
-
-#ifdef __LADSPA__
-#include "engine/engineladspa.h"
-#endif
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
@@ -78,11 +75,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                                                  "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
-#ifdef __LADSPA__
-    // LADSPA
-    m_pLadspa = new EngineLADSPA();
-#endif
-
     // Crossfader
     m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
 
@@ -114,6 +106,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
 
+    m_pTalkoverDucking = new EngineTalkoverDucking(_config, group);
+
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -122,13 +116,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
-        struct OutputBus* bus = &m_outputBus[o];
-        bus->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-        SampleUtil::applyGain(bus->m_pBuffer, 0, MAX_BUFFER_LEN);
-        bus->m_gain.setGains(1.0,
-                             o == EngineChannel::LEFT ? 1.0 : 0.0,
-                             o == EngineChannel::CENTER ? 1.0 : 0.0,
-                             o == EngineChannel::RIGHT ? 1.0 : 0.0);
+        m_pOutputBusBuffers[o] = SampleUtil::alloc(MAX_BUFFER_LEN);
+        SampleUtil::applyGain(m_pOutputBusBuffers[o], 0, MAX_BUFFER_LEN);
     }
 
     // Starts a thread for recording and shoutcast
@@ -150,8 +139,10 @@ EngineMaster::~EngineMaster() {
     delete m_pCrossfader;
     delete m_pBalance;
     delete m_pHeadMix;
+    delete m_pHeadSplitEnabled;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
+    delete m_pTalkoverDucking;
     delete m_pClipping;
     delete m_pVumeter;
     delete m_pHeadClipping;
@@ -172,7 +163,7 @@ EngineMaster::~EngineMaster() {
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        SampleUtil::free(m_outputBus[o].m_pBuffer);
+        SampleUtil::free(m_pOutputBusBuffers[o]);
     }
 
     delete m_pWorkerScheduler;
@@ -204,6 +195,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
 
+    // Clear talkover compressor for the next round of gain calculation.
+    m_pTalkoverDucking->clearKeys();
+
     // Find the Sync Master and process it first then process all the slaves
     // (and skip the master).
 
@@ -232,6 +226,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                 if (pChannel->isPFL()) {
                     *headphoneOutput |= (1 << channel_number);
                     needsProcessing = true;
+                }
+
+                if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                        pChannel->isTalkover()) {
+                    m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
                 }
 
                 // Process the buffer if necessary, which it damn well better be
@@ -270,6 +269,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         if (pChannel->isPFL()) {
             *headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
+        }
+
+        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                pChannel->isTalkover()) {
+            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
 
         // Process the buffer if necessary
@@ -322,23 +326,6 @@ void EngineMaster::process(const int iBufferSize) {
             m_pHead, iBufferSize);
     }
 
-    // Make the mix for each output bus
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        if (m_bRampingGain) {
-            ChannelMixer::mixChannelsRamping(
-                m_channels, m_outputBus[o].m_gain,
-                busChannelConnectionFlags[o], maxChannels,
-                &m_outputBus[o].m_gainCache,
-                m_outputBus[o].m_pBuffer, iBufferSize);
-        } else {
-            ChannelMixer::mixChannels(
-                m_channels, m_outputBus[o].m_gain,
-                busChannelConnectionFlags[o], maxChannels,
-                &m_outputBus[o].m_gainCache,
-                m_outputBus[o].m_pBuffer, iBufferSize);
-        }
-    }
-
     // Calculate the crossfader gains for left and right side of the crossfader
     double c1_gain, c2_gain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
@@ -347,18 +334,39 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderReverse->get() == 1.0,
                                 &c1_gain, &c2_gain);
 
-    // And mix the 3 buses into the master
-    float master_gain = m_pMasterVolume->get();
-    SampleUtil::copy3WithGain(m_pMaster,
-                              m_outputBus[EngineChannel::LEFT].m_pBuffer, c1_gain*master_gain,
-                              m_outputBus[EngineChannel::CENTER].m_pBuffer, master_gain,
-                              m_outputBus[EngineChannel::RIGHT].m_pBuffer, c2_gain*master_gain,
-                              iBufferSize);
+    // And mix the 3 buses into the master.
+    CSAMPLE master_gain = m_pMasterVolume->get();
 
-#ifdef __LADSPA__
-    // LADPSA master effects
-    m_pLadspa->process(m_pMaster, m_pMaster, iBufferSize);
-#endif
+    // Channels with the talkover flag should be mixed with the master signal at
+    // full master volume.  All other channels should be adjusted by ducking gain.
+    m_masterGain.setGains(master_gain * m_pTalkoverDucking->getGain(iBufferSize / 2),
+                          c1_gain, 1.0, c2_gain, master_gain);
+
+    // Make the mix for each output bus. m_masterGain takes care of applying the
+    // master volume, the channel volume, and the orientation gain.
+    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
+        if (m_bRampingGain) {
+            ChannelMixer::mixChannelsRamping(
+                m_channels, m_masterGain,
+                busChannelConnectionFlags[o], maxChannels,
+                &m_channelMasterGainCache,
+                m_pOutputBusBuffers[o], iBufferSize);
+        } else {
+            ChannelMixer::mixChannels(
+                m_channels, m_masterGain,
+                busChannelConnectionFlags[o], maxChannels,
+                &m_channelMasterGainCache,
+                m_pOutputBusBuffers[o], iBufferSize);
+        }
+    }
+
+    // Mix the three channels together. We already mixed the busses together
+    // with the channel gains and overall master gain.
+    SampleUtil::copy3WithGain(m_pMaster,
+                              m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
+                              m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
+                              m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
+                              iBufferSize);
 
     // Clipping
     m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);
@@ -438,7 +446,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     m_channels.push_back(pChannelInfo);
     m_channelHeadphoneGainCache.push_back(0);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_outputBus[o].m_gainCache.push_back(0);
+        m_channelMasterGainCache.push_back(0);
     }
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
@@ -465,7 +473,7 @@ const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
 
 const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
     if (i <= EngineChannel::RIGHT)
-        return m_outputBus[i].m_pBuffer;
+        return m_pOutputBusBuffers[i];
     return NULL;
 }
 

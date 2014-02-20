@@ -3,20 +3,19 @@
 #define AUDIOTAGGER_H
 
 #include <QString>
+#include <QFileInfo>
 #include <taglib/apetag.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/xiphcomment.h>
 #include <taglib/mp4tag.h>
 
+#include "util/sandbox.h"
 
-
-class AudioTagger
-{
-public:
-
-
-    AudioTagger (QString file);
+class AudioTagger {
+  public:
+    AudioTagger(const QString& file, SecurityTokenPointer pToken);
     virtual ~AudioTagger ( );
+
     void setArtist (QString artist );
     void setTitle (QString title );
     void setAlbum (QString album );
@@ -31,8 +30,7 @@ public:
     void setTracknumber (QString tracknumber );
     bool save();
 
-
-private:
+  private:
     QString m_artist;
     QString m_title;
     QString m_albumArtist;
@@ -46,7 +44,8 @@ private:
     QString m_bpm;
     QString m_tracknumber;
 
-    QString m_file;
+    QFileInfo m_file;
+    SecurityTokenPointer m_pSecurityToken;
 
     /** adds or modifies the ID3v2 tag to include BPM and KEY information **/
     void addID3v2Tag(TagLib::ID3v2::Tag* id3v2);

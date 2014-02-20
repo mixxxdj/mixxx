@@ -38,6 +38,7 @@ class RecordingManager;
 class ShoutcastManager;
 class SkinLoader;
 class VinylControlManager;
+class GuiTick;
 
 class DlgPreferences;
 class SoundManager;
@@ -69,6 +70,8 @@ class MixxxMainWindow : public QMainWindow {
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
+
+    inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
 
@@ -163,6 +166,8 @@ class MixxxMainWindow : public QMainWindow {
     ControllerManager* m_pControllerManager;
 
     ConfigObject<ConfigValue>* m_pConfig;
+
+    GuiTick* m_pGuiTick;
 
     VinylControlManager* m_pVCManager;
 

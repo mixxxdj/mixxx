@@ -38,8 +38,9 @@ TEST_F(WPushButtonTest, QuickPressNoLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()),
-            true, true, ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
+            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET,
+            ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 
     m_Events.addMousePress(Qt::LeftButton);
     m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 100);
@@ -60,8 +61,9 @@ TEST_F(WPushButtonTest, LongPressLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()),
-            true, true, ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
+            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET,
+            ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 
     m_Events.addMousePress(Qt::LeftButton);
     m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 1000);

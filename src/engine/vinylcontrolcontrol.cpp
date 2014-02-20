@@ -68,7 +68,7 @@ void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
     m_pCurrentTrack.clear();
 }
 
-void VinylControlControl::notifySeek() {
+void VinylControlControl::notifySeekQueued() {
     // m_bRequested is set and unset in a single execution path,
     // so there are no issues with signals/slots causing timing
     // issues.

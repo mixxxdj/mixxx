@@ -72,13 +72,14 @@ double QuantizeControl::process(const double dRate,
     Q_UNUSED(dRate);
     Q_UNUSED(totalSamples);
     Q_UNUSED(iBufferSize);
-    int iCurrentSample = currentSample;
-    if (!even(iCurrentSample)) {
-        iCurrentSample--;
-    }
 
     if (!m_pBeats) {
         return kNoTrigger;
+    }
+
+    int iCurrentSample = currentSample;
+    if (!even(iCurrentSample)) {
+        iCurrentSample--;
     }
 
     double prevBeat = m_pCOPrevBeat->get();

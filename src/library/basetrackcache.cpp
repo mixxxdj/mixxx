@@ -13,15 +13,6 @@ namespace {
 
 const bool sDebug = false;
 
-const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
-    int i = 0;
-    QHash<QString, int> index;
-    foreach (const QString item, items) {
-        index[item] = i++;
-    }
-    return index;
-}
-
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
@@ -34,7 +25,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_idColumn(idColumn),
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
-          m_columnIndex(buildReverseIndex(columns)),
+          m_columnCache(columns),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_trackDAO(pTrackCollection->getTrackDAO()),
@@ -53,7 +44,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     // them a bunch.
     m_searchColumnIndices.resize(m_searchColumns.size());
     for (int i = 0; i < m_searchColumns.size(); ++i) {
-        m_searchColumnIndices[i] = m_columnIndex.value(m_searchColumns[i], -1);
+        m_searchColumnIndices[i] = m_columnCache.fieldIndex(m_searchColumns[i]);
     }
 }
 
@@ -65,8 +56,12 @@ int BaseTrackCache::columnCount() const {
     return m_columnCount;
 }
 
-int BaseTrackCache::fieldIndex(const QString columnName) const {
-    return m_columnIndex.value(columnName, -1);
+int BaseTrackCache::fieldIndex(ColumnCache::Column column) const {
+    return m_columnCache.fieldIndex(column);
+}
+
+int BaseTrackCache::fieldIndex(const QString& columnName) const {
+    return m_columnCache.fieldIndex(columnName);
 }
 
 void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
@@ -264,49 +259,49 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
 
     // TODO(XXX) Qt properties could really help here.
     // TODO(rryan) this is all TrackDAO specific. What about iTunes/RB/etc.?
-    if (fieldIndex(LIBRARYTABLE_ARTIST) == column) {
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) == column) {
         trackValue.setValue(pTrack->getArtist());
-    } else if (fieldIndex(LIBRARYTABLE_TITLE) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) == column) {
         trackValue.setValue(pTrack->getTitle());
-    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) == column) {
         trackValue.setValue(pTrack->getAlbum());
-    } else if (fieldIndex(LIBRARYTABLE_ALBUMARTIST) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) == column) {
         trackValue.setValue(pTrack->getAlbumArtist());
-    } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         trackValue.setValue(pTrack->getYear());
-    } else if (fieldIndex(LIBRARYTABLE_DATETIMEADDED) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) == column) {
         trackValue.setValue(pTrack->getDateAdded());
-    } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
         trackValue.setValue(pTrack->getGenre());
-    } else if (fieldIndex(LIBRARYTABLE_COMPOSER) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
         trackValue.setValue(pTrack->getComposer());
-    } else if (fieldIndex(LIBRARYTABLE_GROUPING) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
         trackValue.setValue(pTrack->getGrouping());
-    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) == column) {
         trackValue.setValue(pTrack->getType());
-    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
         trackValue.setValue(pTrack->getTrackNumber());
-    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) == column) {
         trackValue.setValue(pTrack->getLocation());
-    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         trackValue.setValue(pTrack->getComment());
-    } else if (fieldIndex(LIBRARYTABLE_DURATION) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) == column) {
         trackValue.setValue(pTrack->getDuration());
-    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) == column) {
         trackValue.setValue(pTrack->getBitrate());
-    } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
         trackValue.setValue(pTrack->getBpm());
-    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
         trackValue.setValue(pTrack->getPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
         trackValue.setValue(pTrack->getTimesPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         trackValue.setValue(pTrack->getRating());
-    } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
         trackValue.setValue(pTrack->getKeyText());
-    } else if (fieldIndex(LIBRARYTABLE_KEY_ID) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
-    } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->hasBpmLock());
     }
 }
@@ -614,12 +609,12 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                                         QVariant val1, QVariant val2) const {
     int result = 0;
 
-    if (sortColumn == fieldIndex(PLAYLISTTRACKSTABLE_POSITION) ||
-        sortColumn == fieldIndex(LIBRARYTABLE_BITRATE) ||
-        sortColumn == fieldIndex(LIBRARYTABLE_BPM) ||
-        sortColumn == fieldIndex(LIBRARYTABLE_DURATION) ||
-        sortColumn == fieldIndex(LIBRARYTABLE_TIMESPLAYED) ||
-        sortColumn == fieldIndex(LIBRARYTABLE_RATING)) {
+    if (sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 

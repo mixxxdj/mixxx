@@ -16,6 +16,15 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QLibrary>
+#include <QMutexLocker>
+#include <QMutex>
+#include <QtDebug>
+#include <QDir>
+#include <QDesktopServices>
+#include <QCoreApplication>
+#include <QApplication>
+
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #ifdef __MAD__
@@ -37,84 +46,97 @@
 #include "soundsourceflac.h"
 #include "util/cmdlineargs.h"
 
-#include <QLibrary>
-#include <QMutexLocker>
-#include <QMutex>
-#include <QtDebug>
-#include <QDir>
-#include <QDesktopServices>
-#include <QCoreApplication>
-#include <QApplication>
-
-
 //Static memory allocation
 QRegExp SoundSourceProxy::m_supportedFileRegex;
 QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
 QMap<QString, getSoundSourceFunc> SoundSourceProxy::m_extensionsSupportedByPlugins;
 QMutex SoundSourceProxy::m_extensionsMutex;
 
-
 //Constructor
-SoundSourceProxy::SoundSourceProxy(QString qFilename)
+SoundSourceProxy::SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken)
     : Mixxx::SoundSource(qFilename),
       m_pSoundSource(NULL),
-      m_pTrack() {
+      m_pSecurityToken(pToken) {
+    if (pToken.isNull()) {
+        // Open a security token for the file if we are in a sandbox.
+        QFileInfo info(m_qFilename);
+        m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+    }
+
+    // Create the underlying SoundSource.
     m_pSoundSource = initialize(qFilename);
 }
 
 //Other constructor
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
     : SoundSource(pTrack->getLocation()),
-      m_pSoundSource(NULL) {
+      m_pSoundSource(NULL),
+      m_pTrack(pTrack),
+      m_pSecurityToken(pTrack->getSecurityToken()) {
+    if (m_pSecurityToken.isNull()) {
+        // Open a security token for the file if we are in a sandbox.
+        QFileInfo info(m_qFilename);
+        m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+    }
 
     m_pSoundSource = initialize(pTrack->getLocation());
-    m_pTrack = pTrack;
+}
+
+SoundSourceProxy::~SoundSourceProxy() {
+    delete m_pSoundSource;
 }
 
 // static
-void SoundSourceProxy::loadPlugins()
-{
-    /** Scan for and initialize all plugins */
-
+void SoundSourceProxy::loadPlugins() {
+    // Scan for and initialize all plugins.
     QList<QDir> pluginDirs;
     QStringList nameFilters;
 
     const QString& pluginPath = CmdlineArgs::Instance().getPluginPath();
-
     if (!pluginPath.isEmpty()) {
         qDebug() << "Adding plugin path from commandline arg:" << pluginPath;
-        pluginDirs.append(QDir(pluginPath));
+        pluginDirs << QDir(pluginPath);
     }
+
 #ifdef __LINUX__
-    QDir libPath(UNIX_LIB_PATH);
-    if (libPath.cd("plugins") && libPath.cd("soundsource")) {
-    pluginDirs.append(libPath.absolutePath());
+    // TODO(rryan): Why can't we use applicationDirPath() and assume it's in the
+    // 'bin' folder of $PREFIX, so we just traverse
+    // ../lib/mixxx/plugins/soundsource.
+    QDir libPluginDir(UNIX_LIB_PATH);
+    if (libPluginDir.cd("plugins") && libPluginDir.cd("soundsource")) {
+        pluginDirs << libPluginDir;
     }
-    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/plugins/soundsource/"));
+
+    QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("soundsource")) {
+        pluginDirs << dataPluginDir;
+    }
 #elif __WINDOWS__
-    pluginDirs.append(QDir(QCoreApplication::applicationDirPath() + "/plugins/soundsource/"));
+    QDir appPluginDir(QCoreApplication::applicationDirPath());
+    if (appPluginDir.cd("plugins") && appPluginDir.cd("soundsource")) {
+        pluginDirs << appPluginDir;
+    }
 #elif __APPLE__
-    QString bundlePluginDir = QCoreApplication::applicationDirPath(); //blah/Mixxx.app/Contents/MacOS
-    bundlePluginDir.remove("MacOS");
+    // blah/Mixxx.app/Contents/MacOS/../PlugIns/
+    // TODO(XXX): Our SCons bundle target doesn't handle plugin subdirectories
+    // :( so we can't do:
     //blah/Mixxx.app/Contents/PlugIns/soundsource
-    //bundlePluginDir.append("PlugIns/soundsource");  //Our SCons bundle target doesn't handle plugin subdirectories :(
-    bundlePluginDir.append("PlugIns/");
-    pluginDirs.append(QDir(bundlePluginDir));
-    // Do we ever put stuff here? I think this was meant to be
-    // ~/Library/Application Support/Mixxx/Plugins rryan 04/2012
-    pluginDirs.append(QDir("/Library/Application Support/Mixxx/Plugins/soundsource/"));
-    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) +
-               "/Library/Application Support/Mixxx/Plugins/soundsource/"));
+    QDir bundlePluginDir(QCoreApplication::applicationDirPath());
+    if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
+        pluginDirs << bundlePluginDir;
+    }
+
+    QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("soundsource")) {
+        pluginDirs << dataPluginDir;
+    }
+
     nameFilters << "libsoundsource*";
 #endif
 
-    QDir dir;
-    foreach(dir, pluginDirs)
-    {
+    foreach(QDir dir, pluginDirs) {
         QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
-        QString file;
-        foreach (file, files)
-        {
+        foreach (const QString& file, files) {
             getPlugin(dir.filePath(file));
         }
     }
@@ -164,11 +186,6 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
     } else { //Unsupported filetype
         return NULL;
     }
-}
-
-SoundSourceProxy::~SoundSourceProxy()
-{
-    delete m_pSoundSource;
 }
 
 // static
@@ -308,69 +325,8 @@ long unsigned SoundSourceProxy::length()
     return m_pSoundSource->length();
 }
 
-int SoundSourceProxy::parseHeader()
-{
-    //TODO: Reorganize code so that the static ParseHeader isn't needed, and use this function instead?
-    return 0;
-}
-
-// static
-int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
-{
-    QString qFilename = p->getLocation();
-
-    // Log parsing of header information in developer mode. This is useful for
-    // tracking down corrupt files.
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
-    }
-
-    SoundSource* sndsrc = initialize(qFilename);
-    if (sndsrc == NULL)
-        return ERR;
-
-    if (sndsrc->parseHeader() == OK) {
-        //Dump the metadata from the soundsource into the TIO
-        //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make sure we've actually parsed metadata and not the filename
-
-        // If Artist, Title and Type fields are not blank, modify them.
-        // Otherwise, keep the values extracted by the function TrackInfoObject::parseFilename()
-        if (!(sndsrc->getArtist().isEmpty())) {
-            p->setArtist(sndsrc->getArtist());
-        }
-
-        if (!(sndsrc->getTitle().isEmpty())) {
-            p->setTitle(sndsrc->getTitle());
-        }
-
-        if (!(sndsrc->getType().isEmpty())) {
-            p->setType(sndsrc->getType());
-        }
-
-        p->setAlbum(sndsrc->getAlbum());
-        p->setAlbumArtist(sndsrc->getAlbumArtist());
-        p->setYear(sndsrc->getYear());
-        p->setGenre(sndsrc->getGenre());
-        p->setComposer(sndsrc->getComposer());
-        p->setGrouping(sndsrc->getGrouping());
-        p->setComment(sndsrc->getComment());
-        p->setTrackNumber(sndsrc->getTrackNumber());
-        p->setReplayGain(sndsrc->getReplayGain());
-        p->setBpm(sndsrc->getBPM());
-        p->setDuration(sndsrc->getDuration());
-        p->setBitrate(sndsrc->getBitrate());
-        p->setSampleRate(sndsrc->getSampleRate());
-        p->setChannels(sndsrc->getChannels());
-        p->setKeyText(sndsrc->getKey(),
-              mixxx::track::io::key::FILE_METADATA);
-        p->setHeaderParsed(true);
-    } else {
-        qDebug() << "SoundSourceProxy::ParseHeader() error at file " << qFilename;
-        p->setHeaderParsed(false);
-    }
-    delete sndsrc;
-
-    return OK;
+int SoundSourceProxy::parseHeader() {
+    return m_pSoundSource ? m_pSoundSource->parseHeader() : ERR;
 }
 
 // static

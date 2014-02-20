@@ -15,6 +15,7 @@ class WWaveformViewer;
 class WaveformWidgetAbstract;
 class QTimer;
 class VSyncThread;
+class MixxxMainWindow;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -95,7 +96,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(QWidget *parent);
+    void startVSync(MixxxMainWindow* mixxxApp);
     void setVSyncType(int vsType);
     int getVSyncType();
 

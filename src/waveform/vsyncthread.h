@@ -29,8 +29,9 @@
     #undef Unsorted
 #endif
 
-
 class QGLWidget;
+class GuiTick;
+class MixxxMainWindow;
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -46,7 +47,7 @@ class VSyncThread : public QThread {
 
     static void swapGl(QGLWidget* glw, int index);
 
-    VSyncThread(QWidget* parent);
+    VSyncThread(MixxxMainWindow* mixxMainWindow);
     ~VSyncThread();
 
     void run();
@@ -115,6 +116,9 @@ class VSyncThread : public QThread {
     QSemaphore m_semaVsyncSlot;
     double m_displayFrameRate;
     int m_vSyncPerRendering;
+
+
+    GuiTick* m_pGuiTick;
 };
 
 

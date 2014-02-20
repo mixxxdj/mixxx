@@ -33,10 +33,15 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "util/compatibility.h"
+#include "util/cmdlineargs.h"
 #include "util/time.h"
 
-TrackInfoObject::TrackInfoObject(const QString& file, bool parseHeader)
+TrackInfoObject::TrackInfoObject(const QString& file,
+                                 SecurityTokenPointer pToken,
+                                 bool parseHeader)
         : m_fileInfo(file),
+          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
+                  m_fileInfo, true) : pToken),
           m_qMutex(QMutex::Recursive),
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
@@ -44,8 +49,12 @@ TrackInfoObject::TrackInfoObject(const QString& file, bool parseHeader)
     initialize(parseHeader);
 }
 
-TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader)
+TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
+                                 SecurityTokenPointer pToken,
+                                 bool parseHeader)
         : m_fileInfo(fileInfo),
+          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
+                  m_fileInfo, true) : pToken),
           m_qMutex(QMutex::Recursive),
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
@@ -61,6 +70,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;
     m_fileInfo = QFileInfo(location);
+    m_pSecurityToken = Sandbox::openSecurityToken(m_fileInfo, true);
 
     // We don't call initialize() here because it would end up calling parse()
     // on the file. Plus those initializations weren't done before, so it might
@@ -133,15 +143,65 @@ void TrackInfoObject::doSave() {
     emit(save(this));
 }
 
-int TrackInfoObject::parse() {
-    // Parse the information stored in the sound file
-    int result = SoundSourceProxy::ParseHeader(this);
+void TrackInfoObject::parse() {
+    // Log parsing of header information in developer mode. This is useful for
+    // tracking down corrupt files.
+    const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
+    }
 
-    if (!m_bHeaderParsed) {
+    // Parse the information stored in the sound file.
+    SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
+    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
+
+        // Dump the metadata extracted from the file into the track.
+
+        // TODO(XXX): This involves locking the mutex for every setXXX
+        // method. We should figure out an optimization where there are private
+        // setters that don't lock the mutex.
+
+        // If Artist, Title and Type fields are not blank, modify them.
+        // Otherwise, keep their current values.
+        // TODO(rryan): Should we re-visit this decision?
+        if (!(pProxiedSoundSource->getArtist().isEmpty())) {
+            setArtist(pProxiedSoundSource->getArtist());
+        }
+
+        if (!(pProxiedSoundSource->getTitle().isEmpty())) {
+            setTitle(pProxiedSoundSource->getTitle());
+        }
+
+        if (!(pProxiedSoundSource->getType().isEmpty())) {
+            setType(pProxiedSoundSource->getType());
+        }
+
+        setAlbum(pProxiedSoundSource->getAlbum());
+        setAlbumArtist(pProxiedSoundSource->getAlbumArtist());
+        setYear(pProxiedSoundSource->getYear());
+        setGenre(pProxiedSoundSource->getGenre());
+        setComposer(pProxiedSoundSource->getComposer());
+        setGrouping(pProxiedSoundSource->getGrouping());
+        setComment(pProxiedSoundSource->getComment());
+        setTrackNumber(pProxiedSoundSource->getTrackNumber());
+        setReplayGain(pProxiedSoundSource->getReplayGain());
+        setBpm(pProxiedSoundSource->getBPM());
+        setDuration(pProxiedSoundSource->getDuration());
+        setBitrate(pProxiedSoundSource->getBitrate());
+        setSampleRate(pProxiedSoundSource->getSampleRate());
+        setChannels(pProxiedSoundSource->getChannels());
+        setKeyText(pProxiedSoundSource->getKey(),
+                   mixxx::track::io::key::FILE_METADATA);
+        setHeaderParsed(true);
+    } else {
+        qDebug() << "TrackInfoObject::parse() error at file"
+                 << canonicalLocation;
+        setHeaderParsed(false);
+
         // Add basic information derived from the filename:
         parseFilename();
     }
-    return result; // 0 = OK if Mixxx can handle this file
 }
 
 
@@ -194,6 +254,22 @@ void TrackInfoObject::setLocation(const QString& location) {
 QString TrackInfoObject::getLocation() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.absoluteFilePath();
+}
+
+QString TrackInfoObject::getCanonicalLocation() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_fileInfo.canonicalFilePath();
+}
+
+QFileInfo TrackInfoObject::getFileInfo() const {
+    // No need for locking since we are passing a copy by value. Qt doesn't say
+    // that QFileInfo is thread-safe but its copy constructor just copies the
+    // d_ptr.
+    return m_fileInfo;
+}
+
+SecurityTokenPointer TrackInfoObject::getSecurityToken() {
+    return m_pSecurityToken;
 }
 
 QString TrackInfoObject::getDirectory() const {

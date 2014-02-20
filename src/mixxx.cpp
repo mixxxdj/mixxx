@@ -34,7 +34,7 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
-#include "engine/enginepassthrough.h"
+#include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryscanner.h"
@@ -64,7 +64,9 @@
 #include "util/version.h"
 #include "controlpushbutton.h"
 #include "util/compatibility.h"
+#include "util/sandbox.h"
 #include "playerinfo.h"
+#include "waveform/guitick.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -86,11 +88,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     Time::start();
     initializeWindow();
 
-    // Only record stats in developer mode.
-    if (m_cmdLineArgs.getDeveloper()) {
-        StatsManager::create();
-    }
-
     //Reset pointer to players
     m_pSoundManager = NULL;
     m_pPrefDlg = NULL;
@@ -106,8 +103,14 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
-    QString resourcePath = m_pConfig->getResourcePath();
+    Sandbox::initialize(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
 
+    // Only record stats in developer mode.
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::create();
+    }
+
+    QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
 
     // Set the visibility of tooltips, default "1" = ON
@@ -134,7 +137,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
-    // TODO(rryan): Fold microphone and passthrough creation into a manager
+    // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
@@ -143,17 +146,17 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
-    EnginePassthrough* pPassthrough1 = new EnginePassthrough("[Passthrough1]");
+    EngineAux* pAux1 = new EngineAux("[Auxiliary1]");
     // What should channelbase be?
-    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 0);
-    m_pEngine->addChannel(pPassthrough1);
-    m_pSoundManager->registerInput(passthroughInput1, pPassthrough1);
+    AudioInput auxInput1 = AudioInput(AudioPath::AUXILIARY, 0, 0, 0);
+    m_pEngine->addChannel(pAux1);
+    m_pSoundManager->registerInput(auxInput1, pAux1);
 
-    EnginePassthrough* pPassthrough2 = new EnginePassthrough("[Passthrough2]");
+    EngineAux* pAux2 = new EngineAux("[Auxiliary2]");
     // What should channelbase be?
-    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 1);
-    m_pEngine->addChannel(pPassthrough2);
-    m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
+    AudioInput auxInput2 = AudioInput(AudioPath::AUXILIARY, 0, 0, 1);
+    m_pEngine->addChannel(pAux2);
+    m_pSoundManager->registerInput(auxInput2, pAux2);
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
@@ -173,6 +176,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Register TrackPointer as a metatype since we use it in signals/slots
     // regularly.
     qRegisterMetaType<TrackPointer>("TrackPointer");
+
+    m_pGuiTick = new GuiTick();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, m_pConfig, m_pSoundManager);
@@ -238,7 +243,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             this, tr("Choose music library directory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
         if (!fd.isEmpty()) {
-            //adds Folder to database
+            // adds Folder to database.
             m_pLibrary->slotRequestAddDir(fd);
             hasChanged_MusicDir = true;
         }
@@ -481,12 +486,17 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
+    Sandbox::shutdown();
+
     ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
 
     delete m_pTouchShift;
 
     PlayerInfo::destroy();
+    WaveformWidgetFactory::destroy();
+
+    delete m_pGuiTick;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
@@ -495,7 +505,8 @@ MixxxMainWindow::~MixxxMainWindow() {
     ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
+        qDebug() << "WARNING: The following" << leakedControls.size()
+                 << "controls were leaked:";
         foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
             if (pCDP.isNull()) {
                 continue;
@@ -522,7 +533,6 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pKbdConfig;
     delete m_pKbdConfigEmpty;
 
-    WaveformWidgetFactory::destroy();
     t.elapsed(true);
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
@@ -574,6 +584,13 @@ void MixxxMainWindow::logBuildDetails() {
     // This is the first line in mixxx.log
     qDebug() << "Mixxx" << version << buildInfoFormatted << "is starting...";
     qDebug() << "Qt version is:" << qVersion();
+
+    qDebug() << "QDesktopServices::storageLocation(HomeLocation):"
+             << QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    qDebug() << "QDesktopServices::storageLocation(DataLocation):"
+             << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    qDebug() << "QCoreApplication::applicationDirPath()"
+             << QCoreApplication::applicationDirPath();
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -1283,7 +1300,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             return;
     }
 
-    QString s =
+    QString trackPath =
         QFileDialog::getOpenFileName(
             this,
             loadTrackText,
@@ -1291,8 +1308,17 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             QString("Audio (%1)")
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
-    if (!s.isNull()) {
-        m_pPlayerManager->slotLoadToDeck(s, deck);
+
+    if (!trackPath.isNull()) {
+        // The user has picked a file via a file dialog. This means the system
+        // sandboxer (if we are sandboxed) has granted us permission to this
+        // folder. Create a security bookmark while we have permission so that
+        // we can access the folder on future runs. We need to canonicalize the
+        // path so we first wrap the directory string with a QDir.
+        QFileInfo trackInfo(trackPath);
+        Sandbox::createSecurityToken(trackInfo);
+
+        m_pPlayerManager->slotLoadToDeck(trackPath, deck);
     }
 }
 

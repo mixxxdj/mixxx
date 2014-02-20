@@ -91,8 +91,7 @@ class HID(Feature):
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
         elif build.platform_is_osx:
-            build.env.Append(LINKFLAGS='-framework IOKit')
-            build.env.Append(LINKFLAGS='-framework CoreFoundation')
+            build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
 
         build.env.Append(CPPDEFINES='__HID__')
 
@@ -215,11 +214,8 @@ class CoreAudio(Feature):
         if not build.platform_is_osx:
             raise Exception('CoreAudio is only supported on OS X!')
 
-        build.env.Append(
-            CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
         build.env.Append(CPPPATH='#lib/apple/')
-        build.env.Append(
-            LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+        build.env.AppendUnique(FRAMEWORKS=['AudioToolbox', 'CoreFoundation'])
         build.env.Append(CPPDEFINES='__COREAUDIO__')
 
     def sources(self, build):
@@ -266,48 +262,6 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
         return
-
-
-class LADSPA(Feature):
-
-    def description(self):
-        return "Experimental LADSPA Support"
-
-    def enabled(self, build):
-        enabled = util.get_flags(build.env, 'ladspa', 0)
-        build.flags['ladspa'] = enabled
-        return True if int(enabled) else False
-
-    def add_options(self, build, vars):
-        vars.Add('ladspa',
-                 '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPPATH=['#lib/ladspa'])
-        build.env.Append(CPPDEFINES='__LADSPA__')
-
-    def sources(self, build):
-        ladspa_plugins = SCons.SConscript(SCons.File('#lib/ladspa/SConscript'))
-        # build.env.Alias('plugins', ladspa_plugins)
-        sources = SCons.Split("""engine/engineladspa.cpp
-                            ladspa/ladspaloader.cpp
-                            ladspa/ladspalibrary.cpp
-                            ladspa/ladspaplugin.cpp
-                            ladspa/ladspainstance.cpp
-                            ladspa/ladspacontrol.cpp
-                            ladspa/ladspainstancestereo.cpp
-                            ladspa/ladspainstancemono.cpp
-                            ladspaview.cpp
-                            ladspa/ladspapreset.cpp
-                            ladspa/ladspapresetmanager.cpp
-                            ladspa/ladspapresetknob.cpp
-                            ladspa/ladspapresetinstance.cpp
-                            dlgladspa.cpp
-                            ladspa/ladspapresetslot.cpp
-                            """)
-        return ladspa_plugins + sources
 
 
 class IPod(Feature):

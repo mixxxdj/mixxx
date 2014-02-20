@@ -63,23 +63,37 @@ class PortMIDI(Dependence):
 class OpenGL(Dependence):
 
     def configure(self, build, conf):
-        # Check for OpenGL (it's messy to do it for all three platforms) XXX
-        # this should *NOT* have hardcoded paths like this
+        if build.platform_is_osx:
+            build.env.AppendUnique(FRAMEWORKS='OpenGL')
+
+        # Check for OpenGL (it's messy to do it for all three platforms).
         if (not conf.CheckLib('GL') and
                 not conf.CheckLib('opengl32') and
-                not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and
+                not conf.CheckCHeader('OpenGL/gl.h') and
                 not conf.CheckCHeader('GL/gl.h')):
             raise Exception('Did not find OpenGL development files')
 
         if (not conf.CheckLib('GLU') and
                 not conf.CheckLib('glu32') and
-                not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h')):
+                not conf.CheckCHeader('OpenGL/glu.h')):
             raise Exception('Did not find GLU development files')
 
-        if build.platform_is_osx:
-            build.env.Append(
-                CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
-            build.env.Append(LINKFLAGS='-framework OpenGL')
+
+class SecurityFramework(Dependence):
+    """The iOS/OS X security framework is used to implement sandboxing."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/Security.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework Security')
+
+
+class CoreServices(Dependence):
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework CoreServices')
 
 
 class OggVorbis(Dependence):
@@ -517,6 +531,7 @@ class MixxxCore(Feature):
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
+                   "controlindicator.cpp",
                    "controlttrotary.cpp",
 
                    "preferences/dlgpreferencepage.cpp",
@@ -566,12 +581,13 @@ class MixxxCore(Feature):
                    "engine/enginefiltereffect.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
+                   "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
-                   "engine/enginepassthrough.cpp",
+                   "engine/engineaux.cpp",
                    "engine/channelmixer_autogen.cpp",
 
                    "engine/enginecontrol.cpp",
@@ -584,6 +600,7 @@ class MixxxCore(Feature):
                    "engine/quantizecontrol.cpp",
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
+                   "engine/enginetalkoverducking.cpp",
                    "cachingreader.cpp",
                    "cachingreaderworker.cpp",
 
@@ -670,6 +687,7 @@ class MixxxCore(Feature):
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
+                   "library/columncache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/searchquery.cpp",
                    "library/searchqueryparser.cpp",
@@ -756,6 +774,7 @@ class MixxxCore(Feature):
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/vsyncthread.cpp",
+                   "waveform/guitick.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",
@@ -842,6 +861,10 @@ class MixxxCore(Feature):
                    "util/performancetimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
+                   "util/valuetransformer.cpp",
+                   "util/sandbox.cpp",
+                   "util/file.cpp",
+                   "util/mac.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -917,11 +940,6 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
             build.env.Append(CCFLAGS='-g')
-
-            # Check that g++ is present (yeah, SCONS is a bit dumb here)
-            # returns a non zeros return code if g++ is found
-            if os.system("which g++ > /dev/null"):
-                raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
             mixxx_lib_path = SCons.ARGUMENTS.get(
@@ -1037,7 +1055,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

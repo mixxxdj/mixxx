@@ -146,7 +146,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     int columns = pPlaylistTableModel->columnCount();
     for (int i = 0; i < columns; ++i) {
         if (pPlaylistTableModel->isColumnInternal(i) ||
-                (pPlaylistTableModel->fieldIndex("preview") == i)) {
+                (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == i)) {
             continue;
         }
         if (!first){
@@ -168,7 +168,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
         first = true;
         for(int i = 0; i < columns; ++i){
             if (pPlaylistTableModel->isColumnInternal(i) ||
-                    (pPlaylistTableModel->fieldIndex("preview") == i)) {
+                    (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW) == i)) {
                 continue;
             }
             if (!first){
@@ -178,7 +178,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
             }
             out << "\"";
             QString field = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
-            if (useRelativePath && i == pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_LOCATION)) {
+            if (useRelativePath && i == pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_LOCATION)) {
                 field = base_dir.relativeFilePath(field);
             }
             out << field.replace('\"', "\"\"");  // escape "
@@ -213,14 +213,14 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
     int rows = pPlaylistTableModel->rowCount();
     for (int j = 0; j < rows; j++) {
         // writing fields section
-        i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+        i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
         if (i >= 0){
             int nr = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toInt();
             out << QString("%1.").arg(nr,2,10,QLatin1Char('0'));
         }
 
         if (writeTimestamp) {
-            i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED);
+            i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
             if (i >= 0){
                 QTime time = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toTime();
                 if (j == 0) {
@@ -232,12 +232,12 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
             }
         }
 
-        i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_ARTIST);
+        i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_ARTIST);
         if (i >= 0){
             out << " ";
             out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
         }
-        i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_TITLE);
+        i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TITLE);
         if (i >= 0){
             out << " - ";
             out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();;
