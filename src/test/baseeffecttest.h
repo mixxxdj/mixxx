@@ -1,12 +1,21 @@
-#ifndef TESTEFFECTBACKEND_H
-#define TESTEFFECTBACKEND_H
+#ifndef BASEEFFECTTEST_H
+#define BASEEFFECTTEST_H
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <QScopedPointer>
+
+#include "effects/effectchain.h"
+#include "effects/effect.h"
+#include "effects/effectsmanager.h"
+#include "effects/effectmanifest.h"
 #include "effects/effectsbackend.h"
 #include "effects/effectinstantiator.h"
 #include "effects/effectprocessor.h"
+
+
+#include "test/mixxxtest.h"
 
 class TestEffectBackend : public EffectsBackend {
   public:
@@ -37,4 +46,24 @@ class MockEffectInstantiator : public EffectInstantiator {
                                                const EffectManifest& manifest));
 };
 
-#endif /* TESTEFFECTBACKEND_H */
+
+class BaseEffectTest : public MixxxTest {
+  protected:
+    BaseEffectTest() : m_pTestBackend(NULL),
+                       m_pEffectsManager(new EffectsManager(NULL, config())) {
+    }
+
+    void registerTestBackend() {
+        m_pTestBackend = new TestEffectBackend();
+        m_pEffectsManager->addEffectsBackend(m_pTestBackend);
+    }
+
+    void registerTestEffect(const EffectManifest& manifest);
+
+    // Deleted by EffectsManager. Do not delete.
+    TestEffectBackend* m_pTestBackend;
+    QScopedPointer<EffectsManager> m_pEffectsManager;
+};
+
+
+#endif /* BASEEFFECTTEST_H */

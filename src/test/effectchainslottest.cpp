@@ -9,19 +9,17 @@
 #include "effects/effectchain.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectsmanager.h"
+#include "test/baseeffecttest.h"
 
 using ::testing::Return;
 using ::testing::_;
 
-class EffectChainSlotTest : public MixxxTest {
+class EffectChainSlotTest : public BaseEffectTest {
   protected:
     virtual void SetUp() {
-        m_pEffectsManager.reset(new EffectsManager(NULL, config()));
         m_pEffectsManager->registerGroup("[Master]");
         m_pEffectsManager->registerGroup("[Headphone]");
     }
-
-    QScopedPointer<EffectsManager> m_pEffectsManager;
 };
 
 TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
