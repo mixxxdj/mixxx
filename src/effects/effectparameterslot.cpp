@@ -3,6 +3,8 @@
 #include "defs.h"
 #include "controlpotmeter.h"
 #include "effects/effectparameterslot.h"
+#include "controlobject.h"
+#include "controlpushbutton.h"
 
 EffectParameterSlot::EffectParameterSlot(QObject* pParent,
                                          const unsigned int iRackNumber,
@@ -19,7 +21,7 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent,
           m_pEffectParameter(NULL) {
     m_pControlEnabled = new ControlObject(
         ConfigKey(m_group, QString("enabled")));
-    m_pControlLinked = new ControlObject(
+    m_pControlLinked = new ControlPushButton(
         ConfigKey(m_group, QString("linked")));
     m_pControlValue = new ControlObject(
         ConfigKey(m_group, QString("value")));
@@ -38,32 +40,34 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent,
     m_pControlValueMinimumLimit = new ControlObject(
         ConfigKey(m_group, QString("value_min_limit")));
 
-    connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEnabled(double)));
     connect(m_pControlLinked, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEnabled(double)));
+            this, SLOT(slotLinked(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValue(double)));
     connect(m_pControlValueNormalized, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueNormalized(double)));
-    connect(m_pControlValueType, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueType(double)));
-    connect(m_pControlValueDefault, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueDefault(double)));
     connect(m_pControlValueMaximum, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueMaximum(double)));
-    connect(m_pControlValueMaximumLimit, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueMaximumLimit(double)));
     connect(m_pControlValueMinimum, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueMinimum(double)));
-    connect(m_pControlValueMinimumLimit, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueMinimumLimit(double)));
+
+    // Read-only controls.
+    m_pControlValueType->connectValueChangeRequest(
+        this, SLOT(slotValueType(double)), Qt::AutoConnection);
+    m_pControlValueDefault->connectValueChangeRequest(
+        this, SLOT(slotValueDefault(double)), Qt::AutoConnection);
+    m_pControlEnabled->connectValueChangeRequest(
+        this, SLOT(slotEnabled(double)), Qt::AutoConnection);
+    m_pControlValueMinimumLimit->connectValueChangeRequest(
+        this, SLOT(slotValueMaximumLimit(double)), Qt::AutoConnection);
+    m_pControlValueMaximumLimit->connectValueChangeRequest(
+        this, SLOT(slotValueMinimumLimit(double)), Qt::AutoConnection);
 
     clear();
 }
 
 EffectParameterSlot::~EffectParameterSlot() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
     m_pEffectParameter = NULL;
     m_pEffect.clear();
     delete m_pControlEnabled;
@@ -93,7 +97,7 @@ QString EffectParameterSlot::description() const {
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
-    qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
+    //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
@@ -123,14 +127,17 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValueNormalized->set(dNormalized);
             m_pControlValueNormalized->setDefaultValue(dDefaultNormalized);
             m_pControlValueMinimum->set(dMinimum);
-            m_pControlValueMinimumLimit->set(dMinimumLimit);
+            m_pControlValueMinimumLimit->setAndConfirm(dMinimumLimit);
             m_pControlValueMaximum->set(dMaximum);
-            m_pControlValueMaximumLimit->set(dMaximumLimit);
-            m_pControlValueType->set(0); // TODO(rryan) expose this from EffectParameter
-            m_pControlValueDefault->set(dDefault);
+            m_pControlValueMaximumLimit->setAndConfirm(dMaximumLimit);
+            // TODO(rryan) expose this from EffectParameter
+            m_pControlValueType->setAndConfirm(0);
+            m_pControlValueDefault->setAndConfirm(dDefault);
+            // TODO(rryan): linking
+            m_pControlLinked->set(0.0);
 
             // Default loaded parameters to enabled and unlinked
-            m_pControlEnabled->set(1.0);
+            m_pControlEnabled->setAndConfirm(1.0);
             m_pControlLinked->set(0.0);
         }
     } else {
@@ -140,27 +147,27 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
 }
 
 void EffectParameterSlot::clear() {
-    qDebug() << debugString() << "clear";
+    //qDebug() << debugString() << "clear";
     m_pEffectParameter = NULL;
     m_pEffect.clear();
-    m_pControlEnabled->set(0.0);
+    m_pControlEnabled->setAndConfirm(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlValueNormalized->set(0.0);
     m_pControlValueNormalized->setDefaultValue(0.0);
-    m_pControlValueType->set(0.0);
-    m_pControlValueDefault->set(0.0);
+    m_pControlValueType->setAndConfirm(0.0);
+    m_pControlValueDefault->setAndConfirm(0.0);
     m_pControlValueMaximum->set(0.0);
-    m_pControlValueMaximumLimit->set(0.0);
+    m_pControlValueMaximumLimit->setAndConfirm(0.0);
     m_pControlValueMinimum->set(0.0);
-    m_pControlValueMinimumLimit->set(0.0);
+    m_pControlValueMinimumLimit->setAndConfirm(0.0);
+    m_pControlLinked->set(0.0);
     emit(updated());
 }
 
 void EffectParameterSlot::slotEnabled(double v) {
     qDebug() << debugString() << "slotEnabled" << v;
-    qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
-    // TODO(rryan) add protection
+    qDebug() << "WARNING: enabled is a read-only control.";
 }
 
 void EffectParameterSlot::slotLinked(double v) {
@@ -203,12 +210,12 @@ void EffectParameterSlot::slotValueNormalized(double v) {
 
 void EffectParameterSlot::slotValueType(double v) {
     qDebug() << debugString() << "slotValueType" << v;
-    qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
+    qDebug() << "WARNING: value_type is a read-only control.";
 }
 
 void EffectParameterSlot::slotValueDefault(double v) {
     qDebug() << debugString() << "slotValueDefault" << v;
-    qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
+    qDebug() << "WARNING: value_default is a read-only control.";
 }
 
 void EffectParameterSlot::slotValueMaximum(double v) {
@@ -226,7 +233,7 @@ void EffectParameterSlot::slotValueMaximum(double v) {
 
 void EffectParameterSlot::slotValueMaximumLimit(double v) {
     qDebug() << debugString() << "slotValueMaximumLimit" << v;
-    qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
+    qDebug() << "WARNING: value_max_limit is a read-only control.";
 }
 
 void EffectParameterSlot::slotValueMinimum(double v) {
@@ -245,5 +252,5 @@ void EffectParameterSlot::slotValueMinimum(double v) {
 
 void EffectParameterSlot::slotValueMinimumLimit(double v) {
     qDebug() << debugString() << "slotValueMinimumLimit" << v;
-    qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
+    qDebug() << "WARNING: value_min_limit is a read-only control.";
 }

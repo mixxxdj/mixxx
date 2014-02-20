@@ -9,6 +9,9 @@
 #include "controlobject.h"
 #include "effects/effect.h"
 
+class ControlObject;
+class ControlPushButton;
+
 class EffectParameterSlot;
 typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
 
@@ -77,7 +80,7 @@ class EffectParameterSlot : public QObject {
     ////////////////////////////////////////////////////////////////////////////////
 
     ControlObject* m_pControlEnabled;
-    ControlObject* m_pControlLinked;
+    ControlPushButton* m_pControlLinked;
     ControlObject* m_pControlValue;
     ControlObject* m_pControlValueNormalized;
     ControlObject* m_pControlValueType;
