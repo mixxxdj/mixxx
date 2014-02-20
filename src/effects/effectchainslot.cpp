@@ -204,7 +204,7 @@ unsigned int EffectChainSlot::numSlots() const {
     return m_slots.size();
 }
 
-void EffectChainSlot::addEffectSlot() {
+EffectSlotPointer EffectChainSlot::addEffectSlot() {
     qDebug() << debugString() << "addEffectSlot";
 
     EffectSlot* pEffectSlot = new EffectSlot(
@@ -212,7 +212,9 @@ void EffectChainSlot::addEffectSlot() {
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
-    m_slots.append(EffectSlotPointer(pEffectSlot));
+    EffectSlotPointer pSlot(pEffectSlot);
+    m_slots.append(pSlot);
+    return pSlot;
 }
 
 void EffectChainSlot::registerGroup(const QString& group) {
