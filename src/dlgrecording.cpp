@@ -112,9 +112,6 @@ void DlgRecording::slotRecordingEnabled(bool isRecording) {
 void DlgRecording::slotBytesRecorded(long bytes) {
     double megabytes = bytes / 1048575.0;
 
-    /* TRANSLATOR RecordingsView
-       Message shown to user when recording an audio file. %1 is the file path
-       and %2 is the current size of the recording in megabytes (MB) */
     QString message = tr("Recording to file: %1 (%2 MB written)");
     QString text = message.arg(m_pRecordingManager->getRecordingFile(),
                                QString::number(megabytes,'f',2));
