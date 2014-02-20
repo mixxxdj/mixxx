@@ -1971,7 +1971,10 @@ void LegacySkinParser::setupBaseWidget(const QDomNode& node,
         } else {
             toolTip = m_tooltips.tooltipForId(toolTipId);
         }
-        if (!toolTip.isEmpty()) {
+
+        QString toolTip = m_tooltips.tooltipForId(toolTipId);
+
+        if (toolTipId.length() > 0) {
             pBaseWidget->prependBaseTooltip(toolTip);
         } else if (!toolTipId.isEmpty()) {
             // Only warn if there was a tooltip ID specified and no tooltip for

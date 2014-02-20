@@ -159,6 +159,24 @@ void WBaseWidget::updateTooltip() {
     }
 }
 
+QString WBaseWidget::getDefaultBaseTooltipId() const {
+    QString toolTipId;
+    if (!m_leftConnections.isEmpty()) {
+        toolTipId = m_leftConnections.at(0)->getKey().item;
+    } else {
+        if (!m_connections.isEmpty()) {
+            toolTipId = m_connections.at(0)->getKey().item;
+        }
+    }
+    if (!m_rightConnections.isEmpty()) {
+        if (!toolTipId.isEmpty()) {
+            toolTipId += "_";
+        }
+        toolTipId += m_rightConnections.at(0)->getKey().item;
+    }
+    return toolTipId;
+}
+
 template <>
 QString toDebugString(const QSizePolicy::Policy& policy) {
     switch (policy) {
