@@ -37,11 +37,15 @@ class EffectSlot : public QObject {
     EffectPointer getEffect() const;
 
     unsigned int numParameterSlots() const;
+    EffectParameterSlotPointer addEffectParameterSlot();
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
 
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);
+
+    void slotEnabled(double v);
+    void slotNumParameters(double v);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -56,8 +60,6 @@ class EffectSlot : public QObject {
     QString debugString() const {
         return QString("EffectSlot(%1,%2)").arg(m_iChainNumber).arg(m_iEffectNumber);
     }
-
-    void addEffectParameterSlot();
 
     // Unload the currently loaded effect
     void clear();
