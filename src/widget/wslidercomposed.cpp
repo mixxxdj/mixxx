@@ -23,11 +23,12 @@
 
 #include "defs.h"
 #include "widget/wpixmapstore.h"
+#include "widget/controlwidgetconnection.h"
 #include "util/debug.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_dOldValue(0.0),
+      m_dOldValue(-1.0), // virgin
       m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),
@@ -62,12 +63,17 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
             m_bEventWhileDrag = false;
         }
     }
-}
-
-ControlWidgetConnection::EmitOption WSliderComposed::getDefaultEmitOption(
-        Qt::MouseButton state) {
-    Q_UNUSED(state);
-    return ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+    if (!m_connections.isEmpty()) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            if (defaultConnection->getEmitOption() &
+                    ControlParameterWidgetConnection::EMIT_DEFAULT) {
+                // ON_PRESS means here value change on mouse move during press
+                defaultConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
+            }
+        }
+    }
 }
 
 void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
@@ -135,7 +141,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
-            setControlParameterUp(newValue);
+            setControlParameterDown(newValue);
         }
 
         // Update display
@@ -146,7 +152,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // For legacy (MIDI) reasons this is tuned to 127.
     double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-    double newValue = getControlParameter() + wheelDirection;
+    double newValue = m_dOldValue + wheelDirection;
 
     // Clamp to [0.0, 1.0]
     newValue = math_max(0.0, math_min(1.0, newValue));
@@ -167,6 +173,8 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
     }
     if (e->button() == Qt::RightButton) {
         m_bRightButtonPressed = false;
+    } else {
+        setControlParameterUp(m_dOldValue);
     }
 }
 
