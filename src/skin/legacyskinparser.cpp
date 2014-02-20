@@ -1438,13 +1438,13 @@ void LegacySkinParser::setupBaseWidget(QDomNode node,
     // Tooltip
     if (m_pContext->hasNode(node, "Tooltip")) {
         QString toolTip = m_pContext->selectString(node, "Tooltip");
-        pBaseWidget->setBaseTooltip(toolTip);
+        pBaseWidget->prependBaseTooltip(toolTip);
     } else if (m_pContext->hasNode(node, "TooltipId")) {
         QString toolTipId = m_pContext->selectString(node, "TooltipId");
         QString toolTip = m_tooltips.tooltipForId(toolTipId);
 
         if (toolTipId.length() > 0) {
-            pBaseWidget->setBaseTooltip(toolTip);
+            pBaseWidget->prependBaseTooltip(toolTip);
         } else {
             qDebug() << "Invalid <TooltipId> in skin.xml:" << toolTipId;
         }
@@ -1702,7 +1702,7 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
         return;
     }
 
-    QString tooltip = pWidget->baseTooltip();
+    QString tooltip;
 
     // translate shortcut to native text
 #if QT_VERSION >= 0x040700
@@ -1720,5 +1720,5 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
     }
     tooltip += ": ";
     tooltip += nativeShortcut;
-    pWidget->setBaseTooltip(tooltip);
+    pWidget->appendBaseTooltip(tooltip);
 }
