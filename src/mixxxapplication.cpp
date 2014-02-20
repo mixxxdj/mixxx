@@ -7,6 +7,11 @@
 #include "controlobjectthread.h"
 #include "mixxx.h"
 
+//#define TIMINGTEST
+#ifdef TIMINGTEST
+#include "util/timer.h"
+#endif
+
 extern void qt_translateRawTouchEvent(QWidget *window,
         QTouchEvent::DeviceType deviceType,
         const QList<QTouchEvent::TouchPoint> &touchPoints);
@@ -24,6 +29,12 @@ MixxxApplication::~MixxxApplication() {
 }
 
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
+
+#ifdef TIMINGTEST
+    Timer timer("MixxxApplication::notify");
+    timer.start();
+#endif
+
     switch (event->type()) {
     case QEvent::TouchBegin:
     case QEvent::TouchUpdate:
@@ -131,6 +142,9 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     default:
         break;
     }
+#ifdef TIMINGTEST
+    timer.elapsed(true);
+#endif
     // No touch event
     return QApplication::notify(target, event);
 }
