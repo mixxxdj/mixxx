@@ -7,11 +7,6 @@
 #include "controlobjectthread.h"
 #include "mixxx.h"
 
-#define TIMINGTEST
-#ifdef TIMINGTEST
-#include "util/timer.h"
-#endif
-
 extern void qt_translateRawTouchEvent(QWidget *window,
         QTouchEvent::DeviceType deviceType,
         const QList<QTouchEvent::TouchPoint> &touchPoints);
@@ -29,18 +24,6 @@ MixxxApplication::~MixxxApplication() {
 }
 
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
-
-#ifdef TIMINGTEST
-    SuspendableTimer timerRef("MixxxApplication::notifyRef");
-    timerRef.start();
-    timerRef.suspend();
-    timerRef.go();
-    timerRef.elapsed(true);
-
-    SuspendableTimer timer("MixxxApplication::notify");
-    timer.start();
-#endif
-
     switch (event->type()) {
     case QEvent::TouchBegin:
     case QEvent::TouchUpdate:
@@ -127,13 +110,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     }
     case QEvent::MouseButtonRelease:
     {
-#ifdef TIMINGTEST
-        timer.suspend();
-#endif
         bool ret = QApplication::notify(target, event);
-#ifdef TIMINGTEST
-        timer.go();
-#endif
         if (m_fakeMouseWidget) {
             // It may happen the faked mouse event was grabbed by a non touch window.
             // eg.: if we have started to drag by touch.
@@ -149,23 +126,13 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
             touchPoints.append(tp);
             qt_translateRawTouchEvent(NULL, QTouchEvent::TouchScreen, touchPoints);
         }
-#ifdef TIMINGTEST
-        timer.elapsed(true);
-#endif
         return ret;
     }
     default:
         break;
     }
-#ifdef TIMINGTEST
-    timer.suspend();
-#endif
     // No touch event
     bool ret = QApplication::notify(target, event);
-#ifdef TIMINGTEST
-    timer.go();
-    timer.elapsed(true);
-#endif
     return ret;
 }
 
