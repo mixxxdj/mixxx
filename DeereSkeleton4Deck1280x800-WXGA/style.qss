@@ -241,7 +241,7 @@ WLabel {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
-WEffectChain {
+#EffectChain {
   font-size: 16pt;
 }
 
