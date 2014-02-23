@@ -87,7 +87,7 @@ class WBaseWidget {
     // this, when widgets should call updateTooltip before they are about to
     // display a tooltip.
     void updateTooltip();
-    virtual void fillDebugTooltip(QStringList* debug);
+    virtual void fillDebugTooltip(QStringList* debug) const;
 
     QList<ControlParameterWidgetConnection*> m_connections;
     ControlParameterWidgetConnection* m_pDisplayConnection;

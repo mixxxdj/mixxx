@@ -462,7 +462,23 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     }
 }
 
-void WPushButton::fillDebugTooltip(QStringList* debug) {
+QString WPushButton::getDefaultBaseTooltipId() const {
+    QStringList toolTipId;
+    toolTipId << "left_right_click"; // Tooltip template
+    if (!m_leftConnections.isEmpty()) {
+        toolTipId << m_leftConnections.at(0)->getKey().item;
+    } else {
+        if (!m_connections.isEmpty()) {
+            toolTipId << m_connections.at(0)->getKey().item;
+        }
+    }
+    if (!m_rightConnections.isEmpty()) {
+        toolTipId << m_rightConnections.at(0)->getKey().item;
+    }
+    return toolTipId.join(",");
+}
+
+void WPushButton::fillDebugTooltip(QStringList* debug) const {
     WWidget::fillDebugTooltip(debug);
     *debug << QString("NumberStates: %1").arg(m_iNoStates)
            << QString("LeftCurrentState: %1").arg(

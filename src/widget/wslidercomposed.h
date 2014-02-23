@@ -57,7 +57,7 @@ class WSliderComposed : public WWidget  {
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
-    void fillDebugTooltip(QStringList* debug) override;
+    void fillDebugTooltip(QStringList* debug) const override;
 
   protected:
     void mouseMoveEvent(QMouseEvent* e) override;

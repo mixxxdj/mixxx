@@ -207,7 +207,7 @@ bool WWidgetGroup::event(QEvent* pEvent) {
     return QFrame::event(pEvent);
 }
 
-void WWidgetGroup::fillDebugTooltip(QStringList* debug) {
+void WWidgetGroup::fillDebugTooltip(QStringList* debug) const {
     WBaseWidget::fillDebugTooltip(debug);
     *debug << QString("LayoutAlignment: %1").arg(toDebugString(layoutAlignment()))
            << QString("LayoutContentsMargins: %1").arg(toDebugString(layoutContentsMargins()))

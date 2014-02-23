@@ -144,7 +144,7 @@ void WLabel::resizeEvent(QResizeEvent* event) {
     setText(m_longText);
 }
 
-void WLabel::fillDebugTooltip(QStringList* debug) {
+void WLabel::fillDebugTooltip(QStringList* debug) const {
     WBaseWidget::fillDebugTooltip(debug);
     *debug << QString("Text: \"%1\"").arg(text());
 }

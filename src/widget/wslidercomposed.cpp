@@ -179,7 +179,7 @@ void WSliderComposed::onConnectedControlChanged(double dParameter, double /*dVal
     m_handler.onConnectedControlChanged(this, dParameter);
 }
 
-void WSliderComposed::fillDebugTooltip(QStringList* debug) {
+void WSliderComposed::fillDebugTooltip(QStringList* debug) const {
     WWidget::fillDebugTooltip(debug);
     int sliderLength = m_bHorizontal ? width() : height();
     *debug << QString("Horizontal: %1").arg(toDebugString(m_bHorizontal))
