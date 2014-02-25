@@ -151,7 +151,7 @@ void WBaseWidget::updateTooltip() {
         QStringList debug;
         fillDebugTooltip(&debug);
 
-        QString base = m_pWidget->toolTip();
+        QString base = baseTooltip();
         if (!base.isEmpty()) {
             debug.append(QString("Tooltip: \"%1\"").arg(base));
         }
