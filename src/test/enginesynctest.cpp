@@ -238,6 +238,35 @@ TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
     ASSERT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 }
 
+TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
+    // If there exists a sync deck, even if it's not playing, don't change the
+    // master BPM if a new deck enables sync.
+
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(80.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->set(1.0);
+    ProcessBuffer();
+
+    // After setting up the first deck, the internal BPM should be 80.
+    ASSERT_FLOAT_EQ(80.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(100.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+    pButtonSyncEnabled2->set(1.0);
+    ProcessBuffer();
+
+    // After the second one, though, the internal BPM should still be 80.
+    ASSERT_FLOAT_EQ(80.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+}
+
 TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     // Same as above, except we use the midi lights to change state.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
