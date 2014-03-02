@@ -293,9 +293,8 @@ PioneerCDJHID.init = function(id) {
 
     // Scratch parameters
     controller.scratchintervalsPerRev = 2048;
-    controller.scratchAlpha = 1.0/8;
-    controller.rampedScratchEnable = true;
-    controller.rampedScratchEnable = true;
+    controller.scratchAlpha = 1.0/6;
+    controller.rampedScratchEnable = false;
     controller.toggleButtons = [ "play", "quantize", "keylock", "pfl" ];
 
     // Set deck switch local callbacks
