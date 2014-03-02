@@ -109,12 +109,7 @@ qint64 ThreadCpuTimer::elapsed() const
     return 0;
 }
 
-qint64 ThreadCpuTimer::restart() const
-{
-    return 0;
-}
-
-qint64 ThreadCpuTimer::difference(ThreadCpuTimer* timer)
+qint64 ThreadCpuTimer::restart()
 {
     return 0;
 }
