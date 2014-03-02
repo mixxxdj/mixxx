@@ -18,7 +18,7 @@ class VinylControlControl : public EngineControl {
     void trackUnloaded(TrackPointer pTrack);
 
     // If the engine asks for a seek, we may need to disable absolute mode.
-    void notifySeek();
+    void notifySeekQueued();
     bool isEnabled();
     bool isScratching();
 

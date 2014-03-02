@@ -49,20 +49,17 @@ const bool SoundSource::s_bDebugMetadata = false;
    return type is int: 0 for OK, -1 for an error.
  */
 SoundSource::SoundSource(QString qFilename)
-    : m_qFilename(qFilename)
-{
-    m_iSampleRate = 0;
-    m_fBPM = 0.0f;
-    m_fReplayGain = 0.0f;
-    m_iDuration = 0;
-    m_iBitrate = 0;
-    m_iChannels = 0;
+        : m_qFilename(qFilename),
+          m_fReplayGain(0.0f),
+          m_fBPM(0.0f),
+          m_iDuration(0),
+          m_iBitrate(0),
+          m_iSampleRate(0),
+          m_iChannels(0) {
 }
 
-SoundSource::~SoundSource()
-{
+SoundSource::~SoundSource() {
 }
-
 
 QList<long> *SoundSource::getCuePoints()
 {

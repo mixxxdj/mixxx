@@ -34,7 +34,7 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
-#include "engine/enginepassthrough.h"
+#include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryscanner.h"
@@ -62,7 +62,9 @@
 #include "util/timer.h"
 #include "util/time.h"
 #include "util/version.h"
+#include "controlpushbutton.h"
 #include "util/compatibility.h"
+#include "util/sandbox.h"
 #include "playerinfo.h"
 #include "waveform/guitick.h"
 
@@ -86,11 +88,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     Time::start();
     initializeWindow();
 
-    // Only record stats in developer mode.
-    if (m_cmdLineArgs.getDeveloper()) {
-        StatsManager::create();
-    }
-
     //Reset pointer to players
     m_pSoundManager = NULL;
     m_pPrefDlg = NULL;
@@ -106,8 +103,14 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
-    QString resourcePath = m_pConfig->getResourcePath();
+    Sandbox::initialize(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
 
+    // Only record stats in developer mode.
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::create();
+    }
+
+    QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
 
     // Set the visibility of tooltips, default "1" = ON
@@ -117,6 +120,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 
     initializeKeyboard();
+
+    setAttribute(Qt::WA_AcceptTouchEvents);
+    m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
@@ -131,7 +137,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
-    // TODO(rryan): Fold microphone and passthrough creation into a manager
+    // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
@@ -140,17 +146,17 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
-    EnginePassthrough* pPassthrough1 = new EnginePassthrough("[Passthrough1]");
+    EngineAux* pAux1 = new EngineAux("[Auxiliary1]");
     // What should channelbase be?
-    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 0);
-    m_pEngine->addChannel(pPassthrough1);
-    m_pSoundManager->registerInput(passthroughInput1, pPassthrough1);
+    AudioInput auxInput1 = AudioInput(AudioPath::AUXILIARY, 0, 0, 0);
+    m_pEngine->addChannel(pAux1);
+    m_pSoundManager->registerInput(auxInput1, pAux1);
 
-    EnginePassthrough* pPassthrough2 = new EnginePassthrough("[Passthrough2]");
+    EngineAux* pAux2 = new EngineAux("[Auxiliary2]");
     // What should channelbase be?
-    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0, 1);
-    m_pEngine->addChannel(pPassthrough2);
-    m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
+    AudioInput auxInput2 = AudioInput(AudioPath::AUXILIARY, 0, 0, 1);
+    m_pEngine->addChannel(pAux2);
+    m_pSoundManager->registerInput(auxInput2, pAux2);
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
@@ -480,8 +486,12 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
+    Sandbox::shutdown();
+
     ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
+
+    delete m_pTouchShift;
 
     PlayerInfo::destroy();
     WaveformWidgetFactory::destroy();
@@ -1290,7 +1300,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             return;
     }
 
-    QString s =
+    QString trackPath =
         QFileDialog::getOpenFileName(
             this,
             loadTrackText,
@@ -1299,8 +1309,16 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
 
-    if (!s.isNull()) {
-        m_pPlayerManager->slotLoadToDeck(s, deck);
+    if (!trackPath.isNull()) {
+        // The user has picked a file via a file dialog. This means the system
+        // sandboxer (if we are sandboxed) has granted us permission to this
+        // folder. Create a security bookmark while we have permission so that
+        // we can access the folder on future runs. We need to canonicalize the
+        // path so we first wrap the directory string with a QDir.
+        QFileInfo trackInfo(trackPath);
+        Sandbox::createSecurityToken(trackInfo);
+
+        m_pPlayerManager->slotLoadToDeck(trackPath, deck);
     }
 }
 
@@ -1581,7 +1599,7 @@ void MixxxMainWindow::rebootMixxxView() {
   * to disable tooltips if the user specifies in the preferences that they
   * want them off. This is a callback function.
   */
-bool MixxxMainWindow::eventFilter(QObject *obj, QEvent *event)
+bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
@@ -1600,6 +1618,26 @@ bool MixxxMainWindow::eventFilter(QObject *obj, QEvent *event)
         // standard event processing
         return QObject::eventFilter(obj, event);
     }
+}
+
+bool MixxxMainWindow::event(QEvent* e) {
+    switch(e->type()) {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchEnd:
+    {
+        // If the touch event falls trough to the main Widget, no touch widget
+        // was touched, so we resend it as a mouse events.
+        // We have to accept it here, so QApplication will continue to deliver
+        // the following events of this touch point as well.
+        QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
+        touchEvent->accept();
+        return true;
+    }
+    default:
+        break;
+    }
+    return QWidget::event(e);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
@@ -1719,3 +1757,4 @@ bool MixxxMainWindow::confirmExit() {
     }
     return true;
 }
+

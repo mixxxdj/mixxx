@@ -25,11 +25,24 @@ class Timer {
     // reports the elapsed time to the associated Stat key.
     int elapsed(bool report);
 
-  private:
+  protected:
     QString m_key;
     Stat::ComputeFlags m_compute;
     bool m_running;
     PerformanceTimer m_time;
+};
+
+class SuspendableTimer : public Timer {
+  public:
+    SuspendableTimer(const QString& key,
+            Stat::ComputeFlags compute = kDefaultComputeFlags);
+    void start();
+    int suspend();
+    void go();
+    int elapsed(bool report);
+
+  private:
+    int m_leapTime;
 };
 
 class ScopedTimer : public Timer {

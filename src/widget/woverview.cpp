@@ -24,9 +24,11 @@
 #include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
+#include "widget/controlwidgetconnection.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
 #include "util/timer.h"
+#include "util/dnd.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -118,6 +120,17 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+    if (!m_connections.isEmpty()) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            if (defaultConnection->getEmitOption() &
+                    ControlParameterWidgetConnection::EMIT_DEFAULT) {
+                // ON_PRESS means here value change on mouse move during press
+                defaultConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+            }
+        }
+    }
 }
 
 void WOverview::onConnectedControlValueChanged(double dValue) {
@@ -246,16 +259,10 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
-
     double dValue = positionToValue(m_iPos);
-
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    if (e->button() == Qt::RightButton) {
-        setControlParameterRightUp(dValue);
-    } else {
-        setControlParameterLeftUp(dValue);
-    }
+    setControlParameterUp(dValue);
     m_bDrag = false;
 }
 
@@ -499,18 +506,14 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        QList<QUrl> urls(event->mimeData()->urls());
-        QUrl url = urls.first();
-        QString name = url.toLocalFile();
-        //If the file is on a network share, try just converting the URL to a string...
-        if (name == "") {
-            name = url.toString();
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
         }
-        event->accept();
-        emit(trackDropped(name, m_group));
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }

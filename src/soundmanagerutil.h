@@ -60,7 +60,7 @@ public:
         DECK,
         VINYLCONTROL,
         MICROPHONE,
-        EXTPASSTHROUGH,
+        AUXILIARY,
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
@@ -167,8 +167,8 @@ class AudioDestination {
 public:
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int iNumFrames) = 0;
-    virtual void onInputConnected(AudioInput input) { Q_UNUSED(input); };
-    virtual void onInputDisconnected(AudioInput input) { Q_UNUSED(input); };
+    virtual void onInputConfigured(AudioInput input) { Q_UNUSED(input); };
+    virtual void onInputUnconfigured(AudioInput input) { Q_UNUSED(input); };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;

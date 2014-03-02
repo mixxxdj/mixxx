@@ -13,7 +13,6 @@ class chromaprinter: public QObject {
   public:
     chromaprinter(QObject* parent=NULL);
     QString getFingerPrint(TrackPointer pTrack);
-    QString getFingerPrint(QString location);
 
   private:
 

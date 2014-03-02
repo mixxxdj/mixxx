@@ -167,6 +167,13 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     custom_title->setText(m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"custom_title")));
 
+    //Metadata format
+    tmp_string = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY,"metadata_format"));
+    if (tmp_string.isEmpty())
+        tmp_string = tr("$artist - $title");
+    metadata_format->setText(tmp_string);
+
     slotApply();
 }
 
@@ -221,6 +228,7 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"), ConfigValue(metadata_format->text()));
 
     //Tell the EngineShoutcast object to update with these values by toggling this control object.
     m_pUpdateShoutcastFromPrefs->slotSet(1.0);

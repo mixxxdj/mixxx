@@ -610,7 +610,7 @@ void DlgAutoDJ::player1PlayChanged(double value) {
             qDebug() << "TrackDuration = " << TrackDuration;
 
             // The track might be shorter than the transition period. Use a
-            // sensibile cap.
+            // sensible cap.
             int autoDjTransition = math_min(spinBoxTransition->value(),
                                             TrackDuration/2);
 

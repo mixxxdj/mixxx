@@ -79,6 +79,23 @@ class OpenGL(Dependence):
             raise Exception('Did not find GLU development files')
 
 
+class SecurityFramework(Dependence):
+    """The iOS/OS X security framework is used to implement sandboxing."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/Security.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework Security')
+
+
+class CoreServices(Dependence):
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework CoreServices')
+
+
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
@@ -563,12 +580,13 @@ class MixxxCore(Feature):
                    "engine/enginefiltereffect.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
+                   "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
-                   "engine/enginepassthrough.cpp",
+                   "engine/engineaux.cpp",
                    "engine/channelmixer_autogen.cpp",
 
                    "engine/enginecontrol.cpp",
@@ -581,6 +599,7 @@ class MixxxCore(Feature):
                    "engine/quantizecontrol.cpp",
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
+                   "engine/enginetalkoverducking.cpp",
                    "cachingreader.cpp",
                    "cachingreaderworker.cpp",
 
@@ -607,6 +626,7 @@ class MixxxCore(Feature):
 
                    "main.cpp",
                    "mixxx.cpp",
+                   "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
@@ -666,6 +686,7 @@ class MixxxCore(Feature):
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
+                   "library/columncache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/searchquery.cpp",
                    "library/searchqueryparser.cpp",
@@ -837,9 +858,13 @@ class MixxxCore(Feature):
                    "util/time.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
+                   "util/threadcputimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
                    "util/valuetransformer.cpp",
+                   "util/sandbox.cpp",
+                   "util/file.cpp",
+                   "util/mac.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1030,7 +1055,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

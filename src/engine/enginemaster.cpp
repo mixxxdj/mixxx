@@ -29,6 +29,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
+#include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
@@ -38,10 +39,6 @@
 #include "util/trace.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
-
-#ifdef __LADSPA__
-#include "engine/engineladspa.h"
-#endif
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
@@ -78,11 +75,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                                                  "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
-#ifdef __LADSPA__
-    // LADSPA
-    m_pLadspa = new EngineLADSPA();
-#endif
-
     // Crossfader
     m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
 
@@ -113,6 +105,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
 
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
+
+    m_pTalkoverDucking = new EngineTalkoverDucking(_config, group);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -145,8 +139,10 @@ EngineMaster::~EngineMaster() {
     delete m_pCrossfader;
     delete m_pBalance;
     delete m_pHeadMix;
+    delete m_pHeadSplitEnabled;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
+    delete m_pTalkoverDucking;
     delete m_pClipping;
     delete m_pVumeter;
     delete m_pHeadClipping;
@@ -199,6 +195,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
 
+    // Clear talkover compressor for the next round of gain calculation.
+    m_pTalkoverDucking->clearKeys();
+
     // Find the Sync Master and process it first then process all the slaves
     // (and skip the master).
 
@@ -227,6 +226,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                 if (pChannel->isPFL()) {
                     *headphoneOutput |= (1 << channel_number);
                     needsProcessing = true;
+                }
+
+                if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                        pChannel->isTalkover()) {
+                    m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
                 }
 
                 // Process the buffer if necessary, which it damn well better be
@@ -265,6 +269,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         if (pChannel->isPFL()) {
             *headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
+        }
+
+        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                pChannel->isTalkover()) {
+            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
 
         // Process the buffer if necessary
@@ -327,7 +336,11 @@ void EngineMaster::process(const int iBufferSize) {
 
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
-    m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain);
+
+    // Channels with the talkover flag should be mixed with the master signal at
+    // full master volume.  All other channels should be adjusted by ducking gain.
+    m_masterGain.setGains(master_gain * m_pTalkoverDucking->getGain(iBufferSize / 2),
+                          c1_gain, 1.0, c2_gain, master_gain);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
     // master volume, the channel volume, and the orientation gain.
@@ -354,11 +367,6 @@ void EngineMaster::process(const int iBufferSize) {
                               m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
                               m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
                               iBufferSize);
-
-#ifdef __LADSPA__
-    // LADPSA master effects
-    m_pLadspa->process(m_pMaster, m_pMaster, iBufferSize);
-#endif
 
     // Clipping
     m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);

@@ -23,11 +23,12 @@
 
 #include "defs.h"
 #include "widget/wpixmapstore.h"
+#include "widget/controlwidgetconnection.h"
 #include "util/debug.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_dOldValue(0.0),
+      m_dOldValue(-1.0), // virgin
       m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),
@@ -62,10 +63,22 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
             m_bEventWhileDrag = false;
         }
     }
+    if (!m_connections.isEmpty()) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            if (defaultConnection->getEmitOption() &
+                    ControlParameterWidgetConnection::EMIT_DEFAULT) {
+                // ON_PRESS means here value change on mouse move during press
+                defaultConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
+            }
+        }
+    }
 }
 
 void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
-    m_pSlider = WPixmapStore::getPaintable(filenameSlider);
+    m_pSlider = WPixmapStore::getPaintable(filenameSlider,
+                                           Paintable::STRETCH);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
     } else {
@@ -76,14 +89,15 @@ void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
 
 void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameHandle) {
     m_bHorizontal = bHorizontal;
-    m_pHandle = WPixmapStore::getPaintable(filenameHandle);
+    m_pHandle = WPixmapStore::getPaintable(filenameHandle,
+                                           Paintable::STRETCH);
     if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
     } else {
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getControlParameterLeft());
+        onConnectedControlValueChanged(getControlParameter());
         update();
     }
 }
@@ -127,11 +141,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
-            if (e->button() == Qt::RightButton) {
-                setControlParameterRightUp(newValue);
-            } else {
-                setControlParameterLeftUp(newValue);
-            }
+            setControlParameter(newValue);
         }
 
         // Update display
@@ -142,13 +152,12 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // For legacy (MIDI) reasons this is tuned to 127.
     double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-    double newValue = getControlParameter() + wheelDirection;
+    double newValue = m_dOldValue + wheelDirection;
 
     // Clamp to [0.0, 1.0]
     newValue = math_max(0.0, math_min(1.0, newValue));
 
-    setControlParameterDown(newValue);
-    setControlParameterUp(newValue);
+    setControlParameter(newValue);
     onConnectedControlValueChanged(newValue);
     update();
 
@@ -160,17 +169,12 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
 void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
     if (!m_bEventWhileDrag) {
         mouseMoveEvent(e);
-
-        if (e->button() == Qt::RightButton) {
-            setControlParameterRightUp(getControlParameterRight());
-        } else {
-            setControlParameterLeftUp(getControlParameterLeft());
-        }
-
         m_bDrag = false;
     }
     if (e->button() == Qt::RightButton) {
         m_bRightButtonPressed = false;
+    } else {
+        setControlParameter(m_dOldValue);
     }
 }
 
@@ -182,7 +186,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
         m_bDrag = true;
     } else {
         if (e->button() == Qt::RightButton) {
-            resetControlParameters();
+            resetControlParameter();
             m_bRightButtonPressed = true;
         } else {
             if (m_bHorizontal) {
