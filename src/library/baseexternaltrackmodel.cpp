@@ -68,7 +68,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
 bool BaseExternalTrackModel::isColumnInternal(int column) {
     // Used for preview deck widgets.
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
+           (PlayerManager::numPreviewDecks() == 0 &&
              column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
     }
