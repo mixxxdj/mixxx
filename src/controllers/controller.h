@@ -51,6 +51,12 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline bool isInputDevice() const {
         return m_bIsInputDevice;
     }
+    inline bool isConnected() const {
+        return m_bIsConnected;
+    }
+    inline void setConnected(bool connected) {
+        m_bIsConnected = connected;
+    }
     inline QString getName() const {
         return m_sDeviceName;
     }
@@ -157,6 +163,8 @@ class Controller : public QObject, ControllerPresetVisitor {
     bool m_bIsOutputDevice;
     // Flag indicating if this device supports input (sending data to Mixxx)
     bool m_bIsInputDevice;
+    // Indicates whether or not the device is connected (hotplug).
+    bool m_bIsConnected;
     // Indicates whether or not the device has been opened for input/output.
     bool m_bIsOpen;
     // Specifies whether or not we should dump incoming data to the console at

@@ -163,7 +163,10 @@ bool shouldLinkInputToOutput(const QString input_name,
   * To help simplify a lot of code, we're going to aggregate these two streams into a single full-duplex device.
   */
 QList<Controller*> PortMidiEnumerator::queryDevices() {
-    qDebug() << "Scanning PortMIDI devices:";
+    // Portmidi does not support hotplug: if any devices were already
+    // loaded, return current list
+    if (m_devices.length()>0)
+        return m_devices;
 
     int iNumDevices = Pm_CountDevices();
 
@@ -171,8 +174,6 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
     while (dev_it.hasNext()) {
         delete dev_it.next();
     }
-
-    m_devices.clear();
 
     const PmDeviceInfo* inputDeviceInfo = NULL;
     const PmDeviceInfo* outputDeviceInfo = NULL;

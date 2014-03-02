@@ -383,7 +383,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Wait until all other ControlObjects are set up
     //  before initializing controllers
-    m_pControllerManager->setUpDevices();
+    m_pControllerManager->updateDevices();
 
     // Scan the library for new files and directories
     bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();

@@ -35,6 +35,7 @@ const int kPollIntervalMillis = 5;
 #else
 const int kPollIntervalMillis = 1;
 #endif
+const int kUpdateIntervalMillis = 3000;
 
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
@@ -46,6 +47,26 @@ QString firstAvailableFilename(QSet<QString>& filenames,
     }
     filenames.insert(filename);
     return filename;
+}
+
+bool controllersModified(QList<Controller*> c_old, QList<Controller*> c_new) {
+    if (c_old.length()!=c_new.length())
+        return true;
+
+    foreach (Controller *a, c_old) {
+        bool device_found = false;
+        if (!a->isConnected())
+            return true;
+        foreach (Controller *b, c_new) {
+            if (a->getName()==b->getName()) {
+                device_found=true;
+                break;
+            }
+        }
+        if (!device_found)
+            return true;
+    }
+    return false;
 }
 
 bool controllerCompare(Controller *a,Controller *b) {
@@ -93,6 +114,10 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
     connect(&m_pollTimer, SIGNAL(timeout()),
             this, SLOT(pollDevices()));
 
+    m_updateTimer.setInterval(kUpdateIntervalMillis);
+    connect(&m_updateTimer, SIGNAL(timeout()),
+            this, SLOT(slotUpdateDevices()));
+
     m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
 
@@ -103,8 +128,8 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
     // audio directly, like when scratching
     m_pThread->start(QThread::HighPriority);
 
-    connect(this, SIGNAL(requestSetUpDevices()),
-            this, SLOT(slotSetUpDevices()));
+    connect(this, SIGNAL(requestUpdateDevices()),
+            this, SLOT(slotUpdateDevices()));
     connect(this, SIGNAL(requestShutdown()),
             this, SLOT(slotShutdown()));
     connect(this, SIGNAL(requestSave(bool)),
@@ -142,12 +167,12 @@ void ControllerManager::slotShutdown() {
     m_pThread->quit();
 }
 
-void ControllerManager::updateControllerList() {
+bool ControllerManager::updateControllerList() {
     QMutexLocker locker(&m_mutex);
     if (m_enumerators.isEmpty()) {
-        qWarning() << "updateControllerList called but no enumerators have been added!";
-        return;
-    }
+        return false;
+     }
+
     QList<ControllerEnumerator*> enumerators = m_enumerators;
     locker.unlock();
 
@@ -156,12 +181,15 @@ void ControllerManager::updateControllerList() {
         newDeviceList.append(pEnumerator->queryDevices());
     }
 
-    locker.relock();
-    if (newDeviceList != m_controllers) {
-        m_controllers = newDeviceList;
-        locker.unlock();
-        emit(devicesChanged());
+    // List of controllers did not change
+    if (!controllersModified(m_controllers,newDeviceList)) {
+        return false;
     }
+
+    locker.relock();
+    m_controllers = newDeviceList;
+    locker.unlock();
+    return true;
 }
 
 QList<Controller*> ControllerManager::getControllers() const {
@@ -170,8 +198,6 @@ QList<Controller*> ControllerManager::getControllers() const {
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
-    qDebug() << "ControllerManager::getControllerList";
-
     QMutexLocker locker(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
@@ -189,51 +215,78 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-int ControllerManager::slotSetUpDevices() {
-    qDebug() << "ControllerManager: Setting up devices";
+void ControllerManager::startDeviceUpdateTimer() {
+    if (!m_updateTimer.isActive()) {
+        m_updateTimer.start();
+        qDebug() << "Controller update polling started.";
+    }
+}
 
-    updateControllerList();
-    QList<Controller*> deviceList = getControllerList(false, true);
+int ControllerManager::slotUpdateDevices() {
 
-    QSet<QString> filenames;
+    bool devices_modified;
     int error = 0;
+    int device_error = 0;
+    startDeviceUpdateTimer();
 
-    foreach (Controller* pController, deviceList) {
-        QString name = pController->getName();
-
-        if (pController->isOpen()) {
-            pController->close();
-        }
-
-        // The filename for this device name.
-        const QString ofilename = presetFilenameFromName(name);
-        // The first unique filename for this device (appends numbers at the end
-        // if we have already seen a controller by this name on this run of
-        // Mixxx.
-        QString filename = firstAvailableFilename(filenames, ofilename);
-
-        if (!loadPreset(pController, filename, true)) {
-            // TODO(XXX) : auto load midi preset here.
-            continue;
-        }
-
-        if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
-            continue;
-        }
-
-        qDebug() << "Opening controller:" << name;
-
-        int value = pController->open();
-        if (value != 0) {
-            qWarning() << "There was a problem opening" << name;
-            if (error == 0) {
-                error = value;
-            }
-            continue;
-        }
-        pController->applyPreset(getScriptPaths());
+    devices_modified = updateControllerList();
+    if (!devices_modified) {
+        return 0;
     }
 
+    QList<Controller*> deviceList = getControllerList(false, true);
+    foreach (Controller* pController, deviceList) {
+        if (!pController->isConnected()) {
+            devices_modified = true;
+            continue;
+        }
+
+        device_error = setupController(pController);
+        if (device_error!=-1)
+            error = device_error;
+    }
+    if (devices_modified)
+        emit(devicesChanged());
+
+    maybeStartOrStopPolling();
+    return error;
+}
+
+int ControllerManager::setupController(Controller *pController) {
+    QSet<QString> filenames;
+    int error = -1;
+
+    // Don't reopen existing devices
+    if (!pController || pController->isOpen())
+        return error;
+
+    QString name = pController->getName();
+    // The filename for this device name.
+    const QString ofilename = presetFilenameFromName(name);
+    // The first unique filename for this device (appends numbers at the end
+    // if we have already seen a controller by this name on this run of
+    // Mixxx.
+    QString filename = firstAvailableFilename(filenames, ofilename);
+    if (!loadPreset(pController, filename, true)) {
+        // TODO(XXX) : auto load midi preset here.
+        return error;
+    }
+
+    // Controller not enabled
+    if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
+        return error;
+    }
+
+    qDebug() << "Opening controller:" << name;
+    int value = pController->open();
+    if (value != 0) {
+        qWarning() << "There was a problem opening" << name;
+        if (error == 0) {
+            error = value;
+        }
+        return error;
+    }
+    pController->applyPreset(getScriptPaths());
     maybeStartOrStopPolling();
     return error;
 }
@@ -276,7 +329,9 @@ void ControllerManager::pollDevices() {
     do {
         eventsProcessed = false;
         foreach (Controller* pDevice, m_controllers) {
-            if (pDevice->isOpen() && pDevice->isPolling()) {
+            if (!pDevice->isConnected()) {
+                eventsProcessed = false || eventsProcessed;
+            } else if (pDevice->isOpen() && pDevice->isPolling()) {
                 eventsProcessed = pDevice->poll() || eventsProcessed;
             }
         }

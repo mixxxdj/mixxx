@@ -43,7 +43,7 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
             if (cur_dev->interface_number != blacklisted.interface_number) {
                 continue;
             }
-        } 
+        }
         // Blacklist entry based on usage_page and usage (both required)
         if (blacklisted.usage_page != 0 && blacklisted.usage != 0) {
             // Skip matching for devices with no usage_page/usage info.
@@ -61,24 +61,29 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
     return false;
 }
 
-QList<Controller*> HidEnumerator::queryDevices() {
-    qDebug() << "Scanning HID devices:";
+bool HidEnumerator::isDeviceLoaded(struct hid_device_info *device) {
+    HidController* m_dev;
+    QString device_path, match_path;
+    if (!device)
+        return false;
+    device_path = QString(device->path);
 
+    foreach (Controller *c_ptr, m_devices) {
+        m_dev = (HidController*) c_ptr;
+        match_path = m_dev->getPath();
+        if (device_path==match_path) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QList<Controller*> HidEnumerator::queryDevices() {
     struct hid_device_info *devs, *cur_dev;
     devs = hid_enumerate(0x0, 0x0);
 
     for (cur_dev = devs; cur_dev; cur_dev = cur_dev->next) {
-        if (isDeviceBlacklisted(cur_dev)) {
-            // OS/X and windows use usage_page/usage not interface_number
-            qDebug() << "Blacklisting"
-                     << cur_dev->manufacturer_string
-                     << cur_dev->product_string
-                     << QString("r%1").arg(cur_dev->release_number)
-                     << "S/N" << cur_dev->serial_number
-                     << (cur_dev->interface_number == -1 ? QString("Usage Page %1 Usage %2").arg(
-                         QString::number(cur_dev->usage_page),
-                         QString::number(cur_dev->usage)) :
-                         QString("Interface %1").arg(cur_dev->interface_number));
+        if (isDeviceBlacklisted(cur_dev) || isDeviceLoaded(cur_dev)) {
             continue;
         }
 
@@ -101,6 +106,28 @@ QList<Controller*> HidEnumerator::queryDevices() {
         HidController* currentDevice = new HidController(*cur_dev);
         m_devices.push_back(currentDevice);
     }
+
+    // Check for removed / disconnected devices
+    foreach (Controller* c_ptr, m_devices) {
+        HidController* m_dev = (HidController *) c_ptr;
+        QString device_path, match_path;
+        bool device_found = false;
+
+        device_path = m_dev->getPath();
+        for (cur_dev = devs; cur_dev; cur_dev = cur_dev->next) {
+            match_path = QString(cur_dev->path);
+            if (device_path==match_path) {
+                device_found = true;
+                break;
+            }
+        }
+        if (!device_found) {
+            qDebug() << "Disconnected HID device " << m_dev->getPath();
+            m_dev->setConnected(false);
+            m_devices.removeOne(m_dev);
+        }
+    }
+
     hid_free_enumeration(devs);
 
     return m_devices;

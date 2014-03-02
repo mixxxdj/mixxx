@@ -18,8 +18,8 @@ BPMEditor::BPMEditor(EditMode mode, QWidget *parent)
         m_pBPMSpinBox = new QDoubleSpinBox(this);
         m_pBPMSpinBox->setMinimum(0);
         m_pBPMSpinBox->setMaximum(1000);
-        m_pBPMSpinBox->setSingleStep(1e-8);
-        m_pBPMSpinBox->setDecimals(8);
+        m_pBPMSpinBox->setSingleStep(1e-3);
+        m_pBPMSpinBox->setDecimals(3);
         m_pBPMSpinBox->setObjectName("LibraryBPMSpinBox");
         m_pLayout->addWidget(m_pBPMSpinBox);
         connect(m_pBPMSpinBox, SIGNAL(editingFinished()),

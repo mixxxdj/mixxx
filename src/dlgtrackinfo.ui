@@ -369,7 +369,7 @@
               <string>Displays the BPM of the selected track.</string>
              </property>
              <property name="decimals">
-              <number>8</number>
+              <number>3</number>
              </property>
              <property name="maximum">
               <double>500.000000000000000</double>

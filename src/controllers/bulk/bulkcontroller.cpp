@@ -88,6 +88,9 @@ BulkController::BulkController(libusb_context* context,
     setInputDevice(true);
     setOutputDevice(true);
     m_pReader = NULL;
+    // Bulk devices are always connected, until we implement hotplug
+    // for portMIDI
+    setConnected(true);
 }
 
 BulkController::~BulkController() {
@@ -229,6 +232,10 @@ int BulkController::close() {
 }
 
 void BulkController::send(QList<int> data, unsigned int length) {
+    if (!isConnected()) {
+        return;
+    }
+
     Q_UNUSED(length);
     QByteArray temp;
 
