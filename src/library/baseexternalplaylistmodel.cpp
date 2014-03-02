@@ -77,7 +77,6 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
             (PlayerManager::numPreviewDecks() == 0 &&
              column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
