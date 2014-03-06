@@ -170,8 +170,7 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
     }
 
 }
-QString NumericFilterNode::parseHumanReadableTime(QString durationHumanReadable)
-{
+QString NumericFilterNode::parseHumanReadableTime(QString durationHumanReadable){
 
     QStringList args=durationHumanReadable.split("-");
     qDebug()<<durationHumanReadable;
@@ -188,14 +187,12 @@ QString NumericFilterNode::parseHumanReadableTime(QString durationHumanReadable)
 
 }
 
-QString NumericFilterNode::getTimeInHMS(QString durationHumanReadable)
-{
+QString NumericFilterNode::getTimeInHMS(QString durationHumanReadable){
 
     bool parseable=false;
     double totalTime=-1;
     totalTime= durationHumanReadable.toDouble(&parseable);
-    if(parseable)
-    {
+    if(parseable){
         return  durationHumanReadable;
     }
 
@@ -204,8 +201,7 @@ QString NumericFilterNode::getTimeInHMS(QString durationHumanReadable)
     bool miniute=false;
     bool second=false;
 
-    for(int i = 0;i< durationHumanReadable.length();i++)
-    {
+    for(int i = 0;i< durationHumanReadable.length();i++){
         if((durationHumanReadable.at(i) == 'h'
                 ||  durationHumanReadable.at(i) == 'H'
                 ||  durationHumanReadable.at(i) == 'm'
