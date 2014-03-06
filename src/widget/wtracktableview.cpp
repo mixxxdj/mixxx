@@ -1080,10 +1080,6 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         // causes a track to load since we allow in-line editing
         // of table items in general
         return;
-    } else if (event->key() == Qt::Key_BracketLeft) {
-        loadSelectionToGroup("[Channel1]");
-    } else if (event->key() == Qt::Key_BracketRight) {
-        loadSelectionToGroup("[Channel2]");
     } else {
         QTableView::keyPressEvent(event);
     }
