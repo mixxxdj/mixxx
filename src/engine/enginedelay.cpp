@@ -43,6 +43,10 @@ void EngineDelay::slotDelayChanged(double new_delay) {
     if (m_iDelay % 2) {
         m_iDelay++;
     }
+    if (!m_iDelay) {
+        // We start bypassing, so clear buffer, to avoid noise in case of re-enable delay
+        memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
+    }
 }
 
 
