@@ -16,6 +16,7 @@
 
 #include "enginedelay.h"
 #include "controlpotmeter.h"
+#include "sampleutil.h"
 
 EngineDelay::EngineDelay(const char* group, bool head)
         : m_iDelayPos(0),
@@ -46,18 +47,23 @@ void EngineDelay::slotDelayChanged(double new_delay) {
 
 
 void EngineDelay::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
-    int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
+    if (m_iDelay) {
+        int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
-    Q_ASSERT(iDelaySourcePos >= 0);
-    Q_ASSERT(iDelaySourcePos <= kiMaxDelay);
+        Q_ASSERT(iDelaySourcePos >= 0);
+        Q_ASSERT(iDelaySourcePos <= kiMaxDelay);
 
-    for (int i = 0; i < iBufferSize; ++i) {
-        // put sample into delay buffer:
-        m_pDelayBuffer[m_iDelayPos] = pIn[i];
-        m_iDelayPos = (m_iDelayPos + 1) % kiMaxDelay;
+        for (int i = 0; i < iBufferSize; ++i) {
+            // put sample into delay buffer:
+            m_pDelayBuffer[m_iDelayPos] = pIn[i];
+            m_iDelayPos = (m_iDelayPos + 1) % kiMaxDelay;
 
-        // Take delayed sample from delay buffer and copy it to dest buffer:
-        pOutput[i] = m_pDelayBuffer[iDelaySourcePos];
-        iDelaySourcePos = (iDelaySourcePos + 1) % kiMaxDelay;
+            // Take delayed sample from delay buffer and copy it to dest buffer:
+            pOutput[i] = m_pDelayBuffer[iDelaySourcePos];
+            iDelaySourcePos = (iDelaySourcePos + 1) % kiMaxDelay;
+        }
+    } else {
+        // Does nothing in case of pOutput == pIn
+        SampleUtil::copyWithGain(pOutput, pIn, 1.0, iBufferSize);
     }
 }
