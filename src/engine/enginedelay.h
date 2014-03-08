@@ -21,12 +21,12 @@
 
 class ControlPotmeter;
 
-const int kiMaxDelay = 20000;
+const int kiMaxDelay = 20000; // 104 ms @ 96 kb/s
 
 class EngineDelay : public EngineObject {
     Q_OBJECT
   public:
-    EngineDelay(const char* group);
+    EngineDelay(const char* group, bool head);
     virtual ~EngineDelay();
 
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);

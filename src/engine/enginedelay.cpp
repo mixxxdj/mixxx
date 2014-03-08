@@ -17,12 +17,16 @@
 #include "enginedelay.h"
 #include "controlpotmeter.h"
 
-EngineDelay::EngineDelay(const char* group)
+EngineDelay::EngineDelay(const char* group, bool head)
         : m_iDelayPos(0),
           m_iDelay(0) {
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
     memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
-    m_pDelayPot = new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
+    if (head) {
+        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "headDelay"), 0, kiMaxDelay);
+    } else {
+        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
+    }
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged(double)), Qt::DirectConnection);
 }

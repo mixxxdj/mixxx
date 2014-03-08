@@ -40,6 +40,7 @@ class SyncWorker;
 class GuiTick;
 class EngineSync;
 class EngineTalkoverDucking;
+class EngineDelay;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
@@ -188,6 +189,8 @@ class EngineMaster : public QObject, public AudioSource {
     EngineClipping* m_pClipping;
     EngineClipping* m_pHeadClipping;
     EngineTalkoverDucking* m_pTalkoverDucking;
+    EngineDelay* m_pMasterDelay;
+    EngineDelay* m_pHeadDelay;
 
     EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pSideChain;

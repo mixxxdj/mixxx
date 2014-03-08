@@ -32,6 +32,7 @@
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
+#include "engine/enginedelay.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
 #include "sampleutil.h"
@@ -90,6 +91,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
+    m_pMasterDelay = new EngineDelay(group, false);
+    m_pHeadDelay = new EngineDelay(group, true);
+
     // Headphone volume
     m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
 
@@ -147,6 +151,8 @@ EngineMaster::~EngineMaster() {
     delete m_pVumeter;
     delete m_pHeadClipping;
     delete m_pSideChain;
+    delete m_pMasterDelay;
+    delete m_pHeadDelay;
 
     delete m_pXFaderReverse;
     delete m_pXFaderCalibration;
@@ -425,6 +431,9 @@ void EngineMaster::process(const int iBufferSize) {
             m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
         }
     }
+
+    m_pMasterDelay->process(m_pMaster, m_pMaster, iBufferSize);
+    m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
