@@ -31,10 +31,14 @@ class EngineDelay : public EngineObject {
 
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
+  public slots:
+    void slotDelayChanged(double);
+
   private:
-    ControlPotmeter* m_pPotmeter;
+    ControlPotmeter* m_pDelayPot;
     CSAMPLE* m_pDelayBuffer;
-    int m_iDelay, m_iDelayPos;
+    int m_iDelayPos;
+    int m_iDelay;
 };
 
 #endif

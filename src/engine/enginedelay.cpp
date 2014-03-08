@@ -17,18 +17,29 @@
 #include "enginedelay.h"
 #include "controlpotmeter.h"
 
-EngineDelay::EngineDelay(const char* group) {
+EngineDelay::EngineDelay(const char* group)
+        : m_iDelayPos(0),
+          m_iDelay(0) {
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
-    m_iDelayPos = 0;
-    // TODO(rryan): EngineDelay doesn't use this control. Need to add support
-    // for it.
-    m_pPotmeter = new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
+    memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
+    m_pDelayPot = new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
+    connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
+            SLOT(slotDelayChanged(double)), Qt::DirectConnection);
 }
 
 EngineDelay::~EngineDelay() {
     delete [] m_pDelayBuffer;
-    delete m_pPotmeter;
+    delete m_pDelayPot;
 }
+
+void EngineDelay::slotDelayChanged(double new_delay) {
+    // if we actually pick a value of kiMaxDelay, it wraps around to zero
+    m_iDelay = (int)(new_delay * (kiMaxDelay - 2));
+    if (m_iDelay % 2) {
+        m_iDelay++;
+    }
+}
+
 
 void EngineDelay::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
     int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
@@ -41,8 +52,8 @@ void EngineDelay::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBuffe
         m_pDelayBuffer[m_iDelayPos] = pIn[i];
         m_iDelayPos = (m_iDelayPos + 1) % kiMaxDelay;
 
-        // Take "old" sample from delay buffer and mix it with the source buffer:
-        pOutput[i] = 0.5 * (m_pDelayBuffer[iDelaySourcePos] + pIn[i]);
+        // Take delayed sample from delay buffer and copy it to dest buffer:
+        pOutput[i] = m_pDelayBuffer[iDelaySourcePos];
         iDelaySourcePos = (iDelaySourcePos + 1) % kiMaxDelay;
     }
 }
