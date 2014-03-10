@@ -23,6 +23,7 @@ MixxxApplication::~MixxxApplication() {
     delete m_pTouchShift;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
     switch (event->type()) {
     case QEvent::TouchBegin:
@@ -135,6 +136,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     bool ret = QApplication::notify(target, event);
     return ret;
 }
+#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 
 bool MixxxApplication::touchIsRightButton() {
     if (!m_pTouchShift) {

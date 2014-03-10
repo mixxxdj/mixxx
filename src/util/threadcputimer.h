@@ -14,4 +14,4 @@ private:
     qint64 t2;
 };
 
-#endif // PERFORMANCETIMER_H
+#endif // THREADCPUTIMER_H
