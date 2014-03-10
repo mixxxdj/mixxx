@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>546</width>
-    <height>635</height>
+    <width>550</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -156,10 +156,16 @@
          </item>
          <item row="9" column="1" colspan="3">
           <widget class="QTextEdit" name="txtComment">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>80</height>
+             <height>16777215</height>
             </size>
            </property>
            <property name="tabChangesFocus">
