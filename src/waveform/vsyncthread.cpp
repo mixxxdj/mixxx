@@ -19,7 +19,9 @@
 #elif defined(__WINDOWS__)
 
 #else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
    extern const QX11Info *qt_x11Info(const QPaintDevice *pd);
+#endif
 #endif
 
 VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
@@ -132,8 +134,12 @@ void VSyncThread::swapGl(QGLWidget* glw, int index) {
 #elif defined(__WINDOWS__)
     glw->swapBuffers();
 #else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     const QX11Info *xinfo = qt_x11Info(glw);
     glXSwapBuffers(xinfo->display(), glw->winId());
+#else
+    glw->swapBuffers();
+#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 }
 
