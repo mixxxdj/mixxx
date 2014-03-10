@@ -20,8 +20,7 @@
 #include "engine/engineobject.h"
 
 class ControlPotmeter;
-
-const int kiMaxDelay = 20000; // 104 ms @ 96 kb/s
+class ControlObjectSlave;
 
 class EngineDelay : public EngineObject {
     Q_OBJECT
@@ -32,10 +31,11 @@ class EngineDelay : public EngineObject {
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
   public slots:
-    void slotDelayChanged(double);
+    void slotDelayChanged();
 
   private:
     ControlPotmeter* m_pDelayPot;
+    ControlObjectSlave* m_pSampleRate;
     CSAMPLE* m_pDelayBuffer;
     int m_iDelayPos;
     int m_iDelay;

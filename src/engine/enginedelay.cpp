@@ -16,7 +16,11 @@
 
 #include "enginedelay.h"
 #include "controlpotmeter.h"
+#include "controlobjectslave.h"
 #include "sampleutil.h"
+
+const int kiMaxDelay = 20000; // 104 ms @ 96 kb/s
+const double kdMaxDelayPot = 100; // 100 ms
 
 EngineDelay::EngineDelay(const char* group, bool head)
         : m_iDelayPos(0),
@@ -24,12 +28,16 @@ EngineDelay::EngineDelay(const char* group, bool head)
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
     memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
     if (head) {
-        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "headDelay"), 0, kiMaxDelay);
+        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "headDelay"), 0, kdMaxDelayPot);
     } else {
-        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
+        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "delay"), 0, kdMaxDelayPot);
     }
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
-            SLOT(slotDelayChanged(double)), Qt::DirectConnection);
+            SLOT(slotDelayChanged()), Qt::DirectConnection);
+
+    m_pSampleRate = new ControlObjectSlave(group, "samplerate", this);
+    m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()), Qt::DirectConnection);
+
 }
 
 EngineDelay::~EngineDelay() {
@@ -37,13 +45,16 @@ EngineDelay::~EngineDelay() {
     delete m_pDelayPot;
 }
 
-void EngineDelay::slotDelayChanged(double new_delay) {
-    // if we actually pick a value of kiMaxDelay, it wraps around to zero
-    m_iDelay = (int)(new_delay * (kiMaxDelay - 2));
-    if (m_iDelay % 2) {
-        m_iDelay++;
+void EngineDelay::slotDelayChanged() {
+    double newDelay = m_pDelayPot->get();
+    double sampleRate = m_pSampleRate->get();
+
+    m_iDelay = (int)(sampleRate * newDelay / 1000);
+    m_iDelay *= 2;
+    if (m_iDelay > (kiMaxDelay - 2)) {
+        m_iDelay = (kiMaxDelay - 2);
     }
-    if (!m_iDelay) {
+    if (m_iDelay <= 0) {
         // We start bypassing, so clear buffer, to avoid noise in case of re-enable delay
         memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
     }
@@ -51,7 +62,7 @@ void EngineDelay::slotDelayChanged(double new_delay) {
 
 
 void EngineDelay::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
-    if (m_iDelay) {
+    if (m_iDelay > 0) {
         int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
         Q_ASSERT(iDelaySourcePos >= 0);
