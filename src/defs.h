@@ -18,7 +18,6 @@
 #define DEFS_H
 
 #include <math.h>
-#include <cmath>
 #include <iostream>
 #include <stdlib.h>
 
