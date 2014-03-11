@@ -359,11 +359,21 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         return;
     }
-
-    TrackModel* trackModel = getTrackModel();
-    TrackPointer pTrack;
-    if (trackModel && (pTrack = trackModel->getTrack(index))) {
-        emit(loadTrack(pTrack));
+    // Read the current double_click settings
+    switch (m_pConfig->getValueString(ConfigKey("[Library]","dbClickAction")).toInt()) {
+    case 1:
+            sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
+            break;
+    case 2:
+            sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
+            break;
+    default: // add track on available deck
+            TrackModel* trackModel = getTrackModel();
+            TrackPointer pTrack;
+	    if (trackModel && (pTrack = trackModel->getTrack(index))) {
+                emit(loadTrack(pTrack));
+            }
+            break;
     }
 }
 

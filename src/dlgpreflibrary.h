@@ -60,6 +60,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue>* m_pconfig;
     Library *m_pLibrary;
+    int radioButton_dbclick_status;
 };
 
 #endif
