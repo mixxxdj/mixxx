@@ -479,9 +479,9 @@ void SoundManager::checkConfig() {
 }
 
 void SoundManager::requestBuffer(
-    const QList<AudioOutputBuffer>& outputs, float* outputBuffer,
-    const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-    SoundDevice* device) {
+        const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
+        const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
+        SoundDevice* device) {
     // qDebug() << "SoundManager::requestBuffer()" << device->getInternalName()
     //          << iFramesPerBuffer << iFrameSize;
 
@@ -545,8 +545,8 @@ void SoundManager::requestBuffer(
     }
 }
 
-void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* inputBuffer,
-                              const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
+void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
+                              const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
                               SoundDevice* pDevice) {
     Q_UNUSED(pDevice);
     // qDebug() << "SoundManager::pushBuffer" << pDevice->getInternalName()
@@ -612,8 +612,8 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* in
         CSAMPLE* pInputBuffer = in.getBuffer();
 
         for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                     m_registeredDestinations.find(in);
-             it != m_registeredDestinations.end() && it.key() == in; ++it) {
+                m_registeredDestinations.find(in);
+                it != m_registeredDestinations.end() && it.key() == in; ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
         }
     }

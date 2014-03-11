@@ -89,15 +89,15 @@ class SoundManager : public QObject {
 
     // Requests a buffer in the proper format, if we're prepared to give one.
     void requestBuffer(
-        const QList<AudioOutputBuffer>& outputs, float* outputBuffer,
-        const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-        SoundDevice* device);
+            const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
+            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
+            SoundDevice* device);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
-    void pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* inputBuffer,
-                    const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-                    SoundDevice* pDevice);
+    void pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
+            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
+            SoundDevice* pDevice);
 
     void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);

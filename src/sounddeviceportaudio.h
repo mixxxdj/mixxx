@@ -44,10 +44,11 @@ class SoundDevicePortAudio : public SoundDevice {
 
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)
-    int callbackProcess(unsigned long framesPerBuffer,
-                        float *output, float* in,
+    int callbackProcess(const unsigned int framesPerBuffer,
+                        CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
+
     virtual unsigned int getDefaultSampleRate() const {
         return m_deviceInfo ? static_cast<unsigned int>(
             m_deviceInfo->defaultSampleRate) : 44100;

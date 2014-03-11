@@ -276,8 +276,8 @@ QString SoundDevicePortAudio::getError() const {
     return m_lastError;
 }
 
-int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
-                                          float *output, float *in,
+int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
+                                          CSAMPLE *output, const CSAMPLE *in,
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
     Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
@@ -326,10 +326,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
             return paContinue;
         }
 
-        m_pSoundManager->requestBuffer(
-            m_audioOutputs, output,
-            framesPerBuffer, static_cast<unsigned int>(
-                m_outputParams.channelCount), this);
+        m_pSoundManager->requestBuffer(m_audioOutputs, output, framesPerBuffer,
+                static_cast<unsigned int>(m_outputParams.channelCount), this);
     }
 
     return paContinue;
@@ -340,6 +338,6 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,
                   PaStreamCallbackFlags statusFlags,
                   void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(framesPerBuffer,
-            (float*) outputBuffer, (float*) inputBuffer, timeInfo, statusFlags);
+    return ((SoundDevicePortAudio*)soundDevice)->callbackProcess((unsigned int)framesPerBuffer,
+            (CSAMPLE*)outputBuffer, (const CSAMPLE*)inputBuffer, timeInfo, statusFlags);
 }
