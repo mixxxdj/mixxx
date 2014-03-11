@@ -67,7 +67,7 @@ void SoundDevice::setSampleRate(double sampleRate) {
 }
 
 void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
-    if (framesPerBuffer * 2 > (unsigned int) MAX_BUFFER_LEN) {
+    if (framesPerBuffer * 2 > MAX_BUFFER_LEN) {
         // framesPerBuffer * 2 because a frame will generally end up
         // being 2 samples and MAX_BUFFER_LEN is a number of samples
         // this isn't checked elsewhere, so...

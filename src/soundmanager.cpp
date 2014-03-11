@@ -478,15 +478,9 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::requestBuffer(
-        const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
-        const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
-        SoundDevice* device) {
-    // qDebug() << "SoundManager::requestBuffer()" << device->getInternalName()
-    //          << iFramesPerBuffer << iFrameSize;
-
+void SoundManager::prepareBuffer() {
     // When the clock reference device requests a buffer...
-    if (device == m_pClkRefDevice && m_requestBufferMutex.tryLock()) {
+    if (m_requestBufferMutex.tryLock()) {
         // Only generate a new buffer for the clock reference card
         //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
 
@@ -496,6 +490,14 @@ void SoundManager::requestBuffer(
 
         m_requestBufferMutex.unlock();
     }
+}
+
+void SoundManager::pullBuffer(
+        const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
+        const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
+        SoundDevice* device) {
+    //qDebug() << "SoundManager::pullBuffer()" << device->getInternalName()
+    //         << iFramesPerBuffer << iFrameSize;
 
     // Reset sample for each open channel
     memset(outputBuffer, 0, iFramesPerBuffer * iFrameSize * sizeof(*outputBuffer));

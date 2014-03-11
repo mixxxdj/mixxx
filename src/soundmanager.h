@@ -87,8 +87,11 @@ class SoundManager : public QObject {
     int setConfig(SoundManagerConfig config);
     void checkConfig();
 
+    // Do all audio processing and prepare the output buffers for all devices
+    void prepareBuffer();
+
     // Requests a buffer in the proper format, if we're prepared to give one.
-    void requestBuffer(
+    void pullBuffer(
             const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
             const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
             SoundDevice* device);
