@@ -9,7 +9,6 @@ class MixxxKeyboard;
 class PlayerManager;
 class ControllerManager;
 class Library;
-class MixxxView;
 class VinylControlManager;
 class EffectsManager;
 

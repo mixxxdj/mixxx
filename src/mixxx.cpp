@@ -64,6 +64,7 @@
 #include "util/timer.h"
 #include "util/time.h"
 #include "util/version.h"
+#include "controlpushbutton.h"
 #include "util/compatibility.h"
 #include "util/sandbox.h"
 #include "playerinfo.h"
@@ -121,6 +122,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 
     initializeKeyboard();
+
+    setAttribute(Qt::WA_AcceptTouchEvents);
+    m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     // Create the Effects subsystem.
     m_pEffectsManager = new EffectsManager(this, m_pConfig);
@@ -504,6 +508,8 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
+
+    delete m_pTouchShift;
 
     PlayerInfo::destroy();
     WaveformWidgetFactory::destroy();
@@ -1612,7 +1618,7 @@ void MixxxMainWindow::rebootMixxxView() {
   * to disable tooltips if the user specifies in the preferences that they
   * want them off. This is a callback function.
   */
-bool MixxxMainWindow::eventFilter(QObject *obj, QEvent *event)
+bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
@@ -1631,6 +1637,26 @@ bool MixxxMainWindow::eventFilter(QObject *obj, QEvent *event)
         // standard event processing
         return QObject::eventFilter(obj, event);
     }
+}
+
+bool MixxxMainWindow::event(QEvent* e) {
+    switch(e->type()) {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchEnd:
+    {
+        // If the touch event falls trough to the main Widget, no touch widget
+        // was touched, so we resend it as a mouse events.
+        // We have to accept it here, so QApplication will continue to deliver
+        // the following events of this touch point as well.
+        QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
+        touchEvent->accept();
+        return true;
+    }
+    default:
+        break;
+    }
+    return QWidget::event(e);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
