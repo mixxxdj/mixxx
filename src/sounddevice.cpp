@@ -38,10 +38,6 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
 SoundDevice::~SoundDevice() {
 }
 
-QString SoundDevice::getInternalName() const {
-    return m_strInternalName;
-}
-
 QString SoundDevice::getDisplayName() const {
     return m_strDisplayName;
 }

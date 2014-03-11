@@ -70,7 +70,7 @@ def write_channelmixer_autogen(output, num_channels):
 
         write('if (totalActive == 0) {', depth=1)
         write('ScopedTimer t("EngineMaster::mixChannels_0active");', depth=2)
-        write('SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);', depth=2)
+        write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
             write('ScopedTimer t("EngineMaster::mixChannels_%(i)dactive");' % {'i': i}, depth=2)
@@ -94,7 +94,7 @@ def write_channelmixer_autogen(output, num_channels):
 
         write('} else {', depth=1)
         write('// Set pOutput to all 0s', depth=2)
-        write('SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);', depth=2)
+        write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         write('for (unsigned int i = 0; i < maxChannels; ++i) {', depth=2)
         write('if (channelBitvector & (1 << i)) {', depth=3)
         write('EngineMaster::ChannelInfo* pChannelInfo = channels[i];', depth=4)

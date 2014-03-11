@@ -41,7 +41,9 @@ class SoundDevice {
     SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
     virtual ~SoundDevice();
 
-    QString getInternalName() const;
+    inline QString getInternalName() const {
+        return m_strInternalName;
+    }
     QString getDisplayName() const;
     QString getHostAPI() const;
     void setHostAPI(QString api);

@@ -115,13 +115,13 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::applyGain(m_pHead, 0, MAX_BUFFER_LEN);
-    SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pMaster, MAX_BUFFER_LEN);
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
         m_pOutputBusBuffers[o] = SampleUtil::alloc(MAX_BUFFER_LEN);
-        SampleUtil::applyGain(m_pOutputBusBuffers[o], 0, MAX_BUFFER_LEN);
+        SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
     }
 
     // Starts a thread for recording and shoutcast
@@ -451,7 +451,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
+    SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
     m_channelHeadphoneGainCache.push_back(0);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {

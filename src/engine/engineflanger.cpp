@@ -70,7 +70,7 @@ QWeakPointer<EngineFlangerControls> EngineFlangerControls::m_pInstance;
 EngineFlanger::EngineFlanger(const char* group) {
     // Init. buffers:
     m_pDelay_buffer = SampleUtil::alloc(max_delay + 1);
-    SampleUtil::applyGain(m_pDelay_buffer, 0.0f, max_delay+1);
+    SampleUtil::clear(m_pDelay_buffer, max_delay+1);
 
     // Init. potmeters
 

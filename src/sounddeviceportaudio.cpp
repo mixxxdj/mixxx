@@ -69,8 +69,8 @@ int SoundDevicePortAudio::open() {
 
     memset(&m_outputParams, 0, sizeof(m_outputParams));
     memset(&m_inputParams, 0, sizeof(m_inputParams));
-    PaStreamParameters * pOutputParams = &m_outputParams;
-    PaStreamParameters * pInputParams = &m_inputParams;
+    PaStreamParameters* pOutputParams = &m_outputParams;
+    PaStreamParameters* pInputParams = &m_inputParams;
 
     // Look at how many audio outputs we have,
     // so we can figure out how many output channels we need to open.
@@ -81,7 +81,7 @@ int SoundDevicePortAudio::open() {
         foreach (AudioOutput out, m_audioOutputs) {
             ChannelGroup channelGroup = out.getChannelGroup();
             int highChannel = channelGroup.getChannelBase()
-                + channelGroup.getChannelCount();
+                    + channelGroup.getChannelCount();
             if (m_outputParams.channelCount <= highChannel) {
                 m_outputParams.channelCount = highChannel;
             }
@@ -311,13 +311,13 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
     //      m_pSoundManager->requestBuffer() is called below.)
 
     // Send audio from the soundcard's input off to the SoundManager...
-    if (in && framesPerBuffer > 0) {
+    if (in) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
         m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
                                     m_inputParams.channelCount, this);
     }
 
-    if (output && framesPerBuffer > 0) {
+    if (output) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess output " + getInternalName());
 
         if (m_outputParams.channelCount <= 0) {
