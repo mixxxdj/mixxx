@@ -78,6 +78,7 @@ class WPushButton : public WWidget {
     // Array of associated pixmaps
     int m_iNoStates;
     QVector<QString> m_text;
+    QVector<QString> m_style;
     QVector<PaintablePointer> m_pressedPixmaps;
     QVector<PaintablePointer> m_unpressedPixmaps;
 
@@ -88,6 +89,7 @@ class WPushButton : public WWidget {
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
+    QVector<int> m_align;
 };
 
 #endif

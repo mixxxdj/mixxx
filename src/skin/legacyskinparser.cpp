@@ -610,7 +610,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
                 bool created;
                 // TODO(rryan): Allow persist enabling. Not sure what the best
                 // option is -- need to think about it.
-                pControl = controlFromConfigKey(configKey, false, &created);
+                pControl = controlFromConfigKey(configKey, true, &created);
                 if (created) {
                     // If we created the control, parent it to the child widget so
                     // it doesn't leak.
