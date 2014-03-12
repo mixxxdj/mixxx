@@ -36,7 +36,6 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
-    radioButton_dbclick_status = 0; // default: add track on available deck
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
@@ -107,17 +106,17 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
-    radioButton_dbclick_status = m_pconfig->getValueString(
-            ConfigKey("[Library]","dbClickAction"),"0").toInt();
-    switch (radioButton_dbclick_status) {
-    case 1:
-            radioButton_dbclick_bottom->click();
+
+    switch (m_pconfig->getValueString(ConfigKey("[Library]","TrackLoadAction"),
+                                      QString::number(LOAD_TRACK_DECK)).toInt()) {
+    case ADD_TRACK_BOTTOM:
+            radioButton_dbclick_bottom->setChecked(true);
             break;
-    case 2:
-            radioButton_dbclick_top->click();
+    case ADD_TRACK_TOP:
+            radioButton_dbclick_top->setChecked(true);
             break;
     default:
-            radioButton_dbclick_deck->click();
+            radioButton_dbclick_deck->setChecked(true);
             break;
     }
 }
@@ -228,17 +227,16 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
-
+    int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
-            radioButton_dbclick_status = 1;
+            dbclick_status = ADD_TRACK_BOTTOM;
     } else if (radioButton_dbclick_top->isChecked()) {
-            radioButton_dbclick_status = 2;
+            dbclick_status = ADD_TRACK_TOP;
     } else {
-            radioButton_dbclick_status = 0;
+            dbclick_status = LOAD_TRACK_DECK;
     }
-
-    m_pconfig->set(ConfigKey("[Library]","dbClickAction"),
-                ConfigValue(radioButton_dbclick_status));
+    m_pconfig->set(ConfigKey("[Library]","TrackLoadAction"),
+                ConfigValue(dbclick_status));
 
     m_pconfig->Save();
 }

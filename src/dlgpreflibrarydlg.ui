@@ -272,7 +272,7 @@
       <string/>
      </property>
      <property name="title">
-      <string>Double Click Action</string>
+      <string>Track Load Action</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="2" column="0">
@@ -285,7 +285,7 @@
       <item row="0" column="0">
        <widget class="QRadioButton" name="radioButton_dbclick_deck">
         <property name="text">
-         <string>Add track on available deck.</string>
+         <string>Load track to next available deck.</string>
         </property>
         <property name="checked">
          <bool>true</bool>

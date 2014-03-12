@@ -17,6 +17,7 @@
 #include "soundsourceproxy.h"
 #include "playermanager.h"
 #include "util/dnd.h"
+#include "dlgpreflibrary.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -360,17 +361,18 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
         return;
     }
     // Read the current double_click settings
-    switch (m_pConfig->getValueString(ConfigKey("[Library]","dbClickAction")).toInt()) {
-    case 1:
+    switch (m_pConfig->getValueString(
+                ConfigKey("[Library]","TrackLoadAction")).toInt()) {
+    case DlgPrefLibrary::ADD_TRACK_BOTTOM:
             sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
             break;
-    case 2:
+    case DlgPrefLibrary::ADD_TRACK_TOP:
             sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
             break;
-    default: // add track on available deck
+    default: // load track to next available deck
             TrackModel* trackModel = getTrackModel();
             TrackPointer pTrack;
-	    if (trackModel && (pTrack = trackModel->getTrack(index))) {
+            if (trackModel && (pTrack = trackModel->getTrack(index))) {
                 emit(loadTrack(pTrack));
             }
             break;

@@ -33,6 +33,12 @@
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:
+    enum TrackLoadAction {
+        LOAD_TRACK_DECK,  // Load track to next available deck.
+        ADD_TRACK_BOTTOM, // Add track to Auto-DJ Queue (bottom).
+        ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
+    };
+
     DlgPrefLibrary(QWidget *parent, ConfigObject<ConfigValue> *config,
                    Library *pLibrary);
     virtual ~DlgPrefLibrary();
@@ -60,7 +66,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue>* m_pconfig;
     Library *m_pLibrary;
-    int radioButton_dbclick_status;
 };
 
 #endif
