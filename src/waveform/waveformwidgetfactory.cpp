@@ -401,12 +401,15 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
 }
 
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
-    if (isZoomSync()) {
+    WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
+    if (pWaveformWidget != NULL && isZoomSync()) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
-        int refZoom = viewer->getWaveformWidget()->getZoomFactor();
-        for (int i = 0; i < (int)m_waveformWidgetHolders.size(); i++) {
-            if (m_waveformWidgetHolders[i].m_waveformViewer != viewer) {
-                m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
+        int refZoom = pWaveformWidget->getZoomFactor();
+
+        for (int i = 0; i < m_waveformWidgetHolders.size(); ++i) {
+            WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
+            if (holder.m_waveformViewer != viewer) {
+                holder.m_waveformViewer->setZoom(refZoom);
             }
         }
     }

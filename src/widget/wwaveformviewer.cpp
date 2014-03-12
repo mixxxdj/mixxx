@@ -188,7 +188,7 @@ void WWaveformViewer::onTrackUnloaded(TrackPointer /*track*/) {
 void WWaveformViewer::onZoomChange(double zoom) {
     //qDebug() << "WaveformWidgetRenderer::onZoomChange" << this << zoom;
     setZoom(zoom);
-    //notify back the factory to sync zoom if needed
+    // notify back the factory to sync zoom if needed
     WaveformWidgetFactory::instance()->notifyZoomChange(this);
 }
 
@@ -196,7 +196,17 @@ void WWaveformViewer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     if (m_waveformWidget) {
         m_waveformWidget->setZoom(zoom);
-        m_pZoom->slotSet(zoom);
+    }
+
+    // If multiple waveform widgets for the same group are created then it's
+    // possible that this setZoom() is coming from another waveform with the
+    // same group. That means that if we set the zoom control here, that
+    // waveform will receive the update as a call to onZoomChange which will in
+    // turn notify the WaveformWidgetFactory that zoom changed which will
+    // infinite loop because we will receive another setZoom() from
+    // WaveformWidgetFactory. To prevent this recursion, check for no-ops.
+    if (m_pZoom->get() != zoom) {
+        m_pZoom->set(zoom);
     }
 }
 
