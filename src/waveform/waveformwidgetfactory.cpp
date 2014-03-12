@@ -236,7 +236,8 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
         delete viewer->getWaveformWidget();
     }
 
-    //Cast to widget done just after creation because it can't be perform in constructor (pure virtual)
+    // Cast to widget done just after creation because it can't be perform in
+    // constructor (pure virtual)
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, viewer);
     viewer->setWaveformWidget(waveformWidget);
     viewer->setup(node, context);
@@ -432,7 +433,8 @@ void WaveformWidgetFactory::render() {
             // all render commands are delayed until the swap from the previous run is executed
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-                if (pWaveformWidget->getWidth() > 0) {
+                if (pWaveformWidget->getWidth() > 0 &&
+                    pWaveformWidget->getWidget()->isVisible()) {
                     (void)pWaveformWidget->render();
                 }
                 // qDebug() << "render" << i << m_vsyncThread->elapsed();
