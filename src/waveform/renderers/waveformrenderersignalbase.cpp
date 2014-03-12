@@ -25,17 +25,17 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() {
 }
 
 void WaveformRendererSignalBase::deleteControls() {
-    if(m_pLowFilterControlObject)
+    if (m_pLowFilterControlObject)
         delete m_pLowFilterControlObject;
-    if(m_pMidFilterControlObject)
+    if (m_pMidFilterControlObject)
         delete m_pMidFilterControlObject;
-    if(m_pHighFilterControlObject)
+    if (m_pHighFilterControlObject)
         delete m_pHighFilterControlObject;
-    if(m_pLowKillControlObject)
+    if (m_pLowKillControlObject)
         delete m_pLowKillControlObject;
-    if(m_pMidKillControlObject)
+    if (m_pMidKillControlObject)
         delete m_pMidKillControlObject;
-    if(m_pHighKillControlObject)
+    if (m_pHighKillControlObject)
         delete m_pHighKillControlObject;
 }
 

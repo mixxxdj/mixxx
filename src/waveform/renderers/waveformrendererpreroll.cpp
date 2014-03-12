@@ -11,7 +11,7 @@
 #include "widget/wwidget.h"
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
-  : WaveformRendererAbstract( waveformWidgetRenderer) {
+  : WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
 WaveformRendererPreroll::~WaveformRendererPreroll() {
