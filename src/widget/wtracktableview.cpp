@@ -360,9 +360,12 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         return;
     }
-    // Read the current double_click settings
-    switch (m_pConfig->getValueString(
-                ConfigKey("[Library]","TrackLoadAction")).toInt()) {
+    // Read the current TrackLoadAction settings
+    int action = DlgPrefLibrary::LOAD_TRACK_DECK; // default action
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        action = m_pConfig->getValueString(ConfigKey("[Library]","TrackLoadAction")).toInt();
+    }
+    switch (action) {
     case DlgPrefLibrary::ADD_TRACK_BOTTOM:
             sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
             break;
