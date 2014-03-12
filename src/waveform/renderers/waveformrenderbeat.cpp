@@ -39,7 +39,7 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if(!trackInfo)
+    if (!trackInfo)
         return;
 
     BeatsPointer trackBeats = trackInfo->getBeats();

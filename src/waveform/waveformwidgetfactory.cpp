@@ -437,7 +437,7 @@ void WaveformWidgetFactory::render() {
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (pWaveformWidget->getWidth() > 0 &&
-                    pWaveformWidget->getWidget()->isVisible()) {
+                        pWaveformWidget->getWidget()->isVisible()) {
                     (void)pWaveformWidget->render();
                 }
                 // qDebug() << "render" << i << m_vsyncThread->elapsed();
