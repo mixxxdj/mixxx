@@ -18,11 +18,12 @@
 WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
         : WWidget(parent),
           m_pGroup(group),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_zoomZoneWidth(20),
+          m_bScratching(false),
+          m_bBending(false),
+          m_waveformWidget(NULL) {
     setAcceptDrops(true);
-
-    m_bScratching = false;
-    m_bBending = false;
 
     m_pZoom = new ControlObjectSlave(group, "waveform_zoom");
     m_pZoom->connectValueChanged(this, SLOT(onZoomChange(double)));
@@ -35,9 +36,6 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
             group, "wheel");
 
     setAttribute(Qt::WA_OpaquePaintEvent);
-
-    m_zoomZoneWidth = 20;
-    m_waveformWidget = NULL;
 }
 
 WWaveformViewer::~WWaveformViewer() {
@@ -51,20 +49,21 @@ WWaveformViewer::~WWaveformViewer() {
 
 void WWaveformViewer::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(context);
-    if (m_waveformWidget)
+    if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
+    }
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
     if (m_waveformWidget) {
-        m_waveformWidget->resize(width(),height());
+        m_waveformWidget->resize(width(), height());
     }
 }
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
     m_mouseAnchor = event->pos();
 
-    if(event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton && m_waveformWidget) {
         // If we are pitch-bending then disable and reset because the two
         // shouldn't be used at once.
         if (m_bBending) {
@@ -136,11 +135,10 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
         //if (event->x() > width() - m_zoomZoneWidth) {
             if (event->delta() > 0) {
                 //qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
-                onZoomChange(m_waveformWidget->getZoomFactor()+1);
-            }
-            else {
+                onZoomChange(m_waveformWidget->getZoomFactor() + 1);
+            } else {
                 //qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
-                onZoomChange(m_waveformWidget->getZoomFactor()-1);
+                onZoomChange(m_waveformWidget->getZoomFactor() - 1);
             }
         //}
     }
@@ -175,14 +173,16 @@ void WWaveformViewer::dropEvent(QDropEvent * event) {
     event->ignore();
 }
 
-void WWaveformViewer::onTrackLoaded( TrackPointer track) {
-    if (m_waveformWidget)
+void WWaveformViewer::onTrackLoaded(TrackPointer track) {
+    if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
+    }
 }
 
-void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/) {
-    if (m_waveformWidget)
-        m_waveformWidget->setTrack(TrackPointer(0));
+void WWaveformViewer::onTrackUnloaded(TrackPointer /*track*/) {
+    if (m_waveformWidget) {
+        m_waveformWidget->setTrack(TrackPointer());
+    }
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {
