@@ -2,6 +2,7 @@
 #define DLGRECORDING_H
 
 #include <QItemSelection>
+#include <QTimer>
 #include "ui_dlgrecording.h"
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -38,6 +39,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void slotBytesRecorded(long);
     void refreshBrowseModel();
     void slotRestoreSearch();
+    void slotReadDuration();
 
   signals:
     void loadTrack(TrackPointer tio);
@@ -45,7 +47,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void restoreSearch(QString search);
 
   private:
-
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
@@ -54,6 +55,10 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     QString m_recordingDir;
 
     RecordingManager* m_pRecordingManager;
+    void refreshLabel();
+    QString m_bytesRecorded;
+    QString m_durationStr;
+    QTimer* m_timerToReadDuration;
 
 };
 

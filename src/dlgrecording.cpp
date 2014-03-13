@@ -49,6 +49,11 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
     label->setText(tr("Start recording here ..."));
+    // Read the duration from file
+    m_durationStr = "--:--";
+    m_timerToReadDuration = new QTimer(this);
+    connect(m_timerToReadDuration, SIGNAL(timeout()),
+            this, SLOT(slotReadDuration()));
 }
 
 DlgRecording::~DlgRecording() {
@@ -97,23 +102,37 @@ void DlgRecording::toggleRecording(bool toggle) {
     }
 }
 void DlgRecording::slotRecordingEnabled(bool isRecording) {
-    if(isRecording){
+    if (isRecording) {
         pushButtonRecording->setText((tr("Stop Recording")));
         //This will update the recorded track table view
         m_browseModel.setPath(m_recordingDir);
-    }
-    else{
+        m_timerToReadDuration->start(50);
+    } else {
         pushButtonRecording->setText((tr("Start Recording")));
         label->setText("Start recording here ...");
+        m_timerToReadDuration->stop();
     }
 
 }
 /** int bytes: the number of recorded bytes within a session **/
 void DlgRecording::slotBytesRecorded(long bytes) {
     double megabytes = bytes / 1048575.0;
-
-    QString message = tr("Recording to file: %1 (%2 MB written)");
+    m_bytesRecorded = QString::number(megabytes,'f',2);
+    refreshLabel();
+}
+void DlgRecording::slotReadDuration() {
+    TrackPointer pTrack = TrackPointer(
+                new TrackInfoObject(m_pRecordingManager->getRecordingLocation()),
+                                    &QObject::deleteLater);
+    QString old = m_durationStr;
+    m_durationStr = pTrack->getDurationStr();
+    if (old != m_durationStr)
+        refreshLabel();
+}
+void DlgRecording::refreshLabel() {
+    QString message = tr("Recording to file: %1 (%2 MB written in %3)");
     QString text = message.arg(m_pRecordingManager->getRecordingFile(),
-                               QString::number(megabytes,'f',2));
+                               m_bytesRecorded,
+                               m_durationStr);
     label->setText(text);
 }
