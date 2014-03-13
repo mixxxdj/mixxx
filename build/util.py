@@ -189,3 +189,4 @@ def write_build_header(path):
                                                 '+' if modified else ''))
     finally:
         f.close()
+        os.chmod(path, 0666)
