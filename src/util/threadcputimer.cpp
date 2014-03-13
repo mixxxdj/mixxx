@@ -1,5 +1,5 @@
 
-#include "threadcputimer.h"
+#include "util/threadcputimer.h"
 
 #if defined(Q_OS_MAC)
 #include <sys/time.h>

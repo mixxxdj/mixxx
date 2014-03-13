@@ -15,7 +15,7 @@
 #include "sharedglcontext.h"
 #include "util/performancetimer.h"
 
-GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent)
+GLWaveformWidget::GLWaveformWidget(const char* group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
 
@@ -48,7 +48,7 @@ void GLWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLWaveformWidget::paintEvent( QPaintEvent* event) {
+void GLWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
@@ -68,4 +68,3 @@ int GLWaveformWidget::render() {
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
     return t1 / 1000; // return timer for painter setup
 }
-

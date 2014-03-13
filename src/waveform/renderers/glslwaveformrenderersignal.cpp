@@ -233,10 +233,10 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
 bool GLSLWaveformRendererSignal::onInit(){
     m_loadedWaveform = 0;
 
-    if(!m_signalMaxShaderProgram)
+    if (!m_signalMaxShaderProgram)
         m_signalMaxShaderProgram = new QGLShaderProgram();
 
-    if(!m_frameShaderProgram)
+    if (!m_frameShaderProgram)
         m_frameShaderProgram = new QGLShaderProgram();
 
     if (!loadShaders()) {
@@ -421,8 +421,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     {
         glColor4f(0.5,1.0,0.5,0.75);
         glVertex3f(-1.0f,-1.0f, 0.0f);
-        glVertex3f( 1.0f, 1.0f, 0.0f);
-        glVertex3f( 1.0f,-1.0f, 0.0f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+        glVertex3f(1.0f,-1.0f, 0.0f);
         glVertex3f(-1.0f, 1.0f, 0.0f);
     }
     glEnd();
