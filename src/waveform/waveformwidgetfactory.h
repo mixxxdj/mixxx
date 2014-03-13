@@ -65,7 +65,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool setWaveformWidget(WWaveformViewer* viewer,
                            const QDomElement &node, const SkinContext& context);
 
-    void setFrameRate( int frameRate);
+    void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
 //    bool getVSync() const { return m_vSyncType;}
 
@@ -74,8 +74,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
-    bool setWidgetType( WaveformWidgetType::Type type);
-    bool setWidgetTypeFromHandle( int handleIndex);
+    bool setWidgetType(WaveformWidgetType::Type type);
+    bool setWidgetTypeFromHandle(int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
     void setDefaultZoom(int zoom);
@@ -84,7 +84,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
-    void setVisualGain( FilterIndex index, double gain);
+    void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
     void setOverviewNormalized(bool normalize);
@@ -119,8 +119,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
   private:
     WaveformWidgetType::Type autoChooseWidgetType() const;
     void evaluateWidgets();
-    WaveformWidgetAbstract* createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer);
-    int findIndexOf( WWaveformViewer* viewer) const;
+    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
+    int findIndexOf(WWaveformViewer* viewer) const;
 
     //All type of available widgets
 

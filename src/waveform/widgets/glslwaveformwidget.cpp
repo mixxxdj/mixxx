@@ -15,7 +15,7 @@
 
 #include "util/performancetimer.h"
 
-GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent)
+GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
 
@@ -49,7 +49,7 @@ void GLSLWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLSLWaveformWidget::paintEvent( QPaintEvent* event) {
+void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
@@ -70,7 +70,7 @@ int GLSLWaveformWidget::render() {
     return t1 / 1000; // return timer for painter setup
 }
 
-void GLSLWaveformWidget::resize( int width, int height) {
+void GLSLWaveformWidget::resize(int width, int height) {
     //NOTE: (vrince) this is needed since we allocation buffer on resize
     //ans the Gl Context should be properly setted
     makeCurrent();
@@ -78,9 +78,8 @@ void GLSLWaveformWidget::resize( int width, int height) {
 }
 
 void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
-    if( event->button() == Qt::RightButton) {
+    if (event->button() == Qt::RightButton) {
         makeCurrent();
         signalRenderer_->loadShaders();
     }
 }
-
