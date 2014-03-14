@@ -125,7 +125,7 @@ void DlgRecording::slotReadDuration() {
                 new TrackInfoObject(m_pRecordingManager->getRecordingLocation()),
                                     &QObject::deleteLater);
     QString old = m_durationStr;
-    m_durationStr = pTrack->getDurationStr();
+    m_durationStr = pTrack->getDurationStr().split(".").at(0);
     if (old != m_durationStr)
         refreshLabel();
 }
