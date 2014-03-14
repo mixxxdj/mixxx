@@ -121,9 +121,12 @@ void DlgRecording::slotBytesRecorded(long bytes) {
     refreshLabel();
 }
 void DlgRecording::slotReadDuration() {
-    TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(m_pRecordingManager->getRecordingLocation()),
-                                    &QObject::deleteLater);
+    QString location = m_pRecordingManager->getRecordingLocation();
+    if (location == "")
+        return;
+
+    TrackPointer pTrack = TrackPointer(new TrackInfoObject(location),
+                                       &QObject::deleteLater);
     QString old = m_durationStr;
     m_durationStr = pTrack->getDurationStr().split(".").at(0);
     if (old != m_durationStr)
