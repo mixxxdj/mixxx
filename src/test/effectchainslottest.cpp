@@ -75,9 +75,9 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
 
     EXPECT_FALSE(pChain->enabledForGroup("[Master]"));
     pChain->enableForGroup("[Master]");
-    EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "channel_[Master]")));
+    EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "group_[Master]_enable")));
 
-    ControlObject::set(ConfigKey(group, "channel_[Master]"), 0);
+    ControlObject::set(ConfigKey(group, "group_[Master]_enable"), 0);
     EXPECT_FALSE(pChain->enabledForGroup("[Master]"));
 }
 
