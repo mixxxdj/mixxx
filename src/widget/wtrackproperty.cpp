@@ -22,7 +22,6 @@ void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     m_property = context.selectString(node, "Property");
-    setAlignment(Qt::AlignLeft);
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer track) {
