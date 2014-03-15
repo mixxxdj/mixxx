@@ -207,7 +207,7 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
         foreach (AudioInput in, m_inputs.values(device)) {
             if ((in.getType() == AudioInput::DECK ||
                  in.getType() == AudioInput::VINYLCONTROL ||
-                 in.getType() == AudioInput::EXTPASSTHROUGH) &&
+                 in.getType() == AudioInput::AUXILIARY) &&
                 in.getIndex() + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
                 minimum_deck_count = in.getIndex() + 1;
