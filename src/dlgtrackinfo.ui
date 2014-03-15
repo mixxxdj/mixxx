@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>550</width>
-    <height>550</height>
+    <height>635</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -157,10 +157,16 @@
          <item row="9" column="1" colspan="3">
           <widget class="QTextEdit" name="txtComment">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="maximumSize">
             <size>
