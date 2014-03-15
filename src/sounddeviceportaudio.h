@@ -38,9 +38,11 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    int open();
-    int close();
-    QString getError() const;
+    virtual int open(bool registerCallback);
+    virtual int close();
+    virtual void readProcess();
+    virtual void writeProcess();
+    virtual QString getError() const;
 
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)

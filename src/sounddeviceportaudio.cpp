@@ -57,7 +57,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
 SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
-int SoundDevicePortAudio::open() {
+int SoundDevicePortAudio::open(bool registerCallback) {
     qDebug() << "SoundDevicePortAudio::open()" << getInternalName();
     PaError err;
 
@@ -160,7 +160,10 @@ int SoundDevicePortAudio::open() {
     qDebug() << "Opening stream with id" << m_devId;
 
     //Create the callback function pointer.
-    PaStreamCallback *callback = paV19Callback;
+    PaStreamCallback* callback = NULL;
+    if (registerCallback) {
+        callback = paV19Callback;
+    }
 
     // Try open device using iChannelMax
     err = Pa_OpenStream(&m_pStream,
@@ -272,6 +275,18 @@ int SoundDevicePortAudio::close() {
     return 0;
 }
 
+void SoundDevicePortAudio::readProcess() {
+    if (m_pStream) {
+        qDebug() << "SoundDevicePortAudio::readProcess()";
+    }
+}
+
+void SoundDevicePortAudio::writeProcess() {
+    if (m_pStream) {
+        qDebug() << "SoundDevicePortAudio::writeProcess()";
+    }
+}
+
 QString SoundDevicePortAudio::getError() const {
     return m_lastError;
 }
@@ -314,7 +329,14 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
     if (in) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
         m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
-                                    m_inputParams.channelCount, this);
+                                    m_inputParams.channelCount);
+    }
+
+    m_pSoundManager->readProcess();
+
+    if (m_pSoundManager->isDeviceClkRef(this)) {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare " + getInternalName());
+        m_pSoundManager->prepareBuffer(framesPerBuffer);
     }
 
     if (output) {
@@ -326,13 +348,11 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             return paContinue;
         }
 
-        if (m_pSoundManager->isDeviceClkRef(this)) {
-            m_pSoundManager->prepareBuffer();
-        }
-
         m_pSoundManager->pullBuffer(m_audioOutputs, output, framesPerBuffer,
-                static_cast<unsigned int>(m_outputParams.channelCount), this);
+                static_cast<unsigned int>(m_outputParams.channelCount));
     }
+
+    m_pSoundManager->writeProcess();
 
     return paContinue;
 }

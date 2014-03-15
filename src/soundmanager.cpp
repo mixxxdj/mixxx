@@ -388,7 +388,7 @@ int SoundManager::setupDevices() {
         bool isOutput = mode.second;
         ++devicesAttempted;
         m_pErrorDevice = device;
-        err = device->open();
+        err = device->open(pNewMasterClockRef == device);
         if (err != OK) {
             goto closeAndError;
         } else {
@@ -478,24 +478,18 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::prepareBuffer() {
-    // When the clock reference device requests a buffer...
-    if (m_requestBufferMutex.tryLock()) {
-        // Only generate a new buffer for the clock reference card
-        //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
+void SoundManager::prepareBuffer(const unsigned int iFramesPerBuffer) {
+    // Only generate a new buffer for the clock reference card
+    //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
 
-        // Produce a block of samples for output. EngineMaster expects stereo
-        // samples so multiply iFramesPerBuffer by 2.
-        m_pMaster->process(iFramesPerBuffer*2);
-
-        m_requestBufferMutex.unlock();
-    }
+    // Produce a block of samples for output. EngineMaster expects stereo
+    // samples so multiply iFramesPerBuffer by 2.
+    m_pMaster->process(iFramesPerBuffer * 2);
 }
 
 void SoundManager::pullBuffer(
         const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
-        const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
-        SoundDevice* device) {
+        const unsigned int iFramesPerBuffer, const unsigned int iFrameSize) {
     //qDebug() << "SoundManager::pullBuffer()" << device->getInternalName()
     //         << iFramesPerBuffer << iFrameSize;
 
@@ -548,9 +542,7 @@ void SoundManager::pullBuffer(
 }
 
 void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
-                              const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
-                              SoundDevice* pDevice) {
-    Q_UNUSED(pDevice);
+                              const unsigned int iFramesPerBuffer, const unsigned int iFrameSize) {
     // qDebug() << "SoundManager::pushBuffer" << pDevice->getInternalName()
     //          << iFramesPerBuffer << iFrameSize;
     //This function is called a *lot* and is a big source of CPU usage.
@@ -620,6 +612,27 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMP
         }
     }
 }
+
+void SoundManager::writeProcess() {
+    QListIterator<SoundDevice*> dev_it(m_devices);
+    while (dev_it.hasNext()) {
+        SoundDevice* device = dev_it.next();
+        if (device != m_pClkRefDevice) {
+            device->writeProcess();
+        }
+    }
+}
+
+void SoundManager::readProcess() {
+    QListIterator<SoundDevice*> dev_it(m_devices);
+    while (dev_it.hasNext()) {
+        SoundDevice* device = dev_it.next();
+        if (device != m_pClkRefDevice) {
+            device->readProcess();
+        }
+    }
+}
+
 
 void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     if (m_registeredSources.contains(output)) {

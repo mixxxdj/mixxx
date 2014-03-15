@@ -49,8 +49,10 @@ class SoundDevice {
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open() = 0;
+    virtual int open(bool registerCallback) = 0;
     virtual int close() = 0;
+    virtual void readProcess() = 0;
+    virtual void writeProcess() = 0;
     virtual QString getError() const = 0;
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;

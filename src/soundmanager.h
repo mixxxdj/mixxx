@@ -88,19 +88,20 @@ class SoundManager : public QObject {
     void checkConfig();
 
     // Do all audio processing and prepare the output buffers for all devices
-    void prepareBuffer();
+    void prepareBuffer(const unsigned int iFramesPerBuffer);
 
     // Requests a buffer in the proper format, if we're prepared to give one.
     void pullBuffer(
             const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
-            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
-            SoundDevice* device);
+            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
     void pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
-            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize,
-            SoundDevice* pDevice);
+            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize);
+
+    void writeProcess();
+    void readProcess();
 
     void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
@@ -130,7 +131,6 @@ class SoundManager : public QObject {
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;
-    QMutex m_requestBufferMutex;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
