@@ -43,7 +43,14 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     virtual void onInputUnconfigured(AudioInput input);
 
     // Called by the engine callback. Must not touch any state in
-    // VinylControlProcessor except for m_samplePipes.
+    // VinylControlProcessor except for m_samplePipes. NOTE:
+
+    // This is called by SoundManager whenever there are new samples from the
+    // configured input to be processed. This is run in the callback thread of
+    // the soundcard this AudioDestination was registered for! Beware, this
+    // method is re-entrant since the VinylControlProcessor is registered for
+    // multiple AudioDestinations, however it is not re-entrant for a given
+    // AudioInput index.
     void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                        unsigned int iNumFrames);
 

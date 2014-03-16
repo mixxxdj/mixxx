@@ -59,7 +59,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_bBusOutputConnected[1] = false;
     m_bBusOutputConnected[2] = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
-    m_pWorkerScheduler->start();
+    m_pWorkerScheduler->start(QThread::HighPriority);
 
     if (pEffectsManager) {
         pEffectsManager->registerGroup(getMasterGroup());

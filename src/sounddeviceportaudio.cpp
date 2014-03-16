@@ -326,10 +326,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
             return paContinue;
         }
 
-        m_pSoundManager->requestBuffer(
-            m_audioOutputs, output,
-            framesPerBuffer, static_cast<unsigned int>(
-                m_outputParams.channelCount), this);
+        m_pSoundManager->onDeviceOutputCallback(this, framesPerBuffer);
+        composeOutputBuffer(output, framesPerBuffer, static_cast<unsigned int>(
+            m_outputParams.channelCount));
     }
 
     return paContinue;
