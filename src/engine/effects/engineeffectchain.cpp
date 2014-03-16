@@ -10,6 +10,8 @@ EngineEffectChain::EngineEffectChain(const QString& id)
           m_dMix(0),
           m_dParameter(0),
           m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    // Try to prevent memory allocation.
+    m_effects.reserve(256);
 }
 
 EngineEffectChain::~EngineEffectChain() {

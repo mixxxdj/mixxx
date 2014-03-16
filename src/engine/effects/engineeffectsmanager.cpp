@@ -6,6 +6,10 @@
 
 EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
         : m_pResponsePipe(pResponsePipe) {
+    // Try to prevent memory allocation.
+    m_racks.reserve(256);
+    m_chains.reserve(256);
+    m_effects.reserve(256);
 }
 
 EngineEffectsManager::~EngineEffectsManager() {
