@@ -253,7 +253,7 @@ int SoundDevicePortAudio::open(bool registerCallback) {
 
 int SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << getInternalName();
-    PaStream pStream = m_pStream;
+    PaStream* pStream = m_pStream;
     m_pStream = NULL;
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
@@ -308,7 +308,7 @@ int SoundDevicePortAudio::close() {
 }
 
 void SoundDevicePortAudio::readProcess() {
-    PaStream pStream = m_pStream;
+    PaStream* pStream = m_pStream;
     if (pStream) {
         if (m_inputParams.channelCount) {
 //          signed int readAvailable = Pa_GetStreamReadAvailable(m_pStream);
@@ -324,10 +324,20 @@ void SoundDevicePortAudio::writeProcess() {
             int writeAvailable = Pa_GetStreamWriteAvailable(pStream);
             if (m_pOutputBufferReadFrame != m_framesPerBuffer) {
                 qDebug() << "SoundDevicePortAudio::writeProcess()" << writeAvailable << m_pOutputBufferReadFrame;
+                if (m_pOutputBufferReadFrame < m_framesPerBuffer / 2) {
+                    // risk of overflow skip one frame
+                    m_pOutputBufferReadFrame++;
+                } else if (m_pOutputBufferReadFrame > m_framesPerBuffer / 2 * 3) {
+                    // risk of underflow duplicate one frame
+                    memcpy(getOutputBufferFrame(m_pOutputBufferReadFrame - 1),
+                            getOutputBufferFrame(m_pOutputBufferReadFrame),
+                            m_outputParams.channelCount * sizeof(CSAMPLE));
+                    m_pOutputBufferReadFrame--;
+                }
             }
             if (writeAvailable > 0) {
                 if (writeAvailable == (int)(m_framesPerBuffer * 2)) {
-                    // Underflow try to catch up with Zeros, clear fist half
+                    // Underflow try to catch up with Zeros, clear fist half of buffer
                     SampleUtil::clear(m_pOutputBuffer, m_outputParams.channelCount * m_framesPerBuffer);
                     m_pOutputBufferReadFrame = 0;
                 }
@@ -347,7 +357,7 @@ void SoundDevicePortAudio::writeProcess() {
                         // copy remaining frames to the fist half of the buffer
                         memcpy(getOutputBufferFrame(m_pOutputBufferReadFrame - m_framesPerBuffer),
                                 getOutputBufferFrame(m_pOutputBufferReadFrame),
-                                (m_framesPerBuffer * 2 - m_pOutputBufferReadFrame) * sizeof(CSAMPLE));
+                                (m_framesPerBuffer * 2 - m_pOutputBufferReadFrame) * m_outputParams.channelCount * sizeof(CSAMPLE));
                     }
                     m_pOutputBufferReadFrame -= m_framesPerBuffer;
                 } else {
@@ -356,7 +366,7 @@ void SoundDevicePortAudio::writeProcess() {
                         // copy second half of the buffer to fist half
                         memcpy(getOutputBufferFrame(0),
                                 getOutputBufferFrame(m_framesPerBuffer),
-                                m_framesPerBuffer * sizeof(CSAMPLE));
+                                m_framesPerBuffer * m_outputParams.channelCount * sizeof(CSAMPLE));
                         m_pOutputBufferReadFrame = 0;
                 }
             }
