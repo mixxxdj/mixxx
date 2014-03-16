@@ -67,8 +67,6 @@ class SoundDevice {
     bool operator==(const SoundDevice &other) const;
     bool operator==(const QString &other) const;
 
-    void onOutputBuffersReady(const unsigned long iFramesPerBuffer);
-
   protected:
     void composeOutputBuffer(float* outputBuffer,
                              const unsigned long iFramesPerBuffer,
