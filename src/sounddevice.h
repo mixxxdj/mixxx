@@ -70,7 +70,7 @@ class SoundDevice {
   protected:
     ConfigObject<ConfigValue> *m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
-    SoundManager *m_pSoundManager;
+    SoundManager* m_pSoundManager;
     // The name of the soundcard, used internally (may include the device ID)
     QString m_strInternalName;
     // The name of the soundcard, as displayed to the user
