@@ -25,7 +25,7 @@ protected:
     void fallBackFromSignalColor();
     void fallBackDefaultColor();
 
-    float stableHue( float hue) const;
+    float stableHue(float hue) const;
 
 private:
     QColor m_signalColor;

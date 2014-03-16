@@ -18,7 +18,6 @@
 #define SOUNDMANAGER_H
 
 #include <QObject>
-#include <QMutex>
 #include <QString>
 #include <QList>
 #include <QHash>
@@ -87,13 +86,7 @@ class SoundManager : public QObject {
     int setConfig(SoundManagerConfig config);
     void checkConfig();
 
-    // Do all audio processing and prepare the output buffers for all devices
-    void prepareBuffer(const unsigned int iFramesPerBuffer);
-
-    // Requests a buffer in the proper format, if we're prepared to give one.
-    void pullBuffer(
-            const QList<AudioOutputBuffer>& outputs, CSAMPLE* outputBuffer,
-            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize);
+    void onDeviceOutputCallback(const unsigned int iFramesPerBuffer);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
@@ -127,7 +120,7 @@ class SoundManager : public QObject {
 #endif
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
-    QHash<AudioInput, CSAMPLE*> m_inputBuffers;
+    QList<CSAMPLE*> m_inputBuffers;
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;
@@ -137,7 +130,6 @@ class SoundManager : public QObject {
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
-    CSAMPLE* m_pDownmixBuffer;
 };
 
 #endif

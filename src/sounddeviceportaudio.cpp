@@ -342,7 +342,8 @@ void SoundDevicePortAudio::writeProcess() {
                     m_pOutputBufferReadFrame = 0;
                 }
                 // Fetch fresh samples and write to the second half of the output buffer
-                m_pSoundManager->pullBuffer(m_audioOutputs, getOutputBufferFrame(m_framesPerBuffer), m_framesPerBuffer,
+                composeOutputBuffer(getOutputBufferFrame(m_framesPerBuffer),
+                        m_framesPerBuffer,
                         static_cast<unsigned int>(m_outputParams.channelCount));
                 int framesCountWrite = qMin(writeAvailable, (int)(m_framesPerBuffer * 2 - m_pOutputBufferReadFrame));
                 PaError err = Pa_WriteStream(pStream, getOutputBufferFrame(m_pOutputBufferReadFrame), framesCountWrite);
@@ -423,7 +424,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
 
     if (m_pSoundManager->isDeviceClkRef(this)) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare " + getInternalName());
-        m_pSoundManager->prepareBuffer(framesPerBuffer);
+        m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }
 
     if (output) {
@@ -435,8 +436,8 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             return paContinue;
         }
 
-        m_pSoundManager->pullBuffer(m_audioOutputs, output, framesPerBuffer,
-                static_cast<unsigned int>(m_outputParams.channelCount));
+        composeOutputBuffer(output, framesPerBuffer, static_cast<unsigned int>(
+            m_outputParams.channelCount));
     }
 
     m_pSoundManager->writeProcess();
