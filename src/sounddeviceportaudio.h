@@ -57,6 +57,9 @@ class SoundDevicePortAudio : public SoundDevice {
     }
 
   private:
+
+    inline CSAMPLE* getOutputBufferFrame(unsigned int frame) { return &m_pOutputBuffer[m_outputParams.channelCount * frame]; };
+
     // PortAudio stream for this device.
     PaStream *m_pStream;
     // PortAudio device index for this device.
@@ -68,12 +71,17 @@ class SoundDevicePortAudio : public SoundDevice {
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
     PaStreamParameters m_inputParams;
+    CSAMPLE* m_pOutputBuffer;
+    unsigned int m_pOutputBufferReadFrame;
+    CSAMPLE* m_pInputBuffer;
     // A string describing the last PortAudio error to occur.
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
     ControlObject* m_pMasterUnderflowCount;
     int m_underflowUpdateCount;
+
+
 };
 
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by

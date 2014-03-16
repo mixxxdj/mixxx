@@ -617,7 +617,7 @@ void SoundManager::writeProcess() {
     QListIterator<SoundDevice*> dev_it(m_devices);
     while (dev_it.hasNext()) {
         SoundDevice* device = dev_it.next();
-        if (device != m_pClkRefDevice) {
+        if (device && device != m_pClkRefDevice) {
             device->writeProcess();
         }
     }
@@ -627,7 +627,7 @@ void SoundManager::readProcess() {
     QListIterator<SoundDevice*> dev_it(m_devices);
     while (dev_it.hasNext()) {
         SoundDevice* device = dev_it.next();
-        if (device != m_pClkRefDevice) {
+        if (device && device != m_pClkRefDevice) {
             device->readProcess();
         }
     }
