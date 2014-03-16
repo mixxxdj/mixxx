@@ -18,7 +18,6 @@
 #define SOUNDMANAGER_H
 
 #include <QObject>
-#include <QMutex>
 #include <QString>
 #include <QList>
 #include <QHash>
@@ -127,7 +126,6 @@ class SoundManager : public QObject {
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;
-    QMutex m_requestBufferMutex;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;

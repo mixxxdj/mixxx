@@ -137,7 +137,7 @@ void SoundManager::closeDevices() {
     QListIterator<SoundDevice*> dev_it(m_devices);
 
     // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
-    // while callbacks are active. No need to lock m_requestBufferMutex here.
+    // while callbacks are active.
     while (dev_it.hasNext()) {
         dev_it.next()->close();
     }
@@ -485,7 +485,7 @@ void SoundManager::requestBuffer(
     //          << iFramesPerBuffer << iFrameSize;
 
     // When the clock reference device requests a buffer...
-    if (device == m_pClkRefDevice && m_requestBufferMutex.tryLock()) {
+    if (pDevice == m_pClkRefDevice) {
         // Only generate a new buffer for the clock reference card
         //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
 
@@ -493,7 +493,6 @@ void SoundManager::requestBuffer(
         // samples so multiply iFramesPerBuffer by 2.
         m_pMaster->process(iFramesPerBuffer*2);
 
-        m_requestBufferMutex.unlock();
     }
 
     // Reset sample for each open channel
