@@ -86,11 +86,8 @@ class SoundManager : public QObject {
     int setConfig(SoundManagerConfig config);
     void checkConfig();
 
-    // Requests a buffer in the proper format, if we're prepared to give one.
-    void requestBuffer(
-        const QList<AudioOutputBuffer>& outputs, float* outputBuffer,
-        const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-        SoundDevice* device);
+    void onDeviceOutputCallback(SoundDevice* pDevice,
+                                const unsigned long iFramesPerBuffer);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
@@ -132,7 +129,6 @@ class SoundManager : public QObject {
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
-    CSAMPLE* m_pDownmixBuffer;
 };
 
 #endif

@@ -45,8 +45,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
           m_jackSampleRate(-1),
 #endif
           m_pClkRefDevice(NULL),
-          m_pErrorDevice(NULL),
-          m_pDownmixBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+          m_pErrorDevice(NULL) {
 
 #ifdef __PORTAUDIO__
     qDebug() << "PortAudio version:" << Pa_GetVersion()
@@ -89,7 +88,6 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
-    SampleUtil::free(m_pDownmixBuffer);
 }
 
 QList<SoundDevice*> SoundManager::getDeviceList(
@@ -274,7 +272,7 @@ void SoundManager::queryDevices() {
 
 int SoundManager::setupDevices() {
     // NOTE(rryan): Big warning: This function is concurrent with calls to
-    // pushBuffer and requestBuffer until closeDevices() below.
+    // pushBuffer and onDeviceOutputCallback until closeDevices() below.
 
     qDebug() << "SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
@@ -296,8 +294,8 @@ int SoundManager::setupDevices() {
     m_config.filterInputs(this);
 
     // Close open devices. After this call we will not get any more
-    // requestBuffer() or pushBuffer() calls because all the SoundDevices are
-    // closed. closeDevices() blocks and can take a while.
+    // onDeviceOutputCallback() or pushBuffer() calls because all the
+    // SoundDevices are closed. closeDevices() blocks and can take a while.
     closeDevices();
 
     // NOTE(rryan): Documenting for future people touching this class. If you
@@ -477,13 +475,9 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::requestBuffer(
-    const QList<AudioOutputBuffer>& outputs, float* outputBuffer,
-    const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-    SoundDevice* device) {
-    // qDebug() << "SoundManager::requestBuffer()" << device->getInternalName()
-    //          << iFramesPerBuffer << iFrameSize;
-
+void SoundManager::onDeviceOutputCallback(SoundDevice* pDevice,
+                                          const unsigned long iFramesPerBuffer) {
+    //qDebug() << pDevice->getInternalName() << "onDeviceOutputCallback";
     // When the clock reference device requests a buffer...
     if (pDevice == m_pClkRefDevice) {
         // Only generate a new buffer for the clock reference card
@@ -492,54 +486,6 @@ void SoundManager::requestBuffer(
         // Produce a block of samples for output. EngineMaster expects stereo
         // samples so multiply iFramesPerBuffer by 2.
         m_pMaster->process(iFramesPerBuffer*2);
-
-    }
-
-    // Reset sample for each open channel
-    memset(outputBuffer, 0, iFramesPerBuffer * iFrameSize * sizeof(*outputBuffer));
-
-    // Interlace Audio data onto portaudio buffer.  We iterate through the
-    // source list to find out what goes in the buffer data is interlaced in
-    // the order of the list
-
-    for (QList<AudioOutputBuffer>::const_iterator i = outputs.begin(),
-                 e = outputs.end(); i != e; ++i) {
-        const AudioOutputBuffer& out = *i;
-
-        const ChannelGroup outChans = out.getChannelGroup();
-        const int iChannelCount = outChans.getChannelCount();
-        const int iChannelBase = outChans.getChannelBase();
-
-        // buffer is always !NULL
-        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
-
-        // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
-        // output then we need to downsample.
-        if (iChannelCount == 1) {
-            for (unsigned int i = 0; i < iFramesPerBuffer; ++i) {
-                m_pDownmixBuffer[i] = (pAudioOutputBuffer[i*2] +
-                                       pAudioOutputBuffer[i*2 + 1]) / 2.0f;
-            }
-            pAudioOutputBuffer = m_pDownmixBuffer;
-        }
-
-        for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
-            // iFrameBase is the "base sample" in a frame (ie. the first
-            // sample in a frame)
-            const unsigned int iFrameBase = iFrameNo * iFrameSize;
-            const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
-
-            // this will make sure a sample from each channel is copied
-            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                outputBuffer[iFrameBase + iChannelBase + iChannel] =
-                        pAudioOutputBuffer[iLocalFrameBase + iChannel];
-
-                // Input audio pass-through (useful for debugging)
-                //if (in)
-                //    output[iFrameBase + src.channelBase + iChannel] =
-                //    in[iFrameBase + src.channelBase + iChannel];
-            }
-        }
     }
 }
 

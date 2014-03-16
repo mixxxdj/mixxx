@@ -67,7 +67,13 @@ class SoundDevice {
     bool operator==(const SoundDevice &other) const;
     bool operator==(const QString &other) const;
 
+    void onOutputBuffersReady(const unsigned long iFramesPerBuffer);
+
   protected:
+    void composeOutputBuffer(float* outputBuffer,
+                             const unsigned long iFramesPerBuffer,
+                             const unsigned int iFrameSize);
+
     ConfigObject<ConfigValue> *m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
     SoundManager* m_pSoundManager;
@@ -86,6 +92,7 @@ class SoundDevice {
     unsigned int m_framesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
+    CSAMPLE* m_pDownmixBuffer;
 };
 
 #endif
