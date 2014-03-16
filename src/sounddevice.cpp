@@ -34,12 +34,10 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
           m_iNumInputChannels(2),
           m_dSampleRate(44100.0),
           m_hostAPI("Unknown API"),
-          m_framesPerBuffer(0),
-          m_pDownmixBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+          m_framesPerBuffer(0) {
 }
 
 SoundDevice::~SoundDevice() {
-    SampleUtil::free(m_pDownmixBuffer);
 }
 
 QString SoundDevice::getDisplayName() const {
@@ -124,15 +122,15 @@ bool SoundDevice::operator==(const QString &other) const {
     return getInternalName() == other;
 }
 
-void SoundDevice::composeOutputBuffer(float* outputBuffer,
+void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
                                       const unsigned long iFramesPerBuffer,
                                       const unsigned int iFrameSize) {
-    // qDebug() << "SoundManager::composeOutputBuffer()"
-    //          << device->getInternalName()
-    //          << iFramesPerBuffer << iFrameSize;
+    //qDebug() << "SoundDevice::composeOutputBuffer()"
+    //         << device->getInternalName()
+    //         << iFramesPerBuffer << iFrameSize;
 
     // Reset sample for each open channel
-    memset(outputBuffer, 0, iFramesPerBuffer * iFrameSize * sizeof(*outputBuffer));
+    SampleUtil::clear(outputBuffer, iFramesPerBuffer * iFrameSize);
 
     // Interlace Audio data onto portaudio buffer.  We iterate through the
     // source list to find out what goes in the buffer data is interlaced in
@@ -148,32 +146,36 @@ void SoundDevice::composeOutputBuffer(float* outputBuffer,
 
         const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
 
-        // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
-        // output then we need to downsample.
         if (iChannelCount == 1) {
-            for (unsigned int i = 0; i < iFramesPerBuffer; ++i) {
-                m_pDownmixBuffer[i] = (pAudioOutputBuffer[i*2] +
-                                       pAudioOutputBuffer[i*2 + 1]) / 2.0f;
+            // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
+            // output then we need to downsample.
+            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                outputBuffer[iFrameBase + iChannelBase] =
+                        (pAudioOutputBuffer[iFrameNo*2] +
+                                pAudioOutputBuffer[iFrameNo*2 + 1]) / 2.0f;
             }
-            pAudioOutputBuffer = m_pDownmixBuffer;
-        }
+        } else {
+            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
 
-        for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
-            // iFrameBase is the "base sample" in a frame (ie. the first
-            // sample in a frame)
-            const unsigned int iFrameBase = iFrameNo * iFrameSize;
-            const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
+                    outputBuffer[iFrameBase + iChannelBase + iChannel] =
+                            pAudioOutputBuffer[iLocalFrameBase + iChannel];
 
-            // this will make sure a sample from each channel is copied
-            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                outputBuffer[iFrameBase + iChannelBase + iChannel] =
-                        pAudioOutputBuffer[iLocalFrameBase + iChannel];
-
-                // Input audio pass-through (useful for debugging)
-                //if (in)
-                //    output[iFrameBase + src.channelBase + iChannel] =
-                //    in[iFrameBase + src.channelBase + iChannel];
+                    // Input audio pass-through (useful for debugging)
+                    //if (in)
+                    //    output[iFrameBase + src.channelBase + iChannel] =
+                    //    in[iFrameBase + src.channelBase + iChannel];
+                }
             }
         }
     }
 }
+
