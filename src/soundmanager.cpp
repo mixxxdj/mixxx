@@ -169,11 +169,10 @@ void SoundManager::closeDevices() {
         }
     }
 
-    foreach (AudioInput in, m_inputBuffers.keys()) {
-        CSAMPLE* buffer = m_inputBuffers.value(in);
-        if (buffer != NULL) {
-            m_inputBuffers.insert(in, NULL);
-            SampleUtil::free(buffer);
+    while (!m_inputBuffers.isEmpty()) {
+        CSAMPLE* pBuffer = m_inputBuffers.takeLast();
+        if (pBuffer != NULL) {
+            SampleUtil::free(pBuffer);
         }
     }
     m_inputBuffers.clear();
@@ -337,7 +336,7 @@ int SoundManager::setupDevices() {
                 goto closeAndError;
             }
 
-            m_inputBuffers.insert(in, aib.getBuffer());
+            m_inputBuffers.append(aib.getBuffer());
 
             // Check if any AudioDestination is registered for this AudioInput
             // and call the onInputConnected method.

@@ -123,7 +123,7 @@ class SoundManager : public QObject {
 #endif
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
-    QHash<AudioInput, CSAMPLE*> m_inputBuffers;
+    QList<CSAMPLE*> m_inputBuffers;
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;
