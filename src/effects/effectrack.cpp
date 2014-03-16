@@ -73,53 +73,39 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
 
 void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
-    EffectChainPointer pNextChain = pLoadedChain;
-    while (true) {
-        pNextChain = m_pEffectChainManager->getNextEffectChain(pNextChain);
-
-        if (!pNextChain) {
-            break;
-        }
-
-        // No next chain available.
-        if (pNextChain == pLoadedChain) {
-            pNextChain = EffectChainPointer();
-            break;
-        }
-
-        // Don't load chains that are already loaded.
-        if (pNextChain->enabled()) {
-            continue;
-        }
-
-        break;
+    if (pLoadedChain) {
+        // TODO(rryan) GC pLoadedChain.
+        pLoadedChain->removeFromEngine();
+        pLoadedChain = pLoadedChain->prototype();
     }
+
+    EffectChainPointer pNextChain = m_pEffectChainManager->getNextEffectChain(
+        pLoadedChain);
+
+    pNextChain = EffectChain::clone(pNextChain);
+    if (pNextChain) {
+        pNextChain->addToEngine();
+    }
+
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
 }
 
 
 void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
-    EffectChainPointer pPrevChain = pLoadedChain;
-    while (true) {
-        pPrevChain = m_pEffectChainManager->getPrevEffectChain(pPrevChain);
-
-        if (!pPrevChain) {
-            break;
-        }
-
-        // No prev chain available.
-        if (pPrevChain == pLoadedChain) {
-            pPrevChain = EffectChainPointer();
-            break;
-        }
-
-        // Don't load chains that are already loaded.
-        if (pPrevChain->enabled()) {
-            continue;
-        }
-
-        break;
+    if (pLoadedChain) {
+        pLoadedChain->removeFromEngine();
+        // TODO(rryan) GC pLoadedChain.
+        pLoadedChain = pLoadedChain->prototype();
     }
+
+    EffectChainPointer pPrevChain = m_pEffectChainManager->getPrevEffectChain(
+        pLoadedChain);
+
+    pPrevChain = EffectChain::clone(pPrevChain);
+    if (pPrevChain) {
+        pPrevChain->addToEngine();
+    }
+
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
 }

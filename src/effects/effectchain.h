@@ -19,7 +19,8 @@ typedef QSharedPointer<EffectChain> EffectChainPointer;
 class EffectChain : public QObject {
     Q_OBJECT
   public:
-    EffectChain(EffectsManager* pEffectsManager, const QString& id);
+    EffectChain(EffectsManager* pEffectsManager, const QString& id,
+                EffectChainPointer prototype=EffectChainPointer());
     virtual ~EffectChain();
 
     void addToEngine();
@@ -27,7 +28,7 @@ class EffectChain : public QObject {
 
     // The ID of an EffectChain is a unique ID given to it to help associate it
     // with the preset from which it was loaded.
-    QString id() const;
+    const QString& id() const;
 
     // Whether the chain is enabled (loaded to a slot and eligible for
     // processing).
@@ -37,10 +38,13 @@ class EffectChain : public QObject {
     // Activates EffectChain processing for the provided group.
     void enableForGroup(const QString& group);
     bool enabledForGroup(const QString& group) const;
+    const QSet<QString>& enabledGroups() const;
     void disableForGroup(const QString& group);
 
+    EffectChainPointer prototype() const;
+
     // Get the human-readable name of the EffectChain
-    QString name() const;
+    const QString& name() const;
     void setName(const QString& name);
 
     // Get the human-readable description of the EffectChain
@@ -85,7 +89,7 @@ class EffectChain : public QObject {
     void addEffect(EffectPointer pEffect);
     void removeEffect(EffectPointer pEffect);
     EffectPointer getEffect(unsigned int i) const;
-    QList<EffectPointer> getEffects() const;
+    const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
 
     EngineEffectChain* getEngineEffectChain();
@@ -93,6 +97,7 @@ class EffectChain : public QObject {
     QDomElement toXML(QDomDocument* doc) const;
     static EffectChainPointer fromXML(EffectsManager* pEffectsManager,
                                       const QDomElement& element);
+    static EffectChainPointer clone(EffectChainPointer pChain);
 
   signals:
     // Signal that indicates that an effect has been added or removed.
@@ -116,6 +121,7 @@ class EffectChain : public QObject {
     void sendParameterUpdate();
 
     EffectsManager* m_pEffectsManager;
+    EffectChainPointer m_pPrototype;
 
     bool m_bEnabled;
     QString m_id;

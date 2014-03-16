@@ -113,7 +113,7 @@ void EffectChainSlot::slotChainGroupStatusChanged(const QString& group,
 void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
     qDebug() << debugString() << "slotChainEffectsChanged";
     if (m_pEffectChain) {
-        QList<EffectPointer> effects = m_pEffectChain->getEffects();
+        QList<EffectPointer> effects = m_pEffectChain->effects();
         while (effects.size() > m_slots.size()) {
             addEffectSlot();
         }

@@ -6,9 +6,11 @@
 #include "sampleutil.h"
 #include "xmlparse.h"
 
-EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id)
+EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
+                         EffectChainPointer pPrototype)
         : QObject(pEffectsManager),
           m_pEffectsManager(pEffectsManager),
+          m_pPrototype(pPrototype),
           m_bEnabled(false),
           m_id(id),
           m_name(""),
@@ -50,11 +52,38 @@ void EffectChain::removeFromEngine() {
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-QString EffectChain::id() const {
+// static
+EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
+    if (!pChain) {
+        return EffectChainPointer();
+    }
+
+    EffectChain* pClone = new EffectChain(
+        pChain->m_pEffectsManager, pChain->id(), pChain);
+    pClone->setEnabled(pChain->enabled());
+    pClone->setName(pChain->name());
+    pClone->setParameter(pChain->parameter());
+    pClone->setMix(pChain->mix());
+    foreach (const QString& group, pChain->enabledGroups()) {
+        pClone->enableForGroup(group);
+    }
+    foreach (EffectPointer pEffect, pChain->effects()) {
+        EffectPointer pClonedEffect = pChain->m_pEffectsManager
+                ->instantiateEffect(pEffect->getManifest().id());
+        pClone->addEffect(pClonedEffect);
+    }
+    return EffectChainPointer(pClone);
+}
+
+EffectChainPointer EffectChain::prototype() const {
+    return m_pPrototype;
+}
+
+const QString& EffectChain::id() const {
     return m_id;
 }
 
-QString EffectChain::name() const {
+const QString& EffectChain::name() const {
     return m_name;
 }
 
@@ -98,6 +127,10 @@ void EffectChain::enableForGroup(const QString& group) {
 
 bool EffectChain::enabledForGroup(const QString& group) const {
     return m_enabledGroups.contains(group);
+}
+
+const QSet<QString>& EffectChain::enabledGroups() const {
+    return m_enabledGroups;
 }
 
 void EffectChain::disableForGroup(const QString& group) {
@@ -167,7 +200,7 @@ unsigned int EffectChain::numEffects() const {
     return m_effects.size();
 }
 
-QList<EffectPointer> EffectChain::getEffects() const {
+const QList<EffectPointer>& EffectChain::effects() const {
     return m_effects;
 }
 
