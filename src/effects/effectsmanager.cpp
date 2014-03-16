@@ -44,6 +44,10 @@ void EffectsManager::registerGroup(const QString& group) {
     m_pEffectChainManager->registerGroup(group);
 }
 
+const QSet<QString>& EffectsManager::registeredGroups() const {
+    return m_pEffectChainManager->registeredGroups();
+}
+
 const QSet<QString> EffectsManager::getAvailableEffects() const {
     QSet<QString> availableEffects;
 

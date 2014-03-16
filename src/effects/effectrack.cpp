@@ -133,7 +133,6 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
         pNextChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
         pNextChain->updateEngineState();
     }
-
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
 }
 

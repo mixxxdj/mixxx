@@ -37,6 +37,8 @@ class MockEffectProcessor : public EffectProcessor {
     MOCK_METHOD4(process, void(const QString& group, const CSAMPLE* pInput,
                                CSAMPLE* pOutput,
                                const unsigned int numSamples));
+
+    MOCK_METHOD1(initialize, void(const QSet<QString>& registeredGroups));
 };
 
 class MockEffectInstantiator : public EffectInstantiator {

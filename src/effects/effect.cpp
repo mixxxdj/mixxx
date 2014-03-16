@@ -13,7 +13,9 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         : QObject(pParent),
           m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
-          m_pEngineEffect(new EngineEffect(manifest, pInstantiator)),
+          m_pEngineEffect(new EngineEffect(manifest,
+                                           pEffectsManager->registeredGroups(),
+                                           pInstantiator)),
           m_bAddedToEngine(false) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(

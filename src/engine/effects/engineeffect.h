@@ -5,6 +5,7 @@
 #include <QString>
 #include <QList>
 #include <QVector>
+#include <QSet>
 #include <QtDebug>
 
 #include "effects/effectmanifest.h"
@@ -16,6 +17,7 @@
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(const EffectManifest& manifest,
+                 const QSet<QString>& registeredGroups,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 

@@ -12,6 +12,8 @@ class EffectProcessor {
   public:
     virtual ~EffectProcessor() { }
 
+    virtual void initialize(const QSet<QString>& registeredGroups) = 0;
+
     // Take a buffer of numSamples samples of audio from group, provided as
     // pInput, process the buffer according to Effect-specific logic, and output
     // it to the buffer pOutput. If pInput is equal to pOutput, then the
@@ -41,6 +43,16 @@ class GroupEffectProcessor : public EffectProcessor {
         }
     }
 
+    virtual void initialize(const QSet<QString>& registeredGroups) {
+        foreach (const QString& group, registeredGroups) {
+            T* pState = m_groupState.value(group, NULL);
+            if (pState == NULL) {
+                pState = new T();
+                m_groupState[group] = pState;
+            }
+        }
+    }
+
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples) {
@@ -48,6 +60,7 @@ class GroupEffectProcessor : public EffectProcessor {
         if (pState == NULL) {
             pState = new T();
             m_groupState[group] = pState;
+            qWarning() << "Allocated group state in the engine for" << group;
         }
         processGroup(group, pState, pInput, pOutput, numSamples);
     }

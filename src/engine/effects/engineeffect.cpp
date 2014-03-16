@@ -1,6 +1,7 @@
 #include "engine/effects/engineeffect.h"
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
+                           const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
           m_parameters(manifest.parameters().size()) {
@@ -15,6 +16,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
 
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, manifest);
+    m_pProcessor->initialize(registeredGroups);
 }
 
 EngineEffect::~EngineEffect() {

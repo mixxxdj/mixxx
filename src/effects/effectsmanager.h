@@ -39,6 +39,7 @@ class EffectsManager : public QObject {
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
     void registerGroup(const QString& group);
+    const QSet<QString>& registeredGroups() const;
 
     EffectRackPointer addEffectRack();
     EffectRackPointer getEffectRack(int rack);
