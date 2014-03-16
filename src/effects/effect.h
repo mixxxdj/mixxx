@@ -11,6 +11,7 @@
 #include "effects/effectinstantiator.h"
 
 class EffectProcessor;
+class EngineEffectChain;
 class EngineEffect;
 class EffectsManager;
 
@@ -36,8 +37,8 @@ class Effect : public QObject {
     EffectParameter* getParameterById(const QString& id) const;
     EngineEffect* getEngineEffect();
 
-    void addToEngine();
-    void removeFromEngine();
+    void addToEngine(EngineEffectChain* pChain, int iIndex);
+    void removeFromEngine(EngineEffectChain* pChain);
     void updateEngineState();
 
     QDomElement toXML(QDomDocument* doc) const;

@@ -3,6 +3,7 @@
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectsmanager.h"
+#include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
 #include "xmlparse.h"
 
@@ -35,14 +36,25 @@ Effect::~Effect() {
     }
 }
 
-void Effect::addToEngine() {
+void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
+    EffectsRequest* request = new EffectsRequest();
+    request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
+    request->pTargetChain = pChain;
+    request->AddEffectToChain.pEffect = m_pEngineEffect;
+    request->AddEffectToChain.iIndex = iIndex;
+    m_pEffectsManager->writeRequest(request);
     m_bAddedToEngine = true;
     foreach (EffectParameter* pParameter, m_parameters) {
         pParameter->addToEngine();
     }
 }
 
-void Effect::removeFromEngine() {
+void Effect::removeFromEngine(EngineEffectChain* pChain) {
+    EffectsRequest* request = new EffectsRequest();
+    request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
+    request->pTargetChain = pChain;
+    request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
+    m_pEffectsManager->writeRequest(request);
     m_bAddedToEngine = false;
     foreach (EffectParameter* pParameter, m_parameters) {
         pParameter->removeFromEngine();

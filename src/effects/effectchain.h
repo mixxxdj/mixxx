@@ -118,8 +118,6 @@ class EffectChain : public QObject {
         return QString("EffectChain(%1)").arg(m_id);
     }
 
-    void addEffectToEngine(EffectPointer pEffect, int iIndex);
-    void removeEffectFromEngine(EffectPointer pEffect);
     void sendParameterUpdate();
 
     EffectsManager* m_pEffectsManager;

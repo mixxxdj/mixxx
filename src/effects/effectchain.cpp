@@ -38,14 +38,14 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
     // Add all effects.
     for (int i = 0; i < m_effects.size(); ++i) {
         // Add the effect to the engine.
-        addEffectToEngine(m_effects[i], i);
+        m_effects[i]->addToEngine(m_pEngineEffectChain, i);
     }
 }
 
 void EffectChain::removeFromEngine(EngineEffectRack* pRack) {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
-        removeEffectFromEngine(m_effects[i]);
+        m_effects[i]->removeFromEngine(m_pEngineEffectChain);
     }
 
     EffectsRequest* pRequest = new EffectsRequest();
@@ -201,14 +201,18 @@ void EffectChain::addEffect(EffectPointer pEffect) {
         return;
     }
     m_effects.append(pEffect);
-    addEffectToEngine(pEffect, m_effects.size() - 1);
+    if (m_bAddedToEngine) {
+        pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
+    }
     emit(effectAdded());
 }
 
 void EffectChain::removeEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "removeEffect";
     if (m_effects.removeAll(pEffect) > 0) {
-        removeEffectFromEngine(pEffect);
+        if (m_bAddedToEngine) {
+            pEffect->removeFromEngine(m_pEngineEffectChain);
+        }
         emit(effectRemoved());
     }
 }
@@ -244,31 +248,6 @@ void EffectChain::sendParameterUpdate() {
     pRequest->SetEffectChainParameters.mix = m_dMix;
     pRequest->SetEffectChainParameters.parameter = m_dParameter;
     m_pEffectsManager->writeRequest(pRequest);
-}
-
-void EffectChain::addEffectToEngine(EffectPointer pEffect, int iIndex) {
-    if (!m_bAddedToEngine) {
-        return;
-    }
-    EffectsRequest* request = new EffectsRequest();
-    request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
-    request->pTargetChain = m_pEngineEffectChain;
-    request->AddEffectToChain.pEffect = pEffect->getEngineEffect();
-    request->AddEffectToChain.iIndex = iIndex;
-    m_pEffectsManager->writeRequest(request);
-    pEffect->addToEngine();
-}
-
-void EffectChain::removeEffectFromEngine(EffectPointer pEffect) {
-    if (!m_bAddedToEngine) {
-        return;
-    }
-    EffectsRequest* request = new EffectsRequest();
-    request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
-    request->pTargetChain = m_pEngineEffectChain;
-    request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
-    m_pEffectsManager->writeRequest(request);
-    pEffect->removeFromEngine();
 }
 
 QDomElement EffectChain::toXML(QDomDocument* doc) const {
