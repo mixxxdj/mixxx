@@ -1,5 +1,6 @@
 #include "engine/effects/engineeffectsmanager.h"
 
+#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
 
@@ -16,10 +17,41 @@ void EngineEffectsManager::onCallbackStart() {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
-            case EffectsRequest::ADD_EFFECT_CHAIN:
-            case EffectsRequest::REMOVE_EFFECT_CHAIN:
+            case EffectsRequest::ADD_EFFECT_RACK:
+            case EffectsRequest::REMOVE_EFFECT_RACK:
                 if (processEffectsRequest(*request, m_pResponsePipe.data())) {
                     processed = true;
+                }
+                break;
+            case EffectsRequest::ADD_CHAIN_TO_RACK:
+            case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
+                if (!m_racks.contains(request->pTargetRack)) {
+                    qDebug() << debugString()
+                             << "WARNING: message for unloaded rack"
+                             << request->pTargetRack;
+                    response.success = false;
+                    response.status = EffectsResponse::NO_SUCH_RACK;
+                } else {
+                    processed = request->pTargetRack->processEffectsRequest(
+                        *request, m_pResponsePipe.data());
+
+                    if (processed) {
+                        // When an effect-chain becomes active (part of a rack), keep
+                        // it in our master list so that we can respond to
+                        // requests about it.
+                        if (request->type == EffectsRequest::ADD_CHAIN_TO_RACK) {
+                            m_chains.append(request->AddChainToRack.pChain);
+                        } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+                            m_chains.removeAll(request->RemoveChainFromRack.pChain);
+                        }
+                    } else {
+                        if (!processed) {
+                            // If we got here, the message was not handled for
+                            // an unknown reason.
+                            response.success = false;
+                            response.status = EffectsResponse::INVALID_REQUEST;
+                        }
+                    }
                 }
                 break;
             case EffectsRequest::ADD_EFFECT_TO_CHAIN:
@@ -90,38 +122,38 @@ void EngineEffectsManager::onCallbackStart() {
 void EngineEffectsManager::process(const QString& group,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
                                    const unsigned int numSamples) {
-    foreach (EngineEffectChain* pChain, m_chains) {
-        pChain->process(group, pInput, pOutput, numSamples);
+    foreach (EngineEffectRack* pRack, m_racks) {
+        pRack->process(group, pInput, pOutput, numSamples);
     }
 }
 
-bool EngineEffectsManager::addEffectChain(EngineEffectChain* pChain) {
-    if (m_chains.contains(pChain)) {
-        qDebug() << debugString() << "WARNING: EffectChain already added to EngineEffectsManager:"
-                 << pChain->id();
+bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack) {
+    if (m_racks.contains(pRack)) {
+        qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
+                 << pRack->number();
         return false;
     }
-    m_chains.append(pChain);
+    m_racks.append(pRack);
     return true;
 }
 
-bool EngineEffectsManager::removeEffectChain(EngineEffectChain* pChain) {
-    return m_chains.removeAll(pChain) > 0;
+bool EngineEffectsManager::removeEffectRack(EngineEffectRack* pRack) {
+    return m_racks.removeAll(pRack) > 0;
 }
 
 bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
                                                  EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
-        case EffectsRequest::ADD_EFFECT_CHAIN:
-            qDebug() << debugString() << "ADD_EFFECT_CHAIN"
-                     << message.AddEffectChain.pChain;
-            response.success = addEffectChain(message.AddEffectChain.pChain);
+        case EffectsRequest::ADD_EFFECT_RACK:
+            qDebug() << debugString() << "ADD_EFFECT_RACK"
+                     << message.AddEffectRack.pRack;
+            response.success = addEffectRack(message.AddEffectRack.pRack);
             break;
-        case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            qDebug() << debugString() << "REMOVE_EFFECT_CHAIN"
-                     << message.RemoveEffectChain.pChain;
-            response.success = removeEffectChain(message.RemoveEffectChain.pChain);
+        case EffectsRequest::REMOVE_EFFECT_RACK:
+            qDebug() << debugString() << "REMOVE_EFFECT_RACK"
+                     << message.RemoveEffectRack.pRack;
+            response.success = removeEffectRack(message.RemoveEffectRack.pRack);
             break;
         default:
             return false;

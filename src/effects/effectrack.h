@@ -8,6 +8,8 @@
 #include "controlobject.h"
 #include "effects/effectchainslot.h"
 
+class EngineEffectRack;
+class EffectsManager;
 class EffectChainManager;
 
 class EffectRack;
@@ -16,13 +18,18 @@ typedef QSharedPointer<EffectRack> EffectRackPointer;
 class EffectRack : public QObject {
     Q_OBJECT
   public:
-    EffectRack(EffectChainManager* pChainManager,
+    EffectRack(EffectsManager* pEffectsManager,
+               EffectChainManager* pChainManager,
                const unsigned int iRackNumber);
     virtual ~EffectRack();
 
     static QString formatGroupString(const unsigned int iRackNumber) {
         return QString("[EffectRack%1]").arg(iRackNumber);
     }
+
+    void addToEngine();
+    void removeFromEngine();
+    EngineEffectRack* getEngineEffectRack();
 
     void registerGroup(const QString& group);
     int numEffectChainSlots() const;
@@ -42,9 +49,11 @@ class EffectRack : public QObject {
     const unsigned int m_iRackNumber;
     const QString m_group;
 
+    EffectsManager* m_pEffectsManager;
     EffectChainManager* m_pEffectChainManager;
     QList<EffectChainSlotPointer> m_effectChainSlots;
     ControlObject m_controlClearRack;
+    EngineEffectRack* m_pEngineEffectRack;
 };
 
 

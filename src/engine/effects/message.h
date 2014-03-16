@@ -8,14 +8,19 @@
 #include "util/fifo.h"
 #include "effects/effectchain.h"
 
+class EngineEffectRack;
 class EngineEffectChain;
 class EngineEffect;
 
 struct EffectsRequest {
     enum MessageType {
         // Messages for EngineEffectsManager
-        ADD_EFFECT_CHAIN,
-        REMOVE_EFFECT_CHAIN,
+        ADD_EFFECT_RACK = 0,
+        REMOVE_EFFECT_RACK,
+
+        // Messages for EngineEffectRack
+        ADD_CHAIN_TO_RACK,
+        REMOVE_CHAIN_FROM_RACK,
 
         // Messages for EngineEffectChain
         SET_EFFECT_CHAIN_PARAMETERS,
@@ -34,11 +39,14 @@ struct EffectsRequest {
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
               request_id(-1) {
+        pTargetRack = NULL;
         pTargetChain = NULL;
         pTargetEffect = NULL;
 #define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
-        CLEAR_STRUCT(AddEffectChain);
-        CLEAR_STRUCT(RemoveEffectChain);
+        CLEAR_STRUCT(AddEffectRack);
+        CLEAR_STRUCT(RemoveEffectRack);
+        CLEAR_STRUCT(AddChainToRack);
+        CLEAR_STRUCT(RemoveChainFromRack);
         CLEAR_STRUCT(AddEffectToChain);
         CLEAR_STRUCT(RemoveEffectFromChain);
         CLEAR_STRUCT(SetEffectChainParameters);
@@ -51,6 +59,10 @@ struct EffectsRequest {
 
     // Target of the message.
     union {
+        // Used by:
+        // - ADD_CHAIN_TO_RACK
+        // - REMOVE_CHAIN_FROM_RACK
+        EngineEffectRack* pTargetRack;
         // Used by:
         // - ADD_EFFECT_TO_CHAIN
         // - REMOVE_EFFECT_FROM_CHAIN
@@ -66,11 +78,18 @@ struct EffectsRequest {
     // Message-specific data.
     union {
         struct {
-            EngineEffectChain* pChain;
-        } AddEffectChain;
+            EngineEffectRack* pRack;
+        } AddEffectRack;
+        struct {
+            EngineEffectRack* pRack;
+        } RemoveEffectRack;
         struct {
             EngineEffectChain* pChain;
-        } RemoveEffectChain;
+            int iIndex;
+        } AddChainToRack;
+        struct {
+            EngineEffectChain* pChain;
+        } RemoveChainFromRack;
         struct {
             EngineEffect* pEffect;
             int iIndex;
@@ -107,6 +126,7 @@ struct EffectsResponse {
     enum StatusCode {
         OK,
         UNHANDLED_MESSAGE_TYPE,
+        NO_SUCH_RACK,
         NO_SUCH_CHAIN,
         NO_SUCH_EFFECT,
         NO_SUCH_PARAMETER,

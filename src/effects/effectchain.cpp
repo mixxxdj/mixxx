@@ -2,6 +2,7 @@
 #include "effects/effectsmanager.h"
 #include "effects/effectchainmanager.h"
 #include "engine/effects/message.h"
+#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
 #include "sampleutil.h"
 #include "xmlparse.h"
@@ -17,39 +18,55 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
           m_dParameter(0),
-          m_pEngineEffectChain(new EngineEffectChain(m_id)) {
+          m_pEngineEffectChain(new EngineEffectChain(m_id)),
+          m_bAddedToEngine(false) {
 }
 
 EffectChain::~EffectChain() {
     qDebug() << debugString() << "destroyed";
 }
 
-void EffectChain::addToEngine() {
+void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::ADD_EFFECT_CHAIN;
-    pRequest->AddEffectChain.pChain = getEngineEffectChain();
+    pRequest->type = EffectsRequest::ADD_CHAIN_TO_RACK;
+    pRequest->pTargetRack = pRack;
+    pRequest->AddChainToRack.pChain = m_pEngineEffectChain;
+    pRequest->AddChainToRack.iIndex = iIndex;
     m_pEffectsManager->writeRequest(pRequest);
+    m_bAddedToEngine = true;
 
     // Add all effects.
     for (int i = 0; i < m_effects.size(); ++i) {
-        EffectPointer pEffect = m_effects[i];
         // Add the effect to the engine.
-        addEffectToEngine(pEffect, i);
-        // Update its parameters in the engine.
-        pEffect->updateEngineState();
+        addEffectToEngine(m_effects[i], i);
     }
 }
 
-void EffectChain::removeFromEngine() {
+void EffectChain::removeFromEngine(EngineEffectRack* pRack) {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
         removeEffectFromEngine(m_effects[i]);
     }
 
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::REMOVE_EFFECT_CHAIN;
-    pRequest->RemoveEffectChain.pChain = getEngineEffectChain();
+    pRequest->type = EffectsRequest::REMOVE_CHAIN_FROM_RACK;
+    pRequest->pTargetRack = pRack;
+    pRequest->RemoveChainFromRack.pChain = m_pEngineEffectChain;
     m_pEffectsManager->writeRequest(pRequest);
+    m_bAddedToEngine = false;
+}
+
+void EffectChain::updateEngineState() {
+    if (!m_bAddedToEngine) {
+        return;
+    }
+    // Update chain parameters in the engine.
+    sendParameterUpdate();
+    for (int i = 0; i < m_effects.size(); ++i) {
+        EffectPointer pEffect = m_effects[i];
+        // Update effect parameters in the engine.
+        pEffect->updateEngineState();
+    }
 }
 
 // static
@@ -216,6 +233,9 @@ EngineEffectChain* EffectChain::getEngineEffectChain() {
 }
 
 void EffectChain::sendParameterUpdate() {
+    if (!m_bAddedToEngine) {
+        return;
+    }
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
     pRequest->pTargetChain = m_pEngineEffectChain;
@@ -227,20 +247,28 @@ void EffectChain::sendParameterUpdate() {
 }
 
 void EffectChain::addEffectToEngine(EffectPointer pEffect, int iIndex) {
+    if (!m_bAddedToEngine) {
+        return;
+    }
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
     request->pTargetChain = m_pEngineEffectChain;
     request->AddEffectToChain.pEffect = pEffect->getEngineEffect();
     request->AddEffectToChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
+    pEffect->addToEngine();
 }
 
 void EffectChain::removeEffectFromEngine(EffectPointer pEffect) {
+    if (!m_bAddedToEngine) {
+        return;
+    }
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
     request->pTargetChain = m_pEngineEffectChain;
     request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
     m_pEffectsManager->writeRequest(request);
+    pEffect->removeFromEngine();
 }
 
 QDomElement EffectChain::toXML(QDomDocument* doc) const {

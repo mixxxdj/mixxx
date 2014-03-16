@@ -1,18 +1,64 @@
 #include "effects/effectrack.h"
 
+#include "effects/effectsmanager.h"
 #include "effects/effectchainmanager.h"
+#include "engine/effects/engineeffectrack.h"
 
-EffectRack::EffectRack(EffectChainManager* pEffectChainManager,
+EffectRack::EffectRack(EffectsManager* pEffectsManager,
+                       EffectChainManager* pEffectChainManager,
                        const unsigned int iRackNumber)
         : m_iRackNumber(iRackNumber),
           m_group(formatGroupString(m_iRackNumber)),
+          m_pEffectsManager(pEffectsManager),
           m_pEffectChainManager(pEffectChainManager),
-          m_controlClearRack(ConfigKey(m_group, "clear")) {
+          m_controlClearRack(ConfigKey(m_group, "clear")),
+          m_pEngineEffectRack(new EngineEffectRack(iRackNumber)) {
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
+    addToEngine();
 }
 
 EffectRack::~EffectRack() {
+    removeFromEngine();
+}
+
+EngineEffectRack* EffectRack::getEngineEffectRack() {
+    return m_pEngineEffectRack;
+}
+
+void EffectRack::addToEngine() {
+    EffectsRequest* pRequest = new EffectsRequest();
+    pRequest->type = EffectsRequest::ADD_EFFECT_RACK;
+    pRequest->AddEffectRack.pRack = m_pEngineEffectRack;
+    m_pEffectsManager->writeRequest(pRequest);
+
+    // Add all effect chains.
+    for (int i = 0; i < m_effectChainSlots.size(); ++i) {
+        EffectChainSlotPointer pSlot = m_effectChainSlots[i];
+        EffectChainPointer pChain = pSlot->getEffectChain();
+        if (pChain) {
+            // Add the effect to the engine.
+            pChain->addToEngine(m_pEngineEffectRack, i);
+            // Update its parameters in the engine.
+            pChain->updateEngineState();
+        }
+    }
+}
+
+void EffectRack::removeFromEngine() {
+    // Order doesn't matter when removing.
+    for (int i = 0; i < m_effectChainSlots.size(); ++i) {
+        EffectChainSlotPointer pSlot = m_effectChainSlots[i];
+        EffectChainPointer pChain = pSlot->getEffectChain();
+        if (pChain) {
+            pChain->removeFromEngine(m_pEngineEffectRack);
+        }
+    }
+
+    EffectsRequest* pRequest = new EffectsRequest();
+    pRequest->type = EffectsRequest::REMOVE_EFFECT_RACK;
+    pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
+    m_pEffectsManager->writeRequest(pRequest);
 }
 
 void EffectRack::registerGroup(const QString& group) {
@@ -75,7 +121,7 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
     if (pLoadedChain) {
         // TODO(rryan) GC pLoadedChain.
-        pLoadedChain->removeFromEngine();
+        pLoadedChain->removeFromEngine(m_pEngineEffectRack);
         pLoadedChain = pLoadedChain->prototype();
     }
 
@@ -84,7 +130,8 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
 
     pNextChain = EffectChain::clone(pNextChain);
     if (pNextChain) {
-        pNextChain->addToEngine();
+        pNextChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
+        pNextChain->updateEngineState();
     }
 
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
@@ -94,7 +141,7 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
 void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
     if (pLoadedChain) {
-        pLoadedChain->removeFromEngine();
+        pLoadedChain->removeFromEngine(m_pEngineEffectRack);
         // TODO(rryan) GC pLoadedChain.
         pLoadedChain = pLoadedChain->prototype();
     }
@@ -104,8 +151,8 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
 
     pPrevChain = EffectChain::clone(pPrevChain);
     if (pPrevChain) {
-        pPrevChain->addToEngine();
+        pPrevChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
+        pPrevChain->updateEngineState();
     }
-
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
 }

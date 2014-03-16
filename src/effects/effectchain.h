@@ -10,6 +10,7 @@
 #include "effects/effect.h"
 
 class EffectsManager;
+class EngineEffectRack;
 class EngineEffectChain;
 class EffectChain;
 typedef QSharedPointer<EffectChain> EffectChainPointer;
@@ -23,8 +24,9 @@ class EffectChain : public QObject {
                 EffectChainPointer prototype=EffectChainPointer());
     virtual ~EffectChain();
 
-    void addToEngine();
-    void removeFromEngine();
+    void addToEngine(EngineEffectRack* pRack, int iIndex);
+    void removeFromEngine(EngineEffectRack* pRack);
+    void updateEngineState();
 
     // The ID of an EffectChain is a unique ID given to it to help associate it
     // with the preset from which it was loaded.
@@ -134,6 +136,7 @@ class EffectChain : public QObject {
     QSet<QString> m_enabledGroups;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
+    bool m_bAddedToEngine;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };

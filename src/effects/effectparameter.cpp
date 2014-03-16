@@ -10,7 +10,8 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
           m_pEffect(pEffect),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
-          m_parameter(parameter) {
+          m_parameter(parameter),
+          m_bAddedToEngine(false) {
     qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
              << m_parameter.id();
     switch (m_parameter.valueHint()) {
@@ -401,7 +402,18 @@ void EffectParameter::setMaximum(QVariant maximum) {
     updateEngineState();
 }
 
+void EffectParameter::addToEngine() {
+    m_bAddedToEngine = true;
+}
+
+void EffectParameter::removeFromEngine() {
+    m_bAddedToEngine = false;
+}
+
 void EffectParameter::updateEngineState() {
+    if (!m_bAddedToEngine) {
+        return;
+    }
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_PARAMETER;
     pRequest->pTargetEffect = m_pEffect->getEngineEffect();

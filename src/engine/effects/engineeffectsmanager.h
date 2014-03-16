@@ -7,7 +7,9 @@
 #include "util/fifo.h"
 #include "engine/effects/message.h"
 
+class EngineEffectRack;
 class EngineEffectChain;
+class EngineEffect;
 
 class EngineEffectsManager : public EffectsRequestHandler {
   public:
@@ -36,10 +38,11 @@ class EngineEffectsManager : public EffectsRequestHandler {
         return QString("EngineEffectsManager");
     }
 
-    bool addEffectChain(EngineEffectChain* pChain);
-    bool removeEffectChain(EngineEffectChain* pChain);
+    bool addEffectRack(EngineEffectRack* pRack);
+    bool removeEffectRack(EngineEffectRack* pRack);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
+    QList<EngineEffectRack*> m_racks;
     QList<EngineEffectChain*> m_chains;
     QList<EngineEffect*> m_effects;
 };

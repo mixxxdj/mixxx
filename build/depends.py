@@ -582,6 +582,7 @@ class MixxxCore(Feature):
                    "effects/native/reverb/Reverb.cc",
 
                    "engine/effects/engineeffectsmanager.cpp",
+                   "engine/effects/engineeffectrack.cpp",
                    "engine/effects/engineeffectchain.cpp",
                    "engine/effects/engineeffect.cpp",
 

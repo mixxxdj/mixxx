@@ -36,6 +36,8 @@ class Effect : public QObject {
     EffectParameter* getParameterById(const QString& id) const;
     EngineEffect* getEngineEffect();
 
+    void addToEngine();
+    void removeFromEngine();
     void updateEngineState();
 
     QDomElement toXML(QDomDocument* doc) const;
@@ -50,6 +52,7 @@ class Effect : public QObject {
     EffectsManager* m_pEffectsManager;
     EffectManifest m_manifest;
     EngineEffect* m_pEngineEffect;
+    bool m_bAddedToEngine;
     QList<EffectParameter*> m_parameters;
     QMap<QString, EffectParameter*> m_parametersById;
 

@@ -22,6 +22,9 @@ class EffectParameter : public QObject {
                     int iParameterNumber, const EffectManifestParameter& parameter);
     virtual ~EffectParameter();
 
+    void addToEngine();
+    void removeFromEngine();
+
     ///////////////////////////////////////////////////////////////////////////
     // Parameter Information
     ///////////////////////////////////////////////////////////////////////////
@@ -69,6 +72,7 @@ class EffectParameter : public QObject {
     QVariant m_maximum;
     QVariant m_default;
     QVariant m_value;
+    bool m_bAddedToEngine;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);
 };

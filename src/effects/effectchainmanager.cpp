@@ -34,7 +34,7 @@ void EffectChainManager::registerGroup(const QString& group) {
 
 EffectRackPointer EffectChainManager::addEffectRack() {
     EffectRackPointer pRack = EffectRackPointer(new EffectRack(
-        this, m_effectRacks.size()));
+        m_pEffectsManager, this, m_effectRacks.size()));
     m_effectRacks.append(pRack);
     return pRack;
 }

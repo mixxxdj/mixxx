@@ -12,7 +12,8 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         : QObject(pParent),
           m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
-          m_pEngineEffect(new EngineEffect(manifest, pInstantiator)) {
+          m_pEngineEffect(new EngineEffect(manifest, pInstantiator)),
+          m_bAddedToEngine(false) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
             this, pEffectsManager, m_parameters.size(), parameter);
@@ -34,7 +35,24 @@ Effect::~Effect() {
     }
 }
 
+void Effect::addToEngine() {
+    m_bAddedToEngine = true;
+    foreach (EffectParameter* pParameter, m_parameters) {
+        pParameter->addToEngine();
+    }
+}
+
+void Effect::removeFromEngine() {
+    m_bAddedToEngine = false;
+    foreach (EffectParameter* pParameter, m_parameters) {
+        pParameter->removeFromEngine();
+    }
+}
+
 void Effect::updateEngineState() {
+    if (!m_bAddedToEngine) {
+        return;
+    }
     foreach (EffectParameter* pParameter, m_parameters) {
         pParameter->updateEngineState();
     }
