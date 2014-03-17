@@ -34,7 +34,21 @@ class EffectManifestParameter {
         UNITS_SAMPLERATE, // fraction of the samplerate
     };
 
-    EffectManifestParameter() { }
+    enum LinkType {
+        LINK_NONE = 0,
+        LINK_LINKED,
+        LINK_INVERSE,
+        NUM_LINK_TYPES
+    };
+
+    EffectManifestParameter()
+            : m_controlHint(CONTROL_UNKNOWN),
+              m_valueHint(VALUE_UNKNOWN),
+              m_semanticHint(SEMANTIC_UNKNOWN),
+              m_unitsHint(UNITS_UNKNOWN),
+              m_linkHint(LINK_NONE) {
+    }
+
     virtual ~EffectManifestParameter() {
         qDebug() << debugString() << "destroyed";
     }
@@ -96,6 +110,13 @@ class EffectManifestParameter {
         m_unitsHint = unitsHint;
     }
 
+    virtual LinkType linkHint() const {
+        return m_linkHint;
+    }
+    virtual void setLinkHint(LinkType linkHint) {
+        m_linkHint = linkHint;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Value Settings
     ////////////////////////////////////////////////////////////////////////////////
@@ -143,6 +164,7 @@ class EffectManifestParameter {
     ValueHint m_valueHint;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
+    LinkType m_linkHint;
 
     QVariant m_default;
     QVariant m_minimum;
