@@ -169,6 +169,11 @@ double EffectChain::parameter() const {
 void EffectChain::setParameter(const double& dParameter) {
     m_dParameter = dParameter;
     sendParameterUpdate();
+
+    foreach (EffectPointer pEffect, m_effects) {
+        pEffect->onChainParameterChanged(m_dParameter);
+    }
+
     emit(parameterChanged(dParameter));
 }
 
@@ -201,6 +206,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
         return;
     }
     m_effects.append(pEffect);
+    pEffect->onChainParameterChanged(m_dParameter);
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
     }

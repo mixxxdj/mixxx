@@ -37,6 +37,8 @@ class Effect : public QObject {
     EffectParameter* getParameterById(const QString& id) const;
     EngineEffect* getEngineEffect();
 
+    void onChainParameterChanged(double chainParameter);
+
     void addToEngine(EngineEffectChain* pChain, int iIndex);
     void removeFromEngine(EngineEffectChain* pChain);
     void updateEngineState();

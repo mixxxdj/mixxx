@@ -84,6 +84,12 @@ unsigned int Effect::numParameters() const {
     return m_parameters.size();
 }
 
+void Effect::onChainParameterChanged(double chainParameter) {
+    foreach (EffectParameter* pParameter, m_parameters) {
+        pParameter->onChainParameterChanged(chainParameter);
+    }
+}
+
 EffectParameter* Effect::getParameterById(const QString& id) const {
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
     if (pParameter == NULL) {
