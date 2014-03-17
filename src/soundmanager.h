@@ -25,6 +25,7 @@
 #include "defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
+#include "util/fifo.h"
 
 class SoundDevice;
 class EngineMaster;
@@ -121,6 +122,8 @@ class SoundManager : public QObject {
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
+    QList<FIFO<CSAMPLE>* > m_outputFifos;
+
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;

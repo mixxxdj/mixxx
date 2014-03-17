@@ -34,10 +34,12 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
           m_iNumInputChannels(2),
           m_dSampleRate(44100.0),
           m_hostAPI("Unknown API"),
-          m_framesPerBuffer(0) {
+          m_framesPerBuffer(0),
+          m_pRenderBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
 }
 
 SoundDevice::~SoundDevice() {
+    SampleUtil::free(m_pRenderBuffer);
 }
 
 QString SoundDevice::getDisplayName() const {
@@ -122,12 +124,40 @@ bool SoundDevice::operator==(const QString &other) const {
     return getInternalName() == other;
 }
 
+void SoundDevice::onOutputBuffersReady(const unsigned long iFramesPerBuffer) {
+    // qDebug() << getInternalName() << "onOutputBuffersReady" << iFramesPerBuffer
+    //          << "outputs" << m_audioInputs.size();
+    for (QList<AudioOutputBuffer>::iterator it = m_audioOutputs.begin();
+         it != m_audioOutputs.end(); ++it) {
+        AudioOutputBuffer& buffer = *it;
+        const CSAMPLE* pBuffer = buffer.getBuffer();
+        FIFO<CSAMPLE>* pFifo = buffer.getFifo();
+
+        // All engine buffers are stereo.
+        int samplesToWrite = iFramesPerBuffer * 2;
+        int written = pFifo->write(pBuffer, samplesToWrite);
+
+        if (written != samplesToWrite) {
+            qWarning() << getInternalName()
+                       << "AudioOutputBuffer FIFO buffer overflow"
+                       << "wanted to write" << samplesToWrite
+                       << "but wrote" << written
+                       << "This device is lagging behind the clock reference device!";
+        }
+    }
+}
+
 void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
                                       const unsigned long iFramesPerBuffer,
                                       const unsigned int iFrameSize) {
     //qDebug() << "SoundDevice::composeOutputBuffer()"
     //         << device->getInternalName()
     //         << iFramesPerBuffer << iFrameSize;
+
+    // If we are the clock reference device then we are able to use audio
+    // buffers directly (since we know we are not concurrent with the engine
+    // processing). Otherwise, we must read from the AudioOutput FIFO.
+    bool isReferenceDevice = m_pSoundManager->isDeviceClkRef(this);
 
     // Reset sample for each open channel
     SampleUtil::clear(outputBuffer, iFramesPerBuffer * iFrameSize);
@@ -144,7 +174,37 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
         const int iChannelCount = outChans.getChannelCount();
         const int iChannelBase = outChans.getChannelBase();
 
-        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
+        const CSAMPLE* pAudioOutputBuffer = NULL;
+        if (isReferenceDevice) {
+            // If we are the reference device we can read the buffer directly
+            // because we know we are not concurrent with the engine processing.
+            pAudioOutputBuffer = out.getBuffer();
+        } else {
+            FIFO<CSAMPLE>* pFifo = out.getFifo();
+            // All buffers from the engine are stereo.
+            int samplesToRead = iFramesPerBuffer * 2;
+            memset(m_pRenderBuffer, 0, samplesToRead * sizeof(*m_pRenderBuffer));
+
+            int offset = 0;
+            int available = pFifo->readAvailable();
+
+            if (available < samplesToRead) {
+                qWarning() << getInternalName()
+                           << "AudioOutputBuffer FIFO buffer underflow"
+                           << "want" << samplesToRead
+                           << "available" << available
+                           << "This device is running faster than the clock reference device!";
+                offset = samplesToRead - available;
+                samplesToRead = available;
+            }
+
+            int samplesRead = pFifo->read(m_pRenderBuffer + offset, samplesToRead);
+            if (samplesRead < samplesToRead) {
+                // Should not happen. We already verified samplesToRead samples
+                // were available.
+            }
+            pAudioOutputBuffer = m_pRenderBuffer;
+        }
 
         if (iChannelCount == 1) {
             // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono

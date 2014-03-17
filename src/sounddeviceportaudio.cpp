@@ -451,7 +451,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
                                     m_inputParams.channelCount);
     }
 
-    m_pSoundManager->readProcess();
+    //m_pSoundManager->readProcess();
 
     if (m_pSoundManager->isDeviceClkRef(this)) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare " + getInternalName());
@@ -471,7 +471,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             m_outputParams.channelCount));
     }
 
-    m_pSoundManager->writeProcess();
+    //m_pSoundManager->writeProcess();
 
     return paContinue;
 }
