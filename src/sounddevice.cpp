@@ -35,17 +35,11 @@ SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
           m_dSampleRate(44100.0),
           m_hostAPI("Unknown API"),
           m_framesPerBuffer(0),
-          m_pRenderBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_pDownmixBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+          m_pRenderBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
 }
 
 SoundDevice::~SoundDevice() {
     SampleUtil::free(m_pRenderBuffer);
-    SampleUtil::free(m_pDownmixBuffer);
-}
-
-QString SoundDevice::getInternalName() const {
-    return m_strInternalName;
 }
 
 QString SoundDevice::getDisplayName() const {
@@ -77,7 +71,7 @@ void SoundDevice::setSampleRate(double sampleRate) {
 }
 
 void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
-    if (framesPerBuffer * 2 > (unsigned int) MAX_BUFFER_LEN) {
+    if (framesPerBuffer * 2 > MAX_BUFFER_LEN) {
         // framesPerBuffer * 2 because a frame will generally end up
         // being 2 samples and MAX_BUFFER_LEN is a number of samples
         // this isn't checked elsewhere, so...
@@ -153,12 +147,12 @@ void SoundDevice::onOutputBuffersReady(const unsigned long iFramesPerBuffer) {
     }
 }
 
-void SoundDevice::composeOutputBuffer(float* outputBuffer,
+void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
                                       const unsigned long iFramesPerBuffer,
                                       const unsigned int iFrameSize) {
-    // qDebug() << "SoundManager::composeOutputBuffer()"
-    //          << device->getInternalName()
-    //          << iFramesPerBuffer << iFrameSize;
+    //qDebug() << "SoundDevice::composeOutputBuffer()"
+    //         << device->getInternalName()
+    //         << iFramesPerBuffer << iFrameSize;
 
     // If we are the clock reference device then we are able to use audio
     // buffers directly (since we know we are not concurrent with the engine
@@ -166,7 +160,7 @@ void SoundDevice::composeOutputBuffer(float* outputBuffer,
     bool isReferenceDevice = m_pSoundManager->isDeviceClkRef(this);
 
     // Reset sample for each open channel
-    memset(outputBuffer, 0, iFramesPerBuffer * iFrameSize * sizeof(*outputBuffer));
+    SampleUtil::clear(outputBuffer, iFramesPerBuffer * iFrameSize);
 
     // Interlace Audio data onto portaudio buffer.  We iterate through the
     // source list to find out what goes in the buffer data is interlaced in
@@ -212,32 +206,36 @@ void SoundDevice::composeOutputBuffer(float* outputBuffer,
             pAudioOutputBuffer = m_pRenderBuffer;
         }
 
-        // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
-        // output then we need to downsample.
         if (iChannelCount == 1) {
-            for (unsigned int i = 0; i < iFramesPerBuffer; ++i) {
-                m_pDownmixBuffer[i] = (pAudioOutputBuffer[i*2] +
-                                       pAudioOutputBuffer[i*2 + 1]) / 2.0f;
+            // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
+            // output then we need to downsample.
+            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                outputBuffer[iFrameBase + iChannelBase] =
+                        (pAudioOutputBuffer[iFrameNo*2] +
+                                pAudioOutputBuffer[iFrameNo*2 + 1]) / 2.0f;
             }
-            pAudioOutputBuffer = m_pDownmixBuffer;
-        }
+        } else {
+            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
 
-        for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
-            // iFrameBase is the "base sample" in a frame (ie. the first
-            // sample in a frame)
-            const unsigned int iFrameBase = iFrameNo * iFrameSize;
-            const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
+                    outputBuffer[iFrameBase + iChannelBase + iChannel] =
+                            pAudioOutputBuffer[iLocalFrameBase + iChannel];
 
-            // this will make sure a sample from each channel is copied
-            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                outputBuffer[iFrameBase + iChannelBase + iChannel] =
-                        pAudioOutputBuffer[iLocalFrameBase + iChannel];
-
-                // Input audio pass-through (useful for debugging)
-                //if (in)
-                //    output[iFrameBase + src.channelBase + iChannel] =
-                //    in[iFrameBase + src.channelBase + iChannel];
+                    // Input audio pass-through (useful for debugging)
+                    //if (in)
+                    //    output[iFrameBase + src.channelBase + iChannel] =
+                    //    in[iFrameBase + src.channelBase + iChannel];
+                }
             }
         }
     }
 }
+

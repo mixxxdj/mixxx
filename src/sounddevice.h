@@ -41,14 +41,18 @@ class SoundDevice {
     SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
     virtual ~SoundDevice();
 
-    QString getInternalName() const;
+    inline QString getInternalName() const {
+        return m_strInternalName;
+    }
     QString getDisplayName() const;
     QString getHostAPI() const;
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open() = 0;
+    virtual int open(bool registerCallback) = 0;
     virtual int close() = 0;
+    virtual void readProcess() = 0;
+    virtual void writeProcess() = 0;
     virtual QString getError() const = 0;
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
@@ -70,7 +74,7 @@ class SoundDevice {
     void onOutputBuffersReady(const unsigned long iFramesPerBuffer);
 
   protected:
-    void composeOutputBuffer(float* outputBuffer,
+    void composeOutputBuffer(CSAMPLE* outputBuffer,
                              const unsigned long iFramesPerBuffer,
                              const unsigned int iFrameSize);
 
@@ -93,7 +97,6 @@ class SoundDevice {
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
     CSAMPLE* m_pRenderBuffer;
-    CSAMPLE* m_pDownmixBuffer;
 };
 
 #endif
