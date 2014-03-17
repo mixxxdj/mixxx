@@ -323,7 +323,7 @@ void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader &xml) {
 TreeItem* ITunesFeature::importLibrary() {
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowestPriority);
+    thisThread->setPriority(QThread::LowPriority);
 
     //Delete all table entries of iTunes feature
     ScopedTransaction transaction(m_database);

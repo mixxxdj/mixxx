@@ -54,7 +54,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_bBusOutputConnected[1] = false;
     m_bBusOutputConnected[2] = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
-    m_pWorkerScheduler->start();
+    m_pWorkerScheduler->start(QThread::HighPriority);
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);

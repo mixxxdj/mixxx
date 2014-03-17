@@ -141,9 +141,6 @@ void LibraryScanner::run() {
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
-    // Lower our priority to help not grind crappy computers.
-    setPriority(QThread::LowPriority);
-
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
     if (!m_database.isValid()) {
@@ -326,7 +323,7 @@ void LibraryScanner::scan(QWidget* parent) {
             this, SLOT(cancel()));
     connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
             m_pProgress, SLOT(slotUpdate(QString)));
-    start();
+    start(QThread::LowPriority);
 }
 
 void LibraryScanner::cancel() {

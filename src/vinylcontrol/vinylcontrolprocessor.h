@@ -34,6 +34,8 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     // Called from the main thread. Must only touch m_bReload;
     void requestReloadConfig();
 
+    bool deckConfigured(int index) const;
+
     FIFO<VinylSignalQualityReport>* getSignalQualityFifo() {
         return &m_signalQualityFifo;
     }
