@@ -49,7 +49,7 @@ class EffectParameterSlot : public QObject {
   private slots:
     // Solely for handling control changes
     void slotEnabled(double v);
-    void slotLinked(double v);
+    void slotLinkType(double v);
     void slotValue(double v);
     void slotValueNormalized(double v);
     void slotValueType(double v);
@@ -58,6 +58,8 @@ class EffectParameterSlot : public QObject {
     void slotValueMaximumLimit(double v);
     void slotValueMinimum(double v);
     void slotValueMinimumLimit(double v);
+
+    void slotParameterValueChanged(QVariant value);
 
   private:
     QString debugString() const {
@@ -80,7 +82,7 @@ class EffectParameterSlot : public QObject {
     ////////////////////////////////////////////////////////////////////////////////
 
     ControlObject* m_pControlEnabled;
-    ControlPushButton* m_pControlLinked;
+    ControlPushButton* m_pControlLinkType;
     ControlObject* m_pControlValue;
     ControlObject* m_pControlValueNormalized;
     ControlObject* m_pControlValueType;

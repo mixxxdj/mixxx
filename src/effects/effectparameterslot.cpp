@@ -21,8 +21,10 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent,
           m_pEffectParameter(NULL) {
     m_pControlEnabled = new ControlObject(
         ConfigKey(m_group, QString("enabled")));
-    m_pControlLinked = new ControlPushButton(
-        ConfigKey(m_group, QString("linked")));
+    m_pControlLinkType = new ControlPushButton(
+        ConfigKey(m_group, QString("link_type")));
+    m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlValue = new ControlObject(
         ConfigKey(m_group, QString("value")));
     m_pControlValueNormalized = new ControlPotmeter(
@@ -40,8 +42,8 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent,
     m_pControlValueMinimumLimit = new ControlObject(
         ConfigKey(m_group, QString("value_min_limit")));
 
-    connect(m_pControlLinked, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLinked(double)));
+    connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLinkType(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValue(double)));
     connect(m_pControlValueNormalized, SIGNAL(valueChanged(double)),
@@ -71,7 +73,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     m_pEffectParameter = NULL;
     m_pEffect.clear();
     delete m_pControlEnabled;
-    delete m_pControlLinked;
+    delete m_pControlLinkType;
     delete m_pControlValue;
     delete m_pControlValueNormalized;
     delete m_pControlValueType;
@@ -98,6 +100,7 @@ QString EffectParameterSlot::description() const {
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
+    clear();
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
@@ -133,22 +136,24 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             // TODO(rryan) expose this from EffectParameter
             m_pControlValueType->setAndConfirm(0);
             m_pControlValueDefault->setAndConfirm(dDefault);
-            // TODO(rryan): linking
-            m_pControlLinked->set(0.0);
-
             // Default loaded parameters to enabled and unlinked
             m_pControlEnabled->setAndConfirm(1.0);
-            m_pControlLinked->set(0.0);
+            m_pControlLinkType->set(m_pEffectParameter->getLinkType());
+
+            connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
+                    this, SLOT(slotParameterValueChanged(QVariant)));
         }
-    } else {
-        clear();
     }
     emit(updated());
 }
 
 void EffectParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
-    m_pEffectParameter = NULL;
+    if (m_pEffectParameter) {
+        m_pEffectParameter->disconnect(this);
+        m_pEffectParameter = NULL;
+    }
+
     m_pEffect.clear();
     m_pControlEnabled->setAndConfirm(0.0);
     m_pControlValue->set(0.0);
@@ -161,7 +166,7 @@ void EffectParameterSlot::clear() {
     m_pControlValueMaximumLimit->setAndConfirm(0.0);
     m_pControlValueMinimum->set(0.0);
     m_pControlValueMinimumLimit->setAndConfirm(0.0);
-    m_pControlLinked->set(0.0);
+    m_pControlLinkType->set(EffectManifestParameter::LINK_NONE);
     emit(updated());
 }
 
@@ -170,8 +175,12 @@ void EffectParameterSlot::slotEnabled(double v) {
     qDebug() << "WARNING: enabled is a read-only control.";
 }
 
-void EffectParameterSlot::slotLinked(double v) {
-    qDebug() << debugString() << "slotLinked" << v;
+void EffectParameterSlot::slotLinkType(double v) {
+    qDebug() << debugString() << "slotLinkType" << v;
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setLinkType(
+            static_cast<EffectManifestParameter::LinkType>(v));
+    }
 }
 
 void EffectParameterSlot::slotValue(double v) {
@@ -253,4 +262,20 @@ void EffectParameterSlot::slotValueMinimum(double v) {
 void EffectParameterSlot::slotValueMinimumLimit(double v) {
     qDebug() << debugString() << "slotValueMinimumLimit" << v;
     qDebug() << "WARNING: value_min_limit is a read-only control.";
+}
+
+void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
+    m_pControlValue->set(value.toDouble());
+
+    if (!m_pEffectParameter) {
+        return;
+    }
+
+    double dValue = value.toDouble();
+    double dMinimum = m_pEffectParameter->getMinimum().toDouble();
+    double dMaximum = m_pEffectParameter->getMaximum().toDouble();
+    if (dMaximum - dMinimum != 0.0) {
+        double dNormalized = (dValue - dMinimum) / (dMaximum - dMinimum);
+        m_pControlValueNormalized->set(dNormalized);
+    }
 }
