@@ -395,7 +395,7 @@ int SoundManager::setupDevices() {
         bool isOutput = mode.second;
         ++devicesAttempted;
         m_pErrorDevice = device;
-        err = device->open(true); // (pNewMasterClockRef == device);
+        err = device->open(pNewMasterClockRef == device);
         if (err != OK) {
             goto closeAndError;
         } else {

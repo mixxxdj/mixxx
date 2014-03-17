@@ -60,7 +60,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
 SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
-int SoundDevicePortAudio::open(bool registerCallback) {
+int SoundDevicePortAudio::open(bool isClkRefDevice) {
     qDebug() << "SoundDevicePortAudio::open()" << getInternalName();
     PaError err;
 
@@ -165,9 +165,10 @@ int SoundDevicePortAudio::open(bool registerCallback) {
 
     //Create the callback function pointer.
     PaStreamCallback* callback = NULL;
-    if (registerCallback) {
-        callback = paV19Callback;
+    if (isClkRefDevice) {
+        callback = paV19CallbackClkRef;
     } else {
+        callback = paV19Callback;
         if (m_outputParams.channelCount) {
             // PA allocates the double amount of buffer so we need it too;
             m_pOutputBuffer = SampleUtil::alloc(
@@ -239,14 +240,16 @@ int SoundDevicePortAudio::open(bool registerCallback) {
     double currentLatencyMSec = streamDetails->outputLatency * 1000;
     qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:" << currentLatencyMSec << "ms";
 
-    // Update the samplerate and latency ControlObjects, which allow the
-    // waveform view to properly correct for the latency.
-    ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
-    ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
-    ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
+    if (isClkRefDevice) {
+        // Update the samplerate and latency ControlObjects, which allow the
+        // waveform view to properly correct for the latency.
+        ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
+        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
 
-    if (m_pMasterUnderflowCount) {
-        m_pMasterUnderflowCount->set(0);
+        if (m_pMasterUnderflowCount) {
+            m_pMasterUnderflowCount->set(0);
+        }
     }
     m_pStream = pStream;
     return OK;
@@ -424,9 +427,48 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
         m_bSetThreadPriority = true;
     }
 
-    if (m_pSoundManager->isDeviceClkRef(this)) {
-        VisualPlayPosition::setTimeInfo(timeInfo);
+    //Note: Input is processed first so that any ControlObject changes made in
+    //      response to input are processed as soon as possible (that is, when
+    //      m_pSoundManager->requestBuffer() is called below.)
+
+    // Send audio from the soundcard's input off to the SoundManager...
+    if (in) {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
+        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
+                                    m_inputParams.channelCount);
     }
+
+    if (output) {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess output " + getInternalName());
+
+        if (m_outputParams.channelCount <= 0) {
+            qWarning() << "SoundDevicePortAudio::callbackProcess m_outputParams channel count is zero or less:" << m_outputParams.channelCount;
+            // Bail out.
+            return paContinue;
+        }
+
+        composeOutputBuffer(output, framesPerBuffer, static_cast<unsigned int>(
+            m_outputParams.channelCount));
+    }
+
+    return paContinue;
+}
+
+int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuffer,
+                                          CSAMPLE *output, const CSAMPLE *in,
+                                          const PaStreamCallbackTimeInfo *timeInfo,
+                                          PaStreamCallbackFlags statusFlags) {
+    Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
+
+    //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
+    // Turn on TimeCritical priority for the callback thread. If we are running
+    // in Linux userland, for example, this will have no effect.
+    if (!m_bSetThreadPriority) {
+        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
+        m_bSetThreadPriority = true;
+    }
+
+    VisualPlayPosition::setTimeInfo(timeInfo);
 
     if (!m_underflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
@@ -453,7 +495,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
 
     //m_pSoundManager->readProcess();
 
-    if (m_pSoundManager->isDeviceClkRef(this)) {
+    {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare " + getInternalName());
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }
@@ -482,5 +524,14 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   PaStreamCallbackFlags statusFlags,
                   void *soundDevice) {
     return ((SoundDevicePortAudio*)soundDevice)->callbackProcess((unsigned int)framesPerBuffer,
+            (CSAMPLE*)outputBuffer, (const CSAMPLE*)inputBuffer, timeInfo, statusFlags);
+}
+
+int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo *timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void *soundDevice) {
+    return ((SoundDevicePortAudio*)soundDevice)->callbackProcessClkRef((unsigned int)framesPerBuffer,
             (CSAMPLE*)outputBuffer, (const CSAMPLE*)inputBuffer, timeInfo, statusFlags);
 }

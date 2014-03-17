@@ -38,7 +38,7 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    virtual int open(bool registerCallback);
+    virtual int open(bool isClkRefDevice);
     virtual int close();
     virtual void readProcess();
     virtual void writeProcess();
@@ -47,6 +47,11 @@ class SoundDevicePortAudio : public SoundDevice {
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)
     int callbackProcess(const unsigned int framesPerBuffer,
+                        CSAMPLE *output, const CSAMPLE* in,
+                        const PaStreamCallbackTimeInfo *timeInfo,
+                        PaStreamCallbackFlags statusFlags);
+    // The same as above but dives the MixxEngine
+    int callbackProcessClkRef(const unsigned int framesPerBuffer,
                         CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
@@ -89,6 +94,12 @@ class SoundDevicePortAudio : public SoundDevice {
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by
 // PortAudio, which knows nothing about C++.
 int paV19Callback(const void* inputBuffer, void* outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo* timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void* soundDevice);
+
+int paV19CallbackClkRef(const void* inputBuffer, void* outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo* timeInfo,
                   PaStreamCallbackFlags statusFlags,
