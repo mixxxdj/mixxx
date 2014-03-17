@@ -504,13 +504,13 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMP
     // of them might potentially be owned by portaudio. Not freeing them means we leak
     // memory in certain cases -- bkgood
     if (iFrameSize == 1 && inputs.size() == 1 &&
-            inputs[0].getChannelGroup().getChannelCount() == 1) {
-        const AudioInputBuffer& in = inputs[0];
+            inputs.at(0).getChannelGroup().getChannelCount() == 1) {
+        const AudioInputBuffer& in = inputs.at(0);
         memcpy(in.getBuffer(), inputBuffer,
                sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
     } else if (iFrameSize == 2 && inputs.size() == 1 &&
-            inputs[0].getChannelGroup().getChannelCount() == 2) {
-        const AudioInputBuffer& in = inputs[0];
+            inputs.at(0).getChannelGroup().getChannelCount() == 2) {
+        const AudioInputBuffer& in = inputs.at(0);
         memcpy(in.getBuffer(), inputBuffer,
                sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
     } else { //More than two channels of input (iFrameSize > 2)
