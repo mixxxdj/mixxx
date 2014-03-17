@@ -94,9 +94,6 @@ class SoundManager : public QObject {
     void pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
             const unsigned int iFramesPerBuffer, const unsigned int iFrameSize);
 
-    void writeProcess();
-    void readProcess();
-
     void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
     QList<AudioOutput> registeredOutputs() const;
