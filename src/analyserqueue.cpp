@@ -421,7 +421,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }
 
@@ -436,6 +436,6 @@ AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }
