@@ -227,6 +227,7 @@ void EffectParameter::setValue(QVariant value) {
         qDebug() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
     updateEngineState();
+    emit(valueChanged(m_value));
 }
 
 QVariant EffectParameter::getDefault() const {

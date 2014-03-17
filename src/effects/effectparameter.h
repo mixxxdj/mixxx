@@ -55,6 +55,9 @@ class EffectParameter : public QObject {
 
     void updateEngineState();
 
+  signals:
+    void valueChanged(QVariant value);
+
   private:
     QString debugString() const {
         return QString("EffectParameter(%1)").arg(m_parameter.name());
