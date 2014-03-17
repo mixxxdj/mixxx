@@ -32,6 +32,7 @@ EffectManifest EchoEffect::getManifest() {
     time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
+    time->setLinkHint(EffectManifestParameter::LINK_LINKED);
     time->setMinimum(0.01);
     time->setDefault(0.25);
     time->setMaximum(2.0);
