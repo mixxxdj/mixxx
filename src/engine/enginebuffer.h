@@ -175,6 +175,8 @@ class EngineBuffer : public EngineObject {
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
+    // Fired when passthrough mode is enabled or disabled.
+    void slotPassthroughChanged(double v);
 
   private:
     void enablePitchAndTimeScaling(bool bEnable);
@@ -288,6 +290,7 @@ class EngineBuffer : public EngineObject {
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
     ControlPushButton* m_pKeylock;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 
