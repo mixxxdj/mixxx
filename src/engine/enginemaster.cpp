@@ -32,6 +32,7 @@
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
+#include "engine/enginedelay.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
 #include "sampleutil.h"
@@ -90,6 +91,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
+    m_pMasterDelay = new EngineDelay(group, false);
+    m_pHeadDelay = new EngineDelay(group, true);
+
     // Headphone volume
     m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
 
@@ -111,13 +115,13 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::applyGain(m_pHead, 0, MAX_BUFFER_LEN);
-    SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pMaster, MAX_BUFFER_LEN);
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
         m_pOutputBusBuffers[o] = SampleUtil::alloc(MAX_BUFFER_LEN);
-        SampleUtil::applyGain(m_pOutputBusBuffers[o], 0, MAX_BUFFER_LEN);
+        SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
     }
 
     // Starts a thread for recording and shoutcast
@@ -147,6 +151,8 @@ EngineMaster::~EngineMaster() {
     delete m_pVumeter;
     delete m_pHeadClipping;
     delete m_pSideChain;
+    delete m_pMasterDelay;
+    delete m_pHeadDelay;
 
     delete m_pXFaderReverse;
     delete m_pXFaderCalibration;
@@ -426,6 +432,9 @@ void EngineMaster::process(const int iBufferSize) {
         }
     }
 
+    m_pMasterDelay->process(m_pMaster, m_pMaster, iBufferSize);
+    m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
+
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
 
@@ -442,7 +451,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
+    SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
     m_channelHeadphoneGainCache.push_back(0);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {

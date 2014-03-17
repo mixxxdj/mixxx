@@ -22,6 +22,7 @@
 #include <QList>
 
 #include "defs.h" // for CSAMPLE (???)
+#include "util/fifo.h"
 
 /**
  * @class ChannelGroup
@@ -114,14 +115,18 @@ class AudioOutput : public AudioPath {
 // This class is required to add the buffer, without changing the hash used as ID
 class AudioOutputBuffer : public AudioOutput {
   public:
-    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer)
+    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer,
+                      FIFO<CSAMPLE>* pFifo)
             : AudioOutput(out),
-              m_pBuffer(pBuffer) {
+              m_pBuffer(pBuffer),
+              m_pFifo(pFifo) {
 
     };
-    inline const CSAMPLE* getBuffer() const { return m_pBuffer; };
+    inline const CSAMPLE* getBuffer() const { return m_pBuffer; }
+    inline FIFO<CSAMPLE>* getFifo() const { return m_pFifo; }
   private:
     const CSAMPLE* m_pBuffer;
+    FIFO<CSAMPLE>* m_pFifo;
 };
 
 /**

@@ -129,10 +129,10 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
             qWarning() << "ERROR: Buffer underflow in EngineMicrophone. Playing silence.";
-            SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
+            SampleUtil::clear(pOut + samplesRead, iBufferSize - samplesRead);
         }
     } else {
-        SampleUtil::applyGain(pOut, 0.0, iBufferSize);
+        SampleUtil::clear(pOut, iBufferSize);
         m_sampleBuffer.skip(iBufferSize);
     }
 

@@ -20,21 +20,25 @@
 #include "engine/engineobject.h"
 
 class ControlPotmeter;
-
-const int kiMaxDelay = 20000;
+class ControlObjectSlave;
 
 class EngineDelay : public EngineObject {
     Q_OBJECT
   public:
-    EngineDelay(const char* group);
+    EngineDelay(const char* group, bool head);
     virtual ~EngineDelay();
 
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
+  public slots:
+    void slotDelayChanged();
+
   private:
-    ControlPotmeter* m_pPotmeter;
+    ControlPotmeter* m_pDelayPot;
+    ControlObjectSlave* m_pSampleRate;
     CSAMPLE* m_pDelayBuffer;
-    int m_iDelay, m_iDelayPos;
+    int m_iDelayPos;
+    int m_iDelay;
 };
 
 #endif
