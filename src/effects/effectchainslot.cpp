@@ -26,10 +26,12 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
+    m_pControlChainMix->set(0.0);
 
     m_pControlChainParameter = new ControlPotmeter(ConfigKey(m_group, "parameter"), 0.0, 1.0);
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainParameter(double)));
+    m_pControlChainParameter->set(0.0);
 
     m_pControlChainInsertionType = new ControlPushButton(ConfigKey(m_group, "insertion_type"));
     m_pControlChainInsertionType->setButtonMode(ControlPushButton::TOGGLE);
@@ -158,14 +160,21 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                 this, SLOT(slotChainGroupStatusChanged(const QString&, bool)));
 
         m_pEffectChain->setEnabled(true);
-        m_pControlChainParameter->set(m_pEffectChain->parameter());
-        m_pControlChainMix->set(m_pEffectChain->mix());
         m_pControlChainEnabled->setAndConfirm(m_pEffectChain->enabled());
         m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
 
+        // Mix, parameter, and enabled channels are persistent properties of the
+        // chain slot, not of the chain. Propagate the current settings to the
+        // chain.
+        m_pEffectChain->setParameter(m_pControlChainParameter->get());
+        m_pEffectChain->setMix(m_pControlChainMix->get());
         for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
              it != m_groupEnableControls.end(); ++it) {
-            it.value()->set(m_pEffectChain->enabledForGroup(it.key()));
+            if (it.value()->get() > 0.0) {
+                m_pEffectChain->enableForGroup(it.key());
+            } else {
+                m_pEffectChain->disableForGroup(it.key());
+            }
         }
         // Don't emit because we will below.
         slotChainEffectsChanged(false);
@@ -193,8 +202,6 @@ void EffectChainSlot::clear() {
     }
     m_pControlNumEffects->setAndConfirm(0.0);
     m_pControlChainEnabled->setAndConfirm(0.0);
-    m_pControlChainMix->set(0.0);
-    m_pControlChainParameter->set(0.0);
     m_pControlChainInsertionType->set(EffectChain::INSERT);
     emit(updated());
 }
