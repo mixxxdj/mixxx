@@ -91,8 +91,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
-    m_pMasterDelay = new EngineDelay(group, false);
-    m_pHeadDelay = new EngineDelay(group, true);
+    m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"));
+    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
 
     // Headphone volume
     m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);

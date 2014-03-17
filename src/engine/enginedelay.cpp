@@ -22,16 +22,12 @@
 const int kiMaxDelay = 20000; // 104 ms @ 96 kb/s
 const double kdMaxDelayPot = 100; // 100 ms
 
-EngineDelay::EngineDelay(const char* group, bool head)
+EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
         : m_iDelayPos(0),
           m_iDelay(0) {
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
     memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
-    if (head) {
-        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "headDelay"), 0, kdMaxDelayPot);
-    } else {
-        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "delay"), 0, kdMaxDelayPot);
-    }
+    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot);
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
