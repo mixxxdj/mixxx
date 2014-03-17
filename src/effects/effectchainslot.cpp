@@ -233,7 +233,7 @@ void EffectChainSlot::registerGroup(const QString& group) {
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
         ConfigKey(m_group, QString("group_%1_enable").arg(group)));
-    pEnableControl->setButtonMode(ControlPushButton::TOGGLE);
+    pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
     m_groupEnableControls[group] = pEnableControl;
     m_groupStatusMapper.setMapping(pEnableControl, group);
     connect(pEnableControl, SIGNAL(valueChanged(double)),
