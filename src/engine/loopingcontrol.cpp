@@ -559,12 +559,11 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
         return;
     }
 
-    // Maintain the current start point if there is an active beat loop and we
-    // are currently looping. slotBeatLoop will update m_pActiveBeatLoop if
-    // applicable
-    bool beatLoopAlreadyActive = m_pActiveBeatLoop != NULL;
-    slotBeatLoop(pBeatLoopControl->getSize(),
-                 beatLoopAlreadyActive && m_bLoopingEnabled);
+    // Maintain the current start point if there is an active loop currently
+    // looping. slotBeatLoop will update m_pActiveBeatLoop if applicable. Note,
+    // this used to only maintain the current start point if a beatloop was
+    // enabled. See Bug #1159243.
+    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopingEnabled);
 }
 
 void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl) {
@@ -572,7 +571,7 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
          return;
      }
 
-    //Disregard existing loops
+    // Disregard existing loops.
     m_pSlipEnabled->set(1);
     slotBeatLoop(pBeatLoopControl->getSize(), false);
     m_bLoopRollActive = true;
