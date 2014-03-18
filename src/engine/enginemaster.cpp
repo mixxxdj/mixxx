@@ -181,6 +181,7 @@ EngineMaster::~EngineMaster() {
         SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
+        delete pChannelInfo->m_pMuteControl;
         delete pChannelInfo;
     }
 }
@@ -450,6 +451,9 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
             ConfigKey(pChannel->getGroup(), "volume"), 1.0);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
+    pChannelInfo->m_pMuteControl = new ControlPushButton(
+        ConfigKey(pChannel->getGroup(), "mute"));
+    pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);

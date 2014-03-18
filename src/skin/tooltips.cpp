@@ -282,6 +282,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
 
+    add("mute")
+            << tr("Mute")
+            << tr("Mutes the selected channel's audio in the master output.");
+
     add("back_start")
             << tr("Fast Rewind")
             << QString("%1: %2").arg(leftClick, tr("Fast rewind through the track."))
