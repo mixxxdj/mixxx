@@ -19,7 +19,7 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
     virtual ~EngineTalkoverDucking();
 
     TalkoverDuckSetting getMode() const {
-        return static_cast<TalkoverDuckSetting>(m_pTalkoverDucking->get());
+        return static_cast<TalkoverDuckSetting>(int(m_pTalkoverDucking->get());
     }
 
     CSAMPLE getGain(int numFrames);
