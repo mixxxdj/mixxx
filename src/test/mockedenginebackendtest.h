@@ -28,7 +28,7 @@ using ::testing::_;
 class MockScaler : public EngineBufferScale {
   public:
     MockScaler() : EngineBufferScale() {
-        SampleUtil::applyGain(m_buffer, 0, MAX_BUFFER_LEN);
+        SampleUtil::clear(m_buffer, MAX_BUFFER_LEN);
     }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {

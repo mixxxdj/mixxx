@@ -84,13 +84,13 @@ void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
             qWarning() << "ERROR: Buffer overflow in EngineDeck. Playing silence.";
-            SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
+            SampleUtil::clear(pOut + samplesRead, iBufferSize - samplesRead);
         }
         m_bPassthroughWasActive = true;
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
-            SampleUtil::applyGain(pOut, 0.0, iBufferSize);
+            SampleUtil::clear(pOut, iBufferSize);
             m_sampleBuffer.skip(iBufferSize);
             m_bPassthroughWasActive = false;
             return;

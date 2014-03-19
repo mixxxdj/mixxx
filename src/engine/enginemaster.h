@@ -21,6 +21,7 @@
 #include <QObject>
 
 #include "controlobject.h"
+#include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "soundmanagerutil.h"
@@ -43,6 +44,7 @@ class SyncWorker;
 class GuiTick;
 class EngineSync;
 class EngineTalkoverDucking;
+class EngineDelay;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
@@ -112,9 +114,16 @@ class EngineMaster : public QObject, public AudioSource {
     }
 
     struct ChannelInfo {
+        ChannelInfo()
+                : m_pChannel(NULL),
+                  m_pBuffer(NULL),
+                  m_pVolumeControl(NULL),
+                  m_pMuteControl(NULL) {
+        }
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
+        ControlPushButton* m_pMuteControl;
     };
 
     class GainCalculator {
@@ -143,6 +152,9 @@ class EngineMaster : public QObject, public AudioSource {
                   m_dTalkoverGain(1.0) { }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
+            if (pChannelInfo->m_pMuteControl->get() > 0.0) {
+                return 0.0;
+            }
             if (pChannelInfo->m_pChannel->isTalkover()) {
                 return m_dTalkoverGain;
             }
@@ -201,6 +213,9 @@ class EngineMaster : public QObject, public AudioSource {
     EngineClipping* m_pClipping;
     EngineClipping* m_pHeadClipping;
     EngineTalkoverDucking* m_pTalkoverDucking;
+    EngineDelay* m_pMasterDelay;
+    EngineDelay* m_pHeadDelay;
+
     EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pSideChain;
 
