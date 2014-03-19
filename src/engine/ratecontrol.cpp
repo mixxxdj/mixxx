@@ -404,8 +404,8 @@ SyncMode RateControl::getSyncMode() const {
 
 double RateControl::calculateRate(double baserate, bool paused,
                                   int iSamplesPerBuffer, bool* isScratching) {
+    *isScratching = false;
     double rate = (paused ? 0 : 1.0);
-
     double searching = m_pRateSearch->get();
     if (searching) {
         // If searching is in progress, it overrides everything else
@@ -414,7 +414,10 @@ double RateControl::calculateRate(double baserate, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
-        bool scratchEnable = m_pScratchToggle->get() != 0 || bVinylControlEnabled;
+
+        if (m_pScratchToggle->get() != 0) {
+            *isScratching = true;
+        }
 
         double scratchFactor = m_pScratch->get();
         // Don't trust values from m_pScratch
@@ -422,7 +425,7 @@ double RateControl::calculateRate(double baserate, bool paused,
             scratchFactor = 0.0;
         }
 
-        // Old Scratch works without scratchEnable
+        // Old Scratch works without scratchToggle
         double oldScratchFactor = m_pOldScratch->get(); // Deprecated
         // Don't trust values from m_pScratch
         if (isnan(oldScratchFactor)) {
@@ -430,47 +433,47 @@ double RateControl::calculateRate(double baserate, bool paused,
         }
 
         // If vinyl control is enabled and scratching then also set isScratching
-        bool bVinylControlScratching = m_pVCScratching && m_pVCScratching->get() > 0.0;
-        if (bVinylControlEnabled && bVinylControlScratching) {
-            *isScratching = true;
-        }
-
-        if (paused) {
-            // Stopped. Wheel, jog and scratch controller all scrub through audio.
-            // New scratch behavior overrides old
-            if (scratchEnable) {
-                rate = scratchFactor + jogFactor + wheelFactor * 40.0;
-            } else {
-                // Just remove oldScratchFactor in future
-                rate = oldScratchFactor + jogFactor * 18 + wheelFactor;
+        if (bVinylControlEnabled) {
+            if (m_pVCScratching && m_pVCScratching->get() > 0.0) {
+                *isScratching = true;
             }
+            rate = scratchFactor;
         } else {
-            // The buffer is playing, so calculate the buffer rate.
-
-            // There are four rate effects we apply: wheel, scratch, jog and temp.
-            // Wheel: a linear additive effect (no spring-back)
-            // Scratch: a rate multiplier
-            // Jog: a linear additive effect whose value is filtered (springs back)
-            // Temp: pitch bend
-
-            // New scratch behavior - overrides playback speed (and old behavior)
-            if (scratchEnable) {
-                rate = scratchFactor;
-            } else {
-
-                rate = 1. + getRawRate() + getTempRate();
-                rate += wheelFactor;
-
-                // Deprecated old scratch behavior
-                if (oldScratchFactor < 0.) {
-                    rate *= (oldScratchFactor - 1.);
-                } else if (oldScratchFactor > 0.) {
-                    rate *= (oldScratchFactor + 1.);
+            if (paused) {
+                // Stopped. Wheel, jog and scratch controller all scrub through audio.
+                // New scratch behavior overrides old
+                if (*isScratching) {
+                    rate = scratchFactor + jogFactor + wheelFactor * 40.0;
+                } else {
+                    // Just remove oldScratchFactor in future
+                    rate = oldScratchFactor + jogFactor * 18 + wheelFactor;
                 }
+            } else {
+                // The buffer is playing, so calculate the buffer rate.
+
+                // There are four rate effects we apply: wheel, scratch, jog and temp.
+                // Wheel: a linear additive effect (no spring-back)
+                // Scratch: a rate multiplier
+                // Jog: a linear additive effect whose value is filtered (springs back)
+                // Temp: pitch bend
+
+                // New scratch behavior - overrides playback speed (and old behavior)
+                if (*isScratching) {
+                    rate = scratchFactor;
+                } else {
+
+                    rate = 1. + getRawRate() + getTempRate();
+                    rate += wheelFactor;
+
+                    // Deprecated old scratch behavior
+                    if (oldScratchFactor < 0.) {
+                        rate *= (oldScratchFactor - 1.);
+                    } else if (oldScratchFactor > 0.) {
+                        rate *= (oldScratchFactor + 1.);
+                    }
+                }
+                rate += jogFactor;
             }
-
-            rate += jogFactor;
-
         }
 
         double currentSample = getCurrentSample();
