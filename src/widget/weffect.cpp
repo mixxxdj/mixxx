@@ -17,7 +17,7 @@ void WEffect::setup(QDomNode node, const SkinContext& context) {
     bool rackOk = false;
     int rackNumber = context.selectInt(node, "EffectRack", &rackOk) - 1;
     bool chainOk = false;
-    int chainNumber = context.selectInt(node, "EffectChain", &chainOk) - 1;
+    int chainNumber = context.selectInt(node, "EffectUnit", &chainOk) - 1;
     bool effectOk = false;
     int effectNumber = context.selectInt(node, "Effect", &effectOk) - 1;
 
@@ -27,7 +27,7 @@ void WEffect::setup(QDomNode node, const SkinContext& context) {
     }
 
     if (!chainOk) {
-        qDebug() << "EffectName node had invalid EffectChain number:" << chainNumber;
+        qDebug() << "EffectName node had invalid EffectUnit number:" << chainNumber;
     }
 
     if (!effectOk) {
@@ -45,7 +45,7 @@ void WEffect::setup(QDomNode node, const SkinContext& context) {
                 qDebug() << "EffectName node had invalid Effect number:" << effectNumber;
             }
         } else {
-            qDebug() << "EffectName node had invalid EffectChain number:" << chainNumber;
+            qDebug() << "EffectName node had invalid EffectUnit number:" << chainNumber;
         }
     } else {
         qDebug() << "EffectName node had invalid EffectRack number:" << rackNumber;

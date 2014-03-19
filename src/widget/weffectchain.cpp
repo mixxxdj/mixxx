@@ -16,7 +16,7 @@ void WEffectChain::setup(QDomNode node, const SkinContext& context) {
     bool rackOk = false;
     int rackNumber = context.selectInt(node, "EffectRack", &rackOk) - 1;
     bool chainOk = false;
-    int chainNumber = context.selectInt(node, "EffectChain", &chainOk) - 1;
+    int chainNumber = context.selectInt(node, "EffectUnit", &chainOk) - 1;
 
     // Tolerate no <EffectRack>. Use the default one.
     if (!rackOk) {
