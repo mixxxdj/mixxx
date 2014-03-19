@@ -25,7 +25,7 @@
             <Children>
               <EffectChainName>
                 <EffectRack><Variable name="EffectRack"/></EffectRack>
-                <EffectChain><Variable name="EffectUnit"/></EffectChain>
+                <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
               </EffectChainName>
             </Children>
           </WidgetGroup>
