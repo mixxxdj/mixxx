@@ -26,7 +26,7 @@ class EffectChainSlot : public QObject {
 
     static QString formatGroupString(const unsigned int iRackNumber,
                                      const unsigned int iChainNumber) {
-        return QString("[EffectRack%1_EffectChain%2]").arg(
+        return QString("[EffectRack%1_EffectUnit%2]").arg(
             QString::number(iRackNumber+1), QString::number(iChainNumber+1));
     }
 

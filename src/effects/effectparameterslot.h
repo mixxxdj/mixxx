@@ -29,7 +29,7 @@ class EffectParameterSlot : public QObject {
                                      const unsigned int iChainNumber,
                                      const unsigned int iSlotNumber,
                                      const unsigned int iParameterNumber) {
-        return QString("[EffectRack%1_EffectChain%2_Effect%3_Parameter%4]")
+        return QString("[EffectRack%1_EffectUnit%2_Effect%3_Parameter%4]")
                 .arg(QString::number(iRackNumber+1),
                      QString::number(iChainNumber+1),
                      QString::number(iSlotNumber+1),

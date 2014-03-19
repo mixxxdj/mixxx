@@ -11,7 +11,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
           m_group(formatGroupString(m_iRackNumber)),
           m_pEffectsManager(pEffectsManager),
           m_pEffectChainManager(pEffectChainManager),
-          m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectchain_slots")),
+          m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
           m_controlClearRack(ConfigKey(m_group, "clear")),
           m_pEngineEffectRack(new EngineEffectRack(iRackNumber)) {
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
