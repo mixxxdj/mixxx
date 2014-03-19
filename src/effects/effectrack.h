@@ -38,6 +38,7 @@ class EffectRack : public QObject {
 
   public slots:
     void slotClearRack(double v);
+    void slotNumEffectChainSlots(double v);
 
   private slots:
     void loadNextChain(const unsigned int iChainSlotNumber,
@@ -46,12 +47,17 @@ class EffectRack : public QObject {
                        EffectChainPointer pLoadedChain);
 
   private:
+    inline QString debugString() const {
+        return QString("EffectRack%1").arg(m_iRackNumber);
+    }
+
     const unsigned int m_iRackNumber;
     const QString m_group;
 
     EffectsManager* m_pEffectsManager;
     EffectChainManager* m_pEffectChainManager;
     QList<EffectChainSlotPointer> m_effectChainSlots;
+    ControlObject m_controlNumEffectChainSlots;
     ControlObject m_controlClearRack;
     EngineEffectRack* m_pEngineEffectRack;
 };
