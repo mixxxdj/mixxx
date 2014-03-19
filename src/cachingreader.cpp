@@ -67,7 +67,7 @@ CachingReader::CachingReader(const char* group,
             this, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
 
-    m_pWorker->start();
+    m_pWorker->start(QThread::HighPriority);
 }
 
 
@@ -303,7 +303,6 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Check for bad inputs
     if (sample % 2 != 0 || num_samples < 0 || !buffer) {
         QString temp = QString("Sample = %1").arg(sample);
-        QByteArray tempBA = QString(temp).toUtf8();
         qDebug() << "CachingReader::read() invalid arguments sample:" << sample
                  << "num_samples:" << num_samples << "buffer:" << buffer;
         return 0;

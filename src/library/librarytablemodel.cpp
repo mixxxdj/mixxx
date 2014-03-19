@@ -1,7 +1,6 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
@@ -9,7 +8,7 @@ const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
-                                     QString settingsNamespace)
+                                     const char* settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace){
     setTableModel();
 }
@@ -37,13 +36,9 @@ void LibraryTableModel::setTableModel(int id) {
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
-    tableColumns << "preview";
+    tableColumns << LIBRARYTABLE_PREVIEW;
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollection->getTrackSource("default"));
-
-    // BaseSqlTabelModel will setup the header info
-    initHeaderData();
-
+             m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
@@ -62,19 +57,21 @@ int LibraryTableModel::addTracks(const QModelIndex& index,
 }
 
 bool LibraryTableModel::isColumnInternal(int column) {
-    if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
-            (column == fieldIndex(LIBRARYTABLE_URL)) ||
-            (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
-            (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
-            (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
-            (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
-            (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
-            (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
-            (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
-            (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
-            (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
-            (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
-            (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+    if ((column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_URL)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CUEPOINT)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_HEADERPARSED)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID))||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED)) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
     }
 

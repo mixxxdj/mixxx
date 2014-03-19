@@ -21,12 +21,14 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
+#include "widget/controlwidgetconnection.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
 #include "util/timer.h"
+#include "util/dnd.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -46,7 +48,8 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
-        m_analyserProgress(-1),
+        m_dAnalyserProgress(-1.0),
+        m_bAnalyserFinalizing(false),
         m_trackLoaded(false) {
     m_endOfTrackControl = new ControlObjectThread(
             m_group, "end_of_track");
@@ -66,24 +69,20 @@ WOverview::~WOverview() {
     }
 }
 
-void WOverview::setup(QDomNode node) {
-    m_signalColors.setup(node);
+void WOverview::setup(QDomNode node, const SkinContext& context) {
+    m_signalColors.setup(node, context);
 
     m_qColorBackground = m_signalColors.getBgColor();
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
-    m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
+    m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
-        m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
-        if (m_backgroundPixmap.size() != size()) {
-            qDebug() << "WOverview: BgPixmap does not fit. Widget size:" << size()
-                     << "BgPixmap size: << m_backgroundPixmap.size()";
-        }
+        m_backgroundPixmap = QPixmap(context.getSkinPath(m_backgroundPixmapPath));
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
-    const QString endOfTrackColorName = WWidget::selectNodeQString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
@@ -94,7 +93,7 @@ void WOverview::setup(QDomNode node) {
     setPalette(palette);
 
     //setup hotcues and cue and loop(s)
-    m_marks.setup(m_group, node, m_signalColors);
+    m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
@@ -107,7 +106,7 @@ void WOverview::setup(QDomNode node) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_group, child, m_signalColors);
+            markRange.setup(m_group, child, context, m_signalColors);
 
             connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
                      this, SLOT(onMarkRangeChange(double)));
@@ -121,16 +120,27 @@ void WOverview::setup(QDomNode node) {
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+    if (!m_connections.isEmpty()) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            if (defaultConnection->getEmitOption() &
+                    ControlParameterWidgetConnection::EMIT_DEFAULT) {
+                // ON_PRESS means here value change on mouse move during press
+                defaultConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+            }
+        }
+    }
 }
 
-void WOverview::setValue(double fValue) {
+void WOverview::onConnectedControlValueChanged(double dValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
-        int iPos = valueToPosition(fValue);
+        int iPos = valueToPosition(dValue);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::setValue" << fValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
             update();
         }
     }
@@ -155,18 +165,14 @@ void WOverview::slotAnalyserProgress(int progress) {
         return;
     }
 
-    int analyserProgress;
-    if (progress == 999) {
-        // Finalize
-        analyserProgress = width() - 1;
-    } else {
-        analyserProgress = width() * progress / 1000;
-    }
+    double analyserProgress = progress / 1000.0;
+    bool finalizing = progress == 999;
 
     bool updateNeeded = drawNextPixmapPart();
     // progress 0 .. 1000
-    if (updateNeeded || (m_analyserProgress != analyserProgress)) {
-        m_analyserProgress = analyserProgress;
+    if (updateNeeded || (m_dAnalyserProgress != analyserProgress)) {
+        m_dAnalyserProgress = analyserProgress;
+        m_bAnalyserFinalizing = finalizing;
         update();
     }
 }
@@ -185,7 +191,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         m_pWaveformSourceImage = NULL;
     }
 
-    m_analyserProgress = -1;
+    m_dAnalyserProgress = -1;
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -253,16 +259,10 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
+    double dValue = positionToValue(m_iPos);
+    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    float fValue = positionToValue(m_iPos);
-
-    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
-
-    if (e->button() == Qt::RightButton) {
-        emit(valueChangedRightUp(fValue));
-    } else {
-        emit(valueChangedLeftUp(fValue));
-    }
+    setControlParameterUp(dValue);
     m_bDrag = false;
 }
 
@@ -321,13 +321,14 @@ void WOverview::paintEvent(QPaintEvent *) {
             painter.drawImage(rect(), m_waveformImageScaled);
         }
 
-        if (m_analyserProgress + 1 < width()) {
+        if (m_dAnalyserProgress != 1.0) {
             // Paint analyzer Progress
             painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
-            painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
+            painter.drawLine(m_dAnalyserProgress * width(), height()/2,
+                             width(), height()/2);
         }
 
-        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable
+        if (m_dAnalyserProgress <= 0.5) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is cached from source
                 paintText(tr("Ready to play, analyzing .."), &painter);
@@ -335,7 +336,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                 //: Text on waveform overview when file is playable but no waveform is visible
                 paintText(tr("Loading track .."), &painter);
             }
-        } else if (m_analyserProgress == width() - 1) {
+        } else if (m_bAnalyserFinalizing) {
             //: Text on waveform overview during finalizing of waveform analysis
             paintText(tr("Finalizing .."), &painter);
         }
@@ -472,9 +473,21 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    //Those coeficient map position from [0;width-1] to value [14;114]
-    m_a = (float)((width()-1))/( 114.f - 14.f);
-    m_b = 14.f * m_a;
+    // Play-position potmeters range from -0.14 to 1.14. This is to give VC and
+    // MIDI control access to the pre-roll area.
+    // TODO(rryan): get these limits from the CO itself.
+    const double kMaxPlayposRange = 1.14;
+    const double kMinPlayposRange = -0.14;
+
+    // Values of zero and one in normalized space.
+    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+
+    // These coeficients convert between widget space and normalized value
+    // space.
+    m_a = (width() - 1) / (one - zero);
+    m_b = zero * m_a;
+
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
 }
@@ -493,18 +506,14 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        QList<QUrl> urls(event->mimeData()->urls());
-        QUrl url = urls.first();
-        QString name = url.toLocalFile();
-        //If the file is on a network share, try just converting the URL to a string...
-        if (name == "") {
-            name = url.toString();
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
         }
-        event->accept();
-        emit(trackDropped(name, m_group));
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }

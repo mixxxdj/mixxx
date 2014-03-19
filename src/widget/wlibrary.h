@@ -8,13 +8,15 @@
 #include <QMutex>
 #include <QStackedWidget>
 #include <QString>
+#include <QEvent>
 
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
+#include "widget/wbasewidget.h"
 
 class MixxxKeyboard;
 
-class WLibrary : public QStackedWidget {
+class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WLibrary(QWidget* parent);
@@ -41,6 +43,9 @@ class WLibrary : public QStackedWidget {
   signals:
     void switchToSelector();
     void setSeedTrack(TrackPointer pTrack);
+  protected:
+    bool event(QEvent* pEvent);
+
 
   private:
     QMutex m_mutex;

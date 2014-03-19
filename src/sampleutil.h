@@ -36,13 +36,16 @@ class SampleUtil {
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
-    static CSAMPLE* alloc(int size);
+    static CSAMPLE* alloc(unsigned int size);
 
     // Frees a 16-byte aligned buffer allocated by SampleUtil::alloc()
     static void free(CSAMPLE* pBuffer);
 
     // Multiply every sample in pBuffer by gain
-    static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain, int iNumSamples);
+    static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain, unsigned int iNumSamples);
+
+    // Multiply every sample in pBuffer by gain
+    static void clear(CSAMPLE* pBuffer, unsigned int iNumSamples);
 
     // Apply a different gain to every other sample.
     static void applyAlternatingGain(CSAMPLE* pBuffer,
@@ -132,6 +135,19 @@ class SampleUtil {
                                        const CSAMPLE* pSrcFadeOut,
                                        const CSAMPLE* pSrcFadeIn,
                                        int iNumSamples);
+
+    // Mix a buffer down to mono, putting the result in both of the channels.
+    // This uses a simple (L+R)/2 method, which assumes that the audio is
+    // "mono-compatible", ie there are no major out-of-phase parts of the signal.
+    static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                int iNumSamples);
+
+    // Convert 0-1.0 range gain from linear to log value.
+    static CSAMPLE linearToLog(CSAMPLE linear) {
+        linear = math_max(0.0, math_min(1.0, linear));
+        static const CSAMPLE dB = log10(2.0) / 1.0;
+        return log10(linear + 1.0) / dB;
+    }
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)

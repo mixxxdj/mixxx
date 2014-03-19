@@ -5,7 +5,6 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
 #include "library/trackcollection.h"
 
 #include "dlgrecording.h"
@@ -100,22 +99,20 @@ void DlgRecording::toggleRecording(bool toggle) {
 void DlgRecording::slotRecordingEnabled(bool isRecording) {
     if(isRecording){
         pushButtonRecording->setText((tr("Stop Recording")));
-        //This will update the recorded track table view
-        m_browseModel.setPath(m_recordingDir);
     }
     else{
         pushButtonRecording->setText((tr("Start Recording")));
         label->setText("Start recording here ...");
     }
-
+    //This will update the recorded track table view
+    m_browseModel.setPath(m_recordingDir);
 }
 /** int bytes: the number of recorded bytes within a session **/
 void DlgRecording::slotBytesRecorded(long bytes) {
-    double megabytes = bytes / 1048575.0f;
-    QString byteStr = QString::number(megabytes,'f',2);
-    QString text = (tr("Recording to file: ")) +m_pRecordingManager->getRecordingFile();
-    /* TRANSLATOR RecordingsView 
-    The size of the file which has been stored during the current recording in megabytes (MB) */
-    text.append(" ( " +byteStr+ (tr("MB written")) +" )");
+    double megabytes = bytes / 1048575.0;
+
+    QString message = tr("Recording to file: %1 (%2 MB written)");
+    QString text = message.arg(m_pRecordingManager->getRecordingFile(),
+                               QString::number(megabytes,'f',2));
     label->setText(text);
 }

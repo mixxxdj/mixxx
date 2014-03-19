@@ -11,7 +11,9 @@
 #elif defined(__WINDOWS__)
 
 #else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     #include <qx11info_x11.h>
+#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 
 #include "util/performancetimer.h"
@@ -29,8 +31,9 @@
     #undef Unsorted
 #endif
 
-
 class QGLWidget;
+class GuiTick;
+class MixxxMainWindow;
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -44,8 +47,11 @@ class VSyncThread : public QThread {
         ST_COUNT // Dummy Type at last, counting possible types
     };
 
-    VSyncThread(QWidget* parent);
+    static void swapGl(QGLWidget* glw, int index);
+
+    VSyncThread(MixxxMainWindow* mixxMainWindow);
     ~VSyncThread();
+
     void run();
     void stop();
 
@@ -60,7 +66,6 @@ class VSyncThread : public QThread {
     void vsyncSlotFinished();
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void setupSync(QGLWidget* glw, int index);
-    void swapGl(QGLWidget* glw, int index);
     void waitUntilSwap(QGLWidget* glw);
 
   signals:
@@ -113,6 +118,9 @@ class VSyncThread : public QThread {
     QSemaphore m_semaVsyncSlot;
     double m_displayFrameRate;
     int m_vSyncPerRendering;
+
+
+    GuiTick* m_pGuiTick;
 };
 
 

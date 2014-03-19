@@ -44,8 +44,9 @@ class EngineBufferScaleST : public EngineBufferScale {
     virtual ~EngineBufferScaleST();
 
     void setScaleParameters(int iSampleRate,
-                            double* rate_adjust,
-                            double* tempo_adjust,
+                            double base_rate,
+                            bool speed_affects_pitch,
+                            double* speed_adjust,
                             double* pitch_adjust);
 
     // Scale buffer.
@@ -57,9 +58,12 @@ class EngineBufferScaleST : public EngineBufferScale {
   private:
     // Holds the playback direction.
     bool m_bBackwards;
+    // Holds previous values for SoundTouch rate and tempo settings.
+    double m_dRateOld;
+    double m_dTempoOld;
 
     // Temporary buffer for reading from the RAMAN.
-    CSAMPLE *buffer_back;
+    CSAMPLE* buffer_back;
 
     // SoundTouch time/pitch scaling lib
     soundtouch::SoundTouch* m_pSoundTouch;

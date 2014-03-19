@@ -10,9 +10,12 @@
 #include <QPoint>
 #include <QTimerEvent>
 #include <QTreeView>
+#include <QEvent>
 
-class WLibrarySidebar : public QTreeView {
-  Q_OBJECT
+#include "widget/wbasewidget.h"
+
+class WLibrarySidebar : public QTreeView, public WBaseWidget {
+    Q_OBJECT
   public:
     WLibrarySidebar(QWidget* parent = 0);
     virtual ~WLibrarySidebar();
@@ -29,6 +32,9 @@ class WLibrarySidebar : public QTreeView {
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
+
+  protected:
+    bool event(QEvent* pEvent);
 
   private:
     QBasicTimer m_expandTimer;

@@ -1,5 +1,5 @@
-Mixxx version 1.11.0, Digital DJ'ing software.
-Copyright (C) 2001-2013 Mixxx Development Team
+Mixxx version 1.12.0, Digital DJ'ing software.
+Copyright (C) 2001-2014 Mixxx Development Team
 
 Promotional tracks are copyright their respective owners and
 distributed with permission.
@@ -11,7 +11,7 @@ PortAudio as-is license which can be found on their website.
 This may also be in turn compiled with ASIO support, which is provided
 by the Steinberg ASIO SDK. The Steinberg ASIO SDK and Steinberg VST
 PlugIn SDK are Copyright Steinberg Media Technologies GmbH. ASIO and VST
-are trademarks of Steinberg Media Technologies GmbH. The license is 
+are trademarks of Steinberg Media Technologies GmbH. The license is
 available at http://www.steinberg.net/en/company/developer.html .
 
 On Windows you may receive a copy of the Microsoft Visual Studio runtime

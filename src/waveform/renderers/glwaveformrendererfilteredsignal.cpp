@@ -1,11 +1,9 @@
-#include "controlobjectthreadmain.h"
-
 #include "defs.h"
 #include "glwaveformrendererfilteredsignal.h"
 #include "trackinfoobject.h"
 #include "waveform/waveform.h"
 #include "waveformwidgetrenderer.h"
-
+#include "controlobjectthread.h"
 #include "waveform/waveformwidgetfactory.h"
 
 #include <QDomNode>
@@ -97,7 +95,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 1.0) {
         highGain = 0;
-    }    
+    }
 
     float meanIndex;
 
@@ -128,14 +126,14 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
-            for( int visualIndex = firstVisualIndex;
+            for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
 
-                if( visualIndex < 0)
+                if (visualIndex < 0)
                     continue;
 
-                if( visualIndex > dataSize - 1)
+                if (visualIndex > dataSize - 1)
                     break;
 
                 maxLow[0] = (float)data[visualIndex].filtered.low;
@@ -163,15 +161,15 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glEnd();
     } else { //top || bottom
         glMatrixMode(GL_PROJECTION);
-        glPushMatrix();        
+        glPushMatrix();
         glLoadIdentity();
-        if( m_alignment == Qt::AlignBottom)
+        if (m_alignment == Qt::AlignBottom)
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
         else
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();        
+        glPushMatrix();
         glLoadIdentity();
 
         glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
@@ -180,14 +178,14 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
-            for( int visualIndex = firstVisualIndex;
+            for (int visualIndex = firstVisualIndex;
                  visualIndex < lastVisualIndex;
                  visualIndex += 2) {
 
-                if( visualIndex < 0)
+                if (visualIndex < 0)
                     continue;
 
-                if( visualIndex > dataSize - 1)
+                if (visualIndex > dataSize - 1)
                     break;
 
                 maxLow[0] = (float)data[visualIndex].filtered.low;

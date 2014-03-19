@@ -327,6 +327,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Upgrade Failed";
         }
     }
+
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
@@ -335,8 +336,14 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         // directories table
         TrackCollection tc(config);
         DirectoryDAO directoryDAO = tc.getDirectoryDAO();
-        bool successful = directoryDAO.addDirectory(currentFolder);
 
+        // NOTE(rryan): We don't have to ask for sandbox permission to this
+        // directory because the normal startup integrity check in Library will
+        // notice if we don't have permission and ask for access. Also, the
+        // Sandbox isn't setup yet at this point in startup because it relies on
+        // the config settings path and this function is what loads the config
+        // so it's not ready yet.
+        bool successful = directoryDAO.addDirectory(currentFolder);
         if (successful) {
             configVersion = VERSION;
             m_bUpgraded = true;

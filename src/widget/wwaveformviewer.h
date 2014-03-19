@@ -11,19 +11,20 @@
 #include "defs.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
+#include "skin/skincontext.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
 
-class WWaveformViewer : public QWidget {
+class WWaveformViewer : public WWidget {
     Q_OBJECT
   public:
     WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
     virtual ~WWaveformViewer();
 
     const char* getGroup() const { return m_pGroup;}
-    void setup(QDomNode node = QDomNode());
+    void setup(QDomNode node, const SkinContext& context);
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
@@ -33,10 +34,7 @@ class WWaveformViewer : public QWidget {
     void mouseReleaseEvent(QMouseEvent *);
 
 signals:
-    void valueChangedLeftDown(double);
-    void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
-    void valueReset();
 
 public slots:
     void onTrackLoaded( TrackPointer track);
@@ -64,9 +62,10 @@ private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
-    ControlObjectThread* m_pZoom;
-    ControlObjectThread* m_pScratchPositionEnable;
-    ControlObjectThread* m_pScratchPosition;
+    ControlObjectSlave* m_pZoom;
+    ControlObjectSlave* m_pScratchPositionEnable;
+    ControlObjectSlave* m_pScratchPosition;
+    ControlObjectSlave* m_pWheel;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;

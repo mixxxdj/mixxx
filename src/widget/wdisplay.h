@@ -18,36 +18,54 @@
 #ifndef WDISPLAY_H
 #define WDISPLAY_H
 
+#include <QVector>
 #include <QPixmap>
 #include <QPaintEvent>
 #include <QString>
 
 #include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
-class WDisplay : public WWidget  {
+class WDisplay : public WWidget {
    Q_OBJECT
-public:
-    WDisplay(QWidget *parent=0);
-    ~WDisplay();
-    void setup(QDomNode node);
+  public:
+    WDisplay(QWidget *parent=NULL);
+    virtual ~WDisplay();
+
+    void setup(QDomNode node, const SkinContext& context);
+
+  protected:
+    void paintEvent(QPaintEvent*);
+
+    int numPixmaps() const {
+        return m_pixmaps.size();
+    }
+
+  private:
+    void setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
+                   const QString& filename);
+
+    void setPixmapBackground(const QString& filename, Paintable::DrawMode mode);
+
     void setPositions(int iNoPos);
-    void setPixmap(int iPos, const QString &filename);
 
-private:
-    /** Set position number to zero and deallocate pixmaps */
+    int getActivePixmapIndex() const;
+
+    // Free existing pixmaps.
     void resetPositions();
-    void paintEvent(QPaintEvent *);
 
-    /** Current position */
-    int m_iPos;
-    /** Number of positions associated with this knob */
-    int m_iNoPos;
-    /** Array of associated pixmaps */
-    QPixmap **m_pPixmaps;
-    };
+    // Associated background pixmap
+    PaintablePointer m_pPixmapBack;
+
+    // List of associated pixmaps.
+    QVector<PaintablePointer> m_pixmaps;
+
+    // Whether disabled pixmaps are loaded.
+    bool m_bDisabledLoaded;
+
+    // List of disabled pixmaps.
+    QVector<PaintablePointer> m_disabledPixmaps;
+};
 
 #endif

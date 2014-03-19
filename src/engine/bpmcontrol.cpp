@@ -117,6 +117,8 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     if (getSyncMode() == SYNC_NONE) {
         slotAdjustRateSlider();
     }
+    m_dUserOffset = 0.0;
+    m_dSyncAdjustment = 1.0;
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
@@ -157,7 +159,9 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 void BpmControl::slotControlPlay(double v) {
     if (v > 0.0) {
         if (m_pQuantize->get() > 0.0) {
-            syncPhase();
+            // Since Quantize is on we can directly seek
+            // SEEK_STANDARD will do the sync job in this case
+            seekAbs(getCurrentSample());
         }
     }
 }
@@ -373,7 +377,7 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*double sample_offset = beat_length * shortest_distance;
+    /*double sample_offset = dBeatLength * shortest_distance;
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
     qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
@@ -422,6 +426,12 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     if (BpmControl::getBeatContext(m_pBeats, dThisPosition, NULL, NULL, NULL,
                                    &dBeatPercentage, 0.01)) {
         return dBeatPercentage;
+    }
+
+    if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
+        qWarning() << getGroup() << "No beatgrid but sync and quantize enabled. "
+                                    "Disabling quantize mode";
+        m_pQuantize->set(0.0);
     }
     return 0.0;
 }
@@ -651,6 +661,8 @@ void BpmControl::trackUnloaded(TrackPointer pTrack) {
 void BpmControl::slotUpdatedTrackBeats()
 {
     if (m_pTrack) {
+        m_dUserOffset = 0.0;
+        m_dSyncAdjustment = 1.0;
         m_pBeats = m_pTrack->getBeats();
     }
 }

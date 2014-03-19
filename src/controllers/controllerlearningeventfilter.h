@@ -5,24 +5,24 @@
 #include <QEvent>
 
 #include "controlobject.h"
-#include "controlobjectthreadwidget.h"
+#include "widget/controlwidgetconnection.h"
 
 struct ControlInfo {
     ControlInfo()
             : clickControl(NULL),
-              emitOption(ControlObjectThreadWidget::EMIT_ON_PRESS_AND_RELEASE),
+              emitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
               leftClickControl(NULL),
-              leftEmitOption(ControlObjectThreadWidget::EMIT_ON_PRESS_AND_RELEASE),
+              leftEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
               rightClickControl(NULL),
-              rightEmitOption(ControlObjectThreadWidget::EMIT_ON_PRESS_AND_RELEASE) {
+              rightEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE) {
     }
 
     ControlObject* clickControl;
-    ControlObjectThreadWidget::EmitOption emitOption;
+    ControlParameterWidgetConnection::EmitOption emitOption;
     ControlObject* leftClickControl;
-    ControlObjectThreadWidget::EmitOption leftEmitOption;
+    ControlParameterWidgetConnection::EmitOption leftEmitOption;
     ControlObject* rightClickControl;
-    ControlObjectThreadWidget::EmitOption rightEmitOption;
+    ControlParameterWidgetConnection::EmitOption rightEmitOption;
 };
 
 class ControllerLearningEventFilter : public QObject {
@@ -35,7 +35,7 @@ class ControllerLearningEventFilter : public QObject {
 
     void addWidgetClickInfo(QWidget* pWidget, Qt::MouseButton buttonState,
                             ControlObject* pControl,
-                            ControlObjectThreadWidget::EmitOption emitOption);
+                            ControlParameterWidgetConnection::EmitOption emitOption);
 
   public slots:
     void startListening();

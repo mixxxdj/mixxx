@@ -91,8 +91,7 @@ class HID(Feature):
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
         elif build.platform_is_osx:
-            build.env.Append(LINKFLAGS='-framework IOKit')
-            build.env.Append(LINKFLAGS='-framework CoreFoundation')
+            build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
 
         build.env.Append(CPPDEFINES='__HID__')
 
@@ -215,11 +214,8 @@ class CoreAudio(Feature):
         if not build.platform_is_osx:
             raise Exception('CoreAudio is only supported on OS X!')
 
-        build.env.Append(
-            CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
         build.env.Append(CPPPATH='#lib/apple/')
-        build.env.Append(
-            LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+        build.env.AppendUnique(FRAMEWORKS=['AudioToolbox', 'CoreFoundation'])
         build.env.Append(CPPDEFINES='__COREAUDIO__')
 
     def sources(self, build):
@@ -266,48 +262,6 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
         return
-
-
-class LADSPA(Feature):
-
-    def description(self):
-        return "Experimental LADSPA Support"
-
-    def enabled(self, build):
-        enabled = util.get_flags(build.env, 'ladspa', 0)
-        build.flags['ladspa'] = enabled
-        return True if int(enabled) else False
-
-    def add_options(self, build, vars):
-        vars.Add('ladspa',
-                 '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPPATH=['#lib/ladspa'])
-        build.env.Append(CPPDEFINES='__LADSPA__')
-
-    def sources(self, build):
-        ladspa_plugins = SCons.SConscript(SCons.File('#lib/ladspa/SConscript'))
-        # build.env.Alias('plugins', ladspa_plugins)
-        sources = SCons.Split("""engine/engineladspa.cpp
-                            ladspa/ladspaloader.cpp
-                            ladspa/ladspalibrary.cpp
-                            ladspa/ladspaplugin.cpp
-                            ladspa/ladspainstance.cpp
-                            ladspa/ladspacontrol.cpp
-                            ladspa/ladspainstancestereo.cpp
-                            ladspa/ladspainstancemono.cpp
-                            ladspaview.cpp
-                            ladspa/ladspapreset.cpp
-                            ladspa/ladspapresetmanager.cpp
-                            ladspa/ladspapresetknob.cpp
-                            ladspa/ladspapresetinstance.cpp
-                            dlgladspa.cpp
-                            ladspa/ladspapresetslot.cpp
-                            """)
-        return ladspa_plugins + sources
 
 
 class IPod(Feature):
@@ -396,25 +350,6 @@ class MSVCDebug(Feature):
             # else:
             #    build.env.Append(CCFLAGS = '/MD')
             build.env.Append(CCFLAGS='/MD')
-
-
-class HifiEq(Feature):
-    def description(self):
-        return "High quality EQs"
-
-    def enabled(self, build):
-        build.flags['hifieq'] = util.get_flags(build.env, 'hifieq', 1)
-        if int(build.flags['hifieq']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('hifieq', 'Set to 1 to enable high quality EQs', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            # Enables old crappy EQs
-            build.env.Append(CPPDEFINES=['__LOFI__', '__NO_INTTYPES__'])
 
 
 class VinylControl(Feature):
@@ -611,6 +546,50 @@ class WavPack(Feature):
                 'Could not find libwavpack, libwv or its development headers.')
 
 
+class ColorDiagnostics(Feature):
+    def description(self):
+        return "Color Diagnostics"
+
+    def enabled(self, build):
+        build.flags['color'] = util.get_flags(build.env, 'color', 0)
+        return bool(int(build.flags['color']))
+
+    def add_options(self, build, vars):
+        vars.Add('color', "Set to 1 to enable Clang color diagnostics.", 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if not build.compiler_is_clang:
+            raise Exception('Color diagnostics are only available using clang.')
+
+        build.env.Append(CCFLAGS='-fcolor-diagnostics')
+
+
+class AddressSanitizer(Feature):
+    def description(self):
+        return "Address Sanitizer"
+
+    def enabled(self, build):
+        build.flags['asan'] = util.get_flags(build.env, 'asan', 0)
+        return bool(int(build.flags['asan']))
+
+    def add_options(self, build, vars):
+        vars.Add("asan", "Set to 1 to enable linking against the Clang AddressSanitizer.", 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if not build.compiler_is_clang:
+            raise Exception('Address Sanitizer is only available using clang.')
+
+        # -fno-omit-frame-pointer gets much better stack traces in asan output.
+        build.env.Append(CCFLAGS="-fsanitize=address -fno-omit-frame-pointer")
+        build.env.Append(LINKFLAGS="-fsanitize=address -fno-omit-frame-pointer")
+
+
 class PerfTools(Feature):
     def description(self):
         return "Google PerfTools"
@@ -720,6 +699,8 @@ class Verbose(Feature):
             build.env['CCCOMSTR'] = '[CC] $SOURCE'
             build.env['CXXCOMSTR'] = '[CXX] $SOURCE'
             build.env['ASCOMSTR'] = '[AS] $SOURCE'
+            build.env['ARCOMSTR'] = '[AR] $TARGET'
+            build.env['RANLIBCOMSTR'] = '[RANLIB] $TARGET'
             build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
             build.env['LINKCOMSTR'] = '[LD] $TARGET'
 
@@ -1060,10 +1041,11 @@ class Optimize(Feature):
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             build.env.Append(CCFLAGS='/fp:fast')
 
-            # Do link-time code generation (and show a progress indicator)
-            # Should we turn on PGO ?
+            # Do link-time code generation (and don't show a progress indicator
+            # -- this relies on aNSI control characters and tends to overwhelm
+            # Jenkins logs) Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-            build.env.Append(LINKFLAGS='/LTCG:STATUS')
+            build.env.Append(LINKFLAGS='/LTCG:NOSTATUS')
 
             # Suggested for unused code removal
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx

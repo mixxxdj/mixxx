@@ -5,7 +5,7 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "track/beats.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -28,8 +28,8 @@ bool WaveformRenderBeat::init() {
     return m_pBeatActive->valid();
 }
 
-void WaveformRenderBeat::setup(const QDomNode& node) {
-    m_beatColor.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
+void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
+    m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor);
 
     if (m_beatColor.alphaF() > 0.99)
@@ -39,7 +39,7 @@ void WaveformRenderBeat::setup(const QDomNode& node) {
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if(!trackInfo)
+    if (!trackInfo)
         return;
 
     BeatsPointer trackBeats = trackInfo->getBeats();

@@ -12,7 +12,7 @@ typedef __int32 int32_t;
 #include "sampleutil.h"
 
 // static
-CSAMPLE* SampleUtil::alloc(int size) {
+CSAMPLE* SampleUtil::alloc(unsigned int size) {
     // TODO(XXX) align the array
     return new CSAMPLE[size];
 }
@@ -23,7 +23,7 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
 
 // static
 void SampleUtil::applyGain(CSAMPLE* pBuffer,
-                           CSAMPLE gain, int iNumSamples) {
+                           CSAMPLE gain, unsigned int iNumSamples) {
     if (gain == 1.0f)
         return;
     if (gain == 0.0f) {
@@ -31,9 +31,15 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer,
         return;
     }
 
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
         pBuffer[i] *= gain;
     }
+}
+
+// static
+void SampleUtil::clear(CSAMPLE* pBuffer, unsigned int iNumSamples) {
+    // this works, because (float)0 == (int)0
+    memset(pBuffer, 0, sizeof(pBuffer[0]) * iNumSamples);
 }
 
 // static
@@ -281,5 +287,14 @@ void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
         pDest[i + 1] = pSrcFadeIn[i + 1] * cross_mix
                        + pSrcFadeOut[i + 1] * (1.0 - cross_mix);
         cross_mix += cross_inc;
+    }
+}
+
+// static
+void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                int iNumSamples) {
+    for (int i = 0; i + 1 < iNumSamples; i += 2) {
+        pDest[i] = (pSrc[i] + pSrc[i + 1]) / 2;
+        pDest[i + 1] = pDest[i];
     }
 }

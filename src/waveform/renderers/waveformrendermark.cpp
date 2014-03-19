@@ -4,7 +4,7 @@
 
 #include "waveform/renderers/waveformrendermark.h"
 
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -12,30 +12,29 @@
 #include "widget/wwidget.h"
 #include "widget/wimagestore.h"
 
-
-
-WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
+WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-void WaveformRenderMark::setup( const QDomNode& node) {
-    m_marks.setup(m_waveformRenderer->getGroup(), node, *m_waveformRenderer->getWaveformSignalColors());
+void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+    m_marks.setup(m_waveformRenderer->getGroup(), node, context,
+                  *m_waveformRenderer->getWaveformSignalColors());
 }
 
-void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
+void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->save();
 
     /*
     //DEBUG
-    for( int i = 0; i < m_markPoints.size(); i++) {
-        if( m_waveformWidget->getTrackSamples())
+    for (int i = 0; i < m_markPoints.size(); i++) {
+        if (m_waveformWidget->getTrackSamples())
             painter->drawText(40*i,12+12*(i%3),QString::number(m_markPoints[i]->get() / (double)m_waveformWidget->getTrackSamples()));
     }
     */
 
     painter->setWorldMatrixEnabled(false);
 
-    for( int i = 0; i < m_marks.size(); i++) {
+    for (int i = 0; i < m_marks.size(); i++) {
         WaveformMark& mark = m_marks[i];
 
         if (!mark.m_pointControl)
@@ -43,7 +42,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
 
         // Generate image on first paint can't be done in setup since we need
         // render widget to be resized yet ...
-        if( mark.m_image.isNull()) {
+        if (mark.m_image.isNull()) {
             generateMarkImage(mark);
         }
 
@@ -56,7 +55,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
             const int markHalfWidth = mark.m_image.width()/2.0;
 
             //check if the current point need to be displayed
-            if( currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
+            if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
                 painter->drawImage(QPoint(currentMarkPoint-markHalfWidth,0), mark.m_image);
             }
         }
@@ -64,10 +63,10 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
     painter->restore();
 }
 
-void WaveformRenderMark::generateMarkImage( WaveformMark& mark) {
+void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
-    if( mark.m_pixmapPath != "") {
-        QString path =  WWidget::getPath(mark.m_pixmapPath);
+    if (mark.m_pixmapPath != "") {
+        QString path =  mark.m_pixmapPath;
         QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
@@ -150,17 +149,17 @@ void WaveformRenderMark::generateMarkImage( WaveformMark& mark) {
         float lineTop = labelRectHeight + 1;
         float lineBottom = mark.m_image.height();
 
-        if(mark.m_align == Qt::AlignBottom) {
+        if (mark.m_align == Qt::AlignBottom) {
             lineTop = 0.0;
             lineBottom = mark.m_image.height() - labelRectHeight - 1;
         }
 
-        painter.drawLine( middle, lineTop, middle, lineBottom);
+        painter.drawLine(middle, lineTop, middle, lineBottom);
 
         //other lines to increase contrast
         painter.setPen(QColor(0,0,0,120));
-        painter.drawLine( middle - 1, lineTop, middle - 1, lineBottom);
-        painter.drawLine( middle + 1, lineTop, middle + 1, lineBottom);
+        painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
+        painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
 
     }
     else //no text draw triangle
@@ -208,11 +207,11 @@ void WaveformRenderMark::generateMarkImage( WaveformMark& mark) {
         float lineTop = triangleSize*0.5 + 1;
         float lineBottom = mark.m_image.height() - triangleSize*0.5 - 1;
 
-        painter.drawLine( middle, lineTop, middle, lineBottom);
+        painter.drawLine(middle, lineTop, middle, lineBottom);
 
         //other lines to increase contrast
         painter.setPen(QColor(0,0,0,100));
-        painter.drawLine( middle - 1, lineTop, middle - 1, lineBottom);
-        painter.drawLine( middle + 1, lineTop, middle + 1, lineBottom);
+        painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
+        painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
     }
 }

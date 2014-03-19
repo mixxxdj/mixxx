@@ -15,11 +15,6 @@ QString chromaprinter::getFingerPrint(TrackPointer pTrack){
     return calcFingerPrint(soundSource);
 }
 
-QString chromaprinter::getFingerPrint(QString location){
-    SoundSourceProxy soundSource(location);
-    return calcFingerPrint(soundSource);
-}
-
 QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
     soundSource.open();
     m_SampleRate = soundSource.getSampleRate();

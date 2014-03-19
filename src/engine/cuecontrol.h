@@ -16,6 +16,7 @@
 class ControlObject;
 class ControlPushButton;
 class Cue;
+class ControlIndicator;
 
 class HotcueControl : public QObject {
     Q_OBJECT
@@ -82,12 +83,15 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(const char * _group,
-               ConfigObject<ConfigValue> * _config);
+    CueControl(const char* _group,
+               ConfigObject<ConfigValue>* _config);
     virtual ~CueControl();
 
     virtual void hintReader(QVector<Hint>* pHintList);
-    bool isCuePreviewing();
+    double updateIndicatorsAndModifyPlay(double play, bool playPossible);
+    void updateIndicators();
+    bool isTrackAtCue();
+    bool getPlayFlashingAtPause();
 
   public slots:
     void trackLoaded(TrackPointer pTrack);
@@ -109,10 +113,12 @@ class CueControl : public EngineControl {
     void cueGoto(double v);
     void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
-    void cueSimple(double v);
     void cuePreview(double v);
     void cueCDJ(double v);
+    void cueDenon(double v);
     void cueDefault(double v);
+    void pause(double v);
+    void playStutter(double v);
 
   private:
     // These methods are not thread safe, only call them when the lock is held.
@@ -125,6 +131,7 @@ class CueControl : public EngineControl {
     bool m_bPreviewing;
     bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
+    ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
@@ -137,9 +144,11 @@ class CueControl : public EngineControl {
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;
-    ControlPushButton* m_pCueSimple;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
+    ControlPushButton* m_pPlayStutter;
+    ControlIndicator* m_pCueIndicator;
+    ControlIndicator* m_pPlayIndicator;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;

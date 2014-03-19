@@ -41,7 +41,7 @@ class Encoder;
 class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
   public:
-    EngineShoutcast(ConfigObject<ConfigValue> *_config);
+    EngineShoutcast(ConfigObject<ConfigValue>* _config);
     virtual ~EngineShoutcast();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -89,7 +89,7 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
-    ConfigObject<ConfigValue> *m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThread* m_pUpdateShoutcastFromPrefs;
@@ -100,6 +100,7 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     bool m_custom_metadata;
     QString m_customArtist;
     QString m_customTitle;
+    QString m_metadataFormat;
 
     // when static metadata is used, we only need calling shout_set_metedata
     // once

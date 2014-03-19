@@ -30,7 +30,7 @@ SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
     m_fileBuf = modFile.readAll();
     modFile.close();
     // get ModPlugFile descriptor for later access
-    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.data(), m_fileBuf.length());
+    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(), m_fileBuf.length());
 
     if (m_pModFile==NULL) {
         qDebug() << "[ModPlug] Error while ModPlug_Load";

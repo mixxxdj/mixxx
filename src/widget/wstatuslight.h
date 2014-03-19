@@ -25,32 +25,43 @@
 #include <QString>
 #include <QDomNode>
 #include <QPixmap>
+#include <QVector>
 
 #include "widget/wwidget.h"
-
-/**
-  *@author John Sully
-  */
+#include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 class WStatusLight : public WWidget  {
    Q_OBJECT
-public:
+  public:
+    enum SizeMode {
+        FIXED,
+        RESIZE,
+    };
+
     WStatusLight(QWidget *parent=0);
-    ~WStatusLight();
-    void setup(QDomNode node);
-    void setPixmap(int iState, const QString &filename);
-    void setNoPos(int iNoPos);
-public slots:
-    void setValue(double v);
-private:
+    virtual ~WStatusLight();
+
+    void setup(QDomNode node, const SkinContext& context);
+    static SizeMode SizeModeFromString(QString str);
+
+  public slots:
+    void onConnectedControlValueChanged(double v);
+
+  protected:
     void paintEvent(QPaintEvent *);
 
-    /** Current position */
+  private:
+    void setPixmap(int iState, const QString &filename, SizeMode mode);
+    void setNoPos(int iNoPos);
+
+    // Current position
     int m_iPos;
-    /** Number of positions associated with this light */
-    int m_iNoPos;
-    /** Associated pixmaps */
-    QPixmap **m_pPixmapSLs;
+
+    PaintablePointer m_pPixmapBackground;
+
+    // Associated pixmaps
+    QVector<PaintablePointer> m_pixmaps;
 };
 
 #endif

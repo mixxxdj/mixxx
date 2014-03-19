@@ -29,6 +29,7 @@
 #include <math.h>
 
 #include "mixxx.h"
+#include "mixxxapplication.h"
 #include "soundsourceproxy.h"
 #include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
@@ -41,11 +42,7 @@ extern "C" {
 }
 #endif
 
-#ifdef __LADSPA__
-#include <ladspa/ladspaloader.h>
-#endif
-
-#ifdef Q_OS_LINUX 
+#ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
 #endif
 
@@ -158,7 +155,7 @@ void MessageHandler(QtMsgType type,
 int main(int argc, char * argv[])
 {
 
-#ifdef Q_OS_LINUX 
+#ifdef Q_OS_LINUX
     XInitThreads();
 #endif
 
@@ -168,7 +165,12 @@ int main(int argc, char * argv[])
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
-    QCoreApplication::setOrganizationName("Mixxx");
+
+    // Setting the organization name results in a QDesktopStorage::DataLocation
+    // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
+    // organization name blank.
+    //QCoreApplication::setOrganizationName("Mixxx");
+
     QCoreApplication::setApplicationName("Mixxx");
     QString mixxxVersion = Version::version();
     QByteArray mixxxVersionBA = mixxxVersion.toLocal8Bit();
@@ -205,7 +207,7 @@ int main(int argc, char * argv[])
     --settingsPath PATH     Top-level directory where Mixxx should look\n\
                             for settings. Default is:\n", stdout);
         fprintf(stdout, "\
-                            %s\n", args.getSettingsPath().toLocal8Bit().data());
+                            %s\n", args.getSettingsPath().toLocal8Bit().constData());
         fputs("\
 \n\
     --controllerDebug       Causes Mixxx to display/log all of the controller\n\
@@ -243,7 +245,7 @@ int main(int argc, char * argv[])
     //  so if you change it here, change it also in:
     //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
-    QApplication a(argc, argv);
+    MixxxApplication a(argc, argv);
 
     // Support utf-8 for all translation strings. Not supported in Qt 5.
     // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
@@ -260,55 +262,11 @@ int main(int argc, char * argv[])
      avcodec_register_all();
 #endif
 
-
-
-#ifdef __LADSPA__
-    //LADSPALoader ladspaloader;
-#endif
-
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
 //    for (int i=0; i<argc; ++i)
 //        if(QString("--no-visuals")==argv[i])
 //            bVisuals = false;
-
-
-    // set up the plugin paths...
-    /*
-    qDebug() << "Setting up plugin paths...";
-    plugin_paths = QStringList();
-    QString ladspaPath = QString(getenv("LADSPA_PATH"));
-
-    if (!ladspaPath.isEmpty())
-    {
-        // get the list of directories containing LADSPA plugins
-#ifdef __WINDOWS__
-        //paths.ladspaPath.split(';');
-#else  //this doesn't work, I think we need to iterate over the splitting to do it properly
-        //paths = ladspaPath.split(':');
-#endif
-    }
-    else
-    {
-        // add default path if LADSPA_PATH is not set
-#ifdef __LINUX__
-        plugin_paths.push_back ("/usr/lib/ladspa/");
-        plugin_paths.push_back ("/usr/lib64/ladspa/");
-#elif __APPLE__
-      QDir dir(a.applicationDirPath());
-     dir.cdUp();
-     dir.cd("PlugIns");
-         plugin_paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
-         plugin_paths.push_back (dir.absolutePath()); //ladspa_plugins directory in Mixxx.app bundle //XXX work in QApplication::appdir()
-#elif __WINDOWS__
-        // not tested yet but should work:
-        QString programFiles = QString(getenv("ProgramFiles"));
-         plugin_paths.push_back (programFiles+"\\LADSPA Plugins");
-         plugin_paths.push_back (programFiles+"\\Audacity\\Plug-Ins");
-#endif
-    }
-    qDebug() << "...done.";
-    */
 
 
 #ifdef __APPLE__
@@ -328,7 +286,7 @@ int main(int argc, char * argv[])
      }
 #endif
 
-    MixxxApp* mixxx = new MixxxApp(&a, args);
+    MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
 
     //a.setMainWidget(mixxx);
     QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));

@@ -32,8 +32,7 @@ machine = ARGUMENTS.get('machine', None)
 build_type = ARGUMENTS.get('build', None)
 toolchain = ARGUMENTS.get('toolchain', None)
 
-available_features = [features.HifiEq,
-                      features.Mad,
+available_features = [features.Mad,
                       features.CoreAudio,
                       features.MediaFoundation,
                       features.HSS1394,
@@ -50,11 +49,12 @@ available_features = [features.HifiEq,
                       features.WavPack,
                       features.ModPlug,
                       features.TestSuite,
-                      features.LADSPA,
                       features.MSVCDebug,
                       features.MSVSHacks,
                       features.Vamp,
                       features.AutoDjCrates,
+                      features.ColorDiagnostics,
+                      features.AddressSanitizer,
 
                       # "Features" of dubious quality
                       features.PerfTools,
@@ -102,7 +102,9 @@ SConscript(File('src/SConscript'), variant_dir=Dir(build.build_dir), duplicate=0
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
 # the DLLs present with it.
-if not build.platform_is_windows:
+if build.platform_is_osx:
+    Command("mixxx", os.path.join(build.build_dir, "Mixxx"), Copy("$TARGET", "$SOURCE"))
+elif not build.platform_is_windows:
     Command("mixxx", os.path.join(build.build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
 
 

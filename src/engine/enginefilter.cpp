@@ -64,10 +64,8 @@ EngineFilter::~EngineFilter()
 
 
 
-void EngineFilter::process(const CSAMPLE * pIn, const CSAMPLE * ppOut, const int iBufferSize)
+void EngineFilter::process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize)
 {
-    CSAMPLE * pOut = (CSAMPLE *) ppOut;   //overrides the const, I don't like it but the parent class
-                                          //forced this on us
     int i;
     for(i=0; i < iBufferSize; i+=2)
     {

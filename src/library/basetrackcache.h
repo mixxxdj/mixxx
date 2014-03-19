@@ -14,10 +14,12 @@
 #include <QVector>
 
 #include "library/dao/trackdao.h"
+#include "library/columncache.h"
 #include "trackinfoobject.h"
 #include "util.h"
 
 class SearchQueryParser;
+class QueryNode;
 class TrackCollection;
 
 // BaseTrackCache is a cache of all of the values in certain table. It supports
@@ -30,9 +32,9 @@ class BaseTrackCache : public QObject {
     Q_OBJECT
   public:
     BaseTrackCache(TrackCollection* pTrackCollection,
-                   QString tableName,
-                   QString idColumn,
-                   QList<QString> columns,
+                   const QString& tableName,
+                   const QString& idColumn,
+                   const QStringList& columns,
                    bool isCaching);
     virtual ~BaseTrackCache();
 
@@ -45,9 +47,9 @@ class BaseTrackCache : public QObject {
     ////////////////////////////////////////////////////////////////////////////
 
     virtual QVariant data(int trackId, int column) const;
-    virtual const QStringList columns() const;
     virtual int columnCount() const;
-    virtual int fieldIndex(const QString column) const;
+    virtual int fieldIndex(const QString& column) const;
+    int fieldIndex(ColumnCache::Column column) const;
     virtual void filterAndSort(const QSet<int>& trackIds,
                                QString query, QString extraFilter,
                                int sortColumn, Qt::SortOrder sortOrder,
@@ -74,10 +76,10 @@ class BaseTrackCache : public QObject {
     void updateTrackInIndex(int trackId);
     void updateTracksInIndex(QSet<int> trackIds);
     void getTrackValueForColumn(TrackPointer pTrack, int column,
-                                    QVariant& trackValue) const;
+                                QVariant& trackValue) const;
 
-    QString filterClause(QString query, QString extraFilter,
-                         QStringList idStrings) const;
+    QueryNode* parseQuery(QString query, QString extraFilter,
+                          QStringList idStrings) const;
     QString orderByClause(int sortColumn, Qt::SortOrder sortOrder) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
@@ -95,9 +97,10 @@ class BaseTrackCache : public QObject {
 
     const QString m_tableName;
     const QString m_idColumn;
-    const QStringList m_columns;
+    const int m_columnCount;
     const QString m_columnsJoined;
-    const QHash<QString, int> m_columnIndex;
+
+    ColumnCache m_columnCache;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;
@@ -111,15 +114,9 @@ class BaseTrackCache : public QObject {
     bool m_bIndexBuilt;
     bool m_bIsCaching;
     QHash<int, QVector<QVariant> > m_trackInfo;
-    TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
     SearchQueryParser* m_pQueryParser;
-    
-    QStringList m_numericFilters;
-    QRegExp m_operatorMatcher;
-    QRegExp m_numericFilterMatcher;
-    QRegExp m_stringFilterMatcher;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

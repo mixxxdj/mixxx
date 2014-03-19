@@ -16,12 +16,15 @@ static const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
 static const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
 
 // a-g followed by any number of sharps or flats.
-static const char* s_keyPattern = "([a-g])([#b]*m?)";
+static const char* s_keyPattern = "([a-g])([#♯b♭]*m?)";
+
+static const QString s_sharpSymbol = QString::fromUtf8("♯");
+static const QString s_flatSymbol = QString::fromUtf8("♭");
 
 static const char *s_traditionalKeyNames[] = {
     "INVALID",
-    "C", "Db", "D", "Eb", "E", "F", "F#/Gb", "G", "Ab", "A", "Bb", "B",
-    "Cm", "C#m", "Dm", "D#m/Ebm", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "Bbm", "Bm"
+    "C", "D♭", "D", "E♭", "E", "F", "F♯/G♭", "G", "A♭", "A", "B♭", "B",
+    "Cm", "C♯m", "Dm", "D♯m/E♭m", "Em", "Fm", "F♯m", "Gm", "G♯m", "Am", "B♭m", "Bm"
 };
 
 // Maps an OpenKey number to its major and minor key.
@@ -83,11 +86,11 @@ ChromaticKey KeyUtils::openKeyNumberToKey(int openKeyNumber, bool major) {
 }
 
 // static
-const char* KeyUtils::keyDebugName(ChromaticKey key) {
+QString KeyUtils::keyDebugName(ChromaticKey key) {
     if (!ChromaticKey_IsValid(key)) {
-        return s_traditionalKeyNames[0];
+        key = mixxx::track::io::key::INVALID;
     }
-    return s_traditionalKeyNames[static_cast<int>(key)];
+    return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
 }
 
 // static
@@ -129,7 +132,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
     } else if (notation == TRADITIONAL) {
-        return s_traditionalKeyNames[static_cast<int>(key)];
+        return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
     }
     return keyDebugName(key);
 }
@@ -201,7 +204,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
                 major = false;
                 break;
             }
-            steps += *it == '#' ? 1 : -1;
+            steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 
         ChromaticKey letterKey = static_cast<ChromaticKey>(
@@ -374,4 +377,42 @@ int KeyUtils::shortestStepsToCompatibleKey(
     target_key = openKeyNumberToKey(targetOpenKeyNumber, major);
 
     return shortestStepsToKey(key, target_key);
+}
+
+QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
+        mixxx::track::io::key::ChromaticKey key) {
+    QList<mixxx::track::io::key::ChromaticKey> compatible;
+    if (!ChromaticKey_IsValid(key) || key == mixxx::track::io::key::INVALID) {
+        return compatible;
+    }
+
+    // We know the key is in the set of valid values. Save whether or not the
+    // value is minor.
+    bool major = keyIsMajor(key);
+    int openKeyNumber = KeyUtils::keyToOpenKeyNumber(key);
+
+    // The compatible keys of particular key are:
+    // * The relative major/minor key.
+    // * The perfect 4th (sub-dominant) key.
+    // * The perfect 5th (dominant) key.
+    //
+    // The Circle of Fifths is a handy tool that encodes this compatibility.
+    // Keys on the same radial of the circle are compatible and adjacent keys on
+    // the circle are compatible. OpenKey notation encodes the Circle of
+    // Fifths. The OpenKey number represents the radial on the circle and
+    // major/minor determines whether you are on the inner or outer ring of the
+    // radial.
+
+    // The key is compatible with tracks in the same key.
+    compatible << key;
+
+    // The relative major/minor key is compatible.
+    compatible << openKeyNumberToKey(openKeyNumber, !major);
+
+    // The perfect 4th and perfect 5th are compatible.
+    compatible << openKeyNumberToKey(
+            openKeyNumber == 12 ? 1 : openKeyNumber + 1, major);
+    compatible << openKeyNumberToKey(
+            openKeyNumber == 1 ? 12 : openKeyNumber - 1, major);
+    return compatible;
 }

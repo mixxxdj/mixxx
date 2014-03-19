@@ -63,6 +63,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("pfl", tr("Headphone listen button"), transportMenu);
+    addDeckAndSamplerControl("mute", tr("Mute button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject track"), transportMenu);
     addSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);

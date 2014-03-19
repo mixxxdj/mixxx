@@ -26,14 +26,15 @@
 
 #include "sounddeviceportaudio.h"
 
-#include "controlobjectthreadmain.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
 #include "visualplayposition.h"
 #include "util/timer.h"
+#include "util/trace.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "sampleutil.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -44,7 +45,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_bSetThreadPriority(false),
           m_pMasterUnderflowCount(ControlObject::getControl(
               ConfigKey("[Master]", "underflow_count"))),
-          m_undeflowUpdateCount(0) {
+          m_underflowUpdateCount(0) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -69,8 +70,8 @@ int SoundDevicePortAudio::open() {
 
     memset(&m_outputParams, 0, sizeof(m_outputParams));
     memset(&m_inputParams, 0, sizeof(m_inputParams));
-    PaStreamParameters * pOutputParams = &m_outputParams;
-    PaStreamParameters * pInputParams = &m_inputParams;
+    PaStreamParameters* pOutputParams = &m_outputParams;
+    PaStreamParameters* pInputParams = &m_inputParams;
 
     // Look at how many audio outputs we have,
     // so we can figure out how many output channels we need to open.
@@ -81,7 +82,7 @@ int SoundDevicePortAudio::open() {
         foreach (AudioOutput out, m_audioOutputs) {
             ChannelGroup channelGroup = out.getChannelGroup();
             int highChannel = channelGroup.getChannelBase()
-                + channelGroup.getChannelCount();
+                    + channelGroup.getChannelCount();
             if (m_outputParams.channelCount <= highChannel) {
                 m_outputParams.channelCount = highChannel;
             }
@@ -125,9 +126,10 @@ int SoundDevicePortAudio::open() {
         }
     }
 
+
     // Sample rate
     if (m_dSampleRate <= 0) {
-        m_dSampleRate = 44100.0f;
+        m_dSampleRate = 44100.0;
     }
 
     // Get latency in milleseconds
@@ -153,17 +155,18 @@ int SoundDevicePortAudio::open() {
     m_outputParams.hostApiSpecificStreamInfo = NULL;
 
     m_inputParams.device  = m_devId;
-    m_inputParams.sampleFormat  = paInt16; //This is how our vinyl control stuff like samples.
+    m_inputParams.sampleFormat  = paFloat32;
     m_inputParams.suggestedLatency = bufferMSec / 1000.0;
     m_inputParams.hostApiSpecificStreamInfo = NULL;
 
     qDebug() << "Opening stream with id" << m_devId;
 
     //Create the callback function pointer.
-    PaStreamCallback *callback = paV19Callback;
+    PaStreamCallback* callback = paV19Callback;
 
+    PaStream *pStream;
     // Try open device using iChannelMax
-    err = Pa_OpenStream(&m_pStream,
+    err = Pa_OpenStream(&pStream,
                         pInputParams,
                         pOutputParams,
                         m_dSampleRate,
@@ -175,11 +178,11 @@ int SoundDevicePortAudio::open() {
     if (err != paNoError) {
         qWarning() << "Error opening stream:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
-        m_pStream = NULL;
         return ERR;
     } else {
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
+
 
 #ifdef __LINUX__
     //Attempt to dynamically load and resolve stuff in the PortAudio library
@@ -192,24 +195,27 @@ int SoundDevicePortAudio::open() {
 
     EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve("PaAlsa_EnableRealtimeScheduling");
     if (enableRealtime) {
-        enableRealtime(m_pStream, 1);
+        enableRealtime(pStream, 1);
     }
     portaudio.unload();
 #endif
 
     // Start stream
-    err = Pa_StartStream(m_pStream);
+    err = Pa_StartStream(pStream);
     if (err != paNoError) {
         qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
-        m_pStream = NULL;
+        err = Pa_CloseStream(pStream);
+        if (err != paNoError) {
+            qWarning() << "PortAudio: Close stream error:" << Pa_GetErrorText(err) << getInternalName();
+        }
         return ERR;
     } else {
         qDebug() << "PortAudio: Started stream successfully";
     }
 
     // Get the actual details of the stream & update Mixxx's data
-    const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
+    const PaStreamInfo* streamDetails = Pa_GetStreamInfo(pStream);
     m_dSampleRate = streamDetails->sampleRate;
     double currentLatencyMSec = streamDetails->outputLatency * 1000;
     qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:" << currentLatencyMSec << "ms";
@@ -223,14 +229,17 @@ int SoundDevicePortAudio::open() {
     if (m_pMasterUnderflowCount) {
         m_pMasterUnderflowCount->set(0);
     }
+    m_pStream = pStream;
     return OK;
 }
 
 int SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << getInternalName();
-    if (m_pStream) {
+    PaStream* pStream = m_pStream;
+    m_pStream = NULL;
+    if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
-        PaError err = Pa_IsStreamStopped(m_pStream);
+        PaError err = Pa_IsStreamStopped(pStream);
         // 1 means the stream is stopped. 0 means active.
         if (err == 1) {
             qDebug() << "PortAudio: Stream already stopped, but no error.";
@@ -244,7 +253,7 @@ int SoundDevicePortAudio::close() {
         }
 
         //Stop the stream.
-        err = Pa_StopStream(m_pStream);
+        err = Pa_StopStream(pStream);
         //PaError err = Pa_AbortStream(m_pStream); //Trying Pa_AbortStream instead, because StopStream seems to wait
                                                    //until all the buffers have been flushed, which can take a
                                                    //few (annoying) seconds when you're doing soundcard input.
@@ -259,14 +268,13 @@ int SoundDevicePortAudio::close() {
         }
 
         // Close stream
-        err = Pa_CloseStream(m_pStream);
+        err = Pa_CloseStream(pStream);
         if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
     }
 
-    m_pStream = NULL;
     m_bSetThreadPriority = false;
 
     return 0;
@@ -276,16 +284,11 @@ QString SoundDevicePortAudio::getError() const {
     return m_lastError;
 }
 
-/** -------- ------------------------------------------------------
-        Purpose: This callback function gets called everytime the sound device runs
-                 out of samples (ie. when it needs more sound to play)
-        -------- ------------------------------------------------------
- */
-int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
-        float *output, short *in, const PaStreamCallbackTimeInfo *timeInfo,
-        PaStreamCallbackFlags statusFlags) {
-    Q_UNUSED(timeInfo);
-    ScopedTimer t("SoundDevicePortAudio::callbackProcess " + getInternalName());
+int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
+                                          CSAMPLE *output, const CSAMPLE *in,
+                                          const PaStreamCallbackTimeInfo *timeInfo,
+                                          PaStreamCallbackFlags statusFlags) {
+    Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     // Turn on TimeCritical priority for the callback thread. If we are running
@@ -299,16 +302,16 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         VisualPlayPosition::setTimeInfo(timeInfo);
     }
 
-    if (!m_undeflowUpdateCount) {
+    if (!m_underflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
             if (m_pMasterUnderflowCount) {
                 m_pMasterUnderflowCount->set(
                     m_pMasterUnderflowCount->get() + 1);
             }
-            m_undeflowUpdateCount = 40;
+            m_underflowUpdateCount = 40;
         }
     } else {
-        m_undeflowUpdateCount--;
+        m_underflowUpdateCount--;
     }
 
     //Note: Input is processed first so that any ControlObject changes made in
@@ -316,27 +319,18 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     //      m_pSoundManager->requestBuffer() is called below.)
 
     // Send audio from the soundcard's input off to the SoundManager...
-    if (in && framesPerBuffer > 0) {
+    if (in) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
-
-        //Apply software preamp
-        //Super big warning: Need to use channel_count here instead of iFrameSize because iFrameSize is
-        //only for output buffers...
-        // TODO(bkgood) move this to vcproxy or something, once we have other
-        // inputs we don't want every input getting the vc gain
-        static ControlObject* pControlObjectVinylControlGain =
-                ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"));
-        int iVCGain = pControlObjectVinylControlGain->get();
-        if (iVCGain > 1) {
-            for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
-                in[i] *= iVCGain;
-        }
-
         m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
                                     m_inputParams.channelCount);
     }
 
-    if (output && framesPerBuffer > 0) {
+    if (m_pSoundManager->isDeviceClkRef(this)) {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare " + getInternalName());
+        m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
+    }
+
+    if (output) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess output " + getInternalName());
 
         if (m_outputParams.channelCount <= 0) {
@@ -345,27 +339,18 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
             return paContinue;
         }
 
-        m_pSoundManager->requestBuffer(
-            m_audioOutputs, output,
-            framesPerBuffer, static_cast<unsigned int>(
-                m_outputParams.channelCount), this);
+        composeOutputBuffer(output, framesPerBuffer, static_cast<unsigned int>(
+            m_outputParams.channelCount));
     }
 
     return paContinue;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Wrapper function to call processing loop function,
-            implemented as a method in a class. Used in PortAudio,
-            which knows nothing about C++.
-   Input:   .
-   Output:  -
-   -------- ------------------------------------------------------ */
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,
                   PaStreamCallbackFlags statusFlags,
                   void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(framesPerBuffer,
-            (float*) outputBuffer, (short*) inputBuffer, timeInfo, statusFlags);
+    return ((SoundDevicePortAudio*)soundDevice)->callbackProcess((unsigned int)framesPerBuffer,
+            (CSAMPLE*)outputBuffer, (const CSAMPLE*)inputBuffer, timeInfo, statusFlags);
 }

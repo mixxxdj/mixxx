@@ -1,22 +1,21 @@
 #ifndef WAVEFORMWIDGETFACTORY_H
 #define WAVEFORMWIDGETFACTORY_H
 
-#include <singleton.h>
-#include "configobject.h"
-
-#include "waveform/widgets/waveformwidgettype.h"
-#include "waveform/waveform.h"
-
 #include <QObject>
 #include <QTime>
 #include <QVector>
 
+#include "util/singleton.h"
+#include "configobject.h"
+#include "waveform/widgets/waveformwidgettype.h"
+#include "waveform/waveform.h"
+#include "skin/skincontext.h"
+
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class ControlObjectThreadMain;
 class QTimer;
 class VSyncThread;
-
+class MixxxMainWindow;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -40,11 +39,13 @@ class WaveformWidgetHolder {
   private:
     WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
                          WWaveformViewer* waveformViewer,
-                         const QDomNode& visualNodeCache);
+                         const QDomNode& skinNode,
+                         const SkinContext& skinContext);
 
     WaveformWidgetAbstract* m_waveformWidget;
     WWaveformViewer* m_waveformViewer;
-    QDomNode m_visualNodeCache;
+    QDomNode m_skinNodeCache;
+    SkinContext m_skinContextCache;
 
     friend class WaveformWidgetFactory;
 };
@@ -61,9 +62,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
-    bool setWaveformWidget(WWaveformViewer* viewer, const QDomElement &node);
+    bool setWaveformWidget(WWaveformViewer* viewer,
+                           const QDomElement &node, const SkinContext& context);
 
-    void setFrameRate( int frameRate);
+    void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
 //    bool getVSync() const { return m_vSyncType;}
 
@@ -72,8 +74,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
-    bool setWidgetType( WaveformWidgetType::Type type);
-    bool setWidgetTypeFromHandle( int handleIndex);
+    bool setWidgetType(WaveformWidgetType::Type type);
+    bool setWidgetTypeFromHandle(int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
     void setDefaultZoom(int zoom);
@@ -82,7 +84,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
-    void setVisualGain( FilterIndex index, double gain);
+    void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
     void setOverviewNormalized(bool normalize);
@@ -94,7 +96,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(QWidget *parent);
+    void startVSync(MixxxMainWindow* mixxxApp);
     void setVSyncType(int vsType);
     int getVSyncType();
 
@@ -117,8 +119,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
   private:
     WaveformWidgetType::Type autoChooseWidgetType() const;
     void evaluateWidgets();
-    WaveformWidgetAbstract* createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer);
-    int findIndexOf( WWaveformViewer* viewer) const;
+    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
+    int findIndexOf(WWaveformViewer* viewer) const;
 
     //All type of available widgets
 

@@ -7,11 +7,8 @@
 *.pyc
 *.rej
 *_build
-*.pro
-*.pro.user
 *~
 .#*
-.DS_Store
 .sconf_temp
 .sconsign.branch
 .sconsign.dblite
@@ -23,3 +20,4 @@ lib/*/lib/*.a
 mixxx
 mixxx-test
 res/qrc_mixxx.cc
+res/developer_skins

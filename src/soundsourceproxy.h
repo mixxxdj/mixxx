@@ -26,8 +26,7 @@
 
 #include "soundsource.h"
 #include "trackinfoobject.h"
-
-class QLibrary;
+#include "util/sandbox.h"
 
 /**
   *@author Tue Haste Andersen
@@ -40,7 +39,7 @@ class QLibrary;
 class SoundSourceProxy : public Mixxx::SoundSource
 {
 public:
-    SoundSourceProxy(QString qFilename);
+    SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
     SoundSourceProxy(TrackPointer pTrack);
     ~SoundSourceProxy();
     static void loadPlugins();
@@ -49,10 +48,14 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
     int parseHeader();
-    static int ParseHeader(TrackInfoObject* p);
     unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();
+
+    SoundSource* getProxiedSoundSource() {
+        return m_pSoundSource;
+    }
+
     static QStringList supportedFileExtensions();
     static QStringList supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();
@@ -63,8 +66,9 @@ private:
     //void initPlugin(QString lib_filename, QString track_filename);
     static QLibrary* getPlugin(QString lib_filename);
 
-    SoundSource *m_pSoundSource;
+    SoundSource* m_pSoundSource;
     TrackPointer m_pTrack;
+    SecurityTokenPointer m_pSecurityToken;
 
     static QRegExp m_supportedFileRegex;
     static QMap<QString, QLibrary*> m_plugins;

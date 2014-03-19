@@ -22,6 +22,7 @@
 #include <QList>
 
 #include "defs.h" // for CSAMPLE (???)
+#include "util/fifo.h"
 
 /**
  * @class ChannelGroup
@@ -60,7 +61,7 @@ public:
         DECK,
         VINYLCONTROL,
         MICROPHONE,
-        EXTPASSTHROUGH,
+        AUXILIARY,
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
@@ -76,7 +77,15 @@ public:
     static AudioPathType getTypeFromString(QString string);
     static bool isIndexed(AudioPathType type);
     static AudioPathType getTypeFromInt(int typeInt);
-    static unsigned char channelsNeededForType(AudioPathType type);
+
+    // Returns the minimum number of channels needed on a sound device for an
+    // AudioPathType.
+    static unsigned char minChannelsForType(AudioPathType type);
+
+    // Returns the maximum number of channels needed on a sound device for an
+    // AudioPathType.
+    static unsigned char maxChannelsForType(AudioPathType type);
+
 protected:
     virtual void setType(AudioPathType type) = 0;
     AudioPathType m_type;
@@ -93,6 +102,7 @@ protected:
 class AudioOutput : public AudioPath {
   public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
+                unsigned char channels = 0,
                 unsigned char index = 0);
     virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;
@@ -105,14 +115,18 @@ class AudioOutput : public AudioPath {
 // This class is required to add the buffer, without changing the hash used as ID
 class AudioOutputBuffer : public AudioOutput {
   public:
-    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer)
+    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer,
+                      FIFO<CSAMPLE>* pFifo)
             : AudioOutput(out),
-              m_pBuffer(pBuffer) {
+              m_pBuffer(pBuffer),
+              m_pFifo(pFifo) {
 
     };
-    inline const CSAMPLE* getBuffer() const { return m_pBuffer; };
+    inline const CSAMPLE* getBuffer() const { return m_pBuffer; }
+    inline FIFO<CSAMPLE>* getFifo() const { return m_pFifo; }
   private:
     const CSAMPLE* m_pBuffer;
+    FIFO<CSAMPLE>* m_pFifo;
 };
 
 /**
@@ -124,7 +138,7 @@ class AudioOutputBuffer : public AudioOutput {
 class AudioInput : public AudioPath {
   public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-               unsigned char index = 0);
+               unsigned char channels = 0, unsigned char index = 0);
     virtual ~AudioInput();
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
@@ -133,32 +147,56 @@ class AudioInput : public AudioPath {
     void setType(AudioPathType type);
 };
 
-// This class is required to add the buffer, without changing the hash used as ID
+// This class is required to add the buffer, without changing the hash used as
+// ID
 class AudioInputBuffer : public AudioInput {
   public:
-    AudioInputBuffer(const AudioInput& id, SAMPLE* pBuffer)
+    AudioInputBuffer(const AudioInput& id, CSAMPLE* pBuffer)
             : AudioInput(id),
               m_pBuffer(pBuffer) {
 
-    };
-    inline SAMPLE* getBuffer() const { return m_pBuffer; };
- private:
-    SAMPLE* m_pBuffer;
+    }
+    inline CSAMPLE* getBuffer() const { return m_pBuffer; }
+  private:
+    CSAMPLE* m_pBuffer;
 };
 
 
 class AudioSource {
 public:
     virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
+
+    // This is called by SoundManager whenever an output is connected for this
+    // source. When this is called it is guaranteed that no callback is
+    // active.
     virtual void onOutputConnected(AudioOutput output) { Q_UNUSED(output); };
+
+    // This is called by SoundManager whenever an output is disconnected for
+    // this source. When this is called it is guaranteed that no callback is
+    // active.
     virtual void onOutputDisconnected(AudioOutput output) { Q_UNUSED(output); };
 };
 
 class AudioDestination {
 public:
-    virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumFrames) = 0;
-    virtual void onInputConnected(AudioInput input) { Q_UNUSED(input); };
-    virtual void onInputDisconnected(AudioInput input) { Q_UNUSED(input); };
+    // This is called by SoundManager whenever there are new samples from the
+    // configured input to be processed. This is run in the callback thread of
+    // the soundcard this AudioDestination was registered for! Beware, in the
+    // case of multiple soundcards, this method is not re-entrant (unless this
+    // AudioDestination is registered for multiple AudioInputs) but it may be
+    // concurrent with EngineMaster processing.
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int iNumFrames) = 0;
+
+    // This is called by SoundManager whenever an input is configured for this
+    // destination. When this is called it is guaranteed that no callback is
+    // active.
+    virtual void onInputConfigured(AudioInput input) { Q_UNUSED(input); };
+
+    // This is called by SoundManager whenever an input is unconfigured for this
+    // destination. When this is called it is guaranteed that no callback is
+    // active.
+    virtual void onInputUnconfigured(AudioInput input) { Q_UNUSED(input); };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;

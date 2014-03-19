@@ -15,7 +15,7 @@
 
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
 // from the correct one
-#define BPM_ERROR 0.05f
+#define BPM_ERROR 0.05
 
 // the raw beatgrid is divided into blocks of size N from which the local bpm is
 // computed. Tweaked from 8 to 12 which improves the BPM accurancy for 'problem songs'.
@@ -374,7 +374,7 @@ double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
 
     // If we didn't find any beat that matched the window, return the first
     // beat.
-    return !rawbeats.empty() ? rawbeats.first() : 0.0f;
+    return !rawbeats.empty() ? rawbeats.first() : 0.0;
 }
 
 // static

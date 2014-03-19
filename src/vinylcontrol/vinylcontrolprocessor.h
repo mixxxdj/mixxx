@@ -34,17 +34,26 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     // Called from the main thread. Must only touch m_bReload;
     void requestReloadConfig();
 
+    bool deckConfigured(int index) const;
+
     FIFO<VinylSignalQualityReport>* getSignalQualityFifo() {
         return &m_signalQualityFifo;
     }
 
   public slots:
-    virtual void onInputConnected(AudioInput input);
-    virtual void onInputDisconnected(AudioInput input);
+    virtual void onInputConfigured(AudioInput input);
+    virtual void onInputUnconfigured(AudioInput input);
 
     // Called by the engine callback. Must not touch any state in
-    // VinylControlProcessor except for m_samplePipes.
-    void receiveBuffer(AudioInput input, const short* pBuffer,
+    // VinylControlProcessor except for m_samplePipes. NOTE:
+
+    // This is called by SoundManager whenever there are new samples from the
+    // configured input to be processed. This is run in the callback thread of
+    // the soundcard this AudioDestination was registered for! Beware, this
+    // method is re-entrant since the VinylControlProcessor is registered for
+    // multiple AudioDestinations, however it is not re-entrant for a given
+    // AudioInput index.
+    void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                        unsigned int iNumFrames);
 
   protected:
@@ -61,8 +70,8 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     // A pre-allocated array of FIFOs for writing samples from the engine
     // callback to the processor thread. There is a maximum of
     // kMaximumVinylControlInputs pipes.
-    FIFO<short>* m_samplePipes[kMaximumVinylControlInputs];
-    short* m_pWorkBuffer;
+    FIFO<CSAMPLE>* m_samplePipes[kMaximumVinylControlInputs];
+    CSAMPLE* m_pWorkBuffer;
     QWaitCondition m_samplesAvailableSignal;
     QMutex m_waitForSampleMutex;
     QMutex m_processorsLock;

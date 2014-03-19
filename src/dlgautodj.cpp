@@ -3,7 +3,6 @@
 #include "dlgautodj.h"
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "playerinfo.h"
@@ -217,10 +216,10 @@ void DlgAutoDJ::skipNext(double value) {
         return;
     }
     // Load the next song from the queue.
-    if (m_pCOPlay1Fb->get() == 0.0f) {
+    if (m_pCOPlay1Fb->get() == 0.0) {
         removePlayingTrackFromQueue("[Channel1]");
         loadNextTrackFromQueue();
-    } else if (m_pCOPlay2Fb->get() == 0.0f) {
+    } else if (m_pCOPlay2Fb->get() == 0.0) {
         removePlayingTrackFromQueue("[Channel2]");
         loadNextTrackFromQueue();
     }
@@ -310,7 +309,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             m_eState = ADJ_ENABLE_P1LOADED;
             pushButtonFadeNow->setEnabled(false);
             // Force Update on load Track
-            m_pCOPlayPos1->slotSet(-0.001f);
+            m_pCOPlayPos1->slotSet(-0.001);
         } else {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
@@ -611,7 +610,7 @@ void DlgAutoDJ::player1PlayChanged(double value) {
             qDebug() << "TrackDuration = " << TrackDuration;
 
             // The track might be shorter than the transition period. Use a
-            // sensibile cap.
+            // sensible cap.
             int autoDjTransition = math_min(spinBoxTransition->value(),
                                             TrackDuration/2);
 

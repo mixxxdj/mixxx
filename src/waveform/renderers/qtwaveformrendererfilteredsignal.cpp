@@ -1,10 +1,9 @@
 #include "qtwaveformrendererfilteredsignal.h"
 
-#include "controlobjectthreadmain.h"
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "defs.h"
 
@@ -311,7 +310,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     }
 
     //draw reference line
-    if( m_alignment == Qt::AlignCenter) {
+    if (m_alignment == Qt::AlignCenter) {
         painter->setPen(m_axesColor);
         painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
     }

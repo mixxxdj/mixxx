@@ -86,15 +86,8 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
 
-    SyncMode syncMode = pSyncable->getSyncMode();
-    bool syncEnabled = syncMode != SYNC_NONE;
-
-    // Already in the desired state.
-    if (syncEnabled == bEnabled) {
-        return;
-    }
-
     if (bEnabled) {
+        bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
             // There is no master. If any other deck is playing we will match
             // the first available bpm -- sync won't be enabled on these decks,
@@ -106,6 +99,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
             foreach (const Syncable* other_deck, m_syncables) {
                 if (other_deck == pSyncable) {
+                    // skip this deck
                     continue;
                 }
 
@@ -116,9 +110,10 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                     targetBeatDistance = other_deck->getBeatDistance();
 
                     // If the other deck is playing we stop looking
-                    // immediately. Otherwise continue looking for a playign
+                    // immediately. Otherwise continue looking for a playing
                     // deck with bpm > 0.0.
                     if (other_deck->isPlaying()) {
+                        foundPlayingDeck = true;
                         break;
                     }
                 }
@@ -133,13 +128,24 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
             }
-        } else if (m_pMasterSyncable == m_pInternalClock &&
-                   playingSyncDeckCount() == 0) {
-            // If there are no active followers, reset the internal clock beat
-            // distance.
-            setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+        } else if (m_pMasterSyncable == m_pInternalClock) {
+            if (!syncDeckExists()) {
+                // If there are no active sync decks, reset the internal clock bpm
+                // and beat distance.
+                setMasterBpm(pSyncable, pSyncable->getBpm());
+                setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+            }
+            if (playingSyncDeckCount() > 0) {
+                foundPlayingDeck = true;
+            }
+        } else if (m_pMasterSyncable != NULL) {
+            foundPlayingDeck = true;
         }
         activateFollower(pSyncable);
+        if (foundPlayingDeck) {
+            // Users also expect phase to be aligned when they press the sync button.
+            pSyncable->requestSyncPhase();
+        }
     } else {
         deactivateSync(pSyncable);
     }
@@ -259,7 +265,6 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
     bool wasMaster = pSyncable->getSyncMode() == SYNC_MASTER;
-
     if (wasMaster) {
         m_pMasterSyncable = NULL;
     }
@@ -269,12 +274,16 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 
     bool bSyncDeckExists = syncDeckExists();
 
-    if (wasMaster && pSyncable != m_pInternalClock && bSyncDeckExists) {
-        // Hand off to internal clock
-        activateMaster(m_pInternalClock);
-    } else if (pSyncable != m_pInternalClock && !bSyncDeckExists) {
-        // Deactivate the internal clock if there are no more sync decks left.
-        m_pMasterSyncable = NULL;
-        m_pInternalClock->notifySyncModeChanged(SYNC_NONE);
+    if (pSyncable != m_pInternalClock) {
+        if (bSyncDeckExists) {
+            if (wasMaster) {
+                // Hand off to internal clock
+                activateMaster(m_pInternalClock);
+            }
+        } else {
+            // Deactivate the internal clock if there are no more sync decks left.
+            m_pMasterSyncable = NULL;
+            m_pInternalClock->notifySyncModeChanged(SYNC_NONE);
+        }
     }
 }

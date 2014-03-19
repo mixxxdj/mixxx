@@ -1,33 +1,96 @@
 #include "widget/wwidgetgroup.h"
 
 #include <QLayout>
-#include <QPainter>
+#include <QMap>
+#include <QStylePainter>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "xmlparse.h"
+#include "util/debug.h"
 
-WWidgetGroup::WWidgetGroup(QWidget* parent)
-        : QGroupBox(parent),
+WWidgetGroup::WWidgetGroup(QWidget* pParent)
+        : QFrame(pParent),
+          WBaseWidget(this),
           m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
 
 WWidgetGroup::~WWidgetGroup() {
-    WPixmapStore::deletePixmap(m_pPixmapBack);
 }
 
-void WWidgetGroup::setup(QDomNode node) {
+int WWidgetGroup::layoutSpacing() const {
+    QLayout* pLayout = layout();
+    return pLayout ? pLayout->spacing() : 0;
+}
+
+void WWidgetGroup::setLayoutSpacing(int spacing) {
+    //qDebug() << "WWidgetGroup::setSpacing" << spacing;
+    if (spacing < 0) {
+        qDebug() << "WWidgetGroup: Invalid spacing:" << spacing;
+        return;
+    }
+    QLayout* pLayout = layout();
+    if (pLayout) {
+        pLayout->setSpacing(spacing);
+    }
+}
+
+QRect WWidgetGroup::layoutContentsMargins() const {
+    QLayout* pLayout = layout();
+    QMargins margins = pLayout ? pLayout->contentsMargins() :
+            contentsMargins();
+    return QRect(margins.left(), margins.top(),
+                 margins.right(), margins.bottom());
+}
+
+void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
+    // qDebug() << "WWidgetGroup::setLayoutContentsMargins" << rectMargins.x()
+    //          << rectMargins.y() << rectMargins.width() << rectMargins.height();
+
+    if (rectMargins.x() < 0 || rectMargins.y() < 0 ||
+            rectMargins.width() < 0 || rectMargins.height() < 0) {
+        qDebug() << "WWidgetGroup: Invalid ContentsMargins rectangle:"
+                 << rectMargins;
+        return;
+    }
+
+    setContentsMargins(rectMargins.x(), rectMargins.y(),
+                       rectMargins.width(), rectMargins.height());
+    QLayout* pLayout = layout();
+    if (pLayout) {
+        pLayout->setContentsMargins(rectMargins.x(), rectMargins.y(),
+                                    rectMargins.width(), rectMargins.height());
+    }
+}
+
+Qt::Alignment WWidgetGroup::layoutAlignment() const {
+    QLayout* pLayout = layout();
+    return pLayout ? pLayout->alignment() : Qt::Alignment();
+}
+
+void WWidgetGroup::setLayoutAlignment(int alignment) {
+    //qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
+
+    QLayout* pLayout = layout();
+    if (pLayout) {
+        pLayout->setAlignment(static_cast<Qt::Alignment>(alignment));
+    }
+}
+
+void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
 
     // Set background pixmap if available
-    if (!WWidget::selectNode(node, "BackPath").isNull()) {
-        setPixmapBackground(WWidget::getPath(WWidget::selectNodeQString(node, "BackPath")));
+    if (context.hasNode(node, "BackPath")) {
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "BackPath"), "scalemode", "TILE");
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
+                            Paintable::DrawModeFromString(mode_str));
     }
 
     QLayout* pLayout = NULL;
-    if (!XmlParse::selectNode(node, "Layout").isNull()) {
-        QString layout = XmlParse::selectNodeQString(node, "Layout");
+    if (context.hasNode(node, "Layout")) {
+        QString layout = context.selectString(node, "Layout");
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
             pLayout->setSpacing(0);
@@ -41,14 +104,31 @@ void WWidgetGroup::setup(QDomNode node) {
         }
     }
 
+    if (pLayout && context.hasNode(node, "SizeConstraint")) {
+        QMap<QString, QLayout::SizeConstraint> constraints;
+        constraints["SetDefaultConstraint"] = QLayout::SetDefaultConstraint;
+        constraints["SetFixedSize"] = QLayout::SetFixedSize;
+        constraints["SetMinimumSize"] = QLayout::SetMinimumSize;
+        constraints["SetMaximumSize"] = QLayout::SetMaximumSize;
+        constraints["SetMinAndMaxSize"] = QLayout::SetMinAndMaxSize;
+        constraints["SetNoConstraint"] = QLayout::SetNoConstraint;
+
+        QString sizeConstraintStr = context.selectString(node, "SizeConstraint");
+        if (constraints.contains(sizeConstraintStr)) {
+            pLayout->setSizeConstraint(constraints[sizeConstraintStr]);
+        } else {
+            qDebug() << "Could not parse SizeConstraint:" << sizeConstraintStr;
+        }
+    }
+
     if (pLayout) {
         setLayout(pLayout);
     }
 }
 
-void WWidgetGroup::setPixmapBackground(const QString &filename) {
+void WWidgetGroup::setPixmapBackground(const QString &filename, Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPixmap(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
     if (!m_pPixmapBack) {
         qDebug() << "WWidgetGroup: Error loading background pixmap:" << filename;
     }
@@ -62,19 +142,29 @@ void WWidgetGroup::addWidget(QWidget* pChild) {
 }
 
 void WWidgetGroup::paintEvent(QPaintEvent* pe) {
-    if(m_pPixmapBack) {
-        if (m_pixmapBackScaled.isNull()) {
-            m_pixmapBackScaled = m_pPixmapBack->scaled(size());
-        }
-        QPainter p(this);
-        p.drawPixmap(0, 0, m_pixmapBackScaled);
+    QFrame::paintEvent(pe);
+
+    if (m_pPixmapBack) {
+        QStylePainter p(this);
+        m_pPixmapBack->draw(rect(), &p);
     }
-    // Paint things styled by style sheet
-    QGroupBox::paintEvent(pe);
 }
 
 void WWidgetGroup::resizeEvent(QResizeEvent* re) {
-    m_pixmapBackScaled = QPixmap();
     // Paint things styled by style sheet
-    QGroupBox::resizeEvent(re);
+    QFrame::resizeEvent(re);
+}
+
+bool WWidgetGroup::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QFrame::event(pEvent);
+}
+
+void WWidgetGroup::fillDebugTooltip(QStringList* debug) {
+    WBaseWidget::fillDebugTooltip(debug);
+    *debug << QString("LayoutAlignment: %1").arg(toDebugString(layoutAlignment()))
+           << QString("LayoutContentsMargins: %1").arg(toDebugString(layoutContentsMargins()))
+           << QString("LayoutSpacing: %1").arg(layoutSpacing());
 }

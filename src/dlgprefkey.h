@@ -13,7 +13,7 @@
 class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     Q_OBJECT
   public:
-    DlgPrefKey(QWidget *parent, ConfigObject<ConfigValue> *pConfig);
+    DlgPrefKey(QWidget *parent, ConfigObject<ConfigValue> *_config);
     virtual ~DlgPrefKey();
 
   public slots:

@@ -26,7 +26,7 @@ QList<QString>& Tooltips::add(QString id) {
 }
 
 void Tooltips::addStandardTooltips() {
-    QString dropTracksHere = tr("Drop tracks from library or external file manager here.");
+    QString dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
@@ -213,8 +213,9 @@ void Tooltips::addStandardTooltips() {
             << tempoDisplay;
 
     add("visual_key")
+            //: The musical key of a track
             << tr("Key")
-            << tr("Displays the harmonic key of the loaded track.");
+            << tr("Displays the current musical key of the loaded track after pitch shifting.");
 
     add("bpm_tap")
             << tr("BPM Tap")
@@ -270,9 +271,9 @@ void Tooltips::addStandardTooltips() {
     QString whileStopped = tr("(while stopped)");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
-            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."))
-            << tr("Change the default cue behavior in Preferences -> Interface.")
-            << QString("%1 %2: %3").arg(leftClick, whileStopped, cueSet)
+            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point."))
+            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx mode) OR preview from it (Denon mode)."))
+            << tr("Hint: Change the default cue mode in Preferences -> Interface.")
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue-point and stops."));
 
@@ -280,6 +281,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Headphone")
             << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
+
+    add("mute")
+            << tr("Mute")
+            << tr("Mutes the selected channel's audio in the master output.");
 
     add("back_start")
             << tr("Fast Rewind")
@@ -341,8 +346,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Vinyl Status")
             << tr("Provides visual feedback for vinyl control status:")
             << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Red for needle skip detected.");
+            << tr("Blinking yellow for when the needle reaches the end of the record.");
 
     add("loop_in")
             << tr("Loop-In Marker")
@@ -406,12 +410,14 @@ void Tooltips::addStandardTooltips() {
     add("track_artist")
             << tr("Track Artist")
             << tr("Displays the artist of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("track_album")
             << tr("Track Album")
@@ -427,7 +433,8 @@ void Tooltips::addStandardTooltips() {
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("flanger")
             << tr("Flanger")

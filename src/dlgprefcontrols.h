@@ -24,11 +24,12 @@
 #include "configobject.h"
 #include "preferences/dlgpreferencepage.h"
 
+class ControlObjectSlave;
 class ControlObjectThread;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
-class MixxxApp;
+class MixxxMainWindow;
 class ControlObject;
 
 /**
@@ -38,7 +39,7 @@ class ControlObject;
 class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
   public:
-    DlgPrefControls(QWidget *parent, MixxxApp *mixxx,
+    DlgPrefControls(QWidget *parent, MixxxMainWindow *mixxx,
                     SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
                     ConfigObject<ConfigValue> *pConfig);
     virtual ~DlgPrefControls();
@@ -83,6 +84,9 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetNormalizeOverview( bool normalize);
     void slotWaveformMeasured(float frameRate, int rtErrorCnt);
 
+    void slotNumDecksChanged(double);
+    void slotNumSamplersChanged(double);
+
   private:
     void initWaveformControl();
     void notifyRebootNecessary();
@@ -90,13 +94,18 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObject* m_pControlPositionDisplay;
+    ControlObjectSlave* m_pNumDecks;
+    ControlObjectSlave* m_pNumSamplers;
     QList<ControlObjectThread*> m_cueControls;
     QList<ControlObjectThread*> m_rateControls;
     QList<ControlObjectThread*> m_rateDirControls;
     QList<ControlObjectThread*> m_rateRangeControls;
-    MixxxApp *m_mixxx;
+    MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
+
+    int m_iNumConfiguredDecks;
+    int m_iNumConfiguredSamplers;
 };
 
 #endif

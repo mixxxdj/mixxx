@@ -50,9 +50,10 @@ class MixxxBuild(object):
                                    'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
                                    'sh3', 'sh4',
                                    'kfreebsd-amd64', 'kfreebsd-i386',
-                                   'i486', 'i386', 'powerpc', 'powerpc64',
-                                   'powerpcspe', 's390x',
-                                   'amd64', 'amd64', 'em64t', 'intel64']:
+                                   'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
+                                   'powerpc64', 'powerpcspe', 's390x',
+                                   'amd64', 'em64t', 'intel64', 'arm64',
+                                   'ppc64el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -87,22 +88,22 @@ class MixxxBuild(object):
             Script.Exit(1)
 
         if flags_force32:
-            if self.machine in ['powerpc', 'powerpc64']:
+            if self.machine in ['powerpc', 'powerpc64', 'ppc', 'ppc64']:
                 self.machine = 'powerpc'
             else:
                 self.machine = 'x86'
         elif flags_force64:
-            if self.machine in ['powerpc', 'powerpc64']:
+            if self.machine in ['powerpc', 'powerpc64', 'ppc', 'ppc64']:
                 self.machine = 'powerpc64'
             else:
                 self.machine = 'x86_64'
         self.machine_is_64bit = self.machine.lower(
-            ) in ['x86_64', 'powerpc64', 'amd64', 'em64t', 'intel64']
+            ) in ['x86_64', 'powerpc64', 'ppc64', 'amd64', 'em64t', 'intel64']
         self.bitwidth = 64 if self.machine_is_64bit else 32
         self.architecture_is_x86 = self.machine.lower(
             ) in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
         self.architecture_is_powerpc = self.machine.lower(
-            ) in ['powerpc', 'powerpc64']
+            ) in ['powerpc', 'powerpc64', 'ppc', 'ppc64']
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 
@@ -187,6 +188,11 @@ class MixxxBuild(object):
             tools=tools, toolpath=toolpath, ENV=os.environ,
             **extra_arguments)
         self.read_environment_variables()
+
+        # Now that environment variables have been read, we can detect the compiler.
+        self.compiler_is_gcc = 'gcc' in self.env['CC']
+        self.compiler_is_clang = 'clang' in self.env['CC']
+
         self.virtualize_build_dir()
 
         if self.toolchain_is_gnu:
@@ -194,6 +200,8 @@ class MixxxBuild(object):
                 self.env.Append(CCFLAGS='-m32')
             elif flags_force64:
                 self.env.Append(CCFLAGS='-m64')
+
+        self.setup_sysroot()
 
         if self.platform_is_osx:
             if self.architecture_is_powerpc:
@@ -237,6 +245,64 @@ class MixxxBuild(object):
 
     def detect_machine(self):
         return platform.machine()
+
+    def setup_sysroot(self):
+        sysroot = Script.ARGUMENTS.get('sysroot', '')
+        if sysroot:
+            env.Append(CCFLAGS=['-isysroot', sysroot])
+
+        # If no sysroot was specified, pick one automatically. The only platform
+        # we pick one automatically on is OS X.
+        if self.platform_is_osx:
+            if '-isysroot' in self.env['CXXFLAGS'] or '-isysroot' in self.env['CFLAGS']:
+                print 'Skipping OS X automatic sysroot selection because -isysroot is in your CCFLAGS.'
+                return
+
+            print 'Automatically detecting Mac OS X SDK.'
+
+            # SDK versions in order of precedence.
+            sdk_versions = ( '10.9', '10.8', '10.7', '10.6', '10.5', )
+            clang_sdk_versions = ( '10.9', '10.8', '10.7', )
+            valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
+
+            # By default use old gcc C++ library version
+            osx_stdlib = Script.ARGUMENTS.get('stdlib', 'libstdc++')
+            if osx_stdlib not in valid_cpp_lib_versions:
+                raise Exception('Unsupported C++ stdlib version')
+
+            if osx_stdlib == 'libc++':
+                sdk_version_default = '10.9'
+            else:
+                sdk_version_default = '10.5'
+
+            min_sdk_version = Script.ARGUMENTS.get('osx_sdk_version_min', sdk_version_default)
+            if min_sdk_version not in sdk_versions:
+                raise Exception('Unsupported osx_sdk_version_min value')
+
+            if osx_stdlib == 'libc++' and min_sdk_version not in clang_sdk_versions:
+                raise Exception('stdlib=libc++ requires osx_sdk_version_min >= 10.7')
+
+            print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
+            for sdk in sdk_versions:
+                sdk_path = os.popen(
+                    'xcodebuild -version -sdk macosx%s Path' % sdk).readline().strip()
+                if sdk_path:
+                    print "Automatically selected OS X SDK:", sdk_path
+
+                    common_flags = ['-isysroot', sdk_path,
+                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                    link_flags = [
+                        '-Wl,-syslibroot,' + sdk_path,
+                        '-stdlib=%s' % osx_stdlib
+                    ]
+                    self.env.Append(CCFLAGS=common_flags)
+                    self.env.Append(LINKFLAGS=common_flags + link_flags)
+                    return
+
+            print 'Could not find a supported Mac OS X SDK.'
+            print ('Make sure that XCode is installed, you have installed '
+                   'the command line tools, and have selected an SDK path with '
+                   'xcode-select.')
 
     def read_environment_variables(self):
         # Import environment variables from the terminal. Note that some
@@ -296,6 +362,7 @@ class MixxxBuild(object):
                  'Set the path to the root of a cross-compile sandbox.', '')
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
+        vars.Add('sysroot', 'Specify a custom sysroot', '')
 
         for feature_class in self.available_features:
             # Instantiate the feature

@@ -38,37 +38,40 @@ class RecordingManager;
 class ShoutcastManager;
 class SkinLoader;
 class VinylControlManager;
+class GuiTick;
 
 class DlgPreferences;
 class SoundManager;
+class ControlPushButton;
 
 #include "configobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
 class ControlObjectThread;
+class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
 // For the main view, an instance of class MixxxView is
 // created which creates your view.
-class MixxxApp : public QMainWindow {
+class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
 
   public:
     // Construtor. files is a list of command line arguments
-    MixxxApp(QApplication *app, const CmdlineArgs& args);
-    virtual ~MixxxApp();
+    MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
+    virtual ~MixxxMainWindow();
     // initializes all QActions of the application
     void initActions();
     // initMenuBar creates the menu_bar and inserts the menuitems
     void initMenuBar();
 
-    void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
-
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
+
+    inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
 
@@ -82,10 +85,8 @@ class MixxxApp : public QMainWindow {
     void slotFileQuit();
 
     // toggle vinyl control - Don't #ifdef this because MOC is dumb
-    void slotControlVinylControl(double toggle);
-    void slotCheckboxVinylControl(bool toggle);
-    void slotControlVinylControl2(double toggle);
-    void slotCheckboxVinylControl2(bool toggle);
+    void slotControlVinylControl(int);
+    void slotCheckboxVinylControl(int);
     // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
@@ -117,25 +118,32 @@ class MixxxApp : public QMainWindow {
     void slotDeveloperReloadSkin(bool toggle);
 
     // Perform genre classification task to test similarity calculations
-    void slotDeveloperCalculateSimilarities(bool toggle);
+    // void slotDeveloperCalculateSimilarities(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
 
     void onNewSkinLoaded();
+
+    // Activated when the number of decks changed, so we can update the UI.
+    void slotNumDecksChanged(double);
 
   signals:
     void newSkinLoaded();
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
-    bool eventFilter(QObject *obj, QEvent *event);
-    void closeEvent(QCloseEvent *event);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
+    virtual bool event(QEvent* e);
 
   private:
     void logBuildDetails();
     void initializeWindow();
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
+    bool loadTranslations(const QLocale& systemLocale, QString userLocale,
+                          const QString& translation, const QString& prefix,
+                          const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
 
@@ -161,6 +169,8 @@ class MixxxApp : public QMainWindow {
     ControllerManager* m_pControllerManager;
 
     ConfigObject<ConfigValue>* m_pConfig;
+
+    GuiTick* m_pGuiTick;
 
     VinylControlManager* m_pVCManager;
 
@@ -193,8 +203,7 @@ class MixxxApp : public QMainWindow {
     QAction* m_pLibraryRescan;
 #ifdef __VINYLCONTROL__
     QMenu* m_pVinylControlMenu;
-    QAction* m_pOptionsVinylControl;
-    QAction* m_pOptionsVinylControl2;
+    QList<QAction*> m_pOptionsVinylControl;
 #endif
     QAction* m_pOptionsRecord;
     QAction* m_pOptionsKeyboard;
@@ -237,8 +246,12 @@ class MixxxApp : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
-    ControlObjectThread* m_pVinylcontrol1Enabled;
-    ControlObjectThread* m_pVinylcontrol2Enabled;
+    ControlPushButton* m_pTouchShift;
+    QList<ControlObjectThread*> m_pVinylControlEnabled;
+    ControlObjectThread* m_pNumDecks;
+    int m_iNumConfiguredDecks;
+    QSignalMapper* m_VCControlMapper;
+    QSignalMapper* m_VCCheckboxMapper;
 };
 
 #endif

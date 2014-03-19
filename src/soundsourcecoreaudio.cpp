@@ -21,20 +21,16 @@
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
         : Mixxx::SoundSource(filename),
-          m_file(filename),
           m_samples(0),
           m_headerFrames(0) {
 }
 
 SoundSourceCoreAudio::~SoundSourceCoreAudio() {
     ExtAudioFileDispose(m_audioFile);
-
 }
 
 // soundsource overrides
 int SoundSourceCoreAudio::open() {
-    //m_file.open(QIODevice::ReadOnly);
-
     //Open the audio file.
     OSStatus err;
 
@@ -198,8 +194,7 @@ int SoundSourceCoreAudio::parseHeader() {
     bool result = false;
 
     if (getType() == "m4a") {
-        // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
-        TagLib::MP4::File f(getFilename().toUtf8().constData());
+        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
         result = processTaglibFile(f);
         TagLib::MP4::Tag* tag = f.tag();
         if (tag) {
@@ -207,7 +202,7 @@ int SoundSourceCoreAudio::parseHeader() {
         }
     } else if (getType() == "mp3") {
         // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
-        TagLib::MPEG::File f(getFilename().toUtf8().constData());
+        TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
 
         // Takes care of all the default metadata
         result = processTaglibFile(f);

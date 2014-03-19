@@ -17,10 +17,11 @@
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
 
-LoopingControl::LoopingControl(const char * _group,
-                               ConfigObject<ConfigValue> * _config)
+LoopingControl::LoopingControl(const char* _group,
+                               ConfigObject<ConfigValue>* _config)
         : EngineControl(_group, _config) {
     m_bLoopingEnabled = false;
+    m_bLoopRollActive = false;
     m_iLoopStartSample = kNoTrigger;
     m_iLoopEndSample = kNoTrigger;
     m_iCurrentSample = 0.;
@@ -52,7 +53,7 @@ LoopingControl::LoopingControl(const char * _group,
     m_pReloopExitButton->set(0);
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(_group, "loop_enabled"));
-    m_pCOLoopEnabled->set(0.0f);
+    m_pCOLoopEnabled->set(0.0);
 
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(_group, "loop_start_position"));
@@ -190,7 +191,7 @@ void LoopingControl::slotLoopHalve(double v) {
 }
 
 void LoopingControl::slotLoopDouble(double v) {
-    if (v > 0.0f) {
+    if (v > 0.0) {
         // If a beatloop is active then double should deactive the current
         // beatloop and activate the next one.
         if (m_pActiveBeatLoop != NULL) {
@@ -417,6 +418,11 @@ void LoopingControl::slotReloopExit(double val) {
     if (val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
+            // If loop roll was active, also disable slip.
+            if (m_bLoopRollActive) {
+                m_pSlipEnabled->set(0);
+                m_bLoopRollActive = false;
+            }
             setLoopingEnabled(false);
             //qDebug() << "reloop_exit looping off";
         } else {
@@ -448,7 +454,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
     clearActiveBeatLoop();
 
-    if (pos == -1.0f) {
+    if (pos == -1.0) {
         setLoopingEnabled(false);
     }
 
@@ -488,7 +494,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
 
     clearActiveBeatLoop();
 
-    if (pos == -1.0f) {
+    if (pos == -1.0) {
         setLoopingEnabled(false);
     }
     m_iLoopEndSample = newpos;
@@ -553,12 +559,11 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
         return;
     }
 
-    // Maintain the current start point if there is an active beat loop and we
-    // are currently looping. slotBeatLoop will update m_pActiveBeatLoop if
-    // applicable
-    bool beatLoopAlreadyActive = m_pActiveBeatLoop != NULL;
-    slotBeatLoop(pBeatLoopControl->getSize(),
-                 beatLoopAlreadyActive && m_bLoopingEnabled);
+    // Maintain the current start point if there is an active loop currently
+    // looping. slotBeatLoop will update m_pActiveBeatLoop if applicable. Note,
+    // this used to only maintain the current start point if a beatloop was
+    // enabled. See Bug #1159243.
+    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopingEnabled);
 }
 
 void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl) {
@@ -566,9 +571,10 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
          return;
      }
 
-    //Disregard existing loops
+    // Disregard existing loops.
     m_pSlipEnabled->set(1);
     slotBeatLoop(pBeatLoopControl->getSize(), false);
+    m_bLoopRollActive = true;
 }
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
@@ -580,6 +586,7 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
     m_pSlipEnabled->set(0);
+    m_bLoopRollActive = false;
 }
 
 void LoopingControl::clearActiveBeatLoop() {
@@ -729,35 +736,34 @@ BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
     // This is the original beatloop control which is now deprecated. Its value
     // is the state of the beatloop control (1 for enabled, 0 for disabled).
     m_pLegacy = new ControlPushButton(
-        keyForControl(pGroup, "beatloop_%1", size));
-    m_pLegacy->setStates(2);
+            keyForControl(pGroup, "beatloop_%1", size));
     m_pLegacy->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pLegacy, SIGNAL(valueChanged(double)),
             this, SLOT(slotLegacy(double)),
             Qt::DirectConnection);
     // A push-button which activates the beatloop.
     m_pActivate = new ControlPushButton(
-        keyForControl(pGroup, "beatloop_%1_activate", size));
+            keyForControl(pGroup, "beatloop_%1_activate", size));
     connect(m_pActivate, SIGNAL(valueChanged(double)),
             this, SLOT(slotActivate(double)),
             Qt::DirectConnection);
     // A push-button which toggles the beatloop as active or inactive.
     m_pToggle = new ControlPushButton(
-        keyForControl(pGroup, "beatloop_%1_toggle", size));
+            keyForControl(pGroup, "beatloop_%1_toggle", size));
     connect(m_pToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggle(double)),
             Qt::DirectConnection);
 
     // A push-button which activates rolling beatloops
     m_pActivateRoll = new ControlPushButton(
-        keyForControl(pGroup, "beatlooproll_%1_activate", size));
+            keyForControl(pGroup, "beatlooproll_%1_activate", size));
     connect(m_pActivateRoll, SIGNAL(valueChanged(double)),
             this, SLOT(slotActivateRoll(double)),
             Qt::DirectConnection);
 
     // An indicator control which is 1 if the beatloop is enabled and 0 if not.
     m_pEnabled = new ControlObject(
-        keyForControl(pGroup, "beatloop_%1_enabled", size));
+            keyForControl(pGroup, "beatloop_%1_enabled", size));
 }
 
 BeatLoopingControl::~BeatLoopingControl() {

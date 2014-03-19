@@ -8,7 +8,7 @@
 #include "basetrackplayer.h"
 #include "playerinfo.h"
 
-#include "controlobjectthreadmain.h"
+// #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "trackinfoobject.h"
 
@@ -42,8 +42,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     connect(this, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
 
-    m_channelBpm = NULL;
-    m_channelKey = NULL;
+    // m_channelBpm = NULL;
+    // m_channelKey = NULL;
     m_bActive = false;
     clearSeedTrackInfo();
 }
@@ -79,7 +79,7 @@ void SelectorLibraryTableModel::setTableModel(int id){
     tableColumns << "preview";
     tableColumns << "score";
     setTable(SELECTOR_TABLE, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollection->getTrackSource("default"));
+             m_pTrackCollection->getTrackSource());
 
     initHeaderData();
     setSearch("");
@@ -210,22 +210,22 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_pChannel = QString("[Channel%1]").arg(deck + 1);
 
     // disconnect the old pitch slider
-    if (m_channelBpm) {
-        disconnect(m_channelBpm, 0, this, 0);
-    }
-
-    if (m_channelKey) {
-        disconnect(m_channelKey, 0, this, 0);
-    }
+    // if (m_channelBpm) {
+    //     disconnect(m_channelBpm, 0, this, 0);
+    // }
+    //
+    // if (m_channelKey) {
+    //     disconnect(m_channelKey, 0, this, 0);
+    // }
 
     if (deck >= 0) {
-        m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
-        m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
-        // listen for slider change events
-        connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
-            SLOT(slotChannelBpmChanged(double)));
-        connect(m_channelKey, SIGNAL(valueChanged(double)), this,
-            SLOT(slotChannelKeyChanged(double)));
+        // m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
+        // m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
+        // // listen for slider change events
+        // connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
+        //     SLOT(slotChannelBpmChanged(double)));
+        // connect(m_channelKey, SIGNAL(valueChanged(double)), this,
+        //     SLOT(slotChannelKeyChanged(double)));
     }
 
     // m_pLoadedTrack = PlayerInfo::Instance().getCurrentPlayingTrack();

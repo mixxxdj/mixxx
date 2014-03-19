@@ -34,8 +34,8 @@ const double kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(const char * _group,
-                  ConfigObject<ConfigValue> * _config);
+    EngineControl(const char* _group,
+                  ConfigObject<ConfigValue>* _config);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -81,6 +81,8 @@ class EngineControl : public QObject {
   protected:
     void seek(double fractionalPosition);
     void seekAbs(double sample);
+    // Seek to an exact sample and don't allow quantizing adjustment.
+    void seekExact(double sample);
     EngineBuffer* pickSyncTarget();
 
     ConfigObject<ConfigValue>* getConfig();

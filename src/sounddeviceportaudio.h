@@ -38,13 +38,17 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    int open();
-    int close();
-    QString getError() const;
-    int callbackProcess(unsigned long framesPerBuffer,
-                        float *output, short *in,
+    virtual int open();
+    virtual int close();
+    virtual QString getError() const;
+
+    // This callback function gets called everytime the sound device runs out of
+    // samples (ie. when it needs more sound to play)
+    int callbackProcess(const unsigned int framesPerBuffer,
+                        CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
+
     virtual unsigned int getDefaultSampleRate() const {
         return m_deviceInfo ? static_cast<unsigned int>(
             m_deviceInfo->defaultSampleRate) : 44100;
@@ -52,7 +56,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
     // PortAudio stream for this device.
-    PaStream *m_pStream;
+    PaStream* m_pStream;
     // PortAudio device index for this device.
     PaDeviceIndex m_devId;
     // Struct containing information about this device. Don't free() it, it
@@ -67,13 +71,15 @@ class SoundDevicePortAudio : public SoundDevice {
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
     ControlObject* m_pMasterUnderflowCount;
-    int m_undeflowUpdateCount;
+    int m_underflowUpdateCount;
 };
 
-int paV19Callback(const void *inputBuffer, void *outputBuffer,
-                        unsigned long framesPerBuffer,
-                        const PaStreamCallbackTimeInfo* timeInfo,
-                        PaStreamCallbackFlags statusFlags,
-                        void *soundDevice);
+// Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by
+// PortAudio, which knows nothing about C++.
+int paV19Callback(const void* inputBuffer, void* outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo* timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void* soundDevice);
 
 #endif
