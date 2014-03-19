@@ -30,22 +30,22 @@
 
               <Template src="skin:effect_chain.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectChain">1</SetVariable>
+                <SetVariable name="EffectUnit">1</SetVariable>
               </Template>
 
               <Template src="skin:effect_chain.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectChain">2</SetVariable>
+                <SetVariable name="EffectUnit">2</SetVariable>
               </Template>
 
               <Template src="skin:effect_chain.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectChain">3</SetVariable>
+                <SetVariable name="EffectUnit">3</SetVariable>
               </Template>
 
               <Template src="skin:effect_chain.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectChain">4</SetVariable>
+                <SetVariable name="EffectUnit">4</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
