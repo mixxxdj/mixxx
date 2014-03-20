@@ -88,15 +88,10 @@ class LoopingControl : public EngineControl {
   private:
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
-    // When a loop shrinks such that the playposition is outside of the loop,
-    // we can figure out where, musically, the best place in the new loop to seek.
-    void seekInsideHalvedLoop(int old_loop_in, int old_loop_out,
-                              int new_loop_in, int new_loop_out);
-
-    // When a loop is shifted out from under the playposition, we can do
-    // a wrap-around seek to preserve the same musical timing.
-    void seekInsideShiftedLoop(int old_loop_in, int old_loop_out,
-                               int new_loop_in, int new_loop_out);
+    // When a loop changes size such that the playposition is outside of the loop,
+    // we can figure out where the best place in the new loop to seek.
+    void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
+                                int new_loop_in, int new_loop_out);
 
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;

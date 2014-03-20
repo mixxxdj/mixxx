@@ -195,11 +195,6 @@ void LoopingControl::slotLoopScale(double scale) {
     // TODO(XXX) we could be smarter about taking the active beatloop, scaling
     // it by the desired amount and trying to find another beatloop that matches
     // it, but for now we just clear the active beat loop if somebody scales.
-    if (scale < 1.0) {
-        seekInsideHalvedLoop(
-                m_iLoopStartSample, old_loop_end,
-                m_iLoopStartSample, m_iLoopEndSample);
-    }
     clearActiveBeatLoop();
 
     // Don't allow 0 samples loop, so one can still manipulate it
@@ -215,6 +210,13 @@ void LoopingControl::slotLoopScale(double scale) {
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(m_iLoopEndSample);
+
+    // Reseek if the loop shrank out from under the playposition.
+    if (scale < 1.0) {
+        seekInsideAdjustedLoop(
+                m_iLoopStartSample, old_loop_end,
+                m_iLoopStartSample, m_iLoopEndSample);
+    }
 }
 
 void LoopingControl::slotLoopHalve(double v) {
@@ -228,11 +230,12 @@ void LoopingControl::slotLoopHalve(double v) {
                     // If the current position is outside the range of the new loop,
                     // take the current position and subtract the length of the new loop until
                     // it fits.
-                    seekInsideHalvedLoop(
-                            m_iLoopStartSample, m_iLoopEndSample,
-                            m_iLoopStartSample,
-                            m_iLoopEndSample + m_beatLoops[active_index - 1]->getSize());
+                    int old_loop_in = m_iLoopStartSample;
+                    int old_loop_out = m_iLoopEndSample;
                     slotBeatLoopActivate(m_beatLoops[active_index - 1]);
+                    seekInsideAdjustedLoop(
+                            old_loop_in, old_loop_out,
+                            m_iLoopStartSample, m_iLoopEndSample);
                 } else {
                     // Calling scale clears the active beatloop.
                     slotLoopScale(0.5);
@@ -814,11 +817,15 @@ void LoopingControl::slotBeatShift(double beats) {
         // Should we reject any shift that goes out of bounds?
 
         m_iLoopStartSample = new_loop_in;
-        m_pCOLoopStartPosition->set(m_iLoopStartSample);
-        m_iLoopEndSample = new_loop_out;
-        m_pCOLoopEndPosition->set(m_iLoopEndSample);
-        seekInsideShiftedLoop(old_loop_in, old_loop_out,
-                              m_iLoopStartSample, m_iLoopEndSample);
+        if (m_pActiveBeatLoop) {
+            slotBeatLoop(m_pActiveBeatLoop->getSize(), true);
+        } else {
+            m_pCOLoopStartPosition->set(new_loop_in);
+            m_iLoopEndSample = new_loop_out;
+            m_pCOLoopEndPosition->set(new_loop_out);
+        }
+        seekInsideAdjustedLoop(old_loop_in, old_loop_out,
+                               new_loop_in, new_loop_out);
     }
 }
 
@@ -834,8 +841,8 @@ void LoopingControl::slotBeatShiftBackward(double v) {
     }
 }
 
-void LoopingControl::seekInsideHalvedLoop(int old_loop_in, int old_loop_out,
-                                          int new_loop_in, int new_loop_out) {
+void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
+                                            int new_loop_in, int new_loop_out) {
     if (m_iCurrentSample >= new_loop_in && m_iCurrentSample <= new_loop_out) {
         return;
     }
@@ -846,23 +853,17 @@ void LoopingControl::seekInsideHalvedLoop(int old_loop_in, int old_loop_out,
     }
     if (new_loop_size > old_loop_out - old_loop_in) {
         // Could this happen if the user grows a loop and then also shifts it?
-        qWarning() << "seekInsideHalvedLoop called for loop that got larger -- ignoring";
+        qWarning() << "seekInsideAdjustedLoop called for loop that got larger -- ignoring";
         return;
     }
-    int adjusted_position = m_iCurrentSample;
 
-    //TODO(owilliams): Eventually we should support right-justified shrinking.
-    if (new_loop_in != old_loop_in) {
-        qWarning() << "seekInsideHalvedLoop: Loop in point changed, ignoring";
-        return;
-    }
+    int adjusted_position = m_iCurrentSample;
     while (adjusted_position > new_loop_out) {
-        qDebug() << "off the end " << adjusted_position << " " <<new_loop_out;
         adjusted_position -= new_loop_size;
         if (adjusted_position < new_loop_in) {
             // I'm not even sure this is possible.  The new loop would have to be bigger than the
             // old loop, and the playhead was somehow outside the old loop.
-            qWarning() << "SHOULDN'T HAPPEN: seekInsideHalvedLoop couldn't find a new position --"
+            qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
         }
@@ -870,42 +871,15 @@ void LoopingControl::seekInsideHalvedLoop(int old_loop_in, int old_loop_out,
     while (adjusted_position < new_loop_in) {
         adjusted_position += new_loop_size;
         if (adjusted_position > new_loop_out) {
-            qWarning() << "SHOULDN'T HAPPEN: seekInsideHalvedLoop couldn't find a new position --"
+            qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
         }
     }
     if (adjusted_position != m_iCurrentSample) {
+        m_iCurrentSample = adjusted_position;
         seekAbs(static_cast<double>(adjusted_position));
     }
-    m_iCurrentSample = adjusted_position;
-}
-
-void LoopingControl::seekInsideShiftedLoop(int old_loop_in, int old_loop_out,
-                                           int new_loop_in, int new_loop_out) {
-    if (m_iCurrentSample >= new_loop_in && m_iCurrentSample <= new_loop_out) {
-        return;
-    }
-
-    // Confirm it actually shifted.
-    if (new_loop_in == old_loop_in) {
-        return;
-    }
-
-    int new_loop_size = new_loop_out - new_loop_in;
-    if (new_loop_size != old_loop_out - old_loop_in) {
-        qWarning() << "seekInsideShiftedLoop: Asked to shift, but the loop size changed";
-        return;
-    }
-
-    int adjusted_position = m_iCurrentSample;
-    if (adjusted_position > new_loop_out) {
-        adjusted_position -= new_loop_size;
-    } else if (adjusted_position < new_loop_in) {
-        adjusted_position += new_loop_size;
-    }
-    seekAbs(static_cast<double>(adjusted_position));
-    m_iCurrentSample = adjusted_position;
 }
 
 BeatJumpControl::BeatJumpControl(const char* pGroup, double size)
