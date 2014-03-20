@@ -202,7 +202,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     QMenu* beatShiftMenu = addSubmenu(tr("Beat-Shift"));
     addDeckControl("beatshift_forward",  tr("Move loop forward by 1 beat"), beatShiftMenu);
-    addDeckControl("beatshift_backward",  tr("Move loop backward by %1 beat"), beatShiftMenu);
+    addDeckControl("beatshift_backward",  tr("Move loop backward by 1 beat"), beatShiftMenu);
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));

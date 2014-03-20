@@ -818,6 +818,9 @@ void LoopingControl::slotBeatShift(double beats) {
 
         m_iLoopStartSample = new_loop_in;
         if (m_pActiveBeatLoop) {
+            // Ugly hack -- slotBeatLoop takes "true" to mean "keep starting
+            // point".  It gets that in-point from m_iLoopStartSample,
+            // which we just changed so that the loop actually shifts.
             slotBeatLoop(m_pActiveBeatLoop->getSize(), true);
         } else {
             m_pCOLoopStartPosition->set(new_loop_in);

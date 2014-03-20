@@ -89,7 +89,8 @@ class LoopingControl : public EngineControl {
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
     // When a loop changes size such that the playposition is outside of the loop,
-    // we can figure out where the best place in the new loop to seek.
+    // we can figure out the best place in the new loop to seek to maintain
+    // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
     void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
                                 int new_loop_in, int new_loop_out);
 
