@@ -115,6 +115,16 @@ LoopingControl::LoopingControl(const char* _group,
     connect(m_pCOBeatJump, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatJump(double)), Qt::DirectConnection);
 
+    m_pCOBeatShift = new ControlObject(ConfigKey(_group, "beatshift"));
+    connect(m_pCOBeatShift, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatShift(double)), Qt::DirectConnection);
+    m_pCOBeatShiftForward = new ControlObject(ConfigKey(_group, "beatshift_forward"));
+    connect(m_pCOBeatShiftForward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatShiftForward(double)), Qt::DirectConnection);
+    m_pCOBeatShiftBackward = new ControlObject(ConfigKey(_group, "beatshift_backward"));
+    connect(m_pCOBeatShiftBackward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatShiftBackward(double)), Qt::DirectConnection);
+
     // Create beatjump_(SIZE) CO's which all call beatjump, but with a set
     // value.
     for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
@@ -158,10 +168,15 @@ LoopingControl::~LoopingControl() {
         BeatJumpControl* pBeatJump = m_beatJumps.takeLast();
         delete pBeatJump;
     }
+
+    delete m_pCOBeatShift;
+    delete m_pCOBeatShiftForward;
+    delete m_pCOBeatShiftBackward;
 }
 
 void LoopingControl::slotLoopScale(double scale) {
     int loop_length = m_iLoopEndSample - m_iLoopStartSample;
+    int old_loop_end = m_iLoopEndSample;
     int samples = m_pTrackSamples->get();
     loop_length *= scale;
 
@@ -180,6 +195,11 @@ void LoopingControl::slotLoopScale(double scale) {
     // TODO(XXX) we could be smarter about taking the active beatloop, scaling
     // it by the desired amount and trying to find another beatloop that matches
     // it, but for now we just clear the active beat loop if somebody scales.
+    if (scale < 1.0) {
+        seekInsideHalvedLoop(
+                m_iLoopStartSample, old_loop_end,
+                m_iLoopStartSample, m_iLoopEndSample);
+    }
     clearActiveBeatLoop();
 
     // Don't allow 0 samples loop, so one can still manipulate it
@@ -205,6 +225,13 @@ void LoopingControl::slotLoopHalve(double v) {
             int active_index = m_beatLoops.indexOf(m_pActiveBeatLoop);
             if (active_index - 1 >= 0) {
                 if (m_bLoopingEnabled) {
+                    // If the current position is outside the range of the new loop,
+                    // take the current position and subtract the length of the new loop until
+                    // it fits.
+                    seekInsideHalvedLoop(
+                            m_iLoopStartSample, m_iLoopEndSample,
+                            m_iLoopStartSample,
+                            m_iLoopEndSample + m_beatLoops[active_index - 1]->getSize());
                     slotBeatLoopActivate(m_beatLoops[active_index - 1]);
                 } else {
                     // Calling scale clears the active beatloop.
@@ -771,6 +798,116 @@ void LoopingControl::slotBeatJump(double beats) {
     }
 }
 
+void LoopingControl::slotBeatShift(double beats) {
+    if (!m_pTrack || !m_pBeats) {
+        return;
+    }
+
+    double dPosition = getCurrentSample();
+    double dBeatLength;
+    if (BpmControl::getBeatContext(m_pBeats, dPosition,
+                                   NULL, NULL, &dBeatLength, NULL)) {
+        int old_loop_in = m_iLoopStartSample;
+        int old_loop_out = m_iLoopEndSample;
+        int new_loop_in = m_iLoopStartSample + (beats * dBeatLength);
+        int new_loop_out = m_iLoopEndSample + (beats * dBeatLength);
+        // Should we reject any shift that goes out of bounds?
+
+        m_iLoopStartSample = new_loop_in;
+        m_pCOLoopStartPosition->set(m_iLoopStartSample);
+        m_iLoopEndSample = new_loop_out;
+        m_pCOLoopEndPosition->set(m_iLoopEndSample);
+        seekInsideShiftedLoop(old_loop_in, old_loop_out,
+                              m_iLoopStartSample, m_iLoopEndSample);
+    }
+}
+
+void LoopingControl::slotBeatShiftForward(double v) {
+    if (v > 0.0) {
+        slotBeatShift(1.0);
+    }
+}
+
+void LoopingControl::slotBeatShiftBackward(double v) {
+    if (v > 0.0) {
+        slotBeatShift(-1.0);
+    }
+}
+
+void LoopingControl::seekInsideHalvedLoop(int old_loop_in, int old_loop_out,
+                                          int new_loop_in, int new_loop_out) {
+    if (m_iCurrentSample >= new_loop_in && m_iCurrentSample <= new_loop_out) {
+        return;
+    }
+
+    int new_loop_size = new_loop_out - new_loop_in;
+    if (!even(new_loop_size)) {
+        --new_loop_size;
+    }
+    if (new_loop_size > old_loop_out - old_loop_in) {
+        // Could this happen if the user grows a loop and then also shifts it?
+        qWarning() << "seekInsideHalvedLoop called for loop that got larger -- ignoring";
+        return;
+    }
+    int adjusted_position = m_iCurrentSample;
+
+    //TODO(owilliams): Eventually we should support right-justified shrinking.
+    if (new_loop_in != old_loop_in) {
+        qWarning() << "seekInsideHalvedLoop: Loop in point changed, ignoring";
+        return;
+    }
+    while (adjusted_position > new_loop_out) {
+        qDebug() << "off the end " << adjusted_position << " " <<new_loop_out;
+        adjusted_position -= new_loop_size;
+        if (adjusted_position < new_loop_in) {
+            // I'm not even sure this is possible.  The new loop would have to be bigger than the
+            // old loop, and the playhead was somehow outside the old loop.
+            qWarning() << "SHOULDN'T HAPPEN: seekInsideHalvedLoop couldn't find a new position --"
+                       << " seeking to in point";
+            adjusted_position = new_loop_in;
+        }
+    }
+    while (adjusted_position < new_loop_in) {
+        adjusted_position += new_loop_size;
+        if (adjusted_position > new_loop_out) {
+            qWarning() << "SHOULDN'T HAPPEN: seekInsideHalvedLoop couldn't find a new position --"
+                       << " seeking to in point";
+            adjusted_position = new_loop_in;
+        }
+    }
+    if (adjusted_position != m_iCurrentSample) {
+        seekAbs(static_cast<double>(adjusted_position));
+    }
+    m_iCurrentSample = adjusted_position;
+}
+
+void LoopingControl::seekInsideShiftedLoop(int old_loop_in, int old_loop_out,
+                                           int new_loop_in, int new_loop_out) {
+    if (m_iCurrentSample >= new_loop_in && m_iCurrentSample <= new_loop_out) {
+        return;
+    }
+
+    // Confirm it actually shifted.
+    if (new_loop_in == old_loop_in) {
+        return;
+    }
+
+    int new_loop_size = new_loop_out - new_loop_in;
+    if (new_loop_size != old_loop_out - old_loop_in) {
+        qWarning() << "seekInsideShiftedLoop: Asked to shift, but the loop size changed";
+        return;
+    }
+
+    int adjusted_position = m_iCurrentSample;
+    if (adjusted_position > new_loop_out) {
+        adjusted_position -= new_loop_size;
+    } else if (adjusted_position < new_loop_in) {
+        adjusted_position += new_loop_size;
+    }
+    seekAbs(static_cast<double>(adjusted_position));
+    m_iCurrentSample = adjusted_position;
+}
+
 BeatJumpControl::BeatJumpControl(const char* pGroup, double size)
         : m_dBeatLoopSize(size) {
     m_pJumpForward = new ControlPushButton(
@@ -781,7 +918,6 @@ BeatJumpControl::BeatJumpControl(const char* pGroup, double size)
             keyForControl(pGroup, "beatjump_%1_backward", size));
     connect(m_pJumpBackward, SIGNAL(valueChanged(double)),
             this, SLOT(slotJumpBackward(double)));
-
 }
 
 BeatJumpControl::~BeatJumpControl() {
