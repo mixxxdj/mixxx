@@ -9,6 +9,7 @@
 #include "controlpushbutton.h"
 #include "cachingreader.h"
 #include "engine/loopingcontrol.h"
+#include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
 #include "mathstuff.h"
 
@@ -16,6 +17,14 @@
 #include "track/beats.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
+
+// Used to generate the beatloop_%SIZE and beatjump_%SIZE CO ConfigKeys.
+ConfigKey keyForControl(const char* pGroup, QString ctrlName, double num) {
+    ConfigKey key;
+    key.group = pGroup;
+    key.item = ctrlName.arg(num);
+    return key;
+}
 
 LoopingControl::LoopingControl(const char* _group,
                                ConfigObject<ConfigValue>* _config)
@@ -102,6 +111,20 @@ LoopingControl::LoopingControl(const char* _group,
         m_beatLoops.append(pBeatLoop);
     }
 
+    m_pCOBeatJump = new ControlObject(ConfigKey(_group, "beatjump"));
+    connect(m_pCOBeatJump, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatJump(double)), Qt::DirectConnection);
+
+    // Create beatjump_(SIZE) CO's which all call beatjump, but with a set
+    // value.
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+        BeatJumpControl* pBeatJump = new BeatJumpControl(_group, s_dBeatSizes[i]);
+        connect(pBeatJump, SIGNAL(beatJump(double)),
+                this, SLOT(slotBeatJump(double)),
+                Qt::DirectConnection);
+        m_beatJumps.append(pBeatJump);
+    }
+
     m_pCOLoopScale = new ControlObject(ConfigKey(_group, "loop_scale"));
     connect(m_pCOLoopScale, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopScale(double)));
@@ -126,9 +149,14 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopDoubleButton;
     delete m_pCOBeatLoop;
 
-    while (m_beatLoops.size() > 0) {
+    while (!m_beatLoops.isEmpty()) {
         BeatLoopingControl* pBeatLoop = m_beatLoops.takeLast();
         delete pBeatLoop;
+    }
+
+    while (!m_beatJumps.isEmpty()) {
+        BeatJumpControl* pBeatJump = m_beatJumps.takeLast();
+        delete pBeatJump;
     }
 }
 
@@ -730,6 +758,49 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
     setLoopingEnabled(true);
 }
 
+void LoopingControl::slotBeatJump(double beats) {
+    if (!m_pTrack || !m_pBeats) {
+        return;
+    }
+
+    double dPosition = getCurrentSample();
+    double dBeatLength;
+    if (BpmControl::getBeatContext(m_pBeats, dPosition,
+                                   NULL, NULL, &dBeatLength, NULL)) {
+        seekAbs(dPosition + beats * dBeatLength);
+    }
+}
+
+BeatJumpControl::BeatJumpControl(const char* pGroup, double size)
+        : m_dBeatLoopSize(size) {
+    m_pJumpForward = new ControlPushButton(
+            keyForControl(pGroup, "beatjump_%1_forward", size));
+    connect(m_pJumpForward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotJumpForward(double)));
+    m_pJumpBackward = new ControlPushButton(
+            keyForControl(pGroup, "beatjump_%1_backward", size));
+    connect(m_pJumpBackward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotJumpBackward(double)));
+
+}
+
+BeatJumpControl::~BeatJumpControl() {
+    delete m_pJumpForward;
+    delete m_pJumpBackward;
+}
+
+void BeatJumpControl::slotJumpBackward(double v) {
+    if (v > 0) {
+        emit(beatJump(-m_dBeatLoopSize));
+    }
+}
+
+void BeatJumpControl::slotJumpForward(double v) {
+    if (v > 0) {
+        emit(beatJump(m_dBeatLoopSize));
+    }
+}
+
 BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
         : m_dBeatLoopSize(size),
           m_bActive(false) {
@@ -826,12 +897,4 @@ void BeatLoopingControl::slotToggle(double v) {
     } else {
         emit(activateBeatLoop(this));
     }
-}
-
-ConfigKey BeatLoopingControl::keyForControl(const char* pGroup,
-                                            QString ctrlName, double num) {
-    ConfigKey key;
-    key.group = pGroup;
-    key.item = ctrlName.arg(num);
-    return key;
 }

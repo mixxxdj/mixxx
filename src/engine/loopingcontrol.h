@@ -17,6 +17,7 @@
 class ControlPushButton;
 class ControlObject;
 
+class BeatJumpControl;
 class BeatLoopingControl;
 
 class LoopingControl : public EngineControl {
@@ -72,6 +73,9 @@ class LoopingControl : public EngineControl {
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl);
 
+    // Jump forward or backward by beats.
+    void slotBeatJump(double beats);
+
     void slotLoopScale(double);
     void slotLoopDouble(double);
     void slotLoopHalve(double);
@@ -110,8 +114,32 @@ class LoopingControl : public EngineControl {
     // Array of BeatLoopingControls, one for each size.
     QList<BeatLoopingControl*> m_beatLoops;
 
+    ControlObject* m_pCOBeatJump;
+    QList<BeatJumpControl*> m_beatJumps;
+
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+};
+
+// Class for handling beat jumps of a set size. This allows easy access from
+// skins.
+class BeatJumpControl : public QObject {
+    Q_OBJECT
+  public:
+    BeatJumpControl(const char* pGroup, double size);
+    virtual ~BeatJumpControl();
+
+  signals:
+    void beatJump(double beats);
+
+  public slots:
+    void slotJumpForward(double value);
+    void slotJumpBackward(double value);
+
+  private:
+    double m_dBeatLoopSize;
+    ControlPushButton* m_pJumpForward;
+    ControlPushButton* m_pJumpBackward;
 };
 
 // Class for handling beat loops of a set size. This allows easy access from
@@ -140,9 +168,6 @@ class BeatLoopingControl : public QObject {
     void deactivateBeatLoopRoll(BeatLoopingControl*);
 
   private:
-    // Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO
-    // ConfigKeys.
-    ConfigKey keyForControl(const char* _group, QString ctrlName, double num);
     double m_dBeatLoopSize;
     bool m_bActive;
     ControlPushButton* m_pLegacy;
