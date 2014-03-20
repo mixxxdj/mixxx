@@ -87,7 +87,7 @@ LoopingControl::LoopingControl(const char* _group,
     // Connect beatloop, which can flexibly handle different values.
     // Using this CO directly is meant to be used internally and by scripts,
     // or anything else that can pass in arbitrary values.
-    m_pCOBeatLoop = new ControlPushButton(ConfigKey(_group, "beatloop"));
+    m_pCOBeatLoop = new ControlObject(ConfigKey(_group, "beatloop"));
     connect(m_pCOBeatLoop, SIGNAL(valueChanged(double)), this,
             SLOT(slotBeatLoop(double)), Qt::DirectConnection);
 
