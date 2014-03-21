@@ -15,10 +15,6 @@
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
-#ifdef __VINYLCONTROL__
-#include "engine/vinylcontrolcontrol.h"
-#endif
-
 #include <QtDebug>
 
 // Static default values for rate buttons (percents)
