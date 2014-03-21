@@ -76,6 +76,11 @@ class LoopingControl : public EngineControl {
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
 
+    // Shift the loop by beats.
+    void slotBeatShift(double beats);
+    void slotBeatShiftForward(double);
+    void slotBeatShiftBackward(double);
+
     void slotLoopScale(double);
     void slotLoopDouble(double);
     void slotLoopHalve(double);
@@ -83,6 +88,11 @@ class LoopingControl : public EngineControl {
   private:
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
+    // When a loop changes size such that the playposition is outside of the loop,
+    // we can figure out the best place in the new loop to seek to maintain
+    // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
+    void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
+                                int new_loop_in, int new_loop_out);
 
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
@@ -116,6 +126,9 @@ class LoopingControl : public EngineControl {
 
     ControlObject* m_pCOBeatJump;
     QList<BeatJumpControl*> m_beatJumps;
+    ControlObject* m_pCOBeatShift;
+    ControlObject* m_pCOBeatShiftForward;
+    ControlObject* m_pCOBeatShiftBackward;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;

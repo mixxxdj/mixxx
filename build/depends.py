@@ -371,6 +371,9 @@ class Qt(Dependence):
             build.flags['sqlitedll'] = util.get_flags(
                 build.env, 'sqlitedll', 1)
 
+class TestHeaders(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/gtest-1.5.0/include")
 
 class FidLib(Dependence):
 
@@ -1054,7 +1057,7 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
-        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
+        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices]
 
