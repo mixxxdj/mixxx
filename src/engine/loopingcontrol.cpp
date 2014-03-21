@@ -18,7 +18,8 @@
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
 
-// Used to generate the beatloop_%SIZE and beatjump_%SIZE CO ConfigKeys.
+// Used to generate the beatloop_%SIZE, beatjump_%SIZE, and loop_move_%SIZE CO
+// ConfigKeys.
 ConfigKey keyForControl(const char* pGroup, QString ctrlName, double num) {
     ConfigKey key;
     key.group = pGroup;
@@ -115,16 +116,6 @@ LoopingControl::LoopingControl(const char* _group,
     connect(m_pCOBeatJump, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatJump(double)), Qt::DirectConnection);
 
-    m_pCOBeatShift = new ControlObject(ConfigKey(_group, "beatshift"));
-    connect(m_pCOBeatShift, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatShift(double)), Qt::DirectConnection);
-    m_pCOBeatShiftForward = new ControlObject(ConfigKey(_group, "beatshift_forward"));
-    connect(m_pCOBeatShiftForward, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatShiftForward(double)), Qt::DirectConnection);
-    m_pCOBeatShiftBackward = new ControlObject(ConfigKey(_group, "beatshift_backward"));
-    connect(m_pCOBeatShiftBackward, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatShiftBackward(double)), Qt::DirectConnection);
-
     // Create beatjump_(SIZE) CO's which all call beatjump, but with a set
     // value.
     for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
@@ -133,6 +124,20 @@ LoopingControl::LoopingControl(const char* _group,
                 this, SLOT(slotBeatJump(double)),
                 Qt::DirectConnection);
         m_beatJumps.append(pBeatJump);
+    }
+
+    m_pCOLoopMove = new ControlObject(ConfigKey(_group, "loop_move"));
+    connect(m_pCOLoopMove, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopMove(double)), Qt::DirectConnection);
+
+    // Create loop_move_(SIZE) CO's which all call loop_move, but with a set
+    // value.
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+        LoopMoveControl* pLoopMove = new LoopMoveControl(_group, s_dBeatSizes[i]);
+        connect(pLoopMove, SIGNAL(loopMove(double)),
+                this, SLOT(slotLoopMove(double)),
+                Qt::DirectConnection);
+        m_loopMoves.append(pLoopMove);
     }
 
     m_pCOLoopScale = new ControlObject(ConfigKey(_group, "loop_scale"));
@@ -157,21 +162,24 @@ LoopingControl::~LoopingControl() {
     delete m_pCOLoopScale;
     delete m_pLoopHalveButton;
     delete m_pLoopDoubleButton;
-    delete m_pCOBeatLoop;
 
+    delete m_pCOBeatLoop;
     while (!m_beatLoops.isEmpty()) {
         BeatLoopingControl* pBeatLoop = m_beatLoops.takeLast();
         delete pBeatLoop;
     }
 
+    delete m_pCOBeatJump;
     while (!m_beatJumps.isEmpty()) {
         BeatJumpControl* pBeatJump = m_beatJumps.takeLast();
         delete pBeatJump;
     }
 
-    delete m_pCOBeatShift;
-    delete m_pCOBeatShiftForward;
-    delete m_pCOBeatShiftBackward;
+    delete m_pCOLoopMove;
+    while (!m_loopMoves.isEmpty()) {
+        LoopMoveControl* pLoopMove = m_loopMoves.takeLast();
+        delete pLoopMove;
+    }
 }
 
 void LoopingControl::slotLoopScale(double scale) {
@@ -801,7 +809,7 @@ void LoopingControl::slotBeatJump(double beats) {
     }
 }
 
-void LoopingControl::slotBeatShift(double beats) {
+void LoopingControl::slotLoopMove(double beats) {
     if (!m_pTrack || !m_pBeats) {
         return;
     }
@@ -829,18 +837,6 @@ void LoopingControl::slotBeatShift(double beats) {
         }
         seekInsideAdjustedLoop(old_loop_in, old_loop_out,
                                new_loop_in, new_loop_out);
-    }
-}
-
-void LoopingControl::slotBeatShiftForward(double v) {
-    if (v > 0.0) {
-        slotBeatShift(1.0);
-    }
-}
-
-void LoopingControl::slotBeatShiftBackward(double v) {
-    if (v > 0.0) {
-        slotBeatShift(-1.0);
     }
 }
 
@@ -886,15 +882,17 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
 }
 
 BeatJumpControl::BeatJumpControl(const char* pGroup, double size)
-        : m_dBeatLoopSize(size) {
+        : m_dBeatJumpSize(size) {
     m_pJumpForward = new ControlPushButton(
             keyForControl(pGroup, "beatjump_%1_forward", size));
     connect(m_pJumpForward, SIGNAL(valueChanged(double)),
-            this, SLOT(slotJumpForward(double)));
+            this, SLOT(slotJumpForward(double)),
+            Qt::DirectConnection);
     m_pJumpBackward = new ControlPushButton(
             keyForControl(pGroup, "beatjump_%1_backward", size));
     connect(m_pJumpBackward, SIGNAL(valueChanged(double)),
-            this, SLOT(slotJumpBackward(double)));
+            this, SLOT(slotJumpBackward(double)),
+            Qt::DirectConnection);
 }
 
 BeatJumpControl::~BeatJumpControl() {
@@ -904,13 +902,44 @@ BeatJumpControl::~BeatJumpControl() {
 
 void BeatJumpControl::slotJumpBackward(double v) {
     if (v > 0) {
-        emit(beatJump(-m_dBeatLoopSize));
+        emit(beatJump(-m_dBeatJumpSize));
     }
 }
 
 void BeatJumpControl::slotJumpForward(double v) {
     if (v > 0) {
-        emit(beatJump(m_dBeatLoopSize));
+        emit(beatJump(m_dBeatJumpSize));
+    }
+}
+
+LoopMoveControl::LoopMoveControl(const char* pGroup, double size)
+        : m_dLoopMoveSize(size) {
+    m_pMoveForward = new ControlPushButton(
+            keyForControl(pGroup, "loop_move_%1_forward", size));
+    connect(m_pMoveForward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotMoveForward(double)),
+            Qt::DirectConnection);
+    m_pMoveBackward = new ControlPushButton(
+            keyForControl(pGroup, "loop_move_%1_backward", size));
+    connect(m_pMoveBackward, SIGNAL(valueChanged(double)),
+            this, SLOT(slotMoveBackward(double)),
+            Qt::DirectConnection);
+}
+
+LoopMoveControl::~LoopMoveControl() {
+    delete m_pMoveForward;
+    delete m_pMoveBackward;
+}
+
+void LoopMoveControl::slotMoveBackward(double v) {
+    if (v > 0) {
+        emit(loopMove(-m_dLoopMoveSize));
+    }
+}
+
+void LoopMoveControl::slotMoveForward(double v) {
+    if (v > 0) {
+        emit(loopMove(m_dLoopMoveSize));
     }
 }
 
