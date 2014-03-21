@@ -456,9 +456,11 @@ void EngineBuffer::slotTrackLoading() {
     m_pTrackSamples->set(0); // Stop renderer
 }
 
-void EngineBuffer::loadFakeTrack() {
+TrackPointer EngineBuffer::loadFakeTrack() {
     TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    pTrack->setSampleRate(44100);
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
+    return pTrack;
 }
 
 // WARNING: Always called from the EngineWorker thread pool

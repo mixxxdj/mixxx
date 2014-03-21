@@ -68,9 +68,9 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pChannel1->getEngineBuffer()->setScalerForTest(m_pMockScaler1);
         m_pChannel2->getEngineBuffer()->setScalerForTest(m_pMockScaler2);
         m_pChannel3->getEngineBuffer()->setScalerForTest(m_pMockScaler3);
-        m_pChannel1->getEngineBuffer()->loadFakeTrack();
-        m_pChannel2->getEngineBuffer()->loadFakeTrack();
-        m_pChannel3->getEngineBuffer()->loadFakeTrack();
+        m_pTrack1 = m_pChannel1->getEngineBuffer()->loadFakeTrack();
+        m_pTrack2 = m_pChannel2->getEngineBuffer()->loadFakeTrack();
+        m_pTrack3 = m_pChannel3->getEngineBuffer()->loadFakeTrack();
     }
 
     void addDeck(EngineDeck* pDeck) {
@@ -114,6 +114,7 @@ class MockedEngineBackendTest : public MixxxTest {
     EngineMaster* m_pEngineMaster;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     MockScaler *m_pMockScaler1, *m_pMockScaler2, *m_pMockScaler3;
+    TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;
