@@ -379,8 +379,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Beatjump")
             << QString("%1: %2").arg(leftClick, tr("Jump forward or backward by the set number of beats."));
 
-    add("beatshift")
-            << tr("Beatshift")
+    add("loop_move")
+            << tr("Loop Move")
             << QString("%1: %2").arg(leftClick, tr("Adjust the loop in and out points by the set number of beats."));
 
     add("loop_exit")

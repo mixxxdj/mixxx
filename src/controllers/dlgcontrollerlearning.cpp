@@ -142,6 +142,34 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);
 
+    // Loop moving
+    QString loopMoveForward = tr("Move loop forward by %1 beats");
+    QString loopMoveBackward = tr("Move loop backward by %1 beats");
+    addDeckControl("loop_move_0.03125_forward",  loopMoveForward.arg(tr("1/32th")), loopMenu);
+    addDeckControl("loop_move_0.0625_forward",  loopMoveForward.arg(tr("1/16th")), loopMenu);
+    addDeckControl("loop_move_0.125_forward", loopMoveForward.arg(tr("1/8th")), loopMenu);
+    addDeckControl("loop_move_0.25_forward", loopMoveForward.arg(tr("1/4th")), loopMenu);
+    addDeckControl("loop_move_0.5_forward", loopMoveForward.arg("1/2"), loopMenu);
+    addDeckControl("loop_move_1_forward", loopMoveForward.arg("1"), loopMenu);
+    addDeckControl("loop_move_2_forward", loopMoveForward.arg("2"), loopMenu);
+    addDeckControl("loop_move_4_forward", loopMoveForward.arg("4"), loopMenu);
+    addDeckControl("loop_move_8_forward", loopMoveForward.arg("8"), loopMenu);
+    addDeckControl("loop_move_16_forward", loopMoveForward.arg("16"), loopMenu);
+    addDeckControl("loop_move_32_forward", loopMoveForward.arg("32"), loopMenu);
+    addDeckControl("loop_move_64_forward", loopMoveForward.arg("64"), loopMenu);
+    addDeckControl("loop_move_0.03125_backward",  loopMoveBackward.arg(tr("1/32th")), loopMenu);
+    addDeckControl("loop_move_0.0625_backward",  loopMoveBackward.arg(tr("1/16th")), loopMenu);
+    addDeckControl("loop_move_0.125_backward", loopMoveBackward.arg(tr("1/8th")), loopMenu);
+    addDeckControl("loop_move_0.25_backward", loopMoveBackward.arg(tr("1/4th")), loopMenu);
+    addDeckControl("loop_move_0.5_backward", loopMoveBackward.arg("1/2"), loopMenu);
+    addDeckControl("loop_move_1_backward", loopMoveBackward.arg("1"), loopMenu);
+    addDeckControl("loop_move_2_backward", loopMoveBackward.arg("2"), loopMenu);
+    addDeckControl("loop_move_4_backward", loopMoveBackward.arg("4"), loopMenu);
+    addDeckControl("loop_move_8_backward", loopMoveBackward.arg("8"), loopMenu);
+    addDeckControl("loop_move_16_backward", loopMoveBackward.arg("16"), loopMenu);
+    addDeckControl("loop_move_32_backward", loopMoveBackward.arg("32"), loopMenu);
+    addDeckControl("loop_move_64_backward", loopMoveBackward.arg("64"), loopMenu);
+
     // Beatloops
     QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
     QString beatLoop = tr("Create %1-beat loop");
@@ -171,7 +199,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("beatlooproll_32_activate", beatLoopRoll.arg("32"), beatLoopMenu);
     addDeckControl("beatlooproll_64_activate", beatLoopRoll.arg("64"), beatLoopMenu);
 
-    // Beatloops
+    // Beat jumping
     QMenu* beatJumpMenu = addSubmenu(tr("Beat-Jump"));
     QString beatJumpForward = tr("Jump forward by %1 beats");
     QString beatJumpBackward = tr("Jump backward by %1 beats");
@@ -199,10 +227,6 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("beatjump_16_backward", beatJumpBackward.arg("16"), beatJumpMenu);
     addDeckControl("beatjump_32_backward", beatJumpBackward.arg("32"), beatJumpMenu);
     addDeckControl("beatjump_64_backward", beatJumpBackward.arg("64"), beatJumpMenu);
-
-    QMenu* beatShiftMenu = addSubmenu(tr("Beat-Shift"));
-    addDeckControl("beatshift_forward",  tr("Move loop forward by 1 beat"), beatShiftMenu);
-    addDeckControl("beatshift_backward",  tr("Move loop backward by 1 beat"), beatShiftMenu);
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
