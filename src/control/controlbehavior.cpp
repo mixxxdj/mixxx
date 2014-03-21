@@ -171,7 +171,7 @@ double ControlTTRotaryBehavior::valueToParameter(double dValue) {
 }
 
 double ControlTTRotaryBehavior::parameterToValue(double dParam) {
-    dParam *= 127.0;
+    dParam *= 128.0;
     // Non-linear scaling
     double temp = ((dParam - 64.0) * (dParam - 64.0)) / 64.0;
     if (dParam - 64 < 0) {
