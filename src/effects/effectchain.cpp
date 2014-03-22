@@ -227,6 +227,32 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     emit(effectAdded());
 }
 
+void EffectChain::replaceEffect(unsigned int iEffectNumber,
+                                EffectPointer pEffect) {
+    qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
+    while (iEffectNumber >= m_effects.size()) {
+        m_effects.append(EffectPointer());
+    }
+
+    EffectPointer pOldEffect = m_effects[iEffectNumber];
+    if (pOldEffect) {
+        if (m_bAddedToEngine) {
+            pOldEffect->removeFromEngine(m_pEngineEffectChain);
+        }
+    }
+
+    m_effects.replace(iEffectNumber, pEffect);
+    if (pEffect) {
+        pEffect->onChainParameterChanged(m_dParameter);
+        if (m_bAddedToEngine) {
+            pEffect->addToEngine(m_pEngineEffectChain, iEffectNumber);
+        }
+    }
+
+    // TODO(rryan): Replaced signal?
+    emit(effectAdded());
+}
+
 void EffectChain::removeEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "removeEffect";
     if (m_effects.removeAll(pEffect) > 0) {

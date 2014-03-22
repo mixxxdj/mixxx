@@ -90,6 +90,7 @@ class EffectChain : public QObject {
 
     void addEffect(EffectPointer pEffect);
     void removeEffect(EffectPointer pEffect);
+    void replaceEffect(unsigned int iEffectNumber, EffectPointer pEffect);
     EffectPointer getEffect(unsigned int i) const;
     const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
