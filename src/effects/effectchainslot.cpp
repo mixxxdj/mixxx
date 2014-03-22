@@ -22,6 +22,10 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
     m_pControlNumEffects->connectValueChangeRequest(
         this, SLOT(slotControlNumEffects(double)), Qt::AutoConnection);
 
+    m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
+    m_pControlNumEffectSlots->connectValueChangeRequest(
+        this, SLOT(slotControlNumEffectSlots(double)), Qt::AutoConnection);
+
     m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlChainLoaded->connectValueChangeRequest(
         this, SLOT(slotControlChainLoaded(double)), Qt::AutoConnection);
@@ -241,6 +245,7 @@ EffectSlotPointer EffectChainSlot::addEffectSlot() {
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
+    m_pControlNumEffectSlots->setAndConfirm(m_pControlNumEffectSlots->get() + 1);
     return pSlot;
 }
 
@@ -296,6 +301,12 @@ void EffectChainSlot::slotControlNumEffects(double v) {
     // Ignore sets to num_effects.
     qDebug() << debugString() << "slotControlNumEffects" << v;
     qDebug() << "WARNING: num_effects is a read-only control.";
+}
+
+void EffectChainSlot::slotControlNumEffectSlots(double v) {
+    // Ignore sets to num_effectslots.
+    qDebug() << debugString() << "slotControlNumEffectSlots" << v;
+    qDebug() << "WARNING: num_effectslots is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainLoaded(double v) {

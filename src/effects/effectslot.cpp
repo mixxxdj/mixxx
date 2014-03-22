@@ -24,6 +24,10 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
     m_pControlNumParameters->connectValueChangeRequest(
         this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
 
+    m_pControlNumParameterSlots = new ControlObject(ConfigKey(m_group, "num_parameterslots"));
+    m_pControlNumParameterSlots->connectValueChangeRequest(
+        this, SLOT(slotNumParameterSlots(double)), Qt::AutoConnection);
+
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
     // Default to true.
@@ -60,6 +64,7 @@ EffectSlot::~EffectSlot() {
 
     delete m_pControlLoaded;
     delete m_pControlNumParameters;
+    delete m_pControlNumParameterSlots;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
@@ -67,6 +72,8 @@ EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
         new EffectParameterSlot(this, m_iRackNumber, m_iChainNumber, m_iEffectNumber,
                                 m_parameters.size()));
     m_parameters.append(pParameter);
+    m_pControlNumParameterSlots->setAndConfirm(
+            m_pControlNumParameterSlots->get() + 1);
     return pParameter;
 }
 
@@ -86,6 +93,11 @@ void EffectSlot::slotLoaded(double v) {
 void EffectSlot::slotNumParameters(double v) {
     qDebug() << debugString() << "slotNumParameters" << v;
     qDebug() << "WARNING: num_parameters is a read-only control.";
+}
+
+void EffectSlot::slotNumParameterSlots(double v) {
+    qDebug() << debugString() << "slotNumParameterSlots" << v;
+    qDebug() << "WARNING: num_parameterslots is a read-only control.";
 }
 
 void EffectSlot::slotEnabled(double v) {

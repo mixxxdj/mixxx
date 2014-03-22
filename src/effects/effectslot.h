@@ -47,6 +47,7 @@ class EffectSlot : public QObject {
 
     void slotLoaded(double v);
     void slotNumParameters(double v);
+    void slotNumParameterSlots(double v);
     void slotEnabled(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
@@ -95,6 +96,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;
     ControlObject* m_pControlNumParameters;
+    ControlObject* m_pControlNumParameterSlots;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
     ControlObject* m_pControlEffectSelector;
