@@ -731,8 +731,10 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
 }
 
 void MixxxMainWindow::onNewSkinLoaded() {
+#ifdef __VINYLCONTROL__
     setVisibilityOptionState(m_pViewVinylControl,
                              ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+#endif
     setVisibilityOptionState(m_pViewShowSamplers,
                              ConfigKey("[Samplers]", "show_samplers"));
     setVisibilityOptionState(m_pViewShowMicrophone,
@@ -1136,6 +1138,7 @@ void MixxxMainWindow::initActions()
     QString showVinylControlTitle = tr("Show Vinyl Control Section");
     QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
             " " + mayNotBeSupported;
+#ifdef __VINYLCONTROL__
     m_pViewVinylControl = new QAction(showVinylControlTitle, this);
     m_pViewVinylControl->setCheckable(true);
     m_pViewVinylControl->setShortcut(
@@ -1146,6 +1149,7 @@ void MixxxMainWindow::initActions()
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowVinylControl(bool)));
+#endif
 
     QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
@@ -1253,7 +1257,9 @@ void MixxxMainWindow::initMenuBar()
     //viewMenu->setCheckable(true);
     m_pViewMenu->addAction(m_pViewShowSamplers);
     m_pViewMenu->addAction(m_pViewShowMicrophone);
+#ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
+#endif
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
