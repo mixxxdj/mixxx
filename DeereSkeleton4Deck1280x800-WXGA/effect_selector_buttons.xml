@@ -16,6 +16,20 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
+          <Text>⏏</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],clear</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>20f,20f</Size>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
           <Text>◀</Text>
         </State>
         <Connection>
