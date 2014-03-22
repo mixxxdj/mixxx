@@ -88,7 +88,8 @@ void EffectChainSlot::slotChainNameChanged(const QString&) {
 }
 
 void EffectChainSlot::slotChainEnabledChanged(bool bEnabled) {
-    m_pControlChainEnabled->setAndConfirm(bEnabled);
+    // TODO(rryan): should chains still have an enabled state?
+    //m_pControlChainEnabled->setAndConfirm(bEnabled);
     emit(updated());
 }
 

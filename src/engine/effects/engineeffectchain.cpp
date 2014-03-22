@@ -38,11 +38,14 @@ bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
 }
 
 bool EngineEffectChain::removeEffect(EngineEffect* pEffect) {
+    bool found = false;
     for (int i = 0; i < m_effects.size(); ++i) {
         if (m_effects.at(i) == pEffect) {
             m_effects.replace(i, NULL);
+            found = true;
         }
     }
+    return found;
 }
 
 bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
