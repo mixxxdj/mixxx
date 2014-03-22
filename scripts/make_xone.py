@@ -166,8 +166,8 @@ if MASTER_SYNC_LAYOUT:
            'knoblight1':['pfl','<button/>'], 'knoblight2':['quantize','<normal/>'], 'knoblight3':['filterLowKill','<normal/>'],
            'button1':{'red':['sync_master','<button/>'], 'orange':['beatloop_4','<button/>'],  'green':['hotcue_1_activate','<button/>']},
            'button2':{'red':['sync_enabled','<button/>'],  'orange':['loop_double','<button/>'], 'green':['hotcue_2_activate','<button/>']},
-           'button3':{'red':['XoneK2.Vinyl','<Script-Binding/>'], 'orange':['loop_halve','<button/>'],  'green':['hotcue_3_activate','<button/>']},
-           'button4':{'red':['XoneK2.PlayButton','<Script-Binding/>'],        'orange':['reloop_exit','<button/>'], 'green':['hotcue_4_activate','<button/>']}}
+           'button3':{'red':['cue_default','<button/>'], 'orange':['loop_halve','<button/>'],  'green':['hotcue_3_activate','<button/>']},
+           'button4':{'red':['play','<button/>'],        'orange':['reloop_exit','<button/>'], 'green':['hotcue_4_activate','<button/>']}}
 
 
 light_mapping = {#'spinknob':'jog',

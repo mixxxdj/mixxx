@@ -61,7 +61,7 @@ XoneK2.clearlights = function () {
     }
 }
 
-XoneK2.encoderJog = function (channel, control, value, status) {
+XoneK2.encoderJog = function (midichannel, control, value, status) {
     deck = XoneK2.IndexToDeck(control);
     if (value == 127) {
         jogValue = -1;
@@ -86,7 +86,7 @@ XoneK2.encoderJog = function (channel, control, value, status) {
     }
 }
 
-XoneK2.encoderButton = function (channel, control, value, status) {
+XoneK2.encoderButton = function (midichannel, control, value, status) {
     deck = XoneK2.IndexToDeck(control - 52);
     if (!value) return;
 
@@ -100,7 +100,7 @@ XoneK2.encoderButton = function (channel, control, value, status) {
 }
 
 
-XoneK2.shift_on = function (channel, control, value, status) {
+XoneK2.shift_on = function (midichannel, control, value, status) {
     if (XoneK2.shift_lock) {
         if (value == 127) {
             XoneK2.shift_status = !XoneK2.shift_status;
@@ -122,7 +122,7 @@ XoneK2.shift_on = function (channel, control, value, status) {
     }
 }
 
-XoneK2.leftBottomKnob = function (channel, control, value, status) {
+XoneK2.leftBottomKnob = function (midichannel, control, value, status) {
     if (XoneK2.shift_status)
     {
         cur_vol = engine.getValue("[Master]", "headMix");
@@ -141,7 +141,7 @@ XoneK2.leftBottomKnob = function (channel, control, value, status) {
     }
 }
 
-XoneK2.rightBottomKnob = function (channel, control, value, status) {
+XoneK2.rightBottomKnob = function (midichannel, control, value, status) {
     if (XoneK2.shift_status)
     {
         cur_vol = engine.getValue("[Master]", "volume");
@@ -163,7 +163,7 @@ XoneK2.rightBottomKnob = function (channel, control, value, status) {
     }
 }
 
-XoneK2.PlayButton = function (channel, control, value, status) {
+XoneK2.PlayButton = function (midichannel, control, value, status) {
     deck = XoneK2.IndexToDeck(control - 24);
     if (!value) return;
 
@@ -177,7 +177,7 @@ XoneK2.PlayButton = function (channel, control, value, status) {
     }
 }
 
-XoneK2.Vinyl = function (channel, control, value, status) {
+XoneK2.Vinyl = function (midichannel, control, value, status) {
     deck = XoneK2.IndexToDeck(control - 28);
     if (!value) return;
 
