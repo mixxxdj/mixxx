@@ -1,6 +1,7 @@
 #include "engine/effects/engineeffectrack.h"
 
 #include "engine/effects/engineeffectchain.h"
+#include "sampleutil.h"
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
         : m_iRackNumber(iRackNumber) {
@@ -38,13 +39,22 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
 void EngineEffectRack::process(const QString& group,
                                const CSAMPLE* pInput, CSAMPLE* pOutput,
                                const unsigned int numSamples) {
+    bool anyProcessed = false;
     foreach (EngineEffectChain* pChain, m_chains) {
-        pChain->process(group, pInput, pOutput, numSamples);
+        if (pChain != NULL) {
+            pChain->process(group, pInput, pOutput, numSamples);
+            anyProcessed = true;
+        }
+    }
+    if (!anyProcessed && pInput != pOutput) {
+        SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+        qDebug() << "WARNING: EngineEffectRack took the slow path!"
+                 << "If you want to do this talk to rryan.";
     }
 }
 
 bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
-    if (iIndex < 0 || iIndex > m_chains.size()) {
+    if (iIndex < 0) {
         qDebug() << debugString()
                  << "WARNING: ADD_CHAIN_TO_RACK message with invalid index:"
                  << iIndex;
@@ -54,10 +64,20 @@ bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
                  << pChain->id();
         return false;
     }
-    m_chains.insert(iIndex, pChain);
+    while (iIndex >= m_chains.size()) {
+        m_chains.append(NULL);
+    }
+    m_chains.replace(iIndex, pChain);
     return true;
 }
 
 bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain) {
-    return m_chains.removeAll(pChain) > 0;
+    bool found = false;
+    for (int i = 0; i < m_chains.size(); ++i) {
+        if (m_chains.at(i) == pChain) {
+            m_chains.replace(i, NULL);
+            found = true;
+        }
+    }
+    return found;
 }
