@@ -17,15 +17,19 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_CHAIN_TO_RACK:
-            qDebug() << debugString() << "ADD_CHAIN_TO_RACK"
-                     << message.AddChainToRack.pChain
-                     << message.AddChainToRack.iIndex;
+            if (kEffectDebugOutput) {
+                qDebug() << debugString() << "ADD_CHAIN_TO_RACK"
+                         << message.AddChainToRack.pChain
+                         << message.AddChainToRack.iIndex;
+            }
             response.success = addEffectChain(message.AddChainToRack.pChain,
                                               message.AddChainToRack.iIndex);
             break;
         case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
-            qDebug() << debugString() << "REMOVE_CHAIN_FROM_RACK"
-                     << message.RemoveChainFromRack.pChain;
+            if (kEffectDebugOutput) {
+                qDebug() << debugString() << "REMOVE_CHAIN_FROM_RACK"
+                         << message.RemoveChainFromRack.pChain;
+            }
             response.success = removeEffectChain(
                 message.RemoveChainFromRack.pChain);
             break;
@@ -48,20 +52,27 @@ void EngineEffectRack::process(const QString& group,
     }
     if (!anyProcessed && pInput != pOutput) {
         SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-        qDebug() << "WARNING: EngineEffectRack took the slow path!"
-                 << "If you want to do this talk to rryan.";
+        if (kEffectDebugOutput) {
+            qDebug() << "WARNING: EngineEffectRack took the slow path!"
+                     << "If you want to do this talk to rryan.";
+        }
     }
 }
 
 bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
     if (iIndex < 0) {
-        qDebug() << debugString()
-                 << "WARNING: ADD_CHAIN_TO_RACK message with invalid index:"
-                 << iIndex;
+        if (kEffectDebugOutput) {
+            qDebug() << debugString()
+                     << "WARNING: ADD_CHAIN_TO_RACK message with invalid index:"
+                     << iIndex;
+        }
+        return false;
     }
     if (m_chains.contains(pChain)) {
-        qDebug() << debugString() << "WARNING: chain already added to EngineEffectRack:"
-                 << pChain->id();
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "WARNING: chain already added to EngineEffectRack:"
+                     << pChain->id();
+        }
         return false;
     }
     while (iIndex >= m_chains.size()) {

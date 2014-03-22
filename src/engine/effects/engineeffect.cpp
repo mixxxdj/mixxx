@@ -20,7 +20,9 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
 }
 
 EngineEffect::~EngineEffect() {
-    qDebug() << debugString() << "destroyed";
+    if (kEffectDebugOutput) {
+        qDebug() << debugString() << "destroyed";
+    }
     delete m_pProcessor;
     m_parametersById.clear();
     for (int i = 0; i < m_parameters.size(); ++i) {
@@ -37,12 +39,14 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
 
     switch (message.type) {
         case EffectsRequest::SET_EFFECT_PARAMETER:
-            qDebug() << debugString() << "SET_EFFECT_PARAMETER"
-                     << "parameter" << message.SetEffectParameter.iParameter
-                     << "minimum" << message.minimum
-                     << "maximum" << message.maximum
-                     << "default_value" << message.default_value
-                     << "value" << message.value;
+            if (kEffectDebugOutput) {
+                qDebug() << debugString() << "SET_EFFECT_PARAMETER"
+                         << "parameter" << message.SetEffectParameter.iParameter
+                         << "minimum" << message.minimum
+                         << "maximum" << message.maximum
+                         << "default_value" << message.default_value
+                         << "value" << message.value;
+            }
             pParameter = m_parameters.value(
                 message.SetEffectParameter.iParameter, NULL);
             if (pParameter) {

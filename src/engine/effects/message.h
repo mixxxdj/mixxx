@@ -8,6 +8,8 @@
 #include "util/fifo.h"
 #include "effects/effectchain.h"
 
+const bool kEffectDebugOutput = true;
+
 class EngineEffectRack;
 class EngineEffectChain;
 class EngineEffect;
