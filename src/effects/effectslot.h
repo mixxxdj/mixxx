@@ -44,7 +44,7 @@ class EffectSlot : public QObject {
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);
 
-    void slotEnabled(double v);
+    void slotLoaded(double v);
     void slotNumParameters(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
@@ -89,7 +89,7 @@ class EffectSlot : public QObject {
     const QString m_group;
     EffectPointer m_pEffect;
 
-    ControlObject* m_pControlEnabled;
+    ControlObject* m_pControlLoaded;
     ControlObject* m_pControlNumParameters;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;

@@ -16,9 +16,9 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
           // is 0-indexed.
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
                                     m_iEffectNumber)) {
-    m_pControlEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
-    m_pControlEnabled->connectValueChangeRequest(
-        this, SLOT(slotEnabled(double)), Qt::AutoConnection);
+    m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
+    m_pControlLoaded->connectValueChangeRequest(
+        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
     m_pControlNumParameters->connectValueChangeRequest(
         this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
@@ -50,7 +50,7 @@ EffectSlot::~EffectSlot() {
     qDebug() << debugString() << "destroyed";
     clear();
 
-    delete m_pControlEnabled;
+    delete m_pControlLoaded;
     delete m_pControlNumParameters;
 }
 
@@ -70,9 +70,9 @@ unsigned int EffectSlot::numParameterSlots() const {
     return m_parameters.size();
 }
 
-void EffectSlot::slotEnabled(double v) {
-    qDebug() << debugString() << "slotEnabled" << v;
-    qDebug() << "WARNING: enabled is a read-only control.";
+void EffectSlot::slotLoaded(double v) {
+    qDebug() << debugString() << "slotLoaded" << v;
+    qDebug() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectSlot::slotNumParameters(double v) {
@@ -94,7 +94,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
              << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
         m_pEffect = pEffect;
-        m_pControlEnabled->setAndConfirm(1.0);
+        m_pControlLoaded->setAndConfirm(1.0);
         m_pControlNumParameters->setAndConfirm(m_pEffect->numParameters());
 
         while (m_parameters.size() < m_pEffect->numParameters()) {
@@ -116,7 +116,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
 
 void EffectSlot::clear() {
     m_pEffect.clear();
-    m_pControlEnabled->setAndConfirm(0.0);
+    m_pControlLoaded->setAndConfirm(0.0);
     m_pControlNumParameters->setAndConfirm(0.0);
     foreach (EffectParameterSlotPointer pParameter, m_parameters) {
         pParameter->loadEffect(EffectPointer());

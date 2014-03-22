@@ -19,9 +19,9 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
     m_pControlNumEffects->connectValueChangeRequest(
         this, SLOT(slotControlNumEffects(double)), Qt::AutoConnection);
 
-    m_pControlChainEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
-    m_pControlChainEnabled->connectValueChangeRequest(
-        this, SLOT(slotControlChainEnabled(double)), Qt::AutoConnection);
+    m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
+    m_pControlChainLoaded->connectValueChangeRequest(
+        this, SLOT(slotControlChainLoaded(double)), Qt::AutoConnection);
 
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
@@ -60,7 +60,7 @@ EffectChainSlot::~EffectChainSlot() {
     clear();
     delete m_pControlClear;
     delete m_pControlNumEffects;
-    delete m_pControlChainEnabled;
+    delete m_pControlChainLoaded;
     delete m_pControlChainMix;
     delete m_pControlChainParameter;
     delete m_pControlChainInsertionType;
@@ -163,8 +163,8 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         connect(m_pEffectChain.data(), SIGNAL(groupStatusChanged(const QString&, bool)),
                 this, SLOT(slotChainGroupStatusChanged(const QString&, bool)));
 
+        m_pControlChainLoaded->setAndConfirm(true);
         m_pEffectChain->setEnabled(true);
-        m_pControlChainEnabled->setAndConfirm(m_pEffectChain->enabled());
         m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
 
         // Mix, parameter, and enabled channels are persistent properties of the
@@ -205,7 +205,7 @@ void EffectChainSlot::clear() {
 
     }
     m_pControlNumEffects->setAndConfirm(0.0);
-    m_pControlChainEnabled->setAndConfirm(0.0);
+    m_pControlChainLoaded->setAndConfirm(0.0);
     m_pControlChainInsertionType->set(EffectChain::INSERT);
     emit(updated());
 }
@@ -289,10 +289,10 @@ void EffectChainSlot::slotControlNumEffects(double v) {
     qDebug() << "WARNING: num_effects is a read-only control.";
 }
 
-void EffectChainSlot::slotControlChainEnabled(double v) {
-    // Ignore sets to enabled.
-    qDebug() << debugString() << "slotControlChainEnabled" << v;
-    qDebug() << "WARNING: enabled is a read-only control.";
+void EffectChainSlot::slotControlChainLoaded(double v) {
+    // Ignore sets to loaded.
+    qDebug() << debugString() << "slotControlChainLoaded" << v;
+    qDebug() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainMix(double v) {

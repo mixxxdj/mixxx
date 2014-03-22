@@ -19,8 +19,8 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent,
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
                                     m_iSlotNumber, m_iParameterNumber)),
           m_pEffectParameter(NULL) {
-    m_pControlEnabled = new ControlObject(
-        ConfigKey(m_group, QString("enabled")));
+    m_pControlLoaded = new ControlObject(
+        ConfigKey(m_group, QString("loaded")));
     m_pControlLinkType = new ControlPushButton(
         ConfigKey(m_group, QString("link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
@@ -58,8 +58,8 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent,
         this, SLOT(slotValueType(double)), Qt::AutoConnection);
     m_pControlValueDefault->connectValueChangeRequest(
         this, SLOT(slotValueDefault(double)), Qt::AutoConnection);
-    m_pControlEnabled->connectValueChangeRequest(
-        this, SLOT(slotEnabled(double)), Qt::AutoConnection);
+    m_pControlLoaded->connectValueChangeRequest(
+        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
     m_pControlValueMinimumLimit->connectValueChangeRequest(
         this, SLOT(slotValueMaximumLimit(double)), Qt::AutoConnection);
     m_pControlValueMaximumLimit->connectValueChangeRequest(
@@ -72,7 +72,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     //qDebug() << debugString() << "destroyed";
     m_pEffectParameter = NULL;
     m_pEffect.clear();
-    delete m_pControlEnabled;
+    delete m_pControlLoaded;
     delete m_pControlLinkType;
     delete m_pControlValue;
     delete m_pControlValueNormalized;
@@ -136,8 +136,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             // TODO(rryan) expose this from EffectParameter
             m_pControlValueType->setAndConfirm(0);
             m_pControlValueDefault->setAndConfirm(dDefault);
-            // Default loaded parameters to enabled and unlinked
-            m_pControlEnabled->setAndConfirm(1.0);
+            // Default loaded parameters to loaded and unlinked
+            m_pControlLoaded->setAndConfirm(1.0);
             m_pControlLinkType->set(m_pEffectParameter->getLinkType());
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
@@ -155,7 +155,7 @@ void EffectParameterSlot::clear() {
     }
 
     m_pEffect.clear();
-    m_pControlEnabled->setAndConfirm(0.0);
+    m_pControlLoaded->setAndConfirm(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlValueNormalized->set(0.0);
@@ -170,9 +170,9 @@ void EffectParameterSlot::clear() {
     emit(updated());
 }
 
-void EffectParameterSlot::slotEnabled(double v) {
-    qDebug() << debugString() << "slotEnabled" << v;
-    qDebug() << "WARNING: enabled is a read-only control.";
+void EffectParameterSlot::slotLoaded(double v) {
+    qDebug() << debugString() << "slotLoaded" << v;
+    qDebug() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectParameterSlot::slotLinkType(double v) {
