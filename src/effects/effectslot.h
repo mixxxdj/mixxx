@@ -48,6 +48,7 @@ class EffectSlot : public QObject {
     void slotNumParameters(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
+    void slotEffectSelector(double v);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -58,11 +59,18 @@ class EffectSlot : public QObject {
 
     // Signal that whoever is in charge of this EffectSlot should load the next
     // Effect into it.
-    void nextEffect(unsigned int iChainNumber, unsigned int iEffectNumber, EffectPointer pEffect);
+    void nextEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
+                    EffectPointer pEffect);
 
-    // Signal that whoever is in charge of this EffectSlot should load the previous
-    // Effect into it.
-    void prevEffect(unsigned int iChainNumber, unsigned int iEffectNumber, EffectPointer pEffect);
+    // Signal that whoever is in charge of this EffectSlot should load the
+    // previous Effect into it.
+    void prevEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
+                    EffectPointer pEffect);
+
+    // Signal that whoever is in charge of this EffectSlot should clear this
+    // EffectSlot (by deleting the effect from the underlying chain).
+    void clearEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
+                     EffectPointer pEffect);
 
     void updated();
 
@@ -84,6 +92,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlNumParameters;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
+    ControlObject* m_pControlEffectSelector;
     QList<EffectParameterSlotPointer> m_parameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
