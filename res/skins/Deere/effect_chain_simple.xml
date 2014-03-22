@@ -51,6 +51,23 @@
 
               <PushButton>
                 <Size>20f,20f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>E</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>E</Text>
+                </State>
+                <Connection>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>

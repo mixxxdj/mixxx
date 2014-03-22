@@ -60,6 +60,24 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
+
+      <PushButton>
+        <Size>20f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>E</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>E</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],enabled</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
     </Children>
   </WidgetGroup>
 </Template>
