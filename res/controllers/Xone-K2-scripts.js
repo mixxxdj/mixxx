@@ -14,6 +14,7 @@ XoneK2.shift_status = false;
 // stay on.
 // shift_lock = false; means that shift is only active when the button is held
 XoneK2.shift_lock = false;
+XoneK2.deck_order = [3, 1, 2, 4];
 
 XoneK2.leds =  [0x34,   0x35,   0x36,   0x37,
                 0x58,	0x59,   0x5A,	0x5B,
@@ -60,23 +61,8 @@ XoneK2.clearlights = function () {
     }
 }
 
-XoneK2.encoderJog1 = function (channel, control, value, status) {
-    XoneK2.encoderJog(value, 1);
-}
-
-XoneK2.encoderJog2 = function (channel, control, value, status) {
-    XoneK2.encoderJog(value, 2);
-}
-
-XoneK2.encoderJog3 = function (channel, control, value, status) {
-    XoneK2.encoderJog(value, 3);
-}
-
-XoneK2.encoderJog4 = function (channel, control, value, status) {
-    XoneK2.encoderJog(value, 4);
-}
-
-XoneK2.encoderJog = function (value, deck) {
+XoneK2.encoderJog = function (channel, control, value, status) {
+    deck = XoneK2.IndexToDeck(control);
     if (value == 127) {
         jogValue = -1;
     } else {
@@ -86,9 +72,11 @@ XoneK2.encoderJog = function (value, deck) {
     if (XoneK2.shift_status) {
         //// faster seek with shift held
         //jogValue *= 5;
-        }
-        pregain = engine.getValue("[Channel" + deck + "]", "pregain");
-        engine.setValue("[Channel" + deck + "]", "pregain", pregain + (.05 * jogValue));
+        //}
+        //pregain = engine.getValue("[Channel" + deck + "]", "pregain");
+        //engine.setValue("[Channel" + deck + "]", "pregain", pregain + (.05 * jogValue));
+        rate = engine.getValue("[Channel" + deck + "]", "rate");
+        engine.setValue("[Channel" + deck + "]", "rate", rate + (.005 * jogValue));
     } else {
         if (engine.getValue("[Channel" + deck + "]", "play") == 1 &&
             engine.getValue("[Channel" + deck + "]", "reverse") == 1) {
@@ -98,23 +86,8 @@ XoneK2.encoderJog = function (value, deck) {
     }
 }
 
-XoneK2.encoderButton1 = function (channel, control, value, status) {
-    XoneK2.encoderButton(value, 1);
-}
-
-XoneK2.encoderButton2 = function (channel, control, value, status) {
-    XoneK2.encoderButton(value, 2);
-}
-
-XoneK2.encoderButton3 = function (channel, control, value, status) {
-    XoneK2.encoderButton(value, 3);
-}
-
-XoneK2.encoderButton4 = function (channel, control, value, status) {
-    XoneK2.encoderButton(value, 4);
-}
-
-XoneK2.encoderButton = function (value, deck) {
+XoneK2.encoderButton = function (channel, control, value, status) {
+    deck = XoneK2.IndexToDeck(control - 52);
     if (!value) return;
 
     channel = "[Channel" + deck + "]"
@@ -190,23 +163,8 @@ XoneK2.rightBottomKnob = function (channel, control, value, status) {
     }
 }
 
-XoneK2.Playbutton1 = function (channel, control, value, status) {
-    XoneK2.PlayButton(value, 1);
-}
-
-XoneK2.Playbutton2 = function (channel, control, value, status) {
-    XoneK2.PlayButton(value, 2);
-}
-
-XoneK2.Playbutton3 = function (channel, control, value, status) {
-    XoneK2.PlayButton(value, 3);
-}
-
-XoneK2.Playbutton4 = function (channel, control, value, status) {
-    XoneK2.PlayButton(value, 4);
-}
-
-XoneK2.PlayButton = function (value, deck) {
+XoneK2.PlayButton = function (channel, control, value, status) {
+    deck = XoneK2.IndexToDeck(control - 24);
     if (!value) return;
 
     channel = "[Channel" + deck + "]"
@@ -219,23 +177,8 @@ XoneK2.PlayButton = function (value, deck) {
     }
 }
 
-XoneK2.Vinyl1 = function (channel, control, value, status) {
-    XoneK2.Vinyl(value, 1);
-}
-
-XoneK2.Vinyl2 = function (channel, control, value, status) {
-    XoneK2.Vinyl(value, 2);
-}
-
-XoneK2.Vinyl3 = function (channel, control, value, status) {
-    XoneK2.Vinyl(value, 3);
-}
-
-XoneK2.Vinyl4 = function (channel, control, value, status) {
-    XoneK2.Vinyl(value, 4);
-}
-
-XoneK2.Vinyl = function (value, deck) {
+XoneK2.Vinyl = function (channel, control, value, status) {
+    deck = XoneK2.IndexToDeck(control - 28);
     if (!value) return;
 
     channel = "[Channel" + deck + "]"
@@ -248,4 +191,8 @@ XoneK2.Vinyl = function (value, deck) {
         curval = engine.getValue(channel, "vinylcontrol_enabled");
         engine.setValue(channel, "vinylcontrol_enabled", !curval);
     }
+}
+
+XoneK2.IndexToDeck = function (index) {
+    return XoneK2.deck_order[index];
 }
