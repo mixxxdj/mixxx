@@ -38,14 +38,20 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
     // Add all effects.
     for (int i = 0; i < m_effects.size(); ++i) {
         // Add the effect to the engine.
-        m_effects[i]->addToEngine(m_pEngineEffectChain, i);
+        EffectPointer pEffect = m_effects[i];
+        if (pEffect) {
+            pEffect->addToEngine(m_pEngineEffectChain, i);
+        }
     }
 }
 
 void EffectChain::removeFromEngine(EngineEffectRack* pRack) {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
-        m_effects[i]->removeFromEngine(m_pEngineEffectChain);
+        EffectPointer pEffect = m_effects[i];
+        if (pEffect) {
+            pEffect->removeFromEngine(m_pEngineEffectChain);
+        }
     }
 
     EffectsRequest* pRequest = new EffectsRequest();
@@ -64,8 +70,10 @@ void EffectChain::updateEngineState() {
     sendParameterUpdate();
     for (int i = 0; i < m_effects.size(); ++i) {
         EffectPointer pEffect = m_effects[i];
-        // Update effect parameters in the engine.
-        pEffect->updateEngineState();
+        if (pEffect) {
+            // Update effect parameters in the engine.
+            pEffect->updateEngineState();
+        }
     }
 }
 
@@ -171,7 +179,9 @@ void EffectChain::setParameter(const double& dParameter) {
     sendParameterUpdate();
 
     foreach (EffectPointer pEffect, m_effects) {
-        pEffect->onChainParameterChanged(m_dParameter);
+        if (pEffect) {
+            pEffect->onChainParameterChanged(m_dParameter);
+        }
     }
 
     emit(parameterChanged(dParameter));
@@ -199,6 +209,10 @@ void EffectChain::setInsertionType(InsertionType insertionType) {
 
 void EffectChain::addEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "addEffect";
+    if (!pEffect) {
+        return;
+    }
+
     if (m_effects.contains(pEffect)) {
         qDebug() << debugString()
                  << "WARNING: EffectChain already contains Effect:"
@@ -271,8 +285,10 @@ QDomElement EffectChain::toXML(QDomDocument* doc) const {
 
     QDomElement effectsNode = doc->createElement("Effects");
     foreach (EffectPointer pEffect, m_effects) {
-        QDomElement effectNode = pEffect->toXML(doc);
-        effectsNode.appendChild(effectNode);
+        if (pEffect) {
+            QDomElement effectNode = pEffect->toXML(doc);
+            effectsNode.appendChild(effectNode);
+        }
     }
     element.appendChild(effectsNode);
 
