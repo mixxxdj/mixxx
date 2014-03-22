@@ -1,6 +1,7 @@
 #include "effects/effectsmanager.h"
 
 #include <QMetaType>
+#include <QtAlgorithms>
 
 #include "effects/effectchainmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
@@ -63,6 +64,53 @@ const QSet<QString> EffectsManager::getAvailableEffects() const {
     }
 
     return availableEffects;
+}
+
+QString EffectsManager::getNextEffectId(const QString& effectId) {
+    // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
+    // STUPID
+    QList<QString> effects = getAvailableEffects().toList();
+    qSort(effects.begin(), effects.end());
+
+    if (effects.isEmpty()) {
+        return QString();
+    }
+
+    if (effectId.isNull()) {
+        return effects.first();
+    }
+
+    QList<QString>::const_iterator it =
+            qUpperBound(effects.constBegin(), effects.constEnd(), effectId);
+    if (it == effects.constEnd()) {
+        return effects.first();
+    }
+
+    return *it;
+}
+
+QString EffectsManager::getPrevEffectId(const QString& effectId) {
+    // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
+    // STUPID
+    QList<QString> effects = getAvailableEffects().toList();
+    qSort(effects.begin(), effects.end());
+
+    if (effects.isEmpty()) {
+        return QString();
+    }
+
+    if (effectId.isNull()) {
+        return effects.last();
+    }
+
+    QList<QString>::const_iterator it =
+            qLowerBound(effects.constBegin(), effects.constEnd(), effectId);
+    if (it == effects.constBegin()) {
+        return effects.last();
+    }
+
+    it--;
+    return *it;
 }
 
 EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
