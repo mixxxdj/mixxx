@@ -30,6 +30,14 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
     m_pControlChainLoaded->connectValueChangeRequest(
         this, SLOT(slotControlChainLoaded(double)), Qt::AutoConnection);
 
+    m_pControlChainEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
+    m_pControlChainEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
+    // Default to enabled. The skin might not show these buttons.
+    m_pControlChainEnabled->setDefaultValue(true);
+    m_pControlChainEnabled->set(true);
+    connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlChainEnabled(double)));
+
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
@@ -69,6 +77,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlNumEffects;
     delete m_pControlNumEffectSlots;
     delete m_pControlChainLoaded;
+    delete m_pControlChainEnabled;
     delete m_pControlChainMix;
     delete m_pControlChainParameter;
     delete m_pControlChainInsertionType;
@@ -97,8 +106,7 @@ void EffectChainSlot::slotChainNameChanged(const QString&) {
 }
 
 void EffectChainSlot::slotChainEnabledChanged(bool bEnabled) {
-    // TODO(rryan): should chains still have an enabled state?
-    //m_pControlChainEnabled->setAndConfirm(bEnabled);
+    m_pControlChainEnabled->set(bEnabled);
     emit(updated());
 }
 
@@ -185,6 +193,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         // chain.
         m_pEffectChain->setParameter(m_pControlChainParameter->get());
         m_pEffectChain->setMix(m_pControlChainMix->get());
+        m_pEffectChain->setEnabled(m_pControlChainEnabled->get() > 0.0);
         for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
              it != m_groupEnableControls.end(); ++it) {
             if (it.value()->get() > 0.0) {
@@ -315,6 +324,13 @@ void EffectChainSlot::slotControlChainLoaded(double v) {
     // Ignore sets to loaded.
     qDebug() << debugString() << "slotControlChainLoaded" << v;
     qDebug() << "WARNING: loaded is a read-only control.";
+}
+
+void EffectChainSlot::slotControlChainEnabled(double v) {
+    qDebug() << debugString() << "slotControlChainEnabled" << v;
+    if (m_pEffectChain) {
+        m_pEffectChain->setEnabled(v > 0);
+    }
 }
 
 void EffectChainSlot::slotControlChainMix(double v) {

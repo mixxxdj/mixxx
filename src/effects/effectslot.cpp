@@ -30,7 +30,8 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
 
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
-    // Default to true.
+    // Default to enabled. The skin might not show these buttons.
+    m_pControlEnabled->setDefaultValue(true);
     m_pControlEnabled->set(true);
     connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnabled(double)));
@@ -132,7 +133,10 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pEffect = pEffect;
         m_pControlLoaded->setAndConfirm(1.0);
         m_pControlNumParameters->setAndConfirm(m_pEffect->numParameters());
-        m_pControlEnabled->set(m_pEffect->enabled());
+
+        // Enabled is a persistent property of the effect slot, not of the
+        // effect. Propagate the current setting to the effect.
+        m_pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
 
         connect(m_pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));

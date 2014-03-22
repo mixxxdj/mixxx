@@ -105,6 +105,7 @@ class EffectChainSlot : public QObject {
     void slotControlNumEffects(double v);
     void slotControlNumEffectSlots(double v);
     void slotControlChainLoaded(double v);
+    void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
     void slotControlChainParameter(double v);
     void slotControlChainInsertionType(double v);
@@ -129,6 +130,7 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlNumEffects;
     ControlObject* m_pControlNumEffectSlots;
     ControlObject* m_pControlChainLoaded;
+    ControlPushButton* m_pControlChainEnabled;
     ControlObject* m_pControlChainMix;
     ControlObject* m_pControlChainParameter;
     ControlPushButton* m_pControlChainInsertionType;
