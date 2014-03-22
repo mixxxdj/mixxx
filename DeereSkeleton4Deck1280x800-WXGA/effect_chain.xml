@@ -90,6 +90,9 @@
             <SizePolicy>me,max</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skin:effect_selector_buttons.xml">
+                <SetVariable name="Effect">1</SetVariable>
+              </Template>
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
@@ -118,6 +121,66 @@
               <Template src="skin:knob.xml">
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitControlRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitParameters</ObjectName>
+            <SizePolicy>me,max</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:effect_selector_buttons.xml">
+                <SetVariable name="Effect">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">1</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">2</SetVariable>
+                <SetVariable name="EffectParameter">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitControlRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitParameters</ObjectName>
+            <SizePolicy>me,max</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:effect_selector_buttons.xml">
+                <SetVariable name="Effect">3</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">1</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">2</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">3</SetVariable>
+                <SetVariable name="EffectParameter">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
