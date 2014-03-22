@@ -41,15 +41,25 @@ bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
     return true;
 }
 
-bool EngineEffectChain::removeEffect(EngineEffect* pEffect) {
-    bool found = false;
-    for (int i = 0; i < m_effects.size(); ++i) {
-        if (m_effects.at(i) == pEffect) {
-            m_effects.replace(i, NULL);
-            found = true;
+bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
+    if (iIndex < 0) {
+        if (kEffectDebugOutput) {
+            qDebug() << debugString()
+                     << "WARNING: REMOVE_EFFECT_FROM_CHAIN message with invalid index:"
+                     << iIndex;
         }
+        return false;
     }
-    return found;
+    if (m_effects.at(iIndex) != pEffect) {
+        qDebug() << debugString()
+                 << "WARNING: REMOVE_EFFECT_FROM_CHAIN consistency error"
+                 << m_effects.at(iIndex) << "loaded but received request to remove"
+                 << pEffect;
+        return false;
+    }
+
+    m_effects.replace(iIndex, NULL);
+    return true;
 }
 
 bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
@@ -94,10 +104,11 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
         case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "REMOVE_EFFECT_FROM_CHAIN"
-                         << message.RemoveEffectFromChain.pEffect;
+                         << message.RemoveEffectFromChain.pEffect
+                         << message.RemoveEffectFromChain.iIndex;
             }
-            response.success = removeEffect(
-                message.RemoveEffectFromChain.pEffect);
+            response.success = removeEffect(message.RemoveEffectFromChain.pEffect,
+                                            message.RemoveEffectFromChain.iIndex);
             break;
         case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
             if (kEffectDebugOutput) {

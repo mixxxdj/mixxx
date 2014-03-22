@@ -28,10 +28,11 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
         case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "REMOVE_CHAIN_FROM_RACK"
-                         << message.RemoveChainFromRack.pChain;
+                         << message.RemoveChainFromRack.pChain
+                         << message.RemoveChainFromRack.iIndex;
             }
-            response.success = removeEffectChain(
-                message.RemoveChainFromRack.pChain);
+            response.success = removeEffectChain(message.RemoveChainFromRack.pChain,
+                                                 message.RemoveChainFromRack.iIndex);
             break;
         default:
             return false;
@@ -82,13 +83,24 @@ bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
     return true;
 }
 
-bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain) {
-    bool found = false;
-    for (int i = 0; i < m_chains.size(); ++i) {
-        if (m_chains.at(i) == pChain) {
-            m_chains.replace(i, NULL);
-            found = true;
+bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain, int iIndex) {
+    if (iIndex < 0) {
+        if (kEffectDebugOutput) {
+            qDebug() << debugString()
+                     << "WARNING: REMOVE_CHAIN_FROM_RACK message with invalid index:"
+                     << iIndex;
         }
+        return false;
     }
-    return found;
+
+    if (m_chains.at(iIndex) != pChain) {
+        qDebug() << debugString()
+                 << "WARNING: REMOVE_CHAIN_FROM_RACK consistency error"
+                 << m_chains.at(iIndex) << "loaded but received request to remove"
+                 << pChain;
+        return false;
+    }
+
+    m_chains.replace(iIndex, NULL);
+    return true;
 }

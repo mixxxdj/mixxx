@@ -26,7 +26,7 @@ class EngineEffectRack : public EffectsRequestHandler {
 
   private:
     bool addEffectChain(EngineEffectChain* pChain, int iIndex);
-    bool removeEffectChain(EngineEffectChain* pChain);
+    bool removeEffectChain(EngineEffectChain* pChain, int iIndex);
 
     QString debugString() const {
         return QString("EngineEffectRack%1").arg(m_iRackNumber);

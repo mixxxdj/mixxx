@@ -91,6 +91,7 @@ struct EffectsRequest {
         } AddChainToRack;
         struct {
             EngineEffectChain* pChain;
+            int iIndex;
         } RemoveChainFromRack;
         struct {
             EngineEffect* pEffect;
@@ -98,6 +99,7 @@ struct EffectsRequest {
         } AddEffectToChain;
         struct {
             EngineEffect* pEffect;
+            int iIndex;
         } RemoveEffectFromChain;
         struct {
             bool enabled;

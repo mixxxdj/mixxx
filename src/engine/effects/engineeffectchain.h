@@ -42,7 +42,7 @@ class EngineEffectChain : public EffectsRequestHandler {
 
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
-    bool removeEffect(EngineEffect* pEffect);
+    bool removeEffect(EngineEffect* pEffect, int iIndex);
     bool enableForGroup(const QString& group);
     bool disableForGroup(const QString& group);
 

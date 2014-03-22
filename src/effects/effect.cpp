@@ -51,11 +51,12 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
     }
 }
 
-void Effect::removeFromEngine(EngineEffectChain* pChain) {
+void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
     request->pTargetChain = pChain;
     request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
+    request->RemoveEffectFromChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
     m_bAddedToEngine = false;
     foreach (EffectParameter* pParameter, m_parameters) {

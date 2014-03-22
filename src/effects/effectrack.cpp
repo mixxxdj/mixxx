@@ -54,7 +54,7 @@ void EffectRack::removeFromEngine() {
         EffectChainSlotPointer pSlot = m_effectChainSlots[i];
         EffectChainPointer pChain = pSlot->getEffectChain();
         if (pChain) {
-            pChain->removeFromEngine(m_pEngineEffectRack);
+            pChain->removeFromEngine(m_pEngineEffectRack, i);
         }
     }
 
@@ -147,7 +147,7 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
     if (pLoadedChain) {
         // TODO(rryan) GC pLoadedChain.
-        pLoadedChain->removeFromEngine(m_pEngineEffectRack);
+        pLoadedChain->removeFromEngine(m_pEngineEffectRack, iChainSlotNumber);
         pLoadedChain = pLoadedChain->prototype();
     }
 
@@ -166,7 +166,7 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
 void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
     if (pLoadedChain) {
-        pLoadedChain->removeFromEngine(m_pEngineEffectRack);
+        pLoadedChain->removeFromEngine(m_pEngineEffectRack, iChainSlotNumber);
         // TODO(rryan) GC pLoadedChain.
         pLoadedChain = pLoadedChain->prototype();
     }

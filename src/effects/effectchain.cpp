@@ -45,12 +45,12 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
     }
 }
 
-void EffectChain::removeFromEngine(EngineEffectRack* pRack) {
+void EffectChain::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
         EffectPointer pEffect = m_effects[i];
         if (pEffect) {
-            pEffect->removeFromEngine(m_pEngineEffectChain);
+            pEffect->removeFromEngine(m_pEngineEffectChain, i);
         }
     }
 
@@ -58,6 +58,7 @@ void EffectChain::removeFromEngine(EngineEffectRack* pRack) {
     pRequest->type = EffectsRequest::REMOVE_CHAIN_FROM_RACK;
     pRequest->pTargetRack = pRack;
     pRequest->RemoveChainFromRack.pChain = m_pEngineEffectChain;
+    pRequest->RemoveChainFromRack.iIndex = iIndex;
     m_pEffectsManager->writeRequest(pRequest);
     m_bAddedToEngine = false;
 }
@@ -237,7 +238,7 @@ void EffectChain::replaceEffect(unsigned int iEffectNumber,
     EffectPointer pOldEffect = m_effects[iEffectNumber];
     if (pOldEffect) {
         if (m_bAddedToEngine) {
-            pOldEffect->removeFromEngine(m_pEngineEffectChain);
+            pOldEffect->removeFromEngine(m_pEngineEffectChain, iEffectNumber);
         }
     }
 
@@ -255,11 +256,13 @@ void EffectChain::replaceEffect(unsigned int iEffectNumber,
 
 void EffectChain::removeEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "removeEffect";
-    if (m_effects.removeAll(pEffect) > 0) {
-        if (m_bAddedToEngine) {
-            pEffect->removeFromEngine(m_pEngineEffectChain);
+
+    for (int i = 0; i < m_effects.size(); ++i) {
+        if (m_effects.at(i) == pEffect) {
+            pEffect->removeFromEngine(m_pEngineEffectChain, i);
+            m_effects.replace(i, EffectPointer());
+            emit(effectRemoved());
         }
-        emit(effectRemoved());
     }
 }
 

@@ -40,7 +40,7 @@ class Effect : public QObject {
     void onChainParameterChanged(double chainParameter);
 
     void addToEngine(EngineEffectChain* pChain, int iIndex);
-    void removeFromEngine(EngineEffectChain* pChain);
+    void removeFromEngine(EngineEffectChain* pChain, int iIndex);
     void updateEngineState();
 
     QDomElement toXML(QDomDocument* doc) const;
