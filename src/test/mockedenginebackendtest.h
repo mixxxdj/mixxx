@@ -10,6 +10,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "deck.h"
+#include "effects/effectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginebufferscale.h"
 #include "engine/enginechannel.h"
@@ -41,14 +42,19 @@ class MockedEngineBackendTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]", false, false);
+        m_pEffectsManager = new EffectsManager(NULL, config());
+        m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]",
+                                           m_pEffectsManager, false, false);
 
         m_pChannel1 = new EngineDeck(m_sGroup1, m_pConfig.data(),
-                                     m_pEngineMaster, EngineChannel::CENTER);
+                                     m_pEngineMaster, m_pEffectsManager,
+                                     EngineChannel::CENTER);
         m_pChannel2 = new EngineDeck(m_sGroup2, m_pConfig.data(),
-                                     m_pEngineMaster, EngineChannel::CENTER);
+                                     m_pEngineMaster, m_pEffectsManager,
+                                     EngineChannel::CENTER);
         m_pChannel3 = new EngineDeck(m_sGroup3, m_pConfig.data(),
-                                     m_pEngineMaster, EngineChannel::CENTER);
+                                     m_pEngineMaster, m_pEffectsManager,
+                                     EngineChannel::CENTER);
 
         addDeck(m_pChannel1);
         addDeck(m_pChannel2);
@@ -86,6 +92,7 @@ class MockedEngineBackendTest : public MixxxTest {
 
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
+        delete m_pEffectsManager;
         delete m_pMockScaler1;
         delete m_pMockScaler2;
         delete m_pMockScaler3;
@@ -102,6 +109,7 @@ class MockedEngineBackendTest : public MixxxTest {
 
     ControlObject* m_pNumDecks;
 
+    EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     EngineMaster* m_pEngineMaster;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;

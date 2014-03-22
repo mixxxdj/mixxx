@@ -34,6 +34,8 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
+#include "effects/effectsmanager.h"
+#include "effects/native/nativebackend.h"
 #include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -124,8 +126,19 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
+    // Create the Effects subsystem.
+    m_pEffectsManager = new EffectsManager(this, m_pConfig);
+
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true, true);
+
+    // Create effect backends. We do this after creating EngineMaster to allow
+    // effect backends to refer to controls that are produced by the engine.
+    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+
+    // Sets up the default EffectChains and EffectRack.
+    m_pEffectsManager->setupDefaults();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__
@@ -186,7 +199,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
 
     // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine);
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager,
+                                         m_pEffectsManager, m_pEngine);
 
     // Add the same number of decks that were last used.  This ensures that when
     // audio inputs and outputs are set up, connections for decks > 2 will
@@ -338,7 +352,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
-                                                           m_pVCManager))) {
+                                                           m_pVCManager,
+                                                           m_pEffectsManager))) {
         reportCriticalErrorAndQuit(
             "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
@@ -476,6 +491,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
+
+    qDebug() << "deleting effects manager, " << qTime.elapsed();
+    delete m_pEffectsManager;
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
@@ -1572,7 +1590,8 @@ void MixxxMainWindow::rebootMixxxView() {
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
-                                                           m_pVCManager))) {
+                                                           m_pVCManager,
+                                                           m_pEffectsManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),
@@ -1765,4 +1784,3 @@ bool MixxxMainWindow::confirmExit() {
     }
     return true;
 }
-

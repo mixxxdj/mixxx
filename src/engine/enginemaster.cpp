@@ -26,6 +26,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
+#include "engine/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
@@ -36,6 +37,8 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
 #include "sampleutil.h"
+#include "engine/effects/engineeffectsmanager.h"
+#include "effects/effectsmanager.h"
 #include "util/timer.h"
 #include "util/trace.h"
 #include "playermanager.h"
@@ -43,9 +46,12 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
+                           EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
                            bool bRampingGain)
-        : m_bRampingGain(bRampingGain),
+        : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_bRampingGain(bRampingGain),
+          m_masterVolumeOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0),
           m_bMasterOutputConnected(false),
@@ -55,6 +61,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_bBusOutputConnected[2] = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start(QThread::HighPriority);
+
+    if (pEffectsManager) {
+        pEffectsManager->registerGroup(getMasterGroup());
+        pEffectsManager->registerGroup(getHeadphoneGroup());
+    }
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -301,6 +312,9 @@ void EngineMaster::process(const int iBufferSize) {
     int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     // Update internal master sync.
     m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
+    if (m_pEngineEffectsManager) {
+        m_pEngineEffectsManager->onCallbackStart();
+    }
 
     // Bitvector of enabled channels
     const unsigned int maxChannels = 32;
@@ -341,13 +355,10 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderReverse->get() == 1.0,
                                 &c1_gain, &c2_gain);
 
-    // And mix the 3 buses into the master.
-    CSAMPLE master_gain = m_pMasterVolume->get();
-
     // Channels with the talkover flag should be mixed with the master signal at
     // full master volume.  All other channels should be adjusted by ducking gain.
-    m_masterGain.setGains(master_gain * m_pTalkoverDucking->getGain(iBufferSize / 2),
-                          c1_gain, 1.0, c2_gain, master_gain);
+    m_masterGain.setGains(m_pTalkoverDucking->getGain(iBufferSize / 2),
+                          c1_gain, 1.0, c2_gain, 1.0);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
     // master volume, the channel volume, and the orientation gain.
@@ -374,6 +385,21 @@ void EngineMaster::process(const int iBufferSize) {
                               m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
                               m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
                               iBufferSize);
+
+    // Process master channel effects
+    if (m_pEngineEffectsManager) {
+        m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster, iBufferSize);
+    }
+
+    // Apply master volume after effects.
+    CSAMPLE master_volume = m_pMasterVolume->get();
+    if (m_bRampingGain) {
+        SampleUtil::applyRampingGain(m_pMaster, m_masterVolumeOld,
+                                     master_volume, iBufferSize);
+    } else {
+        SampleUtil::applyGain(m_pHead, master_volume, iBufferSize);
+    }
+    m_masterVolumeOld = master_volume;
 
     // Clipping
     m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);
@@ -411,6 +437,11 @@ void EngineMaster::process(const int iBufferSize) {
         SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
     }
     m_headphoneMasterGainOld = cmaster_gain;
+
+    // Process headphone channel effects
+    if (m_pEngineEffectsManager) {
+        m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead, iBufferSize);
+    }
 
     // Head volume and clipping
     CSAMPLE headphoneVolume = m_pHeadVolume->get();
