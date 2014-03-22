@@ -1,16 +1,19 @@
 #include "effects/effectchainslot.h"
+
+#include "effects/effectrack.h"
 #include "sampleutil.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
 
-EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
+EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
-        : QObject(pParent),
+        : QObject(pRack),
           m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
-          m_group(formatGroupString(iRackNumber, iChainNumber)) {
+          m_group(formatGroupString(iRackNumber, iChainNumber)),
+          m_pEffectRack(pRack) {
     m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
     connect(m_pControlClear, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlClear(double)));
@@ -147,6 +150,10 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
 
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
+        m_pEffectChain->addToEngine(m_pEffectRack->getEngineEffectRack(),
+                                    m_iChainNumber);
+        m_pEffectChain->updateEngineState();
+
         connect(m_pEffectChain.data(), SIGNAL(effectAdded()),
                 this, SLOT(slotChainEffectsChanged()));
         connect(m_pEffectChain.data(), SIGNAL(effectRemoved()),
@@ -180,6 +187,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                 m_pEffectChain->disableForGroup(it.key());
             }
         }
+
         // Don't emit because we will below.
         slotChainEffectsChanged(false);
     }
@@ -195,6 +203,8 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
 void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
+        m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
+                                         m_iChainNumber);
         m_pEffectChain->disconnect(this);
         m_pEffectChain.clear();
 

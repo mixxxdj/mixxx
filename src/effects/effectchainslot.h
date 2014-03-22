@@ -14,12 +14,13 @@
 class ControlObject;
 class ControlPushButton;
 class EffectChainSlot;
+class EffectRack;
 typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
-    EffectChainSlot(QObject* pParent,
+    EffectChainSlot(EffectRack* pRack,
                     const unsigned int iRackNumber,
                     const unsigned int iChainNumber);
     virtual ~EffectChainSlot();
@@ -65,6 +66,10 @@ class EffectChainSlot : public QObject {
     // previous EffectChain into it.
     void prevChain(unsigned int iChainSlotNumber,
                    EffectChainPointer pEffectChain);
+
+    // Signal that whoever is in charge of this EffectChainSlot should clear
+    // this EffectChain (by removing the chain from this EffectChainSlot).
+    void clearChain(unsigned int iChainNumber, EffectChainPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next Effect into the specified EffectSlot.
@@ -115,6 +120,7 @@ class EffectChainSlot : public QObject {
     const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
     const QString m_group;
+    EffectRack* m_pEffectRack;
 
     EffectChainPointer m_pEffectChain;
 
