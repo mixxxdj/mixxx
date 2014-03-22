@@ -123,6 +123,15 @@ EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     m_effectChainSlots.append(pChainSlotPointer);
     m_controlNumEffectChainSlots.setAndConfirm(
             m_controlNumEffectChainSlots.get() + 1);
+
+    // Now load an empty effect chain into the slot so that users can edit
+    // effect slots on the fly without having to load a chain.
+    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
+                                              EffectChainPointer()));
+    pChain->setName("Empty Chain");
+    pChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
+    pChainSlotPointer->loadEffectChain(pChain);
+
     return pChainSlotPointer;
 }
 
@@ -186,6 +195,12 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
 
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();
+    if (!pChain) {
+        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
+                                                    EffectChainPointer()));
+        pChain->setName("Empty Chain");
+        pChainSlot->loadEffectChain(pChain);
+    }
     pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
 }
 
@@ -203,6 +218,12 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
 
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();
+    if (!pChain) {
+        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
+                                                    EffectChainPointer()));
+        pChain->setName("Empty Chain");
+        pChainSlot->loadEffectChain(pChain);
+    }
 
     pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
 }
