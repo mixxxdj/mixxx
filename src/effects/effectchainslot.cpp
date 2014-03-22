@@ -67,12 +67,14 @@ EffectChainSlot::~EffectChainSlot() {
     clear();
     delete m_pControlClear;
     delete m_pControlNumEffects;
+    delete m_pControlNumEffectSlots;
     delete m_pControlChainLoaded;
     delete m_pControlChainMix;
     delete m_pControlChainParameter;
     delete m_pControlChainInsertionType;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
+    delete m_pControlChainSelector;
 
     for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
          it != m_groupEnableControls.end();) {

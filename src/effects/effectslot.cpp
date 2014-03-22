@@ -65,6 +65,11 @@ EffectSlot::~EffectSlot() {
     delete m_pControlLoaded;
     delete m_pControlNumParameters;
     delete m_pControlNumParameterSlots;
+    delete m_pControlNextEffect;
+    delete m_pControlPrevEffect;
+    delete m_pControlEffectSelector;
+    delete m_pControlClear;
+    delete m_pControlEnabled;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
