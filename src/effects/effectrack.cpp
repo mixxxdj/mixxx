@@ -172,7 +172,7 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
 void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
                                 const unsigned int iEffectSlotNumber,
                                 EffectPointer pEffect) {
-    if (iChainSlotNumber >= m_effectChainSlots.size()) {
+    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
         return;
     }
 
@@ -195,7 +195,7 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
 void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
                                 const unsigned int iEffectSlotNumber,
                                 EffectPointer pEffect) {
-    if (iChainSlotNumber >= m_effectChainSlots.size()) {
+    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
         return;
     }
 

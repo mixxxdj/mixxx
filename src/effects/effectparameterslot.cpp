@@ -6,13 +6,11 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
-EffectParameterSlot::EffectParameterSlot(QObject* pParent,
-                                         const unsigned int iRackNumber,
+EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
                                          const unsigned int iParameterNumber)
-        : QObject(),
-          m_iRackNumber(iRackNumber),
+        : m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
           m_iSlotNumber(iSlotNumber),
           m_iParameterNumber(iParameterNumber),

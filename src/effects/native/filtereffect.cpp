@@ -61,6 +61,7 @@ FilterEffect::FilterEffect(EngineEffect* pEffect,
               pEffect->getParameterById("bandpass_width")),
           m_pBandpassGainParameter(
               pEffect->getParameterById("bandpass_gain")) {
+    Q_UNUSED(manifest);
 }
 
 FilterEffect::~FilterEffect() {
@@ -79,6 +80,7 @@ void FilterEffect::processGroup(const QString& group,
                                 FilterGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples) {
+    Q_UNUSED(group);
     double depth = m_pDepthParameter ?
             m_pDepthParameter->value().toDouble() : 0.0;
     double bandpass_width = m_pBandpassWidthParameter ?

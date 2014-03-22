@@ -7,8 +7,7 @@
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
-        : QObject(pRack),
-          m_iRackNumber(iRackNumber),
+        : m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
@@ -242,8 +241,8 @@ unsigned int EffectChainSlot::numSlots() const {
 EffectSlotPointer EffectChainSlot::addEffectSlot() {
     qDebug() << debugString() << "addEffectSlot";
 
-    EffectSlot* pEffectSlot = new EffectSlot(
-        this, m_iRackNumber, m_iChainNumber, m_slots.size());
+    EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainNumber,
+                                             m_slots.size());
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
@@ -284,7 +283,9 @@ void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotN
 void EffectChainSlot::slotClearEffect(unsigned int iChainSlotNumber,
                                       unsigned int iEffectSlotNumber,
                                       EffectPointer pEffect) {
-    if (iEffectSlotNumber >= m_slots.size()) {
+    Q_UNUSED(iChainSlotNumber);
+    Q_UNUSED(pEffect);
+    if (iEffectSlotNumber >= static_cast<unsigned int>(m_slots.size())) {
         return;
     }
 
@@ -295,7 +296,7 @@ void EffectChainSlot::slotClearEffect(unsigned int iChainSlotNumber,
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     qDebug() << debugString() << "getEffectSlot" << slotNumber;
-    if (slotNumber >= m_slots.size()) {
+    if (slotNumber >= static_cast<unsigned int>(m_slots.size())) {
         qDebug() << "WARNING: slotNumber out of range";
         return EffectSlotPointer();
     }

@@ -69,12 +69,6 @@ typedef CSAMPLE (*clip_func_t) (CSAMPLE);
 typedef void (*yield_func_t) (CSAMPLE *, uint, CSAMPLE, CSAMPLE);
 
 inline void
-store_func (CSAMPLE * s, uint i, CSAMPLE x, CSAMPLE gain)
-{
-	s[i] = x;
-}
-
-inline void
 adding_func (CSAMPLE * s, uint i, CSAMPLE x, CSAMPLE gain)
 {
 	s[i] += gain * x;

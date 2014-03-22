@@ -73,6 +73,7 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : m_pDelayParameter(pEffect->getParameterById("delay_time")),
           m_pDecayParameter(pEffect->getParameterById("decay_amount")),
           m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")) {
+    Q_UNUSED(manifest);
 }
 
 EchoEffect::~EchoEffect() {
@@ -85,9 +86,9 @@ int EchoEffect::getDelaySamples(double delay_time) const {
     if (delay_samples % 2 == 1) {
         --delay_samples;
     }
-    if (delay_samples > MAX_BUFFER_LEN) {
+    if (delay_samples > static_cast<int>(MAX_BUFFER_LEN)) {
         qWarning() << "Delay buffer requested is larger than max buffer!";
-        delay_samples = MAX_BUFFER_LEN;
+        delay_samples = static_cast<int>(MAX_BUFFER_LEN);
     }
     return delay_samples;
 }
@@ -95,6 +96,7 @@ int EchoEffect::getDelaySamples(double delay_time) const {
 void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples) {
+    Q_UNUSED(group);
     EchoGroupState& gs = *pGroupState;
     double delay_time =
             m_pDelayParameter ? m_pDelayParameter->value().toDouble() : 1.0f;

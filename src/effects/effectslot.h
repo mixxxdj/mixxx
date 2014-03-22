@@ -17,8 +17,7 @@ typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
-    EffectSlot(QObject* pParent,
-               const unsigned int iRackNumber,
+    EffectSlot(const unsigned int iRackNumber,
                const unsigned int iChainNumber,
                const unsigned int iEffectNumber);
     virtual ~EffectSlot();
