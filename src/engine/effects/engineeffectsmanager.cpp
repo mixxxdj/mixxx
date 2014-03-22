@@ -30,9 +30,11 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::ADD_CHAIN_TO_RACK:
             case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
                 if (!m_racks.contains(request->pTargetRack)) {
-                    qDebug() << debugString()
-                             << "WARNING: message for unloaded rack"
-                             << request->pTargetRack;
+                    if (kEffectDebugOutput) {
+                        qDebug() << debugString()
+                                 << "WARNING: message for unloaded rack"
+                                 << request->pTargetRack;
+                    }
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_RACK;
                 } else {
@@ -64,9 +66,11 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP:
             case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP:
                 if (!m_chains.contains(request->pTargetChain)) {
-                    qDebug() << debugString()
-                             << "WARNING: message for unloaded chain"
-                             << request->pTargetChain;
+                    if (kEffectDebugOutput) {
+                        qDebug() << debugString()
+                                 << "WARNING: message for unloaded chain"
+                                 << request->pTargetChain;
+                    }
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_CHAIN;
                 } else {
@@ -94,9 +98,11 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             case EffectsRequest::SET_EFFECT_PARAMETER:
                 if (!m_effects.contains(request->pTargetEffect)) {
-                    qDebug() << debugString()
-                             << "WARNING: SetEffectParameter message for unloaded effect"
-                             << request->pTargetEffect;
+                    if (kEffectDebugOutput) {
+                        qDebug() << debugString()
+                                 << "WARNING: SetEffectParameter message for unloaded effect"
+                                 << request->pTargetEffect;
+                    }
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_EFFECT;
                 } else {
@@ -133,8 +139,10 @@ void EngineEffectsManager::process(const QString& group,
 
 bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack) {
     if (m_racks.contains(pRack)) {
-        qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
-                 << pRack->number();
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
+                     << pRack->number();
+        }
         return false;
     }
     m_racks.append(pRack);
@@ -150,13 +158,17 @@ bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_RACK:
-            qDebug() << debugString() << "ADD_EFFECT_RACK"
-                     << message.AddEffectRack.pRack;
+            if (kEffectDebugOutput) {
+                qDebug() << debugString() << "ADD_EFFECT_RACK"
+                         << message.AddEffectRack.pRack;
+            }
             response.success = addEffectRack(message.AddEffectRack.pRack);
             break;
         case EffectsRequest::REMOVE_EFFECT_RACK:
-            qDebug() << debugString() << "REMOVE_EFFECT_RACK"
-                     << message.RemoveEffectRack.pRack;
+            if (kEffectDebugOutput) {
+                qDebug() << debugString() << "REMOVE_EFFECT_RACK"
+                         << message.RemoveEffectRack.pRack;
+            }
             response.success = removeEffectRack(message.RemoveEffectRack.pRack);
             break;
         default:
