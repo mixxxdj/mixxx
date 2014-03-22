@@ -50,7 +50,6 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool m_bEnabled;
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
-    double m_dParameter;
     QList<EngineEffect*> m_effects;
     CSAMPLE* m_pBuffer;
     struct GroupStatus {

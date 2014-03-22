@@ -105,7 +105,6 @@ struct EffectsRequest {
             bool enabled;
             EffectChain::InsertionType insertion_type;
             double mix;
-            double parameter;
         } SetEffectChainParameters;
         struct {
             int iParameter;

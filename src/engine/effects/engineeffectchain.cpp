@@ -8,7 +8,6 @@ EngineEffectChain::EngineEffectChain(const QString& id)
           m_bEnabled(false),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
-          m_dParameter(0),
           m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
@@ -68,7 +67,6 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     m_bEnabled = message.SetEffectChainParameters.enabled;
     m_insertionType = message.SetEffectChainParameters.insertion_type;
     m_dMix = message.SetEffectChainParameters.mix;
-    m_dParameter = message.SetEffectChainParameters.parameter;
 
     // If our enabled state changed then tell each group to ramp in or out.
     if (wasEnabled ^ m_bEnabled) {
@@ -114,8 +112,7 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "SET_EFFECT_CHAIN_PARAMETERS"
                          << "enabled" << message.SetEffectChainParameters.enabled
-                         << "mix" << message.SetEffectChainParameters.mix
-                         << "parameter" << message.SetEffectChainParameters.parameter;
+                         << "mix" << message.SetEffectChainParameters.mix;
             }
             response.success = updateParameters(message);
             break;

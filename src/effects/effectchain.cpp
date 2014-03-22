@@ -255,8 +255,7 @@ void EffectChain::replaceEffect(unsigned int iEffectNumber,
 }
 
 void EffectChain::removeEffect(EffectPointer pEffect) {
-    qDebug() << debugString() << "removeEffect";
-
+    qDebug() << debugString() << "removeEffect" << pEffect;
     for (int i = 0; i < m_effects.size(); ++i) {
         if (m_effects.at(i) == pEffect) {
             pEffect->removeFromEngine(m_pEngineEffectChain, i);
@@ -295,7 +294,6 @@ void EffectChain::sendParameterUpdate() {
     pRequest->SetEffectChainParameters.enabled = m_bEnabled;
     pRequest->SetEffectChainParameters.insertion_type = m_insertionType;
     pRequest->SetEffectChainParameters.mix = m_dMix;
-    pRequest->SetEffectChainParameters.parameter = m_dParameter;
     m_pEffectsManager->writeRequest(pRequest);
 }
 
