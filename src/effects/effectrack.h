@@ -46,6 +46,13 @@ class EffectRack : public QObject {
     void loadPrevChain(const unsigned int iChainSlotNumber,
                        EffectChainPointer pLoadedChain);
 
+    void loadNextEffect(const unsigned int iChainSlotNumber,
+                        const unsigned int iEffectSlotNumber,
+                        EffectPointer pEffect);
+    void loadPrevEffect(const unsigned int iChainSlotNumber,
+                        const unsigned int iEffectSlotNumber,
+                        EffectPointer pEffect);
+
   private:
     inline QString debugString() const {
         return QString("EffectRack%1").arg(m_iRackNumber);

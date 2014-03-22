@@ -1,5 +1,7 @@
 #include "effects/effectslot.h"
 
+#include "controlpushbutton.h"
+
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 32;
 
@@ -20,6 +22,14 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
     m_pControlNumParameters->connectValueChangeRequest(
         this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
+
+    m_pControlNextEffect = new ControlPushButton(ConfigKey(m_group, "next_effect"));
+    connect(m_pControlNextEffect, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNextEffect(double)));
+
+    m_pControlPrevEffect = new ControlPushButton(ConfigKey(m_group, "prev_effect"));
+    connect(m_pControlPrevEffect, SIGNAL(valueChanged(double)),
+            this, SLOT(slotPrevEffect(double)));
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
         addEffectParameterSlot();
@@ -104,4 +114,16 @@ void EffectSlot::clear() {
         pParameter->loadEffect(EffectPointer());
     }
     emit(updated());
+}
+
+void EffectSlot::slotPrevEffect(double v) {
+    if (v > 0) {
+        emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+    }
+}
+
+void EffectSlot::slotNextEffect(double v) {
+    if (v > 0) {
+        emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+    }
 }

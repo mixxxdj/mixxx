@@ -89,8 +89,9 @@ int EffectRack::numEffectChainSlots() const {
 }
 
 EffectChainSlotPointer EffectRack::addEffectChainSlot() {
+    int iChainSlotNumber = m_effectChainSlots.size();
     EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, m_effectChainSlots.size());
+            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
 
     // TODO(rryan) How many should we make default? They create controls that
     // the GUI may rely on, so the choice is important to communicate to skin
@@ -101,10 +102,15 @@ EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     pChainSlot->addEffectSlot();
     pChainSlot->addEffectSlot();
 
-    connect(pChainSlot, SIGNAL(nextChain(const unsigned int, EffectChainPointer)),
-            this, SLOT(loadNextChain(const unsigned int, EffectChainPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(const unsigned int, EffectChainPointer)),
-            this, SLOT(loadPrevChain(const unsigned int, EffectChainPointer)));
+    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
+            this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
+    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
+            this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
+
+    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
 
     // Register all the existing channels with the new EffectChain
     const QSet<QString>& registeredGroups =
@@ -165,4 +171,38 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
         pPrevChain->updateEngineState();
     }
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
+}
+
+void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
+                                const unsigned int iEffectSlotNumber,
+                                EffectPointer pEffect) {
+    if (iChainSlotNumber >= m_effectChainSlots.size()) {
+        return;
+    }
+
+    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString nextEffectId = m_pEffectsManager->getNextEffectId(effectId);
+    EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(nextEffectId);
+
+    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    EffectChainPointer pChain = pChainSlot->getEffectChain();
+    pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
+}
+
+
+void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
+                                const unsigned int iEffectSlotNumber,
+                                EffectPointer pEffect) {
+    if (iChainSlotNumber >= m_effectChainSlots.size()) {
+        return;
+    }
+
+    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString prevEffectId = m_pEffectsManager->getPrevEffectId(effectId);
+    EffectPointer pPrevEffect = m_pEffectsManager->instantiateEffect(prevEffectId);
+
+    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    EffectChainPointer pChain = pChainSlot->getEffectChain();
+
+    pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
 }

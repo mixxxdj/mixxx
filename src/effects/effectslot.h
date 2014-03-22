@@ -46,6 +46,8 @@ class EffectSlot : public QObject {
 
     void slotEnabled(double v);
     void slotNumParameters(double v);
+    void slotNextEffect(double v);
+    void slotPrevEffect(double v);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -53,6 +55,14 @@ class EffectSlot : public QObject {
     // listeners.  pEffect may be an invalid pointer, which indicates that a
     // previously loaded effect was removed from the slot.
     void effectLoaded(EffectPointer pEffect, unsigned int effectSlotNumber);
+
+    // Signal that whoever is in charge of this EffectSlot should load the next
+    // Effect into it.
+    void nextEffect(unsigned int iChainNumber, unsigned int iEffectNumber, EffectPointer pEffect);
+
+    // Signal that whoever is in charge of this EffectSlot should load the previous
+    // Effect into it.
+    void prevEffect(unsigned int iChainNumber, unsigned int iEffectNumber, EffectPointer pEffect);
 
     void updated();
 
@@ -72,6 +82,8 @@ class EffectSlot : public QObject {
 
     ControlObject* m_pControlEnabled;
     ControlObject* m_pControlNumParameters;
+    ControlObject* m_pControlNextEffect;
+    ControlObject* m_pControlPrevEffect;
     QList<EffectParameterSlotPointer> m_parameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);

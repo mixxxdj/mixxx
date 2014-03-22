@@ -219,6 +219,11 @@ EffectSlotPointer EffectChainSlot::addEffectSlot() {
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
+    connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)));
+
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
     return pSlot;
