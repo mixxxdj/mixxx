@@ -17,6 +17,41 @@
         <ObjectName>EffectRackContainer</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+          <!-- Collapsed EffectRack -->
+          <WidgetGroup>
+            <ObjectName>EffectRackCollapsed</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>-1,45</MinimumSize>
+            <MaximumSize>-1,45</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">EffectRackToggle</SetVariable>
+                <SetVariable name="control">[EffectRack1],show</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_chain_simple.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">1</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_chain_simple.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">2</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_chain_simple.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">3</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_chain_simple.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">4</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
           <!-- Expanded EffectRack -->
           <WidgetGroup trigger="[EffectRack1],show">
             <ObjectName>EffectRackExpanded</ObjectName>
@@ -47,25 +82,6 @@
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">4</SetVariable>
               </Template>
-            </Children>
-          </WidgetGroup>
-
-          <!-- Collapsed EffectRack -->
-          <WidgetGroup>
-            <ObjectName>EffectRackCollapsed</ObjectName>
-            <Layout>horizontal</Layout>
-            <MinimumSize>-1,20</MinimumSize>
-            <MaximumSize>-1,20</MaximumSize>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">EffectRackToggle</SetVariable>
-                <SetVariable name="control">[EffectRack1],show</SetVariable>
-              </Template>
-              <Label>
-                <ObjectName>SectionLabel</ObjectName>
-                <Text>Effects</Text>
-              </Label>
             </Children>
           </WidgetGroup>
         </Children>

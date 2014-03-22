@@ -135,8 +135,14 @@ WLabel {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#TitleGutter WLabel, #EffectUnitNameContainer WLabel {
+#TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
   font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#EffectRackCollapsed #EffectUnitNameContainer WLabel {
+  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
   text-align: left;
 }
