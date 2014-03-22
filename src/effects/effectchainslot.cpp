@@ -47,6 +47,10 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
     connect(m_pControlChainPrevPreset, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainPrevPreset(double)));
 
+    m_pControlChainSelector = new ControlObject(ConfigKey(m_group, "chain_selector"));
+    connect(m_pControlChainSelector, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlChainSelector(double)));
+
     connect(&m_groupStatusMapper, SIGNAL(mapped(const QString&)),
             this, SLOT(slotGroupStatusChanged(const QString&)));
 }
@@ -313,18 +317,27 @@ void EffectChainSlot::slotControlChainInsertionType(double v) {
     }
 }
 
+void EffectChainSlot::slotControlChainSelector(double v) {
+    qDebug() << debugString() << "slotControlChainSelector" << v;
+    if (v > 0) {
+        emit(nextChain(m_iChainNumber, m_pEffectChain));
+    } else if (v < 0) {
+        emit(prevChain(m_iChainNumber, m_pEffectChain));
+    }
+}
+
 void EffectChainSlot::slotControlChainNextPreset(double v) {
     qDebug() << debugString() << "slotControlChainNextPreset" << v;
-    // const int read is not worth locking for
-    if (v > 0)
-        emit(nextChain(m_iChainNumber, m_pEffectChain));
+    if (v > 0) {
+        slotControlChainSelector(1);
+    }
 }
 
 void EffectChainSlot::slotControlChainPrevPreset(double v) {
     qDebug() << debugString() << "slotControlChainPrevPreset" << v;
-    // const int read is not worth locking for
-    if (v > 0)
-        emit(prevChain(m_iChainNumber, m_pEffectChain));
+    if (v > 0) {
+        slotControlChainSelector(-1);
+    }
 }
 
 void EffectChainSlot::slotGroupStatusChanged(const QString& group) {
