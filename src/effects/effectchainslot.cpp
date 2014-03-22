@@ -223,6 +223,8 @@ EffectSlotPointer EffectChainSlot::addEffectSlot() {
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
+    connect(pEffectSlot, SIGNAL(clearEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SLOT(slotClearEffect(unsigned int, unsigned int, EffectPointer)));
     connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
             this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
     connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
@@ -252,6 +254,18 @@ void EffectChainSlot::registerGroup(const QString& group) {
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
     // const int is a safe read... don't bother locking
     emit(effectLoaded(pEffect, m_iChainNumber, slotNumber));
+}
+
+void EffectChainSlot::slotClearEffect(unsigned int iChainSlotNumber,
+                                      unsigned int iEffectSlotNumber,
+                                      EffectPointer pEffect) {
+    if (iEffectSlotNumber >= m_slots.size()) {
+        return;
+    }
+
+    if (m_pEffectChain) {
+        m_pEffectChain->replaceEffect(iEffectSlotNumber, EffectPointer());
+    }
 }
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {

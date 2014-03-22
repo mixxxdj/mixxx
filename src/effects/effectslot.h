@@ -48,6 +48,7 @@ class EffectSlot : public QObject {
     void slotNumParameters(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
+    void slotClear(double v);
     void slotEffectSelector(double v);
 
   signals:
@@ -93,6 +94,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
     ControlObject* m_pControlEffectSelector;
+    ControlObject* m_pControlClear;
     QList<EffectParameterSlotPointer> m_parameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);

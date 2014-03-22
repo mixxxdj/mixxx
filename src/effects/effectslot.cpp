@@ -35,6 +35,10 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
     connect(m_pControlEffectSelector, SIGNAL(valueChanged(double)),
             this, SLOT(slotEffectSelector(double)));
 
+    m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
+    connect(m_pControlClear, SIGNAL(valueChanged(double)),
+            this, SLOT(slotClear(double)));
+
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
         addEffectParameterSlot();
     }
@@ -137,5 +141,11 @@ void EffectSlot::slotEffectSelector(double v) {
         emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
     } else if (v < 0) {
         emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+    }
+}
+
+void EffectSlot::slotClear(double v) {
+    if (v > 0) {
+        emit(clearEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
     }
 }
