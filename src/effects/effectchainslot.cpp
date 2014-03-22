@@ -165,7 +165,6 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                 this, SLOT(slotChainGroupStatusChanged(const QString&, bool)));
 
         m_pControlChainLoaded->setAndConfirm(true);
-        m_pEffectChain->setEnabled(true);
         m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
 
         // Mix, parameter, and enabled channels are persistent properties of the
@@ -197,7 +196,6 @@ void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
         m_pEffectChain->disconnect(this);
-        m_pEffectChain->setEnabled(false);
         m_pEffectChain.clear();
 
         foreach (EffectSlotPointer pSlot, m_slots) {

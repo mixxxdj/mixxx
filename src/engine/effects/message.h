@@ -32,7 +32,8 @@ struct EffectsRequest {
         DISABLE_EFFECT_CHAIN_FOR_GROUP,
 
         // Messages for EngineEffect
-        SET_EFFECT_PARAMETER,
+        SET_EFFECT_PARAMETERS,
+        SET_PARAMETER_PARAMETERS,
 
         // Must come last.
         NUM_REQUEST_TYPES
@@ -52,7 +53,8 @@ struct EffectsRequest {
         CLEAR_STRUCT(AddEffectToChain);
         CLEAR_STRUCT(RemoveEffectFromChain);
         CLEAR_STRUCT(SetEffectChainParameters);
-        CLEAR_STRUCT(SetEffectParameter);
+        CLEAR_STRUCT(SetEffectParameters);
+        CLEAR_STRUCT(SetParameterParameters);
 #undef CLEAR_STRUCT
     }
 
@@ -107,8 +109,11 @@ struct EffectsRequest {
             double mix;
         } SetEffectChainParameters;
         struct {
+            bool enabled;
+        } SetEffectParameters;
+        struct {
             int iParameter;
-        } SetEffectParameter;
+        } SetParameterParameters;
     };
 
     ////////////////////////////////////////////////////////////////////////////

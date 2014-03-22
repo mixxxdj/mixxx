@@ -35,6 +35,10 @@ class Effect : public QObject {
     unsigned int numParameters() const;
     EffectParameter* getParameter(unsigned int parameterNumber);
     EffectParameter* getParameterById(const QString& id) const;
+
+    void setEnabled(bool enabled);
+    bool enabled() const;
+
     EngineEffect* getEngineEffect();
 
     void onChainParameterChanged(double chainParameter);
@@ -47,15 +51,21 @@ class Effect : public QObject {
     static EffectPointer fromXML(EffectsManager* pEffectsManager,
                                  const QDomElement& element);
 
+  signals:
+    void enabledChanged(bool enabled);
+
   private:
     QString debugString() const {
         return QString("Effect(%1)").arg(m_manifest.name());
     }
 
+    void sendParameterUpdate();
+
     EffectsManager* m_pEffectsManager;
     EffectManifest m_manifest;
     EngineEffect* m_pEngineEffect;
     bool m_bAddedToEngine;
+    bool m_bEnabled;
     QList<EffectParameter*> m_parameters;
     QMap<QString, EffectParameter*> m_parametersById;
 

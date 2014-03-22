@@ -4,6 +4,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
+          m_bEnabled(true),
           m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {
@@ -38,17 +39,27 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
     EffectsResponse response(message);
 
     switch (message.type) {
-        case EffectsRequest::SET_EFFECT_PARAMETER:
+        case EffectsRequest::SET_EFFECT_PARAMETERS:
             if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_EFFECT_PARAMETER"
-                         << "parameter" << message.SetEffectParameter.iParameter
+                qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
+                         << "enabled" << message.SetEffectParameters.enabled;
+            }
+            m_bEnabled = message.SetEffectParameters.enabled;
+            response.success = true;
+            pResponsePipe->writeMessages(&response, 1);
+            return true;
+            break;
+        case EffectsRequest::SET_PARAMETER_PARAMETERS:
+            if (kEffectDebugOutput) {
+                qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
+                         << "parameter" << message.SetParameterParameters.iParameter
                          << "minimum" << message.minimum
                          << "maximum" << message.maximum
                          << "default_value" << message.default_value
                          << "value" << message.value;
             }
             pParameter = m_parameters.value(
-                message.SetEffectParameter.iParameter, NULL);
+                message.SetParameterParameters.iParameter, NULL);
             if (pParameter) {
                 pParameter->setMinimum(message.minimum);
                 pParameter->setMaximum(message.maximum);
@@ -70,5 +81,10 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
 void EngineEffect::process(const QString& group,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples) {
+    // The EngineEffectChain checks if we are enabled so we don't have to.
+    if (kEffectDebugOutput && !m_bEnabled) {
+        qDebug() << debugString()
+                 << "WARNING: EngineEffect::process() called on disabled effect.";
+    }
     m_pProcessor->process(group, pInput, pOutput, numSamples);
 }

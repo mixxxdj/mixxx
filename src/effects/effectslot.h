@@ -7,6 +7,7 @@
 
 #include "util.h"
 #include "controlobject.h"
+#include "controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
 
@@ -46,10 +47,12 @@ class EffectSlot : public QObject {
 
     void slotLoaded(double v);
     void slotNumParameters(double v);
+    void slotEnabled(double v);
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
     void slotClear(double v);
     void slotEffectSelector(double v);
+    void slotEffectEnabledChanged(bool enabled);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -90,6 +93,7 @@ class EffectSlot : public QObject {
     EffectPointer m_pEffect;
 
     ControlObject* m_pControlLoaded;
+    ControlPushButton* m_pControlEnabled;
     ControlObject* m_pControlNumParameters;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;

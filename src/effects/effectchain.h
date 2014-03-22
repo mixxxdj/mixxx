@@ -32,8 +32,7 @@ class EffectChain : public QObject {
     // with the preset from which it was loaded.
     const QString& id() const;
 
-    // Whether the chain is enabled (loaded to a slot and eligible for
-    // processing).
+    // Whether the chain is enabled (eligible for processing).
     bool enabled() const;
     void setEnabled(bool enabled);
 

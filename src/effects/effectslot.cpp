@@ -19,9 +19,17 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)), Qt::AutoConnection);
+
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
     m_pControlNumParameters->connectValueChangeRequest(
         this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
+
+    m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
+    m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
+    // Default to true.
+    m_pControlEnabled->set(true);
+    connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEnabled(double)));
 
     m_pControlNextEffect = new ControlPushButton(ConfigKey(m_group, "next_effect"));
     connect(m_pControlNextEffect, SIGNAL(valueChanged(double)),
@@ -80,6 +88,17 @@ void EffectSlot::slotNumParameters(double v) {
     qDebug() << "WARNING: num_parameters is a read-only control.";
 }
 
+void EffectSlot::slotEnabled(double v) {
+    qDebug() << debugString() << "slotEnabled" << v;
+    if (m_pEffect) {
+        m_pEffect->setEnabled(v > 0);
+    }
+}
+
+void EffectSlot::slotEffectEnabledChanged(bool enabled) {
+    m_pControlEnabled->set(enabled);
+}
+
 EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
     qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
     if (slotNumber >= m_parameters.size()) {
@@ -96,6 +115,10 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pEffect = pEffect;
         m_pControlLoaded->setAndConfirm(1.0);
         m_pControlNumParameters->setAndConfirm(m_pEffect->numParameters());
+        m_pControlEnabled->set(m_pEffect->enabled());
+
+        connect(m_pEffect.data(), SIGNAL(enabledChanged(bool)),
+                this, SLOT(slotEffectEnabledChanged(bool)));
 
         while (m_parameters.size() < m_pEffect->numParameters()) {
             addEffectParameterSlot();
@@ -115,7 +138,10 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
 }
 
 void EffectSlot::clear() {
-    m_pEffect.clear();
+    if (m_pEffect) {
+        m_pEffect->disconnect(this);
+        m_pEffect.clear();
+    }
     m_pControlLoaded->setAndConfirm(0.0);
     m_pControlNumParameters->setAndConfirm(0.0);
     foreach (EffectParameterSlotPointer pParameter, m_parameters) {

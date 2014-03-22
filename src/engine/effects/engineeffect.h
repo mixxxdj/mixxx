@@ -37,6 +37,10 @@ class EngineEffect : public EffectsRequestHandler {
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples);
 
+    bool enabled() const {
+        return m_bEnabled;
+    }
+
   private:
     QString debugString() const {
         return QString("EngineEffect(%1)").arg(m_manifest.name());
@@ -44,6 +48,7 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
+    bool m_bEnabled;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;

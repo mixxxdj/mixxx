@@ -96,11 +96,12 @@ void EngineEffectsManager::onCallbackStart() {
                     }
                 }
                 break;
-            case EffectsRequest::SET_EFFECT_PARAMETER:
+            case EffectsRequest::SET_EFFECT_PARAMETERS:
+            case EffectsRequest::SET_PARAMETER_PARAMETERS:
                 if (!m_effects.contains(request->pTargetEffect)) {
                     if (kEffectDebugOutput) {
                         qDebug() << debugString()
-                                 << "WARNING: SetEffectParameter message for unloaded effect"
+                                 << "WARNING: message for unloaded effect"
                                  << request->pTargetEffect;
                     }
                     response.success = false;

@@ -5,7 +5,7 @@
 
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
-          m_bEnabled(false),
+          m_bEnabled(true),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
           m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
@@ -194,7 +194,7 @@ void EngineEffectChain::process(const QString& group,
             // Fully wet, no ramp, insert optimization. No temporary buffer needed.
             for (int i = 0; i < m_effects.size(); ++i) {
                 EngineEffect* pEffect = m_effects[i];
-                if (pEffect == NULL) {
+                if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
                 const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : pOutput;
@@ -229,7 +229,7 @@ void EngineEffectChain::process(const QString& group,
             bool anyProcessed = false;
             for (int i = 0; i < m_effects.size(); ++i) {
                 EngineEffect* pEffect = m_effects[i];
-                if (pEffect == NULL) {
+                if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
                 const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
@@ -263,7 +263,7 @@ void EngineEffectChain::process(const QString& group,
         bool anyProcessed = false;
         for (int i = 0; i < m_effects.size(); ++i) {
             EngineEffect* pEffect = m_effects[i];
-            if (pEffect == NULL) {
+            if (pEffect == NULL || !pEffect->enabled()) {
                 continue;
             }
             const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
