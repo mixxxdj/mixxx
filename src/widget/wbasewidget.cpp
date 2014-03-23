@@ -159,6 +159,21 @@ void WBaseWidget::updateTooltip() {
     }
 }
 
+void WBaseWidget::prependBaseTooltip(const QString& tooltip) {
+    if (!tooltip.isEmpty()) {
+        m_baseTooltip.prepend(tooltip);
+    } else {
+        // use CO description if any
+        QString coTooltip;
+        if (!m_connections.isEmpty()) {
+            coTooltip = m_connections.at(0)->name() + "\n" + m_connections.at(0)->description();
+        }
+        m_baseTooltip.prepend(coTooltip);
+    }
+    m_pWidget->setToolTip(m_baseTooltip);
+}
+
+
 QString WBaseWidget::getDefaultBaseTooltipId() const {
     QString toolTipId;
     if (!m_connections.isEmpty()) {

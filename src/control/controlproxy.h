@@ -67,6 +67,14 @@ class ControlProxy : public QObject {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
+    const QString description() const {
+        return m_pControl ?  m_pControl->description() : QString();
+    }
+
+    QString name() const {
+        return m_pControl ?  m_pControl->name() : QString();
+    }
+
   public slots:
     // Set the control to a new value. Non-blocking.
     inline void slotSet(double v) {

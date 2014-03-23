@@ -670,17 +670,17 @@ void Tooltips::addStandardTooltips() {
 
     add("beatjump_forward")
             << tr("Beatjump Forward")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
-            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump forward by 1 beat."))
-            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop forward by 1 beat."));
+            << QString("%1: %2").arg(m_leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
+            << QString("%1: %2").arg(m_leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopInactive, tr("Jump forward by 1 beat."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopActive, tr("Move the loop forward by 1 beat."));
 
     add("beatjump_backward")
             << tr("Beatjump Backward")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
-            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump backward by 1 beat."))
-            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop backward by 1 beat."));
+            << QString("%1: %2").arg(m_leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
+            << QString("%1: %2").arg(m_leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopInactive, tr("Jump backward by 1 beat."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopActive, tr("Move the loop backward by 1 beat."));
 
     add("loop_exit")
             << tr("Loop Exit")

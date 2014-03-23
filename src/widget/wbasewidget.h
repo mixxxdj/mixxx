@@ -24,10 +24,7 @@ class WBaseWidget {
         m_pWidget->setToolTip(m_baseTooltip);
     }
 
-    void prependBaseTooltip(const QString& tooltip) {
-        m_baseTooltip.prepend(tooltip);
-        m_pWidget->setToolTip(m_baseTooltip);
-    }
+    virtual void prependBaseTooltip(const QString& tooltip);
 
     void setBaseTooltip(const QString& tooltip) {
         m_baseTooltip = tooltip;
