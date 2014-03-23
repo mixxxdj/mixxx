@@ -28,8 +28,6 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
         ConfigKey(m_group, itemPrefix));
     m_pControlValueType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_value_type")));
-    m_pControlValueDefault = new ControlObject(
-        ConfigKey(m_group, itemPrefix + QString("_value_default")));
     m_pControlValueMaximum = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_value_max")));
     m_pControlValueMaximumLimit = new ControlObject(
@@ -51,8 +49,6 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     // Read-only controls.
     m_pControlValueType->connectValueChangeRequest(
         this, SLOT(slotValueType(double)), Qt::AutoConnection);
-    m_pControlValueDefault->connectValueChangeRequest(
-        this, SLOT(slotValueDefault(double)), Qt::AutoConnection);
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)), Qt::AutoConnection);
     m_pControlValueMinimumLimit->connectValueChangeRequest(
@@ -71,7 +67,6 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pControlLinkType;
     delete m_pControlValue;
     delete m_pControlValueType;
-    delete m_pControlValueDefault;
     delete m_pControlValueMaximum;
     delete m_pControlValueMaximumLimit;
     delete m_pControlValueMinimum;
@@ -128,7 +123,6 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValueMaximumLimit->setAndConfirm(dMaximumLimit);
             // TODO(rryan) expose this from EffectParameter
             m_pControlValueType->setAndConfirm(0);
-            m_pControlValueDefault->setAndConfirm(dDefault);
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
             m_pControlLinkType->set(m_pEffectParameter->getLinkType());
@@ -152,7 +146,6 @@ void EffectParameterSlot::clear() {
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlValueType->setAndConfirm(0.0);
-    m_pControlValueDefault->setAndConfirm(0.0);
     m_pControlValueMaximum->set(0.0);
     m_pControlValueMaximumLimit->setAndConfirm(0.0);
     m_pControlValueMinimum->set(0.0);
