@@ -15,30 +15,31 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
           m_iSlotNumber(iSlotNumber),
           m_iParameterNumber(iParameterNumber),
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iSlotNumber, m_iParameterNumber)),
+                                    m_iSlotNumber)),
           m_pEffectParameter(NULL) {
+    QString itemPrefix = QString("parameter%1").arg(QString::number(iParameterNumber+1));
     m_pControlLoaded = new ControlObject(
-        ConfigKey(m_group, QString("loaded")));
+        ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
-        ConfigKey(m_group, QString("link_type")));
+        ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlValue = new ControlObject(
-        ConfigKey(m_group, QString("value")));
+        ConfigKey(m_group, itemPrefix + QString("_value")));
     m_pControlValueNormalized = new ControlPotmeter(
-        ConfigKey(m_group, QString("value_normalized")), 0.0, 1.0);
+        ConfigKey(m_group, itemPrefix + QString("_value_normalized")), 0.0, 1.0);
     m_pControlValueType = new ControlObject(
-        ConfigKey(m_group, QString("value_type")));
+        ConfigKey(m_group, itemPrefix + QString("_value_type")));
     m_pControlValueDefault = new ControlObject(
-        ConfigKey(m_group, QString("value_default")));
+        ConfigKey(m_group, itemPrefix + QString("_value_default")));
     m_pControlValueMaximum = new ControlObject(
-        ConfigKey(m_group, QString("value_max")));
+        ConfigKey(m_group, itemPrefix + QString("_value_max")));
     m_pControlValueMaximumLimit = new ControlObject(
-        ConfigKey(m_group, QString("value_max_limit")));
+        ConfigKey(m_group, itemPrefix + QString("_value_max_limit")));
     m_pControlValueMinimum = new ControlObject(
-        ConfigKey(m_group, QString("value_min")));
+        ConfigKey(m_group, itemPrefix + QString("_value_min")));
     m_pControlValueMinimumLimit = new ControlObject(
-        ConfigKey(m_group, QString("value_min_limit")));
+        ConfigKey(m_group, itemPrefix + QString("_value_min_limit")));
 
     connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
             this, SLOT(slotLinkType(double)));

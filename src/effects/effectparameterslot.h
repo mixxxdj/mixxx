@@ -26,13 +26,11 @@ class EffectParameterSlot : public QObject {
 
     static QString formatGroupString(const unsigned int iRackNumber,
                                      const unsigned int iChainNumber,
-                                     const unsigned int iSlotNumber,
-                                     const unsigned int iParameterNumber) {
-        return QString("[EffectRack%1_EffectUnit%2_Effect%3_Parameter%4]")
+                                     const unsigned int iSlotNumber) {
+        return QString("[EffectRack%1_EffectUnit%2_Effect%3]")
                 .arg(QString::number(iRackNumber+1),
                      QString::number(iChainNumber+1),
-                     QString::number(iSlotNumber+1),
-                     QString::number(iParameterNumber+1));
+                     QString::number(iSlotNumber+1));
     }
 
     // Load the parameter of the given effect into this EffectParameterSlot
