@@ -47,6 +47,11 @@ class MidiController : public Controller {
     virtual void visit(const HidControllerPreset* preset);
 
     bool isClockSignal(MidiKey &mappingKey);
+    virtual void accept(ControllerVisitor* visitor) {
+        if (visitor) {
+            visitor->visit(this);
+        }
+    }
 
     virtual bool isMappable() const {
         return m_preset.isMappable();

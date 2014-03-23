@@ -62,6 +62,12 @@ class BulkController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
+    virtual void accept(ControllerVisitor* visitor) {
+        if (visitor) {
+            visitor->visit(this);
+        }
+    }
+
     virtual bool isMappable() const {
         return m_preset.isMappable();
     }

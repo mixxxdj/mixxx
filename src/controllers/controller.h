@@ -13,6 +13,7 @@
 #define CONTROLLER_H
 
 #include "controllers/controllerengine.h"
+#include "controllers/controllervisitor.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
@@ -35,6 +36,8 @@ class Controller : public QObject, ControllerPresetVisitor {
         // the preset to call our visitor methods with its type.
         preset.accept(this);
     }
+
+    virtual void accept(ControllerVisitor* visitor) = 0;
 
     virtual bool savePreset(const QString filename) const = 0;
 
