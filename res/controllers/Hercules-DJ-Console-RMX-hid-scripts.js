@@ -2,6 +2,7 @@
 /*      Hercules DJ Console RMX HID controller script           */
 /*      For Mixxx version 1.11                                  */
 /*      Author: RichterSkala                                    */
+/*      Contributors: Markus Kohlhase                           */
 /*      Based on zestoi's script                                */
 /****************************************************************/
 
@@ -147,7 +148,7 @@ RMX.init = function() {
   });
 
   c.capture("pitch_reset", "press", function(g, e, v) {
-    engine.setValue(g,"rate",0)
+    engine.setValue(g,"rate",0);
   });
 
   // headphone cue
@@ -203,7 +204,7 @@ RMX.init = function() {
     function(g, e, v) { c.send(g, "headphone_cue", v);
   });
 
-}
+};
 
 // playlist scroll nex/previous with auto-repeat when held
 
@@ -224,7 +225,7 @@ RMX.scroll_tracks = function(g, e, v) {
       RMX.scroll_timer = null;
     }
   }
-}
+};
 
 // scale the knobs according to RMX.eq_max
 
@@ -235,7 +236,7 @@ RMX.filter_scale = function(g, e, v) {
     engine.setValue(g, e, v /128);
   }
 
-}
+};
 
 // jog
 RMX.jog = function(g, e, v, ctrl) {
@@ -254,7 +255,7 @@ RMX.jog = function(g, e, v, ctrl) {
     if (!RMX.scratching[g]) {
 
       RMX.scratching[g] = true;
-      var ScratchRPM
+      var ScratchRPM;
 
       if(engine.getValue(g,"play")) {
         ScratchRPM = 45;
@@ -269,7 +270,7 @@ RMX.jog = function(g, e, v, ctrl) {
     }
     engine.scratchTick(deck, ctrl.relative);
 
-    var callback = 'RMX.stopScratching(\"' + g + '\")'
+    var callback = 'RMX.stopScratching(\"' + g + '\")';
     RMX.scratchTimer = engine.beginTimer(20, callback, true);
   }
 
@@ -287,13 +288,13 @@ RMX.jog = function(g, e, v, ctrl) {
   else {
     engine.setValue(g, e, ctrl.relative);
   }
-}
+};
 
 RMX.stopScratching = function(g) {
   var deck = parseInt(g.substring(8,9));
   RMX.scratching[g] = false;
   engine.scratchDisable(deck);
-}
+};
 
 /**
  * define the hid packet to event mapping, could be defined via xml so can be
@@ -406,7 +407,7 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "beatlock",      "[Channel2]", "led", 2, 0x80); // blinking: 2, 0x80
   c.add_control(pid, "pitch_reset",   "[Channel2]", "led", 2, 0x40); // blinking: 2, 0x40
 
-}
+};
 
 /**
  * non-specific controller framework to allow hid packets to be defined and
@@ -426,7 +427,7 @@ RMX.add_control = function(packetid, name, group, type, offset, mask) {
       new RMX.control(packetid, name, group, type, offset, mask)
     );
   }
-}
+};
 
 // bind a function to a modified controller value
 
@@ -437,7 +438,7 @@ RMX.capture = function(name, values, func) {
   else {
     RMX.callbacks[name].push([ values, func ]);
   }
-}
+};
 
 // bind a function to feedback from mixxx, callbacks accept args in same order
 // as from capture()
@@ -448,7 +449,7 @@ RMX.feedback = function(g, e, f) {
     RMX.feedbacks[g + e] = [];
   }
   RMX.feedbacks[g + e].push(f);
-}
+};
 
 // controller feedback: send data to the controller by name and automatically
 // send out the full hid packet needed
@@ -467,19 +468,19 @@ RMX.send = function(g, e, v) {
     // send complete hid packet
     controller.send(tmp, tmp.length, 0);
   }
-}
+};
 
 // process incoming data from mixxx and call any callbacks
 
 RMX.feedbackData = function(v, g, e) {
-  if (RMX.feedbacks[g + e] != undefined) {
-    for (func in RMX.feedbacks[g + e]) {
+  if (RMX.feedbacks[g + e] !== undefined) {
+    for (var func in RMX.feedbacks[g + e]) {
       if (typeof(RMX.feedbacks[g + e][func]) == "function") {
         RMX.feedbacks[g + e][func](g, e, v);
       }
     }
   }
-}
+};
 
 // a single hid control, store last known value and offset/mask to work out the
 // new value from incoming data
@@ -516,11 +517,11 @@ RMX.control = function(packetid, name, group, type, offset, mask) {
       return true;
     }
   };
-  while (mask != 0 && (mask & 0x1) == 0) {
+  while (mask !== 0 && (mask & 0x1) === 0) {
     mask = mask >> 1;
     this.bitshift++;
   }
-}
+};
 
 // process incoming data and call any callbacks if their bound controls have
 // changed
@@ -577,4 +578,4 @@ RMX.incomingData = function (data, length) {
 
   // store the new raw data
   c.cache_in[data[0]] = data;
-}
+};
