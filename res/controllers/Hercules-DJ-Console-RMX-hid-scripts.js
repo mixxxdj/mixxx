@@ -420,7 +420,7 @@ RMX.add_control = function(packetid, name, group, type, offset, mask) {
       new RMX.control(packetid, name, group, type, offset, mask);
   }
   else {
-    if (RMX.controls[offset] == undefined) {
+    if (RMX.controls[offset] === undefined) {
       RMX.controls[offset] = [];
     }
     RMX.controls[offset].push(
@@ -432,7 +432,7 @@ RMX.add_control = function(packetid, name, group, type, offset, mask) {
 // bind a function to a modified controller value
 
 RMX.capture = function(name, values, func) {
-  if (RMX.callbacks[name] == undefined) {
+  if (RMX.callbacks[name] === undefined) {
     RMX.callbacks[name] = [ [ values, func ] ];
   }
   else {
@@ -445,7 +445,7 @@ RMX.capture = function(name, values, func) {
 
 RMX.feedback = function(g, e, f) {
   engine.connectControl(g, e, "RMX.feedbackData");
-  if (RMX.feedbacks[g + e] == undefined) {
+  if (RMX.feedbacks[g + e] === undefined) {
     RMX.feedbacks[g + e] = [];
   }
   RMX.feedbacks[g + e].push(f);
@@ -455,7 +455,7 @@ RMX.feedback = function(g, e, f) {
 // send out the full hid packet needed
 
 RMX.send = function(g, e, v) {
-  if ((ctrl = this.leds[g + e]) != undefined) {
+  if ((ctrl = this.leds[g + e]) !== undefined) {
 
     // for the byte in the hid packet that this led control affects, mask out
     // it's old value
@@ -536,12 +536,12 @@ RMX.incomingData = function (data, length) {
   // has changed
   for (var i=1; i<length; i++) {
 
-    if ((p == undefined || data[i] != p[i]) && c.controls[i] != undefined) {
+    if ((p === undefined || data[i] != p[i]) && c.controls[i] !== undefined) {
 
       // a byte has changed, check any controls defined in that byte, more
       // efficient than checking old+new values for all controls
 
-      for (key in c.controls[i]) {
+      for (var key in c.controls[i]) {
         var control = c.controls[i][key];
         if (typeof(control) == 'object' &&
             control.packetid == data[0] &&
@@ -551,19 +551,19 @@ RMX.incomingData = function (data, length) {
           // check for callbacks
           var callbacks = c.callbacks[control.name];
 
-          if (callbacks != undefined) {
-            for (var i=0; i<callbacks.length; i++) {
+          if (callbacks !== undefined) {
+            for (var j=0; j<callbacks.length; j++) {
 
-              var cb = callbacks[i][1];
+              var cb = callbacks[j][1];
 
               if (typeof(cb) == 'function') {
 
                 // check we need to call for this value change:
                 // all, press, release
-                var v       = callbacks[i][0];
+                var v       = callbacks[j][0];
                 var all     = v == "all";
-                var press   = v == "press"   && control.value >  0;
-                var release = v == "release" && control.value == 0;
+                var press   = v == "press"   && control.value  >  0;
+                var release = v == "release" && control.value === 0;
                 if ( all || press || release ) {
                   // call a callback function for this control
                   cb(control.group, control.name, control.value, control);
