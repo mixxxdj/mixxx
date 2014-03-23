@@ -1,7 +1,7 @@
 #include <QtDebug>
 
 #include "defs.h"
-#include "controlpotmeter.h"
+#include "controllinpotmeter.h"
 #include "effects/effectparameterslot.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
@@ -24,10 +24,8 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
         ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
-    m_pControlValue = new ControlObject(
-        ConfigKey(m_group, itemPrefix + QString("_value")));
-    m_pControlValueNormalized = new ControlPotmeter(
-        ConfigKey(m_group, itemPrefix + QString("_value_normalized")), 0.0, 1.0);
+    m_pControlValue = new ControlLinPotmeter(
+        ConfigKey(m_group, itemPrefix));
     m_pControlValueType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_value_type")));
     m_pControlValueDefault = new ControlObject(
@@ -44,9 +42,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
             this, SLOT(slotLinkType(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValue(double)));
-    connect(m_pControlValueNormalized, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueNormalized(double)));
+            this, SLOT(slotValueChanged(double)));
     connect(m_pControlValueMaximum, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueMaximum(double)));
     connect(m_pControlValueMinimum, SIGNAL(valueChanged(double)),
@@ -74,7 +70,6 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pControlLoaded;
     delete m_pControlLinkType;
     delete m_pControlValue;
-    delete m_pControlValueNormalized;
     delete m_pControlValueType;
     delete m_pControlValueDefault;
     delete m_pControlValueMaximum;
@@ -119,15 +114,14 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
                 dDefault > dMaximum || dDefault < dMinimum) {
                 qDebug() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
-            double dNormalized = (dValue - dMinimum) / (dMaximum - dMinimum);
-            double dDefaultNormalized = (dDefault - dMinimum)  / (dMaximum - dMinimum);
 
-            qDebug() << debugString() << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6 Norm: %7").arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault).arg(dNormalized);
+            qDebug() << debugString()
+                    << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+                    .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
-            m_pControlValueNormalized->set(dNormalized);
-            m_pControlValueNormalized->setDefaultValue(dDefaultNormalized);
+            m_pControlValue->setRange(dMinimum, dMaximum, false);
             m_pControlValueMinimum->set(dMinimum);
             m_pControlValueMinimumLimit->setAndConfirm(dMinimumLimit);
             m_pControlValueMaximum->set(dMaximum);
@@ -157,8 +151,6 @@ void EffectParameterSlot::clear() {
     m_pControlLoaded->setAndConfirm(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
-    m_pControlValueNormalized->set(0.0);
-    m_pControlValueNormalized->setDefaultValue(0.0);
     m_pControlValueType->setAndConfirm(0.0);
     m_pControlValueDefault->setAndConfirm(0.0);
     m_pControlValueMaximum->set(0.0);
@@ -182,8 +174,8 @@ void EffectParameterSlot::slotLinkType(double v) {
     }
 }
 
-void EffectParameterSlot::slotValue(double v) {
-    qDebug() << debugString() << "slotValue" << v;
+void EffectParameterSlot::slotValueChanged(double v) {
+    qDebug() << debugString() << "slotValueChanged" << v;
 
     double dMin = m_pControlValueMinimum->get();
     double dMax = m_pControlValueMaximum->get();
@@ -192,27 +184,9 @@ void EffectParameterSlot::slotValue(double v) {
         v = math_clamp(v, dMin, dMax);
         m_pControlValue->set(v);
     }
-    double dNormalized = (dMax - dMin > 0) ? (v - dMin) / (dMax - dMin) : 0.0f;
-    m_pControlValueNormalized->set(dNormalized);
 
     if (m_pEffectParameter) {
         m_pEffectParameter->setValue(v);
-    }
-}
-
-void EffectParameterSlot::slotValueNormalized(double v) {
-    qDebug() << debugString() << "slotValueNormalized" << v;
-
-    // Set the raw value to match the interpolated equivalent.
-    double dMin = m_pControlValueMinimum->get();
-    double dMax = m_pControlValueMaximum->get();
-    // TODO(rryan) implement curve types, just linear for now.
-    double dRaw = dMin + v * (dMax - dMin);
-    qDebug() << debugString() << "Normalized set of" << v << "produces raw value of" << dRaw;
-    m_pControlValue->set(dRaw);
-
-    if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(dRaw);
     }
 }
 
@@ -265,16 +239,4 @@ void EffectParameterSlot::slotValueMinimumLimit(double v) {
 
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
     m_pControlValue->set(value.toDouble());
-
-    if (!m_pEffectParameter) {
-        return;
-    }
-
-    double dValue = value.toDouble();
-    double dMinimum = m_pEffectParameter->getMinimum().toDouble();
-    double dMaximum = m_pEffectParameter->getMaximum().toDouble();
-    if (dMaximum - dMinimum != 0.0) {
-        double dNormalized = (dValue - dMinimum) / (dMaximum - dMinimum);
-        m_pControlValueNormalized->set(dNormalized);
-    }
 }

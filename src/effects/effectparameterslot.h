@@ -11,6 +11,7 @@
 
 class ControlObject;
 class ControlPushButton;
+class ControlLinPotmeter;
 
 class EffectParameterSlot;
 typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
@@ -47,8 +48,7 @@ class EffectParameterSlot : public QObject {
     // Solely for handling control changes
     void slotLoaded(double v);
     void slotLinkType(double v);
-    void slotValue(double v);
-    void slotValueNormalized(double v);
+    void slotValueChanged(double v);
     void slotValueType(double v);
     void slotValueDefault(double v);
     void slotValueMaximum(double v);
@@ -80,8 +80,7 @@ class EffectParameterSlot : public QObject {
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlLinkType;
-    ControlObject* m_pControlValue;
-    ControlObject* m_pControlValueNormalized;
+    ControlLinPotmeter* m_pControlValue;
     ControlObject* m_pControlValueType;
     ControlObject* m_pControlValueDefault;
     ControlObject* m_pControlValueMaximum;
