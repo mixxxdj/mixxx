@@ -159,6 +159,24 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
+    EngineMicrophone* pMicrophone2 = new EngineMicrophone("[Microphone2]");
+    // What should channelbase be?
+    AudioInput micInput2 = AudioInput(AudioPath::MICROPHONE, 0, 0, 1);
+    m_pEngine->addChannel(pMicrophone2);
+    m_pSoundManager->registerInput(micInput2, pMicrophone2);
+
+    EngineMicrophone* pMicrophone3 = new EngineMicrophone("[Microphone3]");
+    // What should channelbase be?
+    AudioInput micInput3 = AudioInput(AudioPath::MICROPHONE, 0, 0, 2);
+    m_pEngine->addChannel(pMicrophone3);
+    m_pSoundManager->registerInput(micInput3, pMicrophone3);
+
+    EngineMicrophone* pMicrophone4 = new EngineMicrophone("[Microphone4]");
+    // What should channelbase be?
+    AudioInput micInput4 = AudioInput(AudioPath::MICROPHONE, 0, 0, 3);
+    m_pEngine->addChannel(pMicrophone4);
+    m_pSoundManager->registerInput(micInput4, pMicrophone4);
+
     EngineAux* pAux1 = new EngineAux("[Auxiliary1]");
     // What should channelbase be?
     AudioInput auxInput1 = AudioInput(AudioPath::AUXILIARY, 0, 0, 0);
@@ -170,6 +188,18 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     AudioInput auxInput2 = AudioInput(AudioPath::AUXILIARY, 0, 0, 1);
     m_pEngine->addChannel(pAux2);
     m_pSoundManager->registerInput(auxInput2, pAux2);
+
+    EngineAux* pAux3 = new EngineAux("[Auxiliary3]");
+    // What should channelbase be?
+    AudioInput auxInput3 = AudioInput(AudioPath::AUXILIARY, 0, 0, 2);
+    m_pEngine->addChannel(pAux3);
+    m_pSoundManager->registerInput(auxInput3, pAux3);
+
+    EngineAux* pAux4 = new EngineAux("[Auxiliary4]");
+    // What should channelbase be?
+    AudioInput auxInput4 = AudioInput(AudioPath::AUXILIARY, 0, 0, 3);
+    m_pEngine->addChannel(pAux4);
+    m_pSoundManager->registerInput(auxInput4, pAux4);
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
