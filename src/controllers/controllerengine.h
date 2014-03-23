@@ -89,6 +89,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void setParameter(QString group, QString name, double newValue);
     Q_INVOKABLE double getParameterForValue(QString group, QString name, double value);
     Q_INVOKABLE void reset(QString group, QString name);
+    Q_INVOKABLE double getDefault(QString group, QString name);
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
                                     QScriptValue function, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
