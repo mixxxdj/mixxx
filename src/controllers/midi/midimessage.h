@@ -1,6 +1,9 @@
 #ifndef MIDIMESSAGE_H
 #define MIDIMESSAGE_H
 
+#include <QList>
+#include <QPair>
+
 typedef enum {
     MIDI_NOTE_OFF       = 0x80,
     MIDI_NOTE_ON        = 0x90,
@@ -83,6 +86,9 @@ struct MidiKey
         };
     };
 };
+
+typedef QPair<MidiKey, MidiOptions> MidiKeyAndOptions;
+typedef QList<QPair<MidiKey, MidiOptions> > MidiKeyAndOptionsList;
 
 inline unsigned char channelFromStatus(unsigned char status) {
     return status & 0x0F;
