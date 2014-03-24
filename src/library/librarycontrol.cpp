@@ -75,7 +75,8 @@ LibraryControl::LibraryControl(QObject* pParent)
     connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevTrack(double)));
 
-    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"));
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"), false);
     connect(m_pSelectTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrack(double)));
 
@@ -87,7 +88,8 @@ LibraryControl::LibraryControl(QObject* pParent)
     connect(m_pSelectPrevSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevSidebarItem(double)));
 
-    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"));
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"), false);
     connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectSidebarItem(double)));
 
