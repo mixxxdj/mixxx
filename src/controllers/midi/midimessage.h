@@ -33,8 +33,15 @@ typedef enum {
 typedef unsigned int    uint32_t;
 typedef unsigned short  uint16_t;
 
-struct MidiOptions
-{
+struct MidiOptions {
+    MidiOptions()
+            : all(0) {
+    }
+
+    bool operator==(const MidiOptions& other) const {
+        return all == other.all;
+    }
+
     union
     {
         uint32_t    all;
@@ -57,8 +64,13 @@ struct MidiOptions
     };
 };
 
-struct MidiOutput
-{
+struct MidiOutput {
+    MidiOutput()
+            : min(0),
+              max(0.0),
+              message(0) {
+    }
+
     float       min;
     float       max;
     union
@@ -74,8 +86,21 @@ struct MidiOutput
     };
 };
 
-struct MidiKey
-{
+struct MidiKey {
+    MidiKey()
+            : status(0),
+              control(0) {
+    }
+
+    MidiKey(unsigned char status, unsigned char control)
+            : status(status),
+              control(control) {
+    }
+
+    bool operator==(const MidiKey& other) const {
+        return key == other.key;
+    }
+
     union
     {
         uint16_t    key;
