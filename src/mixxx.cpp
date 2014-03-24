@@ -28,6 +28,7 @@
 
 #include "analyserqueue.h"
 #include "controlpotmeter.h"
+#include "controlobjectslave.h"
 #include "deck.h"
 #include "defs_urls.h"
 #include "dlgabout.h"
@@ -78,6 +79,11 @@
 #ifdef __MODPLUG__
 #include "dlgprefmodplug.h"
 #endif
+
+// static
+const int MixxxMainWindow::kMicrophoneCount = 4;
+// static
+const int MixxxMainWindow::kAuxiliaryCount = 4;
 
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
@@ -153,53 +159,29 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
-    EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
-    // What should channelbase be?
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, 0);
-    m_pEngine->addChannel(pMicrophone);
-    m_pSoundManager->registerInput(micInput, pMicrophone);
+    for (int i = 0; i < kMicrophoneCount; ++i) {
+        QString group("[Microphone]");
+        if (i > 0) {
+            group = QString("[Microphone%1]").arg(i + 1);
+        }
+        // We don't know if something downstream expects the string to persist,
+        // so dupe it (probably leaking it).
+        EngineMicrophone* pMicrophone =
+                new EngineMicrophone(strdup(group.toStdString().c_str()));
+        // What should channelbase be?
+        AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, i);
+        m_pEngine->addChannel(pMicrophone);
+        m_pSoundManager->registerInput(micInput, pMicrophone);
+    }
 
-    EngineMicrophone* pMicrophone2 = new EngineMicrophone("[Microphone2]");
-    // What should channelbase be?
-    AudioInput micInput2 = AudioInput(AudioPath::MICROPHONE, 0, 0, 1);
-    m_pEngine->addChannel(pMicrophone2);
-    m_pSoundManager->registerInput(micInput2, pMicrophone2);
-
-    EngineMicrophone* pMicrophone3 = new EngineMicrophone("[Microphone3]");
-    // What should channelbase be?
-    AudioInput micInput3 = AudioInput(AudioPath::MICROPHONE, 0, 0, 2);
-    m_pEngine->addChannel(pMicrophone3);
-    m_pSoundManager->registerInput(micInput3, pMicrophone3);
-
-    EngineMicrophone* pMicrophone4 = new EngineMicrophone("[Microphone4]");
-    // What should channelbase be?
-    AudioInput micInput4 = AudioInput(AudioPath::MICROPHONE, 0, 0, 3);
-    m_pEngine->addChannel(pMicrophone4);
-    m_pSoundManager->registerInput(micInput4, pMicrophone4);
-
-    EngineAux* pAux1 = new EngineAux("[Auxiliary1]");
-    // What should channelbase be?
-    AudioInput auxInput1 = AudioInput(AudioPath::AUXILIARY, 0, 0, 0);
-    m_pEngine->addChannel(pAux1);
-    m_pSoundManager->registerInput(auxInput1, pAux1);
-
-    EngineAux* pAux2 = new EngineAux("[Auxiliary2]");
-    // What should channelbase be?
-    AudioInput auxInput2 = AudioInput(AudioPath::AUXILIARY, 0, 0, 1);
-    m_pEngine->addChannel(pAux2);
-    m_pSoundManager->registerInput(auxInput2, pAux2);
-
-    EngineAux* pAux3 = new EngineAux("[Auxiliary3]");
-    // What should channelbase be?
-    AudioInput auxInput3 = AudioInput(AudioPath::AUXILIARY, 0, 0, 2);
-    m_pEngine->addChannel(pAux3);
-    m_pSoundManager->registerInput(auxInput3, pAux3);
-
-    EngineAux* pAux4 = new EngineAux("[Auxiliary4]");
-    // What should channelbase be?
-    AudioInput auxInput4 = AudioInput(AudioPath::AUXILIARY, 0, 0, 3);
-    m_pEngine->addChannel(pAux4);
-    m_pSoundManager->registerInput(auxInput4, pAux4);
+    for (int i = 0; i < kAuxiliaryCount; ++i) {
+        QString group = QString("[Auxiliary%1]").arg(i + 1);
+        EngineAux* pAux = new EngineAux(strdup(group.toStdString().c_str()));
+        // What should channelbase be?
+        AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 0, i);
+        m_pEngine->addChannel(pAux);
+        m_pSoundManager->registerInput(auxInput, pAux);
+    }
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
@@ -494,6 +476,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_VCControlMapper;
     delete m_VCCheckboxMapper;
 #endif
+    delete m_TalkoverMapper;
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
@@ -1256,6 +1239,22 @@ void MixxxMainWindow::initActions()
     m_pDeveloperReloadSkin->setWhatsThis(buildWhatsThis(reloadSkinTitle, reloadSkinText));
     connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
+
+    // TODO: This code should live in a separate class.
+    m_TalkoverMapper = new QSignalMapper(this);
+    connect(m_TalkoverMapper, SIGNAL(mapped(int)),
+            this, SLOT(slotTalkoverChanged(int)));
+    for (int i = 0; i < kMicrophoneCount; ++i) {
+        QString group("[Microphone]");
+        if (i > 0) {
+            group = QString("[Microphone%1]").arg(i + 1);
+        }
+        ControlObjectSlave* talkover_button(new ControlObjectSlave(
+                group, "talkover", this));
+        m_TalkoverMapper->setMapping(talkover_button, i);
+        talkover_button->connectValueChanged(m_TalkoverMapper, SLOT(map()));
+        m_micTalkoverControls.push_back(talkover_button);
+    }
 }
 
 void MixxxMainWindow::initMenuBar()
@@ -1485,8 +1484,8 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
             QMessageBox::warning(
                     this,
                     tr("Mixxx"),
-                    tr("No input device(s) select.\nPlease select your soundcard(s) "
-                       "in the sound hardware preferences."),
+                    tr("There is no input device selected for this vinyl control.\n"
+                       "Please select an input device in the sound hardware preferences first."),
                     QMessageBox::Ok, QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
@@ -1536,6 +1535,30 @@ void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
     }
 #endif
     m_iNumConfiguredDecks = num_decks;
+}
+
+void MixxxMainWindow::slotTalkoverChanged(int mic_num) {
+    if (mic_num >= m_micTalkoverControls.length()) {
+        qWarning() << "Got a talkover change notice from outside the range.";
+    }
+    ControlObject* configured =
+            ControlObject::getControl(m_micTalkoverControls[mic_num]->getKey().group,
+                                      "enabled",
+                                      false);
+
+    // If the microphone is already configured, we are ok.
+    if (configured && configured->get() > 0.0) {
+        return;
+    }
+    m_micTalkoverControls[mic_num]->set(0.0);
+    QMessageBox::warning(
+                this,
+                tr("Mixxx"),
+                tr("There is no input device selected for this microphone.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok, QMessageBox::Ok);
+    m_pPrefDlg->show();
+            m_pPrefDlg->showSoundHardwarePage();
 }
 
 void MixxxMainWindow::slotHelpAbout() {
