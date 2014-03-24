@@ -204,6 +204,42 @@ QString formatMidiMessage(unsigned char status, unsigned char control, unsigned 
     }
 }
 
+void MidiController::learnTemporaryInputMappings(const MixxxControl& control,
+                                                 const MidiKeyAndOptionsList& mappings) {
+    foreach (const MidiKeyAndOptions& mapping, mappings) {
+        QPair<MixxxControl, MidiOptions> target;
+        target.first = control;
+        target.second = mapping.second;
+
+        m_temporaryInputMappings.insert(mapping.first.key, target);
+
+        unsigned char opCode = opCodeFromStatus(mapping.first.status);
+        bool twoBytes = isMessageTwoBytes(opCode);
+        QString message = twoBytes ? QString("0x%1 0x%2")
+                .arg(QString::number(mapping.first.status, 16).toUpper(),
+                     QString::number(mapping.first.control, 16).toUpper()
+                     .rightJustified(2,'0')) :
+                QString("0x%1")
+                .arg(QString::number(mapping.first.status, 16).toUpper());
+        qDebug() << "Set mapping for" << message << "to" << control.group() << control.item();
+    }
+}
+
+void MidiController::clearTemporaryInputMappings() {
+    m_temporaryInputMappings.clear();
+}
+
+void MidiController::commitTemporaryInputMappings() {
+    // NOTE(rryan): QMap::unite() does not work because it inserts
+    // duplicate keys instead of replacing.
+    for (QHash<uint16_t, QPair<MixxxControl, MidiOptions> >::const_iterator it =
+                 m_temporaryInputMappings.begin();
+         it != m_temporaryInputMappings.end(); ++it) {
+        m_preset.mappings.insert(it.key(), it.value());
+    }
+    m_temporaryInputMappings.clear();
+}
+
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value) {
     unsigned char channel = channelFromStatus(status);
@@ -227,54 +263,28 @@ void MidiController::receive(unsigned char status, unsigned char control,
         mappingKey.control = 0xFF;
     }
 
-    // Learning
+    bool foundControl = false;
+    QPair<MixxxControl, MidiOptions> controlOptions;
+
     if (isLearning()) {
-        MixxxControl control = controlToLearn();
-        if (!control.isNull()) {
-            MidiOptions options;
-            options.all = 0;
+        emit(messageReceived(status, control, value));
 
-            QPair<MixxxControl, MidiOptions> target;
-            target.first = control;
-            target.second = options;
-
-            // Ignore all standard MIDI System Real-Time Messages because they
-            // are continuously sent and prevent mapping of the pressed key.
-            if (isClockSignal(mappingKey)) {
-                return;
-            }
-
-            // TODO: store these in a temporary hash to be applied on learning
-            //  success, or thrown away on cancel.
-            m_preset.mappings.insert(mappingKey.key,target);
-
-            //If we caught a NOTE_ON message, add a binding for NOTE_OFF as well.
-            if (status == MIDI_NOTE_ON) {
-                MidiKey mappingKeyTemp;
-                mappingKeyTemp.status = MIDI_NOTE_OFF;
-                mappingKeyTemp.control = mappingKey.control;
-                m_preset.mappings.insert(mappingKeyTemp.key,target);
-            }
-
-            //Reset the saved control.
-            setControlToLearn(MixxxControl());
-
-            QString message = twoBytes ? QString("0x%1 0x%2")
-                    .arg(QString::number(mappingKey.status, 16).toUpper(),
-                         QString::number(mappingKey.control, 16).toUpper()
-                         .rightJustified(2,'0')) :
-                    QString("0x%1")
-                    .arg(QString::number(mappingKey.status, 16).toUpper());
-            emit(learnedMessage(message));
+        if (m_temporaryInputMappings.contains(mappingKey.key)) {
+            controlOptions = m_temporaryInputMappings.value(mappingKey.key);
+            foundControl = true;
         }
     }
 
-    // If no control is bound to this MIDI message, return
-    if (!m_preset.mappings.contains(mappingKey.key)) {
+    if (!foundControl && m_preset.mappings.contains(mappingKey.key)) {
+        controlOptions = m_preset.mappings.value(mappingKey.key);
+        foundControl = true;
+    }
+
+    if (!foundControl) {
+        // If no control is bound to this MIDI message, return
         return;
     }
 
-    QPair<MixxxControl, MidiOptions> controlOptions = m_preset.mappings.value(mappingKey.key);
     MixxxControl mc = controlOptions.first;
     MidiOptions options = controlOptions.second;
 
@@ -470,38 +480,29 @@ void MidiController::receive(QByteArray data) {
     // Signifies that the second byte is part of the payload, default
     mappingKey.control = 0xFF;
 
-    // Learning
+    // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
+    // don't think this actually does anything useful.
+    bool foundControl = false;
+    QPair<MixxxControl, MidiOptions> control;
     if (isLearning()) {
-        MixxxControl control = controlToLearn();
-        if (!control.isNull()) {
-            MidiOptions options;
-            options.all = 0;
+        // TODO(rryan): Fake a one value?
+        emit(messageReceived(mappingKey.status, mappingKey.control, 0x7F));
 
-            QPair<MixxxControl, MidiOptions> target;
-            target.first = control;
-            target.second = options;
-
-            // TODO: store these in a temporary hash to be applied on learning
-            //  success, or thrown away on cancel.
-            m_preset.mappings.insert(mappingKey.key,target);
-
-            //Reset the saved control.
-            setControlToLearn(MixxxControl());
-
-            QString message = QString("0x%1")
-                    .arg(QString::number(mappingKey.status, 16).toUpper());
-            emit(learnedMessage(message));
+        if (m_temporaryInputMappings.contains(mappingKey.key)) {
+            control = m_temporaryInputMappings.value(mappingKey.key);
+            foundControl = true;
         }
-        // Don't process MIDI messages when learning
-        return;
     }
 
-    // If no control is bound to this MIDI status, return
-    if (!m_preset.mappings.contains(mappingKey.key)) {
-        return;
+    if (!foundControl && m_preset.mappings.contains(mappingKey.key)) {
+        control = m_preset.mappings.value(mappingKey.key);
+        foundControl = true;
     }
 
-    QPair<MixxxControl, MidiOptions> control = m_preset.mappings.value(mappingKey.key);
+    if (!foundControl) {
+        // If no control is bound to this MIDI message, return
+        return;
+    }
 
     MixxxControl mc = control.first;
     MidiOptions options = control.second;

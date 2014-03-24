@@ -71,7 +71,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual bool matchPreset(const PresetInfo& preset) = 0;
 
   signals:
-    void learnedMessage(QString message);
     // Emitted when a new preset is loaded. pPreset is a /clone/ of the loaded
     // preset, not a pointer to the preset itself.
     void presetLoaded(ControllerPresetPointer pPreset);
@@ -87,8 +86,9 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Initializes the controller engine
     virtual void applyPreset(QList<QString> scriptPaths);
 
-    void learn(MixxxControl control);
-    void cancelLearn();
+    // Puts the controller in and out of learning mode.
+    void startLearning();
+    void stopLearning();
 
     virtual void clearInputMappings() {}
     virtual void clearOutputMappings() {}
@@ -122,13 +122,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline void setOpen(bool open) {
         m_bIsOpen = open;
     }
-    inline MixxxControl controlToLearn() const {
-        return m_controlToLearn;
-    }
-    inline void setControlToLearn(MixxxControl control) {
-        m_controlToLearn = control;
-    }
-
 
   private slots:
     virtual int open() = 0;
@@ -166,7 +159,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     // runtime. This is useful for end-user debugging and script-writing.
     bool m_bDebug;
     bool m_bLearning;
-    MixxxControl m_controlToLearn;
 
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
 };
