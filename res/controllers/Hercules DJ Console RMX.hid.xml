@@ -4,6 +4,7 @@
         <name>Hercules DJ Console RMX  HID</name>
         <author>richterskala</author>
         <description>Native HID script for the Hercules DJ Console RMX controller.</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=6134</forums>
     </info>
     <controller id="Hercules">
         <scriptfiles>
