@@ -31,17 +31,18 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
-class EngineFlanger;
-class EngineFilterEffect;
 class EngineMaster;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
+class EffectsManager;
+class EngineEffectsManager;
 class ControlPushButton;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const char* group, ConfigObject<ConfigValue>* pConfig, EngineMaster* pMixingEngine,
+    EngineDeck(const char* group, ConfigObject<ConfigValue>* pConfig,
+               EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 
@@ -53,7 +54,10 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual bool isActive();
 
     // This is called by SoundManager whenever there are new samples from the
-    // deck to be processed.
+    // configured input to be processed. This is run in the callback thread of
+    // the soundcard this AudioDestination was registered for! Beware, in the
+    // case of multiple soundcards, this method is not re-entrant but it may be
+    // concurrent with EngineMaster processing.
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int nFrames);
 
@@ -76,11 +80,10 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineBuffer* m_pBuffer;
     EngineClipping* m_pClipping;
     EngineFilterBlock* m_pFilter;
-    EngineFlanger* m_pFlanger;
-    EngineFilterEffect* m_pFilterEffect;
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
+    EngineEffectsManager* m_pEngineEffectsManager;
 
     // Begin vinyl passthrough fields
     ControlPushButton* m_pPassing;

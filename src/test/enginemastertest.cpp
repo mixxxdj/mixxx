@@ -33,7 +33,7 @@ class EngineChannelMock : public EngineChannel {
 class EngineMasterTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        m_pMaster = new EngineMaster(config(), "[Master]", false, false);
+        m_pMaster = new EngineMaster(config(), "[Master]", NULL, false, false);
     }
 
     virtual void TearDown() {

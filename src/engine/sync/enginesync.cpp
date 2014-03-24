@@ -87,7 +87,6 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
 
     if (bEnabled) {
-        int playingSyncDecks = playingSyncDeckCount();
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
             // There is no master. If any other deck is playing we will match
@@ -129,11 +128,16 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
             }
-        } else if (m_pMasterSyncable == m_pInternalClock && playingSyncDecks == 0) {
-            // If there are no active followers, reset the internal clock bpm
-            // and beat distance.
-            setMasterBpm(pSyncable, pSyncable->getBpm());
-            setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+        } else if (m_pMasterSyncable == m_pInternalClock) {
+            if (!syncDeckExists()) {
+                // If there are no active sync decks, reset the internal clock bpm
+                // and beat distance.
+                setMasterBpm(pSyncable, pSyncable->getBpm());
+                setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+            }
+            if (playingSyncDeckCount() > 0) {
+                foundPlayingDeck = true;
+            }
         } else if (m_pMasterSyncable != NULL) {
             foundPlayingDeck = true;
         }

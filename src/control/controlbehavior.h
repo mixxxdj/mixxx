@@ -28,7 +28,8 @@ class ControlNumericBehavior {
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
-    ControlPotmeterBehavior(double dMinValue, double dMaxValue);
+    ControlPotmeterBehavior(double dMinValue, double dMaxValue,
+                            bool allowOutOfBounds);
     virtual ~ControlPotmeterBehavior();
 
     virtual bool setFilter(double* dValue);
@@ -44,6 +45,7 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     double m_dMaxValue;
     double m_dValueRange;
     double m_dDefaultValue;
+    bool m_bAllowOutOfBounds;
 };
 
 class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {

@@ -28,18 +28,26 @@ void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dPar
     pControl->set(dParam, NULL);
 }
 
-ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue)
+ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
+                                                 bool allowOutOfBounds)
         : m_dMinValue(dMinValue),
           m_dMaxValue(dMaxValue),
           m_dValueRange(m_dMaxValue - m_dMinValue),
-          m_dDefaultValue(m_dMinValue + 0.5 * m_dValueRange) {
+          m_dDefaultValue(m_dMinValue + 0.5 * m_dValueRange),
+          m_bAllowOutOfBounds(allowOutOfBounds) {
 }
 
 ControlPotmeterBehavior::~ControlPotmeterBehavior() {
 }
 
 bool ControlPotmeterBehavior::setFilter(double* dValue) {
-    Q_UNUSED(dValue);
+    if (!m_bAllowOutOfBounds) {
+        if (*dValue > m_dMaxValue) {
+            *dValue = m_dMaxValue;
+        } else if (*dValue < m_dMinValue) {
+            *dValue = m_dMinValue;
+        }
+    }
     return true;
 }
 
@@ -86,7 +94,7 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 #define positionrange (maxPosition - minPosition)
 
 ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
-        : ControlPotmeterBehavior(0, dMaxValue) {
+        : ControlPotmeterBehavior(0, dMaxValue, false) {
     if (dMaxValue == 1.0) {
         m_bTwoState = false;
         m_dB1 = log10(2.0) / maxPosition;
@@ -135,7 +143,7 @@ double ControlLogpotmeterBehavior::parameterToValue(double dParam) {
 }
 
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue) {
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
 }
 
 ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
@@ -163,7 +171,7 @@ double ControlTTRotaryBehavior::valueToParameter(double dValue) {
 }
 
 double ControlTTRotaryBehavior::parameterToValue(double dParam) {
-    dParam *= 127.0;
+    dParam *= 128.0;
     // Non-linear scaling
     double temp = ((dParam - 64.0) * (dParam - 64.0)) / 64.0;
     if (dParam - 64 < 0) {
@@ -242,4 +250,3 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
         }
     }
 }
-

@@ -27,6 +27,8 @@
 #include "skin/colorschemeparser.h"
 #include "skin/skincontext.h"
 
+#include "effects/effectsmanager.h"
+
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
@@ -44,6 +46,9 @@
 #include "widget/wnumber.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
+#include "widget/weffectchain.h"
+#include "widget/weffect.h"
+#include "widget/weffectparameter.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/wspinny.h"
@@ -112,13 +117,15 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
-                                   VinylControlManager* pVCMan)
+                                   VinylControlManager* pVCMan,
+                                   EffectsManager* pEffectsManager)
         : m_pConfig(pConfig),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
           m_pControllerManager(pControllerManager),
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
+          m_pEffectsManager(pEffectsManager),
           m_pParent(NULL),
           m_pContext(NULL) {
 }
@@ -429,6 +436,12 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseWidgetGroup(node));
     } else if (nodeName == "WidgetStack") {
         result = wrapWidget(parseWidgetStack(node));
+    } else if (nodeName == "EffectChainName") {
+        result = wrapWidget(parseEffectChainName(node));
+    } else if (nodeName == "EffectName") {
+        result = wrapWidget(parseEffectName(node));
+    } else if (nodeName == "EffectParameterName") {
+        result = wrapWidget(parseEffectParameterName(node));
     } else if (nodeName == "Spinny") {
         result = wrapWidget(parseSpinny(node));
     } else if (nodeName == "Time") {
@@ -1231,6 +1244,24 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     while ((safe[i] = qba[i])) ++i;
     s_channelStrs.append(safe);
     return safe;
+}
+
+QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
+    WEffectChain* pEffectChain = new WEffectChain(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffectChain);
+    return pEffectChain;
+}
+
+QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
+    WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffect);
+    return pEffect;
+}
+
+QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
+    WEffectParameter* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffectParameter);
+    return pEffectParameter;
 }
 
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {

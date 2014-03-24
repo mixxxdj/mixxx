@@ -20,9 +20,6 @@
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
 
-#define MIDI_SYS_RT_MSG_MASK 0xF8
-// from MIDI Message Table http://www.midi.org/techspecs/midimessages.php
-
 class MidiController : public Controller {
     Q_OBJECT
   public:
@@ -46,7 +43,11 @@ class MidiController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
-    bool isClockSignal(MidiKey &mappingKey);
+    virtual void accept(ControllerVisitor* visitor) {
+        if (visitor) {
+            visitor->visit(this);
+        }
+    }
 
     virtual bool isMappable() const {
         return m_preset.isMappable();

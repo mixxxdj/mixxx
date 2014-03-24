@@ -169,7 +169,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
 TreeItem* TraktorFeature::importLibrary(QString file) {
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowestPriority);
+    thisThread->setPriority(QThread::LowPriority);
     //Invisible root item of Traktor's child model
     TreeItem* root = NULL;
     //Delete all table entries of Traktor feature

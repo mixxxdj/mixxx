@@ -34,6 +34,8 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
+#include "effects/effectsmanager.h"
+#include "effects/native/nativebackend.h"
 #include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -124,8 +126,19 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
+    // Create the Effects subsystem.
+    m_pEffectsManager = new EffectsManager(this, m_pConfig);
+
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true, true);
+
+    // Create effect backends. We do this after creating EngineMaster to allow
+    // effect backends to refer to controls that are produced by the engine.
+    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+
+    // Sets up the default EffectChains and EffectRack.
+    m_pEffectsManager->setupDefaults();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__
@@ -146,6 +159,24 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
+    EngineMicrophone* pMicrophone2 = new EngineMicrophone("[Microphone2]");
+    // What should channelbase be?
+    AudioInput micInput2 = AudioInput(AudioPath::MICROPHONE, 0, 0, 1);
+    m_pEngine->addChannel(pMicrophone2);
+    m_pSoundManager->registerInput(micInput2, pMicrophone2);
+
+    EngineMicrophone* pMicrophone3 = new EngineMicrophone("[Microphone3]");
+    // What should channelbase be?
+    AudioInput micInput3 = AudioInput(AudioPath::MICROPHONE, 0, 0, 2);
+    m_pEngine->addChannel(pMicrophone3);
+    m_pSoundManager->registerInput(micInput3, pMicrophone3);
+
+    EngineMicrophone* pMicrophone4 = new EngineMicrophone("[Microphone4]");
+    // What should channelbase be?
+    AudioInput micInput4 = AudioInput(AudioPath::MICROPHONE, 0, 0, 3);
+    m_pEngine->addChannel(pMicrophone4);
+    m_pSoundManager->registerInput(micInput4, pMicrophone4);
+
     EngineAux* pAux1 = new EngineAux("[Auxiliary1]");
     // What should channelbase be?
     AudioInput auxInput1 = AudioInput(AudioPath::AUXILIARY, 0, 0, 0);
@@ -157,6 +188,18 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     AudioInput auxInput2 = AudioInput(AudioPath::AUXILIARY, 0, 0, 1);
     m_pEngine->addChannel(pAux2);
     m_pSoundManager->registerInput(auxInput2, pAux2);
+
+    EngineAux* pAux3 = new EngineAux("[Auxiliary3]");
+    // What should channelbase be?
+    AudioInput auxInput3 = AudioInput(AudioPath::AUXILIARY, 0, 0, 2);
+    m_pEngine->addChannel(pAux3);
+    m_pSoundManager->registerInput(auxInput3, pAux3);
+
+    EngineAux* pAux4 = new EngineAux("[Auxiliary4]");
+    // What should channelbase be?
+    AudioInput auxInput4 = AudioInput(AudioPath::AUXILIARY, 0, 0, 3);
+    m_pEngine->addChannel(pAux4);
+    m_pSoundManager->registerInput(auxInput4, pAux4);
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
@@ -186,7 +229,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
 
     // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine);
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager,
+                                         m_pEffectsManager, m_pEngine);
 
     // Add the same number of decks that were last used.  This ensures that when
     // audio inputs and outputs are set up, connections for decks > 2 will
@@ -338,7 +382,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
-                                                           m_pVCManager))) {
+                                                           m_pVCManager,
+                                                           m_pEffectsManager))) {
         reportCriticalErrorAndQuit(
             "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
@@ -476,6 +521,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
+
+    qDebug() << "deleting effects manager, " << qTime.elapsed();
+    delete m_pEffectsManager;
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
@@ -731,8 +779,10 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
 }
 
 void MixxxMainWindow::onNewSkinLoaded() {
+#ifdef __VINYLCONTROL__
     setVisibilityOptionState(m_pViewVinylControl,
                              ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+#endif
     setVisibilityOptionState(m_pViewShowSamplers,
                              ConfigKey("[Samplers]", "show_samplers"));
     setVisibilityOptionState(m_pViewShowMicrophone,
@@ -1136,6 +1186,7 @@ void MixxxMainWindow::initActions()
     QString showVinylControlTitle = tr("Show Vinyl Control Section");
     QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
             " " + mayNotBeSupported;
+#ifdef __VINYLCONTROL__
     m_pViewVinylControl = new QAction(showVinylControlTitle, this);
     m_pViewVinylControl->setCheckable(true);
     m_pViewVinylControl->setShortcut(
@@ -1146,6 +1197,7 @@ void MixxxMainWindow::initActions()
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowVinylControl(bool)));
+#endif
 
     QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
@@ -1253,7 +1305,9 @@ void MixxxMainWindow::initMenuBar()
     //viewMenu->setCheckable(true);
     m_pViewMenu->addAction(m_pViewShowSamplers);
     m_pViewMenu->addAction(m_pViewShowMicrophone);
+#ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
+#endif
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
@@ -1463,6 +1517,7 @@ void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
     int num_decks =
             static_cast<int>(math_min(dNumDecks, kMaximumVinylControlInputs));
 
+#ifdef __VINYLCONTROL__
     // Only show menu items to activate vinyl inputs that exist.
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         m_pOptionsVinylControl[i]->setVisible(true);
@@ -1479,6 +1534,7 @@ void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
     for (int i = num_decks; i < kMaximumVinylControlInputs; ++i) {
         m_pOptionsVinylControl[i]->setVisible(false);
     }
+#endif
     m_iNumConfiguredDecks = num_decks;
 }
 
@@ -1564,7 +1620,8 @@ void MixxxMainWindow::rebootMixxxView() {
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
-                                                           m_pVCManager))) {
+                                                           m_pVCManager,
+                                                           m_pEffectsManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),
@@ -1757,4 +1814,3 @@ bool MixxxMainWindow::confirmExit() {
     }
     return true;
 }
-

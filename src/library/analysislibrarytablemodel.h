@@ -15,8 +15,6 @@ class AnalysisLibraryTableModel : public LibraryTableModel
   public slots:
     void showRecentSongs();
     void showAllSongs();
-  private:
-    bool m_bShowRecentSongs;
 };
 
 #endif

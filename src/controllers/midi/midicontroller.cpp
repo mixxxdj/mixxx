@@ -50,13 +50,6 @@ void MidiController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
-bool MidiController::isClockSignal(MidiKey &mappingKey) {
-    if ((mappingKey.key & MIDI_SYS_RT_MSG_MASK) == MIDI_SYS_RT_MSG_MASK) {
-        return true;
-    }
-    return false;
-}
-
 bool MidiController::matchPreset(const PresetInfo& preset) {
     // Product info mapping not implemented for MIDI devices yet
     Q_UNUSED(preset);
@@ -211,27 +204,10 @@ QString formatMidiMessage(unsigned char status, unsigned char control, unsigned 
     }
 }
 
-bool isMessageTwoBytes(unsigned char opCode) {
-    switch (opCode) {
-        case MIDI_SONG:
-        case MIDI_NOTE_OFF:
-        case MIDI_NOTE_ON:
-        case MIDI_AFTERTOUCH:
-        case MIDI_CC:
-            return true;
-        default:
-            return false;
-    }
-}
-
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value) {
-    unsigned char channel = status & 0x0F;
-    unsigned char opCode = status & 0xF0;
-    if (opCode >= 0xF0) {
-        opCode = status;
-    }
-
+    unsigned char channel = channelFromStatus(status);
+    unsigned char opCode = opCodeFromStatus(status);
     bool twoBytes = isMessageTwoBytes(opCode);
 
     if (debugging()) {

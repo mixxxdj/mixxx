@@ -75,7 +75,7 @@ void WaveformSignalColors::fallBackFromSignalColor()
 
     const double analogousAngle = 1.0/12.0;
 
-    if( s < 0.1) // gray
+    if (s < 0.1) // gray
     {
         const qreal sMax = 1.0 - h;
         m_lowColor.setHslF(h,s,l);
@@ -84,21 +84,21 @@ void WaveformSignalColors::fallBackFromSignalColor()
     }
     else
     {
-        if( l < 0.1) // ~white
+        if (l < 0.1) // ~white
         {
             const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l+lMax*0.2);
             m_highColor.setHslF(h,s,l+lMax*0.4);
         }
-        else if( l < 0.5)
+        else if (l < 0.5)
         {
             const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
         }
-        else if ( l < 0.9)
+        else if (l < 0.9)
         {
             const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
@@ -125,7 +125,7 @@ void WaveformSignalColors::fallBackDefaultColor()
 }
 
 //NOTE(vRince) this sabilise hue between -1.0 and 2.0 but not more !
-float WaveformSignalColors::stableHue( float hue) const
+float WaveformSignalColors::stableHue(float hue) const
 {
     return hue < 0.0 ? hue + 1.0 : hue > 1.0 ? hue - 1.0 : hue;
 }

@@ -19,9 +19,9 @@
 
 #define MIXXX_WEBSITE_URL       "http://www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "http://www.mixxx.org/support.php"
-#define MIXXX_FEEDBACK_URL      "https://docs.google.com/forms/d/1Zbx-VgdcSIuTTmy9UalNZhtDypSJdSLvRVZ0MKOuLu4/viewform"
-#define MIXXX_TRANSLATION_URL   "https://translations.launchpad.net/mixxx"
-#define MIXXX_MANUAL_URL        "http://mixxx.org/manual/1.11"
+#define MIXXX_FEEDBACK_URL      "https://docs.google.com/a/mixxx.org/forms/d/1raQ0WnrdVJYSE5r2tsV4jIRd90oZVrF-TRKWeW2kfEU/viewform"
+#define MIXXX_TRANSLATION_URL   "https://www.transifex.com/projects/p/mixxxdj/"
+#define MIXXX_MANUAL_URL        "http://mixxx.org/manual/1.12"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
 
 #endif

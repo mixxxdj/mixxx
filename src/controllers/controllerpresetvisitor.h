@@ -11,4 +11,3 @@ class ControllerPresetVisitor {
 };
 
 #endif /* CONTROLLERPRESETVISITOR_H */
-

@@ -27,7 +27,6 @@ typedef enum {
     MIDI_SYSTEM_RESET   = 0xFF,
 } MidiOpCode;
 
-
 typedef unsigned int    uint32_t;
 typedef unsigned short  uint16_t;
 
@@ -85,5 +84,34 @@ struct MidiKey
     };
 };
 
+inline unsigned char channelFromStatus(unsigned char status) {
+    return status & 0x0F;
+}
+
+inline MidiOpCode opCodeFromStatus(unsigned char status) {
+    unsigned char opCode = status & 0xF0;
+    // MIDI_SYSEX and higher don't have a channel and occupy the entire byte.
+    if (opCode == 0xF0) {
+        opCode = status;
+    }
+    return static_cast<MidiOpCode>(opCode);
+}
+
+inline bool isMessageTwoBytes(unsigned char opCode) {
+    switch (opCode) {
+        case MIDI_SONG:
+        case MIDI_NOTE_OFF:
+        case MIDI_NOTE_ON:
+        case MIDI_AFTERTOUCH:
+        case MIDI_CC:
+            return true;
+        default:
+            return false;
+    }
+}
+
+inline bool isClockSignal(const MidiKey& mappingKey) {
+    return (mappingKey.key & MIDI_TIMING_CLK) == MIDI_TIMING_CLK;
+}
 
 #endif
