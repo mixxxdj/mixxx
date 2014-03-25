@@ -4,18 +4,28 @@
 #include "playermanager.h"
 #include "engine/cuecontrol.h"
 #include "engine/loopingcontrol.h"
+#include "effects/effectrack.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectslot.h"
+#include "effects/effectparameterslot.h"
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
     connect(&m_actionMapper, SIGNAL(mapped(int)),
             this, SLOT(controlChosen(int)));
 
+    m_masterOutputStr = tr("Master Output");
+    m_headphoneOutputStr = tr("Headphone Output");
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
     m_previewdeckStr = tr("Preview Deck %1");
     m_microphoneStr = tr("Microphone %1");
     m_auxStr = tr("Auxiliary %1");
     m_resetStr = tr("Reset to default");
+    m_effectRackStr = tr("Effect Rack %1");
+    m_effectUnitStr = tr("Effect Unit %1");
+    m_effectStr = tr("Effect Slot %1");
+    m_parameterStr = tr("Parameter %1");
 
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
@@ -229,6 +239,183 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Effect Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
+
+    const int kNumEffectRacks = 1;
+    for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
+        const QString rackGroup = EffectRack::formatGroupString(
+                iRackNumber - 1);
+        QMenu* rackMenu = addSubmenu(m_effectRackStr.arg(iRackNumber), effectsMenu);
+        QString descriptionPrefix = m_effectRackStr.arg(iRackNumber);
+
+        addEffectControl(rackGroup, "clear", tr("Clear effect rack"),
+                         descriptionPrefix, rackMenu);
+
+        const int numEffectUnits = ControlObject::get(
+            ConfigKey(rackGroup, "num_effectunits"));
+        for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
+             ++iEffectUnitNumber) {
+            const QString effectUnitGroup = EffectChainSlot::formatGroupString(
+                    iRackNumber - 1, iEffectUnitNumber - 1);
+
+            descriptionPrefix = QString("%1, %2").arg(m_effectRackStr.arg(iRackNumber),
+                                                      m_effectUnitStr.arg(iEffectUnitNumber));
+
+            QMenu* effectUnitMenu = addSubmenu(m_effectUnitStr.arg(iEffectUnitNumber),
+                                               rackMenu);
+            addEffectControl(effectUnitGroup, "clear",
+                             tr("Clear effect unit"), descriptionPrefix,
+                             effectUnitMenu);
+            addEffectControl(effectUnitGroup, "enabled",
+                             tr("Toggle effect unit"), descriptionPrefix,
+                             effectUnitMenu, false);
+            addEffectControl(effectUnitGroup, "mix",
+                             tr("Dry/Wet"), descriptionPrefix,
+                             effectUnitMenu, true);
+            addEffectControl(effectUnitGroup, "parameter",
+                             tr("Super Knob"), descriptionPrefix,
+                             effectUnitMenu, true);
+            addEffectControl(effectUnitGroup, "insertion_type",
+                             tr("Insert / Send Toggle"), descriptionPrefix,
+                             effectUnitMenu);
+            addEffectControl(effectUnitGroup, "next_chain",
+                             tr("Next chain preset"), descriptionPrefix,
+                             effectUnitMenu);
+            addEffectControl(effectUnitGroup, "prev_chain",
+                             tr("Previous chain preset"), descriptionPrefix,
+                             effectUnitMenu);
+            addEffectControl(effectUnitGroup, "chain_selector",
+                             tr("Next or previous chain preset"), descriptionPrefix,
+                             effectUnitMenu);
+
+            QString enableOn = tr("Enable Effect Unit On");
+            QMenu* effectUnitGroups = addSubmenu(enableOn,
+                                                 effectUnitMenu);
+
+            QString groupDescriptionPrefix = QString("%1, %2 %3").arg(
+                    m_effectRackStr.arg(iRackNumber),
+                    m_effectUnitStr.arg(iEffectUnitNumber),
+                    enableOn);
+
+            addEffectControl(effectUnitGroup, "group_[Master]_enable",
+                             m_masterOutputStr, groupDescriptionPrefix,
+                             effectUnitGroups);
+            addEffectControl(effectUnitGroup, "group_[Headphone]_enable",
+                             m_headphoneOutputStr, groupDescriptionPrefix,
+                             effectUnitGroups);
+
+            const int iNumDecks = ControlObject::get(
+                ConfigKey("[Master]", "num_decks"));
+            for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
+                // PlayerManager::groupForDeck is 0-indexed.
+                QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
+                addEffectControl(effectUnitGroup,
+                                 QString("group_%1_enable").arg(playerGroup),
+                                 m_deckStr.arg(iDeckNumber),
+                                 groupDescriptionPrefix,
+                                 effectUnitGroups);
+
+            }
+
+            const int iNumSamplers = ControlObject::get(
+                ConfigKey("[Master]", "num_samplers"));
+            for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
+                 ++iSamplerNumber) {
+                // PlayerManager::groupForSampler is 0-indexed.
+                QString playerGroup = PlayerManager::groupForSampler(iSamplerNumber - 1);
+                addEffectControl(effectUnitGroup,
+                                 QString("group_%1_enable").arg(playerGroup),
+                                 m_samplerStr.arg(iSamplerNumber),
+                                 groupDescriptionPrefix,
+                                 effectUnitGroups);
+
+            }
+
+            const int iNumMicrophones = ControlObject::get(
+                ConfigKey("[Master]", "num_microphones"));
+            for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
+                 ++iMicrophoneNumber) {
+                QString micGroup = "[Microphone]";
+                if (iMicrophoneNumber > 1) {
+                    micGroup = QString("[Microphone%1]").arg(iMicrophoneNumber);
+                }
+                addEffectControl(effectUnitGroup,
+                                 QString("group_%1_enable").arg(micGroup),
+                                 m_microphoneStr.arg(iMicrophoneNumber),
+                                 groupDescriptionPrefix,
+                                 effectUnitGroups);
+            }
+
+            const int iNumAuxiliaries = ControlObject::get(
+                ConfigKey("[Master]", "num_auxiliaries"));
+            for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
+                 ++iAuxiliaryNumber) {
+                QString auxGroup = QString("[Auxiliary%1]").arg(iAuxiliaryNumber);
+                addEffectControl(effectUnitGroup,
+                                 QString("group_%1_enable").arg(auxGroup),
+                                 m_auxStr.arg(iAuxiliaryNumber),
+                                 groupDescriptionPrefix,
+                                 effectUnitGroups);
+            }
+
+            const int numEffectSlots = ControlObject::get(
+                    ConfigKey(effectUnitGroup, "num_effectslots"));
+            for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
+                     ++iEffectSlotNumber) {
+                const QString effectSlotGroup = EffectSlot::formatGroupString(
+                        iRackNumber - 1, iEffectUnitNumber - 1,
+                        iEffectSlotNumber - 1);
+
+                QMenu* effectSlotMenu = addSubmenu(m_effectStr.arg(iEffectSlotNumber),
+                                                   effectUnitMenu);
+
+                descriptionPrefix.append(QString(", %1").arg(
+                    m_effectStr.arg(iEffectSlotNumber)));
+
+                addEffectControl(effectSlotGroup, "clear",
+                                 tr("Clear effect"), descriptionPrefix,
+                                 effectSlotMenu);
+                addEffectControl(effectSlotGroup, "enabled",
+                                 tr("Toggle effect"), descriptionPrefix,
+                                 effectSlotMenu);
+                addEffectControl(effectSlotGroup, "next_effect",
+                                 tr("Next effect"), descriptionPrefix,
+                                 effectSlotMenu);
+                addEffectControl(effectSlotGroup, "prev_effect",
+                                 tr("Previous effect"), descriptionPrefix,
+                                 effectSlotMenu);
+                addEffectControl(effectSlotGroup, "effect_selector",
+                                 tr("Next or previous effect"), descriptionPrefix,
+                                 effectSlotMenu);
+
+                const int numParameterSlots = ControlObject::get(
+                        ConfigKey(effectSlotGroup, "num_parameterslots"));
+                for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
+                     ++iParameterSlotNumber) {
+                    const QString parameterSlotGroup = EffectParameterSlot::formatGroupString(
+                            iRackNumber - 1, iEffectUnitNumber - 1,
+                            iEffectSlotNumber - 1, iParameterSlotNumber - 1);
+
+                    QMenu* parameterSlotMenu = addSubmenu(
+                        m_parameterStr.arg(iParameterSlotNumber),
+                        effectSlotMenu);
+
+                    descriptionPrefix.append(QString(", %1").arg(
+                        m_parameterStr.arg(iParameterSlotNumber)));
+
+                    // Likely to change soon.
+                    addEffectControl(parameterSlotGroup, "value_normalized",
+                                     tr("Parameter value"), descriptionPrefix,
+                                     parameterSlotMenu, true);
+
+                    addEffectControl(parameterSlotGroup, "link_type",
+                                     tr("3-state Super Knob Link Toggle (unlinked, linear, inverse)"),
+                                     descriptionPrefix, parameterSlotMenu);
+
+                }
+            }
+        }
+    }
+
     addDeckControl("flanger", tr("Toggle flange effect"), effectsMenu);
     addControl("[Flanger]", "lfoPeriod", tr("Flange effect: Wavelength/period"), effectsMenu, true);
     addControl("[Flanger]", "lfoDepth", tr("Flange effect: Intensity"), effectsMenu, true);
@@ -279,18 +466,45 @@ ControlPickerMenu::~ControlPickerMenu() {
 }
 
 void ControlPickerMenu::addControl(QString group, QString control, QString description,
-                                       QMenu* pMenu,
-                                       bool addReset) {
-    QAction* pAction = pMenu->addAction(description, &m_actionMapper, SLOT(map()));
+                                   QMenu* pMenu,
+                                   bool addReset) {
+    QAction* pAction = pMenu->addAction(description, &m_actionMapper,
+                                        SLOT(map()));
     m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
     m_controlsAvailable.append(MixxxControl(group, control, description));
 
     if (addReset) {
-        QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
+        QString resetDescription = QString("%1 (%2)").arg(description,
+                                                          m_resetStr);
         QString resetControl = QString("%1_set_default").arg(control);
-        QAction* pResetAction = pMenu->addAction(resetDescription, &m_actionMapper, SLOT(map()));
+        QAction* pResetAction = pMenu->addAction(resetDescription,
+                                                 &m_actionMapper, SLOT(map()));
         m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-        m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
+        m_controlsAvailable.append(MixxxControl(group, resetControl,
+                                                resetDescription));
+    }
+}
+
+void ControlPickerMenu::addEffectControl(QString group, QString control,
+                                         QString menuDescription, QString descriptionPrefix,
+                                         QMenu* pMenu, bool addReset) {
+    QAction* pAction = pMenu->addAction(menuDescription, &m_actionMapper, SLOT(map()));
+    m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
+
+    QString description = QString("%1: %2").arg(descriptionPrefix,
+                                                menuDescription);
+    m_controlsAvailable.append(MixxxControl(group, control, description));
+
+    if (addReset) {
+        QString resetMenuDescription = QString("%1 (%2)").arg(description, m_resetStr);
+        QString resetControl = QString("%1_set_default").arg(control);
+        QAction* pResetAction = pMenu->addAction(resetMenuDescription,
+                                                 &m_actionMapper, SLOT(map()));
+        QString resetDescription = QString("%1: %2").arg(descriptionPrefix,
+                                                         resetMenuDescription);
+        m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
+        m_controlsAvailable.append(MixxxControl(group, resetControl,
+                                                resetDescription));
     }
 }
 

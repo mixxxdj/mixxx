@@ -48,10 +48,23 @@ class ControlPickerMenu : public QMenu {
     void addMicrophoneAndAuxControl(QString control, QString helpText, QMenu* pMenu,
                                     bool microhoneControls, bool auxControls,
                                     bool addReset=false);
+    void addEffectControl(QString group, QString control, QString menuDescription,
+                          QString descriptionPrefix,
+                          QMenu* pMenu, bool addReset=false);
 
-    QString m_deckStr, m_previewdeckStr, m_samplerStr, m_resetStr;
+    QString m_masterOutputStr;
+    QString m_headphoneOutputStr;
+    QString m_deckStr;
+    QString m_previewdeckStr;
+    QString m_samplerStr;
+    QString m_resetStr;
     QString m_microphoneStr;
     QString m_auxStr;
+    QString m_effectRackStr;
+    QString m_effectUnitStr;
+    QString m_effectStr;
+    QString m_parameterStr;
+
     QSignalMapper m_actionMapper;
     QList<MixxxControl> m_controlsAvailable;
 };
