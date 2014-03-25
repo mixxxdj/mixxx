@@ -32,8 +32,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Master]", "crossfader", tr("Crossfader"), mixerMenu, true);
     addControl("[Master]", "volume", tr("Master volume"), mixerMenu, true);
     addControl("[Master]", "balance", tr("Master balance"), mixerMenu, true);
+    addControl("[Master]", "delay", tr("Master delay"), mixerMenu, true);
     addControl("[Master]", "headVolume", tr("Headphone volume"), mixerMenu, true);
     addControl("[Master]", "headMix", tr("Headphone mix (pre/main)"), mixerMenu, true);
+    addControl("[Master]", "headSplit", tr("Toggle headphone split cueing"), mixerMenu);
+    addControl("[Master]", "headDelay", tr("Headphone delay"), mixerMenu, true);
 
     // Transport
     QMenu* transportMenu = addSubmenu(tr("Transport"));
