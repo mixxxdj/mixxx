@@ -1,13 +1,6 @@
-/**
-* @file dlgcontrollerlearning.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
-
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
+#include "util/cmdlineargs.h"
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
@@ -64,6 +57,29 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     m_lastMessageTimer.setSingleShot(true);
     connect(&m_lastMessageTimer, SIGNAL(timeout()),
             this, SLOT(slotTimerExpired()));
+
+    // For developers, print all controls that are not learnable.
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        const QList<MixxxControl>& learningControlsAvailable =
+                m_controlPickerMenu.controlsAvailable();
+
+        QSet<ConfigKey> configKeys;
+        foreach (const MixxxControl& control, learningControlsAvailable) {
+            configKeys.insert(ConfigKey(control.group(), control.item()));
+        }
+
+        qDebug() << "Controller Learning Summary:";
+        qDebug() << learningControlsAvailable.size()
+                 << "controls available for learning.";
+        QList<QSharedPointer<ControlDoublePrivate> > controlsList;
+        ControlDoublePrivate::getControls(&controlsList);
+        foreach (const QSharedPointer<ControlDoublePrivate>& control, controlsList) {
+            ConfigKey key = control->getKey();
+            if (!configKeys.contains(key)) {
+                qDebug() << "Unlearnable Control:" << key.group << key.item;
+            }
+        }
+    }
 }
 
 void DlgControllerLearning::slotMessageReceived(unsigned char status,

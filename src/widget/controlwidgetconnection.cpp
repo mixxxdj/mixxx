@@ -73,6 +73,7 @@ QString ControlParameterWidgetConnection::toDebugString() const {
 void ControlParameterWidgetConnection::slotControlValueChanged(double v) {
     if (m_directionOption & DIR_TO_WIDGET) {
         double parameter = getControlParameterForValue(v);
+        m_pWidget->reloadStyleSheet();
         m_pWidget->onConnectedControlValueChanged(parameter);
     }
 }

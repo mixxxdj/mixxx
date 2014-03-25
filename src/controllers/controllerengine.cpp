@@ -1462,6 +1462,9 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
         m_rampFactor[deck] = rate * factor / 100000; // approx 1 second for a factor of 1
         m_rampTo[deck] = -1.0;
 
+        // TODO(rryan): No longer necessary if we disable keylock for
+        // scratch2_enable automatically.
+
         // save current keylock status and disable
         cot = getControlObjectThread(group, "keylock");
         if (cot != NULL) {

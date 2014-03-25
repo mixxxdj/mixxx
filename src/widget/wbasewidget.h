@@ -8,6 +8,8 @@
 class ControlWidgetPropertyConnection;
 class ControlParameterWidgetConnection;
 
+#define WBASEWIDGET_DISPLAY_VALUE_PROPERTY Q_PROPERTY(double displayValue READ getControlParameterDisplay)
+
 class WBaseWidget {
   public:
     WBaseWidget(QWidget* pWidget);
@@ -57,6 +59,9 @@ class WBaseWidget {
   protected:
     virtual void onConnectedControlValueChanged(double v) {
         Q_UNUSED(v);
+    }
+    virtual void reloadStyleSheet() {
+        m_pWidget->setStyleSheet(m_pWidget->styleSheet());
     }
 
     void resetControlParameter();

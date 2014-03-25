@@ -144,9 +144,11 @@ RateControl::RateControl(const char* _group,
 
     // Scratch enable toggle
     m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
+    m_pScratchToggle->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pScratchToggle->set(0);
 
-    m_pJog = new ControlObject(ConfigKey(_group, "jog"));
+    // Don't ignore no-ops for jog sets.
+    m_pJog = new ControlObject(ConfigKey(_group, "jog"), false);
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
     m_pJogFilter->setFilterLength(25);

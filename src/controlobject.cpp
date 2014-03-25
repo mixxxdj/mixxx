@@ -71,6 +71,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
+    qDebug() << "ControlObject::setValueFromMidi" << m_key.group << m_key.item << o << v;
     if (m_pControl) {
         m_pControl->setMidiParameter(o, v);
     }

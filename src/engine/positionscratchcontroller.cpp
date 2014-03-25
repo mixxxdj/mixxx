@@ -68,18 +68,35 @@ class RateIIFilter {
 };
 
 PositionScratchController::PositionScratchController(const char* pGroup)
-    : m_group(pGroup),
-      m_bScratching(false),
-      m_bEnableInertia(false),
-      m_dLastPlaypos(0),
-      m_dPositionDeltaSum(0),
-      m_dTargetDelta(0),
-      m_dStartScratchPosition(0),
-      m_dRate(0),
-      m_dMoveDelay(0),
-      m_dMouseSampeTime(0) {
-    m_pScratchEnable = new ControlObject(ConfigKey(pGroup, "scratch_position_enable"));
+        : QObject(),
+          m_group(pGroup),
+          m_bScratching(false),
+          m_bEnableInertia(false),
+          m_dLastPlaypos(0),
+          m_dPositionDeltaSum(0),
+          m_dTargetDelta(0),
+          m_dStartScratchPosition(0),
+          m_dRate(0),
+          m_dMoveDelay(0),
+          m_dMouseSampeTime(0) {
+    m_pScratchEnable = new ControlPushButton(ConfigKey(pGroup, "scratch_position_enable"));
+    m_pScratchEnable->setButtonMode(ControlPushButton::TOGGLE);
     m_pScratchPosition = new ControlObject(ConfigKey(pGroup, "scratch_position"));
+
+    m_pScratchAccumulator = new ControlObject(
+        ConfigKey(pGroup, "scratch_position_accumulator"), false);
+    connect(m_pScratchAccumulator, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAccumulate(double)), Qt::DirectConnection);
+
+    m_pScratchAccumulatorSensitivity = new ControlPotmeter(
+        ConfigKey(pGroup, "scratch_position_accumulator_sensitivity"), 0.001, 1.0);
+    connect(m_pScratchAccumulatorSensitivity, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSensitivity(double)));
+
+    // One tick moves 10ms
+    m_pScratchAccumulatorSensitivity->set(0.010);
+
+
     m_pMasterSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
     m_pVelocityController = new VelocityController();
     m_pRateIIFilter = new RateIIFilter;
@@ -90,6 +107,16 @@ PositionScratchController::~PositionScratchController() {
     delete m_pVelocityController;
     delete m_pScratchPosition;
     delete m_pScratchEnable;
+}
+
+void PositionScratchController::slotAccumulate(double v) {
+    double accum = m_pMasterSampleRate->get() * m_pScratchAccumulatorSensitivity->get() * v;
+    qDebug() << "PositionScratchController::slotAccumulate" << v << accum;
+    m_pScratchPosition->set(m_pScratchPosition->get() + accum);
+}
+
+void PositionScratchController::slotSensitivity(double v) {
+    qDebug() << "PositionScratchController sensitivity is" << v;
 }
 
 //volatile double _p = 0.3;

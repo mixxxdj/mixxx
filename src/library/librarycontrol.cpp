@@ -226,6 +226,7 @@ void LibraryControl::slotSelectPrevTrack(double v) {
 }
 
 void LibraryControl::slotSelectTrack(double v) {
+    qDebug() << "LibraryControl::slotSelectTrack" << v;
     if (m_pLibraryWidget == NULL) {
         return;
     }

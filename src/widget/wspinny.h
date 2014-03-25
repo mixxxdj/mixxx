@@ -22,6 +22,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     WSpinny(QWidget* parent, VinylControlManager* pVCMan);
     virtual ~WSpinny();
 
+    WBASEWIDGET_DISPLAY_VALUE_PROPERTY;
+
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
 
     void setup(QDomNode node, const SkinContext& context, QString group);

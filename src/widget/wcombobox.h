@@ -14,6 +14,8 @@ class WComboBox : public QComboBox, public WBaseWidget {
     WComboBox(QWidget* pParent);
     virtual ~WComboBox();
 
+    WBASEWIDGET_DISPLAY_VALUE_PROPERTY;
+
     void setup(QDomNode node, const SkinContext& context);
 
     void onConnectedControlValueChanged(double v);
