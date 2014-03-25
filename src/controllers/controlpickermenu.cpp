@@ -97,7 +97,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* cueMenu = addSubmenu(tr("Cues"));
     addDeckControl("cue_default", tr("Cue button"), cueMenu);
     addDeckControl("cue_set", tr("Set cue point"), cueMenu);
+    addDeckControl("cue_goto", tr("Go to cue point"), cueMenu);
+    addDeckControl("cue_gotoandplay", tr("Go to cue point and play"), cueMenu);
     addDeckControl("cue_gotoandstop", tr("Go to cue point and stop"), cueMenu);
+    addDeckControl("cue_preview", tr("Preview from cue point"), cueMenu);
+    addDeckControl("cue_cdj", tr("Cue button (CDJ mode)"), cueMenu);
+    addDeckControl("play_stutter", tr("Stutter cue"), cueMenu);
 
     // Hotcues
     QMenu* hotcueMenu = addSubmenu(tr("Hotcues"));
