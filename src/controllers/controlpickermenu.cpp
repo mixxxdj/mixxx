@@ -259,7 +259,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* guiMenu = addSubmenu(tr("User Interface"));
     addControl("[Samplers]", "show_samplers", tr("Show/hide the sampler section"), guiMenu);
     addControl("[Microphone]", "show_microphone", tr("Show/hide the microphone section"), guiMenu);
-    addControl("[Vinylcontrol]", "show_vinylcontrol", tr("Show/hide the vinyl control section"), guiMenu);
+    addControl(VINYL_PREF_KEY, "show_vinylcontrol", tr("Show/hide the vinyl control section"), guiMenu);
     addControl("[PreviewDeck]", "show_previewdeck", tr("Show/hide the preview deck"), guiMenu);
 
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
