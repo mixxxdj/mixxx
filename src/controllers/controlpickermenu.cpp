@@ -3,6 +3,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "playermanager.h"
 #include "engine/cuecontrol.h"
+#include "engine/loopingcontrol.h"
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
