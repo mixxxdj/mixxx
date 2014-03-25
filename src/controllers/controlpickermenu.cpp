@@ -27,21 +27,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Transport
     QMenu* transportMenu = addSubmenu(tr("Transport"));
-    addDeckAndPreviewDeckControl("playposition", tr("Strip-search through track"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("playposition", tr("Strip-search through track"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("play", tr("Play button"), transportMenu);
-    addDeckControl("volume", tr("Volume fader"), transportMenu, true);
-    addDeckControl("back", tr("Fast rewind button"), transportMenu);
-    addDeckControl("fwd", tr("Fast forward button"), transportMenu);
+    // Preview deck does not go to master so volume does not matter.
+    addDeckAndSamplerControl("volume", tr("Volume fader"), transportMenu, true);
+    addDeckAndSamplerAndPreviewDeckControl("back", tr("Fast rewind button"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("fwd", tr("Fast forward button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("start", tr("Jump to start of track"), transportMenu);
-    addDeckControl("end", tr("Jump to end of track"), transportMenu);
-    addDeckControl("reverse", tr("Play reverse button"), transportMenu);
-    addDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump to end of track"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("reverse", tr("Play reverse button"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("pfl", tr("Headphone listen button"), transportMenu);
     addDeckAndSamplerControl("mute", tr("Mute button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject track"), transportMenu);
-    addSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
+    addDeckAndSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
     addDeckAndSamplerControl("slip_enabled", tr("Toggle slip mode"), transportMenu);
 
     // BPM & Sync
