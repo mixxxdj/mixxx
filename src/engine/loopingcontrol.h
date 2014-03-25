@@ -24,6 +24,8 @@ class BeatLoopingControl;
 class LoopingControl : public EngineControl {
     Q_OBJECT
   public:
+    static QList<double> getBeatSizes();
+
     LoopingControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~LoopingControl();
 

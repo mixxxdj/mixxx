@@ -16,7 +16,8 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
-double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
+double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
+                                          1, 2, 4, 8, 16, 32, 64 };
 
 // Used to generate the beatloop_%SIZE, beatjump_%SIZE, and loop_move_%SIZE CO
 // ConfigKeys.
@@ -25,6 +26,15 @@ ConfigKey keyForControl(const char* pGroup, QString ctrlName, double num) {
     key.group = pGroup;
     key.item = ctrlName.arg(num);
     return key;
+}
+
+// static
+QList<double> LoopingControl::getBeatSizes() {
+    QList<double> result;
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+        result.append(s_dBeatSizes[i]);
+    }
+    return result;
 }
 
 LoopingControl::LoopingControl(const char* _group,
