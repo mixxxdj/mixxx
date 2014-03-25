@@ -30,8 +30,6 @@ class WLabel : public QLabel, public WBaseWidget {
     WLabel(QWidget* pParent=NULL);
     virtual ~WLabel();
 
-    WBASEWIDGET_DISPLAY_VALUE_PROPERTY;
-
     virtual void setup(QDomNode node, const SkinContext& context);
 
   protected:

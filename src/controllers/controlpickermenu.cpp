@@ -171,7 +171,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);
 
-
     QList<double> beatSizes = LoopingControl::getBeatSizes();
 
     QMap<double, QString> humanBeatSizes;
@@ -237,18 +236,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         addDeckControl(QString("beatjump_%1_backward").arg(beats),
                        beatJumpBackward.arg(humanBeats), beatJumpMenu);
     }
-
-    QMenu* wheelMenu = addSubmenu(tr("Jog Wheels (experimental)"));
-    addDeckAndSamplerControl("wheel", tr("Wheel control"), wheelMenu);
-    addDeckAndSamplerControl("jog", tr("Jog control"), wheelMenu);
-
-    addDeckControl("scratch2_enable", tr("Enable scratch2 mode."), wheelMenu);
-    addDeckControl("scratch2", tr("Scratch2 rate."), wheelMenu);
-
-    addDeckControl("scratch_position_enable", tr("Enable position scratch mode."), wheelMenu);
-    addDeckControl("scratch_position_accumulator", tr("Position scratch jog wheel."), wheelMenu);
-    addDeckControl("scratch_position_accumulator_sensitivity",
-                   tr("Position scratch sensitivity."), wheelMenu);
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));

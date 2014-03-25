@@ -89,28 +89,24 @@ void WBaseWidget::resetControlParameter() {
     foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->resetControl();
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::setControlParameter(double v) {
     foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->setControlParameter(v);
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::setControlParameterUp(double v) {
     foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->setControlParameterUp(v);
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::setControlParameterDown(double v) {
     foreach (ControlParameterWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->setControlParameterDown(v);
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::setControlParameterLeftDown(double v) {
@@ -123,7 +119,6 @@ void WBaseWidget::setControlParameterLeftDown(double v) {
             pControlConnection->setControlParameterDown(v);
         }
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::setControlParameterLeftUp(double v) {
@@ -136,21 +131,18 @@ void WBaseWidget::setControlParameterLeftUp(double v) {
             pControlConnection->setControlParameterUp(v);
         }
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::setControlParameterRightDown(double v) {
     foreach (ControlParameterWidgetConnection* pControlConnection, m_rightConnections) {
         pControlConnection->setControlParameterDown(v);
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::setControlParameterRightUp(double v) {
     foreach (ControlParameterWidgetConnection* pControlConnection, m_rightConnections) {
         pControlConnection->setControlParameterUp(v);
     }
-    reloadStyleSheet();
 }
 
 void WBaseWidget::updateTooltip() {

@@ -5,14 +5,11 @@
 #include <QString>
 
 #include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
 
 class VelocityController;
 class RateIIFilter;
 
 class PositionScratchController : public QObject {
-    Q_OBJECT
   public:
     PositionScratchController(const char* pGroup);
     virtual ~PositionScratchController();
@@ -23,16 +20,10 @@ class PositionScratchController : public QObject {
     double getRate();
     void notifySeek(double currentSample);
 
-  private slots:
-    void slotAccumulate(double v);
-    void slotSensitivity(double v);
-
   private:
     const QString m_group;
-    ControlPushButton* m_pScratchEnable;
+    ControlObject* m_pScratchEnable;
     ControlObject* m_pScratchPosition;
-    ControlObject* m_pScratchAccumulator;
-    ControlPotmeter* m_pScratchAccumulatorSensitivity;
     ControlObject* m_pMasterSampleRate;
     VelocityController* m_pVelocityController;
     RateIIFilter* m_pRateIIFilter;

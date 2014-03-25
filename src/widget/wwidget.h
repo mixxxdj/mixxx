@@ -43,8 +43,7 @@ class WWidget : public QWidget, public WBaseWidget {
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
-    //WBASEWIDGET_DISPLAY_VALUE_PROPERTY;
-    Q_PROPERTY(double displayValue READ getControlParameterDisplay);
+    Q_PROPERTY(double value READ getControlParameterDisplay);
 
     virtual void onConnectedControlValueChanged(double value);
 
