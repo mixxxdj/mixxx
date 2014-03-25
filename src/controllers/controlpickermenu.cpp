@@ -33,7 +33,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("volume", tr("Volume fader"), transportMenu, true);
     addDeckAndSamplerAndPreviewDeckControl("back", tr("Fast rewind button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("fwd", tr("Fast forward button"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("stop", tr("Stop button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("start", tr("Jump to start of track"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("start_play", tr("Jump to start of track and play"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("start_stop", tr("Jump to start of track and stop"), transportMenu);
+
     addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump to end of track"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("reverse", tr("Play reverse button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
