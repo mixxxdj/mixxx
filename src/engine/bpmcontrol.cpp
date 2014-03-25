@@ -5,6 +5,7 @@
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "controlpotmeter.h"
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
@@ -47,7 +48,14 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
 
-    m_pEngineBpm = new ControlObject(ConfigKey(_group, "bpm"));
+    // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
+    // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
+    // bpm_down controls.
+    m_pEngineBpm = new ControlPotmeter(ConfigKey(_group, "bpm"), 1, 200, true);
+    // bpm_up / bpm_down steps by 1
+    m_pEngineBpm->setStep(1);
+    // bpm_up_small / bpm_down_small steps by 0.1
+    m_pEngineBpm->setSmallStep(0.1);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineBpm(double)),
             Qt::DirectConnection);
