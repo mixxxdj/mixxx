@@ -1,12 +1,13 @@
 #ifndef WSPLITTER_H
 #define WSPLITTER_H
 
-#include <QSplitter>
-#include <QEvent>
 #include <QDomNode>
+#include <QEvent>
+#include <QSplitter>
 
-#include "widget/wbasewidget.h"
+#include "configobject.h"
 #include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
 
 class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT
@@ -14,10 +15,18 @@ class WSplitter : public QSplitter, public WBaseWidget {
     WSplitter(QWidget* pParent);
     virtual ~WSplitter();
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(QDomNode node,
+               const SkinContext& context,
+               ConfigObject<ConfigValue>* pConfig);
 
   protected:
     bool event(QEvent* pEvent);
+
+  private slots:
+    void slotSplitterMoved();
+
+  private:
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* WSPLITTER_H */

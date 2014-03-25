@@ -470,7 +470,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     setupConnections(node, pSplitter);
     setupBaseWidget(node, pSplitter);
     setupWidget(node, pSplitter);
-    pSplitter->setup(node, *m_pContext);
+    pSplitter->setup(node, *m_pContext, m_pConfig);
     pSplitter->Init();
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
@@ -495,8 +495,16 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
         }
     }
 
-    if (m_pContext->hasNode(node, "SplitSizes")) {
-        QString sizesJoined = m_pContext->selectString(node, "SplitSizes");
+    // Load split sizes
+    QString sizesJoined = NULL;
+    if (m_pConfig->exists(ConfigKey("[Skin]","SplitSizes"))) {
+        sizesJoined = m_pConfig->getValueString(
+                    ConfigKey("[Skin]","SplitSizes"));
+    } else if (m_pContext->hasNode(node, "SplitSizes")) {
+        sizesJoined = m_pContext->selectString(node, "SplitSizes");
+    }
+
+    if (sizesJoined != NULL) {
         QStringList sizesSplit = sizesJoined.split(",");
         QList<int> sizes;
         bool ok = false;
@@ -515,7 +523,6 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
         if (ok) {
             pSplitter->setSizes(sizes);
         }
-
     }
 
     m_pParent = pOldParent;
