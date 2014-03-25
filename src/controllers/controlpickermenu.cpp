@@ -48,9 +48,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("bpm_tap", tr("BPM tap button"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust beatgrid"), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Toggle quantize mode"), bpmMenu);
-    addDeckAndSamplerControl("beatsync", tr("Beat sync (tempo and phase)"), bpmMenu);
-    addDeckAndSamplerControl("beatsync_tempo", tr("Beat sync (tempo only)"), bpmMenu);
-    addDeckAndSamplerControl("beatsync_phase", tr("Beat sync (phase only)"), bpmMenu);
+    addDeckAndSamplerControl("sync_enabled", tr("Sync button. Tap to sync, hold to enable sync mode"), bpmMenu);
+    addDeckAndSamplerControl("sync_master", tr("Toggle sync master"), bpmMenu);
+    addDeckAndSamplerControl("sync_mode", tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), bpmMenu);
+    addDeckAndSamplerControl("beatsync", tr("One-time beat sync (tempo and phase)"), bpmMenu);
+    addDeckAndSamplerControl("beatsync_tempo", tr("One-time beat sync (tempo only)"), bpmMenu);
+    addDeckAndSamplerControl("beatsync_phase", tr("One-time beat sync (phase only)"), bpmMenu);
 
     // Rate
     QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
