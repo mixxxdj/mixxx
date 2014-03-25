@@ -106,20 +106,29 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Hotcues
     QMenu* hotcueMenu = addSubmenu(tr("Hotcues"));
-    QString hotcueActivate = tr("Set or jump to hotcue %1");
+    QString hotcueActivate = tr("Set, preview from or jump to hotcue %1");
     QString hotcueClear = tr("Clear hotcue %1");
+    QString hotcueSet = tr("Set hotcue %1");
     QString hotcueGoto = tr("Jump to hotcue %1");
     QString hotcueGotoAndStop = tr("Jump to hotcue %1 and stop");
+    QString hotcueGotoAndPlay = tr("Jump to hotcue %1 and play");
+    QString hotcuePreview = tr("Preview from hotcue %1");
     for (int i = 1; i <= NUM_HOT_CUES; ++i) {
         QMenu* hotcueSubMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)), hotcueMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_activate").arg(i),
                                  hotcueActivate.arg(QString::number(i)), hotcueSubMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_clear").arg(i),
                                  hotcueClear.arg(QString::number(i)), hotcueSubMenu);
+        addDeckAndSamplerControl(QString("hotcue_%1_set").arg(i),
+                                 hotcueSet.arg(QString::number(i)), hotcueSubMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_goto").arg(i),
                                  hotcueGoto.arg(QString::number(i)), hotcueSubMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_gotoandstop").arg(i),
                                  hotcueGotoAndStop.arg(QString::number(i)), hotcueSubMenu);
+        addDeckAndSamplerControl(QString("hotcue_%1_gotoandplay").arg(i),
+                                 hotcueGotoAndPlay.arg(QString::number(i)), hotcueSubMenu);
+        addDeckAndSamplerControl(QString("hotcue_%1_activate_preview").arg(i),
+                                 hotcuePreview.arg(QString::number(i)), hotcueSubMenu);
     }
 
     // Loops
