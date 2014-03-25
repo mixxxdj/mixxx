@@ -69,11 +69,23 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // BPM & Sync
     QMenu* bpmMenu = addSubmenu(tr("BPM and Sync"));
+    addDeckAndSamplerControl("bpm", tr("BPM"), bpmMenu, true);
+    addDeckAndSamplerControl("bpm_up", tr("Increase BPM by 1"), bpmMenu);
+    addDeckAndSamplerControl("bpm_down", tr("Decrease BPM by 1"), bpmMenu);
+    addDeckAndSamplerControl("bpm_up_small", tr("Increase BPM by 0.1"), bpmMenu);
+    addDeckAndSamplerControl("bpm_down_small", tr("Decrease BPM by 0.1"), bpmMenu);
     addDeckAndSamplerControl("bpm_tap", tr("BPM tap button"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust beatgrid"), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Toggle quantize mode"), bpmMenu);
     addDeckAndSamplerControl("sync_enabled", tr("Sync button. Tap to sync, hold to enable sync mode"), bpmMenu);
     addControl("[InternalClock]", "sync_master", tr("Toggle internal sync master"), bpmMenu);
+    addControl("[InternalClock]", "bpm", tr("Internal master BPM"), bpmMenu);
+    addControl("[InternalClock]", "bpm_up", tr("Increase internal master BPM by 1"), bpmMenu);
+
+    addControl("[InternalClock]", "bpm_down", tr("Decrease internal master BPM by 1"), bpmMenu);
+
+    addControl("[InternalClock]", "bpm_up_small", tr("Increase internal master BPM by 0.1"), bpmMenu);
+    addControl("[InternalClock]", "bpm_down_small", tr("Decrease internal master BPM by 0.1"), bpmMenu);
     addDeckAndSamplerControl("sync_master", tr("Toggle sync master"), bpmMenu);
     addDeckAndSamplerControl("sync_mode", tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), bpmMenu);
     addDeckAndSamplerControl("beatsync", tr("One-time beat sync (tempo and phase)"), bpmMenu);
