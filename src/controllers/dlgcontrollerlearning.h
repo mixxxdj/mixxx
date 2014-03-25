@@ -10,13 +10,11 @@
 
 #include <QDialog>
 #include <QList>
-#include <QMenu>
-#include <QSet>
-#include <QSignalMapper>
 #include <QString>
 #include <QTimer>
 
 #include "controllers/ui_dlgcontrollerlearning.h"
+#include "controllers/controlpickermenu.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/bulk/bulkcontroller.h"
@@ -52,8 +50,8 @@ class DlgControllerLearning : public QDialog,
     void stopListeningForClicks();
 
   public slots:
-    // Triggered when user selects a control from the menu.
-    void controlChosen(int controlIndex);
+    // Triggered when the user picks a control from the menu.
+    void controlPicked(MixxxControl control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
 
@@ -69,33 +67,16 @@ class DlgControllerLearning : public QDialog,
     void showControlMenu();
 
   private:
-    QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
     void loadControl(const MixxxControl& control);
-
-    void addControl(QString group, QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addPlayerControl(QString control, QString helpText, QMenu* pMenu,
-                          bool deckControls, bool samplerControls, bool previewdeckControls, bool addReset=false);
-    void addDeckAndSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addDeckAndPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addDeckAndSamplerAndPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
     void resetMapping(bool commit);
 
-    QSet<MixxxControl> m_mappedControls;
     MidiController* m_pMidiController;
-    QSignalMapper m_actionMapper;
-    QMenu m_controlPickerMenu;
-    QList<MixxxControl> m_controlsAvailable;
+    ControlPickerMenu m_controlPickerMenu;
     MixxxControl m_currentControl;
-
     bool m_messagesLearned;
     QTimer m_lastMessageTimer;
     QList<QPair<MidiKey, unsigned char> > m_messages;
     MidiKeyAndOptionsList m_mappings;
-
-    QString m_deckStr, m_previewdeckStr, m_samplerStr, m_resetStr;
 };
 
 #endif
