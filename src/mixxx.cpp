@@ -159,6 +159,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
+    ControlObject* pNumMicrophones = new ControlObject(ConfigKey("[Master]", "num_microphones"));
+    pNumMicrophones->setParent(this);
+
     for (int i = 0; i < kMicrophoneCount; ++i) {
         QString group("[Microphone]");
         if (i > 0) {
@@ -172,7 +175,11 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, i);
         m_pEngine->addChannel(pMicrophone);
         m_pSoundManager->registerInput(micInput, pMicrophone);
+        pNumMicrophones->set(pNumMicrophones->get() + 1);
     }
+
+    ControlObject* pNumAuxiliaries = new ControlObject(ConfigKey("[Master]", "num_auxiliaries"));
+    pNumAuxiliaries->setParent(this);
 
     for (int i = 0; i < kAuxiliaryCount; ++i) {
         QString group = QString("[Auxiliary%1]").arg(i + 1);
@@ -181,6 +188,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 0, i);
         m_pEngine->addChannel(pAux);
         m_pSoundManager->registerInput(auxInput, pAux);
+        pNumAuxiliaries->set(pNumAuxiliaries->get() + 1);
     }
 
     // Do not write meta data back to ID3 when meta data has changed
