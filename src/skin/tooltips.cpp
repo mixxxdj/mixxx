@@ -16,48 +16,48 @@ Tooltips::~Tooltips() {
 
 QString Tooltips::tooltipForId(const QString& id) const {
     if (id.isEmpty()) {
-       return QString();
+        return QString();
     }
-   // first check if there is a special tooltip defined
+    // first check if there is a special tooltip defined
     QStringList tooltips = m_tooltips.value(id);
     if (!tooltips.isEmpty()) {
-      if (tooltips.size() == 2 && tooltips.at(0) == ":") {
-         // legacy support, id is redefined by a Template Id
-         return tooltipForTemplate(tooltips.at(1));
-       } else {
-           QString joined = tooltips.join(tooltipSeparator());
-             // We always add a separator at the end.
+        if (tooltips.size() == 2 && tooltips.at(0) == ":") {
+            // legacy support, id is redefined by a Template Id
+            return tooltipForTemplate(tooltips.at(1));
+        } else {
+            QString joined = tooltips.join(tooltipSeparator());
+            // We always add a separator at the end.
             joined += tooltipSeparator();
             return joined;
-       }
+        }
     } else {
-       // No entire tooltip found
-      // try to compose a generic tooltip
-      return tooltipForTemplate(id);
+        // No entire tooltip found
+        // try to compose a generic tooltip
+        return tooltipForTemplate(id);
     }
 }
 
 QString Tooltips::tooltipForTemplate(const QString& id) const {
-   QString tooltip;
-   QStringList idParts = id.split(',');
-   if (idParts.isEmpty()) {
-      return tooltip;
-   }
-   if (idParts.at(0) == "left_right_click") {
-       // %1 Header
-      // %2 LeftClick
-      // %3 RightClick
-      if (idParts.size() > 1) {
-         tooltip = m_headlines.value(idParts.at(1)) + tooltipSeparator() +
-               m_leftClick + ": " + m_description.value(idParts.at(1))   +
-               tooltipSeparator();
-      }
-      if (idParts.size() > 2) {
-         tooltip += m_rightClick + ": " + m_description.value(idParts.at(2))   +
-               tooltipSeparator();
-      }
-   }
-   return tooltip;
+    QString tooltip;
+    QStringList idParts = id.split(',');
+    if (idParts.isEmpty()) {
+        return tooltip;
+    }
+    if (idParts.at(0) == "left_right_click") {
+        // %1 Header
+        // %2 LeftClick
+        // %3 RightClick
+        if (idParts.size() > 1) {
+            tooltip = m_headlines.value(idParts.at(1)) + tooltipSeparator()
+                    + m_leftClick + ": " + m_description.value(idParts.at(1))
+                    + tooltipSeparator();
+        }
+        if (idParts.size() > 2) {
+            tooltip += m_rightClick + ": " + m_description.value(idParts.at(2))
+                    + tooltipSeparator();
+        }
+    }
+    return tooltip;
 }
 
 QString Tooltips::tooltipSeparator() const {
