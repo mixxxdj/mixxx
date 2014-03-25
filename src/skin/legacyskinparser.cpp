@@ -466,11 +466,11 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
-    WSplitter* pSplitter = new WSplitter(m_pParent);
+    WSplitter* pSplitter = new WSplitter(m_pParent, m_pConfig);
     setupConnections(node, pSplitter);
     setupBaseWidget(node, pSplitter);
     setupWidget(node, pSplitter);
-    pSplitter->setup(node, *m_pContext, m_pConfig);
+    pSplitter->setup(node, *m_pContext);
     pSplitter->Init();
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
@@ -498,9 +498,9 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     // Load split sizes
     QString sizesJoined = NULL;
     QString msg;
-    if (m_pConfig->exists(ConfigKey("[Skin]","SplitSizes"))) {
+    if (m_pConfig->exists(ConfigKey("[Skin]", "SplitSizes"))) {
         sizesJoined = m_pConfig->getValueString(
-                    ConfigKey("[Skin]","SplitSizes"));
+                    ConfigKey("[Skin]", "SplitSizes"));
 
         msg = "Reading .cfg file: '[Skin] SplitSizes "
                 + sizesJoined
