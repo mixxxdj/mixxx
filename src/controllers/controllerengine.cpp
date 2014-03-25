@@ -721,7 +721,7 @@ void ControllerEngine::reset(QString group, QString name) {
    Input:   Control group, Key name, new value
    Output:  -
    -------- ------------------------------------------------------ */
-double ControllerEngine::getDefault(QString group, QString name) {
+double ControllerEngine::getDefaultValue(QString group, QString name) {
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
     if (cot == NULL) {
@@ -730,6 +730,22 @@ double ControllerEngine::getDefault(QString group, QString name) {
     }
 
     return cot->getDefault();
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: default parameter of a Mixxx control (for scripts)
+   Input:   Control group, Key name, new value
+   Output:  -
+   -------- ------------------------------------------------------ */
+double ControllerEngine::getDefaultParameter(QString group, QString name) {
+    ControlObjectThread *cot = getControlObjectThread(group, name);
+
+    if (cot == NULL) {
+        qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
+        return 0.0;
+    }
+
+    return cot->getParameterForValue(cot->getDefault());
 }
 
 /* -------- ------------------------------------------------------
