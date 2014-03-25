@@ -497,11 +497,22 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
     // Load split sizes
     QString sizesJoined = NULL;
+    QString msg;
     if (m_pConfig->exists(ConfigKey("[Skin]","SplitSizes"))) {
         sizesJoined = m_pConfig->getValueString(
                     ConfigKey("[Skin]","SplitSizes"));
+
+        msg = "Reading .cfg file: '[Skin] SplitSizes "
+                + sizesJoined
+                + "' does not match the number of children nodes:"
+                + QString::number(pSplitter->count());
     } else if (m_pContext->hasNode(node, "SplitSizes")) {
         sizesJoined = m_pContext->selectString(node, "SplitSizes");
+
+        msg = "<SplitSizes> for <Splitter> ("
+                + sizesJoined
+                + ") does not match the number of children nodes:"
+                + QString::number(pSplitter->count());
     }
 
     if (sizesJoined != NULL) {
@@ -515,9 +526,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
             }
         }
         if (sizes.length() != pSplitter->count()) {
-            qDebug() << "<SplitSizes> for <Splitter> (" << sizesJoined
-                     << ") does not match the number of children nodes:"
-                     << pSplitter->count();
+            qDebug() << msg;
             ok = false;
         }
         if (ok) {
