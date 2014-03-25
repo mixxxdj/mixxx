@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>546</width>
-    <height>615</height>
+    <height>731</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -260,6 +260,42 @@
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>Track Load Action</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="2" column="0">
+       <widget class="QRadioButton" name="radioButton_dbclick_top">
+        <property name="text">
+         <string>Add track to Auto-DJ Queue (top).</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButton_dbclick_deck">
+        <property name="text">
+         <string>Load track to next available deck.</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButton_dbclick_bottom">
+        <property name="text">
+         <string>Add track to Auto-DJ Queue (bottom).</string>
         </property>
        </widget>
       </item>
