@@ -73,6 +73,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("beats_translate_curpos", tr("Adjust beatgrid"), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Toggle quantize mode"), bpmMenu);
     addDeckAndSamplerControl("sync_enabled", tr("Sync button. Tap to sync, hold to enable sync mode"), bpmMenu);
+    addControl("[InternalClock]", "sync_master", tr("Toggle internal sync master"), bpmMenu);
     addDeckAndSamplerControl("sync_master", tr("Toggle sync master"), bpmMenu);
     addDeckAndSamplerControl("sync_mode", tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), bpmMenu);
     addDeckAndSamplerControl("beatsync", tr("One-time beat sync (tempo and phase)"), bpmMenu);
@@ -244,6 +245,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack", tr("Load selected track"), libraryMenu);
     addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Load selected track and play"), libraryMenu);
+
+    addControl("[Recording]", "toggle_recording", tr("Toggle mix recording"), libraryMenu);
 
     // Effect Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
@@ -483,6 +486,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    QString("%1: %2").arg(m_deckStr.arg(i), spinnyText), guiMenu);
 
     }
+
+    addDeckControl("waveform_zoom", tr("Waveform zoom"), guiMenu);
+    addDeckControl("waveform_zoom_down", tr("Zoom waveform in"), guiMenu);
+    addDeckControl("waveform_zoom_up", tr("Zoom waveform out"), guiMenu);
+
 }
 
 ControlPickerMenu::~ControlPickerMenu() {
