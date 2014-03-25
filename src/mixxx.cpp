@@ -170,7 +170,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         // We don't know if something downstream expects the string to persist,
         // so dupe it (probably leaking it).
         EngineMicrophone* pMicrophone =
-                new EngineMicrophone(strdup(group.toStdString().c_str()));
+                new EngineMicrophone(strdup(group.toStdString().c_str()),
+                                     m_pEffectsManager);
         // What should channelbase be?
         AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, i);
         m_pEngine->addChannel(pMicrophone);
@@ -183,7 +184,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     for (int i = 0; i < kAuxiliaryCount; ++i) {
         QString group = QString("[Auxiliary%1]").arg(i + 1);
-        EngineAux* pAux = new EngineAux(strdup(group.toStdString().c_str()));
+        EngineAux* pAux = new EngineAux(strdup(group.toStdString().c_str()),
+                                        m_pEffectsManager);
         // What should channelbase be?
         AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 0, i);
         m_pEngine->addChannel(pAux);

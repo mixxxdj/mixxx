@@ -8,9 +8,12 @@
 
 #include "configobject.h"
 #include "sampleutil.h"
+#include "effects/effectsmanager.h"
+#include "engine/effects/engineeffectsmanager.h"
 
-EngineAux::EngineAux(const char* pGroup)
+EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
         : EngineChannel(pGroup, EngineChannel::CENTER),
+          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
@@ -20,6 +23,9 @@ EngineAux::EngineAux(const char* pGroup)
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN + 1),
           m_wasActive(false) {
+    if (pEffectsManager != NULL) {
+        pEffectsManager->registerGroup(getGroup());
+    }
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 
     // Default passthrough to enabled on the master and disabled on PFL. User
@@ -132,6 +138,11 @@ void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferS
         // as we consume them, right?
         qWarning() << "ERROR: Buffer underflow in EngineAux. Playing silence.";
         SampleUtil::clear(pOut + samplesRead, iBufferSize - samplesRead);
+    }
+
+    if (m_pEngineEffectsManager != NULL) {
+        // Process effects enabled for this channel
+        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
     }
     // Apply clipping
     m_clipping.process(pOut, pOut, iBufferSize);
