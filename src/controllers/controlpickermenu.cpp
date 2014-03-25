@@ -44,6 +44,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerAndPreviewDeckControl("play", tr("Play button"), transportMenu);
     // Preview deck does not go to master so volume does not matter.
     addDeckAndSamplerControl("volume", tr("Volume fader"), transportMenu, true);
+    addDeckAndSamplerControl("volume_set_one", tr("Set to full volume"), transportMenu);
+    addDeckAndSamplerControl("volume_set_zero", tr("Set to zero volume"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("back", tr("Fast rewind button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("fwd", tr("Fast forward button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("stop", tr("Stop button"), transportMenu);
@@ -60,6 +62,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject track"), transportMenu);
     addDeckAndSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
+    addDeckAndSamplerControl("orientation_left", tr("Set mix orientation to left"), transportMenu);
+    addDeckAndSamplerControl("orientation_center", tr("Set mix orientation to center"), transportMenu);
+    addDeckAndSamplerControl("orientation_right", tr("Set mix orientation to right"), transportMenu);
     addDeckAndSamplerControl("slip_enabled", tr("Toggle slip mode"), transportMenu);
 
     // BPM & Sync
@@ -435,10 +440,20 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                false, true);
     addMicrophoneAndAuxControl("volume", tr("Volume fader"), microphoneMenu,
                                true, true, true);
+    addMicrophoneAndAuxControl("volume_set_one", tr("Set to full volume"), microphoneMenu,
+                               true, true);
+    addMicrophoneAndAuxControl("volume_set_zero", tr("Set to zero volume"), microphoneMenu,
+                               true, true);
     addMicrophoneAndAuxControl("mute", tr("Mute button"), microphoneMenu,
                                true, true);
     addMicrophoneAndAuxControl("orientation", tr("Mix orientation (e.g. left, right, center)"),
                                microphoneMenu, true, true);
+    addMicrophoneAndAuxControl("orientation_left", tr("Set mix orientation to left"), microphoneMenu,
+                               true, true);
+    addMicrophoneAndAuxControl("orientation_center", tr("Set mix orientation to center"), microphoneMenu,
+                               true, true);
+    addMicrophoneAndAuxControl("orientation_right", tr("Set mix orientation to right"), microphoneMenu,
+                               true, true);
     addMicrophoneAndAuxControl("pfl", tr("Headphone listen button"), microphoneMenu,
                                true, true);
 
