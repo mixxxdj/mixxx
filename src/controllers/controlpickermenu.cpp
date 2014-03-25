@@ -436,6 +436,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     addMicrophoneAndAuxControl("talkover", tr("Microphone on/off"), microphoneMenu,
                                true, false);
+    addControl("[Master]", "duckStrength",
+               tr("Microphone ducking strength"), microphoneMenu, true);
+    addControl("[Master]", "talkoverDucking",
+               tr("Toggle microphone ducking mode (OFF, AUTO, MANUAL)"),
+               microphoneMenu);
     addMicrophoneAndAuxControl("passthrough", tr("Auxiliary on/off"), microphoneMenu,
                                false, true);
     addMicrophoneAndAuxControl("volume", tr("Volume fader"), microphoneMenu,
