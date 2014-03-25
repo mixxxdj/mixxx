@@ -116,91 +116,71 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);
 
+    QList<double> beatSizes = LoopingControl::getBeatSizes();
+
+    QMap<double, QString> humanBeatSizes;
+    humanBeatSizes[0.03125] = tr("1/32th");
+    humanBeatSizes[0.0625] = tr("1/16th");
+    humanBeatSizes[0.125] = tr("1/8th");
+    humanBeatSizes[0.25] = tr("1/4th");
+    humanBeatSizes[0.5] = tr("1/2");
+    humanBeatSizes[1] = tr("1");
+    humanBeatSizes[2] = tr("2");
+    humanBeatSizes[4] = tr("4");
+    humanBeatSizes[8] = tr("8");
+    humanBeatSizes[16] = tr("16");
+    humanBeatSizes[32] = tr("32");
+    humanBeatSizes[64] = tr("64");
+
     // Loop moving
     QString loopMoveForward = tr("Move loop forward by %1 beats");
     QString loopMoveBackward = tr("Move loop backward by %1 beats");
-    addDeckControl("loop_move_0.03125_forward",  loopMoveForward.arg(tr("1/32th")), loopMenu);
-    addDeckControl("loop_move_0.0625_forward",  loopMoveForward.arg(tr("1/16th")), loopMenu);
-    addDeckControl("loop_move_0.125_forward", loopMoveForward.arg(tr("1/8th")), loopMenu);
-    addDeckControl("loop_move_0.25_forward", loopMoveForward.arg(tr("1/4th")), loopMenu);
-    addDeckControl("loop_move_0.5_forward", loopMoveForward.arg("1/2"), loopMenu);
-    addDeckControl("loop_move_1_forward", loopMoveForward.arg("1"), loopMenu);
-    addDeckControl("loop_move_2_forward", loopMoveForward.arg("2"), loopMenu);
-    addDeckControl("loop_move_4_forward", loopMoveForward.arg("4"), loopMenu);
-    addDeckControl("loop_move_8_forward", loopMoveForward.arg("8"), loopMenu);
-    addDeckControl("loop_move_16_forward", loopMoveForward.arg("16"), loopMenu);
-    addDeckControl("loop_move_32_forward", loopMoveForward.arg("32"), loopMenu);
-    addDeckControl("loop_move_64_forward", loopMoveForward.arg("64"), loopMenu);
-    addDeckControl("loop_move_0.03125_backward",  loopMoveBackward.arg(tr("1/32th")), loopMenu);
-    addDeckControl("loop_move_0.0625_backward",  loopMoveBackward.arg(tr("1/16th")), loopMenu);
-    addDeckControl("loop_move_0.125_backward", loopMoveBackward.arg(tr("1/8th")), loopMenu);
-    addDeckControl("loop_move_0.25_backward", loopMoveBackward.arg(tr("1/4th")), loopMenu);
-    addDeckControl("loop_move_0.5_backward", loopMoveBackward.arg("1/2"), loopMenu);
-    addDeckControl("loop_move_1_backward", loopMoveBackward.arg("1"), loopMenu);
-    addDeckControl("loop_move_2_backward", loopMoveBackward.arg("2"), loopMenu);
-    addDeckControl("loop_move_4_backward", loopMoveBackward.arg("4"), loopMenu);
-    addDeckControl("loop_move_8_backward", loopMoveBackward.arg("8"), loopMenu);
-    addDeckControl("loop_move_16_backward", loopMoveBackward.arg("16"), loopMenu);
-    addDeckControl("loop_move_32_backward", loopMoveBackward.arg("32"), loopMenu);
-    addDeckControl("loop_move_64_backward", loopMoveBackward.arg("64"), loopMenu);
+
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("loop_move_%1_forward").arg(beats),
+                       loopMoveForward.arg(humanBeats), loopMenu);
+    }
+
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("loop_move_%1_backward").arg(beats),
+                       loopMoveBackward.arg(humanBeats), loopMenu);
+    }
 
     // Beatloops
     QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
     QString beatLoop = tr("Create %1-beat loop");
     QString beatLoopRoll = tr("Create temporary %1-beat loop roll");
-    addDeckControl("beatloop_0.03125_toggle",  beatLoop.arg(tr("1/32th")), beatLoopMenu);
-    addDeckControl("beatloop_0.0625_toggle",  beatLoop.arg(tr("1/16th")), beatLoopMenu);
-    addDeckControl("beatloop_0.125_toggle", beatLoop.arg(tr("1/8th")), beatLoopMenu);
-    addDeckControl("beatloop_0.25_toggle", beatLoop.arg(tr("1/4th")), beatLoopMenu);
-    addDeckControl("beatloop_0.5_toggle", beatLoop.arg("1/2"), beatLoopMenu);
-    addDeckControl("beatloop_1_toggle", beatLoop.arg("1"), beatLoopMenu);
-    addDeckControl("beatloop_2_toggle", beatLoop.arg("2"), beatLoopMenu);
-    addDeckControl("beatloop_4_toggle", beatLoop.arg("4"), beatLoopMenu);
-    addDeckControl("beatloop_8_toggle", beatLoop.arg("8"), beatLoopMenu);
-    addDeckControl("beatloop_16_toggle", beatLoop.arg("16"), beatLoopMenu);
-    addDeckControl("beatloop_32_toggle", beatLoop.arg("32"), beatLoopMenu);
-    addDeckControl("beatloop_64_toggle", beatLoop.arg("64"), beatLoopMenu);
-    addDeckControl("beatlooproll_0.03125_activate",  beatLoopRoll.arg(tr("1/32th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.0625_activate",  beatLoopRoll.arg(tr("1/16th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.125_activate", beatLoopRoll.arg(tr("1/8th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.25_activate", beatLoopRoll.arg(tr("1/4th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.5_activate", beatLoopRoll.arg("1/2"), beatLoopMenu);
-    addDeckControl("beatlooproll_1_activate", beatLoopRoll.arg("1"), beatLoopMenu);
-    addDeckControl("beatlooproll_2_activate", beatLoopRoll.arg("2"), beatLoopMenu);
-    addDeckControl("beatlooproll_4_activate", beatLoopRoll.arg("4"), beatLoopMenu);
-    addDeckControl("beatlooproll_8_activate", beatLoopRoll.arg("8"), beatLoopMenu);
-    addDeckControl("beatlooproll_16_activate", beatLoopRoll.arg("16"), beatLoopMenu);
-    addDeckControl("beatlooproll_32_activate", beatLoopRoll.arg("32"), beatLoopMenu);
-    addDeckControl("beatlooproll_64_activate", beatLoopRoll.arg("64"), beatLoopMenu);
+
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatloop_%1_toggle").arg(beats),
+                       beatLoop.arg(humanBeats), beatLoopMenu);
+    }
+
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatlooproll_%1_activate").arg(beats),
+                       beatLoopRoll.arg(humanBeats), beatLoopMenu);
+    }
 
     // Beat jumping
     QMenu* beatJumpMenu = addSubmenu(tr("Beat-Jump"));
     QString beatJumpForward = tr("Jump forward by %1 beats");
     QString beatJumpBackward = tr("Jump backward by %1 beats");
-    addDeckControl("beatjump_0.03125_forward",  beatJumpForward.arg(tr("1/32th")), beatJumpMenu);
-    addDeckControl("beatjump_0.0625_forward",  beatJumpForward.arg(tr("1/16th")), beatJumpMenu);
-    addDeckControl("beatjump_0.125_forward", beatJumpForward.arg(tr("1/8th")), beatJumpMenu);
-    addDeckControl("beatjump_0.25_forward", beatJumpForward.arg(tr("1/4th")), beatJumpMenu);
-    addDeckControl("beatjump_0.5_forward", beatJumpForward.arg("1/2"), beatJumpMenu);
-    addDeckControl("beatjump_1_forward", beatJumpForward.arg("1"), beatJumpMenu);
-    addDeckControl("beatjump_2_forward", beatJumpForward.arg("2"), beatJumpMenu);
-    addDeckControl("beatjump_4_forward", beatJumpForward.arg("4"), beatJumpMenu);
-    addDeckControl("beatjump_8_forward", beatJumpForward.arg("8"), beatJumpMenu);
-    addDeckControl("beatjump_16_forward", beatJumpForward.arg("16"), beatJumpMenu);
-    addDeckControl("beatjump_32_forward", beatJumpForward.arg("32"), beatJumpMenu);
-    addDeckControl("beatjump_64_forward", beatJumpForward.arg("64"), beatJumpMenu);
-    addDeckControl("beatjump_0.03125_backward",  beatJumpBackward.arg(tr("1/32th")), beatJumpMenu);
-    addDeckControl("beatjump_0.0625_backward",  beatJumpBackward.arg(tr("1/16th")), beatJumpMenu);
-    addDeckControl("beatjump_0.125_backward", beatJumpBackward.arg(tr("1/8th")), beatJumpMenu);
-    addDeckControl("beatjump_0.25_backward", beatJumpBackward.arg(tr("1/4th")), beatJumpMenu);
-    addDeckControl("beatjump_0.5_backward", beatJumpBackward.arg("1/2"), beatJumpMenu);
-    addDeckControl("beatjump_1_backward", beatJumpBackward.arg("1"), beatJumpMenu);
-    addDeckControl("beatjump_2_backward", beatJumpBackward.arg("2"), beatJumpMenu);
-    addDeckControl("beatjump_4_backward", beatJumpBackward.arg("4"), beatJumpMenu);
-    addDeckControl("beatjump_8_backward", beatJumpBackward.arg("8"), beatJumpMenu);
-    addDeckControl("beatjump_16_backward", beatJumpBackward.arg("16"), beatJumpMenu);
-    addDeckControl("beatjump_32_backward", beatJumpBackward.arg("32"), beatJumpMenu);
-    addDeckControl("beatjump_64_backward", beatJumpBackward.arg("64"), beatJumpMenu);
+
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatjump_%1_forward").arg(beats),
+                       beatJumpForward.arg(humanBeats), beatJumpMenu);
+    }
+
+    foreach (double beats, beatSizes) {
+        QString humanBeats = humanBeatSizes.value(beats, QString::number(beats));
+        addDeckControl(QString("beatjump_%1_backward").arg(beats),
+                       beatJumpBackward.arg(humanBeats), beatJumpMenu);
+    }
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
