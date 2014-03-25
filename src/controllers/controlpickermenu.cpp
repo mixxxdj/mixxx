@@ -60,14 +60,15 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("keylock", tr("Toggle keylock mode"), rateMenu);
     addDeckAndSamplerControl("rate", tr("Speed control slider"), rateMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch control slider"), rateMenu, true);
-    addDeckControl("rate_perm_up", tr("Adjust rate up (coarse)"), rateMenu);
-    addDeckControl("rate_perm_up_small", tr("Adjust rate up (fine)"), rateMenu);
-    addDeckControl("rate_perm_down", tr("Adjust rate down (coarse)"), rateMenu);
-    addDeckControl("rate_perm_down_small", tr("Adjust rate down (fine)"), rateMenu);
-    addDeckControl("rate_temp_up", tr("Pitch-bend rate up (coarse)"), rateMenu);
-    addDeckControl("rate_temp_up_small", tr("Pitch-bend rate up (fine)"), rateMenu);
-    addDeckControl("rate_temp_down", tr("Pitch-bend rate down (coarse)"), rateMenu);
-    addDeckControl("rate_temp_down_small", tr("Pitch-bend rate down (fine)"), rateMenu);
+    addDeckAndSamplerControl("sync_key", tr("Sync key"), rateMenu, true);
+    addDeckAndSamplerControl("rate_perm_up", tr("Adjust rate up (coarse)"), rateMenu);
+    addDeckAndSamplerControl("rate_perm_up_small", tr("Adjust rate up (fine)"), rateMenu);
+    addDeckAndSamplerControl("rate_perm_down", tr("Adjust rate down (coarse)"), rateMenu);
+    addDeckAndSamplerControl("rate_perm_down_small", tr("Adjust rate down (fine)"), rateMenu);
+    addDeckAndSamplerControl("rate_temp_up", tr("Pitch-bend rate up (coarse)"), rateMenu);
+    addDeckAndSamplerControl("rate_temp_up_small", tr("Pitch-bend rate up (fine)"), rateMenu);
+    addDeckAndSamplerControl("rate_temp_down", tr("Pitch-bend rate down (coarse)"), rateMenu);
+    addDeckAndSamplerControl("rate_temp_down_small", tr("Pitch-bend rate down (fine)"), rateMenu);
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
