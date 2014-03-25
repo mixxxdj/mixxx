@@ -12,6 +12,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
     m_previewdeckStr = tr("Preview Deck %1");
+    m_microphoneStr = tr("Microphone %1");
+    m_auxStr = tr("Auxiliary %1");
     m_resetStr = tr("Reset to default");
 
     // Master Controls
@@ -231,10 +233,20 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("filterDepth", tr("Filter effect: Intensity"), effectsMenu, true);
 
     // Microphone Controls
-    QMenu* microphoneMenu = addSubmenu(tr("Microphone"));
-    addControl("[Microphone]", "talkover", tr("Microphone on/off"), microphoneMenu);
-    addControl("[Microphone]", "volume", tr("Microphone volume"), microphoneMenu, true);
-    addControl("[Microphone]", "orientation", tr("Microphone channel orientation (e.g. left, right, center)"), microphoneMenu);
+    QMenu* microphoneMenu = addSubmenu(tr("Microphone / Auxiliary"));
+
+    addMicrophoneAndAuxControl("talkover", tr("Microphone on/off"), microphoneMenu,
+                               true, false);
+    addMicrophoneAndAuxControl("passthrough", tr("Auxiliary on/off"), microphoneMenu,
+                               false, true);
+    addMicrophoneAndAuxControl("volume", tr("Volume fader"), microphoneMenu,
+                               true, true, true);
+    addMicrophoneAndAuxControl("mute", tr("Mute button"), microphoneMenu,
+                               true, true);
+    addMicrophoneAndAuxControl("orientation", tr("Mix orientation (e.g. left, right, center)"),
+                               microphoneMenu, true, true);
+    addMicrophoneAndAuxControl("pfl", tr("Headphone listen button"), microphoneMenu,
+                               true, true);
 
     // AutoDJ Controls
     QMenu* autodjMenu = addSubmenu(tr("Auto DJ"));
@@ -346,6 +358,69 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlDescrip
             QAction* pResetAction = resetControlMenu->addAction(m_samplerStr.arg(i), &m_actionMapper, SLOT(map()));
             m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
             m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
+        }
+    }
+}
+
+void ControlPickerMenu::addMicrophoneAndAuxControl(QString control, QString controlDescription,
+                                                   QMenu* pMenu,
+                                                   bool microhoneControls,
+                                                   bool auxControls,
+                                                   bool addReset) {
+    QMenu* controlMenu = new QMenu(controlDescription, pMenu);
+    pMenu->addMenu(controlMenu);
+
+    QMenu* resetControlMenu = NULL;
+    QString resetControl = QString("%1_set_default").arg(control);
+    if (addReset) {
+        QString resetHelpText = QString("%1 (%2)").arg(controlDescription, m_resetStr);
+        resetControlMenu = new QMenu(resetHelpText, pMenu);
+        pMenu->addMenu(resetControlMenu);
+    }
+
+    if (microhoneControls) {
+        const int kNumMicrophones = ControlObject::get(ConfigKey("[Master]", "num_microphones"));
+        for (int i = 1; i <= kNumMicrophones; ++i) {
+            QString group = "[Microphone]";
+            if (i > 1) {
+                group = QString("[Microphone%1]").arg(i);
+            }
+
+            QString description = QString("%1: %2").arg(
+                m_microphoneStr.arg(QString::number(i)), controlDescription);
+            QAction* pAction = controlMenu->addAction(m_microphoneStr.arg(i),
+                                                      &m_actionMapper, SLOT(map()));
+            m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
+            m_controlsAvailable.append(MixxxControl(group, control, description));
+
+            if (addReset) {
+                QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
+                QAction* pResetAction = resetControlMenu->addAction(
+                    m_microphoneStr.arg(i), &m_actionMapper, SLOT(map()));
+                m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
+                m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
+            }
+        }
+    }
+
+    const int kNumAuxiliaries = ControlObject::get(ConfigKey("[Master]", "num_auxiliaries"));
+    if (auxControls) {
+        for (int i = 1; i <= kNumAuxiliaries; ++i) {
+            QString group = QString("[Auxiliary%1]").arg(i);
+            QString description = QString("%1: %2").arg(
+                m_auxStr.arg(QString::number(i)), controlDescription);
+            QAction* pAction = controlMenu->addAction(m_auxStr.arg(i),
+                                                      &m_actionMapper, SLOT(map()));
+            m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
+            m_controlsAvailable.append(MixxxControl(group, control, description));
+
+            if (addReset) {
+                QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
+                QAction* pResetAction = resetControlMenu->addAction(
+                    m_auxStr.arg(i), &m_actionMapper, SLOT(map()));
+                m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
+                m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
+            }
         }
     }
 }

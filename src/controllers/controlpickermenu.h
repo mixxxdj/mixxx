@@ -45,8 +45,13 @@ class ControlPickerMenu : public QMenu {
                            bool addReset=false);
     void addPreviewDeckControl(QString control, QString helpText, QMenu* pMenu,
                                bool addReset=false);
+    void addMicrophoneAndAuxControl(QString control, QString helpText, QMenu* pMenu,
+                                    bool microhoneControls, bool auxControls,
+                                    bool addReset=false);
 
     QString m_deckStr, m_previewdeckStr, m_samplerStr, m_resetStr;
+    QString m_microphoneStr;
+    QString m_auxStr;
     QSignalMapper m_actionMapper;
     QList<MixxxControl> m_controlsAvailable;
 };
