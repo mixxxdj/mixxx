@@ -25,7 +25,9 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     m_pPlayButton->connectValueChanged(this, SLOT(slotControlPlay(double)),
                                        Qt::DirectConnection);
 
-    m_pSyncMode.reset(new ControlObject(ConfigKey(pGroup, "sync_mode")));
+    m_pSyncMode.reset(new ControlPushButton(ConfigKey(pGroup, "sync_mode")));
+    m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMode->setStates(SYNC_NUM_MODES);
     m_pSyncMode->connectValueChangeRequest(
             this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
 

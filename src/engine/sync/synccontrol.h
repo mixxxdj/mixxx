@@ -91,7 +91,7 @@ class SyncControl : public EngineControl, public Syncable {
     RateControl* m_pRateControl;
     bool m_bOldScratching;
 
-    QScopedPointer<ControlObject> m_pSyncMode;
+    QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pSyncBeatDistance;
