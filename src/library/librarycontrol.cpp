@@ -273,10 +273,7 @@ void LibraryControl::slotSelectPrevSidebarItem(double v) {
 }
 
 void LibraryControl::slotToggleSelectedSidebarItem(double v) {
-    if (m_pSidebarWidget == NULL) {
-        return;
+    if (m_pSidebarWidget != NULL && v > 0) {
+        m_pSidebarWidget->toggleSelectedItem();
     }
-    QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-        v > 0 ? QEvent::KeyPress : QEvent::KeyRelease,
-        (int)Qt::Key_Return, Qt::NoModifier, QString(), true));
 }
