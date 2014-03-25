@@ -76,6 +76,9 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(&m_playlistDao, SIGNAL(renamed(int,QString)),
             this, SLOT(slotPlaylistTableRenamed(int,QString)));
 
+    connect(&m_playlistDao, SIGNAL(changed(int)),
+            this, SLOT(slotPlaylistTableChanged(int)));
+
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
 }
@@ -94,6 +97,21 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pAnalyzePlaylistAction;
 }
 
+int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (item == NULL) {
+        return -1;
+    }
+
+    QString dataPath = item->dataPath().toString();
+    bool ok = false;
+    int playlistId = dataPath.toInt(&ok);
+    if (!ok) {
+        return -1;
+    }
+    return playlistId;
+}
+
 void BasePlaylistFeature::activate() {
     emit(switchToView(m_rootViewName));
     emit(restoreSearch(QString())); // Null String disables search box
@@ -101,19 +119,19 @@ void BasePlaylistFeature::activate() {
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
-
-    // Switch the playlist table model's playlist.
-    QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-    if (m_pPlaylistTableModel) {
+    int playlistId = playlistIdFromIndex(index);
+    if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
     }
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
-    QString oldName = m_lastRightClickedIndex.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
+    QString oldName = m_playlistDao.getPlaylistName(playlistId);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     if (locked) {
@@ -160,9 +178,12 @@ void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
 }
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {
-    QString oldName = m_lastRightClickedIndex.data().toString();
-    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    int oldPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (oldPlaylistId == -1) {
+        return;
+    }
 
+    QString oldName = m_playlistDao.getPlaylistName(oldPlaylistId);
 
     QString name;
     bool validNameGiven = false;
@@ -204,8 +225,10 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 }
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
-    QString playlistName = m_lastRightClickedIndex.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
     bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
 
     if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
@@ -261,9 +284,12 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
 
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     if (locked) {
         qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
         return;
@@ -336,7 +362,12 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
-    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
+    QString playlistName = m_playlistDao.getPlaylistName(playlistId);
+    qDebug() << "Export playlist" << playlistName;
 
     QString lastPlaylistDirectory = m_pConfig->getValueString(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
@@ -345,7 +376,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
     // name to the playlist name.
-    QString playlist_filename = m_lastRightClickedIndex.data().toString();
+    QString playlist_filename = playlistName;
     QString file_location = QFileDialog::getSaveFileName(
             NULL,
             tr("Export Playlist"),
@@ -429,8 +460,7 @@ void BasePlaylistFeature::slotAddToAutoDJTop() {
 void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(
-                m_lastRightClickedIndex.data().toString());
+        int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             // Insert this playlist
             m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
@@ -440,8 +470,7 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
 
 void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(
-                m_lastRightClickedIndex.data().toString());
+        int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             QList<int> ids = m_playlistDao.getTrackIds(playlistId);
             emit(analyzeTracks(ids));
@@ -497,7 +526,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
+        TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
         decorateChild(item, playlist_id);
         data_list.append(item);
     }
