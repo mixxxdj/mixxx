@@ -48,13 +48,20 @@ QString Tooltips::tooltipForTemplate(const QString& id) const {
         // %2 LeftClick
         // %3 RightClick
         if (idParts.size() > 1) {
-            tooltip = m_headlines.value(idParts.at(1)) + tooltipSeparator()
-                    + m_leftClick + ": " + m_description.value(idParts.at(1))
-                    + tooltipSeparator();
+            QString headline = m_headlines.value(idParts.at(1));
+            if (!headline.isEmpty()) {
+                tooltip = headline + tooltipSeparator();
+            }
+            QString descLeft = m_description.value(idParts.at(1));
+            if (!descLeft.isEmpty()) {
+                tooltip += m_leftClick + ": " + descLeft + tooltipSeparator();
+            }
         }
         if (idParts.size() > 2) {
-            tooltip += m_rightClick + ": " + m_description.value(idParts.at(2))
-                    + tooltipSeparator();
+            QString descRight = m_description.value(idParts.at(2));
+            if (!descRight.isEmpty()) {
+                tooltip += m_rightClick + ": " + descRight + tooltipSeparator();
+            }
         }
     }
     return tooltip;
