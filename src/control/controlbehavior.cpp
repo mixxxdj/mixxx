@@ -93,7 +93,7 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 #define middlePosition ((maxPosition - minPosition) / 2.0)
 #define positionrange (maxPosition - minPosition)
 
-ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMaxValue)
         : ControlPotmeterBehavior(0, dMaxValue, false) {
     if (dMaxValue == 1.0) {
         m_bTwoState = false;
@@ -105,15 +105,15 @@ ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
     }
 }
 
-ControlLogpotmeterBehavior::~ControlLogpotmeterBehavior() {
+ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
 }
 
-double ControlLogpotmeterBehavior::defaultValue(double dDefault) const {
+double ControlLogPotmeterBehavior::defaultValue(double dDefault) const {
     Q_UNUSED(dDefault);
     return 1.0;
 }
 
-double ControlLogpotmeterBehavior::valueToParameter(double dValue) {
+double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     if (dValue > m_dMaxValue) {
         dValue = m_dMaxValue;
     } else if (dValue < m_dMinValue) {
@@ -130,7 +130,7 @@ double ControlLogpotmeterBehavior::valueToParameter(double dValue) {
     }
 }
 
-double ControlLogpotmeterBehavior::parameterToValue(double dParam) {
+double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     if (!m_bTwoState) {
         return pow(10.0, m_dB1 * dParam) - 1.0;
     } else {

@@ -37,6 +37,6 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue)
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlLogpotmeterBehavior(dMaxValue));
+                new ControlLogPotmeterBehavior(dMaxValue));
     }
 }

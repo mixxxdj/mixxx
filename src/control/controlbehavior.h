@@ -48,10 +48,10 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     bool m_bAllowOutOfBounds;
 };
 
-class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
+class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLogpotmeterBehavior(double dMaxValue);
-    virtual ~ControlLogpotmeterBehavior();
+    ControlLogPotmeterBehavior(double dMaxValue);
+    virtual ~ControlLogPotmeterBehavior();
 
     virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
