@@ -50,11 +50,6 @@ class EffectParameterSlot : public QObject {
     void slotLinkType(double v);
     void slotValueChanged(double v);
     void slotValueType(double v);
-    void slotValueDefault(double v);
-    void slotValueMaximum(double v);
-    void slotValueMaximumLimit(double v);
-    void slotValueMinimum(double v);
-    void slotValueMinimumLimit(double v);
 
     void slotParameterValueChanged(QVariant value);
 
@@ -81,12 +76,7 @@ class EffectParameterSlot : public QObject {
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlLinkType;
     ControlLinPotmeter* m_pControlValue;
-    ControlObject* m_pControlValueType;
-    ControlObject* m_pControlValueDefault;
-    ControlObject* m_pControlValueMaximum;
-    ControlObject* m_pControlValueMaximumLimit;
-    ControlObject* m_pControlValueMinimum;
-    ControlObject* m_pControlValueMinimumLimit;
+    ControlObject* m_pControlType;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };
