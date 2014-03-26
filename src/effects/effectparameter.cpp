@@ -209,7 +209,12 @@ void EffectParameter::onChainParameterChanged(double chainParameter) {
             }
             max = m_maximum.toDouble();
             min = m_minimum.toDouble();
-            setValue(min + chainParameter * (max - min));
+            if (m_parameter.controlHint() == EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC) {
+                double dB1 = log10((max - min) + 1.0);
+                setValue(min + pow(10.0, dB1 * chainParameter) - 1.0);
+            } else {
+                setValue(min + chainParameter * (max - min));
+            }
             break;
         case EffectManifestParameter::LINK_NONE:
         default:

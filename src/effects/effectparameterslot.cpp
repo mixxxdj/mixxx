@@ -155,5 +155,6 @@ void EffectParameterSlot::slotValueType(double v) {
 
 
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
+    qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
 }

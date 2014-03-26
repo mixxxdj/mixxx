@@ -132,7 +132,7 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
 
 double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     if (!m_bTwoState) {
-        return pow(10.0, m_dB1 * dParam) - 1.0;
+        return pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
     } else {
         if (dParam <= middlePosition) {
             return pow(10.0, m_dB1 * dParam) - 1;
