@@ -2260,6 +2260,7 @@
 					<Splitter>
 						<Size>me,me</Size>
 						<Style></Style>
+                                                <SplitSizesConfigKey>[Deere1366x768-WXGA],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<SplitSizes>1,10</SplitSizes>
 						<Children>
 							<WidgetGroup>
