@@ -1,7 +1,7 @@
 #include <QtDebug>
 
 #include "defs.h"
-#include "controllinpotmeter.h"
+#include "controleffectknob.h"
 #include "effects/effectparameterslot.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
@@ -24,7 +24,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
         ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
-    m_pControlValue = new ControlLinPotmeter(
+    m_pControlValue = new ControlEffectKnob(
         ConfigKey(m_group, itemPrefix));
     m_pControlType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_type")));
@@ -97,8 +97,10 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->setRange(dMinimum, dMaximum, false);
+            double type = m_pEffectParameter->getControlHint();
+            m_pControlValue->setType(type);
             // TODO(rryan) expose this from EffectParameter
-            m_pControlType->setAndConfirm(0);
+            m_pControlType->setAndConfirm(type);
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
             m_pControlLinkType->set(m_pEffectParameter->getLinkType());

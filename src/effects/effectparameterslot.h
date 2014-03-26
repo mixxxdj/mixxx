@@ -11,7 +11,7 @@
 
 class ControlObject;
 class ControlPushButton;
-class ControlLinPotmeter;
+class ControlEffectKnob;
 
 class EffectParameterSlot;
 typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
@@ -75,7 +75,7 @@ class EffectParameterSlot : public QObject {
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlLinkType;
-    ControlLinPotmeter* m_pControlValue;
+    ControlEffectKnob* m_pControlValue;
     ControlObject* m_pControlType;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);

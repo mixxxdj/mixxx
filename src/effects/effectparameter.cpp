@@ -434,6 +434,10 @@ void EffectParameter::setMaximum(QVariant maximum) {
     updateEngineState();
 }
 
+EffectManifestParameter::ControlHint EffectParameter::getControlHint() const {
+    return m_parameter.controlHint();
+}
+
 void EffectParameter::addToEngine() {
     m_bAddedToEngine = true;
 }
