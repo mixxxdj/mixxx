@@ -50,7 +50,7 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 
 class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLogPotmeterBehavior(double dMaxValue);
+    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue);
     virtual ~ControlLogPotmeterBehavior();
 
     virtual double defaultValue(double dDefault) const;

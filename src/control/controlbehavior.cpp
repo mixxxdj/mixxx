@@ -93,11 +93,11 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 #define middlePosition ((maxPosition - minPosition) / 2.0)
 #define positionrange (maxPosition - minPosition)
 
-ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMaxValue)
-        : ControlPotmeterBehavior(0, dMaxValue, false) {
-    if (dMaxValue == 1.0) {
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+    if (dMaxValue == 1.0 || dMinValue != 0.0 ) {
         m_bTwoState = false;
-        m_dB1 = log10(2.0) / maxPosition;
+        m_dB1 = log10((dMaxValue - dMinValue) + 1.0) / maxPosition;
     } else {
         m_bTwoState = true;
         m_dB1 = log10(2.0) / middlePosition;
@@ -120,7 +120,7 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
         dValue = m_dMinValue;
     }
     if (!m_bTwoState) {
-        return log10(dValue + 1) / m_dB1;
+        return log10((dValue - m_dMinValue) + 1) / m_dB1;
     } else {
         if (dValue > 1.0) {
             return log10(dValue) / m_dB2 + middlePosition;

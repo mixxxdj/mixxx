@@ -22,7 +22,7 @@ void ControlEffectKnob::setType(double v) {
                         new ControlLinPotmeterBehavior(m_dMinValue, m_dMaxValue));
     } else if (v == EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC) {
         m_pControl->setBehavior(
-                        new ControlLogPotmeterBehavior(m_dMaxValue));
+                        new ControlLogPotmeterBehavior(m_dMinValue, m_dMaxValue));
     }
     m_type = v;
 }
