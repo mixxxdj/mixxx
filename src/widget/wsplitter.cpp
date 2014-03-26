@@ -15,7 +15,7 @@ WSplitter::~WSplitter() {
 
 void WSplitter::setup(QDomNode node, const SkinContext& context) {
     // Load split sizes
-    QString sizesJoined = NULL;
+    QString sizesJoined;
     QString msg;
     bool ok = false;
     // Try to load last values stored in mixxx.cfg
@@ -77,18 +77,13 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
 }
 
 void WSplitter::slotSplitterMoved() {
-    // is there any <SplitSizesConfigKey> tag?
-    if (m_pContext.hasNode(m_node, "SplitSizesConfigKey")) {
-        // gets size of each widget
-        QList<int> sizeList = sizes();
-        // build a string with all sizes, using commas to separate
-        QString stringSizes = QString::number(sizeList[0]);
-        for (int i=1; i<sizeList.length(); i++) {
-            // format: "size1,size2,size3" ...
-            stringSizes.append(QString(",%1").arg(sizeList[i]));
+    if (!m_configKey.group.isEmpty() && !m_configKey.item.isEmpty()) {
+        QStringList sizeStrList;
+        foreach (const int& sizeInt, sizes()) {
+            sizeStrList.push_back(QString::number(sizeInt));
         }
-        // write them in mixxx.cfg
-        m_pConfig->set(m_configKey, ConfigValue(stringSizes));
+        QString sizesStr = sizeStrList.join(",");
+        m_pConfig->set(m_configKey, ConfigValue(sizesStr));
     }
 }
 
