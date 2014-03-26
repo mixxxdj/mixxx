@@ -25,6 +25,9 @@ class WSplitter : public QSplitter, public WBaseWidget {
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
+    ConfigKey m_configKey;
+    QDomNode m_node;
+    SkinContext m_pContext;
 };
 
 #endif /* WSPLITTER_H */
