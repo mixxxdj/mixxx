@@ -71,9 +71,6 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
             setOrientation(Qt::Horizontal);
         }
     }
-
-    m_pContext = context;
-    m_node = node;
 }
 
 void WSplitter::slotSplitterMoved() {
