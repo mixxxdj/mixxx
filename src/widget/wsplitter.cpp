@@ -1,5 +1,4 @@
 #include <QList>
-#include <QDebug>
 
 #include "widget/wsplitter.h"
 
@@ -62,6 +61,7 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
             this->setSizes(sizesList);
         }
     }
+
     // Default orientation is horizontal.
     if (context.hasNode(node, "Orientation")) {
         QString layout = context.selectString(node, "Orientation");
@@ -71,21 +71,24 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
             setOrientation(Qt::Horizontal);
         }
     }
+
     m_pContext = context;
     m_node = node;
 }
 
 void WSplitter::slotSplitterMoved() {
-    // is there <SplitSizesConfigKey> tag?
+    // is there any <SplitSizesConfigKey> tag?
     if (m_pContext.hasNode(m_node, "SplitSizesConfigKey")) {
         // gets size of each widget
         QList<int> sizeList = sizes();
-        QString string = QString::number(sizeList[0]);
+        // build a string with all sizes, using commas to separate
+        QString stringSizes = QString::number(sizeList[0]);
         for (int i=1; i<sizeList.length(); i++) {
-            string.append(QString(",%1").arg(sizeList[i]));
+            // format: "size1,size2,size3" ...
+            stringSizes.append(QString(",%1").arg(sizeList[i]));
         }
         // write them in mixxx.cfg
-        m_pConfig->set(m_configKey, ConfigValue(string));
+        m_pConfig->set(m_configKey, ConfigValue(stringSizes));
     }
 }
 
