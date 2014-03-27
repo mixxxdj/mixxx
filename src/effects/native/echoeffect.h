@@ -15,7 +15,7 @@ struct EchoGroupState {
     EchoGroupState() {
         delay_buf = SampleUtil::alloc(MAX_BUFFER_LEN);
         // TODO(owilliams): use the actual samplerate.
-        decay_lowpass =
+        feedback_lowpass =
                 new EngineFilterButterworth8Low(44100, 10000);
         SampleUtil::applyGain(delay_buf, 0, MAX_BUFFER_LEN);
         prev_delay_time = 0.0;
@@ -25,10 +25,10 @@ struct EchoGroupState {
     }
     ~EchoGroupState() {
         SampleUtil::free(delay_buf);
-        delete decay_lowpass;
+        delete feedback_lowpass;
     }
     CSAMPLE* delay_buf;
-    EngineFilterButterworth8Low* decay_lowpass;
+    EngineFilterButterworth8Low* feedback_lowpass;
     double prev_delay_time;
     int prev_delay_samples;
     int write_position;
@@ -57,7 +57,7 @@ class EchoEffect : public GroupEffectProcessor<EchoGroupState> {
     }
 
     EngineEffectParameter* m_pDelayParameter;
-    EngineEffectParameter* m_pDecayParameter;
+    EngineEffectParameter* m_pFeedbackParameter;
     EngineEffectParameter* m_pPingPongParameter;
 
     DISALLOW_COPY_AND_ASSIGN(EchoEffect);
