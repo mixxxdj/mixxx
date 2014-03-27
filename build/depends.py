@@ -543,7 +543,6 @@ class MixxxCore(Feature):
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
                    "controllers/dlgprefcontroller.cpp",
-                   "controllers/dlgprefmappablecontroller.cpp",
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontrollers.cpp",
                    "dlgpreflibrary.cpp",
@@ -923,7 +922,6 @@ class MixxxCore(Feature):
         ui_files = [
             'controllers/dlgcontrollerlearning.ui',
             'controllers/dlgprefcontrollerdlg.ui',
-            'controllers/dlgprefmappablecontrollerdlg.ui',
             'controllers/dlgprefcontrollersdlg.ui',
             'dlgaboutdlg.ui',
             'dlganalysis.ui',

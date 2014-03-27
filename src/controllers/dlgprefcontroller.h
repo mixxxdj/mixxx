@@ -12,6 +12,7 @@
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
+#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 #include "preferences/dlgpreferencepage.h"
@@ -30,11 +31,12 @@ class DlgPrefController : public DlgPreferencePage {
 
   public slots:
     // Called when the OK button is pressed.
-    virtual void slotApply();
+    void slotApply();
     // Called when the dialog is displayed.
-    virtual void slotUpdate();
-    virtual void slotDeviceState(int state);
-    // Loads the specified XML preset.
+    void slotUpdate();
+    // Called when the user toggles the enabled checkbox.
+    void slotEnableDevice(bool enable);
+    // Called when the user selects a preset from the combobox.
     void slotLoadPreset(int index);
     // Mark that we need to apply the settings.
     void slotDirty ();
@@ -42,28 +44,26 @@ class DlgPrefController : public DlgPreferencePage {
     void enumeratePresets();
 
   signals:
-    void deviceStateChanged(DlgPrefController*, bool);
+    void controllerEnabled(DlgPrefController*, bool);
     void openController(Controller* pController);
     void closeController(Controller* pController);
     void loadPreset(Controller* pController, QString controllerName, bool force);
-
-  protected:
-    Controller* getController() const {
-        return m_pController;
-    }
-    ControllerManager* getControllerManager() const {
-        return m_pControllerManager;
-    }
-    void addWidgetToLayout(QWidget* pWidget);
-    bool isEnabled() const {
-        return m_ui.chkEnabledDevice->isChecked();
-    }
-    Ui::DlgPrefControllerDlg& getUi() {
-        return m_ui;
-    }
+    void clearInputs();
+    void clearOutputs();
+    void mappingStarted();
+    void mappingEnded();;
 
   private slots:
     void slotPresetLoaded(ControllerPresetPointer preset);
+    void slotShowLearnDialog();
+
+    // Input mappings
+    void clearAllInputBindings();
+    //void slotRemoveInputMapping() {};
+    //void slotAddInputMapping() {};
+
+    // Output mappings
+    void clearAllOutputBindings();
 
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
@@ -79,7 +79,7 @@ class DlgPrefController : public DlgPreferencePage {
     ConfigObject<ConfigValue>* m_pConfig;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
-    QGridLayout* m_pLayout;
+    DlgControllerLearning* m_pDlgControllerLearning;
     QSpacerItem* m_pVerticalSpacer;
     bool m_bDirty;
 };

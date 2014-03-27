@@ -3,7 +3,6 @@
 #include "dlgpreferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/dlgprefcontroller.h"
-#include "controllers/dlgprefmappablecontroller.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
                                        ConfigObject<ConfigValue>* pConfig,
@@ -80,18 +79,12 @@ void DlgPrefControllers::setupControllerWidgets() {
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     foreach (Controller* pController, controllerList) {
-        DlgPrefController* controllerDlg = NULL;
-        if (pController->isMappable()) {
-            controllerDlg = new DlgPrefMappableController(
-                    this, pController, m_pControllerManager, m_pConfig);
-            connect(controllerDlg, SIGNAL(mappingStarted()),
-                    m_pDlgPreferences, SLOT(hide()));
-            connect(controllerDlg, SIGNAL(mappingEnded()),
-                    m_pDlgPreferences, SLOT(show()));
-        } else {
-            controllerDlg = new DlgPrefController(
-                    this, pController, m_pControllerManager, m_pConfig);
-        }
+        DlgPrefController* controllerDlg = new DlgPrefController(
+            this, pController, m_pControllerManager, m_pConfig);
+        connect(controllerDlg, SIGNAL(mappingStarted()),
+                m_pDlgPreferences, SLOT(hide()));
+        connect(controllerDlg, SIGNAL(mappingEnded()),
+                m_pDlgPreferences, SLOT(show()));
 
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(controllerDlg);
@@ -101,7 +94,7 @@ void DlgPrefControllers::setupControllerWidgets() {
         connect(m_pDlgPreferences, SIGNAL(showDlg()),
                 controllerDlg, SLOT(slotUpdate()));
 
-        connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*, bool)),
+        connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
                 this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
 
         QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);

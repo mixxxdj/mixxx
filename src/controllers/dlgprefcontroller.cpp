@@ -9,6 +9,7 @@
 #include <QFileInfo>
 
 #include "controllers/dlgprefcontroller.h"
+#include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
@@ -21,53 +22,91 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
           m_pConfig(pConfig),
           m_pControllerManager(controllerManager),
           m_pController(controller),
+          m_pDlgControllerLearning(NULL),
           m_bDirty(false) {
+    m_ui.setupUi(this);
 
     connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
             this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
-
-    //QWidget * containerWidget = new QWidget();
-    //QWidget * containerWidget = new QWidget(this);
-    //m_ui.setupUi(containerWidget);
-    m_ui.setupUi(this);
-    m_pLayout = m_ui.gridLayout_4;
     const ControllerPresetPointer pPreset = controller->getPreset();
-
     slotPresetLoaded(pPreset);
-
-    //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
-
-    //QVBoxLayout* vLayout = new QVBoxLayout(this);
-    //vLayout->addWidget(containerWidget);
-    //setLayout(vLayout);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
     QString category = m_pController->getCategory();
-    if (category!="") {
+    if (!category.isEmpty()) {
         m_ui.labelDeviceCategory->setText(category);
     } else {
         m_ui.labelDeviceCategory->hide();
     }
 
+    // When the user picks a preset, load it.
     connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
             this, SLOT(slotLoadPreset(int)));
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
-            this, SLOT(slotDirty()));
 
-    // Connect if we wish to automatically set current mapping as autoload
-    // connect(m_ui.comboBoxPreset, SIGNAL(currentIndexChanged(const QString&)),
-    //        this, SLOT(slotDirty()));
+    // When the user toggles the Enabled checkbox, toggle.
+    connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
+            this, SLOT(slotEnableDevice(bool)));
 
+    // Connect our signals to controller manager.
     connect(this, SIGNAL(openController(Controller*)),
             m_pControllerManager, SLOT(openController(Controller*)));
     connect(this, SIGNAL(closeController(Controller*)),
             m_pControllerManager, SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
             m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
+
+    m_ui.btnLearningWizard->setEnabled(controller->isOpen());
+    connect(m_ui.btnLearningWizard, SIGNAL(clicked()),
+            this, SLOT(slotShowLearnDialog()));
 }
 
 DlgPrefController::~DlgPrefController() {
+}
+
+void DlgPrefController::slotShowLearnDialog() {
+    // If the user has checked the "Enabled" checkbox but they haven't hit OK to
+    // apply it yet, prompt them to apply the settings before we open the
+    // learning dialog. If we don't apply the settings first and open the
+    // device, the dialog won't react to controller messages.
+    if (m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
+        QMessageBox::StandardButton result = QMessageBox::question(
+            this,
+            tr("Apply device settings?"),
+            tr("Your settings must be applied before starting the learning wizard.\n"
+               "Apply settings and continue?"),
+            QMessageBox::Ok | QMessageBox::Cancel,  // Buttons to be displayed
+            QMessageBox::Ok);  // Default button
+        // Stop if the user has not pressed the Ok button,
+        // which could be the Cancel or the Close Button.
+        if (result != QMessageBox::Ok) {
+            return;
+        }
+    }
+    slotApply();
+
+    // After this point we consider the mapping wizard as dirtying the preset.
+    slotDirty();
+
+    // Note that DlgControllerLearning is set to delete itself on close using
+    // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
+    m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
+    m_pDlgControllerLearning->show();
+    ControllerLearningEventFilter* pControllerLearning =
+            m_pControllerManager->getControllerLearningEventFilter();
+    pControllerLearning->startListening();
+    connect(pControllerLearning, SIGNAL(controlClicked(ControlObject*)),
+            m_pDlgControllerLearning, SLOT(controlClicked(ControlObject*)));
+    connect(m_pDlgControllerLearning, SIGNAL(listenForClicks()),
+            pControllerLearning, SLOT(startListening()));
+    connect(m_pDlgControllerLearning, SIGNAL(stopListeningForClicks()),
+            pControllerLearning, SLOT(stopListening()));
+    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
+            this, SLOT(show()));
+
+
+    emit(mappingStarted());
+    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
+            this, SIGNAL(mappingEnded()));
 }
 
 QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset) const {
@@ -117,13 +156,6 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
     return url;
 }
 
-void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
-    Q_UNUSED(pWidget);
-    // Remove the vertical spacer since we're adding stuff
-    //m_pLayout->removeItem(m_pVerticalSpacer);
-    //m_pLayout->addWidget(pWidget);
-}
-
 void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
@@ -142,9 +174,9 @@ void DlgPrefController::enumeratePresets() {
 
     // qDebug() << "Enumerating presets for controller" << m_pController->getName();
 
-    //Insert a dummy "..." item at the top to try to make it less confusing.
-    //(We don't want the first found file showing up as the default item
-    // when a user has their controller plugged in)
+    // Insert a dummy "..." item at the top to try to make it less confusing.
+    // (We don't want the first found file showing up as the default item when a
+    // user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
 
     m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
@@ -164,8 +196,9 @@ void DlgPrefController::enumeratePresets() {
     // Jump to matching device in list if it was found.
     if (match.isValid()) {
         int index = m_ui.comboBoxPreset->findText(nameForPreset(match));
-        if (index != -1)
+        if (index != -1) {
             m_ui.comboBoxPreset->setCurrentIndex(index);
+        }
     }
 }
 
@@ -173,14 +206,11 @@ void DlgPrefController::slotUpdate() {
     // Check if the device that this dialog is for is already enabled...
     bool deviceOpen = m_pController->isOpen();
     // Check/uncheck the "Enabled" box
-    m_ui.chkEnabledDevice->setCheckState(deviceOpen ? Qt::Checked : Qt::Unchecked);
+    m_ui.chkEnabledDevice->setChecked(deviceOpen);
     // Enable/disable presets group box.
     m_ui.groupBoxPresets->setEnabled(deviceOpen);
-    // Connect the "Enabled" checkbox after the checkbox state is set
-    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)),
-            this, SLOT(slotDeviceState(int)));
-    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)),
-            this, SLOT(slotDirty()));
+    // Enable/disable learning wizard option.
+    m_ui.btnLearningWizard->setEnabled(deviceOpen);
 }
 
 void DlgPrefController::slotApply() {
@@ -210,6 +240,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
 
     // Applied on prefs close
     emit(loadPreset(m_pController, presetPath, true));
+    slotDirty();
 }
 
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
@@ -232,12 +263,14 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 }
 
-void DlgPrefController::slotDeviceState(int state) {
-    bool checked = state == Qt::Checked;
-    // Enable/disable presets group box.
-    m_ui.groupBoxPresets->setEnabled(checked);
-    // Set tree item text to normal/bold
-    emit(deviceStateChanged(this, checked));
+void DlgPrefController::slotEnableDevice(bool enable) {
+    // Enable/disable presets group box and learning wizard button.
+    m_ui.groupBoxPresets->setEnabled(enable);
+    m_ui.btnLearningWizard->setEnabled(enable);
+    slotDirty();
+
+    // Set tree item text to normal/bold.
+    emit(controllerEnabled(this, enable));
 }
 
 void DlgPrefController::enableDevice() {
@@ -248,4 +281,20 @@ void DlgPrefController::enableDevice() {
 void DlgPrefController::disableDevice() {
     emit(closeController(m_pController));
     //TODO: Should probably check if close() actually succeeded.
+}
+
+void DlgPrefController::clearAllInputBindings() {
+    if (QMessageBox::warning(this, tr("Clear Input Bindings"),
+            tr("Are you sure you want to clear all bindings?"),
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
+        return;
+    emit(clearInputs());
+}
+
+void DlgPrefController::clearAllOutputBindings() {
+    if (QMessageBox::warning(this, tr("Clear Output Bindings"),
+            tr("Are you sure you want to clear all output bindings?"),
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
+        return;
+    emit(clearOutputs());
 }
