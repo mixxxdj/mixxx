@@ -244,7 +244,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value) {
     unsigned char channel = channelFromStatus(status);
     unsigned char opCode = opCodeFromStatus(status);
-    bool twoBytes = isMessageTwoBytes(opCode);
 
     if (debugging()) {
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
@@ -252,16 +251,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     //if (m_bReceiveInhibit) return;
 
-    MidiKey mappingKey;
-    mappingKey.status = status;
-
-    // When it's part of the message, include it
-    if (twoBytes) {
-        mappingKey.control = control;
-    } else {
-        // Signifies that the second byte is part of the payload, default
-        mappingKey.control = 0xFF;
-    }
+    MidiKey mappingKey = makeMidiKey(status, control);
 
     bool foundControl = false;
     QPair<MixxxControl, MidiOptions> controlOptions;
@@ -295,7 +285,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
         }
 
         QScriptValueList args;
-        args << QScriptValue(status & 0x0F);
+        args << QScriptValue(channel);
         args << QScriptValue(control);
         args << QScriptValue(value);
         args << QScriptValue(status);
@@ -475,10 +465,7 @@ void MidiController::receive(QByteArray data) {
 
     //if (m_bReceiveInhibit) return;
 
-    MidiKey mappingKey;
-    mappingKey.status = data.at(0);
-    // Signifies that the second byte is part of the payload, default
-    mappingKey.control = 0xFF;
+    MidiKey mappingKey = makeMidiKey(data.at(0), 0xFF);
 
     // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
     // don't think this actually does anything useful.

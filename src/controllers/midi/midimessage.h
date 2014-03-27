@@ -159,6 +159,15 @@ inline bool isMessageTwoBytes(unsigned char opCode) {
     }
 }
 
+inline MidiKey makeMidiKey(unsigned char status, unsigned char control) {
+    unsigned char opCode = opCodeFromStatus(status);
+    bool twoBytes = isMessageTwoBytes(opCode);
+
+    // When it's part of the message, include it. If the message is not two
+    // bytes, signify that the second byte is part of the payload with 0xFF.
+    return MidiKey(status, twoBytes ? control : 0xFF);
+}
+
 inline bool isClockSignal(const MidiKey& mappingKey) {
     return (mappingKey.key & MIDI_TIMING_CLK) == MIDI_TIMING_CLK;
 }

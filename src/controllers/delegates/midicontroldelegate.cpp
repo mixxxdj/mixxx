@@ -21,7 +21,7 @@ QWidget* MidiControlDelegate::createEditor(QWidget* parent,
 QString MidiControlDelegate::displayText(const QVariant& value,
                                         const QLocale& locale) const {
     unsigned char control = static_cast<unsigned char>(value.toInt());
-    return MidiUtils::formatByte(control);
+    return MidiUtils::formatByteAsHex(control);
 }
 
 void MidiControlDelegate::setEditorData(QWidget* editor,

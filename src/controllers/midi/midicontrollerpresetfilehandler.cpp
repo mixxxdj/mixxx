@@ -6,7 +6,8 @@
 *
 */
 
-#include "midicontrollerpresetfilehandler.h"
+#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/midi/midiutils.h"
 
 #define DEFAULT_OUTPUT_MAX  1.0f
 #define DEFAULT_OUTPUT_MIN  0.0f    // Anything above 0 is "on"
@@ -33,7 +34,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
-    //Iterate through each <control> block in the XML
+    // Iterate through each <control> block in the XML
     while (!control.isNull()) {
 
         //Unserialize these objects from the XML
@@ -42,10 +43,11 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         bool ok = false;
 
-        //Use QString with toInt base of 0 to auto convert hex values
+        // Allow specifying hex, octal, or decimal.
         unsigned char midiStatusByte = strMidiStatus.toInt(&ok, 0);
         if (!ok) midiStatusByte = 0x00;
 
+        // Allow specifying hex, octal, or decimal.
         unsigned char midiControl = midiNo.toInt(&ok, 0);
         if (!ok) midiControl = 0x00;
 
@@ -85,47 +87,17 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         // Add the static mapping
         QPair<MixxxControl, MidiOptions> target;
-        target.first = MixxxControl(controlGroup, controlKey);
+        target.first = MixxxControl(controlGroup, controlKey,
+                                    controlDescription);
         target.second = options;
+        MidiKey key = makeMidiKey(midiStatusByte, midiControl);
 
-        unsigned char opCode = midiStatusByte & 0xF0;
-        if (opCode >= 0xF0) opCode = midiStatusByte;
-
-        bool twoBytes = true;
-        switch (opCode) {
-            case MIDI_SONG:
-            case MIDI_NOTE_OFF:
-            case MIDI_NOTE_ON:
-            case MIDI_AFTERTOUCH:
-            case MIDI_CC:
-                break;
-            case MIDI_PITCH_BEND:
-            case MIDI_SONG_POS:
-            case MIDI_PROGRAM_CH:
-            case MIDI_CH_AFTERTOUCH:
-            default:
-                twoBytes = false;
-                break;
-        }
-
-        MidiKey key;
-        key.status = midiStatusByte;
-
-        if (twoBytes) {
-            key.control = midiControl;
-        } else {
-            // Signifies that the second byte is part of the payload, default
-            key.control = 0xFF;
-        }
         // qDebug() << "New mapping:" << QString::number(key.key, 16).toUpper()
         //          << QString::number(key.status, 16).toUpper()
         //          << QString::number(key.control, 16).toUpper()
         //          << target.first.group << target.first.item;
 
         preset->mappings.insert(key.key, target);
-        // Notify the GUI and anyone else who cares
-        //emit(newMapping());  // TODO
-
         control = control.nextSiblingElement("control");
     }
 
@@ -140,9 +112,11 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
         //Unserialize the MixxxControl components from the XML
         QDomElement groupNode = output.firstChildElement("group");
         QDomElement keyNode = output.firstChildElement("key");
+        QDomElement descriptionNode = output.firstChildElement("description");
 
         QString controlGroup = groupNode.text();
         QString controlKey = keyNode.text();
+        QString controlDescription = descriptionNode.text();
 
         // Unserialize output message from the XML
         MidiOutput outputMessage;
@@ -201,7 +175,8 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         // We use insertMulti because certain tricks are done with multiple
         // entries for the same MixxxControl
-        preset->outputMappings.insertMulti(MixxxControl(controlGroup, controlKey), outputMessage);
+        preset->outputMappings.insertMulti(MixxxControl(
+            controlGroup, controlKey, controlDescription), outputMessage);
 
         output = output.nextSiblingElement("output");
     }
@@ -340,37 +315,43 @@ void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode,
     QDomDocument nodeMaker;
     QDomElement tagNode;
 
-    //Control object group
+    // CO group
     tagNode = nodeMaker.createElement("group");
     text = nodeMaker.createTextNode(mc.group());
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 
-    //Control object name
+    // CO item
     tagNode = nodeMaker.createElement("key"); //WTF worst name ever
     text = nodeMaker.createTextNode(mc.item());
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 
+    // Description
+    if (!mc.description().isEmpty()) {
+        tagNode = nodeMaker.createElement("description");
+        text = nodeMaker.createTextNode(mc.description());
+        tagNode.appendChild(text);
+        parentNode.appendChild(tagNode);
+    }
+
     //MIDI status byte
     tagNode = nodeMaker.createElement("status");
-    text = nodeMaker.createTextNode(
-        QString("0x%1").arg(QString::number(status, 16).toUpper().rightJustified(2,'0')));
+    text = nodeMaker.createTextNode(MidiUtils::formatByteAsHex(status));
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 
     if (control != 0xFF) {
         //MIDI control number
         tagNode = nodeMaker.createElement("midino");
-        text = nodeMaker.createTextNode(
-            QString("0x%1").arg(QString::number(control, 16).toUpper().rightJustified(2,'0')));
+        text = nodeMaker.createTextNode(MidiUtils::formatByteAsHex(control));
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }
 }
 
 void MidiControllerPresetFileHandler::outputMappingToXML(QDomElement& parentNode, unsigned char on,
-                                        unsigned char off, float max, float min) const {
+                                                         unsigned char off, float max, float min) const {
     QDomText text;
     QDomDocument nodeMaker;
     QDomElement tagNode;
@@ -378,8 +359,7 @@ void MidiControllerPresetFileHandler::outputMappingToXML(QDomElement& parentNode
     // Third MIDI byte for turning on the LED
     if (on != DEFAULT_OUTPUT_ON) {
         tagNode = nodeMaker.createElement("on");
-        text = nodeMaker.createTextNode(
-            QString("0x%1").arg(QString::number(on, 16).toUpper().rightJustified(2,'0')));
+        text = nodeMaker.createTextNode(MidiUtils::formatByteAsHex(on));
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }
@@ -387,8 +367,7 @@ void MidiControllerPresetFileHandler::outputMappingToXML(QDomElement& parentNode
     // Third MIDI byte for turning off the LED
     if (off != DEFAULT_OUTPUT_OFF) {
         tagNode = nodeMaker.createElement("off");
-        text = nodeMaker.createTextNode(
-            QString("0x%1").arg(QString::number(off, 16).toUpper().rightJustified(2,'0')));
+        text = nodeMaker.createTextNode(MidiUtils::formatByteAsHex(off));
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }

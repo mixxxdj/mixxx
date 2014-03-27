@@ -6,7 +6,7 @@
 class MidiUtils {
   public:
     static QString opCodeToTranslatedString(MidiOpCode code);
-    static QString formatByte(unsigned char value);
+    static QString formatByteAsHex(unsigned char value);
     static QString midiOptionToTranslatedString(MidiOption option);
 };
 

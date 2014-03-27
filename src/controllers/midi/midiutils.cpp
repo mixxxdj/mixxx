@@ -21,10 +21,10 @@ QString MidiUtils::opCodeToTranslatedString(MidiOpCode code) {
 }
 
 // static
-QString MidiUtils::formatByte(unsigned char value) {
+QString MidiUtils::formatByteAsHex(unsigned char value) {
     // Construct a hex string formatted like 0xFF.
-    return QString("0x") + QString("%1")
-            .arg(value, 2, 16, QLatin1Char('0')).toUpper();
+    return QString("0x%1").arg(QString::number(value, 16)
+                               .toUpper().rightJustified(2,'0'));
 }
 
 // static
