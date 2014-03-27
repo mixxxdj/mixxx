@@ -17,6 +17,8 @@ class ControlPickerMenu : public QMenu {
         return m_controlsAvailable;
     }
 
+    QString descriptionForConfigKey(ConfigKey key) const;
+
   signals:
     // Emitted when the user selects a control from the menu.
     void controlPicked(MixxxControl control);
@@ -51,6 +53,7 @@ class ControlPickerMenu : public QMenu {
     void addEffectControl(QString group, QString control, QString menuDescription,
                           QString descriptionPrefix,
                           QMenu* pMenu, bool addReset=false);
+    void addAvailableControl(MixxxControl control);
 
     QString m_masterOutputStr;
     QString m_headphoneOutputStr;
@@ -67,6 +70,7 @@ class ControlPickerMenu : public QMenu {
 
     QSignalMapper m_actionMapper;
     QList<MixxxControl> m_controlsAvailable;
+    QHash<ConfigKey, QString> m_descriptionsByKey;
 };
 
 #endif /* CONTROLPICKERMENU_H */
