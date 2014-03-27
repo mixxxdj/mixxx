@@ -55,15 +55,35 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
             m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
 
-    m_ui.btnLearningWizard->setEnabled(controller->isOpen());
+    // If the controller is not mappable, disable the input and output mapping
+    // sections.
+    bool isMappable = m_pController->isMappable();
+    m_ui.inputMappingsPage->setEnabled(isMappable);
+    m_ui.outputMappingsPage->setEnabled(isMappable);
+
+    // Input mappings
+    connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
+            this, SLOT(addInputMapping()));
+    connect(m_ui.btnRemoveInputMappings, SIGNAL(clicked()),
+            this, SLOT(removeInputMappings()));
     connect(m_ui.btnLearningWizard, SIGNAL(clicked()),
-            this, SLOT(slotShowLearnDialog()));
+            this, SLOT(showLearningWizard()));
+    connect(m_ui.btnClearAllInputMappings, SIGNAL(clicked()),
+            this, SLOT(clearAllInputMappings()));
+
+    // Output mappings
+    connect(m_ui.btnAddOutputMapping, SIGNAL(clicked()),
+            this, SLOT(addOutputMapping()));
+    connect(m_ui.btnRemoveOutputMappings, SIGNAL(clicked()),
+            this, SLOT(removeOutputMappings()));
+    connect(m_ui.btnClearAllOutputMappings, SIGNAL(clicked()),
+            this, SLOT(clearAllOutputMappings()));
 }
 
 DlgPrefController::~DlgPrefController() {
 }
 
-void DlgPrefController::slotShowLearnDialog() {
+void DlgPrefController::showLearningWizard() {
     // If the user has checked the "Enabled" checkbox but they haven't hit OK to
     // apply it yet, prompt them to apply the settings before we open the
     // learning dialog. If we don't apply the settings first and open the
@@ -283,18 +303,36 @@ void DlgPrefController::disableDevice() {
     //TODO: Should probably check if close() actually succeeded.
 }
 
-void DlgPrefController::clearAllInputBindings() {
-    if (QMessageBox::warning(this, tr("Clear Input Bindings"),
-            tr("Are you sure you want to clear all bindings?"),
-            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
-        return;
-    emit(clearInputs());
+void DlgPrefController::addInputMapping() {
 }
 
-void DlgPrefController::clearAllOutputBindings() {
-    if (QMessageBox::warning(this, tr("Clear Output Bindings"),
-            tr("Are you sure you want to clear all output bindings?"),
-            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
+void DlgPrefController::removeInputMappings() {
+    QModelIndexList selectedIndices =
+            m_ui.m_pInputMappingTableView->selectionModel()->selectedRows();
+}
+
+void DlgPrefController::clearAllInputMappings() {
+    if (QMessageBox::warning(
+            this, tr("Clear Input Mappings"),
+            tr("Are you sure you want to clear all input mappings?"),
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok) {
         return;
-    emit(clearOutputs());
+    }
+}
+
+void DlgPrefController::addOutputMapping() {
+}
+
+void DlgPrefController::removeOutputMappings() {
+    QModelIndexList selectedIndices =
+            m_ui.m_pOutputMappingTableView->selectionModel()->selectedRows();
+}
+
+void DlgPrefController::clearAllOutputMappings() {
+    if (QMessageBox::warning(
+            this, tr("Clear Output Mappings"),
+            tr("Are you sure you want to clear all output mappings?"),
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok) {
+        return;
+    }
 }

@@ -55,15 +55,17 @@ class DlgPrefController : public DlgPreferencePage {
 
   private slots:
     void slotPresetLoaded(ControllerPresetPointer preset);
-    void slotShowLearnDialog();
 
     // Input mappings
-    void clearAllInputBindings();
-    //void slotRemoveInputMapping() {};
-    //void slotAddInputMapping() {};
+    void addInputMapping();
+    void showLearningWizard();
+    void removeInputMappings();
+    void clearAllInputMappings();
 
     // Output mappings
-    void clearAllOutputBindings();
+    void addOutputMapping();
+    void removeOutputMappings();
+    void clearAllOutputMappings();
 
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
@@ -80,7 +82,6 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
-    QSpacerItem* m_pVerticalSpacer;
     bool m_bDirty;
 };
 
