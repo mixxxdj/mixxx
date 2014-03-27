@@ -87,6 +87,9 @@ class PlayerManager : public QObject {
     // Used to determine if the user has configured an input for the given vinyl deck.
     bool hasVinylInput(int inputnum) const;
 
+    // Used to determine if the user has configured an input for the given aux input.
+    bool hasAuxiliaryInput(int inputnum) const;
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);

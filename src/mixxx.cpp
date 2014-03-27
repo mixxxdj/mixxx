@@ -182,6 +182,15 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     ControlObject* pNumAuxiliaries = new ControlObject(ConfigKey("[Master]", "num_auxiliaries"));
     pNumAuxiliaries->setParent(this);
 
+    m_PassthroughMapper = new QSignalMapper(this);
+    connect(m_PassthroughMapper, SIGNAL(mapped(int)),
+            this, SLOT(slotControlPassthrough(int)));
+
+    // Pre-allocate passthrough COs so the indexing is predictable.
+    for (int i = 0; i < kMaximumVinylControlInputs + kAuxiliaryCount; ++i) {
+        m_pPassthroughEnabled.append(NULL);
+    }
+
     for (int i = 0; i < kAuxiliaryCount; ++i) {
         QString group = QString("[Auxiliary%1]").arg(i + 1);
         EngineAux* pAux = new EngineAux(strdup(group.toStdString().c_str()),
@@ -191,6 +200,18 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         m_pEngine->addChannel(pAux);
         m_pSoundManager->registerInput(auxInput, pAux);
         pNumAuxiliaries->set(pNumAuxiliaries->get() + 1);
+
+        ControlObjectSlave* passthrough_enabled =
+                new ControlObjectSlave(group, "passthrough");
+        m_pPassthroughEnabled[i + kMaximumVinylControlInputs] =
+                passthrough_enabled;
+
+        // These non-vinyl passthrough COs have their index offset by the max
+        // number of vinyl inputs.
+        m_PassthroughMapper->setMapping(passthrough_enabled,
+                                        i + kMaximumVinylControlInputs);
+        passthrough_enabled->connectValueChanged(m_PassthroughMapper,
+                                                 SLOT(map()));
     }
 
     // Do not write meta data back to ID3 when meta data has changed
@@ -486,6 +507,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_VCControlMapper;
     delete m_VCCheckboxMapper;
 #endif
+    delete m_PassthroughMapper;
     delete m_TalkoverMapper;
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
@@ -1508,6 +1530,45 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
 #endif
 }
 
+void MixxxMainWindow::slotControlPassthrough(int index) {
+    // Both vinyl inputs and auxiliary inputs have passthrough controls,
+    // so this function handles both.  Vinyl inputs are given indexes 0 through
+    // kMaximumVinylControlInputs, and auxiliary controls start at
+    // kMaximumVinylControlInputs and increase from there.
+
+    if (index < kMaximumVinylControlInputs && index >= m_iNumConfiguredDecks) {
+        qWarning() << "Tried to activate passthrough on a deck that we "
+                      "haven't configured -- ignoring request.";
+        m_pPassthroughEnabled[index]->set(0.0);
+        return;
+    }
+    bool toggle = static_cast<bool>(m_pPassthroughEnabled[index]->get());
+    if (toggle) {
+        if (index < kMaximumVinylControlInputs) {
+            if (m_pPlayerManager->hasVinylInput(index)) {
+                return;
+            }
+            m_pOptionsVinylControl[index]->setChecked(false);
+        } else {
+            if (m_pPlayerManager->hasAuxiliaryInput(
+                    index - kMaximumVinylControlInputs)) {
+                return;
+            }
+        }
+        m_pPassthroughEnabled[index]->set(0.0);
+
+        // Else...
+        QMessageBox::warning(
+                this,
+                tr("Mixxx"),
+                tr("There is no input device selected for this passthrough control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok, QMessageBox::Ok);
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
+}
+
 void MixxxMainWindow::slotCheckboxVinylControl(int deck) {
 #ifdef __VINYLCONTROL__
     if (deck >= m_iNumConfiguredDecks) {
@@ -1531,14 +1592,19 @@ void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         m_pOptionsVinylControl[i]->setVisible(true);
         m_pVinylControlEnabled.push_back(
-                new ControlObjectThread(PlayerManager::groupForDeck(i),
+                new ControlObjectSlave(PlayerManager::groupForDeck(i),
                                         "vinylcontrol_enabled"));
-
-        ControlObjectThread* vc_enabled = m_pVinylControlEnabled.back();
+        ControlObjectSlave* vc_enabled = m_pVinylControlEnabled.back();
         m_VCControlMapper->setMapping(vc_enabled, i);
-        connect(vc_enabled, SIGNAL(valueChanged(double)),
-                m_VCControlMapper, SLOT(map()));
+        vc_enabled->connectValueChanged(m_VCControlMapper, SLOT(map()));
 
+        ControlObjectSlave* passthrough_enabled =
+                new ControlObjectSlave(PlayerManager::groupForDeck(i),
+                                        "passthrough");
+        m_pPassthroughEnabled[i] = passthrough_enabled;
+        m_PassthroughMapper->setMapping(passthrough_enabled, i);
+        passthrough_enabled->connectValueChanged(m_PassthroughMapper,
+                                                 SLOT(map()));
     }
     for (int i = num_decks; i < kMaximumVinylControlInputs; ++i) {
         m_pOptionsVinylControl[i]->setVisible(false);
