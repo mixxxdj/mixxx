@@ -33,6 +33,24 @@ typedef enum {
 typedef unsigned int    uint32_t;
 typedef unsigned short  uint16_t;
 
+typedef enum {
+    MIDI_OPTION_NONE          = 0x0000,
+    MIDI_OPTION_INVERT        = 0x0001,
+    MIDI_OPTION_ROT64         = 0x0002,
+    MIDI_OPTION_ROT64_INV     = 0x0004,
+    MIDI_OPTION_ROT64_FAST    = 0x0008,
+    MIDI_OPTION_DIFF          = 0x0010,
+    MIDI_OPTION_BUTTON        = 0x0020,
+    MIDI_OPTION_SWITCH        = 0x0040,
+    MIDI_OPTION_SPREAD64      = 0x0080,
+    MIDI_OPTION_HERC_JOG      = 0x0100,
+    MIDI_OPTION_SELECTKNOB    = 0x0200,
+    MIDI_OPTION_SOFT_TAKEOVER = 0x0400,
+    MIDI_OPTION_SCRIPT        = 0x0800,
+    // Should mask all bits used.
+    MIDI_OPTION_MASK          = 0x0FFF,
+} MidiOption;
+
 struct MidiOptions {
     MidiOptions()
             : all(0) {
