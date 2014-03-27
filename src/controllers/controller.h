@@ -20,7 +20,7 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/mixxxcontrol.h"
 
-class Controller : public QObject, ControllerPresetVisitor {
+class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     Controller();
