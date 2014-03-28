@@ -175,7 +175,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
-                m_pControlValue->setParameter(parameter);
+                m_pControlValue->setParameterFrom(parameter, NULL);
                 break;
             case EffectManifestParameter::LINK_NONE:
             default:
