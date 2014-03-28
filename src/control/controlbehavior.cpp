@@ -93,11 +93,11 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 #define middlePosition ((maxPosition - minPosition) / 2.0)
 #define positionrange (maxPosition - minPosition)
 
-ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
-        : ControlPotmeterBehavior(0, dMaxValue, false) {
-    if (dMaxValue == 1.0) {
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+    if (dMaxValue == 1.0 || dMinValue != 0.0 ) {
         m_bTwoState = false;
-        m_dB1 = log10(2.0) / maxPosition;
+        m_dB1 = log10((dMaxValue - dMinValue) + 1.0) / maxPosition;
     } else {
         m_bTwoState = true;
         m_dB1 = log10(2.0) / middlePosition;
@@ -105,22 +105,22 @@ ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
     }
 }
 
-ControlLogpotmeterBehavior::~ControlLogpotmeterBehavior() {
+ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
 }
 
-double ControlLogpotmeterBehavior::defaultValue(double dDefault) const {
+double ControlLogPotmeterBehavior::defaultValue(double dDefault) const {
     Q_UNUSED(dDefault);
     return 1.0;
 }
 
-double ControlLogpotmeterBehavior::valueToParameter(double dValue) {
+double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     if (dValue > m_dMaxValue) {
         dValue = m_dMaxValue;
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
     if (!m_bTwoState) {
-        return log10(dValue + 1) / m_dB1;
+        return log10((dValue - m_dMinValue) + 1) / m_dB1;
     } else {
         if (dValue > 1.0) {
             return log10(dValue) / m_dB2 + middlePosition;
@@ -130,9 +130,9 @@ double ControlLogpotmeterBehavior::valueToParameter(double dValue) {
     }
 }
 
-double ControlLogpotmeterBehavior::parameterToValue(double dParam) {
+double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     if (!m_bTwoState) {
-        return pow(10.0, m_dB1 * dParam) - 1.0;
+        return pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
     } else {
         if (dParam <= middlePosition) {
             return pow(10.0, m_dB1 * dParam) - 1;
