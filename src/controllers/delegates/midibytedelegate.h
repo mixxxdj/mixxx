@@ -1,12 +1,12 @@
-#ifndef MIDICONTROLDELEGATE_H
-#define MIDICONTROLDELEGATE_H
+#ifndef MIDIBYTEDELEGATE_H
+#define MIDIBYTEDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class MidiControlDelegate : public QStyledItemDelegate {
+class MidiByteDelegate : public QStyledItemDelegate {
   public:
-    MidiControlDelegate(QObject* pParent);
-    virtual ~MidiControlDelegate();
+    MidiByteDelegate(QObject* pParent);
+    virtual ~MidiByteDelegate();
 
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                           const QModelIndex& index) const;
@@ -19,4 +19,4 @@ class MidiControlDelegate : public QStyledItemDelegate {
                       const QModelIndex& index) const;
 };
 
-#endif /* MIDICONTROLDELEGATE_H */
+#endif /* MIDIBYTEDELEGATE_H */

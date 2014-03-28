@@ -4,7 +4,7 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
-#include "controllers/delegates/midicontroldelegate.h"
+#include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midioptionsdelegate.h"
 
 ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
@@ -108,7 +108,7 @@ QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(int c
             case MIDI_COLUMN_OPCODE:
                 return new MidiOpCodeDelegate(pParent);
             case MIDI_COLUMN_CONTROL:
-                return new MidiControlDelegate(pParent);
+                return new MidiByteDelegate(pParent);
             case MIDI_COLUMN_OPTIONS:
                 return new MidiOptionsDelegate(pParent);
         }
