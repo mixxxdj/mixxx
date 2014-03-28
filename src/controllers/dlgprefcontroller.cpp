@@ -23,9 +23,11 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
           m_pControllerManager(controllerManager),
           m_pController(controller),
           m_pDlgControllerLearning(NULL),
+          m_pInputTableModel(NULL),
           m_bDirty(false) {
     m_ui.setupUi(this);
 
+    initTableView(m_ui.m_pInputMappingTableView);
     connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
             this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
     const ControllerPresetPointer pPreset = controller->getPreset();
@@ -263,6 +265,29 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     slotDirty();
 }
 
+void DlgPrefController::initTableView(QTableView* pTable) {
+    // Editing starts when clicking on an already selected item.
+    pTable->setEditTriggers(QAbstractItemView::SelectedClicked);
+
+    // Enable selection by rows and extended selection (ctrl/shift click)
+    pTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    pTable->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    pTable->setWordWrap(false);
+    pTable->setShowGrid(false);
+    pTable->setCornerButtonEnabled(false);
+    pTable->setSortingEnabled(true);
+
+    //Work around a Qt bug that lets you make your columns so wide you
+    //can't reach the divider to make them small again.
+    pTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    pTable->verticalHeader()->hide();
+    pTable->verticalHeader()->setDefaultSectionSize(20);
+    pTable->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    pTable->setAlternatingRowColors(true);
+}
+
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetShortName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
@@ -281,6 +306,25 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
         support = tr("No support available.");
     }
     m_ui.labelLoadedPresetSupportLinks->setText(support);
+
+    ControllerInputMappingTableModel* pInputModel =
+            new ControllerInputMappingTableModel(this);
+    pInputModel->setPreset(preset);
+    m_ui.m_pInputMappingTableView->setModel(pInputModel);
+
+    for (int i = 0; i < pInputModel->columnCount(); ++i) {
+        QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
+            i, m_ui.m_pInputMappingTableView);
+        if (pDelegate != NULL) {
+            m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+        }
+    }
+
+    // Now that we have set the new model our old model can be deleted.
+    if (m_pInputTableModel) {
+        delete m_pInputTableModel;
+    }
+    m_pInputTableModel = pInputModel;
 }
 
 void DlgPrefController::slotEnableDevice(bool enable) {
@@ -304,11 +348,19 @@ void DlgPrefController::disableDevice() {
 }
 
 void DlgPrefController::addInputMapping() {
+    if (m_pInputTableModel) {
+        m_pInputTableModel->addEmptyInputMapping();
+        slotDirty();
+    }
 }
 
 void DlgPrefController::removeInputMappings() {
     QModelIndexList selectedIndices =
             m_ui.m_pInputMappingTableView->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0 && m_pInputTableModel) {
+        m_pInputTableModel->removeInputMappings(selectedIndices);
+        slotDirty();
+    }
 }
 
 void DlgPrefController::clearAllInputMappings() {
@@ -317,6 +369,10 @@ void DlgPrefController::clearAllInputMappings() {
             tr("Are you sure you want to clear all input mappings?"),
             QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok) {
         return;
+    }
+    if (m_pInputTableModel) {
+        m_pInputTableModel->clear();
+        slotDirty();
     }
 }
 

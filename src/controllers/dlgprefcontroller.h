@@ -10,6 +10,7 @@
 
 #include <QHash>
 
+#include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
@@ -73,6 +74,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
     void savePreset(QString path);
+    void initTableView(QTableView* pTable);
 
     void enableDevice();
     void disableDevice();
@@ -82,6 +84,8 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
+    ControllerPresetPointer m_pPreset;
+    ControllerInputMappingTableModel* m_pInputTableModel;
     bool m_bDirty;
 };
 
