@@ -90,11 +90,9 @@ TEST_F(LearningUtilsTest, CC7BitTicker) {
 }
 
 TEST_F(LearningUtilsTest, Spread64Ticker) {
-    // A CC 7-bit ticker (select knob, jog wheel, etc.) shows up as a MIDI_CC
-    // message, single channel, single control and a variety of values in two's
-    // complement. We detect this by looking at jumps across the boundary of
-    // 0x7F to 0x00 so the user has to go forward and backward.
-    // Status: 0x81 Control: 0x10
+    // A Spread64 ticker (select knob, jog wheel, etc.) shows up as a MIDI_CC
+    // message, single channel, single control and a variety of values centered
+    // around 0x40 but never including that value (since 0x40 means "not moving")
     addMessage(MIDI_CC | 0x01, 0x10, 0x41);
     addMessage(MIDI_CC | 0x01, 0x10, 0x41);
     addMessage(MIDI_CC | 0x01, 0x10, 0x42);
