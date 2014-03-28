@@ -97,10 +97,10 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->setRange(dMinimum, dMaximum, false);
-            double type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
             m_pControlValue->setType(type);
             // TODO(rryan) expose this from EffectParameter
-            m_pControlType->setAndConfirm(type);
+            m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
             m_pControlLinkType->set(m_pEffectParameter->getLinkType());

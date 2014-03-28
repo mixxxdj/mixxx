@@ -91,8 +91,6 @@ class KnobEventHandler {
         // Clamp to [0.0, 1.0]
         newValue = math_max(0.0, math_min(1.0, newValue));
 
-        qDebug() << "newValue" << newValue;
-
         pWidget->setControlParameter(newValue);
         pWidget->update();
         e->accept();
