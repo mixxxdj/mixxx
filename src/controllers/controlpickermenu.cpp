@@ -295,7 +295,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Dry/Wet"), descriptionPrefix,
                              effectUnitMenu, true);
             addEffectControl(effectUnitGroup, "parameter",
-                             tr("Super Knob"), descriptionPrefix,
+                             tr("Super Knob - Control Linked Effect Parameters"),
+                             descriptionPrefix,
                              effectUnitMenu, true);
             addEffectControl(effectUnitGroup, "insertion_type",
                              tr("Insert / Send Toggle"), descriptionPrefix,
@@ -310,7 +311,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Next or previous chain preset"), descriptionPrefix,
                              effectUnitMenu);
 
-            QString enableOn = tr("Enable Effect Unit On");
+            QString enableOn = tr("Toggle Effect Unit");
             QMenu* effectUnitGroups = addSubmenu(enableOn,
                                                  effectUnitMenu);
 
