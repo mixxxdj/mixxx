@@ -22,10 +22,6 @@ void ControllerInputMappingTableModel::setPreset(ControllerPresetPointer pPreset
         // This immediately calls one of the two visit() methods below.
         m_pPreset->accept(this);
     }
-}
-
-void ControllerInputMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
-    m_pMidiPreset = pMidiPreset;
 
     if (m_pMidiPreset != NULL) {
         // TODO(rryan): Tooltips
@@ -50,6 +46,10 @@ void ControllerInputMappingTableModel::visit(MidiControllerPreset* pMidiPreset) 
             m_midiInputMappings.append(mapping);
         }
     }
+}
+
+void ControllerInputMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
+    m_pMidiPreset = pMidiPreset;
 }
 
 void ControllerInputMappingTableModel::visit(HidControllerPreset* pHidPreset) {
@@ -190,7 +190,6 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                 return QVariant();
         }
     }
-
     return QVariant();
 }
 
