@@ -12,6 +12,7 @@
 #include <QSortFilterProxyModel>
 
 #include "controllers/controllerinputmappingtablemodel.h"
+#include "controllers/controlleroutputmappingtablemodel.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
@@ -88,6 +89,8 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerPresetPointer m_pPreset;
     ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
+    ControllerOutputMappingTableModel* m_pOutputTableModel;
+    QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
 };
 

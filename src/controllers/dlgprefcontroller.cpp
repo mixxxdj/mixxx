@@ -25,10 +25,14 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
           m_pDlgControllerLearning(NULL),
           m_pInputTableModel(NULL),
           m_pInputProxyModel(NULL),
+          m_pOutputTableModel(NULL),
+          m_pOutputProxyModel(NULL),
           m_bDirty(false) {
     m_ui.setupUi(this);
 
     initTableView(m_ui.m_pInputMappingTableView);
+    initTableView(m_ui.m_pOutputMappingTableView);
+
     connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
             this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
     const ControllerPresetPointer pPreset = controller->getPreset();
@@ -315,6 +319,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     pInputModel->setPreset(preset);
 
     QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
+    pInputProxyModel->setSortRole(Qt::UserRole);
     pInputProxyModel->setSourceModel(pInputModel);
     m_ui.m_pInputMappingTableView->setModel(pInputProxyModel);
 
@@ -327,14 +332,34 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     }
 
     // Now that we have set the new model our old model can be deleted.
-    if (m_pInputTableModel) {
-        delete m_pInputTableModel;
-    }
-    m_pInputTableModel = pInputModel;
-    if (m_pInputProxyModel) {
-        delete m_pInputProxyModel;
-    }
+    delete m_pInputProxyModel;
     m_pInputProxyModel = pInputProxyModel;
+    delete m_pInputTableModel;
+    m_pInputTableModel = pInputModel;
+
+    ControllerOutputMappingTableModel* pOutputModel =
+            new ControllerOutputMappingTableModel(this);
+    pOutputModel->setPreset(preset);
+
+    QSortFilterProxyModel* pOutputProxyModel = new QSortFilterProxyModel(this);
+    pOutputProxyModel->setSortRole(Qt::UserRole);
+    pOutputProxyModel->setSourceModel(pOutputModel);
+    m_ui.m_pOutputMappingTableView->setModel(pOutputProxyModel);
+
+    for (int i = 0; i < pOutputModel->columnCount(); ++i) {
+        QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
+            i, m_ui.m_pOutputMappingTableView);
+        if (pDelegate != NULL) {
+            qDebug() << "Setting output delegate for column" << i << pDelegate;
+            m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+        }
+    }
+
+    // Now that we have set the new model our old model can be deleted.
+    delete m_pOutputProxyModel;
+    m_pOutputProxyModel = pOutputProxyModel;
+    delete m_pOutputTableModel;
+    m_pOutputTableModel = pOutputModel;
 }
 
 void DlgPrefController::slotEnableDevice(bool enable) {
@@ -390,11 +415,22 @@ void DlgPrefController::clearAllInputMappings() {
 }
 
 void DlgPrefController::addOutputMapping() {
+    if (m_pOutputTableModel) {
+        m_pOutputTableModel->addEmptyOutputMapping();
+        slotDirty();
+    }
 }
 
 void DlgPrefController::removeOutputMappings() {
-    QModelIndexList selectedIndices =
-            m_ui.m_pOutputMappingTableView->selectionModel()->selectedRows();
+    if (m_pOutputProxyModel) {
+        QItemSelection selection = m_pOutputProxyModel->mapSelectionToSource(
+            m_ui.m_pOutputMappingTableView->selectionModel()->selection());
+        QModelIndexList selectedIndices = selection.indexes();
+        if (selectedIndices.size() > 0 && m_pOutputTableModel) {
+            m_pOutputTableModel->removeOutputMappings(selectedIndices);
+            slotDirty();
+        }
+    }
 }
 
 void DlgPrefController::clearAllOutputMappings() {
@@ -403,5 +439,9 @@ void DlgPrefController::clearAllOutputMappings() {
             tr("Are you sure you want to clear all output mappings?"),
             QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok) {
         return;
+    }
+    if (m_pOutputTableModel) {
+        m_pOutputTableModel->clear();
+        slotDirty();
     }
 }
