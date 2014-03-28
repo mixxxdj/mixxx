@@ -49,6 +49,8 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
             this, SLOT(slotEnableDevice(bool)));
 
+    m_ui.btnLearningWizard->setEnabled(controller->isOpen());
+
     // Connect our signals to controller manager.
     connect(this, SIGNAL(openController(Controller*)),
             m_pControllerManager, SLOT(openController(Controller*)));
