@@ -35,7 +35,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    //frequency->setLinkHint(EffectManifestParameter::LINK_INVERSE);
+    frequency->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     frequency->setDefault(1.0);
     frequency->setMinimum(0.0);
     frequency->setMaximum(1.0);
