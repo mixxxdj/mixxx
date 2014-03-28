@@ -34,6 +34,10 @@ class EffectParameterSlot : public QObject {
                      QString::number(iSlotNumber+1));
     }
 
+    static QString formatItemPrefix(const unsigned int iParameterNumber) {
+        return QString("parameter%1").arg(iParameterNumber + 1);
+    }
+
     // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
 

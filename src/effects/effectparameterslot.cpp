@@ -17,7 +17,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
                                     m_iSlotNumber)),
           m_pEffectParameter(NULL) {
-    QString itemPrefix = QString("parameter%1").arg(QString::number(iParameterNumber+1));
+    QString itemPrefix = formatItemPrefix(iParameterNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(

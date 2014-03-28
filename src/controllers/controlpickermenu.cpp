@@ -416,8 +416,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                      ++iParameterSlotNumber) {
                     const QString parameterSlotGroup = EffectParameterSlot::formatGroupString(
                             iRackNumber - 1, iEffectUnitNumber - 1,
-                            iEffectSlotNumber - 1, iParameterSlotNumber - 1);
-
+                            iEffectSlotNumber - 1);
+                    const QString parameterSlotItemPrefix = EffectParameterSlot::formatItemPrefix(
+                            iParameterSlotNumber - 1);
                     QMenu* parameterSlotMenu = addSubmenu(
                         m_parameterStr.arg(iParameterSlotNumber),
                         effectSlotMenu);
@@ -426,11 +427,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         m_parameterStr.arg(iParameterSlotNumber)));
 
                     // Likely to change soon.
-                    addEffectControl(parameterSlotGroup, "value_normalized",
+                    addEffectControl(parameterSlotGroup, parameterSlotItemPrefix,
                                      tr("Parameter value"), descriptionPrefix,
                                      parameterSlotMenu, true);
 
-                    addEffectControl(parameterSlotGroup, "link_type",
+                    addEffectControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
                                      tr("3-state Super Knob Link Toggle (unlinked, linear, inverse)"),
                                      descriptionPrefix, parameterSlotMenu);
 
