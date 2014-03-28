@@ -78,6 +78,8 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
             (value_histogram.contains(0x00) || value_histogram.contains(0x7F));
     bool multiple_one_or_7f_values = value_histogram.value(0x01, 0x00) > 1 ||
             value_histogram.value(0x7F, 0x00) > 1;
+    bool multiple_values_around_0x40 = value_histogram.contains(0x41) &&
+            value_histogram.contains(0x3F) && !value_histogram.contains(0x40);
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
@@ -146,6 +148,15 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
         // processing).
         MidiOptions options;
         options.selectknob = true;
+        MidiKey knob;
+        knob.status = MIDI_CC | *channels.begin();
+        knob.control = *controls.begin();
+        mappings.append(qMakePair(knob, options));
+    } else if (one_control && one_channel && multiple_values_around_0x40) {
+        // A "spread 64" ticker, where 0x40 is zero, positive jog values are
+        // 0x41 and above, and negative jog values are 0x3F and below.
+        MidiOptions options;
+        options.spread64 = true;
 
         MidiKey knob;
         knob.status = MIDI_CC | *channels.begin();
