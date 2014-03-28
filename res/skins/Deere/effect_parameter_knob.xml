@@ -18,7 +18,7 @@
         <MinAngle>-230</MinAngle>
         <MaxAngle>50</MaxAngle>
         <Connection>
-          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>_Parameter<Variable name="EffectParameter"/>],value_normalized</ConfigKey>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
         </Connection>
       </KnobComposed>
       <EffectParameterName>
@@ -31,7 +31,7 @@
       </EffectParameterName>
     </Children>
     <Connection>
-      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>_Parameter<Variable name="EffectParameter"/>],loaded</ConfigKey>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
