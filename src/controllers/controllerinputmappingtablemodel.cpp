@@ -150,7 +150,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
     int column = index.column();
 
     if (m_pMidiPreset != NULL) {
-        if (row >= m_midiInputMappings.size()) {
+        if (row < 0 || row >= m_midiInputMappings.size()) {
             return QVariant();
         }
 
