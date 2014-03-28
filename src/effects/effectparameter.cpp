@@ -196,32 +196,6 @@ void EffectParameter::setLinkType(EffectManifestParameter::LinkType linkType) {
     // TODO(rryan) update value based on link type.
 }
 
-void EffectParameter::onChainParameterChanged(double chainParameter) {
-    double max;
-    double min;
-    switch (m_linkType) {
-        case EffectManifestParameter::LINK_INVERSE:
-            chainParameter = 1.0 - chainParameter;
-            // Intentional fall-through.
-        case EffectManifestParameter::LINK_LINKED:
-            if (chainParameter < 0.0 || chainParameter > 1.0) {
-                return;
-            }
-            max = m_maximum.toDouble();
-            min = m_minimum.toDouble();
-            if (m_parameter.controlHint() == EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC) {
-                double dB1 = log10((max - min) + 1.0);
-                setValue(min + pow(10.0, dB1 * chainParameter) - 1.0);
-            } else {
-                setValue(min + chainParameter * (max - min));
-            }
-            break;
-        case EffectManifestParameter::LINK_NONE:
-        default:
-            break;
-    }
-}
-
 QVariant EffectParameter::getValue() const {
     return m_value;
 }

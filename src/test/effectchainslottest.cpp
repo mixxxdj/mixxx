@@ -53,16 +53,6 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     ControlObject::set(ConfigKey(group, "num_effects"), 1);
     EXPECT_EQ(0, pChain->numEffects());
 
-    ControlObject::set(ConfigKey(group, "parameter"), 0.5);
-    EXPECT_DOUBLE_EQ(0.5, pChain->parameter());
-
-    pChain->setParameter(1.0);
-    EXPECT_DOUBLE_EQ(pChain->parameter(),
-                     ControlObject::get(ConfigKey(group, "parameter")));
-
-    ControlObject::set(ConfigKey(group, "parameter"), 0.5);
-    EXPECT_DOUBLE_EQ(0.5, pChain->parameter());
-
     pChain->setMix(1.0);
     EXPECT_DOUBLE_EQ(pChain->mix(),
                      ControlObject::get(ConfigKey(group, "mix")));
