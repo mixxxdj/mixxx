@@ -325,6 +325,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
             i, m_ui.m_pInputMappingTableView);
         if (pDelegate != NULL) {
+            qDebug() << "Setting input delegate for column" << i << pDelegate;
             m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
     }

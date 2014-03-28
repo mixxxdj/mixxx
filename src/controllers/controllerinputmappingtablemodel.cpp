@@ -141,8 +141,10 @@ int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent) con
 
 QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                                                 int role) const {
+    // We use UserRole as the "sort" role with QSortFilterProxyModel.
     if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole)) {
+                             role != Qt::EditRole &&
+                             role != Qt::UserRole)) {
         return QVariant();
     }
 
@@ -164,8 +166,22 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_CONTROL:
                 return mapping.key.control;
             case MIDI_COLUMN_OPTIONS:
+                // UserRole is used for sorting.
+                if (role == Qt::UserRole) {
+                    return mapping.options.all;
+                }
                 return qVariantFromValue(mapping.options);
             case MIDI_COLUMN_ACTION:
+                // Present the raw CO name for editing.
+                if (role == Qt::EditRole) {
+                    if (mapping.control.group().isEmpty() &&
+                        mapping.control.item().isEmpty()) {
+                        return QString();
+                    } else {
+                        return mapping.control.group() + "," + mapping.control.item();
+                    }
+                }
+
                 if (mapping.control.group().isEmpty() &&
                     mapping.control.item().isEmpty()) {
                     return tr("No action chosen.");

@@ -171,6 +171,16 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_MAX:
                 return mapping.output.max;
             case MIDI_COLUMN_ACTION:
+                // Present the raw CO name for editing.
+                if (role == Qt::EditRole) {
+                    if (mapping.control.group().isEmpty() &&
+                        mapping.control.item().isEmpty()) {
+                        return QString();
+                    } else {
+                        return mapping.control.group() + "," + mapping.control.item();
+                    }
+                }
+
                 if (mapping.control.group().isEmpty() &&
                     mapping.control.item().isEmpty()) {
                     return tr("No action chosen.");
