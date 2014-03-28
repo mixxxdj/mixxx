@@ -65,7 +65,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
     QList<QPair<MidiKey, MidiOptions> > mappings;
 
     bool one_control = controls.size() == 1;
-    bool one_channel = controls.size() == 1;
+    bool one_channel = channels.size() == 1;
     bool only_note_on = opcodes.size() == 1 && opcodes.contains(MIDI_NOTE_ON);
     bool only_note_on_and_note_off = opcodes.size() == 2 &&
             opcodes.contains(MIDI_NOTE_ON) &&
