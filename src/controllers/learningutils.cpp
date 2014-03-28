@@ -76,10 +76,10 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
             value_histogram.contains(0x00) && value_histogram.contains(0x7F);
     bool one_value_7bit_max_or_min = value_histogram.size() == 1 &&
             (value_histogram.contains(0x00) || value_histogram.contains(0x7F));
-    bool multiple_one_or_7f_values = value_histogram.value(0x01, 0x00) > 1 ||
-            value_histogram.value(0x7F, 0x00) > 1;
-    bool multiple_values_around_0x40 = value_histogram.contains(0x41) &&
-            value_histogram.contains(0x3F) && !value_histogram.contains(0x40);
+    bool multiple_one_or_7f_values = value_histogram.value(0x01, 0) > 1 ||
+            value_histogram.value(0x7F, 0) > 1;
+    bool multiple_values_around_0x40 = value_histogram.value(0x41, 0) > 1 &&
+            value_histogram.value(0x3F, 0) > 1 && !value_histogram.contains(0x40);
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
