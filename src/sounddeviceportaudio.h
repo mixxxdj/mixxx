@@ -78,6 +78,9 @@ class SoundDevicePortAudio : public SoundDevice {
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
     PaStreamParameters m_inputParams;
+    FIFO<CSAMPLE>* m_outputFifo;
+    FIFO<CSAMPLE>* m_inputFifo;
+
     CSAMPLE* m_pOutputBuffer;
     unsigned int m_pOutputBufferReadFrame;
     CSAMPLE* m_pInputBuffer;
