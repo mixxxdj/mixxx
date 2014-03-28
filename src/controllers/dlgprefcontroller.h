@@ -9,6 +9,7 @@
 #define DLGPREFCONTROLLER_H_
 
 #include <QHash>
+#include <QSortFilterProxyModel>
 
 #include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controllerpreset.h"
@@ -86,6 +87,7 @@ class DlgPrefController : public DlgPreferencePage {
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
     ControllerInputMappingTableModel* m_pInputTableModel;
+    QSortFilterProxyModel* m_pInputProxyModel;
     bool m_bDirty;
 };
 

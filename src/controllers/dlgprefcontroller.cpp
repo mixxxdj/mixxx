@@ -24,6 +24,7 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
           m_pController(controller),
           m_pDlgControllerLearning(NULL),
           m_pInputTableModel(NULL),
+          m_pInputProxyModel(NULL),
           m_bDirty(false) {
     m_ui.setupUi(this);
 
@@ -312,7 +313,10 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this);
     pInputModel->setPreset(preset);
-    m_ui.m_pInputMappingTableView->setModel(pInputModel);
+
+    QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
+    pInputProxyModel->setSourceModel(pInputModel);
+    m_ui.m_pInputMappingTableView->setModel(pInputProxyModel);
 
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
@@ -327,6 +331,10 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
         delete m_pInputTableModel;
     }
     m_pInputTableModel = pInputModel;
+    if (m_pInputProxyModel) {
+        delete m_pInputProxyModel;
+    }
+    m_pInputProxyModel = pInputProxyModel;
 }
 
 void DlgPrefController::slotEnableDevice(bool enable) {
@@ -357,11 +365,14 @@ void DlgPrefController::addInputMapping() {
 }
 
 void DlgPrefController::removeInputMappings() {
-    QModelIndexList selectedIndices =
-            m_ui.m_pInputMappingTableView->selectionModel()->selectedRows();
-    if (selectedIndices.size() > 0 && m_pInputTableModel) {
-        m_pInputTableModel->removeInputMappings(selectedIndices);
-        slotDirty();
+    if (m_pInputProxyModel) {
+        QItemSelection selection = m_pInputProxyModel->mapSelectionToSource(
+            m_ui.m_pInputMappingTableView->selectionModel()->selection());
+        QModelIndexList selectedIndices = selection.indexes();
+        if (selectedIndices.size() > 0 && m_pInputTableModel) {
+            m_pInputTableModel->removeInputMappings(selectedIndices);
+            slotDirty();
+        }
     }
 }
 
