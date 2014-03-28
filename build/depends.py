@@ -648,6 +648,7 @@ class MixxxCore(Feature):
                    "controllers/controllerpresetinfo.cpp",
                    "controllers/controlpickermenu.cpp",
                    "controllers/controllerinputmappingtablemodel.cpp",
+                   "controllers/controlleroutputmappingtablemodel.cpp",
                    "controllers/delegates/midichanneldelegate.cpp",
                    "controllers/delegates/midiopcodedelegate.cpp",
                    "controllers/delegates/midibytedelegate.cpp",
