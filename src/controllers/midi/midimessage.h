@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QPair>
+#include <QMetaType>
 
 typedef enum {
     MIDI_NOTE_OFF       = 0x80,
@@ -81,6 +82,7 @@ struct MidiOptions {
         };
     };
 };
+Q_DECLARE_METATYPE(MidiOptions);
 
 struct MidiOutput {
     MidiOutput()
