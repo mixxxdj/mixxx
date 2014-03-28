@@ -19,7 +19,7 @@ class MidiOutputHandler : QObject {
     Q_OBJECT
   public:
     MidiOutputHandler(const QString& group, const QString& key, MidiController* controller,
-                      float min, float max,
+                      double min, double max,
                       unsigned char status, unsigned char midino,
                       unsigned char on, unsigned char off);
     virtual ~MidiOutputHandler();
@@ -33,8 +33,8 @@ class MidiOutputHandler : QObject {
   private:
     MidiController* m_pController;
     ControlObjectThread m_cot;
-    float m_min;
-    float m_max;
+    double m_min;
+    double m_max;
     unsigned char m_status;
     unsigned char m_midino;
     unsigned char m_on;
@@ -43,4 +43,3 @@ class MidiOutputHandler : QObject {
 };
 
 #endif
-

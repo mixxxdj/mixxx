@@ -93,8 +93,8 @@ void MidiController::createOutputHandlers() {
         unsigned char control = outputPack.control;
         unsigned char on = outputPack.on;
         unsigned char off = outputPack.off;
-        float min = outputPack.min;
-        float max = outputPack.max;
+        double min = outputPack.min;
+        double max = outputPack.max;
 
         if (debugging()) {
             qDebug() << QString(

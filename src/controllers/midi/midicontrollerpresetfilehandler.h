@@ -31,7 +31,7 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
                       unsigned char status, unsigned char control) const;
 
     void outputMappingToXML(QDomElement& parentNode, unsigned char on,
-                            unsigned char off, float max, float min) const;
+                            unsigned char off, double max, double min) const;
 };
 
 #endif

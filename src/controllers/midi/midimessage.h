@@ -86,13 +86,13 @@ Q_DECLARE_METATYPE(MidiOptions);
 
 struct MidiOutput {
     MidiOutput()
-            : min(0),
+            : min(0.0),
               max(0.0),
               message(0) {
     }
 
-    float       min;
-    float       max;
+    double min;
+    double max;
     union
     {
         uint32_t    message;

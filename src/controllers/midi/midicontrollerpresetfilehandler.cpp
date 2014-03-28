@@ -9,8 +9,8 @@
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/midi/midiutils.h"
 
-#define DEFAULT_OUTPUT_MAX  1.0f
-#define DEFAULT_OUTPUT_MIN  0.0f    // Anything above 0 is "on"
+#define DEFAULT_OUTPUT_MAX  1.0
+#define DEFAULT_OUTPUT_MIN  0.0    // Anything above 0 is "on"
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
@@ -146,21 +146,21 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         ok = false;
         if (!minNode.isNull()) {
-            outputMessage.min = minNode.text().toFloat(&ok);
+            outputMessage.min = minNode.text().toDouble(&ok);
         } else {
             ok = false;
         }
 
-        if (!ok) //If not a float, or node wasn't defined
+        if (!ok) //If not a double, or node wasn't defined
             outputMessage.min = DEFAULT_OUTPUT_MIN;
 
         if (!maxNode.isNull()) {
-            outputMessage.max = maxNode.text().toFloat(&ok);
+            outputMessage.max = maxNode.text().toDouble(&ok);
         } else {
             ok = false;
         }
 
-        if (!ok) //If not a float, or node wasn't defined
+        if (!ok) //If not a double, or node wasn't defined
             outputMessage.max = DEFAULT_OUTPUT_MAX;
 
         // END unserialize output
@@ -351,7 +351,7 @@ void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode,
 }
 
 void MidiControllerPresetFileHandler::outputMappingToXML(QDomElement& parentNode, unsigned char on,
-                                                         unsigned char off, float max, float min) const {
+                                                         unsigned char off, double max, double min) const {
     QDomText text;
     QDomDocument nodeMaker;
     QDomElement tagNode;

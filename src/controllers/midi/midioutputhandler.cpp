@@ -14,7 +14,7 @@
 
 MidiOutputHandler::MidiOutputHandler(const QString& group, const QString& key,
                                      MidiController *controller,
-                                     float min, float max,
+                                     double min, double max,
                                      unsigned char status, unsigned char midino,
                                      unsigned char on, unsigned char off)
         : m_pController(controller),
