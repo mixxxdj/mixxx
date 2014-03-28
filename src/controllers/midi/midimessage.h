@@ -1,6 +1,9 @@
 #ifndef MIDIMESSAGE_H
 #define MIDIMESSAGE_H
 
+#include <QList>
+#include <QPair>
+
 typedef enum {
     MIDI_NOTE_OFF       = 0x80,
     MIDI_NOTE_ON        = 0x90,
@@ -27,12 +30,18 @@ typedef enum {
     MIDI_SYSTEM_RESET   = 0xFF,
 } MidiOpCode;
 
-
 typedef unsigned int    uint32_t;
 typedef unsigned short  uint16_t;
 
-struct MidiOptions
-{
+struct MidiOptions {
+    MidiOptions()
+            : all(0) {
+    }
+
+    bool operator==(const MidiOptions& other) const {
+        return all == other.all;
+    }
+
     union
     {
         uint32_t    all;
@@ -55,8 +64,13 @@ struct MidiOptions
     };
 };
 
-struct MidiOutput
-{
+struct MidiOutput {
+    MidiOutput()
+            : min(0),
+              max(0.0),
+              message(0) {
+    }
+
     float       min;
     float       max;
     union
@@ -72,8 +86,21 @@ struct MidiOutput
     };
 };
 
-struct MidiKey
-{
+struct MidiKey {
+    MidiKey()
+            : status(0),
+              control(0) {
+    }
+
+    MidiKey(unsigned char status, unsigned char control)
+            : status(status),
+              control(control) {
+    }
+
+    bool operator==(const MidiKey& other) const {
+        return key == other.key;
+    }
+
     union
     {
         uint16_t    key;
@@ -85,5 +112,37 @@ struct MidiKey
     };
 };
 
+typedef QPair<MidiKey, MidiOptions> MidiKeyAndOptions;
+typedef QList<QPair<MidiKey, MidiOptions> > MidiKeyAndOptionsList;
+
+inline unsigned char channelFromStatus(unsigned char status) {
+    return status & 0x0F;
+}
+
+inline MidiOpCode opCodeFromStatus(unsigned char status) {
+    unsigned char opCode = status & 0xF0;
+    // MIDI_SYSEX and higher don't have a channel and occupy the entire byte.
+    if (opCode == 0xF0) {
+        opCode = status;
+    }
+    return static_cast<MidiOpCode>(opCode);
+}
+
+inline bool isMessageTwoBytes(unsigned char opCode) {
+    switch (opCode) {
+        case MIDI_SONG:
+        case MIDI_NOTE_OFF:
+        case MIDI_NOTE_ON:
+        case MIDI_AFTERTOUCH:
+        case MIDI_CC:
+            return true;
+        default:
+            return false;
+    }
+}
+
+inline bool isClockSignal(const MidiKey& mappingKey) {
+    return (mappingKey.key & MIDI_TIMING_CLK) == MIDI_TIMING_CLK;
+}
 
 #endif

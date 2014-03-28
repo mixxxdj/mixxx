@@ -38,16 +38,17 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    int open();
-    int close();
-    QString getError() const;
+    virtual int open();
+    virtual int close();
+    virtual QString getError() const;
 
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)
-    int callbackProcess(unsigned long framesPerBuffer,
-                        float *output, float* in,
+    int callbackProcess(const unsigned int framesPerBuffer,
+                        CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
+
     virtual unsigned int getDefaultSampleRate() const {
         return m_deviceInfo ? static_cast<unsigned int>(
             m_deviceInfo->defaultSampleRate) : 44100;
@@ -55,7 +56,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
     // PortAudio stream for this device.
-    PaStream *m_pStream;
+    PaStream* m_pStream;
     // PortAudio device index for this device.
     PaDeviceIndex m_devId;
     // Struct containing information about this device. Don't free() it, it

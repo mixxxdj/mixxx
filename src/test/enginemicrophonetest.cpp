@@ -20,7 +20,7 @@ class EngineMicrophoneTest : public testing::Test {
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);
 
-        m_pMicrophone = new EngineMicrophone("[Microphone]");
+        m_pMicrophone = new EngineMicrophone("[Microphone]", NULL);
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 
@@ -81,7 +81,7 @@ class EngineMicrophoneTest : public testing::Test {
 
 TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
     FillBuffer<CSAMPLE>(input, 0.1f, inputLength);
-    SampleUtil::applyGain(output, 0.0f, outputLength);
+    SampleUtil::clear(output, outputLength);
 
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
     m_pTalkover->set(1.0);
@@ -94,7 +94,7 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
 }
 
 TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
-    SampleUtil::applyGain(output, 0.0f, outputLength);
+    SampleUtil::clear(output, outputLength);
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
 
     m_pTalkover->set(0.0);
@@ -115,7 +115,7 @@ TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
 }
 
 TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
-    SampleUtil::applyGain(output, 0.0f, outputLength);
+    SampleUtil::clear(output, outputLength);
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
     m_pTalkover->set(1.0);
 

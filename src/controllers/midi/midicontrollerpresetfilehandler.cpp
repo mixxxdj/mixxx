@@ -61,7 +61,6 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
         QDomElement optionsNode = control.firstChildElement("options").firstChildElement();
 
         MidiOptions options;
-        options.all = 0;
 
         QString strMidiOption;
         while (!optionsNode.isNull()) {

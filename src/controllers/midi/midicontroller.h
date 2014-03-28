@@ -20,9 +20,6 @@
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
 
-#define MIDI_SYS_RT_MSG_MASK 0xF8
-// from MIDI Message Table http://www.midi.org/techspecs/midimessages.php
-
 class MidiController : public Controller {
     Q_OBJECT
   public:
@@ -46,13 +43,21 @@ class MidiController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
-    bool isClockSignal(MidiKey &mappingKey);
+    virtual void accept(ControllerVisitor* visitor) {
+        if (visitor) {
+            visitor->visit(this);
+        }
+    }
 
     virtual bool isMappable() const {
         return m_preset.isMappable();
     }
 
     virtual bool matchPreset(const PresetInfo& preset);
+
+  signals:
+    void messageReceived(unsigned char status, unsigned char control,
+                         unsigned char value);
 
   protected:
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
@@ -75,6 +80,11 @@ class MidiController : public Controller {
     // Initializes the engine and static output mappings.
     void applyPreset(QList<QString> scriptPaths);
 
+    void learnTemporaryInputMappings(const MixxxControl& control,
+                                     const MidiKeyAndOptionsList& mappings);
+    void clearTemporaryInputMappings();
+    void commitTemporaryInputMappings();
+
   private:
     virtual void sendWord(unsigned int word) = 0;
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
@@ -88,6 +98,7 @@ class MidiController : public Controller {
         return &m_preset;
     }
 
+    QHash<uint16_t, QPair<MixxxControl, MidiOptions> > m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
     MidiControllerPreset m_preset;
     SoftTakeover m_st;

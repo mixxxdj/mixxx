@@ -371,6 +371,9 @@ class Qt(Dependence):
             build.flags['sqlitedll'] = util.get_flags(
                 build.env, 'sqlitedll', 1)
 
+class TestHeaders(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/gtest-1.5.0/include")
 
 class FidLib(Dependence):
 
@@ -530,6 +533,7 @@ class MixxxCore(Feature):
                    "controlobject.cpp",
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
+                   "controleffectknob.cpp",
                    "controlpushbutton.cpp",
                    "controlindicator.cpp",
                    "controlttrotary.cpp",
@@ -557,6 +561,35 @@ class MixxxCore(Feature):
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
 
+                   "effects/effectmanifest.cpp",
+                   "effects/effectmanifestparameter.cpp",
+
+                   "effects/effectchain.cpp",
+                   "effects/effect.cpp",
+                   "effects/effectparameter.cpp",
+
+                   "effects/effectrack.cpp",
+                   "effects/effectchainslot.cpp",
+                   "effects/effectslot.cpp",
+                   "effects/effectparameterslot.cpp",
+
+                   "effects/effectsmanager.cpp",
+                   "effects/effectchainmanager.cpp",
+                   "effects/effectsbackend.cpp",
+
+                   "effects/native/nativebackend.cpp",
+                   "effects/native/bitcrushereffect.cpp",
+                   "effects/native/flangereffect.cpp",
+                   "effects/native/filtereffect.cpp",
+                   "effects/native/reverbeffect.cpp",
+                   "effects/native/echoeffect.cpp",
+                   "effects/native/reverb/Reverb.cc",
+
+                   "engine/effects/engineeffectsmanager.cpp",
+                   "engine/effects/engineeffectrack.cpp",
+                   "engine/effects/engineeffectchain.cpp",
+                   "engine/effects/engineeffect.cpp",
+
                    "engine/sync/basesyncablelistener.cpp",
                    "engine/sync/enginesync.cpp",
                    "engine/sync/synccontrol.cpp",
@@ -577,8 +610,6 @@ class MixxxCore(Feature):
                    "engine/enginechannel.cpp",
                    "engine/enginemaster.cpp",
                    "engine/enginedelay.cpp",
-                   "engine/engineflanger.cpp",
-                   "engine/enginefiltereffect.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
                    "engine/enginesidechaincompressor.cpp",
@@ -616,6 +647,8 @@ class MixxxCore(Feature):
                    "controllers/controllermanager.cpp",
                    "controllers/controllerpresetfilehandler.cpp",
                    "controllers/controllerpresetinfo.cpp",
+                   "controllers/controlpickermenu.cpp",
+                   "controllers/learningutils.cpp",
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
@@ -661,6 +694,9 @@ class MixxxCore(Feature):
                    "widget/wimagestore.cpp",
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
+                   "widget/weffectchain.cpp",
+                   "widget/weffect.cpp",
+                   "widget/weffectparameter.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
@@ -1054,7 +1090,7 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
-        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
+        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices]
 

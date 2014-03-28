@@ -526,7 +526,7 @@ p, li { white-space: pre-wrap; }
    <item row="3" column="1">
     <widget class="QGroupBox" name="verticalGroupBox">
      <property name="title">
-      <string>Metadata format</string>
+      <string>Shoutcast metadata format</string>
      </property>
      <property name="flat">
       <bool>false</bool>

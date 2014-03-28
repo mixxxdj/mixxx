@@ -659,7 +659,7 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 
 void WaveformWidgetFactory::startVSync(MixxxMainWindow* mixxxMainWindow) {
     m_vsyncThread = new VSyncThread(mixxxMainWindow);
-    m_vsyncThread->start();
+    m_vsyncThread->start(QThread::NormalPriority);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),
             this, SLOT(render()));
