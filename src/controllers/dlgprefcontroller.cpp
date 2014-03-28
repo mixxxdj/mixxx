@@ -54,8 +54,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
             this, SLOT(slotEnableDevice(bool)));
 
-    m_ui.btnLearningWizard->setEnabled(controller->isOpen());
-
     // Connect our signals to controller manager.
     connect(this, SIGNAL(openController(Controller*)),
             m_pControllerManager, SLOT(openController(Controller*)));
@@ -63,12 +61,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             m_pControllerManager, SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
             m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
-
-    // If the controller is not mappable, disable the input and output mapping
-    // sections.
-    bool isMappable = m_pController->isMappable();
-    m_ui.inputMappingsPage->setEnabled(isMappable);
-    m_ui.outputMappingsPage->setEnabled(isMappable);
 
     // Input mappings
     connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
@@ -87,6 +79,8 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             this, SLOT(removeOutputMappings()));
     connect(m_ui.btnClearAllOutputMappings, SIGNAL(clicked()),
             this, SLOT(clearAllOutputMappings()));
+
+    slotUpdate();
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -232,14 +226,18 @@ void DlgPrefController::enumeratePresets() {
 }
 
 void DlgPrefController::slotUpdate() {
-    // Check if the device that this dialog is for is already enabled...
+    // Check if the controller is open.
     bool deviceOpen = m_pController->isOpen();
     // Check/uncheck the "Enabled" box
     m_ui.chkEnabledDevice->setChecked(deviceOpen);
-    // Enable/disable presets group box.
-    m_ui.groupBoxPresets->setEnabled(deviceOpen);
-    // Enable/disable learning wizard option.
-    m_ui.btnLearningWizard->setEnabled(deviceOpen);
+    // Enable/disable access to the preset and mapping pages.
+    m_ui.controllerToolbox->setEnabled(deviceOpen);
+
+    // If the controller is not mappable, disable the input and output mapping
+    // sections.
+    bool isMappable = m_pController->isMappable();
+    m_ui.inputMappingsPage->setEnabled(isMappable);
+    m_ui.outputMappingsPage->setEnabled(isMappable);
 }
 
 void DlgPrefController::slotApply() {
@@ -363,9 +361,8 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 }
 
 void DlgPrefController::slotEnableDevice(bool enable) {
-    // Enable/disable presets group box and learning wizard button.
-    m_ui.groupBoxPresets->setEnabled(enable);
-    m_ui.btnLearningWizard->setEnabled(enable);
+    // Enable/disable preset info page and input/output mapping pages.
+    m_ui.controllerToolbox->setEnabled(enable);
     slotDirty();
 
     // Set tree item text to normal/bold.
