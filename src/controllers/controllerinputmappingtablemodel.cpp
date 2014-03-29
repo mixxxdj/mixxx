@@ -22,7 +22,9 @@ void ControllerInputMappingTableModel::apply() {
         // the table into the preset.
         m_pMidiPreset->inputMappings.clear();
         foreach (const MidiInputMapping& mapping, m_midiInputMappings) {
-            m_pMidiPreset->inputMappings.insert(mapping.key.key, mapping);
+            // Use insertMulti because we support multiple inputs mappings for
+            // the same input MidiKey.
+            m_pMidiPreset->inputMappings.insertMulti(mapping.key.key, mapping);
         }
     }
 }
@@ -55,6 +57,25 @@ void ControllerInputMappingTableModel::clear() {
 
 void ControllerInputMappingTableModel::addMappings(const MidiInputMappings& mappings) {
     if (m_pMidiPreset != NULL) {
+        // When we add mappings from controller learning, we first remove the
+        // duplicates from the table. We allow multiple mappings per MIDI
+        // message but MIDI learning over-writes duplicates instead of adding.
+
+        if (!m_midiInputMappings.isEmpty()) {
+            QSet<uint16_t> keys;
+            foreach (const MidiInputMapping& mapping, mappings) {
+                keys.insert(mapping.key.key);
+            }
+
+            for (int row = m_midiInputMappings.size() - 1; row >= 0; row--) {
+                if (keys.contains(m_midiInputMappings.at(row).key.key)) {
+                    beginRemoveRows(QModelIndex(), row, row);
+                    m_midiInputMappings.removeAt(row);
+                    endRemoveRows();
+                }
+            }
+        }
+
         beginInsertRows(QModelIndex(), m_midiInputMappings.size(),
                         m_midiInputMappings.size() + mappings.size() - 1);
         m_midiInputMappings.append(mappings);

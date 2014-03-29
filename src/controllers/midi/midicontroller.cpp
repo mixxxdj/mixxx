@@ -218,13 +218,18 @@ void MidiController::clearTemporaryInputMappings() {
 }
 
 void MidiController::commitTemporaryInputMappings() {
-    // NOTE(rryan): QMap::unite() does not work because it inserts
-    // duplicate keys instead of replacing.
+    // We want to replace duplicates that exist in m_preset but allow duplicates
+    // in m_temporaryInputMappings. To do this, we first remove every key in
+    // m_temporaryInputMappings from m_preset.inputMappings.
     for (QHash<uint16_t, MidiInputMapping>::const_iterator it =
                  m_temporaryInputMappings.begin();
          it != m_temporaryInputMappings.end(); ++it) {
-        m_preset.inputMappings.insert(it.key(), it.value());
+        m_preset.inputMappings.remove(it.key());
     }
+
+    // Now, we can just use unite since we manually removed the duplicates in
+    // the original set.
+    m_preset.inputMappings.unite(m_temporaryInputMappings);
     m_temporaryInputMappings.clear();
 }
 

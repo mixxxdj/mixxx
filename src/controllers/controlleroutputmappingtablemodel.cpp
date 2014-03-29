@@ -21,6 +21,8 @@ void ControllerOutputMappingTableModel::apply() {
         // the table into the preset.
         m_pMidiPreset->outputMappings.clear();
         foreach (const MidiOutputMapping& mapping, m_midiOutputMappings) {
+            // Use insertMulti because we support multiple outputs from the same
+            // control.
             m_pMidiPreset->outputMappings.insertMulti(mapping.control, mapping);
         }
     }

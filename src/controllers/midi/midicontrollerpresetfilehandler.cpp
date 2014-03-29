@@ -97,7 +97,9 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
         //          << QString::number(mapping.key.control, 16).toUpper()
         //          << mapping.control.group << mapping.control.item;
 
-        preset->inputMappings.insert(mapping.key.key, mapping);
+        // Use insertMulti because we support multiple inputs mappings for the
+        // same input MidiKey.
+        preset->inputMappings.insertMulti(mapping.key.key, mapping);
         control = control.nextSiblingElement("control");
     }
 
@@ -175,8 +177,8 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
         //          << QString::number(mapping.output.off, 16).toUpper()
         //          << controlGroup << controlKey;
 
-        // We use insertMulti because certain tricks are done with multiple
-        // entries for the same control.
+        // Use insertMulti because we support multiple outputs from the same
+        // control.
         preset->outputMappings.insertMulti(mapping.control, mapping);
 
         output = output.nextSiblingElement("output");
