@@ -32,6 +32,10 @@
 #ifndef _BASICS_H_
 #define _BASICS_H_
 
+// NOTE(rryan): 3/2014 Added for MSVC support. (missing M_PI)
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,6 +48,19 @@
 #include "defs.h"
 typedef CSAMPLE sample_t;
 
+// NOTE(rryan): 3/2014 Added these for the MSVC build.
+#if defined(_WIN32) && !defined(__MINGW32__) && (!defined(_MSC_VER) || _MSC_VER<1600)
+#include <BaseTsd.h>
+#include <stddef.h>
+typedef __int8 int8;
+typedef unsigned __int8 uint8;
+typedef __int16 int16;
+typedef unsigned __int16 uint16;
+typedef __int32 int32;
+typedef unsigned __int32 uint32;
+typedef __int64 int64;
+typedef unsigned __int64 uint64;
+#else
 typedef __int8_t			int8;
 typedef __uint8_t			uint8;
 typedef __int16_t			int16;
@@ -52,6 +69,7 @@ typedef __int32_t			int32;
 typedef __uint32_t		uint32;
 typedef __int64_t			int64;
 typedef __uint64_t		uint64;
+#endif
 
 #define MIN_GAIN .000001 /* -120 dB */
 /* smallest non-denormal 32 bit IEEE float is 1.18e-38 */
