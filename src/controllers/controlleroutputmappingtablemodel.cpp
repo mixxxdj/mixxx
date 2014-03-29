@@ -2,6 +2,7 @@
 
 #include "controllers/controlleroutputmappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
+#include "controllers/midi/midiutils.h"
 #include "controllers/delegates/controldelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
@@ -154,9 +155,9 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
         QString value;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
-                return channelFromStatus(mapping.output.status);
+                return MidiUtils::channelFromStatus(mapping.output.status);
             case MIDI_COLUMN_OPCODE:
-                return opCodeFromStatus(mapping.output.status);
+                return MidiUtils::opCodeFromStatus(mapping.output.status);
             case MIDI_COLUMN_CONTROL:
                 return mapping.output.control;
             case MIDI_COLUMN_ON:
@@ -203,13 +204,13 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 mapping.output.status = static_cast<unsigned char>(
-                    opCodeFromStatus(mapping.output.status)) |
+                    MidiUtils::opCodeFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_OPCODE:
                 mapping.output.status = static_cast<unsigned char>(
-                    channelFromStatus(mapping.output.status)) |
+                    MidiUtils::channelFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;

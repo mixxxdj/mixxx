@@ -8,6 +8,7 @@
 
 #include "controllers/midi/midicontroller.h"
 
+#include "controllers/midi/midiutils.h"
 #include "controllers/defs_controllers.h"
 #include "controlobject.h"
 #include "errordialoghandler.h"
@@ -213,8 +214,8 @@ void MidiController::learnTemporaryInputMappings(const MixxxControl& control,
 
         m_temporaryInputMappings.insert(mapping.first.key, target);
 
-        unsigned char opCode = opCodeFromStatus(mapping.first.status);
-        bool twoBytes = isMessageTwoBytes(opCode);
+        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.first.status);
+        bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
         QString message = twoBytes ? QString("0x%1 0x%2")
                 .arg(QString::number(mapping.first.status, 16).toUpper(),
                      QString::number(mapping.first.control, 16).toUpper()
@@ -242,8 +243,8 @@ void MidiController::commitTemporaryInputMappings() {
 
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value) {
-    unsigned char channel = channelFromStatus(status);
-    unsigned char opCode = opCodeFromStatus(status);
+    unsigned char channel = MidiUtils::channelFromStatus(status);
+    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
     if (debugging()) {
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
@@ -251,7 +252,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     //if (m_bReceiveInhibit) return;
 
-    MidiKey mappingKey = makeMidiKey(status, control);
+    MidiKey mappingKey = MidiUtils::makeMidiKey(status, control);
 
     bool foundControl = false;
     QPair<MixxxControl, MidiOptions> controlOptions;
@@ -465,7 +466,7 @@ void MidiController::receive(QByteArray data) {
 
     //if (m_bReceiveInhibit) return;
 
-    MidiKey mappingKey = makeMidiKey(data.at(0), 0xFF);
+    MidiKey mappingKey = MidiUtils::makeMidiKey(data.at(0), 0xFF);
 
     // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
     // don't think this actually does anything useful.

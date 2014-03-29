@@ -2,6 +2,7 @@
 
 #include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
+#include "controllers/midi/midiutils.h"
 #include "controllers/delegates/controldelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
@@ -158,9 +159,9 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
         QString value;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
-                return channelFromStatus(mapping.key.status);
+                return MidiUtils::channelFromStatus(mapping.key.status);
             case MIDI_COLUMN_OPCODE:
-                return opCodeFromStatus(mapping.key.status);
+                return MidiUtils::opCodeFromStatus(mapping.key.status);
             case MIDI_COLUMN_CONTROL:
                 return mapping.key.control;
             case MIDI_COLUMN_OPTIONS:
@@ -206,13 +207,13 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 mapping.key.status = static_cast<unsigned char>(
-                    opCodeFromStatus(mapping.key.status)) |
+                    MidiUtils::opCodeFromStatus(mapping.key.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_OPCODE:
                 mapping.key.status = static_cast<unsigned char>(
-                    channelFromStatus(mapping.key.status)) |
+                    MidiUtils::channelFromStatus(mapping.key.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;

@@ -8,6 +8,7 @@
 
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
+#include "controllers/midi/midiutils.h"
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
@@ -85,7 +86,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
 
     // Ignore all standard MIDI System Real-Time Messages because they
     // are continuously sent and prevent mapping of the pressed key.
-    if (isClockSignal(key)) {
+    if (MidiUtils::isClockSignal(key)) {
         return;
     }
 
@@ -114,8 +115,8 @@ void DlgControllerLearning::slotTimerExpired() {
     QString midiControl = "";
     bool first = true;
     foreach (const MidiKeyAndOptions& mapping, mappings) {
-        unsigned char opCode = opCodeFromStatus(mapping.first.status);
-        bool twoBytes = isMessageTwoBytes(opCode);
+        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.first.status);
+        bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
         QString mappingStr = twoBytes ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
                 .arg(QString::number(mapping.first.status, 16).toUpper(),
                      QString::number(mapping.first.control, 16).toUpper()

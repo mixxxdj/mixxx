@@ -135,43 +135,4 @@ struct MidiKey {
 typedef QPair<MidiKey, MidiOptions> MidiKeyAndOptions;
 typedef QList<QPair<MidiKey, MidiOptions> > MidiKeyAndOptionsList;
 
-inline unsigned char channelFromStatus(unsigned char status) {
-    return status & 0x0F;
-}
-
-inline MidiOpCode opCodeFromStatus(unsigned char status) {
-    unsigned char opCode = status & 0xF0;
-    // MIDI_SYSEX and higher don't have a channel and occupy the entire byte.
-    if (opCode == 0xF0) {
-        opCode = status;
-    }
-    return static_cast<MidiOpCode>(opCode);
-}
-
-inline bool isMessageTwoBytes(unsigned char opCode) {
-    switch (opCode) {
-        case MIDI_SONG:
-        case MIDI_NOTE_OFF:
-        case MIDI_NOTE_ON:
-        case MIDI_AFTERTOUCH:
-        case MIDI_CC:
-            return true;
-        default:
-            return false;
-    }
-}
-
-inline MidiKey makeMidiKey(unsigned char status, unsigned char control) {
-    unsigned char opCode = opCodeFromStatus(status);
-    bool twoBytes = isMessageTwoBytes(opCode);
-
-    // When it's part of the message, include it. If the message is not two
-    // bytes, signify that the second byte is part of the payload with 0xFF.
-    return MidiKey(status, twoBytes ? control : 0xFF);
-}
-
-inline bool isClockSignal(const MidiKey& mappingKey) {
-    return (mappingKey.key & MIDI_TIMING_CLK) == MIDI_TIMING_CLK;
-}
-
 #endif

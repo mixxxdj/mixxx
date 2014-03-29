@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "controllers/learningutils.h"
+#include "controllers/midi/midiutils.h"
 
 typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
 
@@ -20,8 +21,8 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
     // Analyze the message
     unsigned char lastValue = !messages.isEmpty() ? messages.at(0).second : 0;
     foreach (const MidiKeyAndValue& message, messages) {
-        MidiOpCode opcode = opCodeFromStatus(message.first.status);
-        unsigned char channel = channelFromStatus(message.first.status);
+        MidiOpCode opcode = MidiUtils::opCodeFromStatus(message.first.status);
+        unsigned char channel = MidiUtils::channelFromStatus(message.first.status);
         opcodes.insert(opcode);
         channels.insert(channel);
         controls.insert(message.first.control);
