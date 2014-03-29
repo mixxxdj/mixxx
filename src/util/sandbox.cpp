@@ -157,6 +157,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
     }
 
 #ifdef Q_OS_MAC
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(canonicalPath),
             kCFURLPOSIXPathStyle, isDirectory);
@@ -190,6 +191,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
             qDebug() << "Failed to create security-scoped bookmark URL for" << canonicalPath;
         }
     }
+#endif
 #endif
     return false;
 }
@@ -321,6 +323,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
 SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
                                                     const QString& bookmarkBase64) {
 #ifdef Q_OS_MAC
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
     if (!bookmarkBA.isEmpty()) {
         CFDataRef bookmarkData = CFDataCreate(
@@ -358,6 +361,7 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
         }
     }
 #endif
+#endif
     return SecurityTokenPointer();
 }
 
@@ -378,10 +382,12 @@ SandboxSecurityToken::~SandboxSecurityToken() {
     if (sDebug) {
         qDebug() << "~SandboxSecurityToken" << m_path;
     }
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     if (m_url) {
         CFURLStopAccessingSecurityScopedResource(m_url);
         CFRelease(m_url);
         m_url = 0;
     }
+#endif
 #endif
 }
