@@ -35,7 +35,12 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
 
     connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
             this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
-    const ControllerPresetPointer pPreset = controller->getPreset();
+    // TODO(rryan): Eh, this really isn't thread safe but it's the way it's been
+    // since 1.11.0. We shouldn't be calling Controller methods because it lives
+    // in a different thread. Booleans (like isOpen()) are fine but a complex
+    // object like a preset involves QHash's and other data structures that
+    // really don't like concurrent access.
+    ControllerPresetPointer pPreset = m_pController->getPreset();
     slotPresetLoaded(pPreset);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
@@ -54,11 +59,19 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
             this, SLOT(slotEnableDevice(bool)));
 
+    // When the user hits apply, apply.
+    connect(m_ui.btnApply, SIGNAL(clicked()),
+            this, SLOT(slotApply()));
+    // We start off clean so the apply button is disabled.
+    m_ui.btnApply->setEnabled(m_bDirty);
+
     // Connect our signals to controller manager.
     connect(this, SIGNAL(openController(Controller*)),
             m_pControllerManager, SLOT(openController(Controller*)));
     connect(this, SIGNAL(closeController(Controller*)),
             m_pControllerManager, SLOT(closeController(Controller*)));
+    connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
+            m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
     connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
             m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
 
@@ -181,6 +194,7 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
 
 void DlgPrefController::slotDirty() {
     m_bDirty = true;
+    m_ui.btnApply->setEnabled(true);
 }
 
 QString nameForPreset(const PresetInfo& preset) {
@@ -226,6 +240,8 @@ void DlgPrefController::enumeratePresets() {
 }
 
 void DlgPrefController::slotUpdate() {
+    enumeratePresets();
+
     // Check if the controller is open.
     bool deviceOpen = m_pController->isOpen();
     // Check/uncheck the "Enabled" box
@@ -240,21 +256,46 @@ void DlgPrefController::slotUpdate() {
     m_ui.outputMappingsPage->setEnabled(isMappable);
 }
 
+void DlgPrefController::slotCancel() {
+    if (m_pInputTableModel != NULL) {
+        m_pInputTableModel->cancel();
+    }
+
+    if (m_pOutputTableModel != NULL) {
+        m_pOutputTableModel->cancel();
+    }
+}
+
 void DlgPrefController::slotApply() {
-    /* User has pressed OK, so if anything has been changed, enable or disable
-     * the device, write the controls to the DOM, and reload the presets.
-     */
     if (m_bDirty) {
-        if (m_ui.chkEnabledDevice->isChecked()) {
+        bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
+        bool enabled = m_pController->isOpen();
+        if (wantEnabled && !enabled) {
             enableDevice();
-        } else {
+        } else if (!wantEnabled && enabled) {
             disableDevice();
         }
 
+        // Apply the presets and load the resulting preset.
+        if (m_pInputTableModel != NULL) {
+            m_pInputTableModel->apply();
+        }
+
+        if (m_pOutputTableModel != NULL) {
+            m_pOutputTableModel->apply();
+        }
+
+        // Load the resulting preset (which has been mutated by the input/output
+        // table models). The controller clones the preset so we aren't touching
+        // the same preset.
+        emit(loadPreset(m_pController, m_pPreset));
+
         //Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
+
+        m_bDirty = false;
+        m_ui.btnApply->setEnabled(false);
     }
-    m_bDirty = false;
 }
 
 void DlgPrefController::slotLoadPreset(int chosenIndex) {
@@ -312,8 +353,20 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     }
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 
+    // We mutate this preset so keep a reference to it while we are using it.
+    // TODO(rryan): Clone it? Technically a waste since nothing else uses this
+    // copy but if someone did they might not expect it to change.
+    m_pPreset = preset;
+
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this);
+    // If the model reports changes, mark ourselves as dirty.
+    connect(pInputModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)),
+            this, SLOT(slotDirty()));
+    connect(pInputModel, SIGNAL(rowsInserted(QModelIndex, int, int)),
+            this, SLOT(slotDirty()));
+    connect(pInputModel, SIGNAL(rowsRemoved(QModelIndex, int, int)),
+            this, SLOT(slotDirty()));
     pInputModel->setPreset(preset);
 
     QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);

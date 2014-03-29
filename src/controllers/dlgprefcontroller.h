@@ -33,16 +33,18 @@ class DlgPrefController : public DlgPreferencePage {
     virtual ~DlgPrefController();
 
   public slots:
-    // Called when the OK button is pressed.
+    // Called when we should apply / save our changes.
     void slotApply();
-    // Called when the dialog is displayed.
+    // Called when we should cancel the changes made.
+    void slotCancel();
+    // Called when preference dialog (not this dialog) is displayed.
     void slotUpdate();
     // Called when the user toggles the enabled checkbox.
     void slotEnableDevice(bool enable);
     // Called when the user selects a preset from the combobox.
     void slotLoadPreset(int index);
     // Mark that we need to apply the settings.
-    void slotDirty ();
+    void slotDirty();
     // Reload the mappings in the dropdown dialog
     void enumeratePresets();
 
@@ -51,8 +53,7 @@ class DlgPrefController : public DlgPreferencePage {
     void openController(Controller* pController);
     void closeController(Controller* pController);
     void loadPreset(Controller* pController, QString controllerName, bool force);
-    void clearInputs();
-    void clearOutputs();
+    void loadPreset(Controller* pController, ControllerPresetPointer pPreset);
     void mappingStarted();
     void mappingEnded();;
 

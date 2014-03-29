@@ -392,6 +392,9 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
     QList<Controller*> deviceList = getControllerList(false, true);
     QSet<QString> filenames;
 
+    // TODO(rryan): This should be split up somehow but the filename selection
+    // is dependent on all of the controllers to prevent over-writing each
+    // other. We need a better solution.
     foreach (Controller* pController, deviceList) {
         if (onlyActive && !pController->isOpen()) {
             continue;
