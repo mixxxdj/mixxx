@@ -32,7 +32,6 @@ void ControllerMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
 }
 
 void ControllerMappingTableModel::visit(HidControllerPreset* pHidPreset) {
-    qDebug() << "WARNING: HID controller presets are not currently mappable.";
     m_pHidPreset = pHidPreset;
 }
 

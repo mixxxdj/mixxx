@@ -7,7 +7,6 @@
 #include <QAbstractItemDelegate>
 
 #include "controllers/controllermappingtablemodel.h"
-#include "controllers/controlpickermenu.h"
 
 class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
@@ -61,9 +60,6 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
         MixxxControl control;
     };
     QList<MidiOutputMapping> m_midiOutputMappings;
-
-    // TODO(XXX): Separate the control information from the menu aspect.
-    ControlPickerMenu m_controlPickerMenu;
 };
 
 #endif /* CONTROLLEROUTPUTMAPPINGTABLEMODEL_H */

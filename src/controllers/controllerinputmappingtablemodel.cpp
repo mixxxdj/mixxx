@@ -2,14 +2,14 @@
 
 #include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
+#include "controllers/delegates/controldelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
 #include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midioptionsdelegate.h"
 
 ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
-        : ControllerMappingTableModel(pParent),
-          m_controlPickerMenu(NULL) {
+        : ControllerMappingTableModel(pParent) {
 }
 
 ControllerInputMappingTableModel::~ControllerInputMappingTableModel() {
@@ -95,6 +95,7 @@ void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
 QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
         int column, QWidget* pParent) {
     if (m_pMidiPreset != NULL) {
+        ControlDelegate* pControlDelegate = NULL;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return new MidiChannelDelegate(pParent);
@@ -104,6 +105,10 @@ QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
                 return new MidiByteDelegate(pParent);
             case MIDI_COLUMN_OPTIONS:
                 return new MidiOptionsDelegate(pParent);
+            case MIDI_COLUMN_ACTION:
+                pControlDelegate = new ControlDelegate(this);
+                pControlDelegate->setMidiOptionsColumn(MIDI_COLUMN_OPTIONS);
+                return pControlDelegate;
         }
     }
     return NULL;
@@ -165,34 +170,12 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                 }
                 return qVariantFromValue(mapping.options);
             case MIDI_COLUMN_ACTION:
-                // Present the raw CO name for editing.
-                if (role == Qt::EditRole) {
-                    if (mapping.control.group().isEmpty() &&
-                        mapping.control.item().isEmpty()) {
-                        return QString();
-                    } else {
-                        return mapping.control.group() + "," + mapping.control.item();
-                    }
+                if (role == Qt::UserRole) {
+                    // TODO(rryan): somehow get the delegate display text?
+                    return mapping.control.group() + "," + mapping.control.item();
                 }
-
-                if (mapping.control.group().isEmpty() &&
-                    mapping.control.item().isEmpty()) {
-                    return tr("No action chosen.");
-                }
-
-                if (mapping.options.script) {
-                    return tr("Script: %1(%2)").arg(
-                        mapping.control.item(),
-                        mapping.control.group());
-                }
-
-                value = m_controlPickerMenu.descriptionForConfigKey(
-                    ConfigKey(mapping.control.group(), mapping.control.item()));
-                if (!value.isNull()) {
-                    return value;
-                }
-
-                return mapping.control.group() + "," + mapping.control.item();
+                return qVariantFromValue(ConfigKey(mapping.control.group(),
+                                                   mapping.control.item()));
             case MIDI_COLUMN_COMMENT:
                 return mapping.control.description();
             default:
@@ -219,6 +202,7 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
 
         MidiInputMapping& mapping = m_midiInputMappings[row];
 
+        ConfigKey key;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 mapping.key.status = static_cast<unsigned char>(
@@ -241,7 +225,10 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                // TODO(rryan): How do we represent config keys?
+                key = qVariantValue<ConfigKey>(value);
+                // TODO(rryan): nuke MixxxControl from orbit.
+                mapping.control.setGroup(key.group);
+                mapping.control.setItem(key.item);
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:

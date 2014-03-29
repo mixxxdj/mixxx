@@ -2,13 +2,13 @@
 
 #include "controllers/controlleroutputmappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
+#include "controllers/delegates/controldelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
 #include "controllers/delegates/midibytedelegate.h"
 
 ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent)
-        : ControllerMappingTableModel(pParent),
-          m_controlPickerMenu(NULL) {
+        : ControllerMappingTableModel(pParent) {
 }
 
 ControllerOutputMappingTableModel::~ControllerOutputMappingTableModel() {
@@ -103,6 +103,8 @@ QAbstractItemDelegate* ControllerOutputMappingTableModel::delegateForColumn(
             case MIDI_COLUMN_ON:
             case MIDI_COLUMN_OFF:
                 return new MidiByteDelegate(pParent);
+            case MIDI_COLUMN_ACTION:
+                return new ControlDelegate(this);
         }
     }
     return NULL;
@@ -166,28 +168,12 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_MAX:
                 return mapping.output.max;
             case MIDI_COLUMN_ACTION:
-                // Present the raw CO name for editing.
-                if (role == Qt::EditRole) {
-                    if (mapping.control.group().isEmpty() &&
-                        mapping.control.item().isEmpty()) {
-                        return QString();
-                    } else {
-                        return mapping.control.group() + "," + mapping.control.item();
-                    }
+                if (role == Qt::UserRole) {
+                    // TODO(rryan): somehow get the delegate display text?
+                    return mapping.control.group() + "," + mapping.control.item();
                 }
-
-                if (mapping.control.group().isEmpty() &&
-                    mapping.control.item().isEmpty()) {
-                    return tr("No action chosen.");
-                }
-
-                value = m_controlPickerMenu.descriptionForConfigKey(
-                    ConfigKey(mapping.control.group(), mapping.control.item()));
-                if (!value.isNull()) {
-                    return value;
-                }
-
-                return mapping.control.group() + "," + mapping.control.item();
+                return qVariantFromValue(ConfigKey(mapping.control.group(),
+                                                   mapping.control.item()));
             case MIDI_COLUMN_COMMENT:
                 return mapping.control.description();
             default:
@@ -213,7 +199,7 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
         }
 
         MidiOutputMapping& mapping = m_midiOutputMappings[row];
-
+        ConfigKey key;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 mapping.output.status = static_cast<unsigned char>(
@@ -248,7 +234,10 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                // TODO(rryan): How do we represent config keys?
+                key = qVariantValue<ConfigKey>(value);
+                // TODO(rryan): nuke MixxxControl from orbit.
+                mapping.control.setGroup(key.group);
+                mapping.control.setItem(key.item);
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:
