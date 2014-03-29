@@ -107,7 +107,7 @@ T clamp (T value, T lower, T upper)
 static inline float
 frandom()
 {
-	return (float) random() / (float) RAND_MAX;
+	return (float) rand() / (float) RAND_MAX;
 }
 
 /* NB: also true if 0  */
