@@ -338,6 +338,8 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
             pWidget, SLOT(slotUpdate()));
     connect(buttonBox, SIGNAL(accepted()),
             pWidget, SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(rejected()),
+            pWidget, SLOT(slotCancel()));
 
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
