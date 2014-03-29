@@ -21,7 +21,6 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"
 #include "controllers/controllervisitor.h"
-#include "controllers/mixxxcontrol.h"
 #include "configobject.h"
 
 class ControllerPreset;
@@ -39,8 +38,7 @@ class DlgControllerLearning : public QDialog,
     void visit(BulkController* pController);
 
   signals:
-    void learnTemporaryInputMappings(const MixxxControl& control,
-                                     const MidiKeyAndOptionsList& mappings);
+    void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
 
@@ -51,7 +49,7 @@ class DlgControllerLearning : public QDialog,
 
   public slots:
     // Triggered when the user picks a control from the menu.
-    void controlPicked(MixxxControl control);
+    void controlPicked(ConfigKey control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
 
@@ -67,16 +65,17 @@ class DlgControllerLearning : public QDialog,
     void showControlMenu();
 
   private:
-    void loadControl(const MixxxControl& control);
+    void loadControl(const ConfigKey& key, QString description);
     void resetMapping(bool commit);
 
     MidiController* m_pMidiController;
     ControlPickerMenu m_controlPickerMenu;
-    MixxxControl m_currentControl;
+    ConfigKey m_currentControl;
+    QString m_currentDescription;
     bool m_messagesLearned;
     QTimer m_lastMessageTimer;
     QList<QPair<MidiKey, unsigned char> > m_messages;
-    MidiKeyAndOptionsList m_mappings;
+    MidiInputMappings m_mappings;
 };
 
 #endif

@@ -5,6 +5,8 @@
 #include <QPair>
 #include <QMetaType>
 
+#include "configobject.h"
+
 typedef enum {
     MIDI_NOTE_OFF       = 0x80,
     MIDI_NOTE_ON        = 0x90,
@@ -91,6 +93,10 @@ struct MidiOutput {
               message(0) {
     }
 
+    bool operator==(const MidiOutput& other) const {
+        return min == other.min && max == other.max && message == other.message;
+    }
+
     double min;
     double max;
     union
@@ -132,7 +138,37 @@ struct MidiKey {
     };
 };
 
-typedef QPair<MidiKey, MidiOptions> MidiKeyAndOptions;
-typedef QList<QPair<MidiKey, MidiOptions> > MidiKeyAndOptionsList;
+struct MidiInputMapping {
+    MidiInputMapping() {
+    }
+
+    MidiInputMapping(MidiKey key, MidiOptions options)
+            : key(key),
+              options(options) {
+    }
+
+    bool operator==(const MidiInputMapping& other) const {
+        return key == other.key && options == other.options &&
+                control == other.control && description == other.description;
+    }
+
+    MidiKey key;
+    MidiOptions options;
+    ConfigKey control;
+    QString description;
+};
+typedef QList<MidiInputMapping> MidiInputMappings;
+
+struct MidiOutputMapping {
+    bool operator==(const MidiOutputMapping& other) const {
+        return output == other.output && control == other.control &&
+                description == other.description;
+    }
+
+    MidiOutput output;
+    ConfigKey control;
+    QString description;
+};
+typedef QList<MidiOutputMapping> MidiOutputMappings;
 
 #endif

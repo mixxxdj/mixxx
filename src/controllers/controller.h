@@ -18,7 +18,6 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllerpresetfilehandler.h"
-#include "controllers/mixxxcontrol.h"
 
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
@@ -89,9 +88,6 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Puts the controller in and out of learning mode.
     void startLearning();
     void stopLearning();
-
-    virtual void clearInputMappings() {}
-    virtual void clearOutputMappings() {}
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length);

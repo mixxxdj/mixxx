@@ -21,7 +21,7 @@ void ControllerOutputMappingTableModel::apply() {
         // the table into the preset.
         m_pMidiPreset->outputMappings.clear();
         foreach (const MidiOutputMapping& mapping, m_midiOutputMappings) {
-            m_pMidiPreset->outputMappings.insertMulti(mapping.control, mapping.output);
+            m_pMidiPreset->outputMappings.insertMulti(mapping.control, mapping);
         }
     }
 }
@@ -42,14 +42,7 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
         beginInsertRows(QModelIndex(), 0, m_pMidiPreset->outputMappings.size() - 1);
-        for (QHash<MixxxControl, MidiOutput>::const_iterator it =
-                     m_pMidiPreset->outputMappings.begin();
-             it != m_pMidiPreset->outputMappings.end(); ++it) {
-            MidiOutputMapping mapping;
-            mapping.control = it.key();
-            mapping.output = it.value();
-            m_midiOutputMappings.append(mapping);
-        }
+        m_midiOutputMappings = m_pMidiPreset->outputMappings.values();
         endInsertRows();
     }
 }
@@ -171,12 +164,11 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.control.group() + "," + mapping.control.item();
+                    return mapping.control.group + "," + mapping.control.item;
                 }
-                return qVariantFromValue(ConfigKey(mapping.control.group(),
-                                                   mapping.control.item()));
+                return qVariantFromValue(mapping.control);
             case MIDI_COLUMN_COMMENT:
-                return mapping.control.description();
+                return mapping.description;
             default:
                 return QVariant();
         }
@@ -200,7 +192,6 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
         }
 
         MidiOutputMapping& mapping = m_midiOutputMappings[row];
-        ConfigKey key;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 mapping.output.status = static_cast<unsigned char>(
@@ -235,14 +226,11 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                key = qVariantValue<ConfigKey>(value);
-                // TODO(rryan): nuke MixxxControl from orbit.
-                mapping.control.setGroup(key.group);
-                mapping.control.setItem(key.item);
+                mapping.control = qVariantValue<ConfigKey>(value);
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:
-                mapping.control.setDescription(value.toString());
+                mapping.description = value.toString();
                 emit(dataChanged(index, index));
                 return true;
             default:

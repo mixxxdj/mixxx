@@ -20,10 +20,9 @@ void ControllerInputMappingTableModel::apply() {
     if (m_pMidiPreset != NULL) {
         // Clear existing input mappings and insert all the input mappings in
         // the table into the preset.
-        m_pMidiPreset->mappings.clear();
+        m_pMidiPreset->inputMappings.clear();
         foreach (const MidiInputMapping& mapping, m_midiInputMappings) {
-            m_pMidiPreset->mappings.insert(mapping.key.key, qMakePair(
-                mapping.control, mapping.options));
+            m_pMidiPreset->inputMappings.insert(mapping.key.key, mapping);
         }
     }
 }
@@ -40,17 +39,8 @@ void ControllerInputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_ACTION, Qt::Horizontal, tr("Action"));
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
-        beginInsertRows(QModelIndex(), 0, m_pMidiPreset->mappings.size() - 1);
-        for (QHash<uint16_t, QPair<MixxxControl,
-                                   MidiOptions> >::const_iterator it =
-                     m_pMidiPreset->mappings.begin();
-             it != m_pMidiPreset->mappings.end(); ++it) {
-            MidiInputMapping mapping;
-            mapping.key.key = it.key();
-            mapping.options = it.value().second;
-            mapping.control = it.value().first;
-            m_midiInputMappings.append(mapping);
-        }
+        beginInsertRows(QModelIndex(), 0, m_pMidiPreset->inputMappings.size() - 1);
+        m_midiInputMappings = m_pMidiPreset->inputMappings.values();
         endInsertRows();
     }
 }
@@ -173,12 +163,11 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.control.group() + "," + mapping.control.item();
+                    return mapping.control.group + "," + mapping.control.item;
                 }
-                return qVariantFromValue(ConfigKey(mapping.control.group(),
-                                                   mapping.control.item()));
+                return qVariantFromValue(mapping.control);
             case MIDI_COLUMN_COMMENT:
-                return mapping.control.description();
+                return mapping.description;
             default:
                 return QVariant();
         }
@@ -203,7 +192,6 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
 
         MidiInputMapping& mapping = m_midiInputMappings[row];
 
-        ConfigKey key;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 mapping.key.status = static_cast<unsigned char>(
@@ -226,14 +214,11 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                key = qVariantValue<ConfigKey>(value);
-                // TODO(rryan): nuke MixxxControl from orbit.
-                mapping.control.setGroup(key.group);
-                mapping.control.setItem(key.item);
+                mapping.control = qVariantValue<ConfigKey>(value);
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:
-                mapping.control.setDescription(value.toString());
+                mapping.description = value.toString();
                 emit(dataChanged(index, index));
                 return true;
             default:

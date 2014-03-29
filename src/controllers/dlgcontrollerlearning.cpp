@@ -6,6 +6,7 @@
 *
 */
 
+#include "controlobject.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
@@ -16,8 +17,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
           m_pMidiController(NULL),
           m_controlPickerMenu(this),
           m_messagesLearned(false) {
-    qRegisterMetaType<MixxxControl>("MixxxControl");
-    qRegisterMetaType<MidiKeyAndOptionsList>("MidiKeyAndOptionsList");
+    qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
 
     setupUi(this);
     labelMappedTo->setText("");
@@ -29,8 +29,8 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
-    connect(&m_controlPickerMenu, SIGNAL(controlPicked(MixxxControl)),
-            this, SLOT(controlPicked(MixxxControl)));
+    connect(&m_controlPickerMenu, SIGNAL(controlPicked(ConfigKey)),
+            this, SLOT(controlPicked(ConfigKey)));
 
     connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
     connect(pushButtonDone, SIGNAL(clicked()), this, SLOT(close()));
@@ -98,8 +98,17 @@ void DlgControllerLearning::slotTimerExpired() {
     // It's been a timer interval since we last got a message. Let's try to
     // detect mappings.
 
-    QList<MidiKeyAndOptions> mappings =
+    MidiInputMappings mappings =
             LearningUtils::guessMidiInputMappings(m_messages);
+
+    // Add control and description info to each learned input mapping.
+    for (MidiInputMappings::iterator it = mappings.begin();
+         it != mappings.end(); ++it) {
+        MidiInputMapping& mapping = *it;
+        mapping.control = m_currentControl;
+        mapping.description = QString("MIDI Learned from %1 messages.")
+                .arg(m_messages.size());
+    }
 
     if (mappings.isEmpty()) {
         labelMappedTo->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
@@ -110,29 +119,29 @@ void DlgControllerLearning::slotTimerExpired() {
     m_messagesLearned = true;
     m_mappings = mappings;
     pushButtonUndo->setEnabled(true);
-    emit(learnTemporaryInputMappings(m_currentControl, mappings));
+    emit(learnTemporaryInputMappings(m_mappings));
 
     QString midiControl = "";
     bool first = true;
-    foreach (const MidiKeyAndOptions& mapping, mappings) {
-        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.first.status);
+    foreach (const MidiInputMapping& mapping, m_mappings) {
+        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
         bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
         QString mappingStr = twoBytes ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
-                .arg(QString::number(mapping.first.status, 16).toUpper(),
-                     QString::number(mapping.first.control, 16).toUpper()
+                .arg(QString::number(mapping.key.status, 16).toUpper(),
+                     QString::number(mapping.key.control, 16).toUpper()
                      .rightJustified(2, '0'),
-                     QString::number(mapping.second.all, 16).toUpper()
+                     QString::number(mapping.options.all, 16).toUpper()
                      .rightJustified(2, '0')) :
                 QString("0x%1 0x%2")
-                .arg(QString::number(mapping.first.status, 16).toUpper(),
-                     QString::number(mapping.second.all, 16).toUpper()
+                .arg(QString::number(mapping.key.status, 16).toUpper(),
+                     QString::number(mapping.options.all, 16).toUpper()
                      .rightJustified(2, '0'));
 
         // Set the debug string and "Advanced MIDI Options" group using the
         // first mapping.
         if (first) {
             midiControl = mappingStr;
-            MidiOptions options = mapping.second;
+            MidiOptions options = mapping.options;
             midiOptionInvert->setChecked(options.invert);
             midiOptionSelectKnob->setChecked(options.selectknob);
             midiOptionSoftTakeover->setChecked(options.soft_takeover);
@@ -171,16 +180,16 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
 
     // Go over every mapping and set its MIDI options to match the user's
     // choices.
-    for (MidiKeyAndOptionsList::iterator it = m_mappings.begin();
+    for (MidiInputMappings::iterator it = m_mappings.begin();
          it != m_mappings.end(); ++it) {
-        MidiOptions& options = it->second;
+        MidiOptions& options = it->options;
         options.sw = midiOptionSwitchMode->isChecked();
         options.soft_takeover = midiOptionSoftTakeover->isChecked();
         options.invert = midiOptionInvert->isChecked();
         options.selectknob = midiOptionSelectKnob->isChecked();
     }
 
-    emit(learnTemporaryInputMappings(m_currentControl, m_mappings));
+    emit(learnTemporaryInputMappings(m_mappings));
 }
 
 void DlgControllerLearning::resetMapping(bool commit) {
@@ -210,8 +219,8 @@ void DlgControllerLearning::visit(MidiController* pMidiController) {
     connect(m_pMidiController, SIGNAL(messageReceived(unsigned char, unsigned char, unsigned char)),
             this, SLOT(slotMessageReceived(unsigned char, unsigned char, unsigned char)));
 
-    connect(this, SIGNAL(learnTemporaryInputMappings(MixxxControl, MidiKeyAndOptionsList)),
-            m_pMidiController, SLOT(learnTemporaryInputMappings(MixxxControl,MidiKeyAndOptionsList)));
+    connect(this, SIGNAL(learnTemporaryInputMappings(MidiInputMappings)),
+            m_pMidiController, SLOT(learnTemporaryInputMappings(MidiInputMappings)));
     connect(this, SIGNAL(clearTemporaryInputMappings()),
             m_pMidiController, SLOT(clearTemporaryInputMappings()));
 
@@ -250,38 +259,34 @@ void DlgControllerLearning::showControlMenu() {
     m_controlPickerMenu.exec(pushButtonChooseControl->mapToGlobal(QPoint(0,0)));
 }
 
-void DlgControllerLearning::loadControl(const MixxxControl& control) {
+void DlgControllerLearning::loadControl(const ConfigKey& key, QString description) {
     // If we have learned a mapping and the user picked a new control then we
     // should tell the controller to commit the existing ones.
     if (m_messagesLearned) {
         resetMapping(true);
     }
-    m_currentControl = control;
+    m_currentControl = key;
+
+    if (description.isEmpty()) {
+        description = key.group + "," + key.item;
+    }
+    m_currentDescription = description;
+
     QString message = tr("Ready to map: %1. Now move a control on your controller.")
-            .arg(m_currentControl.description());
+            .arg(description);
     controlToMapMessage->setText(message);
     labelMappedTo->setText("");
     labelNextHelp->hide();
 }
 
-void DlgControllerLearning::controlPicked(MixxxControl control) {
-    loadControl(control);
+void DlgControllerLearning::controlPicked(ConfigKey control) {
+    QString description = m_controlPickerMenu.descriptionForConfigKey(control);
+    loadControl(control, description);
 }
 
 void DlgControllerLearning::controlClicked(ControlObject* pControl) {
     if (!pControl) {
         return;
     }
-    ConfigKey key = pControl->getKey();
-
-    const QList<MixxxControl>& controlsAvailable =
-            m_controlPickerMenu.controlsAvailable();
-    // Lookup MixxxControl
-    for (int i = 0; i < controlsAvailable.size(); ++i) {
-        const MixxxControl& control = controlsAvailable.at(i);
-        if (control.group() == key.group && control.item() == key.item) {
-            loadControl(control);
-            return;
-        }
-    }
+    controlPicked(pControl->getKey());
 }

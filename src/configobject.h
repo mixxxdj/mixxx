@@ -39,6 +39,10 @@ class ConfigKey {
     ConfigKey(const char* g, const char* i);
     static ConfigKey parseCommaSeparated(QString key);
 
+    inline bool isNull() const {
+        return group.isNull() && item.isNull();
+    }
+
     QString group, item;
 };
 Q_DECLARE_METATYPE(ConfigKey);

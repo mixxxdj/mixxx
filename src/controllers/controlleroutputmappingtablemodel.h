@@ -7,6 +7,7 @@
 #include <QAbstractItemDelegate>
 
 #include "controllers/controllermappingtablemodel.h"
+#include "controllers/midi/midimessage.h"
 
 class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
@@ -55,10 +56,6 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
         MIDI_COLUMN_COMMENT
     };
 
-    struct MidiOutputMapping {
-        MidiOutput output;
-        MixxxControl control;
-    };
     QList<MidiOutputMapping> m_midiOutputMappings;
 };
 

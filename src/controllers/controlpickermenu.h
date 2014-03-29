@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QSignalMapper>
 
-#include "controllers/mixxxcontrol.h"
+#include "configobject.h"
 
 class ControlPickerMenu : public QMenu {
     Q_OBJECT
@@ -13,7 +13,7 @@ class ControlPickerMenu : public QMenu {
     ControlPickerMenu(QWidget* pParent);
     virtual ~ControlPickerMenu();
 
-    const QList<MixxxControl>& controlsAvailable() const {
+    const QList<ConfigKey>& controlsAvailable() const {
         return m_controlsAvailable;
     }
 
@@ -21,7 +21,7 @@ class ControlPickerMenu : public QMenu {
 
   signals:
     // Emitted when the user selects a control from the menu.
-    void controlPicked(MixxxControl control);
+    void controlPicked(ConfigKey control);
 
   private slots:
     // Triggered when user selects a control from the menu.
@@ -53,7 +53,7 @@ class ControlPickerMenu : public QMenu {
     void addEffectControl(QString group, QString control, QString menuDescription,
                           QString descriptionPrefix,
                           QMenu* pMenu, bool addReset=false);
-    void addAvailableControl(MixxxControl control);
+    void addAvailableControl(ConfigKey key, QString description);
 
     QString m_masterOutputStr;
     QString m_headphoneOutputStr;
@@ -69,7 +69,7 @@ class ControlPickerMenu : public QMenu {
     QString m_parameterStr;
 
     QSignalMapper m_actionMapper;
-    QList<MixxxControl> m_controlsAvailable;
+    QList<ConfigKey> m_controlsAvailable;
     QHash<ConfigKey, QString> m_descriptionsByKey;
 };
 

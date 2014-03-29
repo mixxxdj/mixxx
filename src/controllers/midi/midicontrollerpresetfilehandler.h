@@ -10,7 +10,6 @@
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/midi/midicontrollerpreset.h"
-#include "controllers/mixxxcontrol.h"
 
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:
@@ -27,11 +26,15 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
     void addControlsToDocument(const MidiControllerPreset& preset,
                                QDomDocument* doc) const;
 
-    void mappingToXML(QDomElement& parentNode, MixxxControl mc,
-                      unsigned char status, unsigned char control) const;
+    QDomElement makeTextElement(QDomDocument* doc,
+                                const QString& elementName,
+                                const QString& text) const;
 
-    void outputMappingToXML(QDomElement& parentNode, unsigned char on,
-                            unsigned char off, double max, double min) const;
+    QDomElement inputMappingToXML(QDomDocument* doc,
+                                  const MidiInputMapping& mapping) const;
+
+    QDomElement outputMappingToXML(QDomDocument* doc,
+                                   const MidiOutputMapping& mapping) const;
 };
 
 #endif

@@ -16,7 +16,6 @@
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
-#include "controllers/mixxxcontrol.h"
 #include "controllers/midi/midimessage.h"
 
 class MidiControllerPreset : public ControllerPreset {
@@ -40,9 +39,9 @@ class MidiControllerPreset : public ControllerPreset {
         return true;
     }
 
-    // Additional data elements specific to this controller type
-    QHash<uint16_t, QPair<MixxxControl, MidiOptions> > mappings;
-    QHash<MixxxControl, MidiOutput> outputMappings;
+    // MIDI input and output mappings.
+    QHash<uint16_t, MidiInputMapping> inputMappings;
+    QHash<ConfigKey, MidiOutputMapping> outputMappings;
 };
 
 #endif

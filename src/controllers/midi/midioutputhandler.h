@@ -12,16 +12,15 @@
 #define MIDIOUTPUTHANDLER_H
 
 #include "controlobjectthread.h"
+#include "controllers/midi/midimessage.h"
 
-class MidiController;   // forward declaration
+class MidiController;
 
 class MidiOutputHandler : QObject {
     Q_OBJECT
   public:
-    MidiOutputHandler(const QString& group, const QString& key, MidiController* controller,
-                      double min, double max,
-                      unsigned char status, unsigned char midino,
-                      unsigned char on, unsigned char off);
+    MidiOutputHandler(MidiController* controller,
+                      const MidiOutputMapping& mapping);
     virtual ~MidiOutputHandler();
 
     bool validate();
@@ -32,13 +31,8 @@ class MidiOutputHandler : QObject {
 
   private:
     MidiController* m_pController;
+    const MidiOutputMapping m_mapping;
     ControlObjectThread m_cot;
-    double m_min;
-    double m_max;
-    unsigned char m_status;
-    unsigned char m_midino;
-    unsigned char m_on;
-    unsigned char m_off;
     double m_lastVal;
 };
 

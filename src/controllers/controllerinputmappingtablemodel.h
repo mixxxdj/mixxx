@@ -7,6 +7,7 @@
 #include <QAbstractItemDelegate>
 
 #include "controllers/controllermappingtablemodel.h"
+#include "controllers/midi/midimessage.h"
 
 class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
@@ -50,12 +51,6 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
         MIDI_COLUMN_OPTIONS,
         MIDI_COLUMN_ACTION,
         MIDI_COLUMN_COMMENT
-    };
-
-    struct MidiInputMapping {
-        MidiKey key;
-        MidiOptions options;
-        MixxxControl control;
     };
 
     QList<MidiInputMapping> m_midiInputMappings;
