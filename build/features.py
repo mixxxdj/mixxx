@@ -383,8 +383,8 @@ class VinylControl(Feature):
                    'vinylcontrol/steadypitch.cpp',
                    'engine/vinylcontrolcontrol.cpp', ]
         if build.platform_is_windows:
-            sources.append("#lib/xwax/timecoder_win32.cpp")
-            sources.append("#lib/xwax/lut.cpp")
+            sources.append("#lib/xwax/timecoder_win32.c")
+            sources.append("#lib/xwax/lut_win32.c")
         else:
             sources.append("#lib/xwax/timecoder.c")
             sources.append("#lib/xwax/lut.c")

@@ -40,11 +40,15 @@ if build.platform_is_windows:
         str_list.append('#define VER_FILEVERSION             ')
         # Remove anything after ~ or - in the version number and replace the dots with commas
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        str_list.append(','+str(vcs_revision)+'\n')
+        if vcs_revision:
+            str_list.append(','+str(vcs_revision))
+        str_list.append('\n')
 
         str_list.append('#define VER_PRODUCTVERSION          ')
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        str_list.append(','+str(vcs_revision)+'\n')
+        if vcs_revision:
+            str_list.append(','+str(vcs_revision))
+        str_list.append('\n')
 
         import datetime
         now = datetime.datetime.now()

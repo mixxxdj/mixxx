@@ -999,6 +999,9 @@ class MixxxCore(Feature):
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
 
+            # Find executables (e.g. protoc) in the winlib path
+            build.env.AppendENVPath('PATH', mixxx_lib_path)
+
             # Ugh, MSVC-only hack :( see
             # http://www.qtforum.org/article/17883/problem-using-qstring-
             # fromstdwstring.html

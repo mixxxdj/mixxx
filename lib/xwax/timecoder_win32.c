@@ -348,7 +348,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
 {
     assert(tc->mon == NULL);
     tc->mon_size = size;
-    tc->mon = static_cast<unsigned char*>(malloc(SQ(tc->mon_size)));
+    tc->mon = (unsigned char*)(malloc(SQ(tc->mon_size)));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
@@ -632,9 +632,9 @@ signed int timecoder_get_position(struct timecoder *tc, double *when)
 
     if (r >= 0) {
         // normalize position to milliseconds, not timecode steps -- Owen
-        r = static_cast<double>(r)
+        r = (double)(r)
                 * (1000.0
-                   / (static_cast<double>(tc->def->resolution) * tc->speed));
+                   / ((double)(tc->def->resolution) * tc->speed));
     }
 
     if (when)
