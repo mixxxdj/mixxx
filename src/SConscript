@@ -75,18 +75,18 @@ def build_tests():
         global test_bin
         test_files = Glob('test/*.cpp', strings=True)
         test_env = env.Clone()
-        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
-        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
+        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
         test_files = [test_env.StaticObject(filename) \
                               if filename !='main.cpp' else filename
                       for filename in test_files]
         mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
         test_sources = (test_files + mixxx_sources)
 
-        env.Append(LIBPATH="#lib/gtest-1.5.0/lib")
+        env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
         env.Append(LIBS = 'gtest')
 
-        env.Append(LIBPATH="#lib/gmock-1.5.0/lib")
+        env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
         env.Append(LIBS = 'gmock')
 
         if build.platform_is_windows:

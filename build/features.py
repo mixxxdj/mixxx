@@ -798,22 +798,22 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS='-pthread')
         test_env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
-        gtest_dir = test_env.Dir("#lib/gtest-1.5.0")
+        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
         # gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.5.0'))
         # build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example,
         # optional
-        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.7.0/lib'
 
         env = test_env
         SCons.Export('env')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
-        gmock_dir = test_env.Dir("#lib/gmock-1.5.0")
+        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
+        gmock_dir = test_env.Dir("#lib/gmock-1.7.0")
         # gmock_dir.addRepository(build.env.Dir('#lib/gmock-1.5.0'))
-        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
 
