@@ -71,6 +71,8 @@ class DlgPrefController : public DlgPreferencePage {
     void removeOutputMappings();
     void clearAllOutputMappings();
 
+    void midiInputMappingsLearned(const MidiInputMappings& mappings);
+
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
@@ -88,9 +90,9 @@ class DlgPrefController : public DlgPreferencePage {
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
-    ControllerMappingTableModel* m_pInputTableModel;
+    ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
-    ControllerMappingTableModel* m_pOutputTableModel;
+    ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
 };

@@ -27,6 +27,15 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     // Removes the provided input mappings.
     void removeMappings(QModelIndexList indices);
 
+    // Add the specified MIDI mappings to the model. If this is not a MIDI
+    // mapping model, ignore.
+
+    // HACK(rryan): This method only exists to communicate new mappings from
+    // MIDI learn because doing a round-trip through the controller via
+    // onPresetLoaded takes too long. In the future we should replace this with
+    // a polymorphic mapping structure.
+    void addMappings(const MidiInputMappings& mappings);
+
     // Returns a delegate for the provided column or NULL if the column does not
     // need a delegate.
     QAbstractItemDelegate* delegateForColumn(int column, QWidget* pParent);

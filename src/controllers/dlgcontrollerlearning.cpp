@@ -195,6 +195,7 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
 void DlgControllerLearning::resetMapping(bool commit) {
     if (commit) {
         emit(commitTemporaryInputMappings());
+        emit(inputMappingsLearned(m_mappings));
     } else {
         emit(clearTemporaryInputMappings());
     }

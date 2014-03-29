@@ -42,6 +42,10 @@ class DlgControllerLearning : public QDialog,
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
 
+    // Used to notify DlgPrefController that we have learned some new input
+    // mappings.
+    void inputMappingsLearned(const MidiInputMappings& mappings);
+
     void startLearning();
     void stopLearning();
     void listenForClicks();

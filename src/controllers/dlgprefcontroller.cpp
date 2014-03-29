@@ -138,11 +138,20 @@ void DlgPrefController::showLearningWizard() {
             pControllerLearning, SLOT(stopListening()));
     connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
             this, SLOT(show()));
-
+    connect(m_pDlgControllerLearning, SIGNAL(inputMappingsLearned(MidiInputMappings)),
+            this, SLOT(midiInputMappingsLearned(MidiInputMappings)));
 
     emit(mappingStarted());
     connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
             this, SIGNAL(mappingEnded()));
+}
+
+void DlgPrefController::midiInputMappingsLearned(const MidiInputMappings& mappings) {
+    // This is just a shortcut since doing a round-trip from Learning ->
+    // Controller -> slotPresetLoaded -> setPreset is too heavyweight.
+    if (m_pInputTableModel != NULL) {
+        m_pInputTableModel->addMappings(mappings);
+    }
 }
 
 QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset) const {

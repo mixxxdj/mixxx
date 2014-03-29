@@ -53,6 +53,15 @@ void ControllerInputMappingTableModel::clear() {
     }
 }
 
+void ControllerInputMappingTableModel::addMappings(const MidiInputMappings& mappings) {
+    if (m_pMidiPreset != NULL) {
+        beginInsertRows(QModelIndex(), m_midiInputMappings.size(),
+                        m_midiInputMappings.size() + mappings.size() - 1);
+        m_midiInputMappings.append(mappings);
+        endInsertRows();
+    }
+}
+
 void ControllerInputMappingTableModel::addEmptyMapping() {
     if (m_pMidiPreset != NULL) {
         beginInsertRows(QModelIndex(), m_midiInputMappings.size(),
