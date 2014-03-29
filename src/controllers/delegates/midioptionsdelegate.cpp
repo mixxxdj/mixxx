@@ -17,9 +17,12 @@ MidiOptionsDelegate::~MidiOptionsDelegate() {
 QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
                                            const QStyleOptionViewItem& option,
                                            const QModelIndex& index) const {
+    Q_UNUSED(option);
+    Q_UNUSED(index);
     QComboBox* pComboBox = new QComboBox(parent);
 
     QList<MidiOption> choices;
+    choices.append(MIDI_OPTION_NONE);
     choices.append(MIDI_OPTION_INVERT);
     choices.append(MIDI_OPTION_ROT64);
     choices.append(MIDI_OPTION_ROT64_INV);
@@ -44,6 +47,7 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
 
 QString MidiOptionsDelegate::displayText(const QVariant& value,
                                          const QLocale& locale) const {
+    Q_UNUSED(locale);
     MidiOptions options = qVariantValue<MidiOptions>(value);
     QStringList optionStrs;
     MidiOption option = static_cast<MidiOption>(1);

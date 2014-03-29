@@ -14,6 +14,8 @@ MidiOpCodeDelegate::~MidiOpCodeDelegate() {
 QWidget* MidiOpCodeDelegate::createEditor(QWidget* parent,
                                           const QStyleOptionViewItem& option,
                                           const QModelIndex& index) const {
+    Q_UNUSED(option);
+    Q_UNUSED(index);
     QComboBox* pComboBox = new QComboBox(parent);
 
     QList<MidiOpCode> choices;
@@ -30,6 +32,7 @@ QWidget* MidiOpCodeDelegate::createEditor(QWidget* parent,
 
 QString MidiOpCodeDelegate::displayText(const QVariant& value,
                                         const QLocale& locale) const {
+    Q_UNUSED(locale);
     MidiOpCode opCode = static_cast<MidiOpCode>(value.toInt());
     return MidiUtils::opCodeToTranslatedString(opCode);
 }

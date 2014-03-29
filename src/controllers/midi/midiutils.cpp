@@ -30,6 +30,8 @@ QString MidiUtils::formatByteAsHex(unsigned char value) {
 // static
 QString MidiUtils::midiOptionToTranslatedString(MidiOption option) {
     switch (option) {
+        case MIDI_OPTION_NONE:
+            return QObject::tr("Normal");
         case MIDI_OPTION_INVERT:
             return QObject::tr("Invert");
         case MIDI_OPTION_ROT64:
