@@ -152,7 +152,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiKey knob;
         knob.status = MIDI_CC | *channels.begin();
         knob.control = *controls.begin();
-        mappings.append(qMakePair(knob, options));
+        mappings.append(MidiInputMapping(knob, options));
     } else if (one_control && one_channel && multiple_values_around_0x40) {
         // A "spread 64" ticker, where 0x40 is zero, positive jog values are
         // 0x41 and above, and negative jog values are 0x3F and below.

@@ -101,13 +101,13 @@ TEST_F(LearningUtilsTest, Spread64Ticker) {
     addMessage(MIDI_CC | 0x01, 0x10, 0x3F);
     addMessage(MIDI_CC | 0x01, 0x10, 0x3F);
 
-    MidiKeyAndOptionsList mappings =
+    MidiInputMappings mappings =
             LearningUtils::guessMidiInputMappings(m_messages);
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
     options.spread64 = true;
-    EXPECT_EQ(qMakePair(MidiKey(MIDI_CC | 0x01, 0x10), options),
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10), options),
               mappings.at(0));
 }
 
