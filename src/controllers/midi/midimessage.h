@@ -88,9 +88,11 @@ Q_DECLARE_METATYPE(MidiOptions);
 
 struct MidiOutput {
     MidiOutput()
-            : min(0.0),
-              max(0.0),
-              message(0) {
+            : message(0) {
+        // MSVC gets confused and thinks min/max are macros so they can't appear
+        // in the initializer list.
+        min = 0.0;
+        max = 0.0;
     }
 
     bool operator==(const MidiOutput& other) const {
