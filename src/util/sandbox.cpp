@@ -11,7 +11,7 @@
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
 #include <Security/SecCode.h>
 #include <Security/SecRequirement.h>
 #endif
@@ -30,7 +30,7 @@ void Sandbox::initialize(const QString& permissionsFile) {
     s_pSandboxPermissions = new ConfigObject<ConfigValue>(permissionsFile);
 
 #ifdef Q_OS_MAC
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     // If we are running on at least 10.7.0 and have the com.apple.security.app-sandbox
     // entitlement, we are in a sandbox
     SInt32 version = 0;
