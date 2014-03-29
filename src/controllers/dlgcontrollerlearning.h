@@ -29,6 +29,12 @@ class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
                               public Ui::DlgControllerLearning {
     Q_OBJECT
+    enum DialogPages {
+        page1Choose,
+        page2Learn,
+        page3Confirm
+    };
+
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
     virtual ~DlgControllerLearning();
@@ -61,22 +67,29 @@ class DlgControllerLearning : public QDialog,
                              unsigned char control,
                              unsigned char value);
 
+    void slotChooseControl();
     void slotTimerExpired();
-    void slotUndo();
+    void slotFirstMessageTimeout();
+    void slotRetry();
+    void slotStartLearning();
     void slotMidiOptionsChanged();
 
   private slots:
     void showControlMenu();
+    void DEBUGFakeMidiMessage();
+    void DEBUGFakeMidiMessage2();
 
   private:
     void loadControl(const ConfigKey& key, QString description);
     void resetMapping(bool commit);
 
+    Controller* m_pController;
     MidiController* m_pMidiController;
     ControlPickerMenu m_controlPickerMenu;
     ConfigKey m_currentControl;
     QString m_currentDescription;
     bool m_messagesLearned;
+    QTimer m_firstMessageTimer;
     QTimer m_lastMessageTimer;
     QList<QPair<MidiKey, unsigned char> > m_messages;
     MidiInputMappings m_mappings;

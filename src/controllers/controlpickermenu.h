@@ -18,6 +18,7 @@ class ControlPickerMenu : public QMenu {
     }
 
     QString descriptionForConfigKey(ConfigKey key) const;
+    QString prettyNameForConfigKey(ConfigKey key) const;
 
   signals:
     // Emitted when the user selects a control from the menu.

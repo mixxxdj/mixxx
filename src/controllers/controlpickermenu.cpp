@@ -748,3 +748,8 @@ void ControlPickerMenu::addAvailableControl(ConfigKey key,
 QString ControlPickerMenu::descriptionForConfigKey(ConfigKey key) const {
     return m_descriptionsByKey.value(key, QString());
 }
+
+QString ControlPickerMenu::prettyNameForConfigKey(ConfigKey key) const {
+    // We need a short name list.
+    return m_descriptionsByKey.value(key, QString());
+}

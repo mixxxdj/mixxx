@@ -14,6 +14,7 @@
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
         : QDialog(parent),
+          m_pController(controller),
           m_pMidiController(NULL),
           m_controlPickerMenu(this),
           m_messagesLearned(false) {
@@ -33,12 +34,14 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
             this, SLOT(controlPicked(ConfigKey)));
 
     connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
-    connect(pushButtonDone, SIGNAL(clicked()), this, SLOT(close()));
-    // The undo button doesn't become active until we have mapped a control.
-    pushButtonUndo->setEnabled(false);
-    connect(pushButtonUndo, SIGNAL(clicked()), this, SLOT(slotUndo()));
+    connect(pushButtonClose, SIGNAL(clicked()), this, SLOT(close()));
+    connect(pushButtonClose_2, SIGNAL(clicked()), this, SLOT(close()));
+    connect(pushButtonRetry, SIGNAL(clicked()), this, SLOT(slotRetry()));
+    connect(pushButtonStartLearn, SIGNAL(clicked()), this, SLOT(slotStartLearning()));
+    connect(pushButtonLearnAnother, SIGNAL(clicked()), this, SLOT(slotChooseControl()));
+    connect(pushButtonFakeControl, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage()));
+    connect(pushButtonFakeControl2, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage2()));
 
-    midiOptions->setEnabled(false);
     // We only want to listen to clicked() so we don't fire
     // slotMidiOptionsChanged when we change the checkboxes programmatically.
     connect(midiOptionSwitchMode, SIGNAL(clicked()),
@@ -50,26 +53,53 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     connect(midiOptionSelectKnob, SIGNAL(clicked()),
             this, SLOT(slotMidiOptionsChanged()));
 
-    // Get the underlying type of the Controller. This will call
-    // one of the visit() methods below immediately.
-    controller->accept(this);
-
-    emit(listenForClicks());
-    labelMappedTo->setText("");
-    labelNextHelp->hide();
-    controlToMapMessage->setText("");
-    stackedWidget->setCurrentIndex(0);
+    slotChooseControl();
 
     // Wait 1 second until we detect the control the user moved.
-    m_lastMessageTimer.setInterval(1000);
+    m_lastMessageTimer.setInterval(1500);
     m_lastMessageTimer.setSingleShot(true);
     connect(&m_lastMessageTimer, SIGNAL(timeout()),
             this, SLOT(slotTimerExpired()));
+
+    m_firstMessageTimer.setInterval(7000);
+    m_firstMessageTimer.setSingleShot(true);
+    connect(&m_firstMessageTimer, SIGNAL(timeout()),
+            this, SLOT(slotFirstMessageTimeout()));
+}
+
+void DlgControllerLearning::slotChooseControl() {
+    qDebug() << "changing to choosing page";
+    labelErrorText->setText("");
+    labelMappedTo->setText("");
+    controlToMapMessage->setText("");
+    comboBoxChosenControl->setEditText("");
+    stackedWidget->setCurrentIndex(page1Choose);
+}
+
+void DlgControllerLearning::slotStartLearning() {
+    qDebug() << "starting to learn....";
+    // Change to the learn page and listen for messages.
+    progressBarWiggleFeedback->hide();
+    stackedWidget->setCurrentIndex(page2Learn);
+    // Get the underlying type of the Controller. This will call
+    // one of the visit() methods below immediately.
+    m_pController->accept(this);
+    emit(listenForClicks());
+    m_firstMessageTimer.start();
+}
+
+void DlgControllerLearning::DEBUGFakeMidiMessage() {
+    slotMessageReceived(MIDI_CC, 0x20, 0x41);
+}
+
+void DlgControllerLearning::DEBUGFakeMidiMessage2() {
+    slotMessageReceived(MIDI_CC, 0x20, 0x3F);
 }
 
 void DlgControllerLearning::slotMessageReceived(unsigned char status,
                                                 unsigned char control,
                                                 unsigned char value) {
+    qDebug() << "got a message";
     // Ignore message since we don't have a control yet.
     if (m_currentControl.isNull()) {
         return;
@@ -90,14 +120,41 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
         return;
     }
 
+    if (status == MIDI_CC) {
+        if (progressBarWiggleFeedback->isVisible()) {
+            progressBarWiggleFeedback->setValue(
+                    progressBarWiggleFeedback->value() + 1);
+        } else {
+            progressBarWiggleFeedback->setValue(0);
+            progressBarWiggleFeedback->setMinimum(0);
+            progressBarWiggleFeedback->setMaximum(10);
+            progressBarWiggleFeedback->show();
+        }
+    }
+
     m_messages.append(QPair<MidiKey, unsigned char>(key, value));
+    // We got a message, so we can cancel the taking-too-long timeout.
+    m_firstMessageTimer.stop();
     m_lastMessageTimer.start();
+}
+
+void DlgControllerLearning::slotFirstMessageTimeout() {
+    qDebug() << "never got anything?";
+    if (m_messages.length() == 0) {
+        qDebug() << "didn't heard anything";
+        labelErrorText->setText(tr("Didn't get any midi messages.  Please try again."));
+        m_messages.clear();
+        stackedWidget->setCurrentIndex(page1Choose);
+        return;
+    } else {
+        qWarning() << "we shouldn't time out if we never got anything";
+    }
 }
 
 void DlgControllerLearning::slotTimerExpired() {
     // It's been a timer interval since we last got a message. Let's try to
     // detect mappings.
-
+    qDebug() << "timer expired";
     MidiInputMappings mappings =
             LearningUtils::guessMidiInputMappings(m_messages);
 
@@ -111,14 +168,16 @@ void DlgControllerLearning::slotTimerExpired() {
     }
 
     if (mappings.isEmpty()) {
-        labelMappedTo->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
+        qDebug() << "didn't heard anything";
+        labelErrorText->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
         m_messages.clear();
+        stackedWidget->setCurrentIndex(page1Choose);
         return;
     }
 
     m_messagesLearned = true;
     m_mappings = mappings;
-    pushButtonUndo->setEnabled(true);
+    pushButtonRetry->setEnabled(true);
     emit(learnTemporaryInputMappings(m_mappings));
 
     QString midiControl = "";
@@ -151,22 +210,21 @@ void DlgControllerLearning::slotTimerExpired() {
 
         qDebug() << "DlgControllerLearning learned input mapping:" << mappingStr;
     }
+    qDebug() << "I think we got something!";
 
     QString mapMessage = QString("%1 %2").arg(tr("Successfully mapped to:"),
                                               midiControl);
     labelMappedTo->setText(mapMessage);
-    labelNextHelp->show();
-
-    // Let the user tweak the MIDI options.
-    midiOptions->setEnabled(true);
+    stackedWidget->setCurrentIndex(page3Confirm);
 }
 
-void DlgControllerLearning::slotUndo() {
+void DlgControllerLearning::slotRetry() {
     // If the user hit undo, instruct the controller to forget the mapping we
     // just added.
     if (m_messagesLearned) {
         resetMapping(false);
     }
+    stackedWidget->setCurrentIndex(page2Learn);
 }
 
 void DlgControllerLearning::slotMidiOptionsChanged() {
@@ -203,15 +261,13 @@ void DlgControllerLearning::resetMapping(bool commit) {
     m_mappings.clear();
     m_messages.clear();
     m_messagesLearned = false;
-    pushButtonUndo->setEnabled(false);
     midiOptionInvert->setChecked(false);
     midiOptionSelectKnob->setChecked(false);
     midiOptionSoftTakeover->setChecked(false);
     midiOptionSwitchMode->setChecked(false);
-    midiOptions->setEnabled(false);
 
     labelMappedTo->setText("");
-    labelNextHelp->hide();
+    stackedWidget->setCurrentIndex(page1Choose);
 }
 
 void DlgControllerLearning::visit(MidiController* pMidiController) {
@@ -273,11 +329,12 @@ void DlgControllerLearning::loadControl(const ConfigKey& key, QString descriptio
     }
     m_currentDescription = description;
 
-    QString message = tr("Ready to map: %1. Now move a control on your controller.")
+    QString message = tr("Learning: %1. Now move a control on your controller.")
             .arg(description);
     controlToMapMessage->setText(message);
+    comboBoxChosenControl->setEditText(
+            m_controlPickerMenu.prettyNameForConfigKey(key));
     labelMappedTo->setText("");
-    labelNextHelp->hide();
 }
 
 void DlgControllerLearning::controlPicked(ConfigKey control) {
