@@ -660,7 +660,6 @@ class MixxxCore(Feature):
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
-                   "controllers/mixxxcontrol.cpp",
                    "controllers/qtscript-bytearray/bytearrayclass.cpp",
                    "controllers/qtscript-bytearray/bytearrayprototype.cpp",
                    "controllers/softtakeover.cpp",

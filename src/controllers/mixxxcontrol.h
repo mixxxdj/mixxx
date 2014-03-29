@@ -10,54 +10,66 @@
 #include "controlobject.h"
 
 class MixxxControl {
-    public:
-        MixxxControl(QString controlobject_group="", QString controlobject_item="",
-                     QString controlobject_description="");
-//         MixxxControl(QDomElement& controlNode, bool isOutputNode=false);
-        ~MixxxControl() {};
-        void setGroup(QString controlobject_group) { m_sGroup = controlobject_group; };
-        void setItem(QString controlobject_item) { m_sItem = controlobject_item; };
-        void setDescription(QString controlobject_description) { m_sDescription = controlobject_description; };
+  public:
+    MixxxControl(QString group="", QString item="",
+                 QString description="")
+            : m_key(group, item),
+              m_description(description) {
+    }
 
-        QString group() const { return m_sGroup; };
-        QString item() const { return m_sItem; };
-        QString description() const { return m_sDescription; };
-        ControlObject* getControlObject() const {
-            return ControlObject::getControl(ConfigKey(m_sGroup, m_sItem));
-        };
-//         void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;
-        bool operator==(const MixxxControl& other) const {
-            return ((m_sGroup == other.group()) &&
-                    (m_sItem == other.item()));
-        };
-        bool isNull() { return (m_sGroup == "" && m_sItem == ""); };
-    private:
-        QString m_sGroup;
-        QString m_sItem;
-        QString m_sDescription;
+    virtual ~MixxxControl() {}
+
+    void setGroup(QString group) {
+        m_key.group = group;
+    }
+    void setItem(QString item) {
+        m_key.item = item;
+    }
+
+    void setDescription(QString description) {
+        m_description = description;
+    }
+
+    inline const QString& group() const {
+        return m_key.group;
+    }
+
+    inline const QString& item() const {
+        return m_key.item;
+    }
+
+    inline const QString& description() const {
+        return m_description;
+    }
+
+    inline const ConfigKey& key() const {
+        return m_key;
+    }
+    ControlObject* getControlObject() const {
+        return ControlObject::getControl(m_key);
+    }
+
+    bool operator==(const MixxxControl& other) const {
+        return ((group() == other.group()) &&
+                (item() == other.item()));
+    }
+
+    bool isNull() const {
+        return group() == "" && item() == "";
+    }
+
+  private:
+    ConfigKey m_key;
+    QString m_description;
 };
 
-inline bool operator<(const MixxxControl &first, const MixxxControl &second)
-{
-   return ((first.group() + first.item()) <
-            (second.group() + second.item()));
+inline bool operator<(const MixxxControl& first, const MixxxControl& second) {
+   return (first.group() + first.item()) < (second.group() + second.item());
 }
 
-inline bool groupLessThan(const MixxxControl &first, const MixxxControl &second)
-{
-    return (first.group() < second.group());
+// Hash function needed so we can use MixxxControl in a QHash table.
+inline uint qHash(const MixxxControl& key) {
+    return qHash(key.group()) + qHash(key.item());
 }
-
-/** Hash function needed so we can use MixxxControl in a QHash table */
-uint qHash(const MixxxControl& key);
-
-/*  The below breaks linking.
-QDebug operator<<(QDebug dbg, MixxxControl& control)
-{
-    dbg.space() << control.group();
-    dbg.space() << control.item();
-
-    return dbg.space();
-}*/
 
 #endif
