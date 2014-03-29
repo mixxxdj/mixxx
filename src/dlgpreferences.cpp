@@ -58,7 +58,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
                                ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
         : m_pageSizeHint(QSize(0, 0)),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated")) {
+          m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
