@@ -19,7 +19,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setName(QObject::tr("Bit Depth"));
     depth->setDescription("TODO");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    depth->setValueHint(EffectManifestParameter::EffectManifestParameter::VALUE_FLOAT);
+    depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setLinkHint(EffectManifestParameter::LINK_INVERSE);
