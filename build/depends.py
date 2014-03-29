@@ -373,7 +373,7 @@ class Qt(Dependence):
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/gtest-1.5.0/include")
+        build.env.Append(CPPPATH="#lib/gtest-1.7.0/include")
 
 class FidLib(Dependence):
 
