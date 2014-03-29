@@ -15,6 +15,9 @@ class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     ControllerInputMappingTableModel(QObject* pParent);
     virtual ~ControllerInputMappingTableModel();
 
+    // Apply the changes to the loaded preset.
+    void apply();
+
     // Clears all input mappings in the preset.
     void clear();
 

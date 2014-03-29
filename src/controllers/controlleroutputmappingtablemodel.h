@@ -15,6 +15,9 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     ControllerOutputMappingTableModel(QObject* pParent);
     virtual ~ControllerOutputMappingTableModel();
 
+    // Apply the changes to the loaded preset.
+    void apply();
+
     // Clears all output mappings in the preset.
     void clear();
 

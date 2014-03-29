@@ -21,6 +21,12 @@ void ControllerMappingTableModel::setPreset(ControllerPresetPointer pPreset) {
     onPresetLoaded();
 }
 
+void ControllerMappingTableModel::cancel() {
+    // Apply mutates the preset so to revert to the time just before the last
+    // apply, simply call setPreset again.
+    setPreset(m_pPreset);
+}
+
 void ControllerMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
     m_pMidiPreset = pMidiPreset;
 }

@@ -14,7 +14,20 @@ ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pP
 ControllerOutputMappingTableModel::~ControllerOutputMappingTableModel() {
 }
 
+void ControllerOutputMappingTableModel::apply() {
+    if (m_pMidiPreset != NULL) {
+        // Clear existing output mappings and insert all the output mappings in
+        // the table into the preset.
+        m_pMidiPreset->outputMappings.clear();
+        foreach (const MidiOutputMapping& mapping, m_midiOutputMappings) {
+            m_pMidiPreset->outputMappings.insertMulti(mapping.control, mapping.output);
+        }
+    }
+}
+
 void ControllerOutputMappingTableModel::onPresetLoaded() {
+    clear();
+
     if (m_pMidiPreset != NULL) {
         // TODO(rryan): Tooltips
         setHeaderData(MIDI_COLUMN_CHANNEL, Qt::Horizontal, tr("Channel"));
@@ -27,6 +40,7 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_MAX, Qt::Horizontal, tr("On Range Max"));
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
+        beginInsertRows(QModelIndex(), 0, m_pMidiPreset->outputMappings.size() - 1);
         for (QHash<MixxxControl, MidiOutput>::const_iterator it =
                      m_pMidiPreset->outputMappings.begin();
              it != m_pMidiPreset->outputMappings.end(); ++it) {
@@ -35,6 +49,7 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
             mapping.output = it.value();
             m_midiOutputMappings.append(mapping);
         }
+        endInsertRows();
     }
 }
 
@@ -204,32 +219,41 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 mapping.output.status = static_cast<unsigned char>(
                     opCodeFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_OPCODE:
                 mapping.output.status = static_cast<unsigned char>(
                     channelFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_CONTROL:
                 mapping.output.control = static_cast<unsigned char>(value.toInt());
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ON:
                 mapping.output.on = static_cast<unsigned char>(value.toInt());
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_OFF:
                 mapping.output.off = static_cast<unsigned char>(value.toInt());
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_MIN:
                 mapping.output.min = value.toDouble();
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_MAX:
                 mapping.output.max = value.toDouble();
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
                 // TODO(rryan): How do we represent config keys?
+                emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:
                 mapping.control.setDescription(value.toString());
+                emit(dataChanged(index, index));
                 return true;
             default:
                 return false;

@@ -24,6 +24,12 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     void visit(HidControllerPreset* pHidPreset);
     void visit(MidiControllerPreset* pMidiPreset);
 
+    // Apply the changes to the loaded preset.
+    virtual void apply() = 0;
+
+    // Revert changes made since the last apply.
+    virtual void cancel();
+
     // Clears all input mappings in the preset.
     virtual void clear() = 0;
 
