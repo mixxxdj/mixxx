@@ -17,6 +17,8 @@
  *
  */
 
+extern "C" {
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -109,3 +111,5 @@ unsigned int lut_lookup(struct lut *lut, unsigned int timecode)
 
     return (unsigned)-1;
 }
+
+}; // extern "C"

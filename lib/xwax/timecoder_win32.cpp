@@ -17,6 +17,8 @@
  *
  */
 
+extern "C" {
+
 #include <assert.h>
 #include <limits.h>
 #include <stdio.h>
@@ -642,3 +644,5 @@ signed int timecoder_get_position(struct timecoder *tc, double *when)
 
     return r;
 }
+
+}; // extern "C"
