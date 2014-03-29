@@ -86,6 +86,7 @@ void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
             continue;
         }
 
+        lastRow = row;
         beginRemoveRows(QModelIndex(), row, row);
         m_midiInputMappings.removeAt(row);
         endRemoveRows();

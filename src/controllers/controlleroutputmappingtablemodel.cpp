@@ -79,6 +79,7 @@ void ControllerOutputMappingTableModel::removeMappings(QModelIndexList indices) 
             continue;
         }
 
+        lastRow = row;
         beginRemoveRows(QModelIndex(), row, row);
         m_midiOutputMappings.removeAt(row);
         endRemoveRows();
