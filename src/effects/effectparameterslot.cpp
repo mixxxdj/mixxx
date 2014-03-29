@@ -141,8 +141,9 @@ void EffectParameterSlot::slotLoaded(double v) {
 void EffectParameterSlot::slotLinkType(double v) {
     qDebug() << debugString() << "slotLinkType" << v;
     if (m_pEffectParameter) {
+        // Intermediate cast to integer is needed for VC++.
         m_pEffectParameter->setLinkType(
-            static_cast<EffectManifestParameter::LinkType>(v));
+            static_cast<EffectManifestParameter::LinkType>(int(v)));
     }
 }
 

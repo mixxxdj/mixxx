@@ -363,7 +363,8 @@ void EffectChainSlot::slotControlChainParameter(double v) {
 }
 
 void EffectChainSlot::slotControlChainInsertionType(double v) {
-    EffectChain::InsertionType type = static_cast<EffectChain::InsertionType>(v);
+    // Intermediate cast to integer is needed for VC++.
+    EffectChain::InsertionType type = static_cast<EffectChain::InsertionType>(int(v));
     (void)v; // this avoids a false warning with g++ 4.8.1
     if (m_pEffectChain && type >= 0 &&
             type < EffectChain::NUM_INSERTION_TYPES) {
