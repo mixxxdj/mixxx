@@ -44,6 +44,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_deviceInfo(deviceInfo),
           m_outputFifo(NULL),
           m_inputFifo(NULL),
+          m_outputDrift(false),
+          m_inputDrift(false),
           m_pOutputBuffer(NULL),
           m_pInputBuffer(NULL),
           m_bSetThreadPriority(false),
@@ -339,19 +341,35 @@ void SoundDevicePortAudio::readProcess() {
         int readAvailable = m_inputFifo->readAvailable();
         if (readAvailable > inChunkSize * 2) {
             m_inputFifo->read(m_pInputBuffer, inChunkSize);
-            m_inputFifo->releaseReadRegions(m_inputParams.channelCount);
-            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Skip";
+            if (m_inputDrift) {
+                // Do not compensate the first delay, because it is likely a jitter
+                // corrected in the next cycle
+                m_inputFifo->releaseReadRegions(m_inputParams.channelCount);
+                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Skip";
+            } else {
+                m_inputDrift = true;
+                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Skip";
+            }
+
         } else if (readAvailable == inChunkSize * 2) {
             m_inputFifo->read(m_pInputBuffer, inChunkSize);
-            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Normal";
+            qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Normal";
+            m_inputDrift = false;
         } else if (readAvailable >= inChunkSize) {
             // Risk of underflow, save one sample
-            m_inputFifo->read(&m_pInputBuffer[m_inputParams.channelCount],
-                    inChunkSize - m_inputParams.channelCount);
-            memcpy(&m_pInputBuffer[inChunkSize - m_inputParams.channelCount],
-                   &m_pInputBuffer[inChunkSize - (2 * m_inputParams.channelCount)],
-                    m_inputParams.channelCount * sizeof(CSAMPLE));
-            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Save";
+            if (m_inputDrift) {
+                m_inputFifo->read(&m_pInputBuffer[m_inputParams.channelCount],
+                        inChunkSize - m_inputParams.channelCount);
+                memcpy(&m_pInputBuffer[inChunkSize - m_inputParams.channelCount],
+                        &m_pInputBuffer[inChunkSize - (2 * m_inputParams.channelCount)],
+                        m_inputParams.channelCount * sizeof(CSAMPLE));
+                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Save";
+            } else {
+                m_inputFifo->read(m_pInputBuffer, inChunkSize);
+                m_inputDrift = true;
+                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Save";
+            }
+
         } else if (readAvailable) {
             // Risk of underflow, save one sample
             m_inputFifo->read(m_pInputBuffer,
@@ -436,18 +454,30 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
 
         if (readAvailable > outChunkSize * 2) {
             m_outputFifo->read(out, outChunkSize);
-            m_outputFifo->releaseReadRegions(m_outputParams.channelCount);
-            //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Skip";
+            if (m_outputDrift) {
+                m_outputFifo->releaseReadRegions(m_outputParams.channelCount);
+                //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Skip";
+            } else {
+                m_outputDrift = true;
+                //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Jitter Skip";
+            }
         } else if (readAvailable == outChunkSize * 2) {
             m_outputFifo->read(out,outChunkSize);
+            m_outputDrift = false;
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Normal";
         } else if (readAvailable >= outChunkSize) {
             // Risk of underflow, save one sample
-            m_outputFifo->read(out, outChunkSize - m_outputParams.channelCount);
-            memcpy(&out[outChunkSize - m_outputParams.channelCount],
-                   &out[outChunkSize - (2 * m_outputParams.channelCount)],
-                    m_outputParams.channelCount * sizeof(CSAMPLE));
-            //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Save";
+            if (m_outputDrift) {
+                m_outputFifo->read(out, outChunkSize - m_outputParams.channelCount);
+                memcpy(&out[outChunkSize - m_outputParams.channelCount],
+                       &out[outChunkSize - (2 * m_outputParams.channelCount)],
+                        m_outputParams.channelCount * sizeof(CSAMPLE));
+                //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Save";
+            } else {
+                m_outputFifo->read(out, outChunkSize);
+                m_outputDrift = true;
+                //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Jitter Save";
+            }
         } else if (readAvailable) {
             m_outputFifo->read(out,
                     readAvailable);

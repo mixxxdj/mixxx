@@ -80,6 +80,8 @@ class SoundDevicePortAudio : public SoundDevice {
     PaStreamParameters m_inputParams;
     FIFO<CSAMPLE>* m_outputFifo;
     FIFO<CSAMPLE>* m_inputFifo;
+    bool m_outputDrift;
+    bool m_inputDrift;
 
     CSAMPLE* m_pOutputBuffer;
     unsigned int m_pOutputBufferReadFrame;
