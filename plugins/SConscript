@@ -7,19 +7,19 @@ plugins = []
 
 soundsourcem4a = SConscript(
     File('soundsourcem4a/SConscript'),
-    variant_dir=Dir(build.build_dir + "/m4a"),
+    variant_dir=Dir(build.build_dir),
     duplicate=0, exports=['build'])
 plugins.extend(soundsourcem4a)
 
 soundsourcewv = SConscript(
     File('soundsourcewv/SConscript'),
-    variant_dir=Dir(build.build_dir + "/wv"),
+    variant_dir=Dir(build.build_dir),
     duplicate=0, exports=['build'])
 plugins.extend(soundsourcewv)
 
 soundsourcemediafoundation = SConscript(
     File('soundsourcemediafoundation/SConscript'),
-    variant_dir=Dir(build.build_dir + "/mediafoundation"),
+    variant_dir=Dir(build.build_dir),
     duplicate=0, exports=['build'])
 plugins.extend(soundsourcemediafoundation)
 
