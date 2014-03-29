@@ -260,9 +260,12 @@ if build.platform_is_linux or build.platform_is_bsd:
                 #the compiled-in strings using /usr as the prefix. That's why we have install_root and flags['prefix'].
                 install_root = ARGUMENTS.get('install_root', flags['prefix'])
                 print "Install root: " + install_root
-                unix_share_path = os.path.join(install_root, 'share')
-                unix_bin_path = os.path.join(install_root, 'bin')
-                unix_lib_path = os.path.join(install_root, 'lib')
+                unix_share_path = os.path.join(install_root,
+                    env.get('SHAREDIR', default='share'))
+                unix_bin_path = os.path.join(install_root,
+                    env.get('BINDIR', default='bin'))
+                unix_lib_path = os.path.join(install_root,
+                    env.get('LIBDIR', default='lib'))
 
                 binary = env.Install(unix_bin_path, binary_files)
                 resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
