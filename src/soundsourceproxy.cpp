@@ -119,11 +119,11 @@ void SoundSourceProxy::loadPlugins() {
     // For people who build from source.
     QDir developer32Root(applicationPath);
     if (developer32Root.cd("lin32_build") && developer32Root.cd("plugins")) {
-        pathElements << developer32Root.absolutePath();
+        pluginDirs << developer32Root.absolutePath();
     }
     QDir developer64Root(applicationPath);
     if (developer64Root.cd("lin64_build") && developer64Root.cd("plugins")) {
-        pathElements << developer64Root.absolutePath();
+        pluginDirs << developer64Root.absolutePath();
     }
 #elif __WINDOWS__
     QDir appPluginDir(applicationPath);
