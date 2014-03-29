@@ -45,16 +45,16 @@ int lut_init(struct lut *lut, int nslots)
     bytes = sizeof(struct slot) * nslots + sizeof(slot_no_t) * hashes;
 
     fprintf(stderr, "Lookup table has %d hashes to %d slots"
-            " (%d slots per hash, %zuKb)\n",
+            " (%d slots per hash, %u Kb)\n",
             hashes, nslots, nslots / hashes, bytes / 1024);
 
-    lut->slot = malloc(sizeof(struct slot) * nslots);
+    lut->slot = (struct slot*)(malloc(sizeof(struct slot) * nslots));
     if (lut->slot == NULL) {
         perror("malloc");
         return -1;
     }
 
-    lut->table = malloc(sizeof(slot_no_t) * hashes);
+    lut->table = (slot_no_t*)(malloc(sizeof(slot_no_t) * hashes));
     if (lut->table == NULL) {
         perror("malloc");
         return -1;
