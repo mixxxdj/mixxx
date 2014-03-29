@@ -8,21 +8,14 @@
 #include "controllers/delegates/midioptionsdelegate.h"
 
 ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
-        : QAbstractTableModel(pParent),
-          m_pMidiPreset(NULL),
+        : ControllerMappingTableModel(pParent),
           m_controlPickerMenu(NULL) {
 }
 
 ControllerInputMappingTableModel::~ControllerInputMappingTableModel() {
 }
 
-void ControllerInputMappingTableModel::setPreset(ControllerPresetPointer pPreset) {
-    m_pPreset = pPreset;
-    if (m_pPreset) {
-        // This immediately calls one of the two visit() methods below.
-        m_pPreset->accept(this);
-    }
-
+void ControllerInputMappingTableModel::onPresetLoaded() {
     if (m_pMidiPreset != NULL) {
         // TODO(rryan): Tooltips
         setHeaderData(MIDI_COLUMN_CHANNEL, Qt::Horizontal, tr("Channel"));
@@ -48,15 +41,6 @@ void ControllerInputMappingTableModel::setPreset(ControllerPresetPointer pPreset
     }
 }
 
-void ControllerInputMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
-    m_pMidiPreset = pMidiPreset;
-}
-
-void ControllerInputMappingTableModel::visit(HidControllerPreset* pHidPreset) {
-    Q_UNUSED(pHidPreset);
-    qDebug() << "WARNING: HID controller presets are not currently mappable.";
-}
-
 void ControllerInputMappingTableModel::clear() {
     if (m_pMidiPreset != NULL) {
         beginRemoveRows(QModelIndex(), 0, m_midiInputMappings.size() - 1);
@@ -65,7 +49,7 @@ void ControllerInputMappingTableModel::clear() {
     }
 }
 
-void ControllerInputMappingTableModel::addEmptyInputMapping() {
+void ControllerInputMappingTableModel::addEmptyMapping() {
     if (m_pMidiPreset != NULL) {
         beginInsertRows(QModelIndex(), m_midiInputMappings.size(),
                         m_midiInputMappings.size());
@@ -74,7 +58,7 @@ void ControllerInputMappingTableModel::addEmptyInputMapping() {
     }
 }
 
-void ControllerInputMappingTableModel::removeInputMappings(QModelIndexList indices) {
+void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
     // Values don't matter, it's just to get a consistent ordering.
     QList<int> rows;
     foreach (const QModelIndex& index, indices) {
@@ -95,12 +79,8 @@ void ControllerInputMappingTableModel::removeInputMappings(QModelIndexList indic
     }
 }
 
-bool ControllerInputMappingTableModel::validate() {
-    // TODO(rryan): validation
-    return true;
-}
-
-QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(int column, QWidget* pParent) {
+QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
+        int column, QWidget* pParent) {
     if (m_pMidiPreset != NULL) {
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
@@ -255,53 +235,4 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
     }
 
     return false;
-}
-
-bool ControllerInputMappingTableModel::setHeaderData(int section,
-                                                     Qt::Orientation orientation,
-                                                     const QVariant& value,
-                                                     int role) {
-    int numColumns = columnCount();
-    if (section < 0 || section >= numColumns) {
-        return false;
-    }
-
-    if (orientation != Qt::Horizontal) {
-        // We only care about horizontal headers.
-        return false;
-    }
-
-    if (m_headerInfo.size() != numColumns) {
-        m_headerInfo.resize(numColumns);
-    }
-
-    m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
-    return true;
-}
-
-QVariant ControllerInputMappingTableModel::headerData(int section,
-                                                      Qt::Orientation orientation,
-                                                      int role) const {
-    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
-        QVariant headerValue = m_headerInfo.value(section).value(role);
-        if (!headerValue.isValid()) {
-            // Try EditRole if DisplayRole wasn't present
-            headerValue = m_headerInfo.value(section).value(Qt::EditRole);
-        }
-        if (!headerValue.isValid()) {
-            headerValue = QVariant(section).toString();
-        }
-        return headerValue;
-    }
-    return QAbstractTableModel::headerData(section, orientation, role);
-}
-
-Qt::ItemFlags ControllerInputMappingTableModel::flags(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return Qt::ItemIsEnabled;
-    }
-
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    return defaultFlags | Qt::ItemIsEditable;
 }

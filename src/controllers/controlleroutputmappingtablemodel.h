@@ -3,42 +3,30 @@
 
 #include <QAbstractTableModel>
 #include <QVariant>
-#include <QVector>
-#include <QHash>
 #include <QModelIndex>
 #include <QAbstractItemDelegate>
 
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetvisitor.h"
-#include "controllers/midi/midicontrollerpreset.h"
-#include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/controllermappingtablemodel.h"
 #include "controllers/controlpickermenu.h"
 
-class ControllerOutputMappingTableModel : public QAbstractTableModel,
-                                          public ControllerPresetVisitor {
+class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
     ControllerOutputMappingTableModel(QObject* pParent);
     virtual ~ControllerOutputMappingTableModel();
 
-    void setPreset(ControllerPresetPointer pPreset);
-    void visit(HidControllerPreset* pHidPreset);
-    void visit(MidiControllerPreset* pMidiPreset);
-
     // Clears all output mappings in the preset.
     void clear();
 
     // Adds an empty output mapping.
-    void addEmptyOutputMapping();
+    void addEmptyMapping();
 
     // Removes the provided output mappings.
-    void removeOutputMappings(QModelIndexList mappings);
+    void removeMappings(QModelIndexList mappings);
 
-    // Validates the output mappings.
-    // TODO(rryan): rough
-    bool validate();
-
-    QAbstractItemDelegate* delegateForColumn(int column, QWidget* pParent) const;
+    // Returns a delegate for the provided column or NULL if the column does not
+    // need a delegate.
+    QAbstractItemDelegate* delegateForColumn(int column, QWidget* pParent);
 
     ////////////////////////////////////////////////////////////////////////////
     // QAbstractItemModel methods
@@ -48,11 +36,9 @@ class ControllerOutputMappingTableModel : public QAbstractTableModel,
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex& index, const QVariant& value,
                  int role = Qt::EditRole);
-    bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant& value, int role = Qt::EditRole);
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
-    Qt::ItemFlags flags(const QModelIndex& index) const;
+
+  protected:
+    void onPresetLoaded();
 
   private:
     enum MidiColumn {
@@ -66,10 +52,6 @@ class ControllerOutputMappingTableModel : public QAbstractTableModel,
         MIDI_COLUMN_MAX,
         MIDI_COLUMN_COMMENT
     };
-
-    ControllerPresetPointer m_pPreset;
-    MidiControllerPreset* m_pMidiPreset;
-    QVector<QHash<int, QVariant> > m_headerInfo;
 
     struct MidiOutputMapping {
         MidiOutput output;

@@ -87,9 +87,9 @@ class DlgPrefController : public DlgPreferencePage {
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
-    ControllerInputMappingTableModel* m_pInputTableModel;
+    ControllerMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
-    ControllerOutputMappingTableModel* m_pOutputTableModel;
+    ControllerMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
 };

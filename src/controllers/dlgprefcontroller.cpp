@@ -382,7 +382,7 @@ void DlgPrefController::disableDevice() {
 
 void DlgPrefController::addInputMapping() {
     if (m_pInputTableModel) {
-        m_pInputTableModel->addEmptyInputMapping();
+        m_pInputTableModel->addEmptyMapping();
         slotDirty();
     }
 }
@@ -393,7 +393,7 @@ void DlgPrefController::removeInputMappings() {
             m_ui.m_pInputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pInputTableModel) {
-            m_pInputTableModel->removeInputMappings(selectedIndices);
+            m_pInputTableModel->removeMappings(selectedIndices);
             slotDirty();
         }
     }
@@ -414,7 +414,7 @@ void DlgPrefController::clearAllInputMappings() {
 
 void DlgPrefController::addOutputMapping() {
     if (m_pOutputTableModel) {
-        m_pOutputTableModel->addEmptyOutputMapping();
+        m_pOutputTableModel->addEmptyMapping();
         slotDirty();
     }
 }
@@ -425,7 +425,7 @@ void DlgPrefController::removeOutputMappings() {
             m_ui.m_pOutputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pOutputTableModel) {
-            m_pOutputTableModel->removeOutputMappings(selectedIndices);
+            m_pOutputTableModel->removeMappings(selectedIndices);
             slotDirty();
         }
     }
