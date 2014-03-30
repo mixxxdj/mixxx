@@ -440,7 +440,7 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     } else if (nodeName == "Library") {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
-        result = wrapWidget(parseLabelWidget<WKey>(node));
+        result = wrapWidget(parseEngineKey(node));
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
@@ -880,6 +880,14 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
     setupLabelWidget(node, p);
     return p;
+}
+
+QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
+    WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
+    setupLabelWidget(node, pEngineKey);
+    return pEngineKey;
 }
 
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
