@@ -120,11 +120,9 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
 }
 
 EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
-    EffectParameter* pParameter = m_parameters.value(parameterNumber, NULL);
-    if (pParameter == NULL) {
-        qWarning() << debugString() << "WARNING: Invalid parameter index.";
-    }
-    return pParameter;
+    // It's normal to ask for a parameter that doesn't exist. Callers must check
+    // for NULL.
+    return m_parameters.value(parameterNumber, NULL);
 }
 
 QDomElement Effect::toXML(QDomDocument* doc) const {
