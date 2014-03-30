@@ -77,7 +77,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
         m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
 
         if (m_pEffectParameter) {
-            qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
+            //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue().toDouble();
             double dMinimum = m_pEffectParameter->getMinimum().toDouble();
             double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
@@ -88,12 +88,12 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             if (dValue > dMaximum || dValue < dMinimum ||
                 dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
                 dDefault > dMaximum || dDefault < dMinimum) {
-                qDebug() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
-            qDebug() << debugString()
-                    << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
-                    .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
+            // qDebug() << debugString()
+            //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+            //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
@@ -134,12 +134,12 @@ void EffectParameterSlot::clear() {
 }
 
 void EffectParameterSlot::slotLoaded(double v) {
-    qDebug() << debugString() << "slotLoaded" << v;
-    qDebug() << "WARNING: loaded is a read-only control.";
+    //qDebug() << debugString() << "slotLoaded" << v;
+    qWarning() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectParameterSlot::slotLinkType(double v) {
-    qDebug() << debugString() << "slotLinkType" << v;
+    //qDebug() << debugString() << "slotLinkType" << v;
     if (m_pEffectParameter) {
         // Intermediate cast to integer is needed for VC++.
         m_pEffectParameter->setLinkType(
@@ -148,20 +148,20 @@ void EffectParameterSlot::slotLinkType(double v) {
 }
 
 void EffectParameterSlot::slotValueChanged(double v) {
-    qDebug() << debugString() << "slotValueChanged" << v;
+    //qDebug() << debugString() << "slotValueChanged" << v;
     if (m_pEffectParameter) {
         m_pEffectParameter->setValue(v);
     }
 }
 
 void EffectParameterSlot::slotValueType(double v) {
-    qDebug() << debugString() << "slotValueType" << v;
-    qDebug() << "WARNING: value_type is a read-only control.";
+    //qDebug() << debugString() << "slotValueType" << v;
+    qWarning() << "WARNING: value_type is a read-only control.";
 }
 
 
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
-    qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
+    //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
 }
 

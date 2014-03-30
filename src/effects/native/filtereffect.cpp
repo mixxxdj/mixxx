@@ -65,7 +65,7 @@ FilterEffect::FilterEffect(EngineEffect* pEffect,
 }
 
 FilterEffect::~FilterEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 double getLowFrequencyCorner(double depth) {

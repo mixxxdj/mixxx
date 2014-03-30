@@ -408,7 +408,7 @@ QString ConfigObject<ValueType>::getResourcePath() {
         }
 #endif
     } else {
-        qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
+        //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
 
     if (qResourcePath.length() == 0) {

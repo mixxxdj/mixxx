@@ -51,7 +51,7 @@ BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect,
 }
 
 BitCrusherEffect::~BitCrusherEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void BitCrusherEffect::processGroup(const QString& group,

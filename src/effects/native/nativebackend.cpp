@@ -17,5 +17,5 @@ NativeBackend::NativeBackend(QObject* pParent)
 }
 
 NativeBackend::~NativeBackend() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }

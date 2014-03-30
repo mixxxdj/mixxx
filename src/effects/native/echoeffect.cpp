@@ -77,7 +77,7 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
 }
 
 EchoEffect::~EchoEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 int EchoEffect::getDelaySamples(double delay_time) const {

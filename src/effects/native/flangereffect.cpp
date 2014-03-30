@@ -70,7 +70,7 @@ FlangerEffect::FlangerEffect(EngineEffect* pEffect,
 }
 
 FlangerEffect::~FlangerEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void FlangerEffect::processGroup(const QString& group,

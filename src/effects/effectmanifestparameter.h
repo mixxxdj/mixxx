@@ -50,7 +50,7 @@ class EffectManifestParameter {
     }
 
     virtual ~EffectManifestParameter() {
-        qDebug() << debugString() << "destroyed";
+        //qDebug() << debugString() << "destroyed";
     }
 
     ////////////////////////////////////////////////////////////////////////////////

@@ -22,7 +22,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
 }
 
 EffectChain::~EffectChain() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
@@ -190,13 +190,13 @@ void EffectChain::setInsertionType(InsertionType insertionType) {
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {
-    qDebug() << debugString() << "addEffect";
+    //qDebug() << debugString() << "addEffect";
     if (!pEffect) {
         return;
     }
 
     if (m_effects.contains(pEffect)) {
-        qDebug() << debugString()
+        qWarning() << debugString()
                  << "WARNING: EffectChain already contains Effect:"
                  << pEffect;
         return;
@@ -210,7 +210,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 
 void EffectChain::replaceEffect(unsigned int iEffectNumber,
                                 EffectPointer pEffect) {
-    qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
+    //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
     while (iEffectNumber >= static_cast<unsigned int>(m_effects.size())) {
         m_effects.append(EffectPointer());
     }
@@ -234,7 +234,7 @@ void EffectChain::replaceEffect(unsigned int iEffectNumber,
 }
 
 void EffectChain::removeEffect(EffectPointer pEffect) {
-    qDebug() << debugString() << "removeEffect" << pEffect;
+    //qDebug() << debugString() << "removeEffect" << pEffect;
     for (int i = 0; i < m_effects.size(); ++i) {
         if (m_effects.at(i) == pEffect) {
             pEffect->removeFromEngine(m_pEngineEffectChain, i);
@@ -254,7 +254,7 @@ const QList<EffectPointer>& EffectChain::effects() const {
 
 EffectPointer EffectChain::getEffect(unsigned int effectNumber) const {
     if (effectNumber >= static_cast<unsigned int>(m_effects.size())) {
-        qDebug() << debugString() << "WARNING: list index out of bounds for getEffect";
+        qWarning() << debugString() << "WARNING: list index out of bounds for getEffect";
     }
     return m_effects[effectNumber];
 }

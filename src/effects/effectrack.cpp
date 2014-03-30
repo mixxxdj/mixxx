@@ -72,8 +72,8 @@ void EffectRack::registerGroup(const QString& group) {
 
 void EffectRack::slotNumEffectChainSlots(double v) {
     // Ignore sets to num_effectchain_slots
-    qDebug() << debugString() << "slotNumEffectChainSlots" << v;
-    qDebug() << "WARNING: num_effectchain_slots is a read-only control.";
+    //qDebug() << debugString() << "slotNumEffectChainSlots" << v;
+    qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }
 
 void EffectRack::slotClearRack(double v) {
@@ -136,7 +136,7 @@ EffectChainSlotPointer EffectRack::addEffectChainSlot() {
 
 EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
     if (i < 0 || i >= m_effectChainSlots.size()) {
-        qDebug() << "WARNING: Invalid index for getEffectChainSlot";
+        qWarning() << "WARNING: Invalid index for getEffectChainSlot";
         return EffectChainSlotPointer();
     }
     return m_effectChainSlots[i];

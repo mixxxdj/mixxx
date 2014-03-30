@@ -23,14 +23,14 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
             this, pEffectsManager, m_parameters.size(), parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
-            qDebug() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
+            qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[parameter.id()] = pParameter;
     }
 }
 
 Effect::~Effect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
     m_parametersById.clear();
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
@@ -113,8 +113,8 @@ unsigned int Effect::numParameters() const {
 EffectParameter* Effect::getParameterById(const QString& id) const {
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
     if (pParameter == NULL) {
-        qDebug() << debugString() << "getParameterById"
-                 << "WARNING: parameter for id does not exist:" << id;
+        qWarning() << debugString() << "getParameterById"
+                   << "WARNING: parameter for id does not exist:" << id;
     }
     return pParameter;
 }
@@ -122,7 +122,7 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
 EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
     EffectParameter* pParameter = m_parameters.value(parameterNumber, NULL);
     if (pParameter == NULL) {
-        qDebug() << debugString() << "WARNING: Invalid parameter index.";
+        qWarning() << debugString() << "WARNING: Invalid parameter index.";
     }
     return pParameter;
 }

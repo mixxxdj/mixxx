@@ -61,7 +61,7 @@ ReverbEffect::ReverbEffect(EngineEffect* pEffect,
 }
 
 ReverbEffect::~ReverbEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void ReverbEffect::processGroup(const QString& group,

@@ -52,7 +52,7 @@ void ControlDoublePrivate::initialize() {
     m_defaultValue.setValue(0);
     m_value.setValue(value);
 
-    qDebug() << "Creating:" << m_trackKey << "at" << &m_value << sizeof(m_value);
+    //qDebug() << "Creating:" << m_trackKey << "at" << &m_value << sizeof(m_value);
 
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
