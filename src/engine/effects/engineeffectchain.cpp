@@ -161,7 +161,8 @@ bool EngineEffectChain::disableForGroup(const QString& group) {
 
 void EngineEffectChain::process(const QString& group,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples) {
+                                const unsigned int numSamples,
+                                const GroupFeatureState& groupFeatures) {
     GroupStatus& group_info = m_groupStatus[group];
     bool bEnabled = m_bEnabled && group_info.enabled;
 
@@ -199,7 +200,8 @@ void EngineEffectChain::process(const QString& group,
                 }
                 const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : pOutput;
                 CSAMPLE* pIntermediateOutput = pOutput;
-                pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
+                pEffect->process(group, pIntermediateInput, pIntermediateOutput,
+                                 numSamples, groupFeatures);
                 anyProcessed = true;
             }
             // If no effects were active then we have to copy input to output if
@@ -234,7 +236,8 @@ void EngineEffectChain::process(const QString& group,
                 }
                 const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
-                pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
+                pEffect->process(group, pIntermediateInput, pIntermediateOutput,
+                                 numSamples, groupFeatures);
                 anyProcessed = true;
             }
 
@@ -269,7 +272,7 @@ void EngineEffectChain::process(const QString& group,
             const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
             CSAMPLE* pIntermediateOutput = m_pBuffer;
             pEffect->process(group, pIntermediateInput,
-                             pIntermediateOutput, numSamples);
+                             pIntermediateOutput, numSamples, groupFeatures);
             anyProcessed = true;
         }
 

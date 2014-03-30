@@ -35,7 +35,8 @@ class FlangerEffect : public GroupEffectProcessor<FlangerGroupState> {
     void processGroup(const QString& group,
                       FlangerGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples);
+                      const unsigned int numSamples,
+                      const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

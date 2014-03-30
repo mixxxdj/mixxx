@@ -67,8 +67,10 @@ ReverbEffect::~ReverbEffect() {
 void ReverbEffect::processGroup(const QString& group,
                                 ReverbGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples) {
+                                const unsigned int numSamples,
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(groupFeatures);
     CSAMPLE bandwidth = m_pBandWidthParameter ?
             m_pBandWidthParameter->value().toDouble() : 1.0f;
     CSAMPLE damping = m_pDampingParameter ?

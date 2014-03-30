@@ -95,8 +95,10 @@ int EchoEffect::getDelaySamples(double delay_time) const {
 
 void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
                               const CSAMPLE* pInput,
-                              CSAMPLE* pOutput, const unsigned int numSamples) {
+                              CSAMPLE* pOutput, const unsigned int numSamples,
+                              const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(groupFeatures);
     EchoGroupState& gs = *pGroupState;
     double delay_time =
             m_pDelayParameter ? m_pDelayParameter->value().toDouble() : 1.0f;

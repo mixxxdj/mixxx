@@ -145,7 +145,12 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
 
     if (m_pEngineEffectsManager != NULL) {
         // Process effects enabled for this channel
-        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
+        GroupFeatureState features;
+        // This is out of date by a callback but some effects will want the RMS
+        // volume.
+        m_vuMeter.collectFeatures(&features);
+        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
+                                         features);
     }
     // Apply clipping
     m_clipping.process(pOut, pOut, iBufferSize);

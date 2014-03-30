@@ -36,12 +36,14 @@ EngineDeck::EngineDeck(const char* group,
                        EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
-          m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
+          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
-    pEffectsManager->registerGroup(getGroup());
+    if (pEffectsManager != NULL) {
+        pEffectsManager->registerGroup(getGroup());
+    }
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -76,6 +78,7 @@ EngineDeck::~EngineDeck() {
 }
 
 void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
+    GroupFeatureState features;
     // Feed the incoming audio through if passthrough is active
     if (isPassthroughActive()) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
@@ -98,6 +101,7 @@ void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
 
         // Process the raw audio
         m_pBuffer->process(0, pOut, iBufferSize);
+        m_pBuffer->collectFeatures(&features);
         // Emulate vinyl sounds
         m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
         m_bPassthroughWasActive = false;
@@ -108,7 +112,13 @@ void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
     // Process effects enabled for this channel
-    m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
+    if (m_pEngineEffectsManager != NULL) {
+        // This is out of date by a callback but some effects will want the RMS
+        // volume.
+        m_pVUMeter->collectFeatures(&features);
+        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
+                                         features);
+    }
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
