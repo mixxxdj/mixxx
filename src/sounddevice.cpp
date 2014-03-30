@@ -123,14 +123,15 @@ bool SoundDevice::operator==(const QString &other) const {
 }
 
 void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
-                                      const unsigned long iFramesPerBuffer,
+                                      const unsigned int framesToCompose,
+                                      const unsigned int framesReadOffset,
                                       const unsigned int iFrameSize) {
     //qDebug() << "SoundDevice::composeOutputBuffer()"
     //         << device->getInternalName()
-    //         << iFramesPerBuffer << iFrameSize;
+    //         << framesToCompose << iFrameSize;
 
     // Reset sample for each open channel
-    SampleUtil::clear(outputBuffer, iFramesPerBuffer * iFrameSize);
+    SampleUtil::clear(outputBuffer, framesToCompose * iFrameSize);
 
     // Interlace Audio data onto portaudio buffer.  We iterate through the
     // source list to find out what goes in the buffer data is interlaced in
@@ -145,10 +146,12 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
         const int iChannelBase = outChans.getChannelBase();
 
         const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
+        // advanced to offset; pAudioOutputBuffer is always stereo
+        pAudioOutputBuffer = &pAudioOutputBuffer[framesReadOffset*2];
         if (iChannelCount == 1) {
             // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
             // output then we need to downsample.
-            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+            for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
                 // iFrameBase is the "base sample" in a frame (ie. the first
                 // sample in a frame)
                 const unsigned int iFrameBase = iFrameNo * iFrameSize;
@@ -157,7 +160,7 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
                                 pAudioOutputBuffer[iFrameNo*2 + 1]) / 2.0f;
             }
         } else {
-            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+            for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
                 // iFrameBase is the "base sample" in a frame (ie. the first
                 // sample in a frame)
                 const unsigned int iFrameBase = iFrameNo * iFrameSize;

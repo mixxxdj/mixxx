@@ -73,7 +73,8 @@ class SoundDevice {
 
   protected:
     void composeOutputBuffer(CSAMPLE* outputBuffer,
-                             const unsigned long iFramesPerBuffer,
+                             const unsigned int iFramesPerBuffer,
+                             const unsigned int readOffset,
                              const unsigned int iFrameSize);
 
     ConfigObject<ConfigValue> *m_pConfig;

@@ -63,7 +63,6 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
 
-    inline CSAMPLE* getOutputBufferFrame(unsigned int frame) { return &m_pOutputBuffer[m_outputParams.channelCount * frame]; };
     inline CSAMPLE* getInputBufferFrame(unsigned int frame) { return &m_pInputBuffer[m_inputParams.channelCount * frame]; };
 
 
@@ -83,8 +82,6 @@ class SoundDevicePortAudio : public SoundDevice {
     bool m_outputDrift;
     bool m_inputDrift;
 
-    CSAMPLE* m_pOutputBuffer;
-    unsigned int m_pOutputBufferReadFrame;
     CSAMPLE* m_pInputBuffer;
     // A string describing the last PortAudio error to occur.
     QString m_lastError;

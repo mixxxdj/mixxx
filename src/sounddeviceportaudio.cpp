@@ -49,7 +49,6 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_inputFifo(NULL),
           m_outputDrift(false),
           m_inputDrift(false),
-          m_pOutputBuffer(NULL),
           m_pInputBuffer(NULL),
           m_bSetThreadPriority(false),
           m_pMasterUnderflowCount(ControlObject::getControl(
@@ -185,8 +184,6 @@ int SoundDevicePortAudio::open(bool isClkRefDevice) {
             // Clear first 1.5 chunks on for the required artificial delaly to a allow jitter
             // and a half, because we can't predict which callback fires first.
             m_outputFifo->releaseWriteRegions(m_outputParams.channelCount * m_framesPerBuffer * 3 / 2);
-            m_pOutputBuffer = SampleUtil::alloc(
-                    m_outputParams.channelCount * m_framesPerBuffer);
         }
         if (m_inputParams.channelCount) {
             m_inputFifo = new FIFO<CSAMPLE>(m_inputParams.channelCount * m_framesPerBuffer * 3);
@@ -316,9 +313,6 @@ int SoundDevicePortAudio::close() {
             delete m_inputFifo;
         }
 
-        if (m_pOutputBuffer) {
-            SampleUtil::free(m_pOutputBuffer);
-        }
         if (m_pInputBuffer) {
             SampleUtil::free(m_pInputBuffer);
         }
@@ -326,7 +320,6 @@ int SoundDevicePortAudio::close() {
 
     m_outputFifo = NULL;
     m_inputFifo = NULL;
-    m_pOutputBuffer = NULL;
     m_pInputBuffer = NULL;
     m_bSetThreadPriority = false;
 
@@ -396,27 +389,30 @@ void SoundDevicePortAudio::readProcess() {
 void SoundDevicePortAudio::writeProcess() {
     PaStream* pStream = m_pStream;
     if (pStream && m_outputParams.channelCount) {
-        // Fetch fresh samples and write to the second half of the output buffer
-        composeOutputBuffer(m_pOutputBuffer, m_framesPerBuffer,
-                static_cast<unsigned int>(m_outputParams.channelCount));
-
         int outChunkSize = m_framesPerBuffer * m_outputParams.channelCount;
         int readAvailable = m_outputFifo->readAvailable();
         // we use only three chunks, to limit the maximum delay
         int writeAvailable = (outChunkSize * 3) - readAvailable;
-        if (writeAvailable >= outChunkSize) {
-            // Everything Ok
-            m_outputFifo->write(m_pOutputBuffer, outChunkSize);
-            //qDebug() << "writeProcess():" << (float) readAvailable / outChunkSize << "Normal";
-        } else if (writeAvailable) {
-            // Fifo Overflow
-            m_outputFifo->write(m_pOutputBuffer, writeAvailable);
+        int writeCount = outChunkSize;
+        if (outChunkSize > writeAvailable) {
+            writeCount = writeAvailable;
             m_underflowHappend = 1;
             //qDebug() << "writeProcess():" << (float) readAvailable / outChunkSize << "Overflow";
-        } else {
-            // Buffer full
-            m_underflowHappend = 1;
-            //qDebug() << "writeProcess():" << (float) readAvailable / outChunkSize << "Buffer full";
+        }
+        if (writeCount) {
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+            m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1, &size1, &dataPtr2, &size2);
+            // Fetch fresh samples and write to the the output buffer
+            composeOutputBuffer(dataPtr1, size1 / m_outputParams.channelCount, 0,
+                    static_cast<unsigned int>(m_outputParams.channelCount));
+            if (size2 > 0) {
+                composeOutputBuffer(dataPtr2, size2 / m_outputParams.channelCount, size1 / m_outputParams.channelCount,
+                        static_cast<unsigned int>(m_outputParams.channelCount));
+            }
+            m_outputFifo->releaseWriteRegions(writeCount);
         }
     }
 }
@@ -425,6 +421,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
                                           CSAMPLE *out, const CSAMPLE *in,
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
+    Q_UNUSED(timeInfo);
     Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
@@ -567,7 +564,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
             return paContinue;
         }
 
-        composeOutputBuffer(out, framesPerBuffer, static_cast<unsigned int>(
+        composeOutputBuffer(out, framesPerBuffer, 0, static_cast<unsigned int>(
                 m_outputParams.channelCount));
     }
 
