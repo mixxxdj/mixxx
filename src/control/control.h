@@ -84,8 +84,9 @@ class ControlDoublePrivate : public QObject {
     }
 
     inline double defaultValue() const {
+        QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
         double default_value = m_defaultValue.getValue();
-        return m_pBehavior ? m_pBehavior->defaultValue(default_value) : default_value;
+        return !pBehavior.isNull() ? pBehavior->defaultValue(default_value) : default_value;
     }
 
     inline ControlObject* getCreatorCO() const {

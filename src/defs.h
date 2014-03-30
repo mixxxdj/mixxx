@@ -71,5 +71,8 @@ enum {
 #define math_min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+#ifndef math_clamp
+#define math_clamp(v, min, max)  (((min) < (max)) ? (math_min((max), math_max((v), (min)))) : (math_min((min), math_max((v), (max)))))
 #endif
 
+#endif

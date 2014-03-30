@@ -20,6 +20,7 @@
 
 #include <QMutex>
 #include <QAtomicInt>
+#include <gtest/gtest_prod.h>
 
 #include "defs.h"
 #include "engine/engineobject.h"
@@ -143,7 +144,7 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScale);
 
     // For dependency injection of fake tracks.
-    void loadFakeTrack();
+    TrackPointer loadFakeTrack();
 
   public slots:
     void slotControlPlayRequest(double);
@@ -175,6 +176,8 @@ class EngineBuffer : public EngineObject {
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
+    // Fired when passthrough mode is enabled or disabled.
+    void slotPassthroughChanged(double v);
 
   private:
     void enablePitchAndTimeScaling(bool bEnable);
@@ -208,6 +211,8 @@ class EngineBuffer : public EngineObject {
     ConfigObject<ConfigValue>* m_pConfig;
 
     LoopingControl* m_pLoopingControl;
+    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
@@ -288,6 +293,7 @@ class EngineBuffer : public EngineObject {
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
     ControlPushButton* m_pKeylock;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 

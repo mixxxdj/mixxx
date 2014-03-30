@@ -120,12 +120,9 @@ bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
 
 QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
                                        int role) const {
-    if (role != Qt::DisplayRole)
-        return QAbstractTableModel::headerData(section, orientation, role);
-
-    if (orientation == Qt::Horizontal) {
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         QVariant headerValue = m_headerInfo.value(section).value(role);
-        if (!headerValue.isValid() && role == Qt::DisplayRole) {
+        if (!headerValue.isValid()) {
             // Try EditRole if DisplayRole wasn't present
             headerValue = m_headerInfo.value(section).value(Qt::EditRole);
         }

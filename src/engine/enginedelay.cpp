@@ -22,16 +22,13 @@
 const int kiMaxDelay = 20000; // 104 ms @ 96 kb/s
 const double kdMaxDelayPot = 100; // 100 ms
 
-EngineDelay::EngineDelay(const char* group, bool head)
+EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
         : m_iDelayPos(0),
           m_iDelay(0) {
-    m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
-    memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
-    if (head) {
-        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "headDelay"), 0, kdMaxDelayPot);
-    } else {
-        m_pDelayPot = new ControlPotmeter(ConfigKey(group, "delay"), 0, kdMaxDelayPot);
-    }
+    m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
+    SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
+    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot);
+    m_pDelayPot->setDefaultValue(0);
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
@@ -41,7 +38,7 @@ EngineDelay::EngineDelay(const char* group, bool head)
 }
 
 EngineDelay::~EngineDelay() {
-    delete [] m_pDelayBuffer;
+    SampleUtil::free(m_pDelayBuffer);
     delete m_pDelayPot;
 }
 
@@ -56,7 +53,7 @@ void EngineDelay::slotDelayChanged() {
     }
     if (m_iDelay <= 0) {
         // We start bypassing, so clear buffer, to avoid noise in case of re-enable delay
-        memset(m_pDelayBuffer, 0, kiMaxDelay * sizeof(CSAMPLE));
+        SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
     }
 }
 

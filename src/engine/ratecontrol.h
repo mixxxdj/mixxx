@@ -24,9 +24,6 @@ class ControlPushButton;
 class ControlObjectSlave;
 class EngineChannel;
 class PositionScratchController;
-#ifdef __VINYLCONTROL__
-class VinylControlControl;
-#endif
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from

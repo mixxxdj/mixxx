@@ -1,17 +1,17 @@
-#include "sampleutil.h"
-#include "engine/enginesidechaincompressor.h"
+#include <QtDebug>
 
-EngineSideChainCompressor::EngineSideChainCompressor(
-        ConfigObject<ConfigValue>* pConfig, const char* group)
-    : m_pConfig(pConfig),
-      m_compressRatio(0.0),
-      m_bAboveThreshold(false),
-      m_threshold(1.0),
-      m_strength(0.0),
-      m_attackTime(0),
-      m_decayTime(0),
-      m_attackPerFrame(0.0),
-      m_decayPerFrame(0.0) {
+#include "engine/enginesidechaincompressor.h"
+#include "sampleutil.h"
+
+EngineSideChainCompressor::EngineSideChainCompressor(const char* group)
+        : m_compressRatio(0.0),
+          m_bAboveThreshold(false),
+          m_threshold(1.0),
+          m_strength(0.0),
+          m_attackTime(0),
+          m_decayTime(0),
+          m_attackPerFrame(0.0),
+          m_decayPerFrame(0.0) {
     Q_UNUSED(group);
 }
 

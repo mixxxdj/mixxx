@@ -3,8 +3,9 @@
 
 #ifdef __WINDOWS__
 #pragma intrinsic(fabs)sc
-typedef __int64 int64_t;
-typedef __int32 int32_t;
+#include <QtGlobal>
+typedef qint64 int64_t;
+typedef qint32 int32_t;
 #endif
 
 #include <QtDebug>
@@ -39,7 +40,7 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer,
 // static
 void SampleUtil::clear(CSAMPLE* pBuffer, unsigned int iNumSamples) {
     // this works, because (float)0 == (int)0
-    memset(pBuffer, 0, sizeof (CSAMPLE) * iNumSamples);
+    memset(pBuffer, 0, sizeof(pBuffer[0]) * iNumSamples);
 }
 
 // static

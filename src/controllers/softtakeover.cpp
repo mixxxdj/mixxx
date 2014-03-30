@@ -32,7 +32,7 @@ void SoftTakeover::enable(ControlObject* control) {
     if (!m_times.contains(control)) {
         m_times.insert(control, 0);
     }
-    // Store current MixxxControl value
+    // Store current control value
     if (!m_prevValues.contains(control)) {
         m_prevValues.insert(control, control->get());
     }
@@ -53,8 +53,8 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
     if (m_times.contains(control)) {
         // We only want to ignore the controller when all of the following are true:
         //  - its previous and new values are far away from and on the same side
-        //      of the current value of the MixxxControl
-        //  - it's been awhile since the controller last affected this MixxxControl
+        //      of the current value of the control
+        //  - it's been awhile since the controller last affected this control
 
         // 3/128 units away from the current is enough to catch fast non-sequential moves
         //  but not cause an audibly noticeable jump.
@@ -107,7 +107,7 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
         }
         if (!ignore) {
             // Update the time only if the value is not ignored. Replaces any
-            // previous value for this MixxxControl
+            // previous value for this control
             m_times.insert(control, currentTime);
         }
         // Update the previous value every time
