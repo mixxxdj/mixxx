@@ -92,8 +92,7 @@ class SoundDevicePortAudio : public SoundDevice {
     bool m_bSetThreadPriority;
     ControlObject* m_pMasterUnderflowCount;
     int m_underflowUpdateCount;
-
-
+    static volatile int m_underflowHappend;
 };
 
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by

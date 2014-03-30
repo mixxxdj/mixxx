@@ -36,6 +36,9 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
 
+// static
+volatile int SoundDevicePortAudio::m_underflowHappend = 0;
+
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
         : SoundDevice(config, sm),
@@ -369,18 +372,19 @@ void SoundDevicePortAudio::readProcess() {
                 m_inputDrift = true;
                 //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Save";
             }
-
         } else if (readAvailable) {
-            // Risk of underflow, save one sample
+            // underflow
             m_inputFifo->read(m_pInputBuffer,
                     readAvailable);
             // underflow
             SampleUtil::clear(&m_pInputBuffer[readAvailable],
                     inChunkSize - readAvailable);
+            m_underflowHappend = 1;
             //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
         } else {
             // buffer empty
             SampleUtil::clear(m_pInputBuffer, inChunkSize);
+            m_underflowHappend = 1;
             //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "buffer empty";
         }
 
@@ -407,9 +411,11 @@ void SoundDevicePortAudio::writeProcess() {
         } else if (writeAvailable) {
             // Fifo Overflow
             m_outputFifo->write(m_pOutputBuffer, writeAvailable);
+            m_underflowHappend = 1;
             //qDebug() << "writeProcess():" << (float) readAvailable / outChunkSize << "Overflow";
         } else {
             // Buffer full
+            m_underflowHappend = 1;
             //qDebug() << "writeProcess():" << (float) readAvailable / outChunkSize << "Buffer full";
         }
     }
@@ -430,7 +436,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
     }
 
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
-        //qDebug() << "PA underflow";
+        m_underflowHappend = 1;
     }
 
     if (m_inputParams.channelCount) {
@@ -445,9 +451,11 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
         } else if (writeAvailable) {
             // Fifo Overflow
             m_inputFifo->write(in, writeAvailable);
+            m_underflowHappend = 1;
             //qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Overflow";
         } else {
             // Buffer full
+            m_underflowHappend = 1;
             //qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Buffer full";
         }
     }
@@ -488,10 +496,12 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             // underflow
             SampleUtil::clear(&out[readAvailable],
                     outChunkSize - readAvailable);
+            m_underflowHappend = 1;
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "undeflow";
         } else {
             // underflow
             SampleUtil::clear(out, outChunkSize);
+            m_underflowHappend = 1;
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Buffer empty";
         }
      }
@@ -515,12 +525,16 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
     VisualPlayPosition::setTimeInfo(timeInfo);
 
     if (!m_underflowUpdateCount) {
-        if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
+        if ((statusFlags & (paOutputUnderflow | paInputOverflow)) ||
+                m_underflowHappend) {
             if (m_pMasterUnderflowCount) {
                 m_pMasterUnderflowCount->set(
                     m_pMasterUnderflowCount->get() + 1);
             }
             m_underflowUpdateCount = 40;
+            m_underflowHappend = 0; // reseting her is not thread save,
+                                    // but that is OK, because we count only
+                                    // 1/40 of underflows
         }
     } else {
         m_underflowUpdateCount--;
