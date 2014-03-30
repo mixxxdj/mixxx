@@ -50,6 +50,7 @@ class KeyControl : public EngineControl {
 
     /** The current effective key of the engine */
     ControlObject* m_pEngineKey;
+    ControlObject* m_pEngineKeyDistance;
 
     TrackPointer m_pTrack;
 };
