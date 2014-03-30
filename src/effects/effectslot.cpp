@@ -92,16 +92,19 @@ unsigned int EffectSlot::numParameterSlots() const {
 }
 
 void EffectSlot::slotLoaded(double v) {
+    Q_UNUSED(v);
     //qDebug() << debugString() << "slotLoaded" << v;
     qWarning() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectSlot::slotNumParameters(double v) {
+    Q_UNUSED(v);
     //qDebug() << debugString() << "slotNumParameters" << v;
     qWarning() << "WARNING: num_parameters is a read-only control.";
 }
 
 void EffectSlot::slotNumParameterSlots(double v) {
+    Q_UNUSED(v);
     //qDebug() << debugString() << "slotNumParameterSlots" << v;
     qWarning() << "WARNING: num_parameterslots is a read-only control.";
 }

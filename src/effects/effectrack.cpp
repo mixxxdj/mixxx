@@ -72,6 +72,7 @@ void EffectRack::registerGroup(const QString& group) {
 
 void EffectRack::slotNumEffectChainSlots(double v) {
     // Ignore sets to num_effectchain_slots
+    Q_UNUSED(v);
     //qDebug() << debugString() << "slotNumEffectChainSlots" << v;
     qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }

@@ -134,6 +134,7 @@ void EffectParameterSlot::clear() {
 }
 
 void EffectParameterSlot::slotLoaded(double v) {
+    Q_UNUSED(v);
     //qDebug() << debugString() << "slotLoaded" << v;
     qWarning() << "WARNING: loaded is a read-only control.";
 }
@@ -155,6 +156,7 @@ void EffectParameterSlot::slotValueChanged(double v) {
 }
 
 void EffectParameterSlot::slotValueType(double v) {
+    Q_UNUSED(v);
     //qDebug() << debugString() << "slotValueType" << v;
     qWarning() << "WARNING: value_type is a read-only control.";
 }
