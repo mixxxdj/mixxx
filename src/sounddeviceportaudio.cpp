@@ -335,36 +335,9 @@ void SoundDevicePortAudio::readProcess() {
     if (pStream && m_inputParams.channelCount) {
         int inChunkSize = m_framesPerBuffer * m_inputParams.channelCount;
         int readAvailable = m_inputFifo->readAvailable();
-        if (readAvailable > inChunkSize * 2) {
-            m_inputFifo->read(m_pInputBuffer, inChunkSize);
-            if (m_inputDrift) {
-                // Do not compensate the first delay, because it is likely a jitter
-                // corrected in the next cycle
-                m_inputFifo->releaseReadRegions(m_inputParams.channelCount);
-                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Skip";
-            } else {
-                m_inputDrift = true;
-                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Skip";
-            }
-
-        } else if (readAvailable == inChunkSize * 2) {
+        if (readAvailable >= inChunkSize) {
             m_inputFifo->read(m_pInputBuffer, inChunkSize);
             //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Normal";
-            m_inputDrift = false;
-        } else if (readAvailable >= inChunkSize) {
-            // Risk of underflow, save one sample
-            if (m_inputDrift) {
-                m_inputFifo->read(&m_pInputBuffer[m_inputParams.channelCount],
-                        inChunkSize - m_inputParams.channelCount);
-                memcpy(&m_pInputBuffer[inChunkSize - m_inputParams.channelCount],
-                        &m_pInputBuffer[inChunkSize - (2 * m_inputParams.channelCount)],
-                        m_inputParams.channelCount * sizeof(CSAMPLE));
-                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Save";
-            } else {
-                m_inputFifo->read(m_pInputBuffer, inChunkSize);
-                m_inputDrift = true;
-                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Save";
-            }
         } else if (readAvailable) {
             // underflow
             m_inputFifo->read(m_pInputBuffer,
@@ -441,10 +414,34 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
         int readAvailable = m_inputFifo->readAvailable();
         // we use only three chunks, to limit the maximum delay
         int writeAvailable = (inChunkSize * 3) - readAvailable;
-        if (writeAvailable >= inChunkSize) {
+        if (writeAvailable > inChunkSize * 2) {
+            // risk of an underflow, duplicate one sample
+            m_inputFifo->write(in, inChunkSize);
+            if (m_inputDrift) {
+                // Do not compensate the first delay, because it is likely a jitter
+                // corrected in the next cycle
+                // Duplicate one sample
+                m_inputFifo->write(&in[inChunkSize - m_inputParams.channelCount], m_inputParams.channelCount);
+                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Skip";
+            } else {
+                m_inputDrift = true;
+                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
+            }
+        } else if (writeAvailable == inChunkSize * 2) {
             // Everything Ok
             m_inputFifo->write(in, inChunkSize);
+            m_inputDrift = false;
             //qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Normal";
+        } else if (writeAvailable >= inChunkSize) {
+            // Risk of overflow, save one sample
+            if (m_inputDrift) {
+                m_inputFifo->write(in, inChunkSize - m_inputParams.channelCount);
+                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Save";
+            } else {
+                m_inputFifo->write(in, inChunkSize);
+                m_inputDrift = true;
+                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Jitter Save";
+            }
         } else if (writeAvailable) {
             // Fifo Overflow
             m_inputFifo->write(in, writeAvailable);

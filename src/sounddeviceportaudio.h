@@ -62,10 +62,6 @@ class SoundDevicePortAudio : public SoundDevice {
     }
 
   private:
-
-    inline CSAMPLE* getInputBufferFrame(unsigned int frame) { return &m_pInputBuffer[m_inputParams.channelCount * frame]; };
-
-
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
     // PortAudio device index for this device.
