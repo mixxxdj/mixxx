@@ -3,11 +3,11 @@
 #include "track/keyutils.h"
 #include "track/keys.h"
 
-WKey::WKey(QWidget* pParent)
+WKey::WKey(const char* group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated")),
-          m_engineKeyDistance(ConfigKey("[Channel1]", "visual_key_distance")) {
+          m_engineKeyDistance(ConfigKey(group, "visual_key_distance")) {
     setValue(m_dOldValue);
     connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)),
             this, SLOT(preferencesUpdated(double)));

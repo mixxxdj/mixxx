@@ -9,7 +9,7 @@
 class WKey : public WLabel  {
     Q_OBJECT
   public:
-    WKey(QWidget* pParent=NULL);
+    WKey(const char* group, QWidget* pParent=NULL);
     virtual ~WKey();
 
     virtual void onConnectedControlValueChanged(double v);
