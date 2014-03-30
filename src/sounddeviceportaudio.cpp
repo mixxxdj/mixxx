@@ -345,15 +345,15 @@ void SoundDevicePortAudio::readProcess() {
                 // Do not compensate the first delay, because it is likely a jitter
                 // corrected in the next cycle
                 m_inputFifo->releaseReadRegions(m_inputParams.channelCount);
-                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Skip";
+                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Skip";
             } else {
                 m_inputDrift = true;
-                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Skip";
+                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Skip";
             }
 
         } else if (readAvailable == inChunkSize * 2) {
             m_inputFifo->read(m_pInputBuffer, inChunkSize);
-            qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Normal";
+            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Normal";
             m_inputDrift = false;
         } else if (readAvailable >= inChunkSize) {
             // Risk of underflow, save one sample
@@ -363,11 +363,11 @@ void SoundDevicePortAudio::readProcess() {
                 memcpy(&m_pInputBuffer[inChunkSize - m_inputParams.channelCount],
                         &m_pInputBuffer[inChunkSize - (2 * m_inputParams.channelCount)],
                         m_inputParams.channelCount * sizeof(CSAMPLE));
-                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Save";
+                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Save";
             } else {
                 m_inputFifo->read(m_pInputBuffer, inChunkSize);
                 m_inputDrift = true;
-                qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Save";
+                //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Jitter Save";
             }
 
         } else if (readAvailable) {
@@ -377,11 +377,11 @@ void SoundDevicePortAudio::readProcess() {
             // underflow
             SampleUtil::clear(&m_pInputBuffer[readAvailable],
                     inChunkSize - readAvailable);
-            qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
+            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
         } else {
             // buffer empty
             SampleUtil::clear(m_pInputBuffer, inChunkSize);
-            qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "buffer empty";
+            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "buffer empty";
         }
 
         m_pSoundManager->pushBuffer(m_audioInputs, m_pInputBuffer, m_framesPerBuffer,
@@ -427,6 +427,10 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
     if (!m_bSetThreadPriority) {
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
+    }
+
+    if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
+        //qDebug() << "PA underflow";
     }
 
     if (m_inputParams.channelCount) {

@@ -175,12 +175,6 @@ void SoundManager::closeDevices() {
     }
     m_inputBuffers.clear();
 
-    while (!m_outputFifos.isEmpty()) {
-        FIFO<CSAMPLE>* pFifo = m_outputFifos.takeLast();
-        delete pFifo;
-    }
-    m_outputFifos.clear();
-
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
 }
@@ -360,10 +354,7 @@ int SoundManager::setupDevices() {
                 continue;
             }
 
-            // TODO(rryan): 1 << 20 is 6.6x MAX_BUFFER_LEN.
-            FIFO<CSAMPLE>* pFifo = new FIFO<CSAMPLE>(1 << 20);
-
-            AudioOutputBuffer aob(out, pBuffer, pFifo);
+            AudioOutputBuffer aob(out, pBuffer);
             err = device->addOutput(aob);
             if (err != OK) goto closeAndError;
             if (out.getType() == AudioOutput::MASTER) {
@@ -486,21 +477,9 @@ void SoundManager::checkConfig() {
 }
 
 void SoundManager::onDeviceOutputCallback(const unsigned int iFramesPerBuffer) {
-    // Only generate a new buffer for the clock reference card
-    //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
-
     // Produce a block of samples for output. EngineMaster expects stereo
     // samples so multiply iFramesPerBuffer by 2.
     m_pMaster->process(iFramesPerBuffer*2);
-
-    for (QList<SoundDevice*>::iterator it = m_devices.begin();
-         it != m_devices.end(); ++it) {
-        SoundDevice* pOtherDevice = *it;
-        if (pOtherDevice == m_pClkRefDevice) {
-            continue;
-         }
-         pOtherDevice->onOutputBuffersReady(iFramesPerBuffer);
-    }
 }
 
 void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,

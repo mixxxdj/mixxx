@@ -49,7 +49,7 @@ class SoundDevice {
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open(bool registerCallback) = 0;
+    virtual int open(bool isClkRefDevice) = 0;
     virtual int close() = 0;
     virtual void readProcess() = 0;
     virtual void writeProcess() = 0;
@@ -70,8 +70,6 @@ class SoundDevice {
     void clearInputs();
     bool operator==(const SoundDevice &other) const;
     bool operator==(const QString &other) const;
-
-    void onOutputBuffersReady(const unsigned long iFramesPerBuffer);
 
   protected:
     void composeOutputBuffer(CSAMPLE* outputBuffer,
@@ -96,7 +94,6 @@ class SoundDevice {
     unsigned int m_framesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
-    CSAMPLE* m_pRenderBuffer;
 };
 
 #endif

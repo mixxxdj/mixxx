@@ -115,18 +115,14 @@ class AudioOutput : public AudioPath {
 // This class is required to add the buffer, without changing the hash used as ID
 class AudioOutputBuffer : public AudioOutput {
   public:
-    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer,
-                      FIFO<CSAMPLE>* pFifo)
-            : AudioOutput(out),
-              m_pBuffer(pBuffer),
-              m_pFifo(pFifo) {
+    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer)
+           : AudioOutput(out),
+             m_pBuffer(pBuffer) {
 
     };
     inline const CSAMPLE* getBuffer() const { return m_pBuffer; }
-    inline FIFO<CSAMPLE>* getFifo() const { return m_pFifo; }
   private:
     const CSAMPLE* m_pBuffer;
-    FIFO<CSAMPLE>* m_pFifo;
 };
 
 /**
