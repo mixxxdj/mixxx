@@ -148,12 +148,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
         QString locale = fileNames[i];
         locale.truncate(locale.lastIndexOf('.'));
         locale.remove(0, locale.indexOf('_') + 1);
+        QLocale qlocale = QLocale(locale);
 
-        QString lang = QLocale::languageToString(QLocale(locale).language());
+        QString lang = QLocale::languageToString(qlocale.language());
+        QString country = QLocale::countryToString(qlocale.country());
         if (lang == "C") { // Ugly hack to remove the non-resolving locales
             continue;
         }
-        lang = QString("%1 (%2)").arg(lang).arg(locale);
+        lang = QString("%1 (%2)").arg(lang).arg(country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
     }
     // Set the currently selected locale
