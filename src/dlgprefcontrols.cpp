@@ -162,8 +162,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             selectedIndex = ComboBoxLocale->count() - 1;
         }
     }
-    // Set the currently selected locale
-    ComboBoxLocale->setCurrentIndex(selectedIndex);
+    ComboBoxLocale->setCurrentIndex(selectedIndex); // Set the currently selected locale
+    ComboBoxLocale->model()->sort(); // Sort languages list
 
     connect(ComboBoxLocale, SIGNAL(activated(int)),
             this, SLOT(slotSetLocale(int)));
