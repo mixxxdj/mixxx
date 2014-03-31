@@ -35,7 +35,7 @@
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page1Choose">
       <property name="sizePolicy">
@@ -156,12 +156,6 @@
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,2,3,4,5">
        <property name="spacing">
         <number>6</number>
-       </property>
-       <property name="sizePolicy" stdset="0">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
        </property>
        <item>
         <widget class="QLabel" name="controlToMapMessage">
