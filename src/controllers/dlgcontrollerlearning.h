@@ -67,11 +67,11 @@ class DlgControllerLearning : public QDialog,
                              unsigned char control,
                              unsigned char value);
 
-    void slotChooseControl();
+    void slotChooseControlPressed();
     void slotTimerExpired();
     void slotFirstMessageTimeout();
     void slotRetry();
-    void slotStartLearning();
+    void slotStartLearningPressed();
     void slotMidiOptionsChanged();
 
   private slots:
@@ -81,7 +81,9 @@ class DlgControllerLearning : public QDialog,
 
   private:
     void loadControl(const ConfigKey& key, QString description);
-    void resetMapping(bool commit);
+    void startListening();
+    void commitMapping();
+    void resetWizard(bool keepCurrentControl = true);
 
     Controller* m_pController;
     MidiController* m_pMidiController;
