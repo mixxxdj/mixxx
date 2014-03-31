@@ -399,9 +399,12 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
 
-    // If we were told to start in fullscreen mode on the command-line,
+    // If we were told to start in fullscreen mode on the command-line
+    // or if user chose always starts in fullscreen mode,
     // then turn on fullscreen mode.
-    if (args.getStartInFullscreen()) {
+    bool fullscreenPref = m_pConfig->getValueString(
+                ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
+    if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
     emit(newSkinLoaded());
