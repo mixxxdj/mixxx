@@ -142,6 +142,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
 
     ComboBoxLocale->addItem("System", ""); // System default locale
+    int selectedIndex = 0;
 
     for (int i = 0; i < fileNames.size(); ++i) {
         // Extract locale from filename
@@ -157,10 +158,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
         }
         lang = QString("%1 (%2)").arg(lang).arg(country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
+        if (locale == currentLocale) { // updates selected locale
+            selectedIndex = ComboBoxLocale->count() - 1;
+        }
     }
     // Set the currently selected locale
-    int selectedIndex = ComboBoxLocale->findData(currentLocale);
-    selectedIndex = selectedIndex>0? selectedIndex:0;
     ComboBoxLocale->setCurrentIndex(selectedIndex);
 
     connect(ComboBoxLocale, SIGNAL(activated(int)),
