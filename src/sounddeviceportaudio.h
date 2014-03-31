@@ -78,7 +78,6 @@ class SoundDevicePortAudio : public SoundDevice {
     bool m_outputDrift;
     bool m_inputDrift;
 
-    CSAMPLE* m_pInputBuffer;
     // A string describing the last PortAudio error to occur.
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.

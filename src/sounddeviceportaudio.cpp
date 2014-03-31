@@ -49,7 +49,6 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_inputFifo(NULL),
           m_outputDrift(false),
           m_inputDrift(false),
-          m_pInputBuffer(NULL),
           m_bSetThreadPriority(false),
           m_pMasterUnderflowCount(ControlObject::getControl(
               ConfigKey("[Master]", "underflow_count"))),
@@ -188,9 +187,7 @@ int SoundDevicePortAudio::open(bool isClkRefDevice) {
         if (m_inputParams.channelCount) {
             m_inputFifo = new FIFO<CSAMPLE>(m_inputParams.channelCount * m_framesPerBuffer * 3);
             // Clear first two 1.5 chunks (see above)
-            m_inputFifo->releaseWriteRegions(m_outputParams.channelCount * m_framesPerBuffer * 3 / 2);
-            m_pInputBuffer = SampleUtil::alloc(
-                    m_inputParams.channelCount * m_framesPerBuffer);
+            m_inputFifo->releaseWriteRegions(m_inputParams.channelCount * m_framesPerBuffer * 3 / 2);
         }
     }
 
@@ -312,15 +309,10 @@ int SoundDevicePortAudio::close() {
         if (m_inputFifo) {
             delete m_inputFifo;
         }
-
-        if (m_pInputBuffer) {
-            SampleUtil::free(m_pInputBuffer);
-        }
     }
 
     m_outputFifo = NULL;
     m_inputFifo = NULL;
-    m_pInputBuffer = NULL;
     m_bSetThreadPriority = false;
 
     return 0;
@@ -335,27 +327,37 @@ void SoundDevicePortAudio::readProcess() {
     if (pStream && m_inputParams.channelCount) {
         int inChunkSize = m_framesPerBuffer * m_inputParams.channelCount;
         int readAvailable = m_inputFifo->readAvailable();
-        if (readAvailable >= inChunkSize) {
-            m_inputFifo->read(m_pInputBuffer, inChunkSize);
-            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "Normal";
-        } else if (readAvailable) {
-            // underflow
-            m_inputFifo->read(m_pInputBuffer,
-                    readAvailable);
-            // underflow
-            SampleUtil::clear(&m_pInputBuffer[readAvailable],
-                    inChunkSize - readAvailable);
+        int readCount = inChunkSize;
+        if (inChunkSize > readAvailable) {
+            readCount = readAvailable;
             m_underflowHappend = 1;
             //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
-        } else {
-            // buffer empty
-            SampleUtil::clear(m_pInputBuffer, inChunkSize);
-            m_underflowHappend = 1;
-            //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "buffer empty";
+        }
+        if (readCount) {
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+            m_inputFifo->aquireReadRegions(readCount, &dataPtr1, &size1, &dataPtr2, &size2);
+            // Fetch fresh samples and write to the the output buffer
+            m_pSoundManager->pushBuffer(m_audioInputs, dataPtr1,
+                    size1 / m_inputParams.channelCount, 0,
+                    m_inputParams.channelCount);
+            if (size2 > 0) {
+                m_pSoundManager->pushBuffer(m_audioInputs, dataPtr2,
+                        size2 / m_inputParams.channelCount, size1 / m_inputParams.channelCount,
+                        m_inputParams.channelCount);
+            }
+            m_inputFifo->releaseReadRegions(readCount);
+        }
+        if (readCount < inChunkSize) {
+            // Fill buffers wit zeros
+            m_pSoundManager->pushBufferZero(m_audioInputs,
+                    inChunkSize - readCount, readCount,
+                    m_inputParams.channelCount);
         }
 
-        m_pSoundManager->pushBuffer(m_audioInputs, m_pInputBuffer, m_framesPerBuffer,
-                                    m_inputParams.channelCount);
+        m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
     }
 }
 
@@ -431,7 +433,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             // Everything Ok
             m_inputFifo->write(in, inChunkSize);
             m_inputDrift = false;
-            //qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Normal";
+            qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Normal";
         } else if (writeAvailable >= inChunkSize) {
             // Risk of overflow, save one sample
             if (m_inputDrift) {
@@ -541,8 +543,9 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
     // Send audio from the soundcard's input off to the SoundManager...
     if (in) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
-        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
+        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer, 0,
                                     m_inputParams.channelCount);
+        m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
     }
 
     m_pSoundManager->readProcess();
