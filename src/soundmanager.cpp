@@ -507,11 +507,12 @@ void SoundManager::composeInputBuffer(const QList<AudioInputBuffer>& inputs,
     if (iFrameSize == 2 && inputs.size() == 1 &&
             inputs.at(0).getChannelGroup().getChannelCount() == 2) {
         const AudioInputBuffer& in = inputs.at(0);
-        CSAMPLE* pInputBuffer = in.getBuffer();
+        CSAMPLE* pInputBuffer = in.getBuffer(); // Allways Stereo
         pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
         memcpy(pInputBuffer, inputBuffer,
-               sizeof(*inputBuffer) * iFrameSize * framesToPush);
-    } else { //More than two channels of input (iFrameSize > 2)
+               sizeof(*inputBuffer) * framesToPush * 2);
+    } else {
+        // Non Stereo input (iFrameSize != 2)
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 
         for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
@@ -521,21 +522,22 @@ void SoundManager::composeInputBuffer(const QList<AudioInputBuffer>& inputs,
             int iChannelCount = chanGroup.getChannelCount();
             int iChannelBase = chanGroup.getChannelBase();
             CSAMPLE* pInputBuffer = in.getBuffer();
-            pInputBuffer = &pInputBuffer[framesWriteOffset * iChannelCount];
+            pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
 
             for (unsigned int iFrameNo = 0; iFrameNo < framesToPush; ++iFrameNo) {
                 // iFrameBase is the "base sample" in a frame (ie. the first
                 // sample in a frame)
                 unsigned int iFrameBase = iFrameNo * iFrameSize;
-                unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+                unsigned int iLocalFrameBase = iFrameNo * 2;
 
-                // this will make sure a sample from each channel is copied
-                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                    //output[iFrameBase + src.channelBase + iChannel] +=
-                    //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-
-                    pInputBuffer[iLocalFrameBase + iChannel] =
-                            inputBuffer[iFrameBase + iChannelBase + iChannel];
+                if (iChannelCount == 1) {
+                    pInputBuffer[iLocalFrameBase] =
+                            inputBuffer[iFrameBase + iChannelBase];
+                } else if (iChannelCount > 1) {
+                    pInputBuffer[iLocalFrameBase] =
+                            inputBuffer[iFrameBase + iChannelBase];
+                    pInputBuffer[iLocalFrameBase + 1] =
+                            inputBuffer[iFrameBase + iChannelBase + 1];
                 }
             }
         }

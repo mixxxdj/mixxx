@@ -133,44 +133,11 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
         return;
     }
 
-    if (input.getType() != AudioPath::VINYLCONTROL) {
-        // This is an error!
-        qDebug() << "WARNING: EngineDeck receieved an AudioInput for a non-vinylcontrol type!";
-        return;
-    }
+    // Already in stereo. Use pBuffer as-is.
+     unsigned int samplesToWrite = nFrames * 2;
 
-    const unsigned int iChannels = input.getChannelGroup().getChannelCount();
-
-    // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
-    // because thats our conversion buffer size.
-    if (nFrames > MAX_BUFFER_LEN / iChannels) {
-        qWarning() << "WARNING: Dropping passthrough samples because the input buffer is too large.";
-        nFrames = MAX_BUFFER_LEN / iChannels;
-    }
-
-    const CSAMPLE* pWriteBuffer = NULL;
-    unsigned int samplesToWrite = 0;
-
-    if (iChannels == 1) {
-        // Do mono -> stereo conversion.
-        for (unsigned int i = 0; i < nFrames; ++i) {
-            m_pConversionBuffer[i*2 + 0] = pBuffer[i];
-            m_pConversionBuffer[i*2 + 1] = pBuffer[i];
-        }
-        pWriteBuffer = m_pConversionBuffer;
-        samplesToWrite = nFrames * 2;
-    } else if (iChannels == 2) {
-        // Already in stereo. Use pBuffer as-is.
-        pWriteBuffer = pBuffer;
-        samplesToWrite = nFrames * iChannels;
-    } else {
-        qWarning() << "EngineAux got greater than stereo input. Not currently handled.";
-    }
-
-    if (pWriteBuffer != NULL) {
-        // TODO(rryan) do we need to verify the input is the one we asked for?
-        // Oh well.
-        unsigned int samplesWritten = m_sampleBuffer.write(pWriteBuffer,
+    if (pBuffer != NULL) {
+        unsigned int samplesWritten = m_sampleBuffer.write(pBuffer,
                                                            samplesToWrite);
         if (samplesWritten < samplesToWrite) {
             // Buffer overflow. We aren't processing samples fast enough. This
