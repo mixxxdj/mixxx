@@ -69,12 +69,10 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   public slots:
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
-    void slotGeometryChanged();
 
   signals:
     void closeDlg();
     void showDlg();
-    void geometryChanged();
 
   protected:
     bool eventFilter(QObject*, QEvent*);

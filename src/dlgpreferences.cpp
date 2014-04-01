@@ -119,28 +119,13 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     // If we don't call this explicitly, then we default to showing the sound
     // hardware page but the tree item is not selected.
     showSoundHardwarePage();
-
-    //
-    // Read last geometry (size and position) of preferences panel
-    // Bug#1299949
-    //
-    // load default values (optimum size)
-    QRect defaultGeometry = getDefaultGeometry();
-    QString defaultGeometryStr = QString("%1,%2,%3,%4")
-                                      .arg(defaultGeometry.left())
-                                      .arg(defaultGeometry.top())
-                                      .arg(defaultGeometry.width())
-                                      .arg(defaultGeometry.height());
-    // get last geometry OR use default values
-    m_geometry = m_pConfig->getValueString(
-                ConfigKey("[Preferences]", "geometry"),
-                defaultGeometryStr).split(",");
-    // store geometry in mixxx.cfg
-    connect(this, SIGNAL(geometryChanged()),
-            this, SLOT(slotGeometryChanged()));
 }
 
 DlgPreferences::~DlgPreferences() {
+    // store last geometry in mixxx.cfg
+    m_pConfig->set(ConfigKey("[Preferences]","geometry"),
+                   m_geometry.join(","));
+
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
     // preference pages (and DlgPrefControllers dynamically generates and
@@ -318,19 +303,38 @@ void DlgPreferences::onHide() {
     // Notify other parts of Mixxx that the preferences window just saved and so
     // preferences are likely changed.
     m_preferencesUpdated.set(1);
-
-    // store last geometry in mixxx.cfg
-    emit(geometryChanged());
 }
 
 void DlgPreferences::onShow() {
+    //
+    // Read last geometry (size and position) of preferences panel
+    // Bug#1299949
+    //
+    // init m_geometry
+    if (m_geometry.length() < 4) {
+        // load default values (optimum size)
+        QRect defaultGeometry = getDefaultGeometry();
+        QString defaultGeometryStr = QString("%1,%2,%3,%4")
+                                          .arg(defaultGeometry.left())
+                                            .arg(defaultGeometry.top())
+                                            .arg(defaultGeometry.width())
+                                            .arg(defaultGeometry.height());
+
+        // get last geometry OR use default values from
+        m_geometry = m_pConfig->getValueString(
+                    ConfigKey("[Preferences]", "geometry"),
+                    defaultGeometryStr).split(",");
+    }
+
     // Update geometry with last values
     setGeometry(m_geometry[0].toInt(),  // x position
                 m_geometry[1].toInt(),  // y position
                 m_geometry[2].toInt(),  // width
                 m_geometry[3].toInt()); // heigth
 
+    //
     // Notify children that we are about to show.
+    //
     emit(showDlg());
 }
 
@@ -367,13 +371,17 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
 }
 
 void DlgPreferences::moveEvent(QMoveEvent* e) {
-    m_geometry[0] = QString::number(e->pos().x());
-    m_geometry[1] = QString::number(e->pos().y());
+    if (m_geometry.length() == 4) {
+        m_geometry[0] = QString::number(e->pos().x());
+        m_geometry[1] = QString::number(e->pos().y());
+    }
 }
 
 void DlgPreferences::resizeEvent(QResizeEvent* e) {
-    m_geometry[2] = QString::number(e->size().width());
-    m_geometry[3] = QString::number(e->size().height());
+    if (m_geometry.length() == 4) {
+        m_geometry[2] = QString::number(e->size().width());
+        m_geometry[3] = QString::number(e->size().height());
+    }
 }
 
 QRect DlgPreferences::getDefaultGeometry() {
@@ -396,10 +404,4 @@ QRect DlgPreferences::getDefaultGeometry() {
     optimumRect.setSize(optimumSize);
 
     return optimumRect;
-}
-
-// store geometry (size and position) of preferences panel - Bug#1299949
-void DlgPreferences::slotGeometryChanged() {
-    m_pConfig->set(ConfigKey("[Preferences]","geometry"),
-                   m_geometry.join(","));
 }
