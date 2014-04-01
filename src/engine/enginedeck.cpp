@@ -40,12 +40,11 @@ EngineDeck::EngineDeck(const char* group,
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(MAX_BUFFER_LEN+1) {
+          m_sampleBuffer(NULL) {
     pEffectsManager->registerGroup(getGroup());
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
-    m_pConversionBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_bPassthroughIsActive = false;
     m_bPassthroughWasActive = false;
 
@@ -64,7 +63,6 @@ EngineDeck::EngineDeck(const char* group,
 }
 
 EngineDeck::~EngineDeck() {
-    SampleUtil::free(m_pConversionBuffer);
     delete m_pPassing;
 
     delete m_pBuffer;
@@ -77,21 +75,15 @@ EngineDeck::~EngineDeck() {
 
 void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
     // Feed the incoming audio through if passthrough is active
-    if (isPassthroughActive()) {
-        int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
-        if (samplesRead < iBufferSize) {
-            // Buffer underflow. There aren't getting samples fast enough. This
-            // shouldn't happen since PortAudio should feed us samples just as fast
-            // as we consume them, right?
-            qWarning() << "ERROR: Buffer overflow in EngineDeck. Playing silence.";
-            SampleUtil::clear(pOut + samplesRead, iBufferSize - samplesRead);
-        }
+    const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
+    if (isPassthroughActive() && sampleBuffer) {
+        memcpy(pOut, sampleBuffer, iBufferSize * sizeof(pOut[0]));
         m_bPassthroughWasActive = true;
+        m_sampleBuffer = NULL;
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
             SampleUtil::clear(pOut, iBufferSize);
-            m_sampleBuffer.skip(iBufferSize);
             m_bPassthroughWasActive = false;
             return;
         }
@@ -128,23 +120,14 @@ bool EngineDeck::isActive() {
 }
 
 void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {
+    Q_UNUSED(input);
+    Q_UNUSED(nFrames);
     // Skip receiving audio input if passthrough is not active
     if (!m_bPassthroughIsActive) {
+        m_sampleBuffer = NULL;
         return;
-    }
-
-    // Already in stereo. Use pBuffer as-is.
-     unsigned int samplesToWrite = nFrames * 2;
-
-    if (pBuffer != NULL) {
-        unsigned int samplesWritten = m_sampleBuffer.write(pBuffer,
-                                                           samplesToWrite);
-        if (samplesWritten < samplesToWrite) {
-            // Buffer overflow. We aren't processing samples fast enough. This
-            // shouldn't happen since the deck spits out samples just as fast as
-            // they come in, right?
-            qWarning() << "ERROR: Buffer overflow in EngineMicrophone. Dropping samples on the floor.";
-        }
+    } else {
+        m_sampleBuffer = pBuffer;
     }
 }
 
@@ -154,7 +137,7 @@ void EngineDeck::onInputConfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
-    m_sampleBuffer.clear();
+    m_sampleBuffer =  NULL;
 }
 
 void EngineDeck::onInputUnconfigured(AudioInput input) {
@@ -163,11 +146,11 @@ void EngineDeck::onInputUnconfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
-    m_sampleBuffer.clear();
+    m_sampleBuffer = NULL;
 }
 
 bool EngineDeck::isPassthroughActive() const {
-    return (m_bPassthroughIsActive && !m_sampleBuffer.isEmpty());
+    return (m_bPassthroughIsActive && m_sampleBuffer);
 }
 
 void EngineDeck::slotPassingToggle(double v) {

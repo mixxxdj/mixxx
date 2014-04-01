@@ -18,10 +18,7 @@ EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
-          m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          // Need a +1 here because the CircularBuffer only allows its size-1
-          // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(MAX_BUFFER_LEN + 1),
+          m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerGroup(getGroup());
@@ -36,15 +33,13 @@ EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
 
 EngineAux::~EngineAux() {
     qDebug() << "~EngineAux()";
-    SampleUtil::free(m_pConversionBuffer);
     delete m_pEnabled;
     delete m_pPassing;
 }
 
 bool EngineAux::isActive() {
     bool enabled = m_pEnabled->get() > 0.0;
-    bool samplesAvailable = !m_sampleBuffer.isEmpty();
-    if (enabled && samplesAvailable) {
+    if (enabled && m_sampleBuffer) {
         m_wasActive = true;
     } else if (m_wasActive) {
         m_vuMeter.reset();
@@ -59,7 +54,7 @@ void EngineAux::onInputConfigured(AudioInput input) {
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
         return;
     }
-    m_sampleBuffer.clear();
+    m_sampleBuffer = NULL;
     m_pEnabled->set(1.0);
 }
 
@@ -69,42 +64,30 @@ void EngineAux::onInputUnconfigured(AudioInput input) {
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
         return;
     }
-    m_sampleBuffer.clear();
+    m_sampleBuffer = NULL;
     m_pEnabled->set(0.0);
 }
 
 void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                       unsigned int nFrames) {
+    Q_UNUSED(input);
+    Q_UNUSED(nFrames);
     if (m_pPassing->get() <= 0.0) {
-        return;
-    }
-
-    // Already in stereo. Use pBuffer as-is.
-    unsigned int samplesToWrite = nFrames * 2;
-
-    if (pBuffer != NULL) {
-
-        unsigned int samplesWritten = m_sampleBuffer.write(pBuffer,
-                                                           samplesToWrite);
-        if (samplesWritten < samplesToWrite) {
-            // Buffer overflow. We aren't processing samples fast enough. This
-            // shouldn't happen since the deck spits out samples just as fast as they
-            // come in, right?
-            qWarning() << "ERROR: Buffer overflow in EngineAux. Dropping samples on the floor.";
-        }
+        m_sampleBuffer = NULL;
+    } else {
+        m_sampleBuffer = pBuffer;
     }
 }
 
 void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferSize) {
     Q_UNUSED(pInput);
 
-    int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
-    if (samplesRead < iBufferSize) {
-        // Buffer underflow. There aren't getting samples fast enough. This
-        // shouldn't happen since PortAudio should feed us samples just as fast
-        // as we consume them, right?
-        qWarning() << "ERROR: Buffer underflow in EngineAux. Playing silence.";
-        SampleUtil::clear(pOut + samplesRead, iBufferSize - samplesRead);
+    const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
+    if (sampleBuffer) {
+        memcpy(pOut, sampleBuffer, iBufferSize * sizeof(pOut[0]));
+        m_sampleBuffer = NULL;
+    } else {
+        SampleUtil::clear(pOut, iBufferSize);
     }
 
     if (m_pEngineEffectsManager != NULL) {

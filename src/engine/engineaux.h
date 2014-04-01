@@ -50,8 +50,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
     ControlPushButton* m_pPassing;
-    CSAMPLE* m_pConversionBuffer;
-    CircularBuffer<CSAMPLE> m_sampleBuffer;
+    const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };
 
