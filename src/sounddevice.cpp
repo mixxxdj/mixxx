@@ -181,32 +181,22 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
     }
 }
 
-void SoundDevice::composeInputBuffer(const QList<AudioInputBuffer>& inputs,
-                              const CSAMPLE* inputBuffer,
-                              const unsigned int framesToPush,
-                              const unsigned int framesWriteOffset,
-                              const unsigned int iFrameSize) {
+void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
+                                     const unsigned int framesToPush,
+                                     const unsigned int framesWriteOffset,
+                                     const unsigned int iFrameSize) {
     //qDebug() << "SoundManager::pushBuffer"
     //         << framesToPush << framesWriteOffset << iFrameSize;
     // This function is called a *lot* and is a big source of CPU usage.
     // It needs to be very fast.
 
-    // IMPORTANT -- Mixxx should ALWAYS be the owner of whatever input buffer we're using,
-    // otherwise we double-free (well, PortAudio frees and then we free) and everything
-    // goes to hell -- bkgood
-
-    /** If the framesize is only 2, then we only have one pair of input channels
-     *  That means we don't have to do any deinterlacing, and we can pass
-     *  the audio on to its intended destination. */
-    // this special casing is probably not worth keeping around. It had a speed
-    // advantage before because it just assigned a pointer instead of copying data,
-    // but this meant we couldn't free all the receiver buffer pointers, because some
-    // of them might potentially be owned by portaudio. Not freeing them means we leak
-    // memory in certain cases -- bkgood
-    if (iFrameSize == 2 && inputs.size() == 1 &&
-            inputs.at(0).getChannelGroup().getChannelCount() == 2) {
-        const AudioInputBuffer& in = inputs.at(0);
-        CSAMPLE* pInputBuffer = in.getBuffer(); // Allways Stereo
+    // If the framesize is only 2, then we only have one pair of input channels
+    //  That means we don't have to do any deinterlacing, and we can pass
+    //  the audio on to its intended destination.
+    if (iFrameSize == 2 && m_audioInputs.size() == 1 &&
+            m_audioInputs.at(0).getChannelGroup().getChannelCount() == 2) {
+        const AudioInputBuffer& in =m_audioInputs.at(0);
+        CSAMPLE* pInputBuffer = in.getBuffer(); // Always Stereo
         pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
         memcpy(pInputBuffer, inputBuffer,
                sizeof(*inputBuffer) * framesToPush * 2);
@@ -214,8 +204,8 @@ void SoundDevice::composeInputBuffer(const QList<AudioInputBuffer>& inputs,
         // Non Stereo input (iFrameSize != 2)
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 
-        for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
-                     e = inputs.end(); i != e; ++i) {
+        for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
+                     e = m_audioInputs.end(); i != e; ++i) {
             const AudioInputBuffer& in = *i;
             ChannelGroup chanGroup = in.getChannelGroup();
             int iChannelCount = chanGroup.getChannelCount();
@@ -243,12 +233,11 @@ void SoundDevice::composeInputBuffer(const QList<AudioInputBuffer>& inputs,
     }
 }
 
-void SoundDevice::clearInputBuffer(const QList<AudioInputBuffer>& inputs,
-                              const unsigned int framesToPush,
-                              const unsigned int framesWriteOffset) {
+void SoundDevice::clearInputBuffer(const unsigned int framesToPush,
+                                   const unsigned int framesWriteOffset) {
 
-    for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
-                 e = inputs.end(); i != e; ++i) {
+    for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
+                 e = m_audioInputs.end(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();  // Always stereo
         SampleUtil::clear(&pInputBuffer[framesWriteOffset * 2], framesToPush * 2);
