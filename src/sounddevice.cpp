@@ -222,6 +222,8 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
                 if (iChannelCount == 1) {
                     pInputBuffer[iLocalFrameBase] =
                             inputBuffer[iFrameBase + iChannelBase];
+                    pInputBuffer[iLocalFrameBase + 1] =
+                            inputBuffer[iFrameBase + iChannelBase];
                 } else if (iChannelCount > 1) {
                     pInputBuffer[iLocalFrameBase] =
                             inputBuffer[iFrameBase + iChannelBase];
