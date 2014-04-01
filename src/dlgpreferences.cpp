@@ -15,12 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QTabWidget>
-#include <QTabBar>
+#include <QDesktopWidget>
 #include <QDialog>
 #include <QEvent>
 #include <QScrollArea>
-#include <QDesktopWidget>
+#include <QTabBar>
+#include <QTabWidget>
 
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"
@@ -57,7 +57,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
                                ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
-        : m_pageSizeHint(QSize(0, 0)),
+        : m_pConfig(pConfig),
+          m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
@@ -75,40 +76,40 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
     // TODO(rryan) determine why/if this is still true
-    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, pConfig);
+    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, m_pConfig);
     addPageWidget(m_wvinylcontrol);
 #else
-    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, pConfig);
+    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, m_pConfig);
     addPageWidget(m_wnovinylcontrol);
 #endif
-    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, pConfig);
+    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
     addPageWidget(m_wsound);
-    m_wlibrary = new DlgPrefLibrary(this, pConfig, pLibrary);
+    m_wlibrary = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_wlibrary);
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, pConfig);
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
     addPageWidget(m_wcontrols);
-    m_weq = new DlgPrefEQ(this, pConfig);
+    m_weq = new DlgPrefEQ(this, m_pConfig);
     addPageWidget(m_weq);
-    m_wcrossfader = new DlgPrefCrossfader(this, pConfig);
+    m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
 
-    m_wbeats = new DlgPrefBeats(this, pConfig);
+    m_wbeats = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_wbeats);
-    m_wkey = new DlgPrefKey(this, pConfig);
+    m_wkey = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_wkey);
-    m_wreplaygain = new DlgPrefReplayGain(this, pConfig);
+    m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
     addPageWidget(m_wreplaygain);
-    m_wrecord = new DlgPrefRecord(this, pConfig);
+    m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
 #ifdef __SHOUTCAST__
-    m_wshoutcast = new DlgPrefShoutcast(this, pConfig);
+    m_wshoutcast = new DlgPrefShoutcast(this, m_pConfig);
     addPageWidget(m_wshoutcast);
 #endif
 #ifdef __MODPLUG__
-    m_wmodplug = new DlgPrefModplug(this, pConfig);
+    m_wmodplug = new DlgPrefModplug(this, m_pConfig);
     addPageWidget(m_wmodplug);
 #endif
-    m_wcontrollers = new DlgPrefControllers(this, pConfig, controllers,
+    m_wcontrollers = new DlgPrefControllers(this, m_pConfig, controllers,
                                             m_pControllerTreeItem);
     addPageWidget(m_wcontrollers);
 
@@ -118,6 +119,25 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     // If we don't call this explicitly, then we default to showing the sound
     // hardware page but the tree item is not selected.
     showSoundHardwarePage();
+
+    //
+    // Read last geometry (size and position) of preferences panel
+    // Bug#1299949
+    //
+    // load default values (optimum size)
+    QRect defaultGeometry = getDefaultGeometry();
+    QString defaultGeometryStr = QString("%1,%2,%3,%4")
+                                      .arg(defaultGeometry.left())
+                                      .arg(defaultGeometry.top())
+                                      .arg(defaultGeometry.width())
+                                      .arg(defaultGeometry.height());
+    // get last geometry OR use default values
+    m_geometry = m_pConfig->getValueString(
+                ConfigKey("[Preferences]", "geometry"),
+                defaultGeometryStr).split(",");
+    // store geometry in mixxx.cfg
+    connect(this, SIGNAL(geometryChanged()),
+            this, SLOT(slotGeometryChanged()));
 }
 
 DlgPreferences::~DlgPreferences() {
@@ -298,32 +318,17 @@ void DlgPreferences::onHide() {
     // Notify other parts of Mixxx that the preferences window just saved and so
     // preferences are likely changed.
     m_preferencesUpdated.set(1);
+
+    // store last geometry in mixxx.cfg
+    emit(geometryChanged());
 }
 
 void DlgPreferences::onShow() {
-    QSize optimumSize;
-    QSize deltaSize;
-    QSize pagesSize;
-    QSize saSize;
-
-    adjustSize();
-
-    optimumSize = qApp->desktop()->availableGeometry(this).size();
-
-    if (frameSize() == size()) {
-        // This code is reached in Gnome 2.3
-        qDebug() << "guess the size of the window decoration";
-        optimumSize -= QSize(2,30);
-    } else {
-        optimumSize -= (frameSize() - size());
-    }
-
-    QSize staticSize = size() - pagesWidget->size();
-    optimumSize = optimumSize.boundedTo(staticSize + m_pageSizeHint);
-
-    QRect optimumRect = geometry();
-    optimumRect.setSize(optimumSize);
-    setGeometry(optimumRect);
+    // Update geometry with last values
+    setGeometry(m_geometry[0].toInt(),  // x position
+                m_geometry[1].toInt(),  // y position
+                m_geometry[2].toInt(),  // width
+                m_geometry[3].toInt()); // heigth
 
     // Notify children that we are about to show.
     emit(showDlg());
@@ -359,4 +364,42 @@ void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
 
 void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
+}
+
+void DlgPreferences::moveEvent(QMoveEvent* e) {
+    m_geometry[0] = QString::number(e->pos().x());
+    m_geometry[1] = QString::number(e->pos().y());
+}
+
+void DlgPreferences::resizeEvent(QResizeEvent* e) {
+    m_geometry[2] = QString::number(e->size().width());
+    m_geometry[3] = QString::number(e->size().height());
+}
+
+QRect DlgPreferences::getDefaultGeometry() {
+    QSize optimumSize;
+    adjustSize();
+    optimumSize = qApp->desktop()->availableGeometry(this).size();
+
+    if (frameSize() == size()) {
+        // This code is reached in Gnome 2.3
+        qDebug() << "guess the size of the window decoration";
+        optimumSize -= QSize(2,30);
+    } else {
+        optimumSize -= (frameSize() - size());
+    }
+
+    QSize staticSize = size() - pagesWidget->size();
+    optimumSize = optimumSize.boundedTo(staticSize + m_pageSizeHint);
+
+    QRect optimumRect = geometry();
+    optimumRect.setSize(optimumSize);
+
+    return optimumRect;
+}
+
+// store geometry (size and position) of preferences panel - Bug#1299949
+void DlgPreferences::slotGeometryChanged() {
+    m_pConfig->set(ConfigKey("[Preferences]","geometry"),
+                   m_geometry.join(","));
 }
