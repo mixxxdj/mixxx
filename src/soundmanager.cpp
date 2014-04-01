@@ -482,7 +482,7 @@ void SoundManager::onDeviceOutputCallback(const unsigned int iFramesPerBuffer) {
     m_pMaster->process(iFramesPerBuffer*2);
 }
 
-void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs,
+void SoundManager::composeInputBuffer(const QList<AudioInputBuffer>& inputs,
                               const CSAMPLE* inputBuffer,
                               const unsigned int framesToPush,
                               const unsigned int framesWriteOffset,
@@ -542,58 +542,15 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs,
     }
 }
 
-void SoundManager::pushBufferZero(const QList<AudioInputBuffer>& inputs,
+void SoundManager::clearInputBuffer(const QList<AudioInputBuffer>& inputs,
                               const unsigned int framesToPush,
-                              const unsigned int framesWriteOffset,
-                              const unsigned int iFrameSize) {
-    // qDebug() << "SoundManager::pushBuffer" << pDevice->getInternalName()
-    //          << iFramesPerBuffer << iFrameSize;
-    //This function is called a *lot* and is a big source of CPU usage.
-    //It needs to be very fast.
+                              const unsigned int framesWriteOffset) {
 
-    // IMPORTANT -- Mixxx should ALWAYS be the owner of whatever input buffer we're using,
-    // otherwise we double-free (well, PortAudio frees and then we free) and everything
-    // goes to hell -- bkgood
-
-    /** If the framesize is only 2, then we only have one pair of input channels
-     *  That means we don't have to do any deinterlacing, and we can pass
-     *  the audio on to its intended destination. */
-    // this special casing is probably not worth keeping around. It had a speed
-    // advantage before because it just assigned a pointer instead of copying data,
-    // but this meant we couldn't free all the receiver buffer pointers, because some
-    // of them might potentially be owned by portaudio. Not freeing them means we leak
-    // memory in certain cases -- bkgood
-    if (iFrameSize == 2 && inputs.size() == 1 &&
-            inputs.at(0).getChannelGroup().getChannelCount() == 2) {
-        const AudioInputBuffer& in = inputs.at(0);
-        CSAMPLE* pInputBuffer = in.getBuffer();
-        pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
-        SampleUtil::clear(pInputBuffer, 2 * framesToPush);
-    } else { //More than two channels of input (iFrameSize > 2)
-        // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
-
-        for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
-                     e = inputs.end(); i != e; ++i) {
-            const AudioInputBuffer& in = *i;
-            ChannelGroup chanGroup = in.getChannelGroup();
-            int iChannelCount = chanGroup.getChannelCount();
-            CSAMPLE* pInputBuffer = in.getBuffer();
-            pInputBuffer = &pInputBuffer[framesWriteOffset * iChannelCount];
-
-            for (unsigned int iFrameNo = 0; iFrameNo < framesToPush; ++iFrameNo) {
-                // iFrameBase is the "base sample" in a frame (ie. the first
-                // sample in a frame)
-                unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
-
-                // this will make sure a sample from each channel is copied
-                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                    //output[iFrameBase + src.channelBase + iChannel] +=
-                    //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-
-                    pInputBuffer[iLocalFrameBase + iChannel] = 0.0;
-                }
-            }
-        }
+    for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
+                 e = inputs.end(); i != e; ++i) {
+        const AudioInputBuffer& in = *i;
+        CSAMPLE* pInputBuffer = in.getBuffer();  // Always stereo
+        SampleUtil::clear(&pInputBuffer[framesWriteOffset * 2], framesToPush * 2);
     }
 }
 

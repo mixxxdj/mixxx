@@ -156,8 +156,8 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
                 // sample in a frame)
                 const unsigned int iFrameBase = iFrameNo * iFrameSize;
                 outputBuffer[iFrameBase + iChannelBase] =
-                        (pAudioOutputBuffer[iFrameNo*2] +
-                                pAudioOutputBuffer[iFrameNo*2 + 1]) / 2.0f;
+                        (pAudioOutputBuffer[iFrameNo * 2] +
+                                pAudioOutputBuffer[iFrameNo * 2 + 1]) / 2.0f;
             }
         } else {
             for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
