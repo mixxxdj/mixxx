@@ -340,11 +340,11 @@ void SoundDevicePortAudio::readProcess() {
             ring_buffer_size_t size2;
             m_inputFifo->aquireReadRegions(readCount, &dataPtr1, &size1, &dataPtr2, &size2);
             // Fetch fresh samples and write to the the output buffer
-            m_pSoundManager->composeInputBuffer(m_audioInputs, dataPtr1,
+            composeInputBuffer(m_audioInputs, dataPtr1,
                     size1 / m_inputParams.channelCount, 0,
                     m_inputParams.channelCount);
             if (size2 > 0) {
-                m_pSoundManager->composeInputBuffer(m_audioInputs, dataPtr2,
+                composeInputBuffer(m_audioInputs, dataPtr2,
                         size2 / m_inputParams.channelCount, size1 / m_inputParams.channelCount,
                         m_inputParams.channelCount);
             }
@@ -352,7 +352,7 @@ void SoundDevicePortAudio::readProcess() {
         }
         if (readCount < inChunkSize) {
             // Fill remaining buffers with zeros
-            m_pSoundManager->clearInputBuffer(m_audioInputs,
+            clearInputBuffer(m_audioInputs,
                     inChunkSize - readCount, readCount);
         }
 
@@ -542,7 +542,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
     // Send audio from the soundcard's input off to the SoundManager...
     if (in) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
-        m_pSoundManager->composeInputBuffer(m_audioInputs, in, framesPerBuffer, 0,
+        composeInputBuffer(m_audioInputs, in, framesPerBuffer, 0,
                                     m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
     }

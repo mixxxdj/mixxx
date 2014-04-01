@@ -77,6 +77,16 @@ class SoundDevice {
                              const unsigned int readOffset,
                              const unsigned int iFrameSize);
 
+    void composeInputBuffer(const QList<AudioInputBuffer>& inputs,
+                    const CSAMPLE* inputBuffer,
+                    const unsigned int framesToPush,
+                    const unsigned int framesWriteOffset,
+                    const unsigned int iFrameSize);
+
+    void clearInputBuffer(const QList<AudioInputBuffer>& inputs,
+                        const unsigned int framesToPush,
+                        const unsigned int framesWriteOffset);
+
     ConfigObject<ConfigValue> *m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
     SoundManager* m_pSoundManager;
