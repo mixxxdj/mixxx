@@ -32,6 +32,7 @@ class EffectManifestParameter {
         UNITS_TIME,
         UNITS_HERTZ,
         UNITS_SAMPLERATE, // fraction of the samplerate
+        UNITS_BEATS, // multiples of a beat
     };
 
     enum LinkType {
@@ -50,7 +51,7 @@ class EffectManifestParameter {
     }
 
     virtual ~EffectManifestParameter() {
-        qDebug() << debugString() << "destroyed";
+        //qDebug() << debugString() << "destroyed";
     }
 
     ////////////////////////////////////////////////////////////////////////////////

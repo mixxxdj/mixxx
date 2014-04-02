@@ -3,7 +3,7 @@
 #include "controlpushbutton.h"
 
 // The maximum number of effect parameters we're going to support.
-const unsigned int kDefaultMaxParameters = 32;
+const unsigned int kDefaultMaxParameters = 8;
 
 EffectSlot::EffectSlot(const unsigned int iRackNumber,
                        const unsigned int iChainNumber,
@@ -60,7 +60,7 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
 }
 
 EffectSlot::~EffectSlot() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
     clear();
 
     delete m_pControlLoaded;
@@ -92,22 +92,25 @@ unsigned int EffectSlot::numParameterSlots() const {
 }
 
 void EffectSlot::slotLoaded(double v) {
-    qDebug() << debugString() << "slotLoaded" << v;
-    qDebug() << "WARNING: loaded is a read-only control.";
+    Q_UNUSED(v);
+    //qDebug() << debugString() << "slotLoaded" << v;
+    qWarning() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectSlot::slotNumParameters(double v) {
-    qDebug() << debugString() << "slotNumParameters" << v;
-    qDebug() << "WARNING: num_parameters is a read-only control.";
+    Q_UNUSED(v);
+    //qDebug() << debugString() << "slotNumParameters" << v;
+    qWarning() << "WARNING: num_parameters is a read-only control.";
 }
 
 void EffectSlot::slotNumParameterSlots(double v) {
-    qDebug() << debugString() << "slotNumParameterSlots" << v;
-    qDebug() << "WARNING: num_parameterslots is a read-only control.";
+    Q_UNUSED(v);
+    //qDebug() << debugString() << "slotNumParameterSlots" << v;
+    qWarning() << "WARNING: num_parameterslots is a read-only control.";
 }
 
 void EffectSlot::slotEnabled(double v) {
-    qDebug() << debugString() << "slotEnabled" << v;
+    //qDebug() << debugString() << "slotEnabled" << v;
     if (m_pEffect) {
         m_pEffect->setEnabled(v > 0);
     }
@@ -118,17 +121,17 @@ void EffectSlot::slotEffectEnabledChanged(bool enabled) {
 }
 
 EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
-    qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
+    //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_parameters.size())) {
-        qDebug() << "WARNING: slotNumber out of range";
+        qWarning() << "WARNING: slotNumber out of range";
         return EffectParameterSlotPointer();
     }
     return m_parameters[slotNumber];
 }
 
 void EffectSlot::loadEffect(EffectPointer pEffect) {
-    qDebug() << debugString() << "loadEffect"
-             << (pEffect ? pEffect->getManifest().name() : "(null)");
+    // qDebug() << debugString() << "loadEffect"
+    //          << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
         m_pEffect = pEffect;
         m_pControlLoaded->setAndConfirm(1.0);

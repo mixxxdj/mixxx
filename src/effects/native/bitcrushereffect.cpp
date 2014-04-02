@@ -51,14 +51,16 @@ BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect,
 }
 
 BitCrusherEffect::~BitCrusherEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void BitCrusherEffect::processGroup(const QString& group,
                                     BitCrusherGroupState* pState,
                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                    const unsigned int numSamples) {
+                                    const unsigned int numSamples,
+                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(groupFeatures);
     // TODO(rryan) this is broken. it needs to take into account the sample
     // rate.
     const CSAMPLE downsample = m_pDownsampleParameter ?

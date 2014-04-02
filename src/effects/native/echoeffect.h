@@ -47,7 +47,8 @@ class EchoEffect : public GroupEffectProcessor<EchoGroupState> {
     void processGroup(const QString& group,
                       EchoGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples);
+                      const unsigned int numSamples,
+                      const GroupFeatureState& groupFeatures);
 
   private:
     int getDelaySamples(double delay_time) const;

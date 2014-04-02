@@ -197,3 +197,19 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     m_pPitch->set(newPitch);
     return true;
 }
+
+void KeyControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    mixxx::track::io::key::ChromaticKey fileKey =
+            KeyUtils::keyFromNumericValue(m_pFileKey->get());
+    if (fileKey != mixxx::track::io::key::INVALID) {
+        pGroupFeatures->has_file_key = true;
+        pGroupFeatures->file_key = fileKey;
+    }
+
+    mixxx::track::io::key::ChromaticKey key =
+            KeyUtils::keyFromNumericValue(m_pEngineKey->get());
+    if (key != mixxx::track::io::key::INVALID) {
+        pGroupFeatures->has_key = true;
+        pGroupFeatures->key = key;
+    }
+}

@@ -1504,7 +1504,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
         if (m_pContext->hasNode(con, "BindProperty")) {
             QString property = m_pContext->selectString(con, "BindProperty");
-            qDebug() << "Making property connection for" << property;
+            //qDebug() << "Making property connection for" << property;
 
             ControlObjectSlave* pControlWidget =
                     new ControlObjectSlave(control->getKey(),

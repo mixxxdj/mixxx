@@ -124,8 +124,18 @@ bool SkinContext::selectBool(const QDomNode& node,
     return defaultValue;
 }
 
+bool SkinContext::hasNodeSelectString(const QDomNode& node,
+                                      const QString& nodeName, QString *value) const {
+    QDomNode child = selectNode(node, nodeName);
+    if (!child.isNull()) {
+        *value = nodeToString(child);
+        return true;
+    }
+    return false;
+}
+
 bool SkinContext::hasNodeSelectBool(const QDomNode& node,
-                             const QString& nodeName, bool *value) const {
+                                    const QString& nodeName, bool *value) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
          QString stringValue = nodeToString(child);

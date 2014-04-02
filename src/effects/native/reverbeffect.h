@@ -46,7 +46,8 @@ class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
     void processGroup(const QString& group,
                       ReverbGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples);
+                      const unsigned int numSamples,
+                      const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

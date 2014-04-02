@@ -518,13 +518,13 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << "deleting effects manager, " << qTime.elapsed();
     delete m_pEffectsManager;
 
+    delete m_pPrefDlg;
+
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
     m_pConfig->Save();
-
-    delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
     Sandbox::shutdown();
