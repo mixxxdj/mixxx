@@ -85,7 +85,6 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
-    qDebug() << "EngineMicrophone::process()" << sampleBuffer << sampleBuffer[0]  << sampleBuffer[1];
     if (isTalkover() && sampleBuffer) {
         memcpy(pOut, sampleBuffer, iBufferSize * sizeof(pOut[0]));
         m_sampleBuffer = NULL;

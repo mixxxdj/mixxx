@@ -431,7 +431,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             // Everything Ok
             m_inputFifo->write(in, inChunkSize);
             m_inputDrift = false;
-            qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Normal";
+            //qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Normal";
         } else if (writeAvailable >= inChunkSize) {
             // Risk of overflow, save one sample
             if (m_inputDrift) {
