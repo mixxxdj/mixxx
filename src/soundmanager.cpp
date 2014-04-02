@@ -496,7 +496,6 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
     }
 }
 
-
 void SoundManager::writeProcess() {
     QListIterator<SoundDevice*> dev_it(m_devices);
     while (dev_it.hasNext()) {

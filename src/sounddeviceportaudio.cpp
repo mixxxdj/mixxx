@@ -52,7 +52,9 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_bSetThreadPriority(false),
           m_pMasterUnderflowCount(ControlObject::getControl(
               ConfigKey("[Master]", "underflow_count"))),
-          m_underflowUpdateCount(0) {
+          m_underflowUpdateCount(0),
+          //m_pollingMode(true) {
+          m_pollingMode(false) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -173,7 +175,9 @@ int SoundDevicePortAudio::open(bool isClkRefDevice) {
     if (isClkRefDevice) {
         callback = paV19CallbackClkRef;
     } else {
-        callback = paV19Callback;
+        if (!m_pollingMode) {
+            callback = paV19Callback;
+        }
         // to avoid overflows when one callback overtakes the other or
         // when there is a clock drift compared to the clock reference device
         // we need an additional artificial delay
@@ -325,6 +329,33 @@ QString SoundDevicePortAudio::getError() const {
 void SoundDevicePortAudio::readProcess() {
     PaStream* pStream = m_pStream;
     if (pStream && m_inputParams.channelCount) {
+        if (m_pollingMode) {
+            signed int readAvailable = Pa_GetStreamReadAvailable(pStream);
+            int toWrite = qMin(m_inputFifo->writeAvailable(), readAvailable * m_outputParams.channelCount);
+            if (toWrite > 0) {
+                CSAMPLE* dataPtr1;
+                ring_buffer_size_t size1;
+                CSAMPLE* dataPtr2;
+                ring_buffer_size_t size2;
+                m_inputFifo->aquireWriteRegions(toWrite,
+                        &dataPtr1, &size1, &dataPtr2, &size2);
+                // Fetch fresh samples and write to the the input buffer
+                PaError err = Pa_ReadStream(pStream, dataPtr1, size1 / m_inputParams.channelCount);
+                if (err == paInputOverflowed) {
+                    qDebug() << "SoundDevicePortAudio::readProcess() Pa_ReadStream paInputOverflowed" << getInternalName();
+                    m_underflowHappend = 1;
+                }
+                if (size2 > 0) {
+                    PaError err = Pa_ReadStream(pStream, dataPtr2, size2 / m_inputParams.channelCount);
+                    if (err == paInputOverflowed) {
+                        qDebug() << "SoundDevicePortAudio::readProcess() Pa_ReadStream paInputOverflowed" << getInternalName();
+                        m_underflowHappend = 1;
+                    }
+                }
+                m_inputFifo->releaseWriteRegions(toWrite);
+            }
+        }
+
         int inChunkSize = m_framesPerBuffer * m_inputParams.channelCount;
         int readAvailable = m_inputFifo->readAvailable();
         int readCount = inChunkSize;
@@ -361,6 +392,7 @@ void SoundDevicePortAudio::readProcess() {
 
 void SoundDevicePortAudio::writeProcess() {
     PaStream* pStream = m_pStream;
+
     if (pStream && m_outputParams.channelCount) {
         int outChunkSize = m_framesPerBuffer * m_outputParams.channelCount;
         int readAvailable = m_outputFifo->readAvailable();
@@ -386,6 +418,33 @@ void SoundDevicePortAudio::writeProcess() {
                         static_cast<unsigned int>(m_outputParams.channelCount));
             }
             m_outputFifo->releaseWriteRegions(writeCount);
+        }
+
+        if (m_pollingMode) {
+            signed int writeAvailable = Pa_GetStreamWriteAvailable(pStream);
+            int toRead = qMin(m_outputFifo->readAvailable(), writeAvailable * m_outputParams.channelCount);
+            if (toRead > 0) {
+                CSAMPLE* dataPtr1;
+                ring_buffer_size_t size1;
+                CSAMPLE* dataPtr2;
+                ring_buffer_size_t size2;
+                m_outputFifo->aquireReadRegions(toRead,
+                        &dataPtr1, &size1, &dataPtr2, &size2);
+                // Fetch fresh samples and write to the the input buffer
+                PaError err = Pa_WriteStream(pStream, dataPtr1, size1 / m_outputParams.channelCount);
+                if (err == paOutputUnderflowed) {
+                    qDebug() << "SoundDevicePortAudio::writeProcess() Pa_ReadStream paOutputUnderflowed" << getInternalName();
+                    m_underflowHappend = 1;
+                }
+                if (size2 > 0) {
+                    PaError err = Pa_WriteStream(pStream, dataPtr2, size2 / m_outputParams.channelCount);
+                    if (err == paOutputUnderflowed) {
+                        qDebug() << "SoundDevicePortAudio::writeProcess() Pa_WriteStream paOutputUnderflowed" << getInternalName();
+                        m_underflowHappend = 1;
+                    }
+                }
+                m_outputFifo->releaseReadRegions(toRead);
+            }
         }
     }
 }
