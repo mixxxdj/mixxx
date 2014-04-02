@@ -140,6 +140,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     QDir translationsDir(translationsFolder);
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
+    fileNames.push_back("mixxx_en_US.qm"); // add source language as a fake value
+
     bool indexFlag = false; // it'll indicate if the selected index changed.
     for (int i = 0; i < fileNames.size(); ++i) {
         // Extract locale from filename
