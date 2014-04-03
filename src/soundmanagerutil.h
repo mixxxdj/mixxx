@@ -176,11 +176,8 @@ public:
 class AudioDestination {
 public:
     // This is called by SoundManager whenever there are new samples from the
-    // configured input to be processed. This is run in the callback thread of
-    // the soundcard this AudioDestination was registered for! Beware, in the
-    // case of multiple soundcards, this method is not re-entrant (unless this
-    // AudioDestination is registered for multiple AudioInputs) but it may be
-    // concurrent with EngineMaster processing.
+    // configured input to be processed. This is run in the clock reference
+    // callback thread
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int iNumFrames) = 0;
 
