@@ -1557,7 +1557,7 @@ void MixxxMainWindow::slotTalkoverChanged(int mic_num) {
                                       false);
 
     // If the microphone is already configured, we are ok.
-    if (configured && configured->get() > 0.0) {
+    if (configured && configured->get() > 0.0 || m_micTalkoverControls[mic_num]->get() == 0.0) {
         return;
     }
     m_micTalkoverControls[mic_num]->set(0.0);
