@@ -50,7 +50,12 @@ class SoundDevicePortAudio : public SoundDevice {
                         CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
-    // The same as above but dives the MixxEngine
+    // Same as above but with drift correction
+    int callbackProcessDrift(const unsigned int framesPerBuffer,
+                        CSAMPLE *output, const CSAMPLE* in,
+                        const PaStreamCallbackTimeInfo *timeInfo,
+                        PaStreamCallbackFlags statusFlags);
+    // The same as above but drives the MixxEngine
     int callbackProcessClkRef(const unsigned int framesPerBuffer,
                         CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
@@ -90,6 +95,12 @@ class SoundDevicePortAudio : public SoundDevice {
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by
 // PortAudio, which knows nothing about C++.
 int paV19Callback(const void* inputBuffer, void* outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo* timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void* soundDevice);
+
+int paV19CallbackDrift(const void* inputBuffer, void* outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo* timeInfo,
                   PaStreamCallbackFlags statusFlags,
