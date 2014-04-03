@@ -409,17 +409,41 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
         m_underflowHappend = 1;
     }
 
+    // Since we are on the non Clock reference device and may have an independent
+    // Crystal clock, a drift correction is required
+    //
+    // There is a delay of up to one latency between composing a chunk in the Clock
+    // Reference callback and write it to the device. So we need at lest one buffer.
+    // Unfortunately this delay is somehow random, an WILL produce a delay slow
+    // shift without we can avoid it. (Thats the price for using a cheap USB soundcard).
+    //
+    // Additional we need an filled chunk and an empty chunk. These are used when on
+    // sound card overtakes the other. This always happens, if they are driven form
+    // two crystals. In a test case every 30 s @ 23 ms. After they are consumed,
+    // the drift correction takes place and fills or clears the reserve buffers.
+    // If this is finished before an other overtake happens, we do not face any
+    // dropouts or clicks.
+    // So thats why we need a Fifo of 3 chunks.
+    //
+    // In addition there is a jitter effect. It happens that one callback is delayed,
+    // in this case the second one fires two times and then the first one fires two
+    // time as well to catch up. This is also fixed by the additional buffers. If this
+    // happens just after an regular overtake, we will have clicks again.
+    //
+    // I the tests it turns out that it only happens in the opposite direction, so
+    // 3 chunks are just fine.
+
     if (m_inputParams.channelCount) {
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
         int readAvailable = m_inputFifo->readAvailable();
         int writeAvailable = m_inputFifo->writeAvailable();
         if (readAvailable < inChunkSize) {
-            // risk of an underflow, duplicate one sample
+            // risk of an underflow, duplicate one frame
             m_inputFifo->write(in, inChunkSize);
             if (m_inputDrift) {
                 // Do not compensate the first delay, because it is likely a jitter
                 // corrected in the next cycle
-                // Duplicate one sample
+                // Duplicate one frame
                 m_inputFifo->write(&in[inChunkSize - m_inputParams.channelCount], m_inputParams.channelCount);
                 //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Skip";
             } else {
@@ -432,14 +456,14 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             m_inputDrift = false;
             //qDebug() << "callbackProcess write:" << (float) readAvailable / inChunkSize << "Normal";
         } else if (writeAvailable >= inChunkSize) {
-            // Risk of overflow, save one sample
+            // Risk of overflow, skip one frame
             if (m_inputDrift) {
                 m_inputFifo->write(in, inChunkSize - m_inputParams.channelCount);
-                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Save";
+                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Skip";
             } else {
                 m_inputFifo->write(in, inChunkSize);
                 m_inputDrift = true;
-                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Jitter Save";
+                //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
             }
         } else if (writeAvailable) {
             // Fifo Overflow
@@ -460,6 +484,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
         if (readAvailable > outChunkSize * 2) {
             m_outputFifo->read(out, outChunkSize);
             if (m_outputDrift) {
+                // Risk of overflow, skip one frame
                 m_outputFifo->releaseReadRegions(m_outputParams.channelCount);
                 //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Skip";
             } else {
@@ -471,8 +496,8 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             m_outputDrift = false;
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Normal";
         } else if (readAvailable >= outChunkSize) {
-            // Risk of underflow, save one sample
             if (m_outputDrift) {
+                // Risk of underflow, duplicate one frame
                 m_outputFifo->read(out, outChunkSize - m_outputParams.channelCount);
                 memcpy(&out[outChunkSize - m_outputParams.channelCount],
                        &out[outChunkSize - (2 * m_outputParams.channelCount)],
@@ -490,7 +515,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
             SampleUtil::clear(&out[readAvailable],
                     outChunkSize - readAvailable);
             m_underflowHappend = 1;
-            //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "undeflow";
+            //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Underflow";
         } else {
             // underflow
             SampleUtil::clear(out, outChunkSize);
