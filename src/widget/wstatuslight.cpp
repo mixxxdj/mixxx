@@ -116,8 +116,11 @@ void WStatusLight::setPixmap(int iState, const QString& filename, SizeMode mode)
     }
 }
 
-void WStatusLight::onConnectedControlValueChanged(double v) {
-    int val = static_cast<int>(v);
+void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
+    // Enums are not currently represented using parameter space so it doesn't
+    // make sense to use the parameter here yet.
+    Q_UNUSED(dParameter);
+    int val = static_cast<int>(dValue);
     if (m_iPos == val) {
         return;
     }

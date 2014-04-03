@@ -220,9 +220,12 @@ void WPushButton::setPixmapBackground(const QString &filename,
     }
 }
 
-void WPushButton::onConnectedControlValueChanged(double v) {
+void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dParameter);
+    // Enums are not currently represented using parameter space so it doesn't
+    // make sense to use the parameter here yet.
     if (m_iNoStates == 1) {
-        m_bPressed = (v == 1.0);
+        m_bPressed = (dValue == 1.0);
     }
     update();
 }

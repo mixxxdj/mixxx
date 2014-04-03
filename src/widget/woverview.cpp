@@ -133,14 +133,14 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WOverview::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag)
-    {
+void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    if (!m_bDrag) {
         // Calculate handle position
-        int iPos = valueToPosition(dValue);
+        int iPos = valueToPosition(dParameter);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
             update();
         }
     }
