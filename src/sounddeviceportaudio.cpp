@@ -36,6 +36,9 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
 
+static const int kDriftReserve = 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
+static const int kFifoSize = 2 * kDriftReserve + 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
+
 // static
 volatile int SoundDevicePortAudio::m_underflowHappend = 0;
 
@@ -179,15 +182,15 @@ int SoundDevicePortAudio::open(bool isClkRefDevice) {
         // we need an additional artificial delay
         if (m_outputParams.channelCount) {
             // On chunk for reading one for writing and on for drift correction
-            m_outputFifo = new FIFO<CSAMPLE>(m_outputParams.channelCount * m_framesPerBuffer * 3);
+            m_outputFifo = new FIFO<CSAMPLE>(m_outputParams.channelCount * m_framesPerBuffer * kFifoSize);
             // Clear first 1.5 chunks on for the required artificial delaly to a allow jitter
             // and a half, because we can't predict which callback fires first.
-            m_outputFifo->releaseWriteRegions(m_outputParams.channelCount * m_framesPerBuffer * 3 / 2);
+            m_outputFifo->releaseWriteRegions(m_outputParams.channelCount * m_framesPerBuffer * kFifoSize / 2);
         }
         if (m_inputParams.channelCount) {
-            m_inputFifo = new FIFO<CSAMPLE>(m_inputParams.channelCount * m_framesPerBuffer * 3);
+            m_inputFifo = new FIFO<CSAMPLE>(m_inputParams.channelCount * m_framesPerBuffer * kFifoSize);
             // Clear first two 1.5 chunks (see above)
-            m_inputFifo->releaseWriteRegions(m_inputParams.channelCount * m_framesPerBuffer * 3 / 2);
+            m_inputFifo->releaseWriteRegions(m_inputParams.channelCount * m_framesPerBuffer * kFifoSize / 2);
         }
     }
 
@@ -437,7 +440,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
         int readAvailable = m_inputFifo->readAvailable();
         int writeAvailable = m_inputFifo->writeAvailable();
-        if (readAvailable < inChunkSize) {
+        if (readAvailable < inChunkSize * kDriftReserve) {
             // risk of an underflow, duplicate one frame
             m_inputFifo->write(in, inChunkSize);
             if (m_inputDrift) {
@@ -450,7 +453,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
                 m_inputDrift = true;
                 //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
             }
-        } else if (readAvailable == inChunkSize) {
+        } else if (readAvailable == inChunkSize * kDriftReserve) {
             // Everything Ok
             m_inputFifo->write(in, inChunkSize);
             m_inputDrift = false;
@@ -481,7 +484,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
         int outChunkSize = framesPerBuffer * m_outputParams.channelCount;
         int readAvailable = m_outputFifo->readAvailable();
 
-        if (readAvailable > outChunkSize * 2) {
+        if (readAvailable > outChunkSize * (kDriftReserve + 1)) {
             m_outputFifo->read(out, outChunkSize);
             if (m_outputDrift) {
                 // Risk of overflow, skip one frame
@@ -491,7 +494,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
                 m_outputDrift = true;
                 //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Jitter Skip";
             }
-        } else if (readAvailable == outChunkSize * 2) {
+        } else if (readAvailable == outChunkSize * (kDriftReserve + 1)) {
             m_outputFifo->read(out,outChunkSize);
             m_outputDrift = false;
             //qDebug() << "callbackProcess read:" << (float)readAvailable / outChunkSize << "Normal";
