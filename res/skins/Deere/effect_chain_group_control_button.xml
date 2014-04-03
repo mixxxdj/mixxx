@@ -18,6 +18,6 @@
     <SetVariable name="state_1_pressed"></SetVariable>
     <SetVariable name="state_1_unpressed"></SetVariable>
     <SetVariable name="state_1_text"><Variable name="group_name"/></SetVariable>
-    <SetVariable name="left_connection_control"><Variable name="group"/>,channel_<Variable name="group_group"/></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,group_<Variable name="group_group"/>_enable</SetVariable>
   </Template>
 </Template>

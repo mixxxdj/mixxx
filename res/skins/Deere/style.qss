@@ -135,38 +135,44 @@ WLabel {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#TitleGutter WLabel, #EffectChainNameContainer WLabel {
+#TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
   font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
   text-align: left;
 }
 
-#EffectChainNameRow {
+#EffectRackCollapsed #EffectUnitNameContainer WLabel {
+  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#EffectUnitNameRow {
   border-bottom: 1px solid #555;
   background-color: transparent;
   margin: 0px;
 }
 
-#EffectChain1, #EffectChain2, #EffectChain3, #EffectChain4 {
+#EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignTop';
   border: 1px solid #555;
   border-left:none;
 }
 
-#EffectChain1 {
+#EffectUnit1 {
   border-left: 1px solid #555;
 }
 
-#EffectChainNameContainer {
+#EffectUnitNameContainer {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 
-#EffectChainNextPrevContainer {
+#EffectUnitNextPrevContainer {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
-#EffectChainNextPrevContainer WPushButton {
+#EffectUnitNextPrevContainer WPushButton {
   font-size: 12pt;
 }
 
@@ -225,39 +231,39 @@ WLabel {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
-#EffectChainParameters {
+#EffectUnitParameters {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   qproperty-layoutSpacing: 2;
 }
 
-#EffectChainControls {
+#EffectUnitControls {
   padding: 2px;
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   qproperty-layoutSpacing: 2;
 }
 
-#EffectChainGroupControls {
+#EffectUnitGroupControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
-#EffectChain {
+#EffectUnit {
   font-size: 16pt;
 }
 
-#EffectChain1 {
+#EffectUnit1 {
   background-color: pink;
 }
 
-#EffectChain2 {
+#EffectUnit2 {
   background-color: brown;
 }
 
-#EffectChain3 {
+#EffectUnit3 {
   background-color: red;
 }
 
-#EffectChain4 {
+#EffectUnit4 {
   background-color: green;
 }
 
