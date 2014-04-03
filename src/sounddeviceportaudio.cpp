@@ -338,7 +338,8 @@ void SoundDevicePortAudio::readProcess() {
             ring_buffer_size_t size1;
             CSAMPLE* dataPtr2;
             ring_buffer_size_t size2;
-            m_inputFifo->aquireReadRegions(readCount, &dataPtr1, &size1, &dataPtr2, &size2);
+            // We use size1 and size2, so we can ignore the return value
+            (void)m_inputFifo->aquireReadRegions(readCount, &dataPtr1, &size1, &dataPtr2, &size2);
             // Fetch fresh samples and write to the the output buffer
             composeInputBuffer(dataPtr1,
                     size1 / m_inputParams.channelCount, 0,
@@ -363,9 +364,7 @@ void SoundDevicePortAudio::writeProcess() {
     PaStream* pStream = m_pStream;
     if (pStream && m_outputParams.channelCount) {
         int outChunkSize = m_framesPerBuffer * m_outputParams.channelCount;
-        int readAvailable = m_outputFifo->readAvailable();
-        // we use only three chunks, to limit the maximum delay
-        int writeAvailable = (outChunkSize * 3) - readAvailable;
+        int writeAvailable = m_outputFifo->writeAvailable();
         int writeCount = outChunkSize;
         if (outChunkSize > writeAvailable) {
             writeCount = writeAvailable;
@@ -377,7 +376,8 @@ void SoundDevicePortAudio::writeProcess() {
             ring_buffer_size_t size1;
             CSAMPLE* dataPtr2;
             ring_buffer_size_t size2;
-            m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1, &size1, &dataPtr2, &size2);
+            // We use size1 and size2, so we can ignore the return value
+            (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1, &size1, &dataPtr2, &size2);
             // Fetch fresh samples and write to the the output buffer
             composeOutputBuffer(dataPtr1, size1 / m_outputParams.channelCount, 0,
                     static_cast<unsigned int>(m_outputParams.channelCount));
@@ -412,9 +412,8 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
     if (m_inputParams.channelCount) {
         int inChunkSize = framesPerBuffer * m_inputParams.channelCount;
         int readAvailable = m_inputFifo->readAvailable();
-        // we use only three chunks, to limit the maximum delay
-        int writeAvailable = (inChunkSize * 3) - readAvailable;
-        if (writeAvailable > inChunkSize * 2) {
+        int writeAvailable = m_inputFifo->writeAvailable();
+        if (readAvailable < inChunkSize) {
             // risk of an underflow, duplicate one sample
             m_inputFifo->write(in, inChunkSize);
             if (m_inputDrift) {
@@ -427,7 +426,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
                 m_inputDrift = true;
                 //qDebug() << "callbackProcess write:" << (float)readAvailable / inChunkSize << "Jitter Skip";
             }
-        } else if (writeAvailable == inChunkSize * 2) {
+        } else if (readAvailable == inChunkSize) {
             // Everything Ok
             m_inputFifo->write(in, inChunkSize);
             m_inputDrift = false;
