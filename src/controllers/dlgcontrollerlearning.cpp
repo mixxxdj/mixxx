@@ -367,7 +367,7 @@ void DlgControllerLearning::loadControl(const ConfigKey& key, QString descriptio
             .arg(description);
     controlToMapMessage->setText(message);
     comboBoxChosenControl->setEditText(
-            m_controlPickerMenu.prettyNameForConfigKey(key));
+            m_controlPickerMenu.controlTitleForConfigKey(key));
     labelMappedTo->setText("");
 }
 
