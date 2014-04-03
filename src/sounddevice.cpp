@@ -130,51 +130,61 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
     //         << device->getInternalName()
     //         << framesToCompose << iFrameSize;
 
-    // Reset sample for each open channel
-    SampleUtil::clear(outputBuffer, framesToCompose * iFrameSize);
-
     // Interlace Audio data onto portaudio buffer.  We iterate through the
     // source list to find out what goes in the buffer data is interlaced in
     // the order of the list
 
-    for (QList<AudioOutputBuffer>::iterator i = m_audioOutputs.begin(),
-                 e = m_audioOutputs.end(); i != e; ++i) {
-        AudioOutputBuffer& out = *i;
-
-        const ChannelGroup outChans = out.getChannelGroup();
-        const int iChannelCount = outChans.getChannelCount();
-        const int iChannelBase = outChans.getChannelBase();
-
-        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
-        // advanced to offset; pAudioOutputBuffer is always stereo
+    if (iFrameSize == 2 && m_audioOutputs.size() == 1 &&
+            m_audioOutputs.at(0).getChannelGroup().getChannelCount() == 2) {
+        // Special case for one stereo device only
+        const AudioOutputBuffer& out = m_audioOutputs.at(0);
+        const CSAMPLE* pAudioOutputBuffer = out.getBuffer(); // Always Stereo
         pAudioOutputBuffer = &pAudioOutputBuffer[framesReadOffset*2];
-        if (iChannelCount == 1) {
-            // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
-            // output then we need to downsample.
-            for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
-                // iFrameBase is the "base sample" in a frame (ie. the first
-                // sample in a frame)
-                const unsigned int iFrameBase = iFrameNo * iFrameSize;
-                outputBuffer[iFrameBase + iChannelBase] =
-                        (pAudioOutputBuffer[iFrameNo * 2] +
-                                pAudioOutputBuffer[iFrameNo * 2 + 1]) / 2.0f;
-            }
-        } else {
-            for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
-                // iFrameBase is the "base sample" in a frame (ie. the first
-                // sample in a frame)
-                const unsigned int iFrameBase = iFrameNo * iFrameSize;
-                const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+        memcpy(outputBuffer, pAudioOutputBuffer,
+               sizeof(*outputBuffer) * framesToCompose * 2);
+    } else {
+        // Reset sample for each open channel
+        SampleUtil::clear(outputBuffer, framesToCompose * iFrameSize);
 
-                // this will make sure a sample from each channel is copied
-                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                    outputBuffer[iFrameBase + iChannelBase + iChannel] =
-                            pAudioOutputBuffer[iLocalFrameBase + iChannel];
+        for (QList<AudioOutputBuffer>::iterator i = m_audioOutputs.begin(),
+                     e = m_audioOutputs.end(); i != e; ++i) {
+            AudioOutputBuffer& out = *i;
 
-                    // Input audio pass-through (useful for debugging)
-                    //if (in)
-                    //    output[iFrameBase + src.channelBase + iChannel] =
-                    //    in[iFrameBase + src.channelBase + iChannel];
+            const ChannelGroup outChans = out.getChannelGroup();
+            const int iChannelCount = outChans.getChannelCount();
+            const int iChannelBase = outChans.getChannelBase();
+
+            const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
+            // advanced to offset; pAudioOutputBuffer is always stereo
+            pAudioOutputBuffer = &pAudioOutputBuffer[framesReadOffset*2];
+            if (iChannelCount == 1) {
+                // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
+                // output then we need to downsample.
+                for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
+                    // iFrameBase is the "base sample" in a frame (ie. the first
+                    // sample in a frame)
+                    const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                    outputBuffer[iFrameBase + iChannelBase] =
+                            (pAudioOutputBuffer[iFrameNo * 2] +
+                                    pAudioOutputBuffer[iFrameNo * 2 + 1]) / 2.0f;
+                }
+            } else {
+                for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
+                    // iFrameBase is the "base sample" in a frame (ie. the first
+                    // sample in a frame)
+                    const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                    const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+
+                    // this will make sure a sample from each channel is copied
+                    for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
+                        outputBuffer[iFrameBase + iChannelBase + iChannel] =
+                                pAudioOutputBuffer[iLocalFrameBase + iChannel];
+
+                        // Input audio pass-through (useful for debugging)
+                        //if (in)
+                        //    output[iFrameBase + src.channelBase + iChannel] =
+                        //    in[iFrameBase + src.channelBase + iChannel];
+                    }
                 }
             }
         }
@@ -193,9 +203,22 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
     // If the framesize is only 2, then we only have one pair of input channels
     //  That means we don't have to do any deinterlacing, and we can pass
     //  the audio on to its intended destination.
-    if (iFrameSize == 2 && m_audioInputs.size() == 1 &&
+    if (iFrameSize == 1 && m_audioInputs.size() == 1 &&
+            m_audioInputs.at(0).getChannelGroup().getChannelCount() == 1) {
+        // One mono device only
+        const AudioInputBuffer& in = m_audioInputs.at(0);
+        CSAMPLE* pInputBuffer = in.getBuffer(); // Always Stereo
+        pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
+        for (unsigned int iFrameNo = 0; iFrameNo < framesToPush; ++iFrameNo) {
+            pInputBuffer[iFrameNo * 2] =
+                    inputBuffer[iFrameNo];
+            pInputBuffer[iFrameNo * 2 + 1] =
+                    inputBuffer[iFrameNo];
+        }
+    } else if (iFrameSize == 2 && m_audioInputs.size() == 1 &&
             m_audioInputs.at(0).getChannelGroup().getChannelCount() == 2) {
-        const AudioInputBuffer& in =m_audioInputs.at(0);
+        // One stereo device only
+        const AudioInputBuffer& in = m_audioInputs.at(0);
         CSAMPLE* pInputBuffer = in.getBuffer(); // Always Stereo
         pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
         memcpy(pInputBuffer, inputBuffer,
