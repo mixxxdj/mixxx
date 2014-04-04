@@ -90,6 +90,7 @@ class SoundDevicePortAudio : public SoundDevice {
     ControlObject* m_pMasterUnderflowCount;
     int m_underflowUpdateCount;
     static volatile int m_underflowHappend;
+    bool m_pollingMode;
 };
 
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by
