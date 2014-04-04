@@ -175,7 +175,7 @@ int SoundDevicePortAudio::open(bool isClkRefDevice) {
     PaStreamCallback* callback = NULL;
     if (isClkRefDevice) {
         callback = paV19CallbackClkRef;
-    } else if (false) {
+    } else if (true) {
         callback = paV19CallbackDrift;
         // to avoid overflows when one callback overtakes the other or
         // when there is a clock drift compared to the clock reference device
