@@ -15,6 +15,7 @@
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
           m_pBeatActive(NULL) {
+    m_beats.resize(128);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -74,12 +75,23 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setPen(beatPen);
 
     const float rendererHeight = m_waveformRenderer->getHeight();
+
+    int beatCount = 0;
+
     while (it->hasNext()) {
         int beatPosition = it->next();
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
-        painter->drawLine(QPointF(xBeatPoint, 0.f),
-                          QPointF(xBeatPoint, rendererHeight));
+
+        // If we don't have enough space, double the size.
+        if (beatCount >= m_beats.size()) {
+            m_beats.resize(m_beats.size() * 2);
+        }
+
+        m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
     }
+
+    // Make sure to use constData to prevent detaches!
+    painter->drawLines(m_beats.constData(), beatCount);
 
     painter->restore();
 }
