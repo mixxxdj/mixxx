@@ -53,9 +53,14 @@ class WaveformWidgetRenderer {
     //this "regulate" against visual sampling to make the position in widget
     //stable and deterministic
     // Transform sample index to pixel in track.
-    double transformSampleIndexInRendererWorld(int sampleIndex) const;
+    inline double transformSampleIndexInRendererWorld(int sampleIndex) const {
+        const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
+        return transformPositionInRendererWorld(relativePosition);
+    }
     // Transform position (percentage of track) to pixel in track.
-    double transformPositionInRendererWorld(double position) const;
+    inline double transformPositionInRendererWorld(double position) const {
+        return m_trackPixelCount * (position - m_firstDisplayedPosition);
+    }
 
     double getPlayPos() const { return m_playPos;}
     double getPlayPosVSample() const { return m_playPosVSample;}

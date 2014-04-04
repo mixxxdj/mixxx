@@ -30,7 +30,7 @@ bool WaveformRenderBeat::init() {
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
     m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
-    m_beatColor = WSkinColor::getCorrectColor(m_beatColor);
+    m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 
     if (m_beatColor.alphaF() > 0.99)
         m_beatColor.setAlphaF(0.9);
@@ -71,16 +71,14 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     QPen beatPen(m_beatColor);
     beatPen.setWidthF(1.5);
+    painter->setPen(beatPen);
 
+    const float rendererHeight = m_waveformRenderer->getHeight();
     while (it->hasNext()) {
         int beatPosition = it->next();
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
-
-        painter->setPen(beatPen);
-
         painter->drawLine(QPointF(xBeatPoint, 0.f),
-                          QPointF(xBeatPoint,
-                          (float)m_waveformRenderer->getHeight()));
+                          QPointF(xBeatPoint, rendererHeight));
     }
 
     painter->restore();
