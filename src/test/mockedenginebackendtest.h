@@ -18,6 +18,7 @@
 #include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
 #include "engine/ratecontrol.h"
+#include "previewdeck.h"
 #include "sampleutil.h"
 
 #include "mixxxtest.h"
@@ -55,6 +56,10 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pChannel3 = new EngineDeck(m_sGroup3, m_pConfig.data(),
                                      m_pEngineMaster, m_pEffectsManager,
                                      EngineChannel::CENTER);
+        m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
+                                     m_pEngineMaster, m_pEffectsManager,
+                                     EngineChannel::CENTER, m_sPreviewGroup);
+        ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(2.0);
 
         addDeck(m_pChannel1);
         addDeck(m_pChannel2);
@@ -115,12 +120,14 @@ class MockedEngineBackendTest : public MixxxTest {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     MockScaler *m_pMockScaler1, *m_pMockScaler2, *m_pMockScaler3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
+    PreviewDeck *m_pPreview1;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;
     static const char* m_sGroup3;
     static const char* m_sMasterGroup;
     static const char* m_sInternalClockGroup;
+    static const char* m_sPreviewGroup;
     static const double kDefaultRateRange;
     static const double kDefaultRateDir;
     static const double kRateRangeDivisor;
