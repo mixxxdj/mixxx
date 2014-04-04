@@ -19,6 +19,7 @@
 #include "engine/sync/enginesync.h"
 #include "engine/ratecontrol.h"
 #include "previewdeck.h"
+#include "sampler.h"
 #include "sampleutil.h"
 
 #include "mixxxtest.h"
@@ -59,7 +60,13 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
                                      m_pEngineMaster, m_pEffectsManager,
                                      EngineChannel::CENTER, m_sPreviewGroup);
-        ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(2.0);
+        ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
+        // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
+        // to this sampler.  FIX IT!
+//        m_pSampler1 = new Sampler(NULL, m_pConfig.data(),
+//                                  m_pEngineMaster, m_pEffectsManager,
+//                                  EngineChannel::CENTER, m_sSamplerGroup);
+//        ControlObject::getControl(ConfigKey(m_sSamplerGroup, "file_bpm"))->set(2.0);
 
         addDeck(m_pChannel1);
         addDeck(m_pChannel2);
@@ -121,6 +128,7 @@ class MockedEngineBackendTest : public MixxxTest {
     MockScaler *m_pMockScaler1, *m_pMockScaler2, *m_pMockScaler3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
     PreviewDeck *m_pPreview1;
+    Sampler *m_pSampler1;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;
@@ -128,6 +136,7 @@ class MockedEngineBackendTest : public MixxxTest {
     static const char* m_sMasterGroup;
     static const char* m_sInternalClockGroup;
     static const char* m_sPreviewGroup;
+    static const char* m_sSamplerGroup;
     static const double kDefaultRateRange;
     static const double kDefaultRateDir;
     static const double kRateRangeDivisor;

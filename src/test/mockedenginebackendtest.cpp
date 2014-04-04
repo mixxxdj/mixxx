@@ -6,6 +6,7 @@ const char* MockedEngineBackendTest::m_sGroup1 = "[Test1]";
 const char* MockedEngineBackendTest::m_sGroup2 = "[Test2]";
 const char* MockedEngineBackendTest::m_sGroup3 = "[Test3]";
 const char* MockedEngineBackendTest::m_sPreviewGroup = "[PreviewTest1]";
+const char* MockedEngineBackendTest::m_sSamplerGroup = "[SamplerTest1]";
 const double MockedEngineBackendTest::kDefaultRateRange = 4.0;
 const double MockedEngineBackendTest::kDefaultRateDir = 1.0;
 const double MockedEngineBackendTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;
