@@ -464,6 +464,9 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
+    ScopedTimer t(QString("WaveformWidgetFactory::swap() %1waveforms")
+            .arg(m_waveformWidgetHolders.size()));
+
     // Do this in an extra slot to be sure to hit the desired interval
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
