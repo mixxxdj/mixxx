@@ -42,11 +42,11 @@
 
     <SetVariable name="SmallHorizontalStretchButtonMinimumSize">-1,15</SetVariable>
     <SetVariable name="SmallHorizontalStretchButtonMaximumSize">-1,15</SetVariable>
-    <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,me</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,f</SetVariable>
 
     <SetVariable name="SmallVerticalStretchButtonMinimumSize">15,-1</SetVariable>
-    <SetVariable name="SmallVerticalStretchButtonMaximumSize">16,-1</SetVariable>
-    <SetVariable name="SmallVerticalStretchButtonSizePolicy">me,me</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
 
     <Template src="skin:main_decks.xml"/>
     <Template src="skin:sample_decks.xml"/>
