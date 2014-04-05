@@ -68,8 +68,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(audioBufferChanged(int)));
 
     deviceSyncComboBox->clear();
-    deviceSyncComboBox->addItem(tr("0: Polling (Experimental)"));
-    deviceSyncComboBox->addItem(tr("1: No Synchronsiation"));
+    deviceSyncComboBox->addItem(tr("0: Polling (experimental)"));
+    deviceSyncComboBox->addItem(tr("1: No synchronization"));
     deviceSyncComboBox->addItem(tr("2: Drift and jitter correction"));
     deviceSyncComboBox->setCurrentIndex(2);
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
