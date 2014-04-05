@@ -36,7 +36,8 @@ void WKey::setValue(double dValue) {
 }
 
 void WKey::setCents() {
-    int diff_cents = m_engineKeyDistance.get();
+    double diff_cents = m_engineKeyDistance.get();
+    int cents_to_display = static_cast<int>(diff_cents * 100);
     char sign;
     if (diff_cents < 0) {
         sign = ' ';
@@ -48,7 +49,7 @@ void WKey::setCents() {
     if (old.contains('(')) {
         old = old.section('(', 0, 0);
     }
-    setText(old + QString("(%1%2 c)").arg(sign).arg(diff_cents));
+    setText(old + QString("(%1%2 c)").arg(sign).arg(cents_to_display));
 }
 
 
