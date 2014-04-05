@@ -58,7 +58,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:deck_mixer_controls.xml">
+              <Template src="skin:left_deck_mixer_controls.xml">
                 <SetVariable name="i">3</SetVariable>
               </Template>
             </Children>
@@ -67,16 +67,16 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-          <Template src="skin:deck_mixer_controls.xml">
+          <Template src="skin:left_deck_mixer_controls.xml">
             <SetVariable name="i">1</SetVariable>
           </Template>
-          <Template src="skin:deck_mixer_controls.xml">
+          <Template src="skin:right_deck_mixer_controls.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:deck_mixer_controls.xml">
+              <Template src="skin:right_deck_mixer_controls.xml">
                 <SetVariable name="i">4</SetVariable>
               </Template>
             </Children>
