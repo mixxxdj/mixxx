@@ -24,9 +24,7 @@
             <Handle>handle-horizontal.svg</Handle>
             <Horizontal>true</Horizontal>
             <Connection>
-              <ConfigKey>
-                <Variable name="group"/>,rate</ConfigKey>
-              <EmitOnDownPress>false</EmitOnDownPress>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
             </Connection>
           </SliderComposed>
           <!--<Template src="skin:vumeter.xml"/>-->
