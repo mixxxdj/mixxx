@@ -19,8 +19,9 @@
         <Layout>vertical</Layout>
         <Children>
           <SliderComposed>
-            <MinimumSize>100,21</MinimumSize>
-            <MaximumSize>200,21</MaximumSize>
+            <MinimumSize>50,40</MinimumSize>
+            <MaximumSize>-1,40</MaximumSize>
+            <SizePolicy>me,</SizePolicy>
             <Handle>handle-horizontal.svg</Handle>
             <Horizontal>true</Horizontal>
             <Connection>
