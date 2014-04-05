@@ -67,6 +67,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(audioBufferChanged(int)));
 
+    deviceSyncComboBox->clear();
+    deviceSyncComboBox->addItem(tr("0: Polling (Experimental)"));
+    deviceSyncComboBox->addItem(tr("1: No Synchronsiation"));
+    deviceSyncComboBox->addItem(tr("2: Drift and jitter correction"));
+    deviceSyncComboBox->setCurrentIndex(2);
+    connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(syncBuffersChanged(int)));
+
     initializePaths();
     loadSettings();
 
@@ -75,6 +83,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
 
     connect(queryButton, SIGNAL(clicked()),
@@ -329,6 +339,10 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     if (sizeIndex != -1) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
+
+    int syncIndex = m_config.getSyncBuffers();
+    deviceSyncComboBox->setCurrentIndex(syncIndex);
+
     emit(loadPaths(m_config));
     m_loading = false;
 }
@@ -390,6 +404,9 @@ void DlgPrefSound::audioBufferChanged(int index) {
             audioBufferComboBox->itemData(index).toUInt());
 }
 
+void DlgPrefSound::syncBuffersChanged(int index) {
+    m_config.setSyncBuffers(index);
+}
 
 // Slot called whenever the selected sample rate is changed. Populates the
 // audio buffer input box with SMConfig::kMaxLatency values, starting at 1ms,
