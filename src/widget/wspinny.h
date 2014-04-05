@@ -83,8 +83,10 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
     QString m_group;
     float m_fAngle; //Degrees
+    double m_dAngleCurrentPlaypos;
     double m_dAngleLastPlaypos;
     float m_fGhostAngle;
+    double m_dGhostAngleCurrentPlaypos;
     double m_dGhostAngleLastPlaypos;
     int m_iStartMouseX;
     int m_iStartMouseY;
@@ -94,7 +96,9 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     // Speed of the vinyl rotation.
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
-    bool m_bUnpaintedState;
+    bool m_bGhostPlayback;
+    bool m_bWasGhostPlayback;
+    bool m_bWidgetDirty;
 };
 
 #endif //_WSPINNY_H

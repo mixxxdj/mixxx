@@ -38,7 +38,8 @@ WVuMeter::WVuMeter(QWidget* parent) :
         m_iPeakHoldSize(0),
         m_iPeakPos(0),
         m_iPeakHoldCountdown(0),
-        m_unpaintedState(false) {
+        m_iLastPos(0),
+        m_iLastPeakPos(0) {
 }
 
 WVuMeter::~WVuMeter() {
@@ -122,6 +123,7 @@ void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
         m_iPeakPos = 0;
     }
 
+    // TODO: use something much more lightweight than currentTime.
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
     m_lastUpdate = currentTime;
@@ -151,13 +153,11 @@ void WVuMeter::updateState(int msecsElapsed) {
     m_iPeakPos -= float(m_iPeakFallStep) * float(msecsElapsed) / float(m_iPeakFallTime);
     if (m_iPeakPos < 0)
         m_iPeakPos = 0;
-    m_unpaintedState = true;
 }
 
 void WVuMeter::maybeUpdate() {
-    if (m_unpaintedState) {
-        update();
-        m_unpaintedState = false;
+    if (m_iPos != m_iLastPos || m_iPeakPos != m_iLastPeakPos) {
+        repaint();
     }
 }
 
@@ -213,4 +213,6 @@ void WVuMeter::paintEvent(QPaintEvent *) {
             }
         }
     }
+    m_iLastPos = m_iPos;
+    m_iLastPeakPos = m_iPeakPos;
 }

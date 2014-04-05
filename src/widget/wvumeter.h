@@ -67,9 +67,10 @@ class WVuMeter : public WWidget  {
     int m_iPeakFallTime;
     int m_iPeakPos;
     int m_iPeakHoldCountdown;
+    int m_iLastPos;
+    int m_iLastPeakPos;
 
     QTime m_lastUpdate;
-    bool m_unpaintedState;
 };
 
 #endif
