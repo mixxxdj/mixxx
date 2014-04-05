@@ -16,6 +16,11 @@
       </Template>
 
       <Template src="skin:knob.xml">
+        <SetVariable name="control">pitch</SetVariable>
+        <SetVariable name="label">Pitch</SetVariable>
+      </Template>
+
+      <Template src="skin:knob.xml">
         <SetVariable name="control">filterHigh</SetVariable>
         <SetVariable name="label">High</SetVariable>
       </Template>
