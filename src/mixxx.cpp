@@ -127,8 +127,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 
-    initializeKeyboard();
-
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
@@ -342,6 +340,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
                                     m_pControllerManager, m_pVCManager, m_pConfig, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
+
+
+    // Init keyboard after preferences so the keyboard can listen for
+    initializeKeyboard();
 
     // Try open player device If that fails, the preference panel is opened.
     int setupDevices = m_pSoundManager->setupDevices();
@@ -762,7 +764,7 @@ void MixxxMainWindow::initializeKeyboard() {
     // Workaround for today: MixxxKeyboard calls delete
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+    m_pKeyboard = new MixxxKeyboard(this, m_pPrefDlg, keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
@@ -841,6 +843,8 @@ int MixxxMainWindow::noSoundDlg(void)
     QPushButton *exitButton = msgBox.addButton(tr("Exit"),
         QMessageBox::ActionRole);
 
+    emit(showDlg());
+
     while (true)
     {
         msgBox.exec();
@@ -897,6 +901,8 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
     QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
     QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
     QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
+
+    emit(showDlg());
 
     while (true)
     {
@@ -1380,6 +1386,8 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
 
+        emit(showDlg());
+
         if (ret != QMessageBox::Yes)
             return;
     }
@@ -1518,6 +1526,7 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
                     tr("There is no input device selected for this vinyl control.\n"
                        "Please select an input device in the sound hardware preferences first."),
                     QMessageBox::Ok, QMessageBox::Ok);
+            emit(showDlg());
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(PlayerManager::groupForDeck(deck),
@@ -1551,6 +1560,7 @@ void MixxxMainWindow::slotControlPassthrough(int index) {
                 tr("There is no input device selected for this passthrough control.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
+        emit(showDlg());
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
@@ -1579,6 +1589,7 @@ void MixxxMainWindow::slotControlAuxiliary(int index) {
                 tr("There is no input device selected for this auxiliary input.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
+        emit(showDlg());
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
@@ -1649,8 +1660,9 @@ void MixxxMainWindow::slotTalkoverChanged(int mic_num) {
                 tr("There is no input device selected for this microphone.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
+    emit(showDlg());
     m_pPrefDlg->show();
-            m_pPrefDlg->showSoundHardwarePage();
+    m_pPrefDlg->showSoundHardwarePage();
 }
 
 void MixxxMainWindow::slotHelpAbout() {
@@ -1741,6 +1753,7 @@ void MixxxMainWindow::rebootMixxxView() {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
+        emit(showDlg());
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
@@ -1875,6 +1888,7 @@ void MixxxMainWindow::checkDirectRendering() {
                "direct rendering may not be present, but you should<br>"
                "not experience degraded performance."));
         m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
+        emit(showDlg());
     }
 }
 
@@ -1897,6 +1911,7 @@ bool MixxxMainWindow::confirmExit() {
             break;
         }
     }
+    emit(showDlg());
     if (playing) {
         QMessageBox::StandardButton btn = QMessageBox::question(this,
             tr("Confirm Exit"),
