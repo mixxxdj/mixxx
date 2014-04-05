@@ -10,14 +10,14 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <Template src="skin:deck.xml">
+      <Template src="skin:deck_right.xml">
         <SetVariable name="i">2</SetVariable>
       </Template>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck.xml">
+          <Template src="skin:deck_right.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
         </Children>
