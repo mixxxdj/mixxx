@@ -7,7 +7,7 @@
   <WidgetGroup>
     <ObjectName>MainDeckContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,me</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
       <Template src="skin:left_gutter.xml"/>
       <Template src="skin:mixer.xml"/>

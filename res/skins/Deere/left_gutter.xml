@@ -10,13 +10,6 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <!-- grows to fill the space between the top and the first deck -->
-      <WidgetGroup>
-        <ObjectName>SpaceFiller</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
-      </WidgetGroup>
-
       <Template src="skin:deck.xml">
         <SetVariable name="i">1</SetVariable>
       </Template>
@@ -32,14 +25,6 @@
           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
-
-      <!-- grows to fill the space between the last deck and the bottom of the
-           mixer column -->
-      <WidgetGroup>
-        <ObjectName>SpaceFiller</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
       </WidgetGroup>
 
     </Children>

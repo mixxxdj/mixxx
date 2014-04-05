@@ -9,7 +9,7 @@
   <WidgetGroup>
     <ObjectName>ControlsRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
       <Template src="skin:transport.xml"/>
       <Template src="skin:beatloop.xml"/>
