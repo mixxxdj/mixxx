@@ -220,9 +220,11 @@ void WaveformWidgetFactory::destroyWidgets() {
 }
 
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
-    // Do not hold the pointer to of timer listeners since they may be deleted
+    // Do not hold the pointer to of timer listeners since they may be deleted.
+    // We don't activate update() or repaint() directly so listener widgets
+    // can decide whether to paint or not.
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(repaint()),
+            pWidget, SLOT(maybeUpdate()),
             Qt::DirectConnection);
 }
 

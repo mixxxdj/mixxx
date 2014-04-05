@@ -26,6 +26,7 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pPlay(NULL),
           m_pPlayPos(NULL),
           m_pVisualPlayPos(NULL),
+          m_pRate(NULL),
           m_pTrackSamples(NULL),
           m_pScratch(NULL),
           m_pScratchToggle(NULL),
@@ -44,7 +45,8 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_iStartMouseY(-1),
           m_iFullRotations(0),
           m_dPrevTheta(0.),
-          m_bClampFailedWarning(false) {
+          m_bClampFailedWarning(false),
+          m_bUnpaintedState(false) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #endif
@@ -66,6 +68,7 @@ WSpinny::~WSpinny() {
         WImageStore::deleteImage(m_pGhostImage);
         delete m_pPlay;
         delete m_pPlayPos;
+        delete m_pRate;
         delete m_pTrackSamples;
         delete m_pTrackSampleRate;
         delete m_pScratch;
@@ -109,6 +112,7 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
             line++;
         }
     }
+    m_bUnpaintedState = true;
 #endif
 }
 
@@ -142,7 +146,8 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_pPlayPos = new ControlObjectThread(
             group, "playposition");
     m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(group);
-
+    m_pRate = new ControlObjectThread(
+            group, "rateEngine");
     m_pTrackSamples = new ControlObjectThread(
             group, "track_samples");
     m_pTrackSampleRate = new ControlObjectThread(
@@ -190,6 +195,13 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     //if no vinyl control, just call it 33
     this->updateVinylControlSpeed(33.0);
 #endif
+}
+
+void WSpinny::maybeUpdate() {
+    if (m_bUnpaintedState || m_pRate->get() != 0.0) {
+        update();
+        m_bUnpaintedState = false;
+    }
 }
 
 void WSpinny::paintEvent(QPaintEvent *e) {
