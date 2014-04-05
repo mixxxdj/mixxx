@@ -31,44 +31,6 @@
       </Template>
 
       <PushButton>
-        <ObjectName>DeckSync</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>Sync</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>Sync</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-
-      <PushButton>
-        <ObjectName>DeckSyncMaster</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>Master</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>Master</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,sync_master</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-
-      <PushButton>
         <ObjectName>DeckMute</ObjectName>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>

@@ -24,6 +24,14 @@
           <Template src="skin:deck_controls_row.xml"/>
         </Children>
       </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>DeckInnerColumn</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:deck_inner_column.xml"/>
+        </Children>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

@@ -14,6 +14,14 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
       <WidgetGroup>
+        <ObjectName>DeckInnerColumn</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:deck_inner_column.xml"/>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
         <ObjectName>DeckRows</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
