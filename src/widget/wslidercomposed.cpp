@@ -218,6 +218,13 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
+void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
+
+    m_dOldValue = -1;
+    // Re-calculate m_iPos based on our new width/height.
+    onConnectedControlChanged(getControlParameter(), 0);
+}
+
 void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
     // WARNING: The second parameter to this method is unused and called with
     // invalid values in parts of WSliderComposed. Do not use it unless you fix

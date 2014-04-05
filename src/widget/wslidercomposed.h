@@ -24,6 +24,7 @@
 #include <QWheelEvent>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QResizeEvent>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -56,6 +57,7 @@ class WSliderComposed : public WWidget  {
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void paintEvent(QPaintEvent* e);
     virtual void wheelEvent(QWheelEvent* e);
+    virtual void resizeEvent(QResizeEvent* e);
 
   private:
     void unsetPixmaps();
