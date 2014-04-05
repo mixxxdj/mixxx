@@ -110,6 +110,10 @@ WLabel {
   background-color: green;
 }
 
+#ToolBar {
+  background-color: pink;
+}
+
 /* All widget groups that are children of #DeckRows should AlignTop. */
 #DeckRows > WWidgetGroup {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
