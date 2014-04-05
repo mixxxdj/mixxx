@@ -48,6 +48,7 @@
     <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
     <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
 
+    <Template src="skin:tool_bar.xml"/>
     <Template src="skin:main_decks.xml"/>
     <Template src="skin:sample_decks.xml"/>
     <Template src="skin:effect_rack.xml"/>

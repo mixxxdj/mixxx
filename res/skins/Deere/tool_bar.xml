@@ -1,0 +1,18 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The tool bar.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>ToolBar</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+
+    </Children>
+  </WidgetGroup>
+
+
+
+</Template>
