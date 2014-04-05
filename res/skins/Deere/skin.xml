@@ -34,7 +34,7 @@
   <Children>
     <SetVariable name="SmallSquareButtonMinimumSize">15,15</SetVariable>
     <SetVariable name="SmallSquareButtonMaximumSize">15,15</SetVariable>
-    <SetVariable name="SmallSquareButtonSizePolicy">me,me</SetVariable>
+    <SetVariable name="SmallSquareButtonSizePolicy">f,f</SetVariable>
 
     <SetVariable name="SmallWideButtonMinimumSize">30,15</SetVariable>
     <SetVariable name="SmallWideButtonMaximumSize">30,15</SetVariable>
