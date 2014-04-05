@@ -38,7 +38,7 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    virtual int open(bool isClkRefDevice);
+    virtual int open(bool isClkRefDevice, int syncBuffers);
     virtual int close();
     virtual void readProcess();
     virtual void writeProcess();
@@ -90,7 +90,7 @@ class SoundDevicePortAudio : public SoundDevice {
     ControlObject* m_pMasterUnderflowCount;
     int m_underflowUpdateCount;
     static volatile int m_underflowHappend;
-    bool m_pollingMode;
+    int m_syncBuffers;
 };
 
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by

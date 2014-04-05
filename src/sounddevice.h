@@ -49,7 +49,7 @@ class SoundDevice {
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open(bool isClkRefDevice) = 0;
+    virtual int open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual int close() = 0;
     virtual void readProcess() = 0;
     virtual void writeProcess() = 0;

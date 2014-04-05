@@ -392,7 +392,7 @@ int SoundManager::setupDevices() {
             qWarning() << "Output sound device clock reference not set! Using"
                        << device->getDisplayName();
         }
-        err = device->open(pNewMasterClockRef == device);
+        err = device->open(pNewMasterClockRef == device, m_config.getSyncBuffers());
         if (err != OK) {
             goto closeAndError;
         } else {
