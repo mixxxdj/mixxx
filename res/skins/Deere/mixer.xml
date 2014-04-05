@@ -7,7 +7,6 @@
   <WidgetGroup>
     <ObjectName>Mixer</ObjectName>
     <Layout>vertical</Layout>
-    <MinimumSize>min,-1</MinimumSize>
     <SizePolicy>f,min</SizePolicy>
     <Children>
       <Template src="skin:mixer_status_bar.xml"/>
