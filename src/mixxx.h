@@ -89,6 +89,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotControlVinylControl(int);
     void slotCheckboxVinylControl(int);
     void slotControlPassthrough(int);
+    void slotControlAuxiliary(int);
     // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
@@ -254,12 +255,14 @@ class MixxxMainWindow : public QMainWindow {
     ControlPushButton* m_pTouchShift;
     QList<ControlObjectSlave*> m_pVinylControlEnabled;
     QList<ControlObjectSlave*> m_pPassthroughEnabled;
+    QList<ControlObjectSlave*> m_pAuxiliaryPassthrough;
     ControlObjectThread* m_pNumDecks;
     int m_iNumConfiguredDecks;
     QList<ControlObjectSlave*> m_micTalkoverControls;
     QSignalMapper* m_VCControlMapper;
     QSignalMapper* m_VCCheckboxMapper;
     QSignalMapper* m_PassthroughMapper;
+    QSignalMapper* m_AuxiliaryMapper;
     QSignalMapper* m_TalkoverMapper;
 
     static const int kMicrophoneCount;

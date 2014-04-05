@@ -186,10 +186,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     connect(m_PassthroughMapper, SIGNAL(mapped(int)),
             this, SLOT(slotControlPassthrough(int)));
 
-    // Pre-allocate passthrough COs so the indexing is predictable.
-    for (int i = 0; i < kMaximumVinylControlInputs + kAuxiliaryCount; ++i) {
-        m_pPassthroughEnabled.append(NULL);
-    }
+    m_AuxiliaryMapper = new QSignalMapper(this);
+    connect(m_AuxiliaryMapper, SIGNAL(mapped(int)),
+            this, SLOT(slotControlAuxiliary(int)));
 
     for (int i = 0; i < kAuxiliaryCount; ++i) {
         QString group = QString("[Auxiliary%1]").arg(i + 1);
@@ -201,17 +200,16 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         m_pSoundManager->registerInput(auxInput, pAux);
         pNumAuxiliaries->set(pNumAuxiliaries->get() + 1);
 
-        ControlObjectSlave* passthrough_enabled =
-                new ControlObjectSlave(group, "passthrough");
-        m_pPassthroughEnabled[i + kMaximumVinylControlInputs] =
-                passthrough_enabled;
+        m_pAuxiliaryPassthrough.push_back(
+                new ControlObjectSlave(group, "passthrough"));
+        ControlObjectSlave* auxiliary_passthrough =
+                m_pAuxiliaryPassthrough.back();
 
         // These non-vinyl passthrough COs have their index offset by the max
         // number of vinyl inputs.
-        m_PassthroughMapper->setMapping(passthrough_enabled,
-                                        i + kMaximumVinylControlInputs);
-        passthrough_enabled->connectValueChanged(m_PassthroughMapper,
-                                                 SLOT(map()));
+        m_AuxiliaryMapper->setMapping(auxiliary_passthrough, i);
+        auxiliary_passthrough->connectValueChanged(m_AuxiliaryMapper,
+                                                   SLOT(map()));
     }
 
     // Do not write meta data back to ID3 when meta data has changed
@@ -508,6 +506,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_VCCheckboxMapper;
 #endif
     delete m_PassthroughMapper;
+    delete m_AuxiliaryMapper;
     delete m_TalkoverMapper;
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
@@ -1531,12 +1530,7 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
 }
 
 void MixxxMainWindow::slotControlPassthrough(int index) {
-    // Both vinyl inputs and auxiliary inputs have passthrough controls,
-    // so this function handles both.  Vinyl inputs are given indexes 0 through
-    // kMaximumVinylControlInputs, and auxiliary controls start at
-    // kMaximumVinylControlInputs and increase from there.
-
-    if (index < kMaximumVinylControlInputs && index >= m_iNumConfiguredDecks) {
+    if (index >= kMaximumVinylControlInputs || index >= m_iNumConfiguredDecks) {
         qWarning() << "Tried to activate passthrough on a deck that we "
                       "haven't configured -- ignoring request.";
         m_pPassthroughEnabled[index]->set(0.0);
@@ -1544,24 +1538,45 @@ void MixxxMainWindow::slotControlPassthrough(int index) {
     }
     bool toggle = static_cast<bool>(m_pPassthroughEnabled[index]->get());
     if (toggle) {
-        if (index < kMaximumVinylControlInputs) {
-            if (m_pPlayerManager->hasVinylInput(index)) {
-                return;
-            }
-            m_pOptionsVinylControl[index]->setChecked(false);
-        } else {
-            if (m_pPlayerManager->hasAuxiliaryInput(
-                    index - kMaximumVinylControlInputs)) {
-                return;
-            }
+        if (m_pPlayerManager->hasVinylInput(index)) {
+            return;
         }
+        // Else...
+        m_pOptionsVinylControl[index]->setChecked(false);
         m_pPassthroughEnabled[index]->set(0.0);
 
-        // Else...
         QMessageBox::warning(
                 this,
                 tr("Mixxx"),
                 tr("There is no input device selected for this passthrough control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok, QMessageBox::Ok);
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
+}
+
+void MixxxMainWindow::slotControlAuxiliary(int index) {
+    if (index >= kAuxiliaryCount || index >= m_iNumConfiguredDecks) {
+        qWarning() << "Tried to activate auxiliary input that we "
+                      "haven't configured -- ignoring request.";
+        m_pAuxiliaryPassthrough[index]->set(0.0);
+        return;
+    }
+    bool toggle = static_cast<bool>(m_pAuxiliaryPassthrough[index]->get());
+    if (toggle) {
+        if (ControlObject::getControl(
+                m_pAuxiliaryPassthrough[index]->getKey().group,
+                "enabled")->get()) {
+            return;
+        }
+        // Else...
+        m_pAuxiliaryPassthrough[index]->set(0.0);
+
+        QMessageBox::warning(
+                this,
+                tr("Mixxx"),
+                tr("There is no input device selected for this auxiliary input.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
         m_pPrefDlg->show();
@@ -1598,10 +1613,10 @@ void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
         m_VCControlMapper->setMapping(vc_enabled, i);
         vc_enabled->connectValueChanged(m_VCControlMapper, SLOT(map()));
 
-        ControlObjectSlave* passthrough_enabled =
+        m_pPassthroughEnabled.push_back(
                 new ControlObjectSlave(PlayerManager::groupForDeck(i),
-                                        "passthrough");
-        m_pPassthroughEnabled[i] = passthrough_enabled;
+                                        "passthrough"));
+        ControlObjectSlave* passthrough_enabled = m_pPassthroughEnabled.back();
         m_PassthroughMapper->setMapping(passthrough_enabled, i);
         passthrough_enabled->connectValueChanged(m_PassthroughMapper,
                                                  SLOT(map()));

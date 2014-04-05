@@ -346,11 +346,6 @@ bool PlayerManager::hasVinylInput(int inputnum) const {
     return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
 }
 
-bool PlayerManager::hasAuxiliaryInput(int inputnum) const {
-    AudioInput aux_input(AudioInput::AUXILIARY, 0, 0, inputnum);
-    return m_pSoundManager->getConfig().getInputs().values().contains(aux_input);
-}
-
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
