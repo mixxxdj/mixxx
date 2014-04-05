@@ -62,6 +62,9 @@
       </Time>
       <Battery>
       </Battery>
+
+      <Template src="skin:microphone.xml"/>
+
       <WidgetGroup>
         <ObjectName>MasterControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
