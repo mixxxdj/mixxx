@@ -347,7 +347,7 @@ bool PlayerManager::hasVinylInput(int inputnum) const {
 }
 
 bool PlayerManager::hasAuxiliaryInput(int inputnum) const {
-    AudioInput aux_input(AudioInput::AUXILIARY, 0, inputnum);
+    AudioInput aux_input(AudioInput::AUXILIARY, 0, 0, inputnum);
     return m_pSoundManager->getConfig().getInputs().values().contains(aux_input);
 }
 
