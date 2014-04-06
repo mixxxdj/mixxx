@@ -227,6 +227,10 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     if (m_iNoStates == 1) {
         m_bPressed = (dValue == 1.0);
     }
+
+    // Since we expect button connections to not change at high frequency we
+    // don't try to detect whether things have changed for WPushButton, we just
+    // re-render.
     update();
 }
 
