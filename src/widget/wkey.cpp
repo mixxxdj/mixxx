@@ -23,6 +23,15 @@ void WKey::onConnectedControlValueChanged(double v) {
     setCents();
 }
 
+void WKey::setup(QDomNode node, const SkinContext& context) {
+    WLabel::setup(node, context);
+    if (context.selectBool(node, "DisplayCents", false)) {
+        m_displayCents = true;
+    } else {
+        m_displayCents = false;
+    }
+}
+
 void WKey::setValue(double dValue) {
     m_dOldValue = dValue;
     mixxx::track::io::key::ChromaticKey key =
@@ -36,22 +45,23 @@ void WKey::setValue(double dValue) {
 }
 
 void WKey::setCents() {
-    double diff_cents = m_engineKeyDistance.get();
-    int cents_to_display = static_cast<int>(diff_cents * 100);
-    char sign;
-    if (diff_cents < 0) {
-        sign = ' ';
-    } else {
-        sign = '+';
+    if (m_displayCents) {
+        double diff_cents = m_engineKeyDistance.get();
+        int cents_to_display = static_cast<int>(diff_cents * 100);
+        char sign;
+        if (diff_cents < 0) {
+            sign = '-';
+        } else {
+            sign = '+';
+        }
+        // Remove the previous cent difference
+        QString old = text();
+        if (old.contains(' ')) {
+            old = old.section(' ', 0, 0);
+        }
+        setText(old + QString(" %1%2c").arg(sign).arg(qAbs(cents_to_display)));
     }
-    // Remove the previous cent difference
-    QString old = text();
-    if (old.contains('(')) {
-        old = old.section('(', 0, 0);
-    }
-    setText(old + QString("(%1%2 c)").arg(sign).arg(cents_to_display));
 }
-
 
 void WKey::preferencesUpdated(double dValue) {
     if (dValue > 0) {

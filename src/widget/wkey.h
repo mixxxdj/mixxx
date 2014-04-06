@@ -13,6 +13,7 @@ class WKey : public WLabel  {
     virtual ~WKey();
 
     virtual void onConnectedControlValueChanged(double v);
+    void setup(QDomNode node, const SkinContext& context);
 
   private slots:
     void setValue(double dValue);
@@ -21,6 +22,7 @@ class WKey : public WLabel  {
 
   private:
     double m_dOldValue;
+    bool m_displayCents;
     ControlObjectThread m_preferencesUpdated;
     ControlObjectThread m_engineKeyDistance;
 };
