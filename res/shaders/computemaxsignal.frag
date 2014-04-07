@@ -36,7 +36,7 @@ void main(void)
         discard;
 
     int nearestCurrentIndex = int(floor(currentPosition*float(waveformLength)+0.5));
-    float currentIndex = float(nearestCurrentIndex);
+    float currentIndex = float(nearestCurrentIndex)  - float(mod(nearestCurrentIndex, (2*visualSamplePerPixel)));
 
     float previousIndex = currentIndex - 1.0*float(visualSamplePerPixel);
     float nextIndex = currentIndex + 1.0*float(visualSamplePerPixel);
