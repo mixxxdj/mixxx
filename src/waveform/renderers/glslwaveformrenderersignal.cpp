@@ -152,9 +152,9 @@ bool GLSLWaveformRendererSignal::loadTexture() {
         // Waveform ensures that getTextureSize is a multiple of
         // getTextureStride so there is no rounding here.
         int textureWidth = waveform->getTextureStride();
-        int textureHeigth = waveform->getTextureSize() / waveform->getTextureStride();
+        int textureHeight = waveform->getTextureSize() / waveform->getTextureStride();
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeigth, 0,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
                      GL_RGBA, GL_UNSIGNED_BYTE, data);
         int error = glGetError();
         if (error)
@@ -212,7 +212,8 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
     if (m_signalMaxbuffer)
         delete m_signalMaxbuffer;
 
-    m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth, 2);
+    // Render Max Signal at 4x resolution for antialiasing.
+    m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth * 4, 2);
 
     if (!m_signalMaxbuffer->isValid())
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - signal frame buffer not valid";
@@ -221,7 +222,8 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
         delete m_framebuffer;
 
     //should work with any version of OpenGl
-    m_framebuffer = new QGLFramebufferObject(bufferWidth, bufferHeight);
+    // Render framebuffer at 4x resolution for antialiasing when it gets shrunk to fit the widget.
+    m_framebuffer = new QGLFramebufferObject(bufferWidth * 4, bufferHeight * 4);
 
     if (!m_framebuffer->isValid())
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
@@ -495,8 +497,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     {
         glViewport(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
         glBindTexture(GL_TEXTURE_2D, m_framebuffer->texture());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glBegin(GL_QUADS);
         {
