@@ -5,6 +5,7 @@
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "controlobjectthread.h"
 
 #include "mathstuff.h"
 
@@ -59,13 +60,13 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     m_signalMaxShaderProgram->removeAllShaders();
 
     if (!m_signalMaxShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, ":/shaders/passthrough.vert")) {
+            QGLShader::Vertex, "./res/shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_signalMaxShaderProgram->log();
         return false;
     }
     if (!m_signalMaxShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, ":/shaders/computemaxsignal.frag")) {
+            QGLShader::Fragment, "./res/shaders/computemaxsignal.frag")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_signalMaxShaderProgram->log();
         return false;
@@ -87,13 +88,13 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     m_frameShaderProgram->removeAllShaders();
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, ":/shaders/passthrough.vert")) {
+            QGLShader::Vertex, "./res/shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_signalMaxShaderProgram->log();
         return false;
     }
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, ":/shaders/filteredsignal.frag")) {
+            QGLShader::Fragment, "./res/shaders/filteredsignal.frag")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_signalMaxShaderProgram->log();
         return false;
@@ -131,7 +132,7 @@ bool GLSLWaveformRendererSignal::loadTexture() {
     glEnable(GL_TEXTURE_2D);
 
     if (m_textureId == 0) {
-        glGenTextures(1,&m_textureId);
+        glGenTextures(1, &m_textureId);
 
         int error = glGetError();
         if (error)
@@ -148,10 +149,13 @@ bool GLSLWaveformRendererSignal::loadTexture() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     if (waveform != NULL && data != NULL) {
+        // Waveform ensures that getTextureSize is a multiple of
+        // getTextureStride so there is no rounding here.
         int textureWidth = waveform->getTextureStride();
-        int textureHeigth = waveform->getTextureSize() / waveform->getTextureStride();
+        int textureHeight = waveform->getTextureSize() / waveform->getTextureStride();
 
-        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,textureWidth,textureHeigth,0,GL_RGBA,GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, data);
         int error = glGetError();
         if (error)
             qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" << error;
@@ -202,13 +206,14 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
 {
     m_frameBuffersValid = false;
 
-    int bufferWidth = nearestSuperiorPowerOfTwo(m_waveformRenderer->getWidth()*3);
-    int bufferHeight = nearestSuperiorPowerOfTwo(m_waveformRenderer->getHeight());
+    int bufferWidth = m_waveformRenderer->getWidth();
+    int bufferHeight = m_waveformRenderer->getHeight();
 
     if (m_signalMaxbuffer)
         delete m_signalMaxbuffer;
 
-    m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth/(m_signalFrameBufferRatio*2),2);
+    // Render Max Signal at 4x resolution for antialiasing.
+    m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth * 4, 2);
 
     if (!m_signalMaxbuffer->isValid())
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - signal frame buffer not valid";
@@ -217,8 +222,8 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
         delete m_framebuffer;
 
     //should work with any version of OpenGl
-    m_framebuffer = new QGLFramebufferObject(bufferWidth,bufferHeight);
-
+    // Render framebuffer at 4x resolution for antialiasing when it gets shrunk to fit the widget.
+    m_framebuffer = new QGLFramebufferObject(bufferWidth * 4, bufferHeight * 4);
 
     if (!m_framebuffer->isValid())
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
@@ -300,26 +305,49 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_loadedWaveform = currentCompletion;
     }
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
+    // Per-band gain from the EQ knobs.
+    float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
+    if (m_pLowFilterControlObject &&
+            m_pMidFilterControlObject &&
+            m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
+    }
+    allGain = m_waveformRenderer->getGain();
 
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glTranslatef(.0f,.0f,.0f);
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
+    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
+    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
+    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_TEXTURE_2D);
+
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize/2.0;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize/2.0;
+
+    // const int firstIndex = int(firstVisualIndex+0.5);
+    // firstVisualIndex = firstIndex - firstIndex%2;
+
+    // const int lastIndex = int(lastVisualIndex+0.5);
+    // lastVisualIndex = lastIndex + lastIndex%2;
+
+    //qDebug() << "GAIN" << allGain << lowGain << midGain << highGain;
 
     //compute signal max
     {
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
         glLoadIdentity();
+        glOrtho(firstVisualIndex, lastVisualIndex, -1.0, 1.0, -10.0, 10.0);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+        glTranslatef(.0f,.0f,.0f);
 
         m_signalMaxShaderProgram->bind();
-        glViewport(0,0,m_signalMaxbuffer->width(),m_signalMaxbuffer->height());
+        glViewport(0, 0, m_signalMaxbuffer->width(), m_signalMaxbuffer->height());
 
         // TODO(XXX) all these accesses of the waveform info need to be made
         // thread safe.
@@ -330,15 +358,41 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_signalMaxShaderProgram->setUniformValue("zoomFactor",(int)m_waveformRenderer->getZoomFactor());
         m_signalMaxShaderProgram->setUniformValue("width",m_signalMaxbuffer->width());
         m_signalMaxShaderProgram->setUniformValue("signalFrameBufferRatio",m_signalFrameBufferRatio);
-        m_signalMaxShaderProgram->setUniformValue("gain",(float)m_waveformRenderer->getGain());
 
+        m_signalMaxShaderProgram->setUniformValue("firstVisualIndex", (float)firstVisualIndex);
+        m_signalMaxShaderProgram->setUniformValue("lastVisualIndex", (float)lastVisualIndex);
+
+        m_signalMaxShaderProgram->setUniformValue("allGain", allGain);
+        m_signalMaxShaderProgram->setUniformValue("lowGain", lowGain);
+        m_signalMaxShaderProgram->setUniformValue("midGain", midGain);
+        m_signalMaxShaderProgram->setUniformValue("highGain", highGain);
+
+        glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, m_textureId);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         m_signalMaxbuffer->bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glCallList(m_unitQuadListId);
+        //glCallList(m_unitQuadListId);
+
+        glBegin(GL_QUADS);
+        {
+            glTexCoord2f(0.0,0.0);
+            glVertex3f(firstVisualIndex,-1.0f,0.0f);
+
+            glTexCoord2f(1.0, 0.0);
+            glVertex3f(lastVisualIndex,-1.0f,0.0f);
+
+            glTexCoord2f(1.0,1.0);
+            glVertex3f(lastVisualIndex,1.0f, 0.0f);
+
+            glTexCoord2f(0.0,1.0);
+            glVertex3f(firstVisualIndex,1.0f,0.0f);
+        }
+        glEnd();
+
+
         m_signalMaxbuffer->release();
 
         m_signalMaxShaderProgram->release();
@@ -350,7 +404,16 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     //paint into frame buffer
     {
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
         glLoadIdentity();
+        glOrtho(firstVisualIndex, lastVisualIndex, -1.0, 1.0, -10.0, 10.0);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+        glTranslatef(.0f,.0f,.0f);
+
         //glScalef((float)m_signalMaxbuffer->width()/(float)m_framebuffer->width(), 1.0, 1.0);
 
         m_frameShaderProgram->bind();
@@ -361,21 +424,48 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("midColor", m_pColors->getMidColor());
         m_frameShaderProgram->setUniformValue("highColor", m_pColors->getHighColor());
 
+        glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, m_signalMaxbuffer->texture());
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         m_framebuffer->bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glCallList(m_unitQuadListId);
+        //glCallList(m_unitQuadListId);
+
+        glBegin(GL_QUADS);
+        {
+            glTexCoord2f(0.0,0.0);
+            glVertex3f(firstVisualIndex,-1.0f,0.0f);
+
+            glTexCoord2f(1.0, 0.0);
+            glVertex3f(lastVisualIndex,-1.0f,0.0f);
+
+            glTexCoord2f(1.0,1.0);
+            glVertex3f(lastVisualIndex,1.0f, 0.0f);
+
+            glTexCoord2f(0.0,1.0);
+            glVertex3f(firstVisualIndex,1.0f,0.0f);
+        }
+        glEnd();
+
+
         m_framebuffer->release();
 
         m_frameShaderProgram->release();
     }
 
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
     glLoadIdentity();
-    float scale = (float)m_framebuffer->width()/(2.0*(float)m_waveformRenderer->getWidth());
-    scale /= (1.0+m_waveformRenderer->getRateAdjust());
+    glOrtho(firstVisualIndex, lastVisualIndex, -1.0, 1.0, -10.0, 10.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    //float scale = (float)m_framebuffer->width()/(2.0*(float)m_waveformRenderer->getWidth());
+    //scale /= (1.0+m_waveformRenderer->getRateAdjust());
 
     //NOTE: (vrince) try to move the camera to limit the stepping effect of actual versus current position centering
     //The following code must be paired with the shader that compute signal value in texture/gemometry world
@@ -386,12 +476,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     const float range = float(visualSamplePerPixel * m_waveformRenderer->getWidth());
     const float deltaInGeometry = deltaPosition / range;*/
 
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    double visualGain = factory->getVisualGain(WaveformWidgetFactory::All);
-    visualGain *= m_waveformRenderer->getGain();
-
     glTranslatef(0.0, 0.0, 0.0);
-    glScalef(scale, visualGain, 1.0);
+    //glScalef(scale, 1.0, 1.0);
 
     /*
     //TODO: (vrince) make this line work sometime
@@ -403,13 +489,33 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glEnd();
     */
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_2D);
+
     //paint buffer into viewport
     {
         glViewport(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
         glBindTexture(GL_TEXTURE_2D, m_framebuffer->texture());
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        glCallList(m_unitQuadListId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBegin(GL_QUADS);
+        {
+            glTexCoord2f(0.0,0.0);
+            glVertex3f(firstVisualIndex,-1.0f,0.0f);
+
+            glTexCoord2f(1.0, 0.0);
+            glVertex3f(lastVisualIndex,-1.0f,0.0f);
+
+            glTexCoord2f(1.0,1.0);
+            glVertex3f(lastVisualIndex,1.0f, 0.0f);
+
+            glTexCoord2f(0.0,1.0);
+            glVertex3f(firstVisualIndex,1.0f,0.0f);
+        }
+        glEnd();
+
     }
 
     glDisable(GL_TEXTURE_2D);
