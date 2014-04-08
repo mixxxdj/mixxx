@@ -34,14 +34,14 @@ void main(void)
       outputColor.x += midColor.x;
       outputColor.y += midColor.y;
       outputColor.z += midColor.z;
-      outputColor.w = 0.8;
+      outputColor.w = 0.85;
     }
 
     if (signalDistance.z > 0.0) {
       outputColor.x += highColor.x;
       outputColor.y += highColor.y;
       outputColor.z += highColor.z;
-      outputColor.w = 0.8;
+      outputColor.w = 0.9;
     }
 
     /*
