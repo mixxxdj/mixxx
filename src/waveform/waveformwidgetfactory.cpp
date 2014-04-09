@@ -465,7 +465,7 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
-    ScopedTimer t((const char*)"WaveformWidgetFactory::swap() %1waveforms", m_waveformWidgetHolders.size());
+    ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms", m_waveformWidgetHolders.size());
 
     // Do this in an extra slot to be sure to hit the desired interval
     if (!m_skipRender) {

@@ -33,24 +33,6 @@ class Timer {
     PerformanceTimer m_time;
 };
 
-class TimerAtMem : public Timer {
-  public:
-    TimerAtMem(const QString& key,
-                 Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : Timer(key, compute) {
-    }
-    static inline void* operator new(size_t size, void* ptr) {
-        Q_UNUSED(size);
-        return ptr;
-    } // TimerAtMen's default ctor implicitly called here
-
-    static inline void operator delete(void *p, void* ptr) {
-        Q_UNUSED(p);
-        Q_UNUSED(ptr);
-    } // TimerAtMem's dtor implicitly called at this point
-};
-
-
 class SuspendableTimer : public Timer {
   public:
     SuspendableTimer(const QString& key,
@@ -71,7 +53,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), QString().number(i), compute);
+            initalize(QString(key), QString::number(i), compute);
         }
     }
 
