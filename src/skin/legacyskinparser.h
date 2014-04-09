@@ -17,6 +17,7 @@ class WBaseWidget;
 class Library;
 class MixxxKeyboard;
 class PlayerManager;
+class EffectsManager;
 class ControllerManager;
 class SkinContext;
 class WLabel;
@@ -28,7 +29,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
-                     Library* pLibrary, VinylControlManager* pVCMan);
+                     Library* pLibrary, VinylControlManager* pVCMan,
+                     EffectsManager* pEffectsManager);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(QString skinPath);
@@ -39,6 +41,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Parse a skin manifest from the provided skin document root.
     static mixxx::skin::SkinManifest getSkinManifest(QDomElement skinDocument);
     static void freeChannelStrings();
+
+    static Qt::MouseButton parseButtonState(QDomNode node,
+                                            const SkinContext& context);
+
   private:
     static QDomElement openSkin(QString skinPath);
 
@@ -65,6 +71,9 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseTrackProperty(QDomElement node);
     QWidget* parseNumberRate(QDomElement node);
     QWidget* parseNumberPos(QDomElement node);
+    QWidget* parseEffectChainName(QDomElement node);
+    QWidget* parseEffectName(QDomElement node);
+    QWidget* parseEffectParameterName(QDomElement node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget, QWidget* pInnerWidget);
@@ -110,6 +119,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
+    EffectsManager* m_pEffectsManager;
     QWidget* m_pParent;
     SkinContext* m_pContext;
     Tooltips m_tooltips;

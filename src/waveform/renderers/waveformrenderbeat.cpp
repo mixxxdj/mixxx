@@ -15,6 +15,7 @@
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
           m_pBeatActive(NULL) {
+    m_beats.resize(128);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -30,7 +31,7 @@ bool WaveformRenderBeat::init() {
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
     m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
-    m_beatColor = WSkinColor::getCorrectColor(m_beatColor);
+    m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 
     if (m_beatColor.alphaF() > 0.99)
         m_beatColor.setAlphaF(0.9);
@@ -39,7 +40,7 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if(!trackInfo)
+    if (!trackInfo)
         return;
 
     BeatsPointer trackBeats = trackInfo->getBeats();
@@ -71,17 +72,26 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     QPen beatPen(m_beatColor);
     beatPen.setWidthF(1.5);
+    painter->setPen(beatPen);
+
+    const float rendererHeight = m_waveformRenderer->getHeight();
+
+    int beatCount = 0;
 
     while (it->hasNext()) {
         int beatPosition = it->next();
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
-        painter->setPen(beatPen);
+        // If we don't have enough space, double the size.
+        if (beatCount >= m_beats.size()) {
+            m_beats.resize(m_beats.size() * 2);
+        }
 
-        painter->drawLine(QPointF(xBeatPoint, 0.f),
-                          QPointF(xBeatPoint,
-                          (float)m_waveformRenderer->getHeight()));
+        m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
     }
+
+    // Make sure to use constData to prevent detaches!
+    painter->drawLines(m_beats.constData(), beatCount);
 
     painter->restore();
 }

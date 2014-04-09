@@ -37,16 +37,18 @@ class PlayerManager;
 class RecordingManager;
 class ShoutcastManager;
 class SkinLoader;
+class EffectsManager;
 class VinylControlManager;
 class GuiTick;
-
 class DlgPreferences;
 class SoundManager;
+class ControlPushButton;
 
 #include "configobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
+class ControlObjectSlave;
 class ControlObjectThread;
 class QTranslator;
 
@@ -123,6 +125,10 @@ class MixxxMainWindow : public QMainWindow {
     // Activated when the number of decks changed, so we can update the UI.
     void slotNumDecksChanged(double);
 
+    // Activated when the talkover button is pushed on a microphone so we
+    // can alert the user if a mic is not configured.
+    void slotTalkoverChanged(int);
+
   signals:
     void newSkinLoaded();
 
@@ -130,6 +136,7 @@ class MixxxMainWindow : public QMainWindow {
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
     virtual bool eventFilter(QObject *obj, QEvent *event);
     virtual void closeEvent(QCloseEvent *event);
+    virtual bool event(QEvent* e);
 
   private:
     void logBuildDetails();
@@ -144,6 +151,9 @@ class MixxxMainWindow : public QMainWindow {
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
+
+    // The effects processing system
+    EffectsManager* m_pEffectsManager;
 
     // The mixing engine.
     EngineMaster* m_pEngine;
@@ -240,11 +250,17 @@ class MixxxMainWindow : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
+    ControlPushButton* m_pTouchShift;
     QList<ControlObjectThread*> m_pVinylControlEnabled;
     ControlObjectThread* m_pNumDecks;
     int m_iNumConfiguredDecks;
+    QList<ControlObjectSlave*> m_micTalkoverControls;
     QSignalMapper* m_VCControlMapper;
     QSignalMapper* m_VCCheckboxMapper;
+    QSignalMapper* m_TalkoverMapper;
+
+    static const int kMicrophoneCount;
+    static const int kAuxiliaryCount;
 };
 
 #endif

@@ -17,6 +17,7 @@
 #include <QList>
 
 class ControllerPresetVisitor;
+class ConstControllerPresetVisitor;
 
 class ControllerPreset {
   public:
@@ -109,7 +110,8 @@ class ControllerPreset {
         m_productMatches.append(match);
     }
 
-    virtual void accept(ControllerPresetVisitor* visitor) const = 0;
+    virtual void accept(ControllerPresetVisitor* visitor) = 0;
+    virtual void accept(ConstControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
     // Data elements

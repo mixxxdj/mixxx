@@ -5,15 +5,28 @@
 #include <QWidget>
 #include <QList>
 
-class ControlWidgetConnection;
+class ControlWidgetPropertyConnection;
+class ControlParameterWidgetConnection;
 
 class WBaseWidget {
   public:
     WBaseWidget(QWidget* pWidget);
     virtual ~WBaseWidget();
 
+    void Init();
+
     QWidget* toQWidget() {
         return m_pWidget;
+    }
+
+    void appendBaseTooltip(const QString& tooltip) {
+        m_baseTooltip.append(tooltip);
+        m_pWidget->setToolTip(m_baseTooltip);
+    }
+
+    void prependBaseTooltip(const QString& tooltip) {
+        m_baseTooltip.prepend(tooltip);
+        m_pWidget->setToolTip(m_baseTooltip);
     }
 
     void setBaseTooltip(const QString& tooltip) {
@@ -25,14 +38,16 @@ class WBaseWidget {
         return m_baseTooltip;
     }
 
-    void addLeftConnection(ControlWidgetConnection* pConnection);
-    void addRightConnection(ControlWidgetConnection* pConnection);
-    void addConnection(ControlWidgetConnection* pConnection);
+    void addLeftConnection(ControlParameterWidgetConnection* pConnection);
+    void addRightConnection(ControlParameterWidgetConnection* pConnection);
+    void addConnection(ControlParameterWidgetConnection* pConnection);
+
+    void addPropertyConnection(ControlWidgetPropertyConnection* pConnection);
 
     // Set a ControlWidgetConnection to be the display connection for the
     // widget. The connection should also be added via an addConnection method
     // or it will not be deleted or receive updates.
-    void setDisplayConnection(ControlWidgetConnection* pConnection);
+    void setDisplayConnection(ControlParameterWidgetConnection* pConnection);
 
     double getControlParameter() const;
     double getControlParameterLeft() const;
@@ -40,11 +55,16 @@ class WBaseWidget {
     double getControlParameterDisplay() const;
 
   protected:
-    virtual void onConnectedControlValueChanged(double v) {
-        Q_UNUSED(v);
+    // Whenever a connected control is changed, onConnectedControlChanged is
+    // called. This allows the widget implementor to respond to the change and
+    // gives them both the parameter and its corresponding value.
+    virtual void onConnectedControlChanged(double dParameter, double dValue) {
+        Q_UNUSED(dParameter);
+        Q_UNUSED(dValue);
     }
 
-    void resetControlParameters();
+    void resetControlParameter();
+    void setControlParameter(double v);
     void setControlParameterDown(double v);
     void setControlParameterUp(double v);
     void setControlParameterLeftDown(double v);
@@ -59,13 +79,17 @@ class WBaseWidget {
     void updateTooltip();
     virtual void fillDebugTooltip(QStringList* debug);
 
+  protected:
+    QList<ControlParameterWidgetConnection*> m_connections;
+    ControlParameterWidgetConnection* m_pDisplayConnection;
+    QList<ControlParameterWidgetConnection*> m_leftConnections;
+    QList<ControlParameterWidgetConnection*> m_rightConnections;
+
+    QList<ControlWidgetPropertyConnection*> m_propertyConnections;
+
   private:
     QWidget* m_pWidget;
     QString m_baseTooltip;
-    QList<ControlWidgetConnection*> m_connections;
-    ControlWidgetConnection* m_pDisplayConnection;
-    QList<ControlWidgetConnection*> m_leftConnections;
-    QList<ControlWidgetConnection*> m_rightConnections;
 
     friend class ControlParameterWidgetConnection;
 };

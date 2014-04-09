@@ -66,7 +66,7 @@
 		<attribute config_key="[Spinny2],show_spinny">1</attribute>
 		<attribute config_key="[Samplers],show_samplers">0</attribute>
 		<attribute config_key="[Microphone],show_microphone">0</attribute>
-		<attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+		<attribute config_key="[VinylControl],show_vinylcontrol">0</attribute>
 		<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 	</attributes>
 	</manifest>
@@ -3924,6 +3924,7 @@
 					<Splitter>
 						<Size>me,me</Size>
 						<Style></Style>
+                                                <SplitSizesConfigKey>[DeereSamplegrid1280x800-WXGA],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<SplitSizes>1,10</SplitSizes>
 						<Children>
 							<WidgetGroup>
@@ -4340,7 +4341,7 @@
 			</WidgetGroup>
 		</Children>
 		<Connection>
-			<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+			<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 			<BindProperty>visible</BindProperty>
 		</Connection>
 	</WidgetGroup>
@@ -4571,7 +4572,7 @@
 						</State>
 						<Pos>253,104</Pos>
 						<Connection>
-							<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+							<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 						</Connection>
 					</PushButton>
 

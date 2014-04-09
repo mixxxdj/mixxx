@@ -32,9 +32,6 @@
 #define CLM_COMPOSER "composer"
 #define CLM_PREVIEW "preview"
 
-
-const bool sDebug = false;
-
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
           m_pTrackCollection(pTrackCollection),

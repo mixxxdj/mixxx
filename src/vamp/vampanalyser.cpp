@@ -37,36 +37,59 @@ void VampAnalyser::initializePluginPaths() {
     QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
             : QStringList();
 
-    const QString homeLocation = QDesktopServices::storageLocation(
-        QDesktopServices::HomeLocation);
-    QString applicationPath = QCoreApplication::applicationDirPath();
+    const QString dataLocation = QDesktopServices::storageLocation(
+            QDesktopServices::DataLocation);
+    const QString applicationPath = QCoreApplication::applicationDirPath();
+
 #ifdef __WINDOWS__
     QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins")) {
-        if (winVampPath.cd("vamp")) {
-            pathElements << winVampPath.absolutePath().replace("/","\\");
-        } else {
-            qDebug() << winVampPath.absolutePath() << "does not exist!";
-        }
+    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
+        pathElements << winVampPath.absolutePath().replace("/","\\");
     } else {
         qDebug() << winVampPath.absolutePath() << "does not exist!";
     }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
-    pathElements << applicationPath +"/../Plugins";
+    // blah/Mixxx.app/Contents/MacOS/
+    QDir bundlePluginDir(applicationPath);
+    if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
+        pathElements << bundlePluginDir.absolutePath();
+    }
+
     // For people who build from source.
-    pathElements << applicationPath + "/osx32_build/vamp-plugins";
-    pathElements << applicationPath + "/osx64_build/vamp-plugins";
-    pathElements << homeLocation + "/Library/Application Support/Mixxx/Plugins/vamp/";
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("osx32_build") && developer32Root.cd("vamp-plugins")) {
+        pathElements << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("osx64_build") && developer64Root.cd("vamp-plugins")) {
+        pathElements << developer64Root.absolutePath();
+    }
+
+    QDir dataPluginDir(dataLocation);
+    if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("vamp")) {
+        pathElements << dataPluginDir.absolutePath();
+    }
 #elif __LINUX__
     QDir libPath(UNIX_LIB_PATH);
     if (libPath.cd("plugins") && libPath.cd("vamp")) {
         pathElements << libPath.absolutePath();
     }
-    pathElements << homeLocation + "/.mixxx/plugins/vamp/";
+
+    QDir dataPluginDir(dataLocation);
+    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("vamp")) {
+        pathElements << dataPluginDir.absolutePath();
+    }
+
     // For people who build from source.
-    pathElements << applicationPath + "/lin32_build/vamp-plugins";
-    pathElements << applicationPath + "/lin64_build/vamp-plugins";
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("lin32_build") && developer32Root.cd("vamp-plugins")) {
+        pathElements << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("lin64_build") && developer64Root.cd("vamp-plugins")) {
+        pathElements << developer64Root.absolutePath();
+    }
 #endif
 
     QString newPath = pathElements.join(PATH_SEPARATOR);

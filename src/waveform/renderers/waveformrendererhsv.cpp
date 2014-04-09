@@ -12,7 +12,7 @@
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase( waveformWidgetRenderer) {
+    : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
 WaveformRendererHSV::~WaveformRendererHSV() {
@@ -82,7 +82,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
     const float heightFactor = allGain*halfHeight/255.0;
 
     //draw reference line
-    painter->setPen(m_axesColor);
+    painter->setPen(m_pColors->getAxesColor());
     painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
 
     for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {
@@ -131,17 +131,17 @@ void WaveformRendererHSV::draw(QPainter* painter,
             maxMid[1] = math_max(maxMid[1], (int)waveformDataNext.filtered.mid);
             maxHigh[0] = math_max(maxHigh[0], (int)waveformData.filtered.high);
             maxHigh[1] = math_max(maxHigh[1], (int)waveformDataNext.filtered.high);
-            maxAll[0] = math_max( maxAll[0], (int)waveformData.filtered.all);
-            maxAll[1] = math_max( maxAll[1], (int)waveformDataNext.filtered.all);
+            maxAll[0] = math_max(maxAll[0], (int)waveformData.filtered.all);
+            maxAll[1] = math_max(maxAll[1], (int)waveformDataNext.filtered.all);
         }
 
-        if( maxAll[0] && maxAll[1] ) {
+        if (maxAll[0] && maxAll[1]) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
             total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
 
             // prevent division by zero
-            if( total > 0 )
+            if (total > 0)
             {
                 // Normalize low and high (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;

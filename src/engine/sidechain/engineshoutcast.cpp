@@ -213,6 +213,9 @@ void EngineShoutcast::updateFromPreferences() {
     m_customArtist = m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
 
+    m_metadataFormat = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"));
+
     int format;
     int protocol;
 
@@ -546,6 +549,8 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 bool EngineShoutcast::metaDataHasChanged() {
     TrackPointer pTrack;
 
+    // TODO(rryan): This is latency and buffer size dependent. Should be based
+    // on time.
     if (m_iMetaDataLife < 16) {
         m_iMetaDataLife++;
         return false;
@@ -611,7 +616,31 @@ void EngineShoutcast::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
-                QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
+                // we are going to take the metadata format and replace all
+                // the references to $title and $artist by doing a single
+                // pass over the string
+                int replaceIndex = 0;
+                do {
+                    // find the next occurrence 
+                    replaceIndex = m_metadataFormat.indexOf(
+                                      QRegExp("\\$artist|\\$title"),
+                                      replaceIndex);
+                  
+                    if (replaceIndex != -1) {
+                        if (m_metadataFormat.indexOf(
+                                          QRegExp("\\$artist"), replaceIndex)
+                                          == replaceIndex) {
+                            m_metadataFormat.replace(replaceIndex, 7, artist);
+                            // skip to the end of the replacement
+                            replaceIndex += artist.length();
+                        } else {
+                            m_metadataFormat.replace(replaceIndex, 6, title);
+                            replaceIndex += title.length();
+                        }
+                    }
+               } while (replaceIndex != -1);
+
+                QByteArray baSong = encodeString(m_metadataFormat);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
             shout_set_metadata(m_pShout, m_pShoutMetaData);

@@ -24,6 +24,7 @@
 #include <QWheelEvent>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QResizeEvent>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -45,8 +46,9 @@ class WSliderComposed : public WWidget  {
     void setSliderPixmap(const QString& filenameSlider);
     void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
     inline bool isHorizontal() const { return m_bHorizontal; };
+
   public slots:
-    void onConnectedControlValueChanged(double);
+    void onConnectedControlChanged(double dParameter, double dValue);
     void fillDebugTooltip(QStringList* debug);
 
   protected:
@@ -55,6 +57,7 @@ class WSliderComposed : public WWidget  {
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void paintEvent(QPaintEvent* e);
     virtual void wheelEvent(QWheelEvent* e);
+    virtual void resizeEvent(QResizeEvent* e);
 
   private:
     void unsetPixmaps();

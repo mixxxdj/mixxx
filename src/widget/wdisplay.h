@@ -35,6 +35,8 @@ class WDisplay : public WWidget {
 
     void setup(QDomNode node, const SkinContext& context);
 
+    void onConnectedControlChanged(double dParameter, double dValue);
+
   protected:
     void paintEvent(QPaintEvent*);
 
@@ -46,11 +48,13 @@ class WDisplay : public WWidget {
     void setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
                    const QString& filename);
 
-    void setPixmapBackground(const QString& filename);
+    void setPixmapBackground(const QString& filename, Paintable::DrawMode mode);
 
     void setPositions(int iNoPos);
 
-    int getActivePixmapIndex() const;
+    int getPixmapForParameter(double dParameter) const;
+
+    int m_iCurrentPixmap;
 
     // Free existing pixmaps.
     void resetPositions();

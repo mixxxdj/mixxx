@@ -68,7 +68,7 @@ void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
     m_pCurrentTrack.clear();
 }
 
-void VinylControlControl::notifySeek() {
+void VinylControlControl::notifySeekQueued() {
     // m_bRequested is set and unset in a single execution path,
     // so there are no issues with signals/slots causing timing
     // issues.
@@ -80,8 +80,8 @@ void VinylControlControl::notifySeek() {
 }
 
 void VinylControlControl::slotControlVinylSeek(double change) {
-    if (isnan(change) || change > 1.14 || change < -0.14) {
-        // This seek is ridiculous.
+    // Prevent NaN's from sneaking into the engine.
+    if (isnan(change)) {
         return;
     }
 

@@ -17,7 +17,7 @@ class VSyncThread;
 
 class WaveformWidgetAbstract : public WaveformWidgetRenderer {
   public:
-    WaveformWidgetAbstract( const char* group);
+    WaveformWidgetAbstract(const char* group);
     virtual ~WaveformWidgetAbstract();
 
     //Type is use by the factory to safely up-cast waveform widgets
@@ -32,7 +32,7 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     virtual void preRender(VSyncThread* vsyncThread);
     virtual int render();
 
-    virtual void resize( int width, int height);
+    virtual void resize(int width, int height);
 
   protected:
     QWidget* m_widget;

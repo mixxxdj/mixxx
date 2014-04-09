@@ -14,10 +14,13 @@
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "analyserqueue.h"
+#include "util/sandbox.h"
+#include "effects/effectsmanager.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue>* pConfig,
                                  EngineMaster* pMixingEngine,
+                                 EffectsManager* pEffectsManager,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  QString group,
                                  bool defaultMaster,
@@ -25,14 +28,13 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
           m_pLoadedTrack() {
-
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    m_pChannel = new EngineDeck(pSafeGroupName,
-                                pConfig, pMixingEngine, defaultOrientation);
+    m_pChannel = new EngineDeck(pSafeGroupName, pConfig, pMixingEngine,
+                                pEffectsManager, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
@@ -101,6 +103,12 @@ BaseTrackPlayer::~BaseTrackPlayer()
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
+    // Before loading the track, ensure we have access. This uses lazy
+    // evaluation to make sure track isn't NULL before we dereference it.
+    if (!track.isNull() && !Sandbox::askForAccess(track->getCanonicalLocation())) {
+        // We don't have access.
+        return;
+    }
 
     //Disconnect the old track's signals.
     if (m_pLoadedTrack) {

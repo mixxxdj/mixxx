@@ -52,68 +52,115 @@ QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
 QMap<QString, getSoundSourceFunc> SoundSourceProxy::m_extensionsSupportedByPlugins;
 QMutex SoundSourceProxy::m_extensionsMutex;
 
-
 //Constructor
-SoundSourceProxy::SoundSourceProxy(QString qFilename)
+SoundSourceProxy::SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken)
     : Mixxx::SoundSource(qFilename),
       m_pSoundSource(NULL),
-      m_pTrack() {
+      m_pSecurityToken(pToken) {
+    if (pToken.isNull()) {
+        // Open a security token for the file if we are in a sandbox.
+        QFileInfo info(m_qFilename);
+        m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+    }
+
+    // Create the underlying SoundSource.
     m_pSoundSource = initialize(qFilename);
 }
 
 //Other constructor
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
     : SoundSource(pTrack->getLocation()),
-      m_pSoundSource(NULL) {
+      m_pSoundSource(NULL),
+      m_pTrack(pTrack),
+      m_pSecurityToken(pTrack->getSecurityToken()) {
+    if (m_pSecurityToken.isNull()) {
+        // Open a security token for the file if we are in a sandbox.
+        QFileInfo info(m_qFilename);
+        m_pSecurityToken = Sandbox::openSecurityToken(info, true);
+    }
 
     m_pSoundSource = initialize(pTrack->getLocation());
-    m_pTrack = pTrack;
+}
+
+SoundSourceProxy::~SoundSourceProxy() {
+    delete m_pSoundSource;
 }
 
 // static
-void SoundSourceProxy::loadPlugins()
-{
-    /** Scan for and initialize all plugins */
-
+void SoundSourceProxy::loadPlugins() {
+    // Scan for and initialize all plugins.
     QList<QDir> pluginDirs;
     QStringList nameFilters;
 
     const QString& pluginPath = CmdlineArgs::Instance().getPluginPath();
-
     if (!pluginPath.isEmpty()) {
         qDebug() << "Adding plugin path from commandline arg:" << pluginPath;
-        pluginDirs.append(QDir(pluginPath));
+        pluginDirs << QDir(pluginPath);
     }
+
+    const QString dataLocation = QDesktopServices::storageLocation(
+            QDesktopServices::DataLocation);
+    const QString applicationPath = QCoreApplication::applicationDirPath();
+
 #ifdef __LINUX__
-    QDir libPath(UNIX_LIB_PATH);
-    if (libPath.cd("plugins") && libPath.cd("soundsource")) {
-    pluginDirs.append(libPath.absolutePath());
+    // TODO(rryan): Why can't we use applicationDirPath() and assume it's in the
+    // 'bin' folder of $PREFIX, so we just traverse
+    // ../lib/mixxx/plugins/soundsource.
+    QDir libPluginDir(UNIX_LIB_PATH);
+    if (libPluginDir.cd("plugins") && libPluginDir.cd("soundsource")) {
+        pluginDirs << libPluginDir;
     }
-    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/plugins/soundsource/"));
+
+    QDir dataPluginDir(dataLocation);
+    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("soundsource")) {
+        pluginDirs << dataPluginDir;
+    }
+
+    // For people who build from source.
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("lin32_build") && developer32Root.cd("plugins")) {
+        pluginDirs << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("lin64_build") && developer64Root.cd("plugins")) {
+        pluginDirs << developer64Root.absolutePath();
+    }
 #elif __WINDOWS__
-    pluginDirs.append(QDir(QCoreApplication::applicationDirPath() + "/plugins/soundsource/"));
+    QDir appPluginDir(applicationPath);
+    if (appPluginDir.cd("plugins") && appPluginDir.cd("soundsource")) {
+        pluginDirs << appPluginDir;
+    }
 #elif __APPLE__
-    QString bundlePluginDir = QCoreApplication::applicationDirPath(); //blah/Mixxx.app/Contents/MacOS
-    bundlePluginDir.remove("MacOS");
+    // blah/Mixxx.app/Contents/MacOS/../PlugIns/
+    // TODO(XXX): Our SCons bundle target doesn't handle plugin subdirectories
+    // :( so we can't do:
     //blah/Mixxx.app/Contents/PlugIns/soundsource
-    //bundlePluginDir.append("PlugIns/soundsource");  //Our SCons bundle target doesn't handle plugin subdirectories :(
-    bundlePluginDir.append("PlugIns/");
-    pluginDirs.append(QDir(bundlePluginDir));
-    // Do we ever put stuff here? I think this was meant to be
-    // ~/Library/Application Support/Mixxx/Plugins rryan 04/2012
-    pluginDirs.append(QDir("/Library/Application Support/Mixxx/Plugins/soundsource/"));
-    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) +
-               "/Library/Application Support/Mixxx/Plugins/soundsource/"));
+    QDir bundlePluginDir(applicationPath);
+    if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
+        pluginDirs << bundlePluginDir;
+    }
+
+    // For people who build from source.
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("osx32_build") && developer32Root.cd("plugins")) {
+        pluginDirs << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("osx64_build") && developer64Root.cd("plugins")) {
+        pluginDirs << developer64Root.absolutePath();
+    }
+
+    QDir dataPluginDir(dataLocation);
+    if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("soundsource")) {
+        pluginDirs << dataPluginDir;
+    }
+
     nameFilters << "libsoundsource*";
 #endif
 
-    QDir dir;
-    foreach(dir, pluginDirs)
-    {
+    foreach(QDir dir, pluginDirs) {
         QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
-        QString file;
-        foreach (file, files)
-        {
+        foreach (const QString& file, files) {
             getPlugin(dir.filePath(file));
         }
     }
@@ -163,11 +210,6 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
     } else { //Unsupported filetype
         return NULL;
     }
-}
-
-SoundSourceProxy::~SoundSourceProxy()
-{
-    delete m_pSoundSource;
 }
 
 // static

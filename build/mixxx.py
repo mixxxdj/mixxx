@@ -261,8 +261,26 @@ class MixxxBuild(object):
             print 'Automatically detecting Mac OS X SDK.'
 
             # SDK versions in order of precedence.
-            sdk_versions = ['10.9', '10.8', '10.7', '10.6', '10.5']
-            min_sdk_version = '10.5'
+            sdk_versions = ( '10.9', '10.8', '10.7', '10.6', '10.5', )
+            clang_sdk_versions = ( '10.9', '10.8', '10.7', )
+            valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
+
+            # By default use old gcc C++ library version
+            osx_stdlib = Script.ARGUMENTS.get('stdlib', 'libstdc++')
+            if osx_stdlib not in valid_cpp_lib_versions:
+                raise Exception('Unsupported C++ stdlib version')
+
+            if osx_stdlib == 'libc++':
+                sdk_version_default = '10.9'
+            else:
+                sdk_version_default = '10.5'
+
+            min_sdk_version = Script.ARGUMENTS.get('osx_sdk_version_min', sdk_version_default)
+            if min_sdk_version not in sdk_versions:
+                raise Exception('Unsupported osx_sdk_version_min value')
+
+            if osx_stdlib == 'libc++' and min_sdk_version not in clang_sdk_versions:
+                raise Exception('stdlib=libc++ requires osx_sdk_version_min >= 10.7')
 
             print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
             for sdk in sdk_versions:
@@ -271,17 +289,12 @@ class MixxxBuild(object):
                 if sdk_path:
                     print "Automatically selected OS X SDK:", sdk_path
 
-                    # NOTE(rryan): A quick note about mmacosx-version-min. With
-                    # the OS X 10.9 SDK Clang changed the standard library from
-                    # libstdc++ to libc++. If you set -mmacosx-version-min=<10.9
-                    # then this uses libstdc++. libstdc++ and libc++ are not
-                    # binary compatible so if you want to build Mixxx with
-                    # libc++ then all dependencies have to be built with
-                    # libc++.
-
                     common_flags = ['-isysroot', sdk_path,
                                     '-mmacosx-version-min=%s' % min_sdk_version]
-                    link_flags = ['-Wl,-syslibroot,' + sdk_path]
+                    link_flags = [
+                        '-Wl,-syslibroot,' + sdk_path,
+                        '-stdlib=%s' % osx_stdlib
+                    ]
                     self.env.Append(CCFLAGS=common_flags)
                     self.env.Append(LINKFLAGS=common_flags + link_flags)
                     return
@@ -305,6 +318,16 @@ class MixxxBuild(object):
             self.env['CXXFLAGS'] += SCons.Util.CLVar(os.environ['CXXFLAGS'])
         if 'LDFLAGS' in os.environ:
             self.env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
+
+        # Allow installation directories to be specified.
+        prefix = Script.ARGUMENTS.get('prefix', '/usr/local')
+        if os.environ.has_key('LIBDIR'):
+            self.env['LIBDIR'] = os.path.relpath(os.environ['LIBDIR'], prefix)
+        if os.environ.has_key('BINDIR'):
+            self.env['BINDIR'] = os.path.relpath(os.environ['BINDIR'], prefix)
+        if os.environ.has_key('SHAREDIR'):
+            self.env['SHAREDIR'] = \
+                os.path.relpath(os.environ['SHAREDIR'], prefix)
 
         # Initialize this as a list, fixes a bug where first CPPDEFINE would get
         # mangled

@@ -162,8 +162,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Vinyl Control");
     case MICROPHONE:
         return QString::fromAscii("Microphone");
-    case EXTPASSTHROUGH:
-        return QString::fromAscii("Passthrough");
+    case AUXILIARY:
+        return QString::fromAscii("Auxiliary");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
 }
@@ -200,9 +200,10 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
                                     QString::number(index + 1));
     case MICROPHONE:
-        return QObject::tr("Microphone");
-    case EXTPASSTHROUGH:
-        return QString("%1 %2").arg(QObject::tr("Passthrough"),
+        return QString("%1 %2").arg(QObject::tr("Microphone"),
+                                    QString::number(index + 1));
+    case AUXILIARY:
+        return QString("%1 %2").arg(QObject::tr("Auxiliary"),
                                     QString::number(index + 1));
     }
     return QObject::tr("Unknown path type %1").arg(type);
@@ -226,8 +227,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::VINYLCONTROL;
     } else if (string == AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
         return AudioPath::MICROPHONE;
-    } else if (string == AudioPath::getStringFromType(AudioPath::EXTPASSTHROUGH).toLower()) {
-        return AudioPath::EXTPASSTHROUGH;
+    } else if (string == AudioPath::getStringFromType(AudioPath::AUXILIARY).toLower()) {
+        return AudioPath::AUXILIARY;
     } else {
         return AudioPath::INVALID;
     }
@@ -242,9 +243,9 @@ bool AudioPath::isIndexed(AudioPathType type) {
     case BUS:
     case DECK:
     case VINYLCONTROL:
-    case EXTPASSTHROUGH:
-        return true;
+    case AUXILIARY:
     case MICROPHONE:
+        return true;
     default:
         break;
     }
@@ -421,7 +422,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
 #endif
-    types.append(EXTPASSTHROUGH);
+    types.append(AUXILIARY);
     types.append(MICROPHONE);
     return types;
 }

@@ -20,12 +20,14 @@
 
 #include <QMutex>
 #include <QAtomicInt>
+#include <gtest/gtest_prod.h>
 
 #include "defs.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "rotary.h"
+#include "control/controlvalue.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -92,16 +94,16 @@ const int ENGINE_RAMP_UP = 1;
 
 //const int kiRampLength = 3;
 
-enum SeekRequest {
-    NO_SEEK,
-    SEEK_STANDARD,
-    SEEK_EXACT,
-    SEEK_PHASE
-};
-
 class EngineBuffer : public EngineObject {
      Q_OBJECT
   public:
+    enum SeekRequest {
+        NO_SEEK,
+        SEEK_STANDARD,
+        SEEK_EXACT,
+        SEEK_PHASE
+    };
+
     EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
@@ -121,17 +123,12 @@ class EngineBuffer : public EngineObject {
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
-    void queueNewPlaypos(double newpos, bool exact);
+    void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
-
-    // Reset buffer playpos and set file playpos. This must only be called
-    // while holding the pause mutex
-    void setNewPlaypos(double playpos);
 
     // The process methods all run in the audio callback.
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
-    void processSeek();
 
     const char* getGroup();
     bool isTrackLoaded();
@@ -140,6 +137,8 @@ class EngineBuffer : public EngineObject {
     double getVisualPlayPos();
     double getTrackSamples();
 
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
 
@@ -147,7 +146,7 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScale);
 
     // For dependency injection of fake tracks.
-    void loadFakeTrack();
+    TrackPointer loadFakeTrack();
 
   public slots:
     void slotControlPlayRequest(double);
@@ -179,6 +178,8 @@ class EngineBuffer : public EngineObject {
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
+    // Fired when passthrough mode is enabled or disabled.
+    void slotPassthroughChanged(double v);
 
   private:
     void enablePitchAndTimeScaling(bool bEnable);
@@ -191,7 +192,17 @@ class EngineBuffer : public EngineObject {
 
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
-    void doSeek(double change, bool exact);
+    void doSeek(double change, enum SeekRequest seekType);
+
+    void clearScale();
+
+    // Reset buffer playpos and set file playpos.
+    void setNewPlaypos(double playpos);
+
+    void processSeek();
+
+    double updateIndicatorsAndModifyPlay(double v);
+    void verifyPlay();
 
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
@@ -202,6 +213,8 @@ class EngineBuffer : public EngineObject {
     ConfigObject<ConfigValue>* m_pConfig;
 
     LoopingControl* m_pLoopingControl;
+    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
@@ -282,6 +295,7 @@ class EngineBuffer : public EngineObject {
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
     ControlPushButton* m_pKeylock;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 
@@ -306,14 +320,7 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
-    // TODO(XXX) make a macro or something.
-#if defined(__GNUC__)
-    double m_dQueuedPosition __attribute__ ((aligned(sizeof(double))));
-#elif defined(_MSC_VER)
-    double __declspec(align(8)) m_dQueuedPosition;
-#else
-    double m_dQueuedPosition;
-#endif
+    ControlValueAtomic<double> m_queuedPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to
     // zero in case of an immediate stop of the playback

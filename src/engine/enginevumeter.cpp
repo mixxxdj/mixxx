@@ -26,20 +26,13 @@ EngineVuMeter::EngineVuMeter(const char* group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
-    m_ctrlVuMeter->set(0);
     // left channel VU meter
     m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
-    m_ctrlVuMeterL->set(0);
     // right channel VU meter
     m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
-    m_ctrlVuMeterR->set(0);
 
     // Initialize the calculation:
-    m_iSamplesCalculated = 0;
-    m_fRMSvolumeL = 0;
-    m_fRMSvolumeSumL = 0;
-    m_fRMSvolumeR = 0;
-    m_fRMSvolumeSumR = 0;
+    reset();
 }
 
 EngineVuMeter::~EngineVuMeter()
@@ -84,6 +77,10 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
     }
 }
 
+void EngineVuMeter::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    pGroupFeatures->rms_volume_sum = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0;
+    pGroupFeatures->has_rms_volume_sum = true;
+}
 
 void EngineVuMeter::doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume)
 {
@@ -95,4 +92,15 @@ void EngineVuMeter::doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume)
         currentVolume=0;
     if (currentVolume > 1.0)
         currentVolume=1.0;
+}
+
+void EngineVuMeter::reset() {
+    m_ctrlVuMeter->set(0);
+    m_ctrlVuMeterL->set(0);
+    m_ctrlVuMeterR->set(0);
+    m_iSamplesCalculated = 0;
+    m_fRMSvolumeL = 0;
+    m_fRMSvolumeSumL = 0;
+    m_fRMSvolumeR = 0;
+    m_fRMSvolumeSumR = 0;
 }

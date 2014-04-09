@@ -25,7 +25,9 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     m_pPlayButton->connectValueChanged(this, SLOT(slotControlPlay(double)),
                                        Qt::DirectConnection);
 
-    m_pSyncMode.reset(new ControlObject(ConfigKey(pGroup, "sync_mode")));
+    m_pSyncMode.reset(new ControlPushButton(ConfigKey(pGroup, "sync_mode")));
+    m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMode->setStates(SYNC_NUM_MODES);
     m_pSyncMode->connectValueChangeRequest(
             this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
 
@@ -254,10 +256,11 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
 void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
     bool bEnabled = enabled > 0.0;
     bool syncEnabled = getSyncMode() != SYNC_NONE;
+    // syncEnabled == true -> We are follower or master
 
     // If we are not already in the enabled state requested, request a
     // transition.
-    if (bEnabled ^ syncEnabled) {
+    if (bEnabled != syncEnabled) {
         m_pEngineSync->requestEnableSync(this, bEnabled);
     }
 }

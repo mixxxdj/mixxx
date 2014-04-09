@@ -264,48 +264,6 @@ class MediaFoundation(Feature):
         return
 
 
-class LADSPA(Feature):
-
-    def description(self):
-        return "Experimental LADSPA Support"
-
-    def enabled(self, build):
-        enabled = util.get_flags(build.env, 'ladspa', 0)
-        build.flags['ladspa'] = enabled
-        return True if int(enabled) else False
-
-    def add_options(self, build, vars):
-        vars.Add('ladspa',
-                 '(EXPERIMENTAL) Set to 1 to enable LADSPA plugin support', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPPATH=['#lib/ladspa'])
-        build.env.Append(CPPDEFINES='__LADSPA__')
-
-    def sources(self, build):
-        ladspa_plugins = SCons.SConscript(SCons.File('#lib/ladspa/SConscript'))
-        # build.env.Alias('plugins', ladspa_plugins)
-        sources = SCons.Split("""engine/engineladspa.cpp
-                            ladspa/ladspaloader.cpp
-                            ladspa/ladspalibrary.cpp
-                            ladspa/ladspaplugin.cpp
-                            ladspa/ladspainstance.cpp
-                            ladspa/ladspacontrol.cpp
-                            ladspa/ladspainstancestereo.cpp
-                            ladspa/ladspainstancemono.cpp
-                            ladspaview.cpp
-                            ladspa/ladspapreset.cpp
-                            ladspa/ladspapresetmanager.cpp
-                            ladspa/ladspapresetknob.cpp
-                            ladspa/ladspapresetinstance.cpp
-                            dlgladspa.cpp
-                            ladspa/ladspapresetslot.cpp
-                            """)
-        return ladspa_plugins + sources
-
-
 class IPod(Feature):
     def description(self):
         return "NOT-WORKING iPod Support"
@@ -426,7 +384,7 @@ class VinylControl(Feature):
                    'engine/vinylcontrolcontrol.cpp', ]
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.cpp")
-            sources.append("#lib/xwax/lut.cpp")
+            sources.append("#lib/xwax/lut_win32.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
             sources.append("#lib/xwax/lut.c")
@@ -840,22 +798,22 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS='-pthread')
         test_env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
-        gtest_dir = test_env.Dir("#lib/gtest-1.5.0")
+        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
         # gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.5.0'))
         # build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example,
         # optional
-        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.7.0/lib'
 
         env = test_env
         SCons.Export('env')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
-        gmock_dir = test_env.Dir("#lib/gmock-1.5.0")
+        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
+        gmock_dir = test_env.Dir("#lib/gmock-1.7.0")
         # gmock_dir.addRepository(build.env.Dir('#lib/gmock-1.5.0'))
-        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
 

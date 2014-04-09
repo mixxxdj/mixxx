@@ -1,4 +1,4 @@
 #include "util/time.h"
 
 // static
-PerformanceTimer Time::s_timer;
+LLTIMER Time::s_timer;

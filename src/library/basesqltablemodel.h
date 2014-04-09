@@ -9,6 +9,7 @@
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
+#include "library/columncache.h"
 #include "util.h"
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
@@ -52,7 +53,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);
+
+    int fieldIndex(ColumnCache::Column column) const;
     int fieldIndex(const QString& fieldName) const;
+
     void select();
     QString getTrackLocation(const QModelIndex& index) const;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
@@ -64,9 +68,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     bool setHeaderData(int section, Qt::Orientation orientation,
-                               const QVariant &value, int role = Qt::EditRole);
+                       const QVariant &value, int role = Qt::EditRole);
     QVariant headerData(int section, Qt::Orientation orientation,
-                                int role=Qt::DisplayRole) const;
+                        int role=Qt::DisplayRole) const;
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
 
   protected:
@@ -125,7 +129,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;
     QString m_tableColumnsJoined;
-    QHash<QString, int> m_tableColumnIndex;
+    ColumnCache m_tableColumnCache;
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
     bool m_bInitialized;

@@ -26,7 +26,7 @@ QList<QString>& Tooltips::add(QString id) {
 }
 
 void Tooltips::addStandardTooltips() {
-    QString dropTracksHere = tr("Drop tracks from library or external file manager here.");
+    QString dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
@@ -282,6 +282,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
 
+    add("mute")
+            << tr("Mute")
+            << tr("Mutes the selected channel's audio in the master output.");
+
     add("back_start")
             << tr("Fast Rewind")
             << QString("%1: %2").arg(leftClick, tr("Fast rewind through the track."))
@@ -371,6 +375,14 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Temporarily setup a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
+    add("beatjump")
+            << tr("Beatjump")
+            << QString("%1: %2").arg(leftClick, tr("Jump forward or backward by the set number of beats."));
+
+    add("loop_move")
+            << tr("Loop Move")
+            << QString("%1: %2").arg(leftClick, tr("Adjust the loop in and out points by the set number of beats."));
+
     add("loop_exit")
             << tr("Loop Exit")
             << tr("Turns the current loop off.")
@@ -406,12 +418,14 @@ void Tooltips::addStandardTooltips() {
     add("track_artist")
             << tr("Track Artist")
             << tr("Displays the artist of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
-            << trackTags;
+            << trackTags
+            << dropTracksHere;
 
     add("track_album")
             << tr("Track Album")
@@ -427,34 +441,8 @@ void Tooltips::addStandardTooltips() {
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
-            << trackTags;
-
-    add("flanger")
-            << tr("Flanger")
-            << tr("Toggles the flange effect. Use the depth/delay/lfo knobs to adjust.");
-
-    add("lfoDelay")
-            << tr("Flanger Delay")
-            << tr("Adjusts the phase delay of the flange effect (when active).")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("lfoDepth")
-            << tr("Flanger Depth")
-            << tr("Adjusts the intensity of the flange effect (when active).")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("lfoPeriod")
-            << tr("Flanger LFO Period")
-            << tr("Adjusts the wavelength of the flange effect (when active).")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("filter")
-            << tr("Filter")
-            << tr("Toggles the filter effect. Use the depth knobs to adjust.");
-
-    add("filterDepth")
-            << tr("Filter Depth")
-            << tr("Adjusts the intensity of the filter effect (when active).");
+            << trackTags
+            << dropTracksHere;
 
     add("time")
             << tr("Clock")

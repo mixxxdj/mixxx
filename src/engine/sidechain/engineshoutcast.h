@@ -100,6 +100,7 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     bool m_custom_metadata;
     QString m_customArtist;
     QString m_customTitle;
+    QString m_metadataFormat;
 
     // when static metadata is used, we only need calling shout_set_metedata
     // once

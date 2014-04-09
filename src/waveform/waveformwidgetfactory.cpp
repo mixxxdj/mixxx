@@ -222,9 +222,11 @@ void WaveformWidgetFactory::destroyWidgets() {
 }
 
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
-    // Do not hold the pointer to of timer listeners since they may be deleted
+    // Do not hold the pointer to of timer listeners since they may be deleted.
+    // We don't activate update() or repaint() directly so listener widgets
+    // can decide whether to paint or not.
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(repaint()),
+            pWidget, SLOT(maybeUpdate()),
             Qt::DirectConnection);
 }
 
@@ -238,7 +240,8 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
         delete viewer->getWaveformWidget();
     }
 
-    //Cast to widget done just after creation because it can't be perform in constructor (pure virtual)
+    // Cast to widget done just after creation because it can't be perform in
+    // constructor (pure virtual)
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, viewer);
     viewer->setWaveformWidget(waveformWidget);
     viewer->setup(node, context);
@@ -402,12 +405,15 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
 }
 
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
-    if (isZoomSync()) {
+    WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
+    if (pWaveformWidget != NULL && isZoomSync()) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
-        int refZoom = viewer->getWaveformWidget()->getZoomFactor();
-        for (int i = 0; i < (int)m_waveformWidgetHolders.size(); i++) {
-            if (m_waveformWidgetHolders[i].m_waveformViewer != viewer) {
-                m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
+        int refZoom = pWaveformWidget->getZoomFactor();
+
+        for (int i = 0; i < m_waveformWidgetHolders.size(); ++i) {
+            WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
+            if (holder.m_waveformViewer != viewer) {
+                holder.m_waveformViewer->setZoom(refZoom);
             }
         }
     }
@@ -434,7 +440,8 @@ void WaveformWidgetFactory::render() {
             // all render commands are delayed until the swap from the previous run is executed
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-                if (pWaveformWidget->getWidth() > 0) {
+                if (pWaveformWidget->getWidth() > 0 &&
+                        pWaveformWidget->getWidget()->isVisible()) {
                     (void)pWaveformWidget->render();
                 }
                 // qDebug() << "render" << i << m_vsyncThread->elapsed();
@@ -461,6 +468,9 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
+    ScopedTimer t(QString("WaveformWidgetFactory::swap() %1waveforms")
+            .arg(m_waveformWidgetHolders.size()));
+
     // Do this in an extra slot to be sure to hit the desired interval
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
@@ -674,7 +684,7 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 
 void WaveformWidgetFactory::startVSync(MixxxMainWindow* mixxxMainWindow) {
     m_vsyncThread = new VSyncThread(mixxxMainWindow);
-    m_vsyncThread->start();
+    m_vsyncThread->start(QThread::NormalPriority);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),
             this, SLOT(render()));

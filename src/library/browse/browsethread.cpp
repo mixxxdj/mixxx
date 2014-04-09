@@ -31,7 +31,7 @@ BrowseThread::BrowseThread(QObject *parent)
     m_bStopThread = false;
     m_model_observer = NULL;
     //start Thread
-    start(QThread::LowestPriority);
+    start(QThread::LowPriority);
 
 }
 
@@ -67,7 +67,7 @@ void BrowseThread::destroyInstance()
     s_Mutex.unlock();
 }
 
-void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
     m_path_mutex.lock();
     m_path = path;
     m_model_observer = client;
@@ -95,14 +95,15 @@ void BrowseThread::run() {
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
-    QString thisPath = m_path;
+    MDir thisPath = m_path;
     BrowseTableModel* thisModelObserver = m_model_observer;
     m_path_mutex.unlock();
 
     // Refresh the name filters in case we loaded new SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
 
-    QDirIterator fileIt(thisPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator fileIt(thisPath.dir().canonicalPath(), nameFilters,
+                        QDir::Files | QDir::NoDotAndDotDot);
 
     // remove all rows
     // This is a blocking operation
@@ -117,16 +118,16 @@ void BrowseThread::populateModel() {
         // If a user quickly jumps through the folders
         // the current task becomes "dirty"
         m_path_mutex.lock();
-        QString newPath = m_path;
+        MDir newPath = m_path;
         m_path_mutex.unlock();
 
-        if(thisPath != newPath) {
+        if (thisPath.dir() != newPath.dir()) {
             qDebug() << "Abort populateModel()";
             return populateModel();
         }
 
         QString filepath = fileIt.next();
-        TrackInfoObject tio(filepath);
+        TrackInfoObject tio(filepath, thisPath.token());
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem(tio.getFilename());

@@ -24,9 +24,11 @@
 #include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
+#include "widget/controlwidgetconnection.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
 #include "util/timer.h"
+#include "util/dnd.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -118,16 +120,30 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+    if (!m_connections.isEmpty()) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            if (defaultConnection->getEmitOption() &
+                    ControlParameterWidgetConnection::EMIT_DEFAULT) {
+                // ON_PRESS means here value change on mouse move during press
+                defaultConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+            }
+        }
+    }
 }
 
-void WOverview::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag)
-    {
-        // Calculate handle position
-        int iPos = valueToPosition(dValue);
+void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    if (!m_bDrag) {
+        // Calculate handle position. Clamp the value within 0-1 because that's
+        // all we represent with this widget.
+        dParameter = math_clamp(dParameter, 0.0, 1.0);
+
+        int iPos = valueToPosition(dParameter);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
             update();
         }
     }
@@ -246,16 +262,10 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
-
     double dValue = positionToValue(m_iPos);
-
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    if (e->button() == Qt::RightButton) {
-        setControlParameterRightUp(dValue);
-    } else {
-        setControlParameterLeftUp(dValue);
-    }
+    setControlParameterUp(dValue);
     m_bDrag = false;
 }
 
@@ -466,11 +476,10 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    // Play-position potmeters range from -0.14 to 1.14. This is to give VC and
-    // MIDI control access to the pre-roll area.
-    // TODO(rryan): get these limits from the CO itself.
-    const double kMaxPlayposRange = 1.14;
-    const double kMinPlayposRange = -0.14;
+    // Play-position potmeters range from 0 to 1 but they allow out-of-range
+    // sets. This is to give VC access to the pre-roll area.
+    const double kMaxPlayposRange = 1.0;
+    const double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
     const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
@@ -499,18 +508,14 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        QList<QUrl> urls(event->mimeData()->urls());
-        QUrl url = urls.first();
-        QString name = url.toLocalFile();
-        //If the file is on a network share, try just converting the URL to a string...
-        if (name == "") {
-            name = url.toString();
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
         }
-        event->accept();
-        emit(trackDropped(name, m_group));
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }

@@ -17,7 +17,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
             .toDouble(&gainOk);
     m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
 
-    playPos             = new ControlObjectThread(group, "playposition");    //Range: -.14 to 1.14
+    playPos             = new ControlObjectThread(group, "playposition");    // Range: 0 to 1.0
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
     vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
@@ -51,7 +51,6 @@ bool VinylControl::isEnabled() {
 }
 
 void VinylControl::toggleVinylControl(bool enable) {
-    m_bIsEnabled = enable;
     if (m_pConfig) {
         m_pConfig->set(ConfigKey(m_group,"vinylcontrol_enabled"), ConfigValue((int)enable));
     }

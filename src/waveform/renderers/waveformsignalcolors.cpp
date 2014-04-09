@@ -18,26 +18,30 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     qDebug() << string;
 */
 
+    // NOTE(rryan): It is critical that every color is converted to RGB with
+    // toRgb(). Otherwise Mixxx will waste 3% of its CPU time while rendering
+    // the filtered waveform doing RGB color space conversions!
+
     m_signalColor.setNamedColor(context.selectString(node, "SignalColor"));
-    m_signalColor = WSkinColor::getCorrectColor(m_signalColor);
+    m_signalColor = WSkinColor::getCorrectColor(m_signalColor).toRgb();
 
     m_lowColor.setNamedColor(context.selectString(node, "SignalLowColor"));
-    m_lowColor = WSkinColor::getCorrectColor(m_lowColor);
+    m_lowColor = WSkinColor::getCorrectColor(m_lowColor).toRgb();
 
     m_midColor.setNamedColor(context.selectString(node, "SignalMidColor"));
-    m_midColor = WSkinColor::getCorrectColor(m_midColor);
+    m_midColor = WSkinColor::getCorrectColor(m_midColor).toRgb();
 
     m_highColor.setNamedColor(context.selectString(node, "SignalHighColor"));
-    m_highColor = WSkinColor::getCorrectColor(m_highColor);
+    m_highColor = WSkinColor::getCorrectColor(m_highColor).toRgb();
 
     m_axesColor.setNamedColor(context.selectString(node, "AxesColor"));
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);
     }
-    m_axesColor = WSkinColor::getCorrectColor(m_axesColor);
+    m_axesColor = WSkinColor::getCorrectColor(m_axesColor).toRgb();
 
     m_playPosColor.setNamedColor(context.selectString(node, "PlayPosColor"));
-    m_playPosColor = WSkinColor::getCorrectColor(m_playPosColor);
+    m_playPosColor = WSkinColor::getCorrectColor(m_playPosColor).toRgb();
     if (!m_playPosColor.isValid()) {
         m_playPosColor = m_axesColor;
     }
@@ -46,7 +50,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     if (!m_bgColor.isValid()) {
         m_bgColor = QColor(0, 0, 0);
     }
-    m_bgColor = WSkinColor::getCorrectColor(m_bgColor);
+    m_bgColor = WSkinColor::getCorrectColor(m_bgColor).toRgb();
 
     bool filteredColorValid = m_lowColor.isValid() && m_midColor.isValid() && m_highColor.isValid();
 
@@ -65,8 +69,8 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
 
 void WaveformSignalColors::fallBackFromSignalColor()
 {
-    qWarning() << "WaveformSignalColors::fallBackFromSignalColor - " \
-                  "skin do not provide low/mid/high signal colors";
+    // qWarning() << "WaveformSignalColors::fallBackFromSignalColor - " \
+    //               "skin do not provide low/mid/high signal colors";
 
     // NOTE(rryan): On ARM, qreal is float so it's important we use qreal here
     // and not double or float or else we will get build failures on ARM.
@@ -75,7 +79,7 @@ void WaveformSignalColors::fallBackFromSignalColor()
 
     const double analogousAngle = 1.0/12.0;
 
-    if( s < 0.1) // gray
+    if (s < 0.1) // gray
     {
         const qreal sMax = 1.0 - h;
         m_lowColor.setHslF(h,s,l);
@@ -84,21 +88,21 @@ void WaveformSignalColors::fallBackFromSignalColor()
     }
     else
     {
-        if( l < 0.1) // ~white
+        if (l < 0.1) // ~white
         {
             const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l+lMax*0.2);
             m_highColor.setHslF(h,s,l+lMax*0.4);
         }
-        else if( l < 0.5)
+        else if (l < 0.5)
         {
             const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
         }
-        else if ( l < 0.9)
+        else if (l < 0.9)
         {
             const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
@@ -113,6 +117,14 @@ void WaveformSignalColors::fallBackFromSignalColor()
             m_highColor.setHslF(h,s,l-lMin*0.4);
         }
     }
+
+
+    // NOTE(rryan): It is critical that every color is converted to RGB with
+    // toRgb(). Otherwise Mixxx will waste 3% of its CPU time while rendering
+    // the filtered waveform doing RGB color space conversions!
+    m_lowColor = m_lowColor.toRgb();
+    m_midColor = m_midColor.toRgb();
+    m_highColor = m_highColor.toRgb();
 }
 
 void WaveformSignalColors::fallBackDefaultColor()
@@ -121,11 +133,12 @@ void WaveformSignalColors::fallBackDefaultColor()
                   "skin do not provide valid signal colors ! Default colors is use ...";
 
     m_signalColor = Qt::green;
+    m_signalColor = m_signalColor.toRgb();
     fallBackFromSignalColor();
 }
 
 //NOTE(vRince) this sabilise hue between -1.0 and 2.0 but not more !
-float WaveformSignalColors::stableHue( float hue) const
+float WaveformSignalColors::stableHue(float hue) const
 {
     return hue < 0.0 ? hue + 1.0 : hue > 1.0 ? hue - 1.0 : hue;
 }

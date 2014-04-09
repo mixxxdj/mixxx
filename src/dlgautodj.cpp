@@ -105,7 +105,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(m_pCOTEnabledAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(enableAutoDJCo(double)));
 
-    // playposition is from -0.14 to + 1.14
+    // playposition is from 0 to 1 (though out of range sets are allowed)
     m_pCOPlayPos1 = new ControlObjectThread("[Channel1]", "playposition");
     m_pCOPlayPos2 = new ControlObjectThread("[Channel2]", "playposition");
     m_pCOPlay1 = new ControlObjectThread("[Channel1]", "play");
@@ -610,7 +610,7 @@ void DlgAutoDJ::player1PlayChanged(double value) {
             qDebug() << "TrackDuration = " << TrackDuration;
 
             // The track might be shorter than the transition period. Use a
-            // sensibile cap.
+            // sensible cap.
             int autoDjTransition = math_min(spinBoxTransition->value(),
                                             TrackDuration/2);
 

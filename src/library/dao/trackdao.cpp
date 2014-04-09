@@ -917,7 +917,9 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             bool header_parsed = query.value(headerParsedColumn).toBool();
             bool has_bpm_lock = query.value(bpmLockColumn).toBool();
 
-            TrackPointer pTrack = TrackPointer(new TrackInfoObject(location, false), &TrackDAO::deleteTrack);
+            TrackPointer pTrack = TrackPointer(
+                    new TrackInfoObject(location, SecurityTokenPointer(), false),
+                    &TrackDAO::deleteTrack);
 
             // TIO already stats the file to see if it exists, what its length is,
             // etc. So don't bother setting it.
@@ -1453,7 +1455,7 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
 
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-        AudioTagger tagger(pTrack->getLocation());
+        AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
 
         tagger.setArtist(pTrack->getArtist());
         tagger.setTitle(pTrack->getTitle());
