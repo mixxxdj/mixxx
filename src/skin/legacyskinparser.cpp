@@ -1489,12 +1489,17 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
     ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
 
-    while (!con.isNull()) {
+    for (QDomNode con = m_pContext->selectNode(node, "Connection");
+            !con.isNull();
+            con = con.nextSibling()) {
         // Check that the control exists
         bool created = false;
         ControlObject* control = controlFromConfigNode(
                 con.toElement(), "ConfigKey", &created);
 
+        if (!control) {
+            continue;
+        }
 
         ValueTransformer* pTransformer = NULL;
         if (m_pContext->hasNode(con, "Transform")) {
@@ -1693,7 +1698,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 }
             }
         }
-        con = con.nextSibling();
     }
 
     // Legacy behavior: The last left-button or no-button connection with
