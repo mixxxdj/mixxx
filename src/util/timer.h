@@ -32,6 +32,24 @@ class Timer {
     PerformanceTimer m_time;
 };
 
+class TimerAtMem : public Timer {
+  public:
+    TimerAtMem(const QString& key,
+                 Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : Timer(key, compute) {
+    }
+    static inline void* operator new(size_t size, void* ptr) {
+        Q_UNUSED(size);
+        return ptr;
+    } // TimerAtMen's default ctor implicitly called here
+
+    static inline void operator delete(void *p, void* ptr) {
+        Q_UNUSED(p);
+        Q_UNUSED(ptr);
+    } // TimerAtMem's dtor implicitly called at this point
+};
+
+
 class SuspendableTimer : public Timer {
   public:
     SuspendableTimer(const QString& key,
@@ -45,23 +63,35 @@ class SuspendableTimer : public Timer {
     int m_leapTime;
 };
 
-class ScopedTimer : public Timer {
+class ScopedTimer {
   public:
     ScopedTimer(const QString& key,
                 Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : Timer(key, compute),
+            : m_pTimer(NULL),
               m_cancel(false) {
-        start();
+        initalize(key, compute);
     }
     virtual ~ScopedTimer() {
-        if (!m_cancel) {
-            elapsed(true);
+        if (m_pTimer) {
+            if (!m_cancel) {
+                m_pTimer->elapsed(true);
+            }
+            m_pTimer->~Timer();
         }
     }
+
+    inline void initalize(const QString& key,
+            Stat::ComputeFlags compute = kDefaultComputeFlags) {
+        m_pTimer = new(m_timerMem) Timer(key, compute);
+        m_pTimer->start();
+    }
+
     void cancel() {
         m_cancel = true;
     }
   private:
+    Timer* m_pTimer;
+    char m_timerMem[sizeof(Timer)];
     bool m_cancel;
 };
 
