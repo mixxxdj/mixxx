@@ -56,9 +56,6 @@ class PortMIDI(Dependence):
         if not conf.CheckLib(libs) or not conf.CheckHeader(headers):
             raise Exception("Did not find PortMidi or its development headers.")
 
-        # Turn on PortMidi support in Mixxx
-        build.env.Append(CPPDEFINES='__PORTMIDI__')
-
     def sources(self, build):
         return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
 
