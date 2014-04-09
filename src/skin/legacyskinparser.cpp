@@ -51,6 +51,7 @@
 #include "widget/weffectparameter.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
+#include "widget/woverviewrgb.h"
 #include "widget/wspinny.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -709,12 +710,14 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 
     WOverview* overviewWidget = NULL;
 
-    // HSV = "1" or "Filtered" = "0" (LMH) waveform overview type
-    if (m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"),
-            "0").toInt() == 0) {
+    // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
+    int type = m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+    if (type == 0) {
         overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
-    } else {
+    } else if (type == 1) {
         overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+    } else {
+        overviewWidget = new WOverviewRGB(pSafeChannelStr, m_pConfig, m_pParent);
     }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
