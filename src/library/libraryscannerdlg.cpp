@@ -41,7 +41,9 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f)
     pLayout->addWidget(pCancel);
 
     QLabel* pCurrent = new QLabel(this);
+    pCurrent->setAlignment(Qt::AlignTop);
     pCurrent->setMaximumWidth(600);
+    pCurrent->setFixedHeight(this->fontMetrics().height());
     pCurrent->setWordWrap(true);
     connect(this, SIGNAL(progress(QString)),
             pCurrent, SLOT(setText(QString)));
