@@ -23,8 +23,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     m_auxStr = tr("Auxiliary %1");
     m_resetStr = tr("Reset to default");
     m_effectRackStr = tr("Effect Rack %1");
-    m_effectUnitStr = tr("Effect Unit %1");
-    m_effectStr = tr("Effect Slot %1");
+    m_effectUnitStr = tr("Unit %1");
+    m_effectStr = tr("Slot %1");
     m_parameterStr = tr("Parameter %1");
 
     // Master Controls
@@ -569,6 +569,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
     }
 
+    /* DEPRECATED EFFECTS
     addDeckControl("flanger",
                    tr("Flange Toggle"),
                    tr("Toggle flange effect"),
@@ -588,6 +589,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("filterDepth",
                    tr("Filter Intensity"),
                    tr("Filter effect: Intensity"), effectsMenu, true);
+    */
 
     // Microphone Controls
     QMenu* microphoneMenu = addSubmenu(tr("Microphone / Auxiliary"));
@@ -892,7 +894,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                 QAction* pResetAction = resetControlMenu->addAction(
                     m_auxStr.arg(i), &m_actionMapper, SLOT(map()));
                 m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-                addAvailableControl(ConfigKey(group, resetControl), controlTitle, resetDescription);
+                addAvailableControl(ConfigKey(group, resetControl), resetTitle, resetDescription);
             }
         }
     }

@@ -83,7 +83,7 @@ class DlgControllerLearning : public QDialog,
     void loadControl(const ConfigKey& key, QString title, QString description);
     void startListening();
     void commitMapping();
-    void resetWizard(bool keepCurrentControl = true);
+    void resetWizard(bool keepCurrentControl = false);
     void populateComboBox();
 
     Controller* m_pController;

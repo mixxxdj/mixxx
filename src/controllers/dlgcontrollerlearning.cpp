@@ -113,6 +113,7 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
 
     if (!keepCurrentControl) {
         m_currentControl = ConfigKey();
+        comboBoxChosenControl->setCurrentIndex(0);
     }
     m_messagesLearned = false;
     m_messages.clear();
@@ -121,7 +122,6 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
     midiOptionSelectKnob->setChecked(false);
     midiOptionSoftTakeover->setChecked(false);
     midiOptionSwitchMode->setChecked(false);
-    comboBoxChosenControl->setCurrentIndex(0);
 
     progressBarWiggleFeedback->hide();
 
@@ -297,7 +297,7 @@ void DlgControllerLearning::slotTimerExpired() {
 void DlgControllerLearning::slotRetry() {
     // If the user hit undo, instruct the controller to forget the mapping we
     // just added. So reset, but keep the control currently being learned.
-    resetWizard(false);
+    resetWizard(true);
     slotStartLearningPressed();
 }
 
