@@ -34,7 +34,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     labelMappedTo->setText("");
     // Ensure the first page is always shown regardless of the last page shown
     // when the .ui file was saved.
-    stackedWidget->setCurrentIndex(0);
+    stackedWidget->setCurrentWidget(page1Choose);
 
     // Delete this dialog when its closed. We don't want any persistence.
     setAttribute(Qt::WA_DeleteOnClose);
@@ -132,7 +132,7 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
 
 void DlgControllerLearning::slotChooseControlPressed() {
     resetWizard();
-    stackedWidget->setCurrentIndex(page1Choose);
+    stackedWidget->setCurrentWidget(page1Choose);
     startListening();
 }
 
@@ -150,7 +150,7 @@ void DlgControllerLearning::slotStartLearningPressed() {
         return;
     }
     m_firstMessageTimer.start();
-    stackedWidget->setCurrentIndex(page2Learn);
+    stackedWidget->setCurrentWidget(page2Learn);
 }
 
 #ifdef CONTROLLERLESSTESTING
@@ -189,7 +189,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     if (m_messages.length() == 0) {
         // If an advanced user started wiggling a control without bothering to
         // click the Learn button, take them to the learning screen.
-        stackedWidget->setCurrentIndex(page2Learn);
+        stackedWidget->setCurrentWidget(page2Learn);
     }
 
     if (status == MIDI_CC) {
@@ -221,7 +221,7 @@ void DlgControllerLearning::slotFirstMessageTimeout() {
         labelErrorText->setText(tr("Didn't get any midi messages.  Please try again."));
         m_messages.clear();
         // No need to reset everything.
-        stackedWidget->setCurrentIndex(page1Choose);
+        stackedWidget->setCurrentWidget(page1Choose);
         startListening();
     } else {
         qWarning() << "we shouldn't time out if we never got anything";
@@ -247,7 +247,7 @@ void DlgControllerLearning::slotTimerExpired() {
         labelErrorText->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
         m_messages.clear();
         // Don't reset the wizard.
-        stackedWidget->setCurrentIndex(page1Choose);
+        stackedWidget->setCurrentWidget(page1Choose);
         startListening();
         return;
     }
@@ -291,7 +291,7 @@ void DlgControllerLearning::slotTimerExpired() {
     QString mapMessage = QString("%1 %2").arg(tr("Successfully mapped to:"),
                                               midiControl);
     labelMappedTo->setText(mapMessage);
-    stackedWidget->setCurrentIndex(page3Confirm);
+    stackedWidget->setCurrentWidget(page3Confirm);
 }
 
 void DlgControllerLearning::slotRetry() {
@@ -365,7 +365,7 @@ DlgControllerLearning::~DlgControllerLearning() {
     if (m_messagesLearned) {
         commitMapping();
         resetWizard();
-        stackedWidget->setCurrentIndex(page1Choose);
+        stackedWidget->setCurrentWidget(page1Choose);
     }
 
     //If there was any ongoing learning, cancel it (benign if there wasn't).
@@ -385,7 +385,7 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
     if (m_messagesLearned) {
         commitMapping();
         resetWizard();
-        stackedWidget->setCurrentIndex(page1Choose);
+        stackedWidget->setCurrentWidget(page1Choose);
         startListening();
     }
     m_currentControl = key;

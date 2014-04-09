@@ -31,11 +31,6 @@ class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
                               public Ui::DlgControllerLearning {
     Q_OBJECT
-    enum DialogPages {
-        page1Choose,
-        page2Learn,
-        page3Confirm
-    };
 
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);

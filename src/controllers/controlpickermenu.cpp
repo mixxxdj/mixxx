@@ -14,8 +14,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     connect(&m_actionMapper, SIGNAL(mapped(int)),
             this, SLOT(controlChosen(int)));
 
-    m_effectMasterOutputStr = tr("Effect Master Output");
-    m_effectHeadphoneOutputStr = tr("Effect Headphone Output");
+    m_effectMasterOutputStr = tr("Master Output");
+    m_effectHeadphoneOutputStr = tr("Headphone Output");
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
     m_previewdeckStr = tr("Preview Deck %1");
@@ -383,37 +383,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             QMenu* effectUnitMenu = addSubmenu(m_effectUnitStr.arg(iEffectUnitNumber),
                                                rackMenu);
             addEffectControl(effectUnitGroup, "clear",
-                             tr("Effect Unit Clear"),
+                             tr("Unit Clear"),
                              tr("Clear effect unit"), descriptionPrefix,
                              effectUnitMenu);
             addEffectControl(effectUnitGroup, "enabled",
-                             tr("Effect Unit Toggle"),
+                             tr("Unit Toggle"),
                              tr("Toggle effect unit"), descriptionPrefix,
                              effectUnitMenu, false);
             addEffectControl(effectUnitGroup, "mix",
-                             tr("Effect Dry/Wet"),
+                             tr("Dry/Wet"),
                              tr("Dry/Wet"), descriptionPrefix,
                              effectUnitMenu, true);
             addEffectControl(effectUnitGroup, "parameter",
-                             tr("Effect Super Knob"),
+                             tr("Super Knob"),
                              tr("Super Knob (Control Linked Effect Parameters)"),
                              descriptionPrefix,
                              effectUnitMenu, true);
             addEffectControl(effectUnitGroup, "insertion_type",
-                             tr("Effect Insert / Send Toggle"),
+                             tr("Insert / Send Toggle"),
                              tr("Insert / Send Toggle"),
                              descriptionPrefix,
                              effectUnitMenu);
             addEffectControl(effectUnitGroup, "next_chain",
-                             tr("Effect Next Chain"),
+                             tr("Next Chain"),
                              tr("Next chain preset"), descriptionPrefix,
                              effectUnitMenu);
             addEffectControl(effectUnitGroup, "prev_chain",
-                             tr("Effect Previous Chain"),
+                             tr("Previous Chain"),
                              tr("Previous chain preset"), descriptionPrefix,
                              effectUnitMenu);
             addEffectControl(effectUnitGroup, "chain_selector",
-                             tr("Effect Chain Next/Previous"),
+                             tr("Chain Next/Previous"),
                              tr("Next or previous chain preset"), descriptionPrefix,
                              effectUnitMenu);
 
@@ -443,8 +443,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 // TODO(owen): Fix bad i18n here.
                 addEffectControl(effectUnitGroup,
                                  QString("group_%1_enable").arg(playerGroup),
-                                 tr("Effects Enable ") + m_deckStr.arg(iDeckNumber),
-                                 tr("Effects Enable ") + m_deckStr.arg(iDeckNumber),
+                                 tr("Assign ") + m_deckStr.arg(iDeckNumber),
+                                 tr("Assign ") + m_deckStr.arg(iDeckNumber),
                                  groupDescriptionPrefix,
                                  effectUnitGroups);
 
@@ -459,8 +459,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 // TODO(owen): Fix bad i18n here.
                 addEffectControl(effectUnitGroup,
                                  QString("group_%1_enable").arg(playerGroup),
-                                 tr("Effects Enable ") + m_samplerStr.arg(iSamplerNumber),
-                                 tr("Effects Enable ") + m_samplerStr.arg(iSamplerNumber),
+                                 tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
+                                 tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
                                  groupDescriptionPrefix,
                                  effectUnitGroups);
 
@@ -477,8 +477,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 // TODO(owen): Fix bad i18n here.
                 addEffectControl(effectUnitGroup,
                                  QString("group_%1_enable").arg(micGroup),
-                                 tr("Effects Enable ") + m_microphoneStr.arg(iMicrophoneNumber),
-                                 tr("Effects Enable ") + m_microphoneStr.arg(iMicrophoneNumber),
+                                 tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
+                                 tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
                                  groupDescriptionPrefix,
                                  effectUnitGroups);
             }
@@ -491,8 +491,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 // TODO(owen): Fix bad i18n here.
                 addEffectControl(effectUnitGroup,
                                  QString("group_%1_enable").arg(auxGroup),
-                                 tr("Effects Enable ") + m_auxStr.arg(iAuxiliaryNumber),
-                                 tr("Effects Enable ") + m_auxStr.arg(iAuxiliaryNumber),
+                                 tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
+                                 tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
                                  groupDescriptionPrefix,
                                  effectUnitGroups);
             }
@@ -513,23 +513,23 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                               m_effectStr.arg(iEffectSlotNumber));
 
                 addEffectControl(effectSlotGroup, "clear",
-                                 tr("Effect Clear"), tr("Clear the current effect"),
+                                 tr("Clear"), tr("Clear the current effect"),
                                  slotDescriptionPrefix,
                                  effectSlotMenu);
                 addEffectControl(effectSlotGroup, "enabled",
-                                 tr("Effect Toggle"), tr("Toggle the current effect"),
+                                 tr("Toggle"), tr("Toggle the current effect"),
                                  slotDescriptionPrefix,
                                  effectSlotMenu);
                 addEffectControl(effectSlotGroup, "next_effect",
-                                 tr("Effect Next"), tr("Switch to next effect"),
+                                 tr("Next"), tr("Switch to next effect"),
                                  slotDescriptionPrefix,
                                  effectSlotMenu);
                 addEffectControl(effectSlotGroup, "prev_effect",
-                                 tr("Previous effect"), tr("Switch to the previous effect"),
+                                 tr("Previous"), tr("Switch to the previous effect"),
                                  slotDescriptionPrefix,
                                  effectSlotMenu);
                 addEffectControl(effectSlotGroup, "effect_selector",
-                                 tr("Effect Next or Previous"),
+                                 tr("Next or Previous"),
                                  tr("Switch to either next or previous effect"),
                                  slotDescriptionPrefix,
                                  effectSlotMenu);
@@ -553,13 +553,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
                     // Likely to change soon.
                     addEffectControl(parameterSlotGroup, parameterSlotItemPrefix,
-                                     tr("Effect Parameter Value"),
-                                     tr("Effect Parameter Value"),
+                                     tr("Parameter Value"),
+                                     tr("Parameter Value"),
                                      parameterDescriptionPrefix,
                                      parameterSlotMenu, true);
 
                     addEffectControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
-                                     tr("Effect Super Knob Mode"),
+                                     tr("Super Knob Mode"),
                                      tr("3-state Super Knob Link Toggle (unlinked, linear, inverse)"),
                                      parameterDescriptionPrefix,
                                      parameterSlotMenu);
