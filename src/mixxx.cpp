@@ -661,6 +661,11 @@ void MixxxMainWindow::initializeTranslations(QApplication* pApp) {
         userLocale = m_pConfig->getValueString(ConfigKey("[Config]","Locale"));
     }
 
+    // source language
+    if (userLocale == "en_US") {
+        return;
+    }
+
     // Load Qt translations for this locale from the system translation
     // path. This is the lowest precedence QTranslator.
     QTranslator* qtTranslator = new QTranslator(pApp);
