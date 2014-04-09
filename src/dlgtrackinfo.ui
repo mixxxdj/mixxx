@@ -52,7 +52,14 @@
           </widget>
          </item>
          <item row="0" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtTrackName"/>
+          <widget class="QLineEdit" name="txtTrackName">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="lblArtist">
@@ -62,7 +69,14 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtArtist"/>
+          <widget class="QLineEdit" name="txtArtist">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="lblAlbum">
@@ -72,7 +86,14 @@
           </widget>
          </item>
          <item row="2" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtAlbum"/>
+          <widget class="QLineEdit" name="txtAlbum">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="lblAlbumArtist">
@@ -82,7 +103,14 @@
           </widget>
          </item>
          <item row="3" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtAlbumArtist"/>
+          <widget class="QLineEdit" name="txtAlbumArtist">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="lblGenre">
@@ -92,7 +120,14 @@
           </widget>
          </item>
          <item row="4" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtGenre"/>
+          <widget class="QLineEdit" name="txtGenre">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="lblComposer">
@@ -102,7 +137,14 @@
           </widget>
          </item>
          <item row="5" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtComposer"/>
+          <widget class="QLineEdit" name="txtComposer">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="6" column="0">
           <widget class="QLabel" name="lblGrouping">
@@ -112,7 +154,14 @@
           </widget>
          </item>
          <item row="6" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtGrouping"/>
+          <widget class="QLineEdit" name="txtGrouping">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="lblYear">
@@ -122,7 +171,14 @@
           </widget>
          </item>
          <item row="7" column="1">
-          <widget class="QLineEdit" name="txtYear"/>
+          <widget class="QLineEdit" name="txtYear">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="7" column="2">
           <widget class="QLabel" name="lblTrackNumber">
@@ -132,7 +188,14 @@
           </widget>
          </item>
          <item row="7" column="3">
-          <widget class="QLineEdit" name="txtTrackNumber"/>
+          <widget class="QLineEdit" name="txtTrackNumber">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="8" column="0">
           <widget class="QLabel" name="lblKey">
@@ -142,7 +205,14 @@
           </widget>
          </item>
          <item row="8" column="1">
-          <widget class="QLineEdit" name="txtKey"/>
+          <widget class="QLineEdit" name="txtKey">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item row="9" column="0">
           <widget class="QLabel" name="lblComment">
@@ -161,18 +231,6 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
            </property>
            <property name="tabChangesFocus">
             <bool>true</bool>
