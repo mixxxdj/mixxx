@@ -59,8 +59,8 @@ class ControlPickerMenu : public QMenu {
                           QMenu* pMenu, bool addReset=false);
     void addAvailableControl(ConfigKey key, QString title, QString description);
 
-    QString m_masterOutputStr;
-    QString m_headphoneOutputStr;
+    QString m_effectMasterOutputStr;
+    QString m_effectHeadphoneOutputStr;
     QString m_deckStr;
     QString m_previewdeckStr;
     QString m_samplerStr;
