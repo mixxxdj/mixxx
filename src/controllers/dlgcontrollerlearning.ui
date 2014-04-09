@@ -274,7 +274,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Now test it out!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If you manipulate the control, you should see the Mixxx UI respond the way you expect. If the mapping is not working click Retry to try again or try enabling an advanced option below and then try the control again.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Now test it out!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If you manipulate the control, you should see the Mixxx UI respond the way you expect.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Not quite right?&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If the mapping is not working try enabling an advanced option below and then try the control again. Or click Retry to redetect the midi control.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
