@@ -88,6 +88,10 @@ class HID(Feature):
             conf.CheckLib(['pthread', 'libpthread'])
             conf.CheckLib(['rt', 'librt'])
 
+            # -pthread tells GCC to do the right thing regardless of system
+            build.env.Append(CCFLAGS='-pthread')
+            build.env.Append(LINKFLAGS='-pthread')
+
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
         elif build.platform_is_osx:
