@@ -6,10 +6,20 @@
 *
 */
 
+#include <QCompleter>
+
 #include "controlobject.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
+
+
+namespace {
+typedef QPair<QString, ConfigKey> NamedControl;
+bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
+    return l1.first < l2.first;
+}
+}
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
@@ -32,6 +42,12 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     connect(&m_controlPickerMenu, SIGNAL(controlPicked(ConfigKey)),
             this, SLOT(controlPicked(ConfigKey)));
+
+    comboBoxChosenControl->completer()->setCompletionMode(
+        QCompleter::PopupCompletion);
+    populateComboBox();
+    connect(comboBoxChosenControl, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(comboboxIndexChanged(int)));
 
     connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
     connect(pushButtonClose, SIGNAL(clicked()), this, SLOT(close()));
@@ -67,13 +83,31 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
             this, SLOT(slotFirstMessageTimeout()));
 }
 
+void DlgControllerLearning::populateComboBox() {
+    // Sort all of the controls and add them to the combo box
+    comboBoxChosenControl->clear();
+    comboBoxChosenControl->addItem("", QVariant::fromValue(ConfigKey()));
+    QList<NamedControl> sorted_controls;
+    foreach(ConfigKey key, m_controlPickerMenu.controlsAvailable())
+    {
+        sorted_controls.push_back(
+                NamedControl(m_controlPickerMenu.controlTitleForConfigKey(key),
+                             key));
+    }
+    qSort(sorted_controls.begin(), sorted_controls.end(),
+          namedControlComparator);
+    foreach(NamedControl control, sorted_controls)
+    {
+        comboBoxChosenControl->addItem(control.first,
+                                       QVariant::fromValue(control.second));
+    }
+}
+
 void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
-    qDebug() << "resetting wizard";
     emit(clearTemporaryInputMappings());
 
     if (!keepCurrentControl) {
         m_currentControl = ConfigKey();
-        m_currentDescription = "";
     }
     m_messagesLearned = false;
     m_messages.clear();
@@ -82,15 +116,16 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
     midiOptionSelectKnob->setChecked(false);
     midiOptionSoftTakeover->setChecked(false);
     midiOptionSwitchMode->setChecked(false);
+    comboBoxChosenControl->setCurrentIndex(0);
 
     progressBarWiggleFeedback->hide();
 
     labelMappedTo->setText("");
     labelErrorText->setText("");
+    labelDescription->setText("");
 }
 
 void DlgControllerLearning::slotChooseControlPressed() {
-    qDebug() << "choose button pressed";
     resetWizard();
     stackedWidget->setCurrentIndex(page1Choose);
     startListening();
@@ -101,15 +136,12 @@ void DlgControllerLearning::startListening() {
     // users don't have to specifically click the "Learn" button.
     // Get the underlying type of the Controller. This will call
     // one of the visit() methods below immediately.
-    qDebug() << "listening for midi input";
     m_pController->accept(this);
     emit(listenForClicks());
 }
 
 void DlgControllerLearning::slotStartLearningPressed() {
-    qDebug() << "starting to learn.... (initiate timeout)";
     if (m_currentControl.isNull()) {
-        qDebug() << "nothing selected...";
         return;
     }
     m_firstMessageTimer.start();
@@ -127,7 +159,6 @@ void DlgControllerLearning::DEBUGFakeMidiMessage2() {
 void DlgControllerLearning::slotMessageReceived(unsigned char status,
                                                 unsigned char control,
                                                 unsigned char value) {
-    qDebug() << "got a message";
     // Ignore message since we don't have a control yet.
     if (m_currentControl.isNull()) {
         return;
@@ -179,9 +210,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
 }
 
 void DlgControllerLearning::slotFirstMessageTimeout() {
-    qDebug() << "never got anything?";
     if (m_messages.length() == 0) {
-        qDebug() << "didn't heard anything";
         labelErrorText->setText(tr("Didn't get any midi messages.  Please try again."));
         m_messages.clear();
         // No need to reset everything.
@@ -195,7 +224,6 @@ void DlgControllerLearning::slotFirstMessageTimeout() {
 void DlgControllerLearning::slotTimerExpired() {
     // It's been a timer interval since we last got a message. Let's try to
     // detect mappings.
-    qDebug() << "timer expired";
     MidiInputMappings mappings =
             LearningUtils::guessMidiInputMappings(m_messages);
 
@@ -209,7 +237,6 @@ void DlgControllerLearning::slotTimerExpired() {
     }
 
     if (mappings.isEmpty()) {
-        qDebug() << "didn't heard anything.";
         labelErrorText->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
         m_messages.clear();
         // Don't reset the wizard.
@@ -253,7 +280,6 @@ void DlgControllerLearning::slotTimerExpired() {
 
         qDebug() << "DlgControllerLearning learned input mapping:" << mappingStr;
     }
-    qDebug() << "I think we got something!";
 
     QString mapMessage = QString("%1 %2").arg(tr("Successfully mapped to:"),
                                               midiControl);
@@ -263,12 +289,9 @@ void DlgControllerLearning::slotTimerExpired() {
 
 void DlgControllerLearning::slotRetry() {
     // If the user hit undo, instruct the controller to forget the mapping we
-    // just added.
-    if (m_messagesLearned) {
-        // Reset, but keep the control currently being learned.
-        resetWizard(false);
-    }
-    stackedWidget->setCurrentIndex(page2Learn);
+    // just added. So reset, but keep the control currently being learned.
+    resetWizard(false);
+    slotStartLearningPressed();
 }
 
 void DlgControllerLearning::slotMidiOptionsChanged() {
@@ -347,7 +370,9 @@ void DlgControllerLearning::showControlMenu() {
     m_controlPickerMenu.exec(pushButtonChooseControl->mapToGlobal(QPoint(0,0)));
 }
 
-void DlgControllerLearning::loadControl(const ConfigKey& key, QString description) {
+void DlgControllerLearning::loadControl(const ConfigKey& key,
+                                        QString title,
+                                        QString description) {
     // If we have learned a mapping and the user picked a new control then we
     // should tell the controller to commit the existing ones.
     if (m_messagesLearned) {
@@ -361,19 +386,18 @@ void DlgControllerLearning::loadControl(const ConfigKey& key, QString descriptio
     if (description.isEmpty()) {
         description = key.group + "," + key.item;
     }
-    m_currentDescription = description;
-
+    comboBoxChosenControl->setEditText(title);
+    labelDescription->setText(description);
     QString message = tr("Learning: %1. Now move a control on your controller.")
-            .arg(description);
+            .arg(title);
     controlToMapMessage->setText(message);
-    comboBoxChosenControl->setEditText(
-            m_controlPickerMenu.controlTitleForConfigKey(key));
     labelMappedTo->setText("");
 }
 
 void DlgControllerLearning::controlPicked(ConfigKey control) {
+    QString title = m_controlPickerMenu.controlTitleForConfigKey(control);
     QString description = m_controlPickerMenu.descriptionForConfigKey(control);
-    loadControl(control, description);
+    loadControl(control, title, description);
 }
 
 void DlgControllerLearning::controlClicked(ControlObject* pControl) {
@@ -382,4 +406,13 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
     }
 
     controlPicked(pControl->getKey());
+}
+
+void DlgControllerLearning::comboboxIndexChanged(int index) {
+    ConfigKey control =
+            comboBoxChosenControl->itemData(index).value<ConfigKey>();
+    if (control.isNull()) {
+        return;
+    }
+    controlPicked(control);
 }

@@ -24,6 +24,7 @@
 #include "configobject.h"
 
 class ControllerPreset;
+class QCompleter;
 
 class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
@@ -62,6 +63,7 @@ class DlgControllerLearning : public QDialog,
     void controlPicked(ConfigKey control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
+    void comboboxIndexChanged(int index);
 
     void slotMessageReceived(unsigned char status,
                              unsigned char control,
@@ -80,16 +82,16 @@ class DlgControllerLearning : public QDialog,
     void DEBUGFakeMidiMessage2();
 
   private:
-    void loadControl(const ConfigKey& key, QString description);
+    void loadControl(const ConfigKey& key, QString title, QString description);
     void startListening();
     void commitMapping();
     void resetWizard(bool keepCurrentControl = true);
+    void populateComboBox();
 
     Controller* m_pController;
     MidiController* m_pMidiController;
     ControlPickerMenu m_controlPickerMenu;
     ConfigKey m_currentControl;
-    QString m_currentDescription;
     bool m_messagesLearned;
     QTimer m_firstMessageTimer;
     QTimer m_lastMessageTimer;
