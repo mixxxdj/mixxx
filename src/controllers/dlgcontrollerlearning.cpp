@@ -55,8 +55,13 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     connect(pushButtonRetry, SIGNAL(clicked()), this, SLOT(slotRetry()));
     connect(pushButtonStartLearn, SIGNAL(clicked()), this, SLOT(slotStartLearningPressed()));
     connect(pushButtonLearnAnother, SIGNAL(clicked()), this, SLOT(slotChooseControlPressed()));
+#ifdef CONTROLLERLESSTESTING
     connect(pushButtonFakeControl, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage()));
     connect(pushButtonFakeControl2, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage2()));
+#else
+    pushButtonFakeControl->hide();
+    pushButtonFakeControl2->hide();
+#endif
 
     // We only want to listen to clicked() so we don't fire
     // slotMidiOptionsChanged when we change the checkboxes programmatically.
@@ -148,6 +153,7 @@ void DlgControllerLearning::slotStartLearningPressed() {
     stackedWidget->setCurrentIndex(page2Learn);
 }
 
+#ifdef CONTROLLERLESSTESTING
 void DlgControllerLearning::DEBUGFakeMidiMessage() {
     slotMessageReceived(MIDI_CC, 0x20, 0x41);
 }
@@ -155,6 +161,7 @@ void DlgControllerLearning::DEBUGFakeMidiMessage() {
 void DlgControllerLearning::DEBUGFakeMidiMessage2() {
     slotMessageReceived(MIDI_CC, 0x20, 0x3F);
 }
+#endif
 
 void DlgControllerLearning::slotMessageReceived(unsigned char status,
                                                 unsigned char control,

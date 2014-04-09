@@ -24,7 +24,8 @@
 #include "configobject.h"
 
 class ControllerPreset;
-class QCompleter;
+
+//#define CONTROLLERLESSTESTING
 
 class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
@@ -78,8 +79,10 @@ class DlgControllerLearning : public QDialog,
 
   private slots:
     void showControlMenu();
+#ifdef CONTROLLERLESSTESTING
     void DEBUGFakeMidiMessage();
     void DEBUGFakeMidiMessage2();
+#endif
 
   private:
     void loadControl(const ConfigKey& key, QString title, QString description);
