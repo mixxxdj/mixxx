@@ -65,6 +65,7 @@ class DlgControllerLearning : public QDialog,
                              unsigned char control,
                              unsigned char value);
 
+    void slotCancelLearn();
     void slotChooseControlPressed();
     void slotTimerExpired();
     void slotFirstMessageTimeout();

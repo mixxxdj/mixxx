@@ -58,7 +58,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     labelNextHelp->setTextFormat(Qt::RichText);
     labelNextHelp->setText(QString(
             "<p><span style=\"font-weight:600;\">%1</span></p>"
-            "<p>%2</p><br/><p><span style=\"font-weight:600;\">%3</span></p>"
+            "<p>%2</p><p><span style=\"font-weight:600;\">%3</span></p>"
             "<p>%4</p>").arg(
                     nextTitle, nextInstructionBody,
                     nextTroubleshootTitle, nextTroubleshootBody));
@@ -83,6 +83,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
     connect(pushButtonClose, SIGNAL(clicked()), this, SLOT(close()));
     connect(pushButtonClose_2, SIGNAL(clicked()), this, SLOT(close()));
+    connect(pushButtonCancelLearn, SIGNAL(clicked()), this, SLOT(slotCancelLearn()));
     connect(pushButtonRetry, SIGNAL(clicked()), this, SLOT(slotRetry()));
     connect(pushButtonStartLearn, SIGNAL(clicked()), this, SLOT(slotStartLearningPressed()));
     connect(pushButtonLearnAnother, SIGNAL(clicked()), this, SLOT(slotChooseControlPressed()));
@@ -140,6 +141,8 @@ void DlgControllerLearning::populateComboBox() {
 }
 
 void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
+    m_firstMessageTimer.stop();
+    m_lastMessageTimer.stop();
     emit(clearTemporaryInputMappings());
 
     if (!keepCurrentControl) {
@@ -247,16 +250,22 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     }
 }
 
+void DlgControllerLearning::slotCancelLearn() {
+    resetWizard(true);
+    stackedWidget->setCurrentWidget(page1Choose);
+    startListening();
+}
+
 void DlgControllerLearning::slotFirstMessageTimeout() {
+    resetWizard(true);
     if (m_messages.length() == 0) {
         labelErrorText->setText(tr("Didn't get any midi messages.  Please try again."));
-        m_messages.clear();
-        // No need to reset everything.
-        stackedWidget->setCurrentWidget(page1Choose);
-        startListening();
     } else {
-        qWarning() << "we shouldn't time out if we never got anything";
+        qWarning() << "we shouldn't time out if we got something";
+        m_messages.clear();
     }
+    stackedWidget->setCurrentWidget(page1Choose);
+    startListening();
 }
 
 void DlgControllerLearning::slotTimerExpired() {
