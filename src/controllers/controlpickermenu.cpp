@@ -57,8 +57,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                            tr("Stop playback and jump to start of track"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("end", tr("Jump to End"), tr("Jump to end of track"), transportMenu);
     addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), transportMenu, true);
-    addDeckAndSamplerControl("volume_set_one", tr("Volume Full"), tr("Sets volume to full"), transportMenu);
-    addDeckAndSamplerControl("volume_set_zero", tr("Volume Zero"), tr("Sets volume to zero"), transportMenu);
+    addDeckAndSamplerControl("volume_set_one", tr("Full Volume"), tr("Sets volume to full"), transportMenu);
+    addDeckAndSamplerControl("volume_set_zero", tr("Zero Volume"), tr("Sets volume to zero"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Track Gain"), tr("Track Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("mute", tr("Mute"), tr("Mute button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject"), tr("Eject track"), transportMenu);
@@ -107,7 +107,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("sync_master", tr("Sync Master"), tr("Toggle sync master"), syncMenu);
     addDeckAndSamplerControl("sync_mode", tr("Sync Mode"),
                              tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), syncMenu);
-    addDeckAndSamplerControl("beatsync", tr("Sync Beat One-shot"),
+    addDeckAndSamplerControl("beatsync", tr("Beat Sync One-shot"),
                              tr("One-time beat sync (tempo and phase)"), syncMenu);
     addDeckAndSamplerControl("beatsync_tempo", tr("Sync Tempo One-shot"),
                              tr("One-time beat sync (tempo only)"), syncMenu);
@@ -140,16 +140,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    addDeckControl("filterHigh", tr("EQ High"), tr("High EQ knob"), eqMenu, true);
-    addDeckControl("filterMid", tr("EQ Mid"), tr("Mid EQ knob"), eqMenu, true);
-    addDeckControl("filterLow", tr("EQ Low"), tr("Low EQ knob"), eqMenu, true);
-    addDeckControl("filterHighKill", tr("EQ Kill High"), tr("High EQ kill"), eqMenu);
-    addDeckControl("filterMidKill", tr("EQ Kill Mid"), tr("Mid EQ kill"), eqMenu);
-    addDeckControl("filterLowKill", tr("EQ Kill Low"), tr("Low EQ kill"), eqMenu);
+    addDeckControl("filterHigh", tr("High EQ"), tr("High EQ knob"), eqMenu, true);
+    addDeckControl("filterMid", tr("Mid EQ"), tr("Mid EQ knob"), eqMenu, true);
+    addDeckControl("filterLow", tr("Low EQ"), tr("Low EQ knob"), eqMenu, true);
+    addDeckControl("filterHighKill", tr("Kill EQ High"), tr("High EQ kill"), eqMenu);
+    addDeckControl("filterMidKill", tr("Kill EQ Mid"), tr("Mid EQ kill"), eqMenu);
+    addDeckControl("filterLowKill", tr("Kill EQ Low"), tr("Low EQ kill"), eqMenu);
 
     // Vinyl Control
     QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
-    addDeckControl("vinylcontrol_enabled", tr("Vinyl Control Toggle"),
+    addDeckControl("vinylcontrol_enabled", tr("Toggle Vinyl Control"),
                    tr("Toggle Vinyl Control (ON/OFF)"), vinylControlMenu);
     addDeckControl("vinylcontrol_mode", tr("Vinyl Control Mode"),
                    tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
@@ -163,28 +163,28 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Cues
     QMenu* cueMenu = addSubmenu(tr("Cues"));
     addDeckControl("cue_default", tr("Cue"), tr("Cue button"), cueMenu);
-    addDeckControl("cue_set", tr("Cue Set"), tr("Set cue point"), cueMenu);
-    addDeckControl("cue_goto", tr("Cue Go-To"), tr("Go to cue point"), cueMenu);
-    addDeckControl("cue_gotoandplay", tr("Cue Go-To and Play"),
+    addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), cueMenu);
+    addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), cueMenu);
+    addDeckControl("cue_gotoandplay", tr("Go-To Cue and Play"),
                    tr("Go to cue point and play"), cueMenu);
-    addDeckControl("cue_gotoandstop", tr("Cue Go-To and Stop"),
+    addDeckControl("cue_gotoandstop", tr("Go-To Cue and Stop"),
                    tr("Go to cue point and stop"), cueMenu);
-    addDeckControl("cue_preview", tr("Cue Preview"),
+    addDeckControl("cue_preview", tr("Preview Cue"),
                    tr("Preview from cue point"), cueMenu);
     addDeckControl("cue_cdj", tr("Cue (CDJ mode)"),
                    tr("Cue button (CDJ mode)"), cueMenu);
-    addDeckControl("play_stutter", tr("Cue Stutter"),
+    addDeckControl("play_stutter", tr("Stutter Cue"),
                    tr("Stutter cue"), cueMenu);
 
     // Hotcues
     QMenu* hotcueMenu = addSubmenu(tr("Hotcues"));
     QString hotcueActivateTitle = tr("Hotcue %1");
-    QString hotcueClearTitle = tr("Hotcue Clear %1");
-    QString hotcueSetTitle = tr("Hotcue Set %1");
-    QString hotcueGotoTitle = tr("Hotcue Jump %1");
-    QString hotcueGotoAndStopTitle = tr("Hotcue %1 Jump To and Stop");
-    QString hotcueGotoAndPlayTitle = tr("Hotcue %1 Jump To and Play");
-    QString hotcuePreviewTitle = tr("Hotcue Preview %1");
+    QString hotcueClearTitle = tr("Clear Hotcue %1");
+    QString hotcueSetTitle = tr("Set Hotcue %1");
+    QString hotcueGotoTitle = tr("Jump to Hotcue %1");
+    QString hotcueGotoAndStopTitle = tr("Jump To Hotcue %1 and Stop");
+    QString hotcueGotoAndPlayTitle = tr("Jump To Hotcue %1 and Play");
+    QString hotcuePreviewTitle = tr("Preview Hotcue %1");
     QString hotcueActivateDescription = tr("Set, preview from or jump to hotcue %1");
     QString hotcueClearDescription = tr("Clear hotcue %1");
     QString hotcueSetDescription = tr("Set hotcue %1");
@@ -229,7 +229,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("loop_in", tr("Loop In"), tr("Loop In button"), loopMenu);
     addDeckControl("loop_out", tr("Loop Out"), tr("Loop Out button"), loopMenu);
     addDeckControl("loop_exit", tr("Loop Exit"), tr("Loop Exit button"), loopMenu);
-    addDeckControl("reloop_exit", tr("Loop Reloop / Exit"), tr("Reloop / Exit button"), loopMenu);
+    addDeckControl("reloop_exit", tr("Reloop / Exit Loop"), tr("Reloop / Exit button"), loopMenu);
     addDeckControl("loop_halve", tr("Loop Halve"), tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Loop Double"),
                    tr("Double the current loop's length"), loopMenu);
@@ -251,8 +251,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     humanBeatSizes[64] = tr("64");
 
     // Loop moving
-    QString loopMoveForwardTitle = tr("Loop Move +%1 beats");
-    QString loopMoveBackwardTitle = tr("Loop Move -%1 beats");
+    QString loopMoveForwardTitle = tr("Move Loop +%1 beats");
+    QString loopMoveBackwardTitle = tr("Move Loop -%1 beats");
     QString loopMoveForwardDescription = tr("Move loop forward by %1 beats");
     QString loopMoveBackwardDescription = tr("Move loop backward by %1 beats");
 
@@ -315,39 +315,39 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
     addControl("[Playlist]", "ToggleSelectedSidebarItem",
-               tr("View Expand/Collapse"),
+               tr("Expand/Collapse View"),
                tr("Expand/collapse the selected view (library, playlist..)"),
                libraryMenu);
     addControl("[Playlist]", "SelectPlaylist",
-               tr("View Switch Next/Previous"),
+               tr("Switch Next/Previous View"),
                tr("Switch to the next or previous view (library, playlist..)"),
                libraryMenu);
     addControl("[Playlist]", "SelectNextPlaylist",
-               tr("View Switch Next"),
+               tr("Switch To Next View"),
                tr("Switch to the next view (library, playlist..)"),
                libraryMenu);
     addControl("[Playlist]", "SelectPrevPlaylist",
-               tr("View Switch Previous"),
+               tr("Switch To Previous View"),
                tr("Switch to the previous view (library, playlist..)"),
                libraryMenu);
     addControl("[Playlist]", "SelectTrackKnob",
-               tr("View Scroll Next/Previous"),
+               tr("Scroll To Next/Previous Track"),
                tr("Scroll up or down in library/playlist"),
                libraryMenu);
     addControl("[Playlist]", "SelectNextTrack",
-               tr("View Scroll Next"),
+               tr("Scroll To Next Track"),
                tr("Scroll to next track in library/playlist"),
                libraryMenu);
     addControl("[Playlist]", "SelectPrevTrack",
-               tr("View Scroll Previous"),
+               tr("Scroll To Previous Track"),
                tr("Scroll to previous track in library/playlist"),
                libraryMenu);
     addControl("[Playlist]", "LoadSelectedIntoFirstStopped",
-               tr("View Load Track Into Stopped"),
+               tr("Load Track Into Stopped Deck"),
                tr("Load selected track into first stopped deck"),
                libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack",
-                             tr("View Load Track"),
+                             tr("Load Track"),
                              tr("Load selected track"), libraryMenu);
     addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Track Load and Play"),
                                            tr("Load selected track and play"), libraryMenu);
@@ -367,7 +367,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         QString descriptionPrefix = m_effectRackStr.arg(iRackNumber);
 
         addEffectControl(rackGroup, "clear",
-                         tr("Effect Rack Clear"), tr("Clear effect rack"),
+                         tr("Clear Effect Rack"), tr("Clear effect rack"),
                          descriptionPrefix, rackMenu);
 
         const int numEffectUnits = ControlObject::get(
@@ -383,11 +383,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             QMenu* effectUnitMenu = addSubmenu(m_effectUnitStr.arg(iEffectUnitNumber),
                                                rackMenu);
             addEffectControl(effectUnitGroup, "clear",
-                             tr("Unit Clear"),
+                             tr("Clear Unit"),
                              tr("Clear effect unit"), descriptionPrefix,
                              effectUnitMenu);
             addEffectControl(effectUnitGroup, "enabled",
-                             tr("Unit Toggle"),
+                             tr("Toggle Unit"),
                              tr("Toggle effect unit"), descriptionPrefix,
                              effectUnitMenu, false);
             addEffectControl(effectUnitGroup, "mix",
@@ -413,7 +413,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Previous chain preset"), descriptionPrefix,
                              effectUnitMenu);
             addEffectControl(effectUnitGroup, "chain_selector",
-                             tr("Chain Next/Previous"),
+                             tr("Next/Previous Chain"),
                              tr("Next or previous chain preset"), descriptionPrefix,
                              effectUnitMenu);
 
