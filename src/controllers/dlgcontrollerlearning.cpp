@@ -32,6 +32,37 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     setupUi(this);
     labelMappedTo->setText("");
+
+    QString helpTitle(tr("Click anywhere in Mixxx or Choose a control to Learn"));
+    QString helpBody(tr("You can click on any button, slider, or knob in Mixxx "
+                        "to teach it that control.  You can also type in the "
+                        "box to search for a control by name, or click the "
+                        "Choose Control button to select from a list."));
+    labelMappingHelp->setTextFormat(Qt::RichText);
+    labelMappingHelp->setText(QString(
+            "<p><span style=\"font-weight:600;\">%1</span></p>"
+            "<p>%2</p>").arg(
+                    helpTitle, helpBody));
+
+
+    QString nextTitle(tr("Now test it out!"));
+    QString nextInstructionBody(tr(
+            "If you manipulate the control, you should see the Mixxx UI "
+            "respond the way you expect."));
+    QString nextTroubleshootTitle(tr("Not quite right?"));
+    QString nextTroubleshootBody(tr(
+            "If the mapping is not working try enabling an advanced option "
+            "below and then try the control again. Or click Retry to redetect "
+            "the midi control."));
+
+    labelNextHelp->setTextFormat(Qt::RichText);
+    labelNextHelp->setText(QString(
+            "<p><span style=\"font-weight:600;\">%1</span></p>"
+            "<p>%2</p><br/><p><span style=\"font-weight:600;\">%3</span></p>"
+            "<p>%4</p>").arg(
+                    nextTitle, nextInstructionBody,
+                    nextTroubleshootTitle, nextTroubleshootBody));
+
     // Ensure the first page is always shown regardless of the last page shown
     // when the .ui file was saved.
     stackedWidget->setCurrentWidget(page1Choose);
@@ -288,8 +319,8 @@ void DlgControllerLearning::slotTimerExpired() {
         qDebug() << "DlgControllerLearning learned input mapping:" << mappingStr;
     }
 
-    QString mapMessage = QString("%1 %2").arg(tr("Successfully mapped to:"),
-                                              midiControl);
+    QString mapMessage = QString("<i>%1 %2</i>").arg(
+            tr("Successfully mapped control:"), midiControl);
     labelMappedTo->setText(mapMessage);
     stackedWidget->setCurrentWidget(page3Confirm);
 }

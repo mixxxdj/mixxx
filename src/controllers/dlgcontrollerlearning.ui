@@ -133,7 +133,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Click anywhere in Mixxx or Choose a control to Learn&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can click on any button, slider, or knob in Mixxx to teach it that control.  You can also type in the box to search for a control by name, or click the Choose Control button to select from a list.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>(html help)</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -147,7 +147,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="4" column="0" colspan="3">
         <widget class="QLabel" name="labelDescription">
          <property name="text">
           <string>(description text)</string>
@@ -274,7 +274,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Now test it out!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If you manipulate the control, you should see the Mixxx UI respond the way you expect.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Not quite right?&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If the mapping is not working try enabling an advanced option below and then try the control again. Or click Retry to redetect the midi control.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>(html text)</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
