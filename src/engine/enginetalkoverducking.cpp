@@ -5,7 +5,7 @@
 
 EngineTalkoverDucking::EngineTalkoverDucking(
         ConfigObject<ConfigValue>* pConfig, const char* group)
-    : EngineSideChainCompressor(pConfig, group),
+    : EngineSideChainCompressor(group),
       m_pConfig(pConfig),
       m_group(group) {
     m_pMasterSampleRate = new ControlObjectSlave(m_group, "samplerate");

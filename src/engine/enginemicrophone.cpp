@@ -7,17 +7,24 @@
 
 #include "configobject.h"
 #include "sampleutil.h"
+#include "effects/effectsmanager.h"
+#include "engine/effects/engineeffectsmanager.h"
 
-EngineMicrophone::EngineMicrophone(const char* pGroup)
+EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsManager)
         : EngineChannel(pGroup, EngineChannel::CENTER),
+          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
-          m_pConfigured(new ControlObject(ConfigKey(pGroup, "configured"))),
+          m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1),
           m_wasActive(false) {
+    if (pEffectsManager != NULL) {
+        pEffectsManager->registerGroup(getGroup());
+    }
+
     // You normally don't expect to hear yourself in the headphones. Default PFL
     // setting for mic to false. User can over-ride by setting the "pfl" or
     // "master" controls.
@@ -28,13 +35,13 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
 EngineMicrophone::~EngineMicrophone() {
     qDebug() << "~EngineMicrophone()";
     SampleUtil::free(m_pConversionBuffer);
-    delete m_pConfigured;
+    delete m_pEnabled;
 }
 
 bool EngineMicrophone::isActive() {
-    bool configured = m_pConfigured->get() > 0.0;
+    bool enabled = m_pEnabled->get() > 0.0;
     bool samplesAvailable = !m_sampleBuffer.isEmpty();
-    if (configured && samplesAvailable) {
+    if (enabled && samplesAvailable) {
         m_wasActive = true;
     } else if (m_wasActive) {
         m_vuMeter.reset();
@@ -50,7 +57,7 @@ void EngineMicrophone::onInputConfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pConfigured->set(1.0);
+    m_pEnabled->set(1.0);
 }
 
 void EngineMicrophone::onInputUnconfigured(AudioInput input) {
@@ -60,7 +67,7 @@ void EngineMicrophone::onInputUnconfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pConfigured->set(0.0);
+    m_pEnabled->set(0.0);
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
@@ -129,13 +136,22 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
             qWarning() << "ERROR: Buffer underflow in EngineMicrophone. Playing silence.";
-            SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
+            SampleUtil::clear(pOut + samplesRead, iBufferSize - samplesRead);
         }
     } else {
-        SampleUtil::applyGain(pOut, 0.0, iBufferSize);
+        SampleUtil::clear(pOut, iBufferSize);
         m_sampleBuffer.skip(iBufferSize);
     }
 
+    if (m_pEngineEffectsManager != NULL) {
+        // Process effects enabled for this channel
+        GroupFeatureState features;
+        // This is out of date by a callback but some effects will want the RMS
+        // volume.
+        m_vuMeter.collectFeatures(&features);
+        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
+                                         features);
+    }
     // Apply clipping
     m_clipping.process(pOut, pOut, iBufferSize);
     // Update VU meter

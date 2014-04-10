@@ -175,6 +175,12 @@ void SoundManager::closeDevices() {
     }
     m_inputBuffers.clear();
 
+    while (!m_outputFifos.isEmpty()) {
+        FIFO<CSAMPLE>* pFifo = m_outputFifos.takeLast();
+        delete pFifo;
+    }
+    m_outputFifos.clear();
+
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
 }
@@ -353,7 +359,11 @@ int SoundManager::setupDevices() {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
             }
-            AudioOutputBuffer aob(out, pBuffer);
+
+            // TODO(rryan): 1 << 20 is 6.6x MAX_BUFFER_LEN.
+            FIFO<CSAMPLE>* pFifo = new FIFO<CSAMPLE>(1 << 20);
+
+            AudioOutputBuffer aob(out, pBuffer, pFifo);
             err = device->addOutput(aob);
             if (err != OK) goto closeAndError;
             if (out.getType() == AudioOutput::MASTER) {
@@ -475,24 +485,26 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::onDeviceOutputCallback(SoundDevice* pDevice,
-                                          const unsigned long iFramesPerBuffer) {
-    //qDebug() << pDevice->getInternalName() << "onDeviceOutputCallback";
-    // When the clock reference device requests a buffer...
-    if (pDevice == m_pClkRefDevice) {
-        // Only generate a new buffer for the clock reference card
-        //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
+void SoundManager::onDeviceOutputCallback(const unsigned int iFramesPerBuffer) {
+    // Only generate a new buffer for the clock reference card
+    //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
 
-        // Produce a block of samples for output. EngineMaster expects stereo
-        // samples so multiply iFramesPerBuffer by 2.
-        m_pMaster->process(iFramesPerBuffer*2);
+    // Produce a block of samples for output. EngineMaster expects stereo
+    // samples so multiply iFramesPerBuffer by 2.
+    m_pMaster->process(iFramesPerBuffer*2);
+
+    for (QList<SoundDevice*>::iterator it = m_devices.begin();
+         it != m_devices.end(); ++it) {
+        SoundDevice* pOtherDevice = *it;
+        if (pOtherDevice == m_pClkRefDevice) {
+            continue;
+         }
+         pOtherDevice->onOutputBuffersReady(iFramesPerBuffer);
     }
 }
 
-void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* inputBuffer,
-                              const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-                              SoundDevice* pDevice) {
-    Q_UNUSED(pDevice);
+void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
+                              const unsigned int iFramesPerBuffer, const unsigned int iFrameSize) {
     // qDebug() << "SoundManager::pushBuffer" << pDevice->getInternalName()
     //          << iFramesPerBuffer << iFrameSize;
     //This function is called a *lot* and is a big source of CPU usage.
@@ -511,13 +523,13 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* in
     // of them might potentially be owned by portaudio. Not freeing them means we leak
     // memory in certain cases -- bkgood
     if (iFrameSize == 1 && inputs.size() == 1 &&
-            inputs[0].getChannelGroup().getChannelCount() == 1) {
-        const AudioInputBuffer& in = inputs[0];
+            inputs.at(0).getChannelGroup().getChannelCount() == 1) {
+        const AudioInputBuffer& in = inputs.at(0);
         memcpy(in.getBuffer(), inputBuffer,
                sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
     } else if (iFrameSize == 2 && inputs.size() == 1 &&
-            inputs[0].getChannelGroup().getChannelCount() == 2) {
-        const AudioInputBuffer& in = inputs[0];
+            inputs.at(0).getChannelGroup().getChannelCount() == 2) {
+        const AudioInputBuffer& in = inputs.at(0);
         memcpy(in.getBuffer(), inputBuffer,
                sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
     } else { //More than two channels of input (iFrameSize > 2)
@@ -556,8 +568,8 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* in
         CSAMPLE* pInputBuffer = in.getBuffer();
 
         for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                     m_registeredDestinations.find(in);
-             it != m_registeredDestinations.end() && it.key() == in; ++it) {
+                m_registeredDestinations.find(in);
+                it != m_registeredDestinations.end() && it.key() == in; ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
         }
     }

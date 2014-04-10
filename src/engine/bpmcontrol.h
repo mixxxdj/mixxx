@@ -11,6 +11,7 @@
 #include "tapfilter.h"
 
 class ControlObject;
+class ControlPotmeter;
 class ControlObjectSlave;
 class ControlPushButton;
 class EngineBuffer;
@@ -37,6 +38,8 @@ class BpmControl : public EngineControl {
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
+
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
     // Calculates contextual information about beats: the previous beat, the
     // next beat, the current beat length, and the beat ratio (how far dPosition
@@ -100,7 +103,7 @@ class BpmControl : public EngineControl {
     ControlObject* m_pFileBpm;
 
     // The current effective BPM of the engine
-    ControlObject* m_pEngineBpm;
+    ControlPotmeter* m_pEngineBpm;
 
     // Used for bpm tapping from GUI and MIDI
     ControlPushButton* m_pButtonTap;

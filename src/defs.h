@@ -45,7 +45,7 @@ const int WINDOWSIZE = 2048;
 const int STEPSIZE = 1024; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in an integer value
 
 /** Maximum buffer length to each EngineObject::process call */
-const int MAX_BUFFER_LEN = 160000;
+const unsigned int MAX_BUFFER_LEN = 160000;
 
 #ifndef PATH_MAX
 #ifndef MAX_PATH
@@ -71,5 +71,8 @@ enum {
 #define math_min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+#ifndef math_clamp
+#define math_clamp(v, min, max)  (((min) < (max)) ? (math_min((max), math_max((v), (min)))) : (math_min((min), math_max((v), (max)))))
 #endif
 
+#endif

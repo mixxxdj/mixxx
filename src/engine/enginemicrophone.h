@@ -11,12 +11,15 @@
 #include "engine/enginevumeter.h"
 #include "soundmanagerutil.h"
 
+class EffectsManager;
+class EngineEffectsManager;
+
 // EngineMicrophone is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager
 class EngineMicrophone : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineMicrophone(const char* pGroup);
+    EngineMicrophone(const char* pGroup, EffectsManager* pEffectsManager);
     virtual ~EngineMicrophone();
 
     bool isActive();
@@ -44,9 +47,10 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     double getSoloDamping();
 
   private:
+    EngineEffectsManager* m_pEngineEffectsManager;
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pConfigured;
+    ControlObject* m_pEnabled;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 

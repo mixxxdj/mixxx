@@ -408,7 +408,7 @@ QString ConfigObject<ValueType>::getResourcePath() {
         }
 #endif
     } else {
-        qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
+        //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
 
     if (qResourcePath.length() == 0) {
@@ -448,6 +448,13 @@ template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() co
     return configFileInfo.absoluteDir().absolutePath();
 }
 
+template <class ValueType> QHash<ConfigKey, ValueType> ConfigObject<ValueType>::toHash() const {
+    QHash<ConfigKey, ValueType> hash;
+    foreach (ConfigOption<ValueType>* pOption, m_list) {
+        hash.insert(*pOption->key, *pOption->val);
+    }
+    return hash;
+}
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;

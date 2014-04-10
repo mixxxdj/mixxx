@@ -290,13 +290,6 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
-
-        if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
-            m_pPlaylistTableModel->setTableModel(playlistId);
-            // Update selection
-            emit(featureSelect(this, m_lastRightClickedIndex));
-        }
     }
 }
 

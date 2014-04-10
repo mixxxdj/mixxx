@@ -107,6 +107,9 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 }
 
 void CachingReaderWorker::run() {
+    unsigned static id = 0; //the id of this thread, for debugging purposes
+    QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
+
     TrackPointer pLoadTrack;
     ChunkReadRequest request;
     ReaderStatusUpdate status;

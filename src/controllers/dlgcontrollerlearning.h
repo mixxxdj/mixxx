@@ -10,63 +10,76 @@
 
 #include <QDialog>
 #include <QList>
-#include <QMenu>
-#include <QSet>
-#include <QSignalMapper>
 #include <QString>
+#include <QTimer>
 
 #include "controllers/ui_dlgcontrollerlearning.h"
+#include "controllers/controlpickermenu.h"
+#include "controllers/midi/midicontroller.h"
+#include "controllers/hid/hidcontroller.h"
+#include "controllers/bulk/bulkcontroller.h"
+#include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"
-#include "controllers/mixxxcontrol.h"
+#include "controllers/controllervisitor.h"
 #include "configobject.h"
 
 class ControllerPreset;
 
-class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
+class DlgControllerLearning : public QDialog,
+                              public ControllerVisitor,
+                              public Ui::DlgControllerLearning {
     Q_OBJECT
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
     virtual ~DlgControllerLearning();
 
+    void visit(MidiController* pController);
+    void visit(HidController* pController);
+    void visit(BulkController* pController);
+
   signals:
-    void cancelLearning();
-    void learn(MixxxControl control);
+    void learnTemporaryInputMappings(const MidiInputMappings& mappings);
+    void clearTemporaryInputMappings();
+    void commitTemporaryInputMappings();
+
+    // Used to notify DlgPrefController that we have learned some new input
+    // mappings.
+    void inputMappingsLearned(const MidiInputMappings& mappings);
+
+    void startLearning();
+    void stopLearning();
     void listenForClicks();
     void stopListeningForClicks();
 
   public slots:
-    // Triggered when user selects a control from the menu.
-    void controlChosen(int controlIndex);
+    // Triggered when the user picks a control from the menu.
+    void controlPicked(ConfigKey control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
 
-    // Gets called when a control has just been mapped successfully
-    void controlMapped(QString);
+    void slotMessageReceived(unsigned char status,
+                             unsigned char control,
+                             unsigned char value);
+
+    void slotTimerExpired();
+    void slotUndo();
+    void slotMidiOptionsChanged();
 
   private slots:
     void showControlMenu();
 
   private:
-    QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
-    void loadControl(const MixxxControl& control);
+    void loadControl(const ConfigKey& key, QString description);
+    void resetMapping(bool commit);
 
-    void addControl(QString group, QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addPlayerControl(QString control, QString helpText, QMenu* pMenu,
-                          bool deckControls, bool samplerControls, bool previewdeckControls, bool addReset=false);
-    void addDeckAndSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addDeckAndPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addDeckAndSamplerAndPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-    void addPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
-
-    QSet<MixxxControl> m_mappedControls;
-    Controller* m_pController;
-    QSignalMapper m_actionMapper;
-    QMenu m_controlPickerMenu;
-    QList<MixxxControl> m_controlsAvailable;
-    MixxxControl m_currentControl;
-    QString m_deckStr, m_previewdeckStr, m_samplerStr, m_resetStr;
+    MidiController* m_pMidiController;
+    ControlPickerMenu m_controlPickerMenu;
+    ConfigKey m_currentControl;
+    QString m_currentDescription;
+    bool m_messagesLearned;
+    QTimer m_lastMessageTimer;
+    QList<QPair<MidiKey, unsigned char> > m_messages;
+    MidiInputMappings m_mappings;
 };
 
 #endif

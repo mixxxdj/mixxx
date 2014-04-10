@@ -20,6 +20,8 @@
 
 #include <QDialog>
 #include <QEvent>
+#include <QRect>
+#include <QStringList>
 
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
@@ -74,12 +76,17 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   protected:
     bool eventFilter(QObject*, QEvent*);
+    void moveEvent(QMoveEvent* e);
+    void resizeEvent(QResizeEvent* e);
 
   private:
     void createIcons();
     void onShow();
     void onHide();
+    QRect getDefaultGeometry();
 
+    QStringList m_geometry;
+    ConfigObject<ConfigValue>* m_pConfig;
     DlgPrefSound* m_wsound;
     DlgPrefLibrary* m_wlibrary;
     DlgPrefControllers *m_wcontrollers;

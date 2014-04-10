@@ -17,6 +17,11 @@ KeyControl::KeyControl(const char* pGroup,
           m_dPitchCompensation(0.0),
           m_dPitchCompensationOldPitch(0.0) {
     m_pPitch = new ControlPotmeter(ConfigKey(pGroup, "pitch"), -1.f, 1.f);
+    // Course adjust by full step.
+    m_pPitch->setStep(1.0 / 12.0);
+    // Fine adjust by half-step / semitone.
+    m_pPitch->setSmallStep(1.0 / 24.0);
+
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
@@ -195,4 +200,20 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     }
     m_pPitch->set(newPitch);
     return true;
+}
+
+void KeyControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    mixxx::track::io::key::ChromaticKey fileKey =
+            KeyUtils::keyFromNumericValue(m_pFileKey->get());
+    if (fileKey != mixxx::track::io::key::INVALID) {
+        pGroupFeatures->has_file_key = true;
+        pGroupFeatures->file_key = fileKey;
+    }
+
+    mixxx::track::io::key::ChromaticKey key =
+            KeyUtils::keyFromNumericValue(m_pEngineKey->get());
+    if (key != mixxx::track::io::key::INVALID) {
+        pGroupFeatures->has_key = true;
+        pGroupFeatures->key = key;
+    }
 }

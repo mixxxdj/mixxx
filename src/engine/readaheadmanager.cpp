@@ -13,13 +13,13 @@
 ReadAheadManager::ReadAheadManager(CachingReader* pReader) :
     m_iCurrentPosition(0),
     m_pReader(pReader),
-    m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]) {
+    m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     // zero out crossfade buffer
-    SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
 }
 
 ReadAheadManager::~ReadAheadManager() {
-    delete [] m_pCrossFadeBuffer;
+    SampleUtil::free(m_pCrossFadeBuffer);
 }
 
 int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,

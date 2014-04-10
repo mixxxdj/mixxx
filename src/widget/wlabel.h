@@ -35,7 +35,6 @@ class WLabel : public QLabel, public WBaseWidget {
   protected:
     bool event(QEvent* pEvent);
     void fillDebugTooltip(QStringList* debug);
-
     QString m_qsText;
     // Foreground and background colors.
     QColor m_qFgColor;
