@@ -86,8 +86,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    tr("Align beatgrid to current position"), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), bpmMenu);
 
-    QMenu* syncMenu = addSubmenu(tr("BPM"));
-
+    QMenu* syncMenu = addSubmenu(tr("Sync"));
     addDeckAndSamplerControl("sync_enabled", tr("Sync Mode"),
                              tr("Tap to sync, hold to enable sync mode"), syncMenu);
     addControl("[InternalClock]", "sync_master", tr("Internal Sync Master"),
