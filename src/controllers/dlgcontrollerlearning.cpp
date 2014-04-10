@@ -148,6 +148,8 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
     if (!keepCurrentControl) {
         m_currentControl = ConfigKey();
         comboBoxChosenControl->setCurrentIndex(0);
+        labelDescription->setText("");
+        pushButtonStartLearn->setDisabled(true);
     }
     m_messagesLearned = false;
     m_messages.clear();
@@ -161,7 +163,6 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
 
     labelMappedTo->setText("");
     labelErrorText->setText("");
-    labelDescription->setText("");
 }
 
 void DlgControllerLearning::slotChooseControlPressed() {
@@ -434,11 +435,14 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
         description = key.group + "," + key.item;
     }
     comboBoxChosenControl->setEditText(title);
-    labelDescription->setText(description);
-    QString message = tr("Learning: %1. Now move a control on your controller.")
+
+    labelDescription->setText(tr("<i>Ready to learn %1</i>").arg(description));
+    QString learnmessage = tr("Learning: %1. Now move a control on your controller.")
             .arg(title);
-    controlToMapMessage->setText(message);
+    controlToMapMessage->setText(learnmessage);
     labelMappedTo->setText("");
+    pushButtonStartLearn->setDisabled(false);
+    pushButtonStartLearn->setFocus();
 }
 
 void DlgControllerLearning::controlPicked(ConfigKey control) {
@@ -459,6 +463,8 @@ void DlgControllerLearning::comboboxIndexChanged(int index) {
     ConfigKey control =
             comboBoxChosenControl->itemData(index).value<ConfigKey>();
     if (control.isNull()) {
+        labelDescription->setText(tr("");
+        pushButtonStartLearn->setDisabled(true);
         return;
     }
     controlPicked(control);
