@@ -456,14 +456,28 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
         return;
     }
 
-    controlPicked(pControl->getKey());
+    ConfigKey key = pControl->getKey();
+    if (!m_controlPickerMenu.controlExists(key)) {
+        qWarning() << "Mixxx UI element clicked for which there is no "
+                      "learnable control " << key.group << " " << key.item;
+        QMessageBox::warning(
+                    this,
+                    tr("Mixxx"),
+                    tr("The control you clicked in Mixxx is not learnable.\n"
+                       "This could be because you are using an old skin"
+                       " and this control is no longer supported.\n"
+                       "\nYou tried to learn: %1,%2").arg(key.group, key.item),
+                    QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
+    controlPicked(key);
 }
 
 void DlgControllerLearning::comboboxIndexChanged(int index) {
     ConfigKey control =
             comboBoxChosenControl->itemData(index).value<ConfigKey>();
     if (control.isNull()) {
-        labelDescription->setText(tr("");
+        labelDescription->setText(tr(""));
         pushButtonStartLearn->setDisabled(true);
         return;
     }

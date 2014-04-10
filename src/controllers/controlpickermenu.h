@@ -17,6 +17,7 @@ class ControlPickerMenu : public QMenu {
         return m_controlsAvailable;
     }
 
+    bool controlExists(ConfigKey key) const;
     QString descriptionForConfigKey(ConfigKey key) const;
     QString controlTitleForConfigKey(ConfigKey key) const;
 

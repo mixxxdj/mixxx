@@ -971,6 +971,10 @@ void ControlPickerMenu::addAvailableControl(ConfigKey key,
     m_titlesByKey.insert(key, title);
 }
 
+bool ControlPickerMenu::controlExists(ConfigKey key) const {
+    return m_titlesByKey.contains(key);
+}
+
 QString ControlPickerMenu::descriptionForConfigKey(ConfigKey key) const {
     return m_descriptionsByKey.value(key, QString());
 }
