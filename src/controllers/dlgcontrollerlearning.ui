@@ -108,7 +108,7 @@
             <bool>true</bool>
            </property>
            <property name="insertPolicy">
-            <enum>QComboBox::InsertAlphabetically</enum>
+            <enum>QComboBox::NoInsert</enum>
            </property>
           </widget>
          </item>
@@ -133,7 +133,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>(html help)</string>
+          <string notr="true">(html help)</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -143,14 +143,14 @@
        <item row="5" column="0" colspan="3">
         <widget class="QLabel" name="labelErrorText">
          <property name="text">
-          <string>(error text)</string>
+          <string notr="true">(error text)</string>
          </property>
         </widget>
        </item>
        <item row="4" column="0" colspan="3">
         <widget class="QLabel" name="labelDescription">
          <property name="text">
-          <string>(description text)</string>
+          <string notr="true">(description text)</string>
          </property>
         </widget>
        </item>
@@ -274,7 +274,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>(html text)</string>
+          <string notr="true">(html text)</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
