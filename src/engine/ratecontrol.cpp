@@ -146,6 +146,9 @@ RateControl::RateControl(const char* _group,
     m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
     m_pScratchToggle->set(0);
 
+    m_pScratch2AlwaysOn = new ControlPushButton(ConfigKey(_group, "scratch2_always_on"));
+    m_pScratch2AlwaysOn->set(0);
+
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
@@ -414,7 +417,10 @@ double RateControl::calculateRate(double baserate, bool paused,
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
 
-        if (m_pScratchToggle->get() != 0) {
+        // scratch2_enable is normally enough to determine if the user is
+        // scratching or not, but some controllers have it on all the time,
+        // so this signal must be ignored.
+        if (m_pScratchToggle->get() != 0 && m_pScratch2AlwaysOn->get()) {
             *isScratching = true;
         }
 

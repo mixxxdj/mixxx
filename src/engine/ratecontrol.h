@@ -115,6 +115,7 @@ public:
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
     ControlObject* m_pVCMode;
+    ControlObject* m_pScratch2AlwaysOn;
     Rotary* m_pJogFilter;
 
     ControlObject* m_pSampleRate;
