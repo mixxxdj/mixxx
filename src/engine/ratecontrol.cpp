@@ -420,7 +420,7 @@ double RateControl::calculateRate(double baserate, bool paused,
         // scratch2_enable is normally enough to determine if the user is
         // scratching or not, but some controllers have it on all the time,
         // so this signal must be ignored.
-        if (m_pScratchToggle->get() != 0 && m_pScratch2AlwaysOn->get()) {
+        if (m_pScratchToggle->get() != 0 && !m_pScratch2AlwaysOn->get()) {
             *isScratching = true;
         }
 
