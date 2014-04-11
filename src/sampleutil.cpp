@@ -3,8 +3,9 @@
 
 #ifdef __WINDOWS__
 #pragma intrinsic(fabs)sc
-typedef __int64 int64_t;
-typedef __int32 int32_t;
+#include <QtGlobal>
+typedef qint64 int64_t;
+typedef qint32 int32_t;
 #endif
 
 #include <QtDebug>

@@ -9,9 +9,8 @@ AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.prepare") {
-    m_bShowRecentSongs = true;
+    // Default to showing recent tracks.
     setSearch("", RECENT_FILTER);
-
 }
 
 
@@ -20,11 +19,11 @@ AnalysisLibraryTableModel::~AnalysisLibraryTableModel() {
 
 
 void AnalysisLibraryTableModel::showRecentSongs() {
-    m_bShowRecentSongs = true;
-    search(currentSearch());
+    // Search with the recent filter.
+    search(currentSearch(), RECENT_FILTER);
 }
 
 void AnalysisLibraryTableModel::showAllSongs() {
-    m_bShowRecentSongs = false;
-    search(currentSearch());
+    // Clear the recent filter.
+    search(currentSearch(), "");
 }

@@ -220,9 +220,11 @@ void WaveformWidgetFactory::destroyWidgets() {
 }
 
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
-    // Do not hold the pointer to of timer listeners since they may be deleted
+    // Do not hold the pointer to of timer listeners since they may be deleted.
+    // We don't activate update() or repaint() directly so listener widgets
+    // can decide whether to paint or not.
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(repaint()),
+            pWidget, SLOT(maybeUpdate()),
             Qt::DirectConnection);
 }
 
@@ -416,8 +418,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::render() {
-    ScopedTimer t(QString("WaveformWidgetFactory::render() %1waveforms")
-            .arg(m_waveformWidgetHolders.size()));
+    ScopedTimer t("WaveformWidgetFactory::render() %1waveforms", m_waveformWidgetHolders.size());
 
     //int paintersSetupTime0 = 0;
     //int paintersSetupTime1 = 0;
@@ -464,6 +465,8 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
+    ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms", m_waveformWidgetHolders.size());
+
     // Do this in an extra slot to be sure to hit the desired interval
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform

@@ -39,10 +39,11 @@ class WVuMeter : public WWidget  {
     void setPixmapBackground(const QString& filename);
     void setPixmaps(const QString &vuFilename,
                     bool bHorizontal=false);
-    void onConnectedControlValueChanged(double fValue);
+    void onConnectedControlChanged(double dParameter, double dValue);
 
   protected slots:
     void updateState(int msecsElapsed);
+    void maybeUpdate();
 
   private:
     /** Set position number to zero and deallocate pixmaps */
@@ -66,6 +67,8 @@ class WVuMeter : public WWidget  {
     int m_iPeakFallTime;
     int m_iPeakPos;
     int m_iPeakHoldCountdown;
+    int m_iLastPos;
+    int m_iLastPeakPos;
 
     QTime m_lastUpdate;
 };

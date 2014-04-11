@@ -120,7 +120,6 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        qDebug() << "creating speed CO " << group;
         m_COSpeeds.push_back(new ControlObjectSlave(group, "vinylcontrol_speed_type"));
         setDeckWidgetsVisible(i, true);
     }

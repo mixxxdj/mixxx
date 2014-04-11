@@ -6,7 +6,9 @@
 class ControlLinPotmeter : public ControlPotmeter {
     Q_OBJECT
   public:
-    ControlLinPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0);
+    ControlLinPotmeter(ConfigKey key, double dMinValue = 0.0,
+                       double dMaxValue = 1.0,
+                       bool allowOutOfBounds = false);
 };
 
 #endif // CONTROLLINPOTMETER_H

@@ -20,6 +20,11 @@ class DlgPreferencePage : public QWidget {
     // dialog should make all of the current setting of the UI widgets active.
     virtual void slotApply() {}
 
+    // Called when the user clicks the global "Cancel" button. The preference
+    // dialog should revert all of the changes the user made since the last
+    // slotUpdate.
+    virtual void slotCancel() {}
+
     // Called when the preferences dialog is shown to the user (not necessarily
     // when this PreferencePage is shown to the user).
     virtual void slotShow() {}

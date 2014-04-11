@@ -20,6 +20,7 @@
 
 #include <QMutex>
 #include <QAtomicInt>
+#include <gtest/gtest_prod.h>
 
 #include "defs.h"
 #include "engine/engineobject.h"
@@ -136,6 +137,8 @@ class EngineBuffer : public EngineObject {
     double getVisualPlayPos();
     double getTrackSamples();
 
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
 
@@ -143,7 +146,7 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScale);
 
     // For dependency injection of fake tracks.
-    void loadFakeTrack();
+    TrackPointer loadFakeTrack();
 
   public slots:
     void slotControlPlayRequest(double);
@@ -210,6 +213,8 @@ class EngineBuffer : public EngineObject {
     ConfigObject<ConfigValue>* m_pConfig;
 
     LoopingControl* m_pLoopingControl;
+    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;

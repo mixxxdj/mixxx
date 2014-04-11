@@ -12,19 +12,11 @@
 #include "controllers/midi/midicontroller.h"
 #include "controlobject.h"
 
-MidiOutputHandler::MidiOutputHandler(const QString& group, const QString& key,
-                                     MidiController *controller,
-                                     float min, float max,
-                                     unsigned char status, unsigned char midino,
-                                     unsigned char on, unsigned char off)
+MidiOutputHandler::MidiOutputHandler(MidiController* controller,
+                                     const MidiOutputMapping& mapping)
         : m_pController(controller),
-          m_cot(group, key),
-          m_min(min),
-          m_max(max),
-          m_status(status),
-          m_midino(midino),
-          m_on(on),
-          m_off(off),
+          m_mapping(mapping),
+          m_cot(mapping.control),
           m_lastVal(0) {
     connect(&m_cot, SIGNAL(valueChanged(double)),
             this, SLOT(controlChanged(double)));
@@ -56,16 +48,20 @@ void MidiOutputHandler::controlChanged(double value) {
     value = m_cot.get();
     m_lastVal = value;
 
-    unsigned char byte3 = m_off;
-    if (value >= m_min && value <= m_max) { byte3 = m_on; }
+    unsigned char byte3 = m_mapping.output.off;
+    if (value >= m_mapping.output.min && value <= m_mapping.output.max) {
+        byte3 = m_mapping.output.on;
+    }
 
     if (!m_pController->isOpen()) {
         qWarning() << "MIDI device" << m_pController->getName() << "not open for output!";
     } else if (byte3 != 0xFF) {
         if (m_pController->debugging()) {
-            qDebug() << "sending MIDI bytes:" << m_status << ", " << m_midino << ", "
+            qDebug() << "sending MIDI bytes:" << m_mapping.output.status
+                     << ", " << m_mapping.output.control << ", "
                      << byte3 ;
         }
-        m_pController->sendShortMsg(m_status, m_midino, byte3);
+        m_pController->sendShortMsg(m_mapping.output.status,
+                                    m_mapping.output.control, byte3);
     }
 }

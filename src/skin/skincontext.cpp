@@ -103,9 +103,13 @@ double SkinContext::selectDouble(const QDomNode& node,
 }
 
 int SkinContext::selectInt(const QDomNode& node,
-                           const QString& nodeName) const {
+                           const QString& nodeName,
+                           bool* pOk) const {
     bool ok = false;
     int conv = nodeToString(selectElement(node, nodeName)).toInt(&ok);
+    if (pOk != NULL) {
+        *pOk = ok;
+    }
     return ok ? conv : 0;
 }
 
@@ -120,8 +124,18 @@ bool SkinContext::selectBool(const QDomNode& node,
     return defaultValue;
 }
 
+bool SkinContext::hasNodeSelectString(const QDomNode& node,
+                                      const QString& nodeName, QString *value) const {
+    QDomNode child = selectNode(node, nodeName);
+    if (!child.isNull()) {
+        *value = nodeToString(child);
+        return true;
+    }
+    return false;
+}
+
 bool SkinContext::hasNodeSelectBool(const QDomNode& node,
-                             const QString& nodeName, bool *value) const {
+                                    const QString& nodeName, bool *value) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
          QString stringValue = nodeToString(child);

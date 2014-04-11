@@ -17,11 +17,15 @@
 class ControlPushButton;
 class ControlObject;
 
+class LoopMoveControl;
+class BeatJumpControl;
 class BeatLoopingControl;
 
 class LoopingControl : public EngineControl {
     Q_OBJECT
   public:
+    static QList<double> getBeatSizes();
+
     LoopingControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~LoopingControl();
 
@@ -72,6 +76,12 @@ class LoopingControl : public EngineControl {
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl);
 
+    // Jump forward or backward by beats.
+    void slotBeatJump(double beats);
+
+    // Move the loop by beats.
+    void slotLoopMove(double beats);
+
     void slotLoopScale(double);
     void slotLoopDouble(double);
     void slotLoopHalve(double);
@@ -79,6 +89,11 @@ class LoopingControl : public EngineControl {
   private:
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
+    // When a loop changes size such that the playposition is outside of the loop,
+    // we can figure out the best place in the new loop to seek to maintain
+    // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
+    void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
+                                int new_loop_in, int new_loop_out);
 
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
@@ -110,8 +125,56 @@ class LoopingControl : public EngineControl {
     // Array of BeatLoopingControls, one for each size.
     QList<BeatLoopingControl*> m_beatLoops;
 
+    ControlObject* m_pCOBeatJump;
+    QList<BeatJumpControl*> m_beatJumps;
+
+    ControlObject* m_pCOLoopMove;
+    QList<LoopMoveControl*> m_loopMoves;
+
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+};
+
+// Class for handling loop moves of a set size. This allows easy access from
+// skins.
+class LoopMoveControl : public QObject {
+    Q_OBJECT
+  public:
+    LoopMoveControl(const char* pGroup, double size);
+    virtual ~LoopMoveControl();
+
+  signals:
+    void loopMove(double beats);
+
+  public slots:
+    void slotMoveForward(double value);
+    void slotMoveBackward(double value);
+
+  private:
+    double m_dLoopMoveSize;
+    ControlPushButton* m_pMoveForward;
+    ControlPushButton* m_pMoveBackward;
+};
+
+// Class for handling beat jumps of a set size. This allows easy access from
+// skins.
+class BeatJumpControl : public QObject {
+    Q_OBJECT
+  public:
+    BeatJumpControl(const char* pGroup, double size);
+    virtual ~BeatJumpControl();
+
+  signals:
+    void beatJump(double beats);
+
+  public slots:
+    void slotJumpForward(double value);
+    void slotJumpBackward(double value);
+
+  private:
+    double m_dBeatJumpSize;
+    ControlPushButton* m_pJumpForward;
+    ControlPushButton* m_pJumpBackward;
 };
 
 // Class for handling beat loops of a set size. This allows easy access from
@@ -140,9 +203,6 @@ class BeatLoopingControl : public QObject {
     void deactivateBeatLoopRoll(BeatLoopingControl*);
 
   private:
-    // Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO
-    // ConfigKeys.
-    ConfigKey keyForControl(const char* _group, QString ctrlName, double num);
     double m_dBeatLoopSize;
     bool m_bActive;
     ControlPushButton* m_pLegacy;

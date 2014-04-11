@@ -20,7 +20,7 @@ class EngineMicrophoneTest : public testing::Test {
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);
 
-        m_pMicrophone = new EngineMicrophone("[Microphone]");
+        m_pMicrophone = new EngineMicrophone("[Microphone]", NULL);
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 
@@ -45,7 +45,7 @@ class EngineMicrophoneTest : public testing::Test {
     template <typename T>
     void FillSequentialWithStride(T* pBuffer, T initial, T increment, T max,
                                   unsigned int stride, unsigned int length) {
-        ASSERT_EQ(0, length % stride);
+        ASSERT_EQ(0U, length % stride);
         T value = initial;
         for (unsigned int i = 0; i < length/stride; ++i) {
             for (unsigned int j = 0; j < stride; ++j) {
