@@ -20,7 +20,7 @@
 #include "engine/engineobject.h"
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
-#define UPDATE_RATE 20
+#define VU_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define PEAK_DURATION 500 // in ms
 
 // SMOOTHING FACTORS

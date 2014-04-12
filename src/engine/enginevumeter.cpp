@@ -29,9 +29,9 @@ EngineVuMeter::EngineVuMeter(const char* group) {
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
     // left channel VU meter
-    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
+    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
     // right channel VU meter
-    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
+    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
 
     // Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
     m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
@@ -62,7 +62,7 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
     m_iSamplesCalculated += iBufferSize/2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (sampleRate/2/UPDATE_RATE)) {
+    if (m_iSamplesCalculated > (sampleRate/VU_UPDATE_RATE)) {
         doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
         doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
 
