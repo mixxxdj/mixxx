@@ -310,3 +310,4 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
         pDest[i + 1] = pDest[i];
     }
 }
+

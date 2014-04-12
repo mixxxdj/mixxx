@@ -85,10 +85,12 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pTemp4 = new CSAMPLE[MAX_BUFFER_LEN];
 
     memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pTemp4, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     old_low = old_mid = old_high = 1.0;
 }
@@ -98,6 +100,7 @@ EngineFilterBlock::~EngineFilterBlock()
     delete high;
     delete band;
     delete low;
+    delete [] m_pTemp4;
     delete [] m_pTemp3;
     delete [] m_pTemp2;
     delete [] m_pTemp1;
@@ -167,6 +170,12 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
     if (filterKillHigh->get()==0.)
         fHigh = filterpotHigh->get(); //*1.2;
 
+    // tweak gains for RGBW
+    float fDry = qMin(qMin(fLow, fMid), fHigh);
+    fLow -= fDry;
+    fMid -= fDry;
+    fHigh -= fDry;
+
     setFilters();
 
     // If the user has never touched the Eq controls (they are still at zero)
@@ -179,40 +188,47 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
             low->process(pIn, m_pTemp1, iBufferSize);
             band->process(pIn, m_pTemp2, iBufferSize);
             high->process(pIn, m_pTemp3, iBufferSize);
+            memcpy(m_pTemp4, pIn, iBufferSize * sizeof(CSAMPLE));
 
             // Build the new EQ'd buffer in pOutput.
-            SampleUtil::copy3WithGain(pOutput,
+            SampleUtil::copy3WithGain(m_pTemp4,
                                       m_pTemp1, fLow,
                                       m_pTemp2, fMid,
                                       m_pTemp3, fHigh, iBufferSize);
 
             // Fade from unaffected (pIn) to the EQ'd buffer (now in pOutput).
-            SampleUtil::linearCrossfadeBuffers(pOutput, pIn, pOutput,
+            SampleUtil::linearCrossfadeBuffers(m_pTemp4, pIn, m_pTemp4,
                                                iBufferSize);
 
             m_eqNeverTouched = false;
         } else {
-            SampleUtil::copyWithGain(pOutput, pIn, 1, iBufferSize);
+            SampleUtil::copyWithGain(m_pTemp4, pIn, 1, iBufferSize);
         }
-        return;
-    }
-
-    low->process(pIn, m_pTemp1, iBufferSize);
-    band->process(pIn, m_pTemp2, iBufferSize);
-    high->process(pIn, m_pTemp3, iBufferSize);
-
-    if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
-        SampleUtil::copy3WithRampingGain(pOutput,
-                                         m_pTemp1, old_low, fLow,
-                                         m_pTemp2, old_mid, fMid,
-                                         m_pTemp3, old_high, fHigh,
-                                         iBufferSize);
     } else {
-        SampleUtil::copy3WithGain(pOutput,
-                          m_pTemp1, fLow,
-                          m_pTemp2, fMid,
-                          m_pTemp3, fHigh, iBufferSize);
+        low->process(pIn, m_pTemp1, iBufferSize);
+        band->process(pIn, m_pTemp2, iBufferSize);
+        high->process(pIn, m_pTemp3, iBufferSize);
+
+        if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
+            SampleUtil::copy3WithRampingGain(m_pTemp4,
+                                             m_pTemp1, old_low, fLow,
+                                             m_pTemp2, old_mid, fMid,
+                                             m_pTemp3, old_high, fHigh,
+                                             iBufferSize);
+        } else {
+            SampleUtil::copy3WithGain(m_pTemp4,
+                              m_pTemp1, fLow,
+                              m_pTemp2, fMid,
+                              m_pTemp3, fHigh, iBufferSize);
+        }
     }
+
+    SampleUtil::copy2WithGain(pOutput,
+                      m_pTemp4, 1.0f,
+                      pIn, fDry, iBufferSize);
+
+    qDebug() << "EngineFilterBlock::process()" << fDry;
+
 
     old_low = fLow;
     old_mid = fMid;
