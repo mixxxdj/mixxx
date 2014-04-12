@@ -42,6 +42,8 @@ class EngineVuMeter : public EngineObject {
     void reset();
 
   private:
+    void doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume);
+
     ControlPotmeter* m_ctrlVuMeter;
     ControlPotmeter* m_ctrlVuMeterL;
     ControlPotmeter* m_ctrlVuMeterR;
@@ -51,7 +53,8 @@ class EngineVuMeter : public EngineObject {
     FLOAT_TYPE m_fRMSvolumeSumR;
     int m_iSamplesCalculated;
 
-    void doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume);
+    ControlPotmeter *m_ctrlClipping;
+    int m_duration;
 };
 
 #endif

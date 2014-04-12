@@ -408,9 +408,6 @@ void EngineMaster::process(const int iBufferSize) {
     }
     m_masterVolumeOld = master_volume;
 
-    // Clipping
-    m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);
-
     // Balance values
     CSAMPLE balright = 1.;
     CSAMPLE balleft = 1.;
@@ -428,6 +425,9 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pVumeter != NULL) {
         m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
     }
+
+    // Clipping
+    m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);
 
     // Submit master samples to the side chain to do shoutcasting, recording,
     // etc. (cpu intensive non-realtime tasks)

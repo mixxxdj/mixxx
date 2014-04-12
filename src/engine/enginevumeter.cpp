@@ -31,6 +31,11 @@ EngineVuMeter::EngineVuMeter(const char* group) {
     // right channel VU meter
     m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
 
+    //Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
+    m_ctrlClipping = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
+    m_ctrlClipping->set(0);
+    m_duration = 0;
+
     // Initialize the calculation:
     reset();
 }
@@ -40,11 +45,12 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlVuMeter;
     delete m_ctrlVuMeterL;
     delete m_ctrlVuMeterR;
+    delete m_ctrlClipping;
 }
 
 void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
-    SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
+    bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
@@ -74,6 +80,22 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
         m_iSamplesCalculated = 0;
         m_fRMSvolumeSumL = 0;
         m_fRMSvolumeSumR = 0;
+    }
+
+    if (clipped) {
+        if (m_ctrlClipping->get() != 1.) {
+            m_ctrlClipping->set(1.);
+        }
+        m_duration = 20;
+    }
+
+    if (m_duration == 0) {
+        if (m_ctrlClipping->get() == 1.) {
+            m_ctrlClipping->set(0.);
+        }
+    }
+    else {
+        m_duration--;
     }
 }
 

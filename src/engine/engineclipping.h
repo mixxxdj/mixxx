@@ -27,12 +27,6 @@ class EngineClipping : public EngineObject {
     virtual ~EngineClipping();
 
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
-    bool hasClipped();
-
-  private:
-    bool clipped;
-    ControlPotmeter *m_ctrlClipping;
-    int m_duration;
 };
 
 #endif // ENGINECLIPPING_H
