@@ -140,8 +140,8 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
         const AudioOutputBuffer& out = m_audioOutputs.at(0);
         const CSAMPLE* pAudioOutputBuffer = out.getBuffer(); // Always Stereo
         pAudioOutputBuffer = &pAudioOutputBuffer[framesReadOffset*2];
-        memcpy(outputBuffer, pAudioOutputBuffer,
-               sizeof(*outputBuffer) * framesToCompose * 2);
+        SampleUtil::copyClampBuffer(outputBuffer, pAudioOutputBuffer,
+               framesToCompose * 2);
     } else {
         // Reset sample for each open channel
         SampleUtil::clear(outputBuffer, framesToCompose * iFrameSize);
@@ -164,9 +164,9 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
                     // iFrameBase is the "base sample" in a frame (ie. the first
                     // sample in a frame)
                     const unsigned int iFrameBase = iFrameNo * iFrameSize;
-                    outputBuffer[iFrameBase + iChannelBase] =
+                    outputBuffer[iFrameBase + iChannelBase] = SampleUtil::clampSample(
                             (pAudioOutputBuffer[iFrameNo * 2] +
-                                    pAudioOutputBuffer[iFrameNo * 2 + 1]) / 2.0f;
+                                    pAudioOutputBuffer[iFrameNo * 2 + 1]) / 2.0f);
                 }
             } else {
                 for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
@@ -178,7 +178,8 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
                     // this will make sure a sample from each channel is copied
                     for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
                         outputBuffer[iFrameBase + iChannelBase + iChannel] =
-                                pAudioOutputBuffer[iLocalFrameBase + iChannel];
+                                SampleUtil::clampSample(
+                                        pAudioOutputBuffer[iLocalFrameBase + iChannel]);
 
                         // Input audio pass-through (useful for debugging)
                         //if (in)
