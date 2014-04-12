@@ -33,6 +33,9 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
 
+  protected slots:
+    void maybeUpdate();
+
   signals:
     void trackDropped(QString filename, QString group);
 
@@ -57,12 +60,12 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     ControlObjectThread* m_pPlay;
     ControlObjectThread* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
+    ControlObjectThread* m_pRate;
     ControlObjectThread* m_pTrackSamples;
     ControlObjectThread* m_pTrackSampleRate;
     ControlObjectThread* m_pScratch;
     ControlObjectThread* m_pScratchToggle;
     ControlObjectThread* m_pScratchPos;
-    ControlObjectThread* m_pRate;
     ControlObjectThread* m_pVinylControlSpeedType;
     ControlObjectThread* m_pVinylControlEnabled;
     ControlObjectThread* m_pSignalEnabled;
@@ -80,8 +83,10 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
     QString m_group;
     float m_fAngle; //Degrees
+    double m_dAngleCurrentPlaypos;
     double m_dAngleLastPlaypos;
     float m_fGhostAngle;
+    double m_dGhostAngleCurrentPlaypos;
     double m_dGhostAngleLastPlaypos;
     int m_iStartMouseX;
     int m_iStartMouseY;
@@ -91,6 +96,9 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     // Speed of the vinyl rotation.
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
+    bool m_bGhostPlayback;
+    bool m_bWasGhostPlayback;
+    bool m_bWidgetDirty;
 };
 
 #endif //_WSPINNY_H
