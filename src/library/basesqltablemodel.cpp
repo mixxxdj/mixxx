@@ -201,8 +201,8 @@ void BaseSqlTableModel::select() {
     // Remove all the rows from the table. We wait to do this until after the
     // table query has succeeded. See Bug #1090888.
     // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+    if (!m_rowInfo.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
         m_rowInfo.clear();
         m_trackIdToRows.clear();
         endRemoveRows();
@@ -297,9 +297,11 @@ void BaseSqlTableModel::select() {
     }
 
     // We're done! Issue the update signals and replace the master maps.
-    beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
-    m_rowInfo = rowInfo;
-    endInsertRows();
+    if (!rowInfo.isEmpty()) {
+        beginInsertRows(QModelIndex(), 0, rowInfo.size() - 1);
+        m_rowInfo = rowInfo;
+        endInsertRows();
+    }
 
     int elapsed = time.elapsed();
     qDebug() << this << "select() took" << elapsed << "ms" << rowInfo.size();
