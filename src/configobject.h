@@ -52,6 +52,12 @@ inline bool operator==(const ConfigKey &c1, const ConfigKey &c2) {
     return c1.group == c2.group && c1.item == c2.item;
 }
 
+/* stream operator function for trivial qDebug()ing of ConfigKeys */
+inline QDebug operator<<(QDebug stream, const ConfigKey &c1) {
+    stream << c1.group << "," << c1.item;
+    return stream;
+}
+
 /* QHash hash function for ConfigKey objects. */
 inline uint qHash(const ConfigKey &key) {
     return qHash(key.group) ^ qHash(key.item);
