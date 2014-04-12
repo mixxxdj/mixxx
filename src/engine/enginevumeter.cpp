@@ -33,9 +33,6 @@ EngineVuMeter::EngineVuMeter(const char* group) {
 
     //Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
     m_ctrlClipping = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
-    m_ctrlClipping->set(0);
-    m_duration = 0;
-
     // Initialize the calculation:
     reset();
 }
@@ -93,8 +90,7 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
         if (m_ctrlClipping->get() == 1.) {
             m_ctrlClipping->set(0.);
         }
-    }
-    else {
+    } else {
         m_duration--;
     }
 }
@@ -120,9 +116,12 @@ void EngineVuMeter::reset() {
     m_ctrlVuMeter->set(0);
     m_ctrlVuMeterL->set(0);
     m_ctrlVuMeterR->set(0);
+    m_ctrlClipping->set(0);
+
     m_iSamplesCalculated = 0;
     m_fRMSvolumeL = 0;
     m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;
     m_fRMSvolumeSumR = 0;
+    m_duration = 0;
 }
