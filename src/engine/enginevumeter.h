@@ -21,6 +21,7 @@
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
 #define UPDATE_RATE 20
+#define PEAK_DURATION 500 // in ms
 
 // SMOOTHING FACTORS
 // Must be from 0-1 the lower the factor, the more smoothing that is applied
@@ -28,6 +29,7 @@
 #define DECAY_SMOOTHING .1  //.16//.4
 
 class ControlPotmeter;
+class ControlObjectSlave;
 
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
@@ -53,8 +55,10 @@ class EngineVuMeter : public EngineObject {
     FLOAT_TYPE m_fRMSvolumeSumR;
     int m_iSamplesCalculated;
 
-    ControlPotmeter *m_ctrlClipping;
-    int m_duration;
+    ControlPotmeter* m_ctrlPeakIndicator;
+    int m_peakDuration;
+
+    ControlObjectSlave* m_pSampleRate;
 };
 
 #endif

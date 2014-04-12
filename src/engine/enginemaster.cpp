@@ -440,7 +440,7 @@ void EngineMaster::process(const int iBufferSize) {
                                          iBufferSize, headphoneFeatures);
     }
 
-    // Head volume and clipping
+    // Head volume
     CSAMPLE headphoneVolume = m_pHeadVolume->get();
     if (m_bRampingGain) {
         SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld,

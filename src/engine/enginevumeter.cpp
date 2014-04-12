@@ -20,7 +20,9 @@
 
 #include "engine/enginevumeter.h"
 #include "controlpotmeter.h"
+#include "controlobjectslave.h"
 #include "sampleutil.h"
+
 
 EngineVuMeter::EngineVuMeter(const char* group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
@@ -31,8 +33,11 @@ EngineVuMeter::EngineVuMeter(const char* group) {
     // right channel VU meter
     m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
 
-    //Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
-    m_ctrlClipping = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
+    // Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
+    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
+
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
+
     // Initialize the calculation:
     reset();
 }
@@ -42,11 +47,14 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlVuMeter;
     delete m_ctrlVuMeterL;
     delete m_ctrlVuMeterR;
-    delete m_ctrlClipping;
+    delete m_ctrlPeakIndicator;
 }
 
 void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
+
+    int sampleRate = (int)m_pSampleRate->get();
+
     bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
@@ -54,7 +62,7 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
     m_iSamplesCalculated += iBufferSize/2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (44100/2/UPDATE_RATE)) {
+    if (m_iSamplesCalculated > (sampleRate/2/UPDATE_RATE)) {
         doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
         doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
 
@@ -80,18 +88,18 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
     }
 
     if (clipped) {
-        if (m_ctrlClipping->get() != 1.) {
-            m_ctrlClipping->set(1.);
+        if (m_ctrlPeakIndicator->get() != 1.) {
+            m_ctrlPeakIndicator->set(1.);
         }
-        m_duration = 20;
+        m_peakDuration = PEAK_DURATION * sampleRate / iBufferSize / 2000;
     }
 
-    if (m_duration == 0) {
-        if (m_ctrlClipping->get() == 1.) {
-            m_ctrlClipping->set(0.);
+    if (m_peakDuration <= 0) {
+        if (m_ctrlPeakIndicator->get() == 1.) {
+            m_ctrlPeakIndicator->set(0.);
         }
     } else {
-        m_duration--;
+        --m_peakDuration;
     }
 }
 
@@ -116,12 +124,12 @@ void EngineVuMeter::reset() {
     m_ctrlVuMeter->set(0);
     m_ctrlVuMeterL->set(0);
     m_ctrlVuMeterR->set(0);
-    m_ctrlClipping->set(0);
+    m_ctrlPeakIndicator->set(0);
 
     m_iSamplesCalculated = 0;
     m_fRMSvolumeL = 0;
     m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;
     m_fRMSvolumeSumR = 0;
-    m_duration = 0;
+    m_peakDuration = 0;
 }
