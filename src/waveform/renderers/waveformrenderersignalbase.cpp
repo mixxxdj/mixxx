@@ -71,7 +71,22 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     }
 
     m_pColors = m_waveformRenderer->getWaveformSignalColors();
-    m_axesColor = m_pColors->getAxesColor();
+
+    const QColor& l = m_pColors->getLowColor();
+    l.getRgbF(&m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
+
+    const QColor& m = m_pColors->getMidColor();
+    m.getRgbF(&m_midColor_r, &m_midColor_g, &m_midColor_b);
+
+    const QColor& h = m_pColors->getHighColor();
+    h.getRgbF(&m_highColor_r, &m_highColor_g, &m_highColor_b);
+
+    const QColor& axes = m_pColors->getAxesColor();
+    axes.getRgbF(&m_axesColor_r, &m_axesColor_g, &m_axesColor_b,
+                 &m_axesColor_a);
+
+    const QColor& signal = m_pColors->getSignalColor();
+    signal.getRgbF(&m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
 
     onSetup(node);
 }

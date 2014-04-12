@@ -41,21 +41,29 @@ void ControllerInputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_ACTION, Qt::Horizontal, tr("Action"));
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
-        beginInsertRows(QModelIndex(), 0, m_pMidiPreset->inputMappings.size() - 1);
-        m_midiInputMappings = m_pMidiPreset->inputMappings.values();
-        endInsertRows();
+        if (!m_pMidiPreset->inputMappings.isEmpty()) {
+            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->inputMappings.size() - 1);
+            m_midiInputMappings = m_pMidiPreset->inputMappings.values();
+            endInsertRows();
+        }
     }
 }
 
 void ControllerInputMappingTableModel::clear() {
     if (m_pMidiPreset != NULL) {
-        beginRemoveRows(QModelIndex(), 0, m_midiInputMappings.size() - 1);
-        m_midiInputMappings.clear();
-        endRemoveRows();
+        if (!m_midiInputMappings.isEmpty()) {
+            beginRemoveRows(QModelIndex(), 0, m_midiInputMappings.size() - 1);
+            m_midiInputMappings.clear();
+            endRemoveRows();
+        }
     }
 }
 
 void ControllerInputMappingTableModel::addMappings(const MidiInputMappings& mappings) {
+    if (mappings.isEmpty()) {
+        return;
+    }
+
     if (m_pMidiPreset != NULL) {
         // When we add mappings from controller learning, we first remove the
         // duplicates from the table. We allow multiple mappings per MIDI

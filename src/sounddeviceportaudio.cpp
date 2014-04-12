@@ -780,7 +780,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
 
     // Send audio from the soundcard's input off to the SoundManager...
     if (in) {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess input %1", getInternalName());
         composeInputBuffer(in, framesPerBuffer, 0,
                            m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, m_framesPerBuffer);
@@ -789,12 +789,12 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
     m_pSoundManager->readProcess();
 
     {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare " + getInternalName());
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1", getInternalName());
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }
 
     if (out) {
-        ScopedTimer t("SoundDevicePortAudio::callbackProcess output " + getInternalName());
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess output %1", getInternalName());
 
         if (m_outputParams.channelCount <= 0) {
             qWarning() << "SoundDevicePortAudio::callbackProcess m_outputParams channel count is zero or less:" << m_outputParams.channelCount;

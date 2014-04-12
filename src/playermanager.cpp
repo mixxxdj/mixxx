@@ -342,7 +342,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 }
 
 bool PlayerManager::hasVinylInput(int inputnum) const {
-    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, inputnum);
+    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, 0, inputnum);
     return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
 }
 
