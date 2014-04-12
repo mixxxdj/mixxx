@@ -1578,8 +1578,8 @@ void MixxxMainWindow::slotControlAuxiliary(int index) {
         m_pAuxiliaryPassthrough[index]->set(0.0);
         return;
     }
-    bool toggle = static_cast<bool>(m_pAuxiliaryPassthrough[index]->get());
-    if (toggle) {
+    bool passthrough = static_cast<bool>(m_pAuxiliaryPassthrough[index]->get());
+    if (passthrough) {
         if (ControlObject::getControl(
                 m_pAuxiliaryPassthrough[index]->getKey().group,
                 "enabled")->get()) {
