@@ -14,7 +14,6 @@
 EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),

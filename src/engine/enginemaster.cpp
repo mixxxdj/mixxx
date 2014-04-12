@@ -29,7 +29,6 @@
 #include "engine/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
-#include "engine/engineclipping.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
@@ -96,9 +95,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Master volume
     m_pMasterVolume = new ControlLogpotmeter(ConfigKey(group, "volume"), 5.);
 
-    // Clipping
-    m_pClipping = new EngineClipping(group);
-
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
@@ -117,9 +113,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pHeadSplitEnabled->set(0.0);
-
-    // Headphone Clipping
-    m_pHeadClipping = new EngineClipping("");
 
     m_pTalkoverDucking = new EngineTalkoverDucking(_config, group);
 
@@ -158,9 +151,7 @@ EngineMaster::~EngineMaster() {
     delete m_pMasterVolume;
     delete m_pHeadVolume;
     delete m_pTalkoverDucking;
-    delete m_pClipping;
     delete m_pVumeter;
-    delete m_pHeadClipping;
     delete m_pSideChain;
     delete m_pMasterDelay;
     delete m_pHeadDelay;
@@ -426,9 +417,6 @@ void EngineMaster::process(const int iBufferSize) {
         m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
     }
 
-    // Clipping
-    m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);
-
     // Submit master samples to the side chain to do shoutcasting, recording,
     // etc. (cpu intensive non-realtime tasks)
     if (m_pSideChain != NULL) {
@@ -461,7 +449,6 @@ void EngineMaster::process(const int iBufferSize) {
         SampleUtil::applyGain(m_pHead, headphoneVolume, iBufferSize);
     }
     m_headphoneVolumeOld = headphoneVolume;
-    m_pHeadClipping->process(m_pHead, m_pHead, iBufferSize);
 
     // If Head Split is enabled, replace the left channel of the pfl buffer
     // with a mono mix of the headphone buffer, and the right channel of the pfl
