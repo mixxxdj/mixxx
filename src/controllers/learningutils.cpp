@@ -121,7 +121,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
     bool no_0x00_value = !stats.value_histogram.contains(0x00);
     bool no_0x40_value = !stats.value_histogram.contains(0x40);
     bool multiple_values_around_0x40 = stats.value_histogram.value(0x41, 0) > 1 &&
-            stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value;
+            stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value &&
+            under_8_distinct_values;
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.

@@ -315,6 +315,36 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker) {
               mappings.at(0));
 }
 
+TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_StartAndStopOn41) {
+    // Moving a CC knob through its range multiple times is confusable for
+    // Spread64 select knobs when a 0x41 or 0x3F is repeated. If we start and
+    // stop on 0x41 (and don't pass through 0x40) then this can set off Spread64
+    // detection. We require <8 distinct values for Spread64 detection to
+    // prevent this.
+    addMessage(MIDI_CC | 0x01, 0x10, 0x41);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x45);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x50);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x55);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x60);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x65);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x70);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x75);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x62);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x52);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x48);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x46);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x41);
+
+    ConfigKey control("[Test]", "SomeControl");
+    MidiInputMappings mappings =
+            LearningUtils::guessMidiInputMappings(control, m_messages);
+
+    ASSERT_EQ(1, mappings.size());
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
+                               MidiOptions(), control),
+              mappings.at(0));
+}
+
 TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_0x40Included) {
     // Moving a CC knob through its range multiple times is confusable for
     // Spread64 select knobs when a 0x41 or 0x3F is repeated.
