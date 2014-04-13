@@ -14,7 +14,8 @@
 #include "errordialoghandler.h"
 #include "playermanager.h"
 
-MidiController::MidiController() : Controller() {
+MidiController::MidiController()
+        : Controller() {
 }
 
 MidiController::~MidiController() {
@@ -242,8 +243,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
     }
 
-    //if (m_bReceiveInhibit) return;
-
     MidiKey mappingKey = MidiUtils::makeMidiKey(status, control);
 
     if (isLearning()) {
@@ -299,10 +298,69 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     double newValue = value;
 
+
+    bool mapping_is_14bit = mapping.options.fourteen_bit_msb ||
+            mapping.options.fourteen_bit_lsb;
+    if (!mapping_is_14bit && !m_fourteen_bit_queued_mappings.isEmpty()) {
+        qWarning() << "MidiController was waiting for the MSB/LSB of a 14-bit"
+                   << "message but the next message received was not mapped as 14-bit."
+                   << "Ignoring the original message.";
+        m_fourteen_bit_queued_mappings.clear();
+    }
+
     //qDebug() << "MIDI Options" << QString::number(mapping.options.all, 2).rightJustified(16,'0');
 
-    // compute 14-bit number for pitch bend messages
-    if (opCode == MIDI_PITCH_BEND) {
+    if (mapping_is_14bit) {
+        bool found = false;
+        for (QList<QPair<MidiInputMapping, unsigned char> >::iterator it =
+                     m_fourteen_bit_queued_mappings.begin();
+             it != m_fourteen_bit_queued_mappings.end(); ++it) {
+            if (it->first.control == mapping.control) {
+                if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
+                    (it->first.options.fourteen_bit_msb && mapping.options.fourteen_bit_msb)) {
+                    qWarning() << "MidiController: 14-bit MIDI mapping has mis-matched LSB/MSB options."
+                               << "Ignoring both messages.";
+                    m_fourteen_bit_queued_mappings.erase(it);
+                    return;
+                }
+
+                int iValue = 0;
+                if (mapping.options.fourteen_bit_msb) {
+                    iValue = (value << 7) | it->second;
+                    // qDebug() << "MSB" << value
+                    //          << "LSB" << it->second
+                    //          << "Joint:" << iValue;
+                } else if (mapping.options.fourteen_bit_lsb) {
+                    iValue = (it->second << 7) | value;
+                    // qDebug() << "MSB" << it->second
+                    //          << "LSB" << value
+                    //          << "Joint:" << iValue;
+                }
+
+                // NOTE(rryan): The 14-bit message ranges from 0x0000 to
+                // 0x3FFF. Dividing by 0x81 maps this onto the range of 0 to
+                // 127. However, some controllers map the center to MSB 64
+                // (0x40) and LSB 0. Dividing by 128 (0x80) maps 0x2000
+                // directly to 0x40. See ControlLinPotmeterBehavior and
+                // ControlPotmeterBehavior for more fun of this variety :).
+                newValue = static_cast<double>(iValue) / 128.0;
+                newValue = math_min(newValue, 127.0);
+
+                // Erase the queued message since we processed it.
+                m_fourteen_bit_queued_mappings.erase(it);
+
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            // Queue this mapping and value for processing once we receive the next
+            // message.
+            m_fourteen_bit_queued_mappings.append(qMakePair(mapping, value));
+            return;
+        }
+    } else if (opCode == MIDI_PITCH_BEND) {
+        // compute 14-bit number for pitch bend messages
         int ivalue;
         ivalue = (value << 7) | control;
 
@@ -458,8 +516,6 @@ void MidiController::receive(QByteArray data) {
     if (debugging()) {
         qDebug() << formatSysexMessage(getName(), data);
     }
-
-    //if (m_bReceiveInhibit) return;
 
     MidiKey mappingKey = MidiUtils::makeMidiKey(data.at(0), 0xFF);
 
