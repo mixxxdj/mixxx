@@ -65,6 +65,127 @@ TEST_F(LearningUtilsTest, CC7BitKnob) {
               mappings.at(0));
 }
 
+TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
+    // A CC 14-bit knob with the MSB as the first message. We treat streams of
+    // single-channel, CC opcode, 2 control, equal size message streams as
+    // 14-bit CC knobs. The order of the LSB and MSB does not matter to us.
+
+    addMessage(MIDI_CC | 0x01, 0x11, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x01);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x01);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x01);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x02);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x02);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x02);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x03);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x03);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x03);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+
+    MidiInputMappings mappings =
+            LearningUtils::guessMidiInputMappings(m_messages);
+
+    ASSERT_EQ(2, mappings.size());
+
+    MidiInputMapping mapping1 = mappings.at(0);
+    MidiInputMapping mapping2 = mappings.at(1);
+
+    EXPECT_TRUE(mapping1.options.fourteen_bit_lsb ||
+                mapping1.options.fourteen_bit_msb);
+    EXPECT_TRUE(mapping2.options.fourteen_bit_lsb ||
+                mapping2.options.fourteen_bit_msb);
+    EXPECT_TRUE(mapping1.options.fourteen_bit_msb !=
+                mapping2.options.fourteen_bit_msb);
+    EXPECT_TRUE(mapping1.options.fourteen_bit_lsb !=
+                mapping2.options.fourteen_bit_lsb);
+
+    MidiInputMapping lsb_mapping = mapping1.options.fourteen_bit_msb ? mapping2 : mapping1;
+    MidiInputMapping msb_mapping = mapping1.options.fourteen_bit_msb ? mapping1 : mapping2;
+
+    MidiOptions lsb_option;
+    lsb_option.fourteen_bit_lsb = true;
+    MidiOptions msb_option;
+    msb_option.fourteen_bit_msb = true;
+
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10), lsb_option),
+              lsb_mapping);
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x11), msb_option),
+              msb_mapping);
+}
+
+TEST_F(LearningUtilsTest, CC14BitKnob_LSBFirst) {
+    // A CC 14-bit knob with the LSB as the first message. We treat streams of
+    // single-channel, CC opcode, 2 control, equal size message streams as
+    // 14-bit CC knobs. The order of the LSB and MSB does not matter to us.
+
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x01);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x01);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x01);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x02);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x02);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x02);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x03);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x40);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x03);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x11, 0x03);
+
+    MidiInputMappings mappings =
+            LearningUtils::guessMidiInputMappings(m_messages);
+
+    ASSERT_EQ(2, mappings.size());
+
+    MidiInputMapping mapping1 = mappings.at(0);
+    MidiInputMapping mapping2 = mappings.at(1);
+
+    EXPECT_TRUE(mapping1.options.fourteen_bit_lsb ||
+                mapping1.options.fourteen_bit_msb);
+    EXPECT_TRUE(mapping2.options.fourteen_bit_lsb ||
+                mapping2.options.fourteen_bit_msb);
+    EXPECT_TRUE(mapping1.options.fourteen_bit_msb !=
+                mapping2.options.fourteen_bit_msb);
+    EXPECT_TRUE(mapping1.options.fourteen_bit_lsb !=
+                mapping2.options.fourteen_bit_lsb);
+
+    MidiInputMapping lsb_mapping = mapping1.options.fourteen_bit_msb ? mapping2 : mapping1;
+    MidiInputMapping msb_mapping = mapping1.options.fourteen_bit_msb ? mapping1 : mapping2;
+
+    MidiOptions lsb_option;
+    lsb_option.fourteen_bit_lsb = true;
+    MidiOptions msb_option;
+    msb_option.fourteen_bit_msb = true;
+
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10), lsb_option),
+              lsb_mapping);
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x11), msb_option),
+              msb_mapping);
+}
 
 TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_Zeroes) {
     // Make sure that 0x00 is a tell that we are not a 2's complement select

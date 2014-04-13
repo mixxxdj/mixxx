@@ -4,8 +4,38 @@
 
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
+#include "defs.h"
 
 typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
+
+struct MessageStats {
+    MessageStats()
+            : message_count(0),
+              last_value(0) {
+    }
+
+    void addMessage(const MidiKeyAndValue& message) {
+        // If we've never seen a message before, set last_value to this value.
+        if (message_count == 0) {
+            last_value = message.second;
+        }
+
+        message_count++;
+        value_histogram[message.second]++;
+
+        // Convert to integers first to get negative values.
+        int absolute_difference = abs(static_cast<int>(message.second) -
+                                      static_cast<int>(last_value));
+        abs_diff_histogram[absolute_difference]++;
+        last_value = message.second;
+    }
+
+    int message_count;
+    QMap<unsigned char, int> value_histogram;
+    // The range of differences for unsigned char is -255 through 255.
+    QMap<int, int> abs_diff_histogram;
+    unsigned char last_value;
+};
 
 // static
 MidiInputMappings LearningUtils::guessMidiInputMappings(
@@ -14,25 +44,19 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
     QSet<MidiOpCode> opcodes;
     QSet<unsigned char> channels;
     QSet<unsigned char> controls;
-    QMap<unsigned char, int> value_histogram;
-    // The range of differences for unsigned char is -255 through 255.
-    QMap<int, int> abs_diff_histogram;
+    QMap<unsigned char, MessageStats> stats_by_control;
+    MessageStats stats;
 
     // Analyze the message
-    unsigned char lastValue = !messages.isEmpty() ? messages.at(0).second : 0;
     foreach (const MidiKeyAndValue& message, messages) {
         MidiOpCode opcode = MidiUtils::opCodeFromStatus(message.first.status);
         unsigned char channel = MidiUtils::channelFromStatus(message.first.status);
         opcodes.insert(opcode);
         channels.insert(channel);
         controls.insert(message.first.control);
-        value_histogram[message.second]++;
 
-        // Convert to integers first to get negative values.
-        int absolute_difference = abs(static_cast<int>(message.second) -
-                                      static_cast<int>(lastValue));
-        abs_diff_histogram[absolute_difference]++;
-        lastValue = message.second;
+        stats.addMessage(message);
+        stats_by_control[message.first.control].addMessage(message);
     }
 
     qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size() << "messages.";
@@ -57,10 +81,22 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         qDebug() << "Control:" << control;
     }
 
-    for (QMap<unsigned char, int>::const_iterator it = value_histogram.begin();
-         it != value_histogram.end(); ++it) {
-        qDebug() << "Value:" << it.key()
+    for (QMap<unsigned char, int>::const_iterator it = stats.value_histogram.begin();
+         it != stats.value_histogram.end(); ++it) {
+        qDebug() << "Overall Value:" << it.key()
                  << "count" << it.value();
+    }
+
+    for (QMap<unsigned char, MessageStats>::const_iterator control_it =
+                 stats_by_control.begin();
+         control_it != stats_by_control.end(); ++control_it) {
+        QString controlName = QString("Control %1").arg(control_it.key());
+        for (QMap<unsigned char, int>::const_iterator it =
+                     control_it->value_histogram.begin();
+             it != control_it->value_histogram.end(); ++it) {
+            qDebug() << controlName << "Value:" << it.key()
+                     << "count" << it.value();
+        }
     }
 
     MidiInputMappings mappings;
@@ -73,29 +109,29 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
             opcodes.contains(MIDI_NOTE_OFF);
     bool only_cc = opcodes.size() == 1 && opcodes.contains(MIDI_CC);
 
-    bool two_values_7bit_max_and_min = value_histogram.size() == 2 &&
-            value_histogram.contains(0x00) && value_histogram.contains(0x7F);
-    bool one_value_7bit_max_or_min = value_histogram.size() == 1 &&
-            (value_histogram.contains(0x00) || value_histogram.contains(0x7F));
-    bool multiple_one_or_7f_values = value_histogram.value(0x01, 0) > 1 ||
-            value_histogram.value(0x7F, 0) > 1;
-    bool under_8_distinct_values = value_histogram.size() < 8;
-    bool no_0x00_value = !value_histogram.contains(0x00);
-    bool no_0x40_value = !value_histogram.contains(0x40);
-    bool multiple_values_around_0x40 = value_histogram.value(0x41, 0) > 1 &&
-            value_histogram.value(0x3F, 0) > 1 && no_0x40_value;
+    bool two_values_7bit_max_and_min = stats.value_histogram.size() == 2 &&
+            stats.value_histogram.contains(0x00) && stats.value_histogram.contains(0x7F);
+    bool one_value_7bit_max_or_min = stats.value_histogram.size() == 1 &&
+            (stats.value_histogram.contains(0x00) || stats.value_histogram.contains(0x7F));
+    bool multiple_one_or_7f_values = stats.value_histogram.value(0x01, 0) > 1 ||
+            stats.value_histogram.value(0x7F, 0) > 1;
+    bool under_8_distinct_values = stats.value_histogram.size() < 8;
+    bool no_0x00_value = !stats.value_histogram.contains(0x00);
+    bool no_0x40_value = !stats.value_histogram.contains(0x40);
+    bool multiple_values_around_0x40 = stats.value_histogram.value(0x41, 0) > 1 &&
+            stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value;
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
-    bool only_7bit_values = !value_histogram.isEmpty() &&
-            (value_histogram.end() - 1).key() <= 0x7F;
+    bool only_7bit_values = !stats.value_histogram.isEmpty() &&
+            (stats.value_histogram.end() - 1).key() <= 0x7F;
 
     // A 7-bit two's complement ticker swinging from +1 to -1 can generate
     // unsigned differences of up to 126 (0x7E). If we see differences in
     // individual messages above 96 (0x60) that's a good hint that we're looking
     // at a two's complement ticker.
-    bool abs_differences_above_60 = !abs_diff_histogram.isEmpty() &&
-            (abs_diff_histogram.end() - 1).key() >= 0x60;
+    bool abs_differences_above_60 = !stats.abs_diff_histogram.isEmpty() &&
+            (stats.abs_diff_histogram.end() - 1).key() >= 0x60;
 
     if (one_control && one_channel &&
         two_values_7bit_max_and_min &&
@@ -177,6 +213,54 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         knob.status = MIDI_CC | *channels.begin();
         knob.control = *controls.begin();
         mappings.append(MidiInputMapping(knob, options));
+    } else if (one_channel && only_cc && controls.size() == 2 &&
+               stats_by_control.begin()->message_count > 10 &&
+               stats_by_control.begin()->message_count ==
+               (stats_by_control.begin() + 1)->message_count) {
+
+        // If there are two CC controls with the same number of messages then we
+        // assume this is a 14-bit CC knob. Now we need to determine which
+        // control is the LSB and which is the MSB.
+
+        // When observing an MSB/LSB sweep, the LSB will be very high frequency
+        // compared to the MSB. Instead of doing an actual FFT on the two
+        // signals, we can hack this by looking at the absolute differences
+        // between messages. We expect to see many high/low wrap-arounds for the
+        // LSB.
+        int control1 = *controls.begin();
+        int control2 = *(controls.begin() + 1);
+
+        int control1_max_abs_diff =
+                (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
+        int control2_max_abs_diff =
+                (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
+
+        // The control with the larger abs difference in messages is the LSB. If
+        // they are equal we choose one arbitrarily (depends on QSet iteration
+        // order which is undefined).
+        int lsb_control = control1_max_abs_diff > control2_max_abs_diff ? control1 : control2;
+        int msb_control = control1_max_abs_diff > control2_max_abs_diff ? control2 : control1;
+
+        // NOTE(rryan): There is an industry convention that a 14-bit CC control
+        // is a pair of controls offset by 32 (the lower is the MSB, the higher
+        // is the LSB). My VCI-400 follows this convention, for example. I don't
+        // use that convention here because it's not universal and we should be
+        // able to come up with reasonable heuristics to identify an LSB and an
+        // MSB.
+
+        MidiKey msb;
+        msb.status = MIDI_CC | *channels.begin();
+        msb.control = msb_control;
+        MidiOptions msb_option;
+        msb_option.fourteen_bit_msb = true;
+        mappings.append(MidiInputMapping(msb, msb_option));
+
+        MidiKey lsb;
+        lsb.status = MIDI_CC | *channels.begin();
+        lsb.control = lsb_control;
+        MidiOptions lsb_option;
+        lsb_option.fourteen_bit_lsb = true;
+        mappings.append(MidiInputMapping(lsb, lsb_option));
     }
 
     if (mappings.isEmpty() && !messages.isEmpty()) {
