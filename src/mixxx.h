@@ -134,11 +134,6 @@ class MixxxMainWindow : public QMainWindow {
   signals:
     void newSkinLoaded();
 
-    // Emitted when the UI is showing a dialog window -- this is used to
-    // tell MixxxKeyboard to clear its list of active keys because it might
-    // not get Key Release signals.
-    void showDlg();
-
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
     virtual bool eventFilter(QObject *obj, QEvent *event);
