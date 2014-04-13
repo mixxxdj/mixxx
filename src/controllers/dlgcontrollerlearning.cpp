@@ -227,7 +227,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
         stackedWidget->setCurrentWidget(page2Learn);
     }
 
-    if (status == MIDI_CC) {
+    if (status & 0xF0 == MIDI_CC) {
         if (progressBarWiggleFeedback->isVisible()) {
             progressBarWiggleFeedback->setValue(
                     progressBarWiggleFeedback->value() + 1);
@@ -246,7 +246,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // Unless this is a MIDI_CC and the progress bar is full, restart the
     // timer.  That way the user won't just push buttons forever and wonder
     // why the wizard never advances.
-    if (status != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
+    if (status & 0xF0 != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
         m_lastMessageTimer.start();
     }
 }
