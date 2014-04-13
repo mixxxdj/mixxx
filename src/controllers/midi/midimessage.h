@@ -155,9 +155,17 @@ struct MidiInputMapping {
               options(options) {
     }
 
+    MidiInputMapping(MidiKey key, MidiOptions options, const ConfigKey& control)
+            : key(key),
+              options(options),
+              control(control) {
+    }
+
+    // Don't use descriptions in operator== since we only use equality testing
+    // for unit tests.
     bool operator==(const MidiInputMapping& other) const {
         return key == other.key && options == other.options &&
-                control == other.control && description == other.description;
+                control == other.control;
     }
 
     MidiKey key;

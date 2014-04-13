@@ -273,16 +273,7 @@ void DlgControllerLearning::slotTimerExpired() {
     // It's been a timer interval since we last got a message. Let's try to
     // detect mappings.
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(m_messages);
-
-    // Add control and description info to each learned input mapping.
-    for (MidiInputMappings::iterator it = mappings.begin();
-         it != mappings.end(); ++it) {
-        MidiInputMapping& mapping = *it;
-        mapping.control = m_currentControl;
-        mapping.description = QString("MIDI Learned from %1 messages.")
-                .arg(m_messages.size());
-    }
+            LearningUtils::guessMidiInputMappings(m_currentControl, m_messages);
 
     if (mappings.isEmpty()) {
         labelErrorText->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
