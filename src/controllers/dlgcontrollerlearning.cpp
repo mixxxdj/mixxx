@@ -159,6 +159,9 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
     midiOptionSoftTakeover->setChecked(false);
     midiOptionSwitchMode->setChecked(false);
 
+    progressBarWiggleFeedback->setValue(0);
+    progressBarWiggleFeedback->setMinimum(0);
+    progressBarWiggleFeedback->setMaximum(300);
     progressBarWiggleFeedback->hide();
 
     labelMappedTo->setText("");
@@ -227,14 +230,14 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
         stackedWidget->setCurrentWidget(page2Learn);
     }
 
-    if (status & 0xF0 == MIDI_CC) {
+    // If we get a few messages, it's probably a rotation control so let's give
+    // feedback.  If we only get one or two messages, it's probably a button
+    // and we shouldn't show the progress bar.
+    if (m_messages.length() > 4) {
         if (progressBarWiggleFeedback->isVisible()) {
             progressBarWiggleFeedback->setValue(
                     progressBarWiggleFeedback->value() + 1);
         } else {
-            progressBarWiggleFeedback->setValue(0);
-            progressBarWiggleFeedback->setMinimum(0);
-            progressBarWiggleFeedback->setMaximum(10);
             progressBarWiggleFeedback->show();
         }
     }
@@ -246,7 +249,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // Unless this is a MIDI_CC and the progress bar is full, restart the
     // timer.  That way the user won't just push buttons forever and wonder
     // why the wizard never advances.
-    if (status & 0xF0 != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
+    if ((status & 0xF0) != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
         m_lastMessageTimer.start();
     }
 }
