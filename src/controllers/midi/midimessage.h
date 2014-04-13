@@ -7,6 +7,11 @@
 
 #include "configobject.h"
 
+// The second value of each OpCode will be the channel number the message
+// corresponds to.  So 0xB0 is a CC on the first channel, and 0xB1 is a CC
+// on the second channel.  When working with incoming midi data, first call
+// MidiUtils::opCodeFromStatus to translate from raw status values to opcodes,
+// then compare to these enums.
 typedef enum {
     MIDI_NOTE_OFF       = 0x80,
     MIDI_NOTE_ON        = 0x90,
