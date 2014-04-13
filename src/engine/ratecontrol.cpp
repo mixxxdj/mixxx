@@ -405,8 +405,9 @@ SyncMode RateControl::getSyncMode() const {
 }
 
 double RateControl::calculateRate(double baserate, bool paused,
-                                  int iSamplesPerBuffer, bool* isScratching) {
-    *isScratching = false;
+                                  int iSamplesPerBuffer,
+                                  bool* reportScratching) {
+    *reportScratching = false;
     double rate = (paused ? 0 : 1.0);
     double searching = m_pRateSearch->get();
     if (searching) {
@@ -416,12 +417,14 @@ double RateControl::calculateRate(double baserate, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
+        bool useScratch2Value = m_pScratchToggle->get() != 0;
 
         // scratch2_enable is normally enough to determine if the user is
         // scratching or not, but some controllers have it on all the time,
-        // so this signal must be ignored.
-        if (m_pScratchToggle->get() != 0 && !m_pScratch2AlwaysOn->get()) {
-            *isScratching = true;
+        // and if they have told us they do this the signal shouldn't be
+        // reported.
+        if (useScratch2Value && !m_pScratch2AlwaysOn->get()) {
+            *reportScratching = true;
         }
 
         double scratchFactor = m_pScratch->get();
@@ -437,17 +440,16 @@ double RateControl::calculateRate(double baserate, bool paused,
             oldScratchFactor = 0.0;
         }
 
-        // If vinyl control is enabled and scratching then also set isScratching
         if (bVinylControlEnabled) {
             if (m_pVCScratching && m_pVCScratching->get() > 0.0) {
-                *isScratching = true;
+                *reportScratching = true;
             }
             rate = scratchFactor;
         } else {
             if (paused) {
                 // Stopped. Wheel, jog and scratch controller all scrub through audio.
                 // New scratch behavior overrides old
-                if (*isScratching) {
+                if (useScratch2Value) {
                     rate = scratchFactor + jogFactor + wheelFactor * 40.0;
                 } else {
                     // Just remove oldScratchFactor in future
@@ -463,7 +465,7 @@ double RateControl::calculateRate(double baserate, bool paused,
                 // Temp: pitch bend
 
                 // New scratch behavior - overrides playback speed (and old behavior)
-                if (*isScratching) {
+                if (useScratch2Value) {
                     rate = scratchFactor;
                 } else {
 
@@ -487,12 +489,12 @@ double RateControl::calculateRate(double baserate, bool paused,
         // If waveform scratch is enabled, override all other controls
         if (m_pScratchController->isEnabled()) {
             rate = m_pScratchController->getRate();
-            *isScratching = true;
+            *reportScratching = true;
         }
 
         // If master sync is on, respond to it -- but vinyl and scratch mode always override.
         if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-            !bVinylControlEnabled && !*isScratching) {
+            !bVinylControlEnabled && !useScratch2Value) {
             if (m_pBpmControl == NULL) {
                 qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
                 return 1.0;
