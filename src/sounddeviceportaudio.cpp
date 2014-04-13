@@ -348,11 +348,11 @@ QString SoundDevicePortAudio::getError() const {
 
 void SoundDevicePortAudio::readProcess() {
     PaStream* pStream = m_pStream;
-    if (pStream && m_inputParams.channelCount) {
+    if (pStream && m_inputParams.channelCount && m_inputFifo) {
         int inChunkSize = m_framesPerBuffer * m_inputParams.channelCount;
         if (m_syncBuffers == 0) {
             // Polling mode
-            signed int readAvailable = Pa_GetStreamReadAvailable(pStream) * m_outputParams.channelCount;
+            signed int readAvailable = Pa_GetStreamReadAvailable(pStream) * m_inputParams.channelCount;
             int writeAvailable = m_inputFifo->writeAvailable();
             int copyCount = qMin(writeAvailable, readAvailable);
             if (copyCount > 0) {
@@ -453,7 +453,7 @@ void SoundDevicePortAudio::readProcess() {
 void SoundDevicePortAudio::writeProcess() {
     PaStream* pStream = m_pStream;
 
-    if (pStream && m_outputParams.channelCount) {
+    if (pStream && m_outputParams.channelCount && m_outputFifo) {
         int outChunkSize = m_framesPerBuffer * m_outputParams.channelCount;
         int writeAvailable = m_outputFifo->writeAvailable();
         int writeCount = outChunkSize;
