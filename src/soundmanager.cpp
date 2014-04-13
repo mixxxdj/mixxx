@@ -44,7 +44,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
           m_paInitialized(false),
           m_jackSampleRate(-1),
 #endif
-          m_pClkRefDevice(NULL),
           m_pErrorDevice(NULL) {
 
 #ifdef __PORTAUDIO__
@@ -140,7 +139,6 @@ void SoundManager::closeDevices() {
         dev_it.next()->close();
     }
 
-    m_pClkRefDevice = NULL;
     m_pErrorDevice = NULL;
 
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
@@ -406,16 +404,8 @@ int SoundManager::setupDevices() {
         }
     }
 
-    // NOTE(rryan): Atomically hand-off between the old master and the new
-    // one. Previously we set m_pClkRefDevice to NULL first and then picked a
-    // new master. Due to long time lags caused by SoundDevice::close() this
-    // lead to dozens, if not hundreds of callbacks where there was no
-    // m_pClkRefDevice so the engine was not processed and we buffer under-ran
-    // (causing stuttering / bleeps).
-    m_pClkRefDevice = pNewMasterClockRef;
-
-    if (m_pClkRefDevice) {
-        qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
+    if (pNewMasterClockRef) {
+        qDebug() << "Using" << pNewMasterClockRef->getDisplayName()
                  << "as output sound device clock reference";
     } else {
         qDebug() << "No output devices opened, no clock reference device set";
@@ -500,7 +490,7 @@ void SoundManager::writeProcess() {
     QListIterator<SoundDevice*> dev_it(m_devices);
     while (dev_it.hasNext()) {
         SoundDevice* device = dev_it.next();
-        if (device && device != m_pClkRefDevice) {
+        if (device) {
             device->writeProcess();
         }
     }
@@ -510,7 +500,7 @@ void SoundManager::readProcess() {
     QListIterator<SoundDevice*> dev_it(m_devices);
     while (dev_it.hasNext()) {
         SoundDevice* device = dev_it.next();
-        if (device && device != m_pClkRefDevice) {
+        if (device) {
             device->readProcess();
         }
     }

@@ -121,9 +121,6 @@ class SoundManager : public QObject {
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
-    // Clock reference, used to make sure the same device triggers buffer
-    // refresh every $latency-ms period
-    SoundDevice* m_pClkRefDevice;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
