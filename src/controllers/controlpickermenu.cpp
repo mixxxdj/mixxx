@@ -29,7 +29,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
-    addControl("[Master]", "crossfader", tr("Crossfader"), tr("Crossfader"), mixerMenu, true);
+    addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master Crossfader"), mixerMenu, true);
     addControl("[Master]", "volume", tr("Master Volume"), tr("Master volume"), mixerMenu, true);
     addControl("[Master]", "balance", tr("Master Balance"), tr("Master balance"), mixerMenu, true);
     addControl("[Master]", "delay", tr("Master Delay"), tr("Master delay"), mixerMenu, true);
@@ -714,7 +714,7 @@ void ControlPickerMenu::addControl(QString group, QString control, QString title
                                                  &m_actionMapper, SLOT(map()));
         m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
         addAvailableControl(ConfigKey(group, resetControl),
-                            title, resetDescription);
+                            resetDescription, resetDescription);
     }
 }
 
@@ -864,7 +864,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
             addAvailableControl(ConfigKey(group, control), title, description);
 
             if (addReset) {
-                QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+                QString resetTitle = QString("%1 (%2)").arg(title, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
                 QAction* pResetAction = resetControlMenu->addAction(
                     m_microphoneStr.arg(i), &m_actionMapper, SLOT(map()));
