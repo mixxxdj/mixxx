@@ -5,6 +5,7 @@
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
 #include "defs.h"
+#include "controlobject.h"
 
 typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
 
@@ -48,8 +49,8 @@ struct MessageStats {
 
 // static
 MidiInputMappings LearningUtils::guessMidiInputMappings(
-    const QList<QPair<MidiKey, unsigned char> >& messages) {
-
+        const ConfigKey& control,
+        const QList<QPair<MidiKey, unsigned char> >& messages) {
     QMap<unsigned char, MessageStats> stats_by_control;
     MessageStats stats;
 
@@ -120,7 +121,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
     bool no_0x00_value = !stats.value_histogram.contains(0x00);
     bool no_0x40_value = !stats.value_histogram.contains(0x40);
     bool multiple_values_around_0x40 = stats.value_histogram.value(0x41, 0) > 1 &&
-            stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value;
+            stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value &&
+            under_8_distinct_values;
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
@@ -144,12 +146,12 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiKey note_on;
         note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
         note_on.control = *stats.controls.begin();
-        mappings.append(MidiInputMapping(note_on, options));
+        mappings.append(MidiInputMapping(note_on, options, control));
 
         MidiKey note_off;
         note_off.status = MIDI_NOTE_OFF | *stats.channels.begin();
         note_off.control = note_on.control;
-        mappings.append(MidiInputMapping(note_off, options));
+        mappings.append(MidiInputMapping(note_off, options, control));
     } else if (one_control && one_channel &&
                two_values_7bit_max_and_min &&
                only_note_on) {
@@ -160,7 +162,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiKey note_on;
         note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
         note_on.control = *stats.controls.begin();
-        mappings.append(MidiInputMapping(note_on, options));
+        mappings.append(MidiInputMapping(note_on, options, control));
     } else if (one_control && one_channel &&
                one_value_7bit_max_or_min &&
                only_note_on) {
@@ -173,7 +175,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiKey note_on;
         note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
         note_on.control = *stats.controls.begin();
-        mappings.append(MidiInputMapping(note_on, options));
+        mappings.append(MidiInputMapping(note_on, options, control));
     } else if (one_control && one_channel &&
                only_cc && only_7bit_values &&
                no_0x00_value && (abs_differences_above_60 ||
@@ -194,7 +196,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiKey knob;
         knob.status = MIDI_CC | *stats.channels.begin();
         knob.control = *stats.controls.begin();
-        mappings.append(MidiInputMapping(knob, options));
+        mappings.append(MidiInputMapping(knob, options, control));
     } else if (one_control && one_channel && multiple_values_around_0x40) {
         // A "spread 64" ticker, where 0x40 is zero, positive jog values are
         // 0x41 and above, and negative jog values are 0x3F and below.
@@ -204,16 +206,17 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiKey knob;
         knob.status = MIDI_CC | *stats.channels.begin();
         knob.control = *stats.controls.begin();
-        mappings.append(MidiInputMapping(knob, options));
+        mappings.append(MidiInputMapping(knob, options, control));
     } else if (one_channel && has_cc && num_cc_controls == 1 && only_7bit_values) {
-        // A simple 7-bit knob. We ignore NOTE_ON and NOTE_OFF messages
-        // occurring in this stream. Some controllers (e.g. the VCI-100) emit a
-        // center-point NOTE_ON/NOTE_OFF instead of a CC value of
-        // 0x40. Supporting a reset when we get a center-point message requires
-        // refactoring LearningUtils to also be able to control the
-        // ControlObject we bind a mapping to so we can't do this currently but
-        // for now we can not totally screw up these mappings by ignoring
-        // NOTE_ON/NOTE_OFF if there are CC messages.
+        // A simple 7-bit knob that may have other messages mixed in. Some
+        // controllers (e.g. the VCI-100) emit a center-point NOTE_ON (with
+        // value 0x7F or 0x00 depending on if you are arriving at or leaving the
+        // center point) instead of a CC value of 0x40. If the control we are
+        // mapping has a reset control then we map the NOTE_ON messages to the
+        // reset control.
+        ConfigKey resetControl = control;
+        resetControl.item.append("_set_default");
+        bool hasResetControl = ControlObject::getControl(resetControl) != NULL;
 
         // Find the CC control (based on the predicate one must exist) and add a
         // binding for it.
@@ -223,15 +226,24 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
                 MidiKey knob;
                 knob.status = MIDI_CC | *stats.channels.begin();
                 knob.control = it.key();
-                mappings.append(MidiInputMapping(knob, MidiOptions()));
-                break;
+                mappings.append(MidiInputMapping(knob, MidiOptions(), control));
+            }
+
+            // If we found a NOTE_ON, map it to reset if the control exists.
+            // TODO(rryan): We need to modularize each recognizer here so we can
+            // run the button recognizer on these messages minus the CC
+            // messages.
+            if (hasResetControl && it->opcodes.contains(MIDI_NOTE_ON)) {
+                MidiKey note_on;
+                note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+                note_on.control = it.key();
+                mappings.append(MidiInputMapping(note_on, MidiOptions(), resetControl));
             }
         }
     } else if (one_channel && only_cc && stats.controls.size() == 2 &&
                stats_by_control.begin()->message_count > 10 &&
                stats_by_control.begin()->message_count ==
                (stats_by_control.begin() + 1)->message_count) {
-
         // If there are two CC controls with the same number of messages then we
         // assume this is a 14-bit CC knob. Now we need to determine which
         // control is the LSB and which is the MSB.
@@ -267,14 +279,14 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         msb.control = msb_control;
         MidiOptions msb_option;
         msb_option.fourteen_bit_msb = true;
-        mappings.append(MidiInputMapping(msb, msb_option));
+        mappings.append(MidiInputMapping(msb, msb_option, control));
 
         MidiKey lsb;
         lsb.status = MIDI_CC | *stats.channels.begin();
         lsb.control = lsb_control;
         MidiOptions lsb_option;
         lsb_option.fourteen_bit_lsb = true;
-        mappings.append(MidiInputMapping(lsb, lsb_option));
+        mappings.append(MidiInputMapping(lsb, lsb_option, control));
     }
 
     if (mappings.isEmpty() && !messages.isEmpty()) {
@@ -285,7 +297,15 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
         // TODO(rryan): Feedback to the user that we didn't do anything
         // intelligent here.
-        mappings.append(MidiInputMapping(messages.first().first, options));
+        mappings.append(MidiInputMapping(messages.first().first, options, control));
+    }
+
+    // Add control and description info to each learned input mapping.
+    for (MidiInputMappings::iterator it = mappings.begin();
+         it != mappings.end(); ++it) {
+        MidiInputMapping& mapping = *it;
+        mapping.description = QString("MIDI Learned from %1 messages.")
+                .arg(messages.size());
     }
 
     return mappings;
