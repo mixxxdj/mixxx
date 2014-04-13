@@ -20,6 +20,12 @@ struct MessageStats {
             last_value = message.second;
         }
 
+        MidiOpCode opcode = MidiUtils::opCodeFromStatus(message.first.status);
+        unsigned char channel = MidiUtils::channelFromStatus(message.first.status);
+        opcodes.insert(opcode);
+        channels.insert(channel);
+        controls.insert(message.first.control);
+
         message_count++;
         value_histogram[message.second]++;
 
@@ -31,6 +37,9 @@ struct MessageStats {
     }
 
     int message_count;
+    QSet<MidiOpCode> opcodes;
+    QSet<unsigned char> channels;
+    QSet<unsigned char> controls;
     QMap<unsigned char, int> value_histogram;
     // The range of differences for unsigned char is -255 through 255.
     QMap<int, int> abs_diff_histogram;
@@ -41,43 +50,26 @@ struct MessageStats {
 MidiInputMappings LearningUtils::guessMidiInputMappings(
     const QList<QPair<MidiKey, unsigned char> >& messages) {
 
-    QSet<MidiOpCode> opcodes;
-    QSet<unsigned char> channels;
-    QSet<unsigned char> controls;
     QMap<unsigned char, MessageStats> stats_by_control;
     MessageStats stats;
 
     // Analyze the message
     foreach (const MidiKeyAndValue& message, messages) {
-        MidiOpCode opcode = MidiUtils::opCodeFromStatus(message.first.status);
-        unsigned char channel = MidiUtils::channelFromStatus(message.first.status);
-        opcodes.insert(opcode);
-        channels.insert(channel);
-        controls.insert(message.first.control);
-
         stats.addMessage(message);
         stats_by_control[message.first.control].addMessage(message);
     }
 
     qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size() << "messages.";
 
-    if (channels.size() > 1) {
-        qDebug() << "More than one channel. Maybe you hit multiple controls?";
-    }
-
-    if (controls.size() > 1) {
-        qDebug() << "More than one control. Maybe you hit multiple controls?";
-    }
-
-    foreach (MidiOpCode opcode, opcodes) {
+    foreach (MidiOpCode opcode, stats.opcodes) {
         qDebug() << "Opcode:" << opcode;
     }
 
-    foreach (unsigned char channel, channels) {
+    foreach (unsigned char channel, stats.channels) {
         qDebug() << "Channel:" << channel;
     }
 
-    foreach (unsigned char control, controls) {
+    foreach (unsigned char control, stats.controls) {
         qDebug() << "Control:" << control;
     }
 
@@ -101,13 +93,22 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
     MidiInputMappings mappings;
 
-    bool one_control = controls.size() == 1;
-    bool one_channel = channels.size() == 1;
-    bool only_note_on = opcodes.size() == 1 && opcodes.contains(MIDI_NOTE_ON);
-    bool only_note_on_and_note_off = opcodes.size() == 2 &&
-            opcodes.contains(MIDI_NOTE_ON) &&
-            opcodes.contains(MIDI_NOTE_OFF);
-    bool only_cc = opcodes.size() == 1 && opcodes.contains(MIDI_CC);
+    bool one_control = stats.controls.size() == 1;
+    bool one_channel = stats.channels.size() == 1;
+    bool only_note_on = stats.opcodes.size() == 1 && stats.opcodes.contains(MIDI_NOTE_ON);
+    bool only_note_on_and_note_off = stats.opcodes.size() == 2 &&
+            stats.opcodes.contains(MIDI_NOTE_ON) &&
+            stats.opcodes.contains(MIDI_NOTE_OFF);
+
+    bool has_cc = stats.opcodes.contains(MIDI_CC);
+    bool only_cc = stats.opcodes.size() == 1 && has_cc;
+    int num_cc_controls = 0;
+    for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
+         it != stats_by_control.end(); ++it) {
+        if (it->opcodes.contains(MIDI_CC)) {
+            num_cc_controls++;
+        }
+    }
 
     bool two_values_7bit_max_and_min = stats.value_histogram.size() == 2 &&
             stats.value_histogram.contains(0x00) && stats.value_histogram.contains(0x7F);
@@ -141,12 +142,12 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiOptions options;
 
         MidiKey note_on;
-        note_on.status = MIDI_NOTE_ON | *channels.begin();
-        note_on.control = *controls.begin();
+        note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+        note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options));
 
         MidiKey note_off;
-        note_off.status = MIDI_NOTE_OFF | *channels.begin();
+        note_off.status = MIDI_NOTE_OFF | *stats.channels.begin();
         note_off.control = note_on.control;
         mappings.append(MidiInputMapping(note_off, options));
     } else if (one_control && one_channel &&
@@ -157,8 +158,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiOptions options;
 
         MidiKey note_on;
-        note_on.status = MIDI_NOTE_ON | *channels.begin();
-        note_on.control = *controls.begin();
+        note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+        note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options));
     } else if (one_control && one_channel &&
                one_value_7bit_max_or_min &&
@@ -170,8 +171,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         options.sw = true;
 
         MidiKey note_on;
-        note_on.status = MIDI_NOTE_ON | *channels.begin();
-        note_on.control = *controls.begin();
+        note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+        note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options));
     } else if (one_control && one_channel &&
                only_cc && only_7bit_values &&
@@ -191,8 +192,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiOptions options;
         options.selectknob = true;
         MidiKey knob;
-        knob.status = MIDI_CC | *channels.begin();
-        knob.control = *controls.begin();
+        knob.status = MIDI_CC | *stats.channels.begin();
+        knob.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(knob, options));
     } else if (one_control && one_channel && multiple_values_around_0x40) {
         // A "spread 64" ticker, where 0x40 is zero, positive jog values are
@@ -201,19 +202,32 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         options.spread64 = true;
 
         MidiKey knob;
-        knob.status = MIDI_CC | *channels.begin();
-        knob.control = *controls.begin();
+        knob.status = MIDI_CC | *stats.channels.begin();
+        knob.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(knob, options));
-    } else if (one_control && one_channel &&
-               only_cc && only_7bit_values) {
-        // A simple 7-bit knob.
-        MidiOptions options;
+    } else if (one_channel && has_cc && num_cc_controls == 1 && only_7bit_values) {
+        // A simple 7-bit knob. We ignore NOTE_ON and NOTE_OFF messages
+        // occurring in this stream. Some controllers (e.g. the VCI-100) emit a
+        // center-point NOTE_ON/NOTE_OFF instead of a CC value of
+        // 0x40. Supporting a reset when we get a center-point message requires
+        // refactoring LearningUtils to also be able to control the
+        // ControlObject we bind a mapping to so we can't do this currently but
+        // for now we can not totally screw up these mappings by ignoring
+        // NOTE_ON/NOTE_OFF if there are CC messages.
 
-        MidiKey knob;
-        knob.status = MIDI_CC | *channels.begin();
-        knob.control = *controls.begin();
-        mappings.append(MidiInputMapping(knob, options));
-    } else if (one_channel && only_cc && controls.size() == 2 &&
+        // Find the CC control (based on the predicate one must exist) and add a
+        // binding for it.
+        for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
+             it != stats_by_control.end(); ++it) {
+            if (it->opcodes.contains(MIDI_CC)) {
+                MidiKey knob;
+                knob.status = MIDI_CC | *stats.channels.begin();
+                knob.control = it.key();
+                mappings.append(MidiInputMapping(knob, MidiOptions()));
+                break;
+            }
+        }
+    } else if (one_channel && only_cc && stats.controls.size() == 2 &&
                stats_by_control.begin()->message_count > 10 &&
                stats_by_control.begin()->message_count ==
                (stats_by_control.begin() + 1)->message_count) {
@@ -227,8 +241,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // signals, we can hack this by looking at the absolute differences
         // between messages. We expect to see many high/low wrap-arounds for the
         // LSB.
-        int control1 = *controls.begin();
-        int control2 = *(controls.begin() + 1);
+        int control1 = *stats.controls.begin();
+        int control2 = *(stats.controls.begin() + 1);
 
         int control1_max_abs_diff =
                 (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
@@ -249,14 +263,14 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // MSB.
 
         MidiKey msb;
-        msb.status = MIDI_CC | *channels.begin();
+        msb.status = MIDI_CC | *stats.channels.begin();
         msb.control = msb_control;
         MidiOptions msb_option;
         msb_option.fourteen_bit_msb = true;
         mappings.append(MidiInputMapping(msb, msb_option));
 
         MidiKey lsb;
-        lsb.status = MIDI_CC | *channels.begin();
+        lsb.status = MIDI_CC | *stats.channels.begin();
         lsb.control = lsb_control;
         MidiOptions lsb_option;
         lsb_option.fourteen_bit_lsb = true;

@@ -65,6 +65,57 @@ TEST_F(LearningUtilsTest, CC7BitKnob) {
               mappings.at(0));
 }
 
+TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton) {
+    // This style of 7-bit CC knob is found on controllers like the
+    // VCI-100. They do not emit a center-point CC message with value 0x40 and
+    // instead emit a NOTE_ON/NOTE_OFF pair for the center point. This causes
+    // Mixxx to confuse these knobs for buttons and also cause them to never
+    // truly reach their center point. For now we can't solve the never reaching
+    // the center point issue, but we can check that these streams are not
+    // confused as buttons.
+
+    // Starting outside the center point.
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x70);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x60);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x50);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x41);
+    addMessage(MIDI_NOTE_ON | 0x01, 0xE0, 0x7F);
+    addMessage(MIDI_NOTE_OFF | 0x01, 0xE0, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x3F);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x30);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x20);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x10);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+
+    MidiInputMappings mappings =
+            LearningUtils::guessMidiInputMappings(m_messages);
+
+    ASSERT_EQ(1, mappings.size());
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10), MidiOptions()),
+              mappings.at(0));
+
+    m_messages.clear();
+
+    // Starting on the center point.
+    addMessage(MIDI_NOTE_ON | 0x01, 0xE0, 0x7F);
+    addMessage(MIDI_NOTE_OFF | 0x01, 0xE0, 0x00);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x3F);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x35);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x30);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x25);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x20);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x15);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x10);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x05);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+
+    mappings = LearningUtils::guessMidiInputMappings(m_messages);
+    ASSERT_EQ(1, mappings.size());
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10), MidiOptions()),
+              mappings.at(0));
+}
+
 TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
     // A CC 14-bit knob with the MSB as the first message. We treat streams of
     // single-channel, CC opcode, 2 control, equal size message streams as
