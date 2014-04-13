@@ -14,7 +14,6 @@
 EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
@@ -56,7 +55,7 @@ bool EngineAux::isActive() {
 void EngineAux::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
-        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
     m_sampleBuffer.clear();
@@ -66,7 +65,7 @@ void EngineAux::onInputConfigured(AudioInput input) {
 void EngineAux::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
-        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
     m_sampleBuffer.clear();
@@ -149,8 +148,6 @@ void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferS
         m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
                                          features);
     }
-    // Apply clipping
-    m_clipping.process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_vuMeter.process(pOut, pOut, iBufferSize);
 }

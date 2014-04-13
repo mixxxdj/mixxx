@@ -50,8 +50,10 @@ typedef enum {
     MIDI_OPTION_SELECTKNOB    = 0x0200,
     MIDI_OPTION_SOFT_TAKEOVER = 0x0400,
     MIDI_OPTION_SCRIPT        = 0x0800,
+    MIDI_OPTION_14BIT_MSB     = 0x1000,
+    MIDI_OPTION_14BIT_LSB     = 0x2000,
     // Should mask all bits used.
-    MIDI_OPTION_MASK          = 0x0FFF,
+    MIDI_OPTION_MASK          = 0xFFFF,
 } MidiOption;
 
 struct MidiOptions {
@@ -80,6 +82,10 @@ struct MidiOptions {
             bool selectknob    : 1;    // relative knob which can be turned forever and outputs a signed value
             bool soft_takeover : 1;    // prevents sudden changes when hardware position differs from software value
             bool script        : 1;    // maps a MIDI control to a custom MixxxScript function
+            // the message supplies the MSB of a 14-bit message
+            bool fourteen_bit_msb : 1;
+            // the message supplies the LSB of a 14-bit message
+            bool fourteen_bit_lsb : 1;
             // 20 more available for future expansion
         };
     };

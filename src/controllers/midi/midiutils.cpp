@@ -56,6 +56,10 @@ QString MidiUtils::midiOptionToTranslatedString(MidiOption option) {
             return QObject::tr("SoftTakeover");
         case MIDI_OPTION_SCRIPT:
             return QObject::tr("Script");
+        case MIDI_OPTION_14BIT_LSB:
+            return QObject::tr("14-bit (LSB)");
+        case MIDI_OPTION_14BIT_MSB:
+            return QObject::tr("14-bit (MSB)");
         default:
             return QObject::tr("Unknown (0x%1)")
                     .arg(option, 4, 16, QLatin1Char('0'));

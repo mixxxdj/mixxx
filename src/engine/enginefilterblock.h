@@ -62,6 +62,7 @@ class EngineFilterBlock : public EngineObject {
 
     int ilowFreq, ihighFreq;
     bool blofi;
+    bool m_eqNeverTouched;
 };
 
 #endif
