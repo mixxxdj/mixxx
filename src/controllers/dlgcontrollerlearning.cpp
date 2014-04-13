@@ -47,7 +47,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     QString nextTitle(tr("Now test it out!"));
     QString nextInstructionBody(tr(
-            "If you manipulate the control, you should see the Mixxx UI "
+            "If you manipulate the control, you should see the Mixxx user interface "
             "respond the way you expect."));
     QString nextTroubleshootTitle(tr("Not quite right?"));
     QString nextTroubleshootBody(tr(
