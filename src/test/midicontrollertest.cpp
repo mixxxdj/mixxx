@@ -47,7 +47,7 @@ class MidiControllerTest : public MixxxTest {
     QScopedPointer<MockMidiController> m_pController;
 };
 
-TEST_F(MidiControllerTest, ReceiveMessage_PushButton_OnOff) {
+TEST_F(MidiControllerTest, ReceiveMessage_PushButton_PushOnOff) {
     // Most MIDI controller send push-buttons as (NOTE_ON, 0x7F) for press and
     // (NOTE_OFF, 0x00) for release.
     ConfigKey key("[Channel1]", "hotcue_1_activate");
@@ -75,7 +75,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButton_OnOff) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_PushButton_OnOn) {
+TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOn) {
     // Some MIDI controllers send push-buttons as (NOTE_ON, 0x7f) for press and
     // (NOTE_ON, 0x00) for release.
     ConfigKey key("[Channel1]", "hotcue_1_activate");
@@ -127,7 +127,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButton_CC) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_OnOff) {
+TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOff) {
     // Most MIDI controller send push-buttons as (NOTE_ON, 0x7F) for press and
     // (NOTE_OFF, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
@@ -156,7 +156,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_OnOff) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_OnOn) {
+TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
     // Some MIDI controllers send push-buttons as (NOTE_ON, 0x7f) for press and
     // (NOTE_ON, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
@@ -183,7 +183,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_OnOn) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_CC) {
+TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
     // Some MIDI controllers (e.g. Korg nanoKONTROL) send momentary push-buttons
     // as (CC, 0x7f) for press and (CC, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
