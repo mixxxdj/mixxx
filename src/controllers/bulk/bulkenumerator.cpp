@@ -36,7 +36,9 @@ static bool is_interesting(struct libusb_device_descriptor *desc) {
 }
 
 QList<Controller*> BulkEnumerator::queryDevices() {
-    qDebug() << "Scanning USB Bulk devices:";
+    if (m_devices.length()>0)
+        return m_devices;
+
     libusb_device **list;
     ssize_t cnt = libusb_get_device_list(m_context, &list);
     ssize_t i = 0;

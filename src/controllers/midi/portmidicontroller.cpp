@@ -31,6 +31,10 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
     if (m_pOutputDeviceInfo) {
         setOutputDevice(m_pOutputDeviceInfo->output);
     }
+
+    // PortMIDI devices are always connected, until we implement hotplug
+    // for portMIDI
+    setConnected(true);
 }
 
 PortMidiController::~PortMidiController() {
@@ -215,6 +219,10 @@ bool PortMidiController::poll() {
 }
 
 void PortMidiController::sendWord(unsigned int word) {
+    if (!isConnected()) {
+        return;
+    }
+
     if (m_pOutputStream) {
         PmError err = Pm_WriteShort(m_pOutputStream, 0, word);
         if (err != pmNoError) {

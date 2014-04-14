@@ -20,6 +20,8 @@ class ControllerLearningEventFilter;
 // Function to sort controllers by name
 bool controllerCompare(Controller *a,Controller *b);
 
+bool controllersModified(QList<Controller*> c_old, QList<Controller*> c_new);
+
 /** Manages enumeration/operation/deletion of hardware controllers. */
 class ControllerManager : public QObject {
     Q_OBJECT
@@ -33,17 +35,17 @@ class ControllerManager : public QObject {
     PresetInfoEnumerator* getPresetInfoManager();
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
-    void setUpDevices() { emit(requestSetUpDevices()); };
+    void updateDevices() { emit(requestUpdateDevices()); };
     void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
 
   signals:
     void devicesChanged();
-    void requestSetUpDevices();
+    void requestUpdateDevices();
     void requestShutdown();
     void requestSave(bool onlyActive);
 
   public slots:
-    void updateControllerList();
+    bool updateControllerList();
 
     void openController(Controller* pController);
     void closeController(Controller* pController);
@@ -55,7 +57,7 @@ class ControllerManager : public QObject {
     // Open whatever controllers are selected in the preferences. This currently
     // only runs on start-up but maybe should instead be signaled by the
     // preferences dialog on apply, and only open/close changed devices
-    int slotSetUpDevices();
+    int slotUpdateDevices();
     void slotShutdown();
     bool loadPreset(Controller* pController,
                     ControllerPresetPointer preset);
@@ -66,6 +68,8 @@ class ControllerManager : public QObject {
     void startPolling();
     void stopPolling();
     void maybeStartOrStopPolling();
+    void startDeviceUpdateTimer();
+    int setupController(Controller *pController);
 
     static QString presetFilenameFromName(QString name) {
         return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
@@ -77,6 +81,7 @@ class ControllerManager : public QObject {
     ConfigObject<ConfigValue> *m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;
+    QTimer m_updateTimer;
     mutable QMutex m_mutex;
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;

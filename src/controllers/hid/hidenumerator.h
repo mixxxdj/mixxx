@@ -19,6 +19,7 @@ class HidEnumerator : public ControllerEnumerator {
 
   private:
     QList<Controller*> m_devices;
+    bool isDeviceLoaded(struct hid_device_info *device);
 };
 
 #endif
