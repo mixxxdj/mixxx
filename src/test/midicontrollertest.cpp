@@ -491,10 +491,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
 TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
     ConfigKey key("[Channel1]", "rate");
 
-    // NOTE(rryan): Currently 14-bit pitch bend only works for potmeters that
-    // range from -1 to 1.
-    const double kMinValue = -1.0;
-    const double kMaxValue = 1.0;
+    const double kMinValue = -1234.5;
+    const double kMaxValue = 678.9;
     const double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
     ControlPotmeter potmeter(key, kMinValue, kMaxValue);
     unsigned char channel = 0x01;
@@ -521,7 +519,6 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
     // parameter should map to the middle value plus a tiny amount. Scaling is
     // not quite linear for MIDI parameters so just check that incrementing the
     // LSB by 1 is greater than the middle value.
-    potmeter.set(-0.5); // Just something that isn't the middle mark.
     receive(MIDI_PITCH_BEND | channel, 0x01, 0x40);
     EXPECT_LT(kMiddleValue, potmeter.get());
 }
