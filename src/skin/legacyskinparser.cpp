@@ -453,7 +453,7 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     } else if (nodeName == "Library") {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
-        result = wrapWidget(parseLabelWidget<WKey>(node));
+        result = wrapWidget(parseEngineKey(node));
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
@@ -870,6 +870,14 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
     setupLabelWidget(node, p);
     return p;
+}
+
+QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
+    WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
+    setupLabelWidget(node, pEngineKey);
+    return pEngineKey;
 }
 
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
@@ -1489,12 +1497,17 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
     ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
 
-    while (!con.isNull()) {
+    for (QDomNode con = m_pContext->selectNode(node, "Connection");
+            !con.isNull();
+            con = con.nextSibling()) {
         // Check that the control exists
         bool created = false;
         ControlObject* control = controlFromConfigNode(
                 con.toElement(), "ConfigKey", &created);
 
+        if (!control) {
+            continue;
+        }
 
         ValueTransformer* pTransformer = NULL;
         if (m_pContext->hasNode(con, "Transform")) {
@@ -1693,7 +1706,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 }
             }
         }
-        con = con.nextSibling();
     }
 
     // Legacy behavior: The last left-button or no-button connection with

@@ -218,11 +218,27 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
+void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
+    Q_UNUSED(pEvent);
+    m_dOldValue = -1;
+    m_iPos = -1;
+    // Re-calculate m_iPos based on our new width/height.
+    onConnectedControlChanged(getControlParameter(), 0);
+}
+
 void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
     // WARNING: The second parameter to this method is unused and called with
     // invalid values in parts of WSliderComposed. Do not use it unless you fix
     // this.
-    if (!m_bDrag && m_dOldValue != dParameter) {
+
+    // We don't update slider values while you're dragging them. This way you
+    // don't have to "fight" with a controller that is also changing the
+    // control.
+    if (m_bDrag) {
+        return;
+    }
+
+    if (m_dOldValue != dParameter) {
         m_dOldValue = dParameter;
 
         // Calculate handle position
@@ -230,14 +246,22 @@ void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
             dParameter = 1.0 - dParameter;
         }
         int sliderLength = m_bHorizontal ? width() : height();
-        m_iPos = static_cast<int>(dParameter * (sliderLength - m_iHandleLength));
 
-        if (m_iPos > (sliderLength - m_iHandleLength)) {
-            m_iPos = sliderLength - m_iHandleLength;
-        } else if (m_iPos < 0) {
-            m_iPos = 0;
+        int newPos = static_cast<int>(dParameter * (sliderLength - m_iHandleLength));
+        if (newPos > (sliderLength - m_iHandleLength)) {
+            newPos = sliderLength - m_iHandleLength;
+        } else if (newPos < 0) {
+            newPos = 0;
         }
-        update();
+
+        // Check a second time for no-ops. It's possible the parameter changed
+        // but the visible pixmap didn't. Only update() the widget if we're
+        // really sure we need to since this involves painting ALL of its
+        // parents.
+        if (newPos != m_iPos) {
+            m_iPos = newPos;
+            update();
+        }
     }
 }
 

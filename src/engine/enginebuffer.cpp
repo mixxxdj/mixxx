@@ -57,9 +57,6 @@
 
 #include "trackinfoobject.h"
 
-const double kMaxPlayposRange = 1.14;
-const double kMinPlayposRange = -0.14;
-
 EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_engineLock(QMutex::Recursive),
@@ -182,10 +179,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
 
-    // Slider to show and change song position. kMinPlayposRange and
-    // kMaxPlayposRange map conveniently to the 0-127 range of 7-bit MIDI.
     m_playposSlider = new ControlLinPotmeter(
-        ConfigKey(m_group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
+        ConfigKey(m_group, "playposition"), 0.0, 1.0, true);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);
@@ -543,22 +538,23 @@ void EngineBuffer::slotControlSeekExact(double abs) {
 }
 
 void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
-    if (isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
-        // This seek is ridiculous.
+    // Prevent NaN's from sneaking into the engine.
+    if (isnan(change)) {
         return;
     }
 
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(change * m_file_length_old);
 
-    // TODO(XXX) currently not limiting seeks file_length_old instead of
-    // kMaxPlayposRange.
-    if (new_playpos > m_file_length_old)
+    // Don't allow the playposition to go past the end.
+    if (new_playpos > m_file_length_old) {
         new_playpos = m_file_length_old;
+    }
 
     // Ensure that the file position is even (remember, stereo channel files...)
-    if (!even((int)new_playpos))
+    if (!even((int)new_playpos)) {
         new_playpos--;
+    }
 
 #ifdef __VINYLCONTROL__
     // Notify the vinyl control that a seek has taken place in case it is in

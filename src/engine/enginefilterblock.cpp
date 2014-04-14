@@ -37,6 +37,7 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     ilowFreq = 0;
     ihighFreq = 0;
     blofi = false;
+    m_eqNeverTouched = true;
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
     m_iOldSampleRate = 0;
@@ -167,6 +168,34 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
         fHigh = filterpotHigh->get(); //*1.2;
 
     setFilters();
+
+    // If the user has never touched the Eq controls (they are still at zero)
+    // Then pass through.  As soon as the user twiddles one, actually activate
+    // the EQ code and crossfade to it.  This will save CPU if the user never
+    // uses EQ but also doesn't know to disable it.
+    if (m_eqNeverTouched) {
+        if (fLow != 1. || fMid != 1. || fHigh != 1.) {
+            // First process the new EQ'd signals.
+            low->process(pIn, m_pTemp1, iBufferSize);
+            band->process(pIn, m_pTemp2, iBufferSize);
+            high->process(pIn, m_pTemp3, iBufferSize);
+
+            // Build the new EQ'd buffer in pOutput.
+            SampleUtil::copy3WithGain(pOutput,
+                                      m_pTemp1, fLow,
+                                      m_pTemp2, fMid,
+                                      m_pTemp3, fHigh, iBufferSize);
+
+            // Fade from unaffected (pIn) to the EQ'd buffer (now in pOutput).
+            SampleUtil::linearCrossfadeBuffers(pOutput, pIn, pOutput,
+                                               iBufferSize);
+
+            m_eqNeverTouched = false;
+        } else {
+            SampleUtil::copyWithGain(pOutput, pIn, 1, iBufferSize);
+        }
+        return;
+    }
 
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);

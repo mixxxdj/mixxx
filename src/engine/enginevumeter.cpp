@@ -20,16 +20,23 @@
 
 #include "engine/enginevumeter.h"
 #include "controlpotmeter.h"
+#include "controlobjectslave.h"
 #include "sampleutil.h"
+
 
 EngineVuMeter::EngineVuMeter(const char* group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
     // left channel VU meter
-    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
+    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
     // right channel VU meter
-    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
+    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
+
+    // Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
+    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
+
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
     // Initialize the calculation:
     reset();
@@ -40,18 +47,22 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlVuMeter;
     delete m_ctrlVuMeterL;
     delete m_ctrlVuMeterR;
+    delete m_ctrlPeakIndicator;
 }
 
 void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
-    SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
+
+    int sampleRate = (int)m_pSampleRate->get();
+
+    bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
     m_iSamplesCalculated += iBufferSize/2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (44100/2/UPDATE_RATE)) {
+    if (m_iSamplesCalculated > (sampleRate/VU_UPDATE_RATE)) {
         doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
         doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
 
@@ -74,6 +85,21 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
         m_iSamplesCalculated = 0;
         m_fRMSvolumeSumL = 0;
         m_fRMSvolumeSumR = 0;
+    }
+
+    if (clipped) {
+        if (m_ctrlPeakIndicator->get() != 1.) {
+            m_ctrlPeakIndicator->set(1.);
+        }
+        m_peakDuration = PEAK_DURATION * sampleRate / iBufferSize / 2000;
+    }
+
+    if (m_peakDuration <= 0) {
+        if (m_ctrlPeakIndicator->get() == 1.) {
+            m_ctrlPeakIndicator->set(0.);
+        }
+    } else {
+        --m_peakDuration;
     }
 }
 
@@ -98,9 +124,12 @@ void EngineVuMeter::reset() {
     m_ctrlVuMeter->set(0);
     m_ctrlVuMeterL->set(0);
     m_ctrlVuMeterR->set(0);
+    m_ctrlPeakIndicator->set(0);
+
     m_iSamplesCalculated = 0;
     m_fRMSvolumeL = 0;
     m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;
     m_fRMSvolumeSumR = 0;
+    m_peakDuration = 0;
 }

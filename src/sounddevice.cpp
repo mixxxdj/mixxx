@@ -206,6 +206,11 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
             pAudioOutputBuffer = m_pRenderBuffer;
         }
 
+        // TODO(DSC) Ugly hack to avoid overflow in integer conversion later.
+        // The copy part of this function should be used after mergeing the multi soundcard fix.
+        SampleUtil::copyClampBuffer(1.0f, -1.0f,
+                (CSAMPLE*)pAudioOutputBuffer, pAudioOutputBuffer, (int)iFramesPerBuffer * 2);
+
         if (iChannelCount == 1) {
             // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
             // output then we need to downsample.
