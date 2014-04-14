@@ -486,6 +486,42 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
     receive(MIDI_CC | channel, lsb_control, 0x01);
     receive(MIDI_CC | channel, msb_control, 0x40);
     EXPECT_LT(kMiddleValue, potmeter.get());
+}
 
+TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
+    ConfigKey key("[Channel1]", "rate");
 
+    // NOTE(rryan): Currently 14-bit pitch bend only works for potmeters that
+    // range from -1 to 1.
+    const double kMinValue = -1.0;
+    const double kMaxValue = 1.0;
+    const double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
+    ControlPotmeter potmeter(key, kMinValue, kMaxValue);
+    unsigned char channel = 0x01;
+
+    // The control is ignored in mappings for messages where the control is part
+    // of the payload.
+    addMapping(MidiInputMapping(MidiKey(MIDI_PITCH_BEND | channel, 0xFF),
+                                MidiOptions(), key));
+    loadPreset(m_preset);
+
+    // Receive a 0x0000, MIDI parameter should map to the min value.
+    receive(MIDI_PITCH_BEND | channel, 0x00, 0x00);
+    EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
+
+    // Receive a 0x3FFF, MIDI parameter should map to the potmeter max value.
+    receive(MIDI_PITCH_BEND | channel, 0x7F, 0x7F);
+    EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
+
+    // Receive a 0x2000, MIDI parameter should map to the potmeter middle value.
+    receive(MIDI_PITCH_BEND | channel, 0x00, 0x40);
+    EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
+
+    // Check the 14-bit resolution is actually present. Receive a 0x2001, MIDI
+    // parameter should map to the middle value plus a tiny amount. Scaling is
+    // not quite linear for MIDI parameters so just check that incrementing the
+    // LSB by 1 is greater than the middle value.
+    potmeter.set(-0.5); // Just something that isn't the middle mark.
+    receive(MIDI_PITCH_BEND | channel, 0x01, 0x40);
+    EXPECT_LT(kMiddleValue, potmeter.get());
 }
