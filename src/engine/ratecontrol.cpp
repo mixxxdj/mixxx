@@ -146,8 +146,10 @@ RateControl::RateControl(const char* _group,
     m_pScratchEnable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
     m_pScratchEnable->set(0);
 
-    m_pScratch2AlwaysOn = new ControlPushButton(ConfigKey(_group, "scratch2_always_on"));
-    m_pScratch2AlwaysOn->set(0);
+    m_pScratch2Scratching = new ControlPushButton(ConfigKey(_group, "scratch2_scratching"));
+    // Enable by default, because it was always scratching befor introducing this control.
+    m_pScratch2Scratching->set(1.0);
+
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
@@ -419,11 +421,11 @@ double RateControl::calculateRate(double baserate, bool paused,
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
         bool useScratch2Value = m_pScratchEnable->get() != 0;
 
-        // scratch2_enable is normally enough to determine if the user is
-        // scratching or not, but some controllers have it on all the time,
-        // and if they have told us they do this the signal shouldn't be
-        // reported.
-        if (useScratch2Value && !m_pScratch2AlwaysOn->get()) {
+        // By default scratch2_enable enough to determine if the user is
+        // scratching or not. Moving platter controllers have to disable
+        // "scratch2_scratching" if they are not scratching, to allow things
+        // like key-lock
+        if (useScratch2Value && m_pScratch2Scratching->get()) {
             *reportScratching = true;
         }
 
