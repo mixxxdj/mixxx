@@ -47,7 +47,9 @@ class MidiControllerTest : public MixxxTest {
     QScopedPointer<MockMidiController> m_pController;
 };
 
-TEST_F(MidiControllerTest, ReceiveMessage_PushButton) {
+TEST_F(MidiControllerTest, ReceiveMessage_PushButton_OnOff) {
+    // Most MIDI controller send push-buttons as (NOTE_ON, 0x7F) for press and
+    // (NOTE_OFF, 0x00) for release.
     ConfigKey key("[Channel1]", "hotcue_1_activate");
     ControlPushButton cpb(key);
 
@@ -73,7 +75,61 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButton) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton) {
+TEST_F(MidiControllerTest, ReceiveMessage_PushButton_OnOn) {
+    // Some MIDI controllers send push-buttons as (NOTE_ON, 0x7f) for press and
+    // (NOTE_ON, 0x00) for release.
+    ConfigKey key("[Channel1]", "hotcue_1_activate");
+    ControlPushButton cpb(key);
+
+    unsigned char channel = 0x01;
+    unsigned char control = 0x10;
+
+    addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_ON | channel, control),
+                                MidiOptions(), key));
+    loadPreset(m_preset);
+
+    // Receive an on/off, sets the control on/off with each press.
+    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    EXPECT_LT(0.0, cpb.get());
+    receive(MIDI_NOTE_ON | channel, control, 0x00);
+    EXPECT_DOUBLE_EQ(0.0, cpb.get());
+
+    // Receive an on/off, sets the control on/off with each press.
+    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    EXPECT_LT(0.0, cpb.get());
+    receive(MIDI_NOTE_ON | channel, control, 0x00);
+    EXPECT_DOUBLE_EQ(0.0, cpb.get());
+}
+
+TEST_F(MidiControllerTest, ReceiveMessage_PushButton_CC) {
+    // Some MIDI controllers (e.g. Korg nanoKONTROL) send momentary push-buttons
+    // as (CC, 0x7f) for press and (CC, 0x00) for release.
+    ConfigKey key("[Channel1]", "hotcue_1_activate");
+    ControlPushButton cpb(key);
+
+    unsigned char channel = 0x01;
+    unsigned char control = 0x10;
+
+    addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
+                                MidiOptions(), key));
+    loadPreset(m_preset);
+
+    // Receive an on/off, sets the control on/off with each press.
+    receive(MIDI_CC | channel, control, 0x7F);
+    EXPECT_LT(0.0, cpb.get());
+    receive(MIDI_CC | channel, control, 0x00);
+    EXPECT_DOUBLE_EQ(0.0, cpb.get());
+
+    // Receive an on/off, sets the control on/off with each press.
+    receive(MIDI_CC | channel, control, 0x7F);
+    EXPECT_LT(0.0, cpb.get());
+    receive(MIDI_CC | channel, control, 0x00);
+    EXPECT_DOUBLE_EQ(0.0, cpb.get());
+}
+
+TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_OnOff) {
+    // Most MIDI controller send push-buttons as (NOTE_ON, 0x7F) for press and
+    // (NOTE_OFF, 0x00) for release.
     ConfigKey key("[Channel1]", "keylock");
     ControlPushButton cpb(key);
     cpb.setButtonMode(ControlPushButton::TOGGLE);
@@ -96,6 +152,60 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton) {
     // Receive an on/off, toggles the control.
     receive(MIDI_NOTE_ON | channel, control, 0x7F);
     receive(MIDI_NOTE_OFF | channel, control, 0x00);
+
+    EXPECT_DOUBLE_EQ(0.0, cpb.get());
+}
+
+TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_OnOn) {
+    // Some MIDI controllers send push-buttons as (NOTE_ON, 0x7f) for press and
+    // (NOTE_ON, 0x00) for release.
+    ConfigKey key("[Channel1]", "keylock");
+    ControlPushButton cpb(key);
+    cpb.setButtonMode(ControlPushButton::TOGGLE);
+
+    unsigned char channel = 0x01;
+    unsigned char control = 0x10;
+
+    addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_ON | channel, control),
+                                MidiOptions(), key));
+    loadPreset(m_preset);
+
+    // Receive an on/off, toggles the control.
+    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receive(MIDI_NOTE_ON | channel, control, 0x00);
+
+    EXPECT_LT(0.0, cpb.get());
+
+    // Receive an on/off, toggles the control.
+    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receive(MIDI_NOTE_ON | channel, control, 0x00);
+
+    EXPECT_DOUBLE_EQ(0.0, cpb.get());
+}
+
+TEST_F(MidiControllerTest, ReceiveMessage_ToggleButton_CC) {
+    // Some MIDI controllers (e.g. Korg nanoKONTROL) send momentary push-buttons
+    // as (CC, 0x7f) for press and (CC, 0x00) for release.
+    ConfigKey key("[Channel1]", "keylock");
+    ControlPushButton cpb(key);
+    cpb.setButtonMode(ControlPushButton::TOGGLE);
+
+    unsigned char channel = 0x01;
+    unsigned char control = 0x10;
+
+    addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
+                                MidiOptions(), key));
+    loadPreset(m_preset);
+
+    // Receive an on/off, toggles the control.
+    receive(MIDI_CC | channel, control, 0x7F);
+    receive(MIDI_CC | channel, control, 0x00);
+
+    EXPECT_LT(0.0, cpb.get());
+
+    // Receive an on/off, toggles the control.
+    receive(MIDI_CC | channel, control, 0x7F);
+    receive(MIDI_CC | channel, control, 0x00);
 
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
