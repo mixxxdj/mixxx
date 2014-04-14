@@ -7,7 +7,6 @@
 #include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
-#include "engine/engineclipping.h"
 #include "engine/enginevumeter.h"
 #include "soundmanagerutil.h"
 
@@ -48,11 +47,9 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
 
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
-    EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
-    CSAMPLE* m_pConversionBuffer;
-    CircularBuffer<CSAMPLE> m_sampleBuffer;
+    const CSAMPLE* volatile m_sampleBuffer;
 
     bool m_wasActive;
 };

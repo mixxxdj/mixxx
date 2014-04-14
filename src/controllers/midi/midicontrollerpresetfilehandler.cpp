@@ -81,6 +81,8 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
             if (strMidiOption == "selectknob")options.selectknob = true;
             if (strMidiOption == "soft-takeover") options.soft_takeover = true;
             if (strMidiOption == "script-binding") options.script = true;
+            if (strMidiOption == "fourteen-bit-msb") options.fourteen_bit_msb = true;
+            if (strMidiOption == "fourteen-bit-lsb") options.fourteen_bit_lsb = true;
 
             optionsNode = optionsNode.nextSiblingElement();
         }
@@ -318,6 +320,14 @@ QDomElement MidiControllerPresetFileHandler::inputMappingToXML(
         }
         if (mapping.options.script) {
             QDomElement singleOption = doc->createElement("script-binding");
+            optionsNode.appendChild(singleOption);
+        }
+        if (mapping.options.fourteen_bit_msb) {
+            QDomElement singleOption = doc->createElement("fourteen-bit-msb");
+            optionsNode.appendChild(singleOption);
+        }
+        if (mapping.options.fourteen_bit_lsb) {
+            QDomElement singleOption = doc->createElement("fourteen-bit-lsb");
             optionsNode.appendChild(singleOption);
         }
     }

@@ -38,13 +38,25 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    virtual int open();
+    virtual int open(bool isClkRefDevice, int syncBuffers);
     virtual int close();
+    virtual void readProcess();
+    virtual void writeProcess();
     virtual QString getError() const;
 
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)
     int callbackProcess(const unsigned int framesPerBuffer,
+                        CSAMPLE *output, const CSAMPLE* in,
+                        const PaStreamCallbackTimeInfo *timeInfo,
+                        PaStreamCallbackFlags statusFlags);
+    // Same as above but with drift correction
+    int callbackProcessDrift(const unsigned int framesPerBuffer,
+                        CSAMPLE *output, const CSAMPLE* in,
+                        const PaStreamCallbackTimeInfo *timeInfo,
+                        PaStreamCallbackFlags statusFlags);
+    // The same as above but drives the MixxEngine
+    int callbackProcessClkRef(const unsigned int framesPerBuffer,
                         CSAMPLE *output, const CSAMPLE* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
@@ -56,7 +68,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
   private:
     // PortAudio stream for this device.
-    PaStream* m_pStream;
+    PaStream* volatile m_pStream;
     // PortAudio device index for this device.
     PaDeviceIndex m_devId;
     // Struct containing information about this device. Don't free() it, it
@@ -66,17 +78,36 @@ class SoundDevicePortAudio : public SoundDevice {
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
     PaStreamParameters m_inputParams;
+    FIFO<CSAMPLE>* m_outputFifo;
+    FIFO<CSAMPLE>* m_inputFifo;
+    bool m_outputDrift;
+    bool m_inputDrift;
+
     // A string describing the last PortAudio error to occur.
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
     ControlObject* m_pMasterUnderflowCount;
     int m_underflowUpdateCount;
+    static volatile int m_underflowHappend;
+    int m_syncBuffers;
 };
 
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by
 // PortAudio, which knows nothing about C++.
 int paV19Callback(const void* inputBuffer, void* outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo* timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void* soundDevice);
+
+int paV19CallbackDrift(const void* inputBuffer, void* outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo* timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void* soundDevice);
+
+int paV19CallbackClkRef(const void* inputBuffer, void* outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo* timeInfo,
                   PaStreamCallbackFlags statusFlags,

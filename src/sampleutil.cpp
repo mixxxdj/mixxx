@@ -196,18 +196,29 @@ void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
                                   const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = 0.0f;
     CSAMPLE fAbsR = 0.0f;
+    bool clipped = false;
 
     for (int i = 0; i < iNumSamples; i += 2) {
-        fAbsL += fabs(pBuffer[i]);
-        fAbsR += fabs(pBuffer[i+1]);
+        CSAMPLE absl = fabs(pBuffer[i]);
+        if (absl > 1.0) {
+            clipped = true;
+        }
+        fAbsL += absl;
+
+        CSAMPLE absr = fabs(pBuffer[i+1]);
+        if (absr > 1.0) {
+            clipped = true;
+        }
+        fAbsR += absr;
     }
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
+    return clipped;
 }
 
 // static
@@ -225,35 +236,11 @@ bool SampleUtil::isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
 }
 
 // static
-bool SampleUtil::copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
-                                 CSAMPLE* pDest, const CSAMPLE* pSrc,
+void SampleUtil::copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                  int iNumSamples) {
-    bool clamped = false;
-    if (pSrc == pDest) {
-        for (int i = 0; i < iNumSamples; ++i) {
-            CSAMPLE sample = pSrc[i];
-            if (sample > fMax) {
-                clamped = true;
-                pDest[i] = fMax;
-            } else if (sample < fMin) {
-                clamped = true;
-                pDest[i] = fMin;
-            }
-        }
-    } else {
-        for (int i = 0; i < iNumSamples; ++i) {
-            CSAMPLE sample = pSrc[i];
-            if (sample > fMax) {
-                sample = fMax;
-                clamped = true;
-            } else if (sample < fMin) {
-                sample = fMin;
-                clamped = true;
-            }
-            pDest[i] = sample;
-        }
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = clampSample(pSrc[i]);
     }
-    return clamped;
 }
 
 // static

@@ -25,7 +25,6 @@
 #include "util/cmdlineargs.h"
 
 
-
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
                              QObject* parent, const char* name)
         : QObject(parent),
@@ -38,7 +37,11 @@ MixxxKeyboard::~MixxxKeyboard() {
 }
 
 bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
-    if (e->type() == QEvent::KeyPress) {
+    if (e->type() == QEvent::FocusOut) {
+        // If we lose focus, we need to clear out the active key list
+        // because we might not get Key Release events.
+        m_qActiveKeyList.clear();
+    } else if (e->type() == QEvent::KeyPress) {
         QKeyEvent* ke = (QKeyEvent *)e;
 
 #ifdef __APPLE__
@@ -71,11 +74,14 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
-                        //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_ON" << 1;
-                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                        //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
                             keyId, ke->modifiers(), control));
+                        // Since setting the value might cause us to go down
+                        // a route that would eventually clear the active
+                        // key list, do that last.
+                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
                         result = true;
                     } else {
                         qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
@@ -116,7 +122,7 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             if (keyDownInfo.keyId == keyId ||
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_OFF" << 0;
+                    //qDebug() << pControl->getKey() << "MIDI_NOTE_OFF" << 0;
                     pControl->setValueFromMidi(MIDI_NOTE_OFF, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
@@ -126,12 +132,10 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             }
         }
         return matched;
-    } else {
-        if (e->type() == QEvent::KeyboardLayoutChange) {
-            // This event is not fired on ubunty natty, why?
-            // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-            //qDebug() << "QEvent::KeyboardLayoutChange";
-        }
+    } else if (e->type() == QEvent::KeyboardLayoutChange) {
+        // This event is not fired on ubunty natty, why?
+        // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
+        //qDebug() << "QEvent::KeyboardLayoutChange";
     }
     return false;
 }

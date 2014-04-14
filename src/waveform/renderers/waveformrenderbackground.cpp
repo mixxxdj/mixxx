@@ -19,6 +19,7 @@ void WaveformRenderBackground::setup(const QDomNode& node,
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (m_backgroundPixmapPath.isEmpty()) {
         qWarning() << "WaveformRenderBackground::generatePixmap - no background file";
+        m_backgroundPixmapPath = QString();
     } else {
         m_backgroundPixmapPath = context.getSkinPath(m_backgroundPixmapPath);
     }
@@ -31,6 +32,14 @@ void WaveformRenderBackground::draw(QPainter* painter,
         generateImage();
     }
 
+    // If there is no background image, just fill the painter with the
+    // background color.
+    if (m_backgroundImage.isNull()) {
+        painter->fillRect(0, 0, m_waveformRenderer->getWidth(),
+                          m_waveformRenderer->getHeight(), m_backgroundColor);
+        return;
+    }
+
     // since we use opaque widget we need to draw the background !
     painter->drawImage(QPoint(0, 0), m_backgroundImage);
 
@@ -40,7 +49,8 @@ void WaveformRenderBackground::draw(QPainter* painter,
 }
 
 void WaveformRenderBackground::generateImage() {
-    if (m_backgroundPixmapPath != "") {
+    m_backgroundImage = QImage();
+    if (!m_backgroundPixmapPath.isEmpty()) {
         QImage backgroundImage(m_backgroundPixmapPath);
 
         if (!backgroundImage.isNull()) {
@@ -56,17 +66,7 @@ void WaveformRenderBackground::generateImage() {
                 painter.drawImage(m_backgroundImage.rect(),
                                   backgroundImage, backgroundImage.rect());
             }
-        } else {
-            m_backgroundImage = QImage(m_waveformRenderer->getWidth(),
-                                       m_waveformRenderer->getHeight(),
-                                       QImage::Format_RGB32);
-            m_backgroundImage.fill(m_backgroundColor.rgb());
         }
-    } else {
-        m_backgroundImage = QImage(m_waveformRenderer->getWidth(),
-                                     m_waveformRenderer->getHeight(),
-                                     QImage::Format_RGB32);
-        m_backgroundImage.fill(m_backgroundColor.rgb());
     }
     setDirty(false);
 }
