@@ -6,6 +6,7 @@
 #include <QMetaType>
 
 #include "configobject.h"
+#include "controllers/midi/midiutil.h"
 
 // The second value of each OpCode will be the channel number the message
 // corresponds to.  So 0xB0 is a CC on the first channel, and 0xB1 is a CC
@@ -133,7 +134,11 @@ struct MidiKey {
 
     MidiKey(unsigned char status, unsigned char control)
             : status(status),
-              control(control) {
+              // When it's part of the message, include it. If the message is
+              // not two bytes, signify that the second byte is part of the
+              // payload with 0xFF.
+              control(MidiUtils::isMessageTwoBytes(
+                  MidiUtils::opCodeFromStatus(status)) ? control : 0xFF) {
     }
 
     bool operator==(const MidiKey& other) const {

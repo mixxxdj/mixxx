@@ -243,7 +243,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
     }
 
-    MidiKey mappingKey = MidiUtils::makeMidiKey(status, control);
+    MidiKey mappingKey(status, control);
 
     if (isLearning()) {
         emit(messageReceived(status, control, value));
@@ -517,7 +517,7 @@ void MidiController::receive(QByteArray data) {
         qDebug() << formatSysexMessage(getName(), data);
     }
 
-    MidiKey mappingKey = MidiUtils::makeMidiKey(data.at(0), 0xFF);
+    MidiKey mappingKey(data.at(0), 0xFF);
 
     // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
     // don't think this actually does anything useful.
