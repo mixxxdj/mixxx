@@ -143,8 +143,8 @@ RateControl::RateControl(const char* _group,
     m_pOldScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));  // Deprecated
 
     // Scratch enable toggle
-    m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
-    m_pScratchToggle->set(0);
+    m_pScratchEnable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
+    m_pScratchEnable->set(0);
 
     m_pScratch2AlwaysOn = new ControlPushButton(ConfigKey(_group, "scratch2_always_on"));
     m_pScratch2AlwaysOn->set(0);
@@ -191,7 +191,7 @@ RateControl::~RateControl() {
     delete m_pWheel;
     delete m_pScratch;
     delete m_pOldScratch;
-    delete m_pScratchToggle;
+    delete m_pScratchEnable;
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
@@ -417,7 +417,7 @@ double RateControl::calculateRate(double baserate, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
-        bool useScratch2Value = m_pScratchToggle->get() != 0;
+        bool useScratch2Value = m_pScratchEnable->get() != 0;
 
         // scratch2_enable is normally enough to determine if the user is
         // scratching or not, but some controllers have it on all the time,
@@ -511,7 +511,7 @@ double RateControl::calculateRate(double baserate, bool paused,
         // Reverse with vinyl is only ok if absolute mode isn't on.
         int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
         if (m_pReverseButton->get()
-                && !m_pScratchToggle->get()
+                && !m_pScratchEnable->get()
                 && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
             rate = -rate;
         }

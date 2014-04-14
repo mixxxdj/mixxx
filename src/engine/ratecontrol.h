@@ -113,7 +113,7 @@ public:
     ControlTTRotary* m_pOldScratch;
     PositionScratchController* m_pScratchController;
 
-    ControlPushButton* m_pScratchToggle;
+    ControlPushButton* m_pScratchEnable;
     ControlObject* m_pJog;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
