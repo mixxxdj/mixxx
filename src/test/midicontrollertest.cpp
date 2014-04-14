@@ -379,7 +379,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
 
     const double kMinValue = -1234.5;
     const double kMaxValue = 678.9;
-    ControlPotmeter cpb(key, kMinValue, kMaxValue);
+    const double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
+    ControlPotmeter potmeter(key, kMinValue, kMaxValue);
 
     unsigned char channel = 0x01;
     unsigned char control = 0x10;
@@ -390,13 +391,101 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
 
     // Receive a 0, MIDI parameter should map to the min value.
     receive(MIDI_CC | channel, control, 0x00);
-    EXPECT_DOUBLE_EQ(kMinValue, cpb.get());
+    EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
 
     // Receive a 0x7F, MIDI parameter should map to the potmeter max value.
     receive(MIDI_CC | channel, control, 0x7F);
-    EXPECT_DOUBLE_EQ(kMaxValue, cpb.get());
+    EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
 
     // Receive a 0x40, MIDI parameter should map to the potmeter middle value.
     receive(MIDI_CC | channel, control, 0x40);
-    EXPECT_DOUBLE_EQ((kMinValue + kMaxValue) * 0.5, cpb.get());
+    EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
+}
+
+TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
+    ConfigKey key("[Channel1]", "playposition");
+
+    const double kMinValue = -1234.5;
+    const double kMaxValue = 678.9;
+    const double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
+    ControlPotmeter potmeter(key, kMinValue, kMaxValue);
+    potmeter.set(0);
+
+    unsigned char channel = 0x01;
+    unsigned char lsb_control = 0x10;
+    unsigned char msb_control = 0x11;
+
+    MidiOptions lsb;
+    lsb.fourteen_bit_lsb = true;
+
+    MidiOptions msb;
+    msb.fourteen_bit_msb = true;
+
+    addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, lsb_control),
+                                lsb, key));
+    addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, msb_control),
+                                msb, key));
+    loadPreset(m_preset);
+
+    // If kMinValue or kMaxValue are such that the middle value is 0 then the
+    // set(0) commands below allow us to hide failures.
+    ASSERT_NE(0.0, kMiddleValue);
+
+    // Receive a 0x0000 (lsb-first), MIDI parameter should map to the min value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, lsb_control, 0x00);
+    receive(MIDI_CC | channel, msb_control, 0x00);
+    EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
+
+    // Receive a 0x0000 (msb-first), MIDI parameter should map to the min value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, msb_control, 0x00);
+    receive(MIDI_CC | channel, lsb_control, 0x00);
+    EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
+
+    // Receive a 0x3FFF (lsb-first), MIDI parameter should map to the max value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, lsb_control, 0x7F);
+    receive(MIDI_CC | channel, msb_control, 0x7F);
+    EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
+
+    // Receive a 0x3FFF (msb-first), MIDI parameter should map to the max value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, msb_control, 0x7F);
+    receive(MIDI_CC | channel, lsb_control, 0x7F);
+    EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
+
+    // Receive a 0x2000 (lsb-first), MIDI parameter should map to the middle
+    // value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, lsb_control, 0x00);
+    receive(MIDI_CC | channel, msb_control, 0x40);
+    EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
+
+    // Receive a 0x2000 (msb-first), MIDI parameter should map to the middle
+    // value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, msb_control, 0x40);
+    receive(MIDI_CC | channel, lsb_control, 0x00);
+    EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
+
+    // Check the 14-bit resolution is actually present. Receive a 0x2001
+    // (msb-first), MIDI parameter should map to the middle value plus a tiny
+    // amount. Scaling is not quite linear for MIDI parameters so just check
+    // that incrementing the LSB by 1 is greater than the middle value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, msb_control, 0x40);
+    receive(MIDI_CC | channel, lsb_control, 0x01);
+    EXPECT_LT(kMiddleValue, potmeter.get());
+
+    // Check the 14-bit resolution is actually present. Receive a 0x2001
+    // (lsb-first), MIDI parameter should map to the middle value plus a tiny
+    // amount. Scaling is not quite linear for MIDI parameters so just check
+    // that incrementing the LSB by 1 is greater than the middle value.
+    potmeter.set(0);
+    receive(MIDI_CC | channel, lsb_control, 0x01);
+    receive(MIDI_CC | channel, msb_control, 0x40);
+    EXPECT_LT(kMiddleValue, potmeter.get());
+
+
 }
