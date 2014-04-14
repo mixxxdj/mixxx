@@ -655,6 +655,7 @@ class MixxxCore(Feature):
                    "controllers/delegates/midibytedelegate.cpp",
                    "controllers/delegates/midioptionsdelegate.cpp",
                    "controllers/learningutils.cpp",
+                   "controllers/midi/midimessage.cpp",
                    "controllers/midi/midiutils.cpp",
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
