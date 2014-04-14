@@ -165,15 +165,21 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         mappings.append(MidiInputMapping(note_on, options, control));
     } else if (one_control && one_channel &&
                one_value_7bit_max_or_min &&
-               only_note_on) {
+               (only_note_on || only_cc)) {
         // This looks like a toggle switch. If we only got one value and it's
         // either min or max then this behaves like hard-coded toggle buttons on
-        // the VCI-400.
+        // the VCI-400. The opcode can be MIDI_NOTE_ON or MIDI_CC.
+        // Examples:
+        // - VCI-400 vinyl toggle button (NOTE_ON)
+        // - Korg nanoKontrol switches (CC)
         MidiOptions options;
         options.sw = true;
 
         MidiKey note_on;
-        note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+        // The predicate ensures only NOTE_ON or CC messages can trigger this
+        // logic.
+        MidiOpCode code = only_note_on ? MIDI_NOTE_ON : MIDI_CC;
+        note_on.status = code | *stats.channels.begin();
         note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options, control));
     } else if (one_control && one_channel &&
