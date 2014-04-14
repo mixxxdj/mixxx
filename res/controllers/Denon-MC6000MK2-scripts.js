@@ -20,6 +20,8 @@
 //   - No samplers
 //   - No filters and effects
 //   - No microphone support
+// 2014-04-14 Direct mapping
+//   - Map some controls and the VU meter LEDs directly
 ////////////////////////////////////////////////////////////////////////
 
 function DenonMC6000MK2 () {}
@@ -43,11 +45,6 @@ DenonMC6000MK2.JOG_SCRATCH_RAMP = true;
 // Seeking: Number of revolutions needed to seek from the beginning
 // to the end of the track.
 DenonMC6000MK2.JOG_SEEK_REVOLUTIONS = 3;
-
-// VU meter: 1st green LED
-DenonMC6000MK2.METER_BIAS = 0.2; // [0.0, 1.0]
-// VU meter: 1st yellow LED
-DenonMC6000MK2.METER_SPLIT = 0.8; // [DenonMC6000MK2.METER_BIAS, 1.0]
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -218,43 +215,6 @@ DenonMC6000MK2.TriLed.prototype.reset = function () {
 	this.setStateBoolean(false);
 };
 
-DenonMC6000MK2.MIDI_METER_LED_ON = 0x01;
-DenonMC6000MK2.MIDI_METER_LED_OFF = 0x00;
-
-DenonMC6000MK2.MeterLedState = function (midiValue) {
-	this.midiValue = midiValue;
-};
-
-DenonMC6000MK2.METER_LED_ON = new DenonMC6000MK2.MeterLedState(DenonMC6000MK2.MIDI_METER_LED_ON);
-DenonMC6000MK2.METER_LED_OFF = new DenonMC6000MK2.MeterLedState(DenonMC6000MK2.MIDI_METER_LED_OFF);
-
-DenonMC6000MK2.MeterLed = function (midiChannel, midiCtrl) {
-	this.midiChannel = midiChannel;
-	this.midiCtrl = midiCtrl;
-	this.state = undefined;
-};
-
-DenonMC6000MK2.MeterLed.prototype.setState = function (ledState) {
-	this.state = ledState;
-	this.trigger();
-};
-
-DenonMC6000MK2.MeterLed.prototype.setStateBoolean = function (booleanValue) {
-	if (booleanValue) {
-		this.setState(DenonMC6000MK2.METER_LED_ON);
-	} else {
-		this.setState(DenonMC6000MK2.METER_LED_OFF);
-	}
-};
-
-DenonMC6000MK2.MeterLed.prototype.trigger = function () {
-	midi.sendShortMsg(0xB0 + this.midiChannel, this.midiCtrl, this.state.midiValue);
-};
-
-DenonMC6000MK2.MeterLed.prototype.reset = function () {
-	this.setStateBoolean(false);
-};
-
 DenonMC6000MK2.connectedLeds = [];
 
 DenonMC6000MK2.connectLed = function (midiChannel, midiValue) {
@@ -266,13 +226,6 @@ DenonMC6000MK2.connectLed = function (midiChannel, midiValue) {
 
 DenonMC6000MK2.connectTriLed = function (midiChannel, midiValue) {
 	var led = new DenonMC6000MK2.TriLed(midiChannel, midiValue);
-	led.reset();
-	DenonMC6000MK2.connectedLeds.push(led);
-	return led;
-};
-
-DenonMC6000MK2.connectMeterLed = function (midiChannel, midiCtrl) {
-	var led = new DenonMC6000MK2.MeterLed(midiChannel, midiCtrl);
 	led.reset();
 	DenonMC6000MK2.connectedLeds.push(led);
 	return led;
@@ -862,35 +815,6 @@ DenonMC6000MK2.Deck.prototype.toggleLoopCutPlus = function () {
 	// TODO
 };
 
-/* VU Meter */
-
-DenonMC6000MK2.Deck.prototype.onPeakIndicatorValue = function (value) {
-	this.redMeterLed.setStateBoolean(value);
-};
-
-DenonMC6000MK2.onPeakIndicatorValue = function (value, group, control) {
-	var deck = DenonMC6000MK2.getDeckByGroup(group);
-	deck.onPeakIndicatorValue(value);
-};
-
-DenonMC6000MK2.Deck.prototype.onVuMeterValue = function (value) {
-	var level;
-	var bias;
-	for (level = 0; level < this.greenMeterLeds.length; ++level) {
-		bias = this.greenMeterBias + level * this.greenMeterScale;
-		this.greenMeterLeds[level].setStateBoolean(value > bias);
-	}
-	for (level = 0; level < this.yellowMeterLeds.length; ++level) {
-		bias = this.yellowMeterBias + level * this.yellowMeterScale;
-		this.yellowMeterLeds[level].setStateBoolean(value > bias);
-	}
-};
-
-DenonMC6000MK2.onVuMeterValue = function (value, group, control) {
-	var deck = DenonMC6000MK2.getDeckByGroup(group);
-	deck.onVuMeterValue(value);
-};
-
 /* Deck LEDs */
 
 DenonMC6000MK2.Deck.prototype.connectLed = function (midiValue) {
@@ -899,10 +823,6 @@ DenonMC6000MK2.Deck.prototype.connectLed = function (midiValue) {
 
 DenonMC6000MK2.Deck.prototype.connectTriLed = function (midiValue) {
 	return DenonMC6000MK2.connectTriLed(this.midiChannel, midiValue);
-};
-
-DenonMC6000MK2.Deck.prototype.connectMeterLed = function (midiCtrl) {
-	return DenonMC6000MK2.connectMeterLed(this.midiChannel, midiCtrl);
 };
 
 /* Startup */
@@ -928,20 +848,6 @@ DenonMC6000MK2.Deck.prototype.connectLeds = function () {
 	this.hotCue3DimmerLed = this.connectTriLed(DenonMC6000MK2.HOT_CUE_3.midiDimmerLedValue);
 	this.hotCue4Led = this.connectTriLed(DenonMC6000MK2.HOT_CUE_4.midiLedValue);
 	this.hotCue4DimmerLed = this.connectTriLed(DenonMC6000MK2.HOT_CUE_4.midiDimmerLedValue);
-	this.greenMeterLeds = [
-		this.connectMeterLed(0x53),
-		this.connectMeterLed(0x54),
-		this.connectMeterLed(0x55) ];
-	this.yellowMeterLeds = [
-		this.connectMeterLed(0x56),
-		this.connectMeterLed(0x57),
-		this.connectMeterLed(0x58) ];
-	this.redMeterLed =
-		this.connectMeterLed(0x59);
-	this.greenMeterBias = DenonMC6000MK2.METER_BIAS;
-	this.greenMeterScale = (DenonMC6000MK2.METER_SPLIT - this.greenMeterBias) / this.greenMeterLeds.length;
-	this.yellowMeterBias = DenonMC6000MK2.METER_SPLIT;
-	this.yellowMeterScale = (1.0 - this.yellowMeterBias) / this.yellowMeterLeds.length;
 };
 
 DenonMC6000MK2.Deck.prototype.connectControl = function (ctrl, func) {
@@ -960,8 +866,6 @@ DenonMC6000MK2.Deck.prototype.connectControls = function () {
 	this.connectControl(DenonMC6000MK2.HOT_CUE_2.ctrlPrefix + "_enabled", DenonMC6000MK2.onHotCue2Value);
 	this.connectControl(DenonMC6000MK2.HOT_CUE_3.ctrlPrefix + "_enabled", DenonMC6000MK2.onHotCue3Value);
 	this.connectControl(DenonMC6000MK2.HOT_CUE_4.ctrlPrefix + "_enabled", DenonMC6000MK2.onHotCue4Value);
-	this.connectControl("VuMeter", DenonMC6000MK2.onVuMeterValue);
-	this.connectControl("PeakIndicator", DenonMC6000MK2.onPeakIndicatorValue);
 	// default settings
 	this.enableKeyLock();
 	this.disableSyncMode();
@@ -1195,21 +1099,6 @@ DenonMC6000MK2.onTrackSelectKnob = function (channel, control, value, status, gr
 	engine.setValue("[Playlist]", "SelectNextTrack", 0 < knobDelta);
 };
 
-DenonMC6000MK2.onTrackSelectButton = function (channel, control, value, status, group) {
-	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
-	engine.setValue("[Playlist]", "ToggleSelectedSidebarItem", isButtonPressed);
-};
-
-DenonMC6000MK2.onFwdButton = function (channel, control, value, status, group) {
-	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
-	engine.setValue("[Playlist]", "SelectNextPlaylist", isButtonPressed);
-};
-
-DenonMC6000MK2.onBackButton = function (channel, control, value, status, group) {
-	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
-	engine.setValue("[Playlist]", "SelectPrevPlaylist", isButtonPressed);
-};
-
 DenonMC6000MK2.onLoadLeftButton = function (channel, control, value, status, group) {
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
 	if (isButtonPressed) {
@@ -1334,12 +1223,6 @@ DenonMC6000MK2.onSyncButton = function (channel, control, value, status, group) 
 		var deck = DenonMC6000MK2.getDeckByGroup(group);
 		deck.toggleSyncMode();
 	}
-};
-
-DenonMC6000MK2.onPitchSlider = function (channel, control, value, status, group) {
-	var rate = script.pitch(control, value, status);
-	var deck = DenonMC6000MK2.getDeckByGroup(group);
-	deck.setValue("rate", rate);
 };
 
 DenonMC6000MK2.onJogTouch = function (channel, control, value, status, group) {
