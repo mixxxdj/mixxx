@@ -101,7 +101,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOn) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_PushButton_CC) {
+TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushCC) {
     // Some MIDI controllers (e.g. Korg nanoKONTROL) send momentary push-buttons
     // as (CC, 0x7f) for press and (CC, 0x00) for release.
     ConfigKey key("[Channel1]", "hotcue_1_activate");
