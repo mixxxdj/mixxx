@@ -169,6 +169,10 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
 }
 
 void DlgControllerLearning::slotChooseControlPressed() {
+    // If we learned messages, commit them.
+    if (m_messagesLearned) {
+        commitMapping();
+    }
     resetWizard();
     stackedWidget->setCurrentWidget(page1Choose);
     startListening();
