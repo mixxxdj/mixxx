@@ -492,30 +492,30 @@ double RateControl::calculateRate(double baserate, bool paused,
         if (m_pScratchController->isEnabled()) {
             rate = m_pScratchController->getRate();
             *reportScratching = true;
-        }
+        } else {
+            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+            if (getSyncMode() == SYNC_FOLLOWER && !paused &&
+                !bVinylControlEnabled && !useScratch2Value) {
+                if (m_pBpmControl == NULL) {
+                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                    return 1.0;
+                }
 
-        // If master sync is on, respond to it -- but vinyl and scratch mode always override.
-        if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-            !bVinylControlEnabled && !useScratch2Value) {
-            if (m_pBpmControl == NULL) {
-                qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
-                return 1.0;
+                rate = m_pBpmControl->getSyncedRate();
+                double userTweak = getTempRate() + wheelFactor + jogFactor;
+                bool userTweakingSync = userTweak != 0.0;
+                rate += userTweak;
+
+                rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
             }
-
-            rate = m_pBpmControl->getSyncedRate();
-            double userTweak = getTempRate() + wheelFactor + jogFactor;
-            bool userTweakingSync = userTweak != 0.0;
-            rate += userTweak;
-
-            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
-        }
-        // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
-        // Reverse with vinyl is only ok if absolute mode isn't on.
-        int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
-        if (m_pReverseButton->get()
-                && !m_pScratchEnable->get()
-                && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
-            rate = -rate;
+            // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
+            // Reverse with vinyl is only ok if absolute mode isn't on.
+            int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+            if (m_pReverseButton->get()
+                    && !m_pScratchEnable->get()
+                    && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+                rate = -rate;
+            }
         }
     }
 
