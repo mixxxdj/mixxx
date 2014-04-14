@@ -6,6 +6,7 @@
 #include "effects/native/filtereffect.h"
 #include "effects/native/reverbeffect.h"
 #include "effects/native/echoeffect.h"
+#include "effects/native/goaslicereffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -14,6 +15,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<FilterEffect>();
     registerEffect<ReverbEffect>();
     registerEffect<EchoEffect>();
+    registerEffect<GoaSlicerEffect>();
 }
 
 NativeBackend::~NativeBackend() {
