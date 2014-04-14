@@ -47,7 +47,7 @@ class MidiControllerTest : public MixxxTest {
     QScopedPointer<MockMidiController> m_pController;
 };
 
-TEST_F(MidiControllerTest, ReceiveMessage_PushButton_PushOnOff) {
+TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOff) {
     // Most MIDI controller send push-buttons as (NOTE_ON, 0x7F) for press and
     // (NOTE_OFF, 0x00) for release.
     ConfigKey key("[Channel1]", "hotcue_1_activate");
@@ -374,7 +374,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_PotMeter) {
+TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
     ConfigKey key("[Channel1]", "playposition");
 
     const double kMinValue = -1234.5;
