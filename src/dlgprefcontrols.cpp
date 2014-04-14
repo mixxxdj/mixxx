@@ -510,7 +510,6 @@ void DlgPrefControls::slotSetAutoDjIgnoreTime(const QTime &a_rTime) {
 
 void DlgPrefControls::slotSetStartInFullscreen(int index) {
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"), index);
-    notifyRebootNecessary();
 }
 
 void DlgPrefControls::slotSetTooltips(int) {
