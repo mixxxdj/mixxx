@@ -21,38 +21,6 @@
 				</options>
 			</control>
 			<control>
-				<midino>0x54</midino>
-				<status>0xB0</status>
-				<key>DenonMC6000MK2.onTrackSelectKnob</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x28</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onTrackSelectButton</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x29</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFwdButton</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x30</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onBackButton</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
 				<midino>0x16</midino>
 				<status>0x90</status>
 				<key>DenonMC6000MK2.onFilterLeftButton</key>
@@ -133,6 +101,37 @@
 				</options>
 			</control>
 
+			<!-- [Playlist] Controls -->
+			<control>
+				<midino>0x54</midino>
+				<status>0xB0</status>
+				<key>DenonMC6000MK2.onTrackSelectKnob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Playlist]</group>
+				<midino>0x28</midino>
+				<status>0x90</status>
+				<key>ToggleSelectedSidebarItem</key>
+				<options/>
+			</control>
+			<control>
+				<group>[Playlist]</group>
+				<midino>0x29</midino>
+				<status>0x90</status>
+				<key>SelectNextPlaylist</key>
+				<options/>
+			</control>
+			<control>
+				<group>[Playlist]</group>
+				<midino>0x30</midino>
+				<status>0x90</status>
+				<key>SelectPrevPlaylist</key>
+				<options/>
+			</control>
+
 			<!-- [Master] Controls -->
 			<control>
 				<!-- Xfader Audio -->
@@ -140,9 +139,7 @@
 				<midino>0x16</midino>
 				<status>0xB0</status>
 				<key>crossfader</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<!-- Xfader Video -->
@@ -150,36 +147,28 @@
 				<midino>0x17</midino>
 				<status>0xB0</status>
 				<key>crossfader</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Master]</group>
 				<midino>0x19</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Master]</group>
 				<midino>0x43</midino>
 				<status>0xB0</status>
 				<key>headMix</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Master]</group>
 				<midino>0x44</midino>
 				<status>0xB0</status>
 				<key>headVolume</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 
 			<!-- [Channel1] - MIDI Ch0 Controls -->
@@ -214,45 +203,35 @@
 				<midino>0x01</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x02</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x03</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x04</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x05</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 
 			<!-- [Channel1] - MIDI Ch0 Controls -->
@@ -349,10 +328,8 @@
 			<control>
 				<group>[Channel1]</group>
 				<status>0xE0</status>
-				<key>DenonMC6000MK2.onPitchSlider</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>rate</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -631,45 +608,35 @@
 				<midino>0x07</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x08</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x09</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x0A</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x0B</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 
 			<!-- [Channel2] - MIDI Ch2 Controls -->
@@ -766,10 +733,8 @@
 			<control>
 				<group>[Channel2]</group>
 				<status>0xE2</status>
-				<key>DenonMC6000MK2.onPitchSlider</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>rate</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -1048,45 +1013,35 @@
 				<midino>0x07</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x08</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x09</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x0A</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x0B</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 
 			<!-- [Channel3] - MIDI Ch1 Controls -->
@@ -1183,10 +1138,8 @@
 			<control>
 				<group>[Channel3]</group>
 				<status>0xE1</status>
-				<key>DenonMC6000MK2.onPitchSlider</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>rate</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1465,45 +1418,35 @@
 				<midino>0x07</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x08</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x09</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x0A</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x0B</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options>
-					<normal/>
-				</options>
+				<options/>
 			</control>
 
 			<!-- [Channel4] - MIDI Ch3 Controls -->
@@ -1600,10 +1543,8 @@
 			<control>
 				<group>[Channel4]</group>
 				<status>0xE3</status>
-				<key>DenonMC6000MK2.onPitchSlider</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>rate</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
@@ -1858,6 +1799,266 @@
 				</options>
 			</control>
 		</controls>
-		<outputs/>
+		<outputs>
+			<!-- [Channel1] VU meter -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0xB0</status>
+				<midino>0x53</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.2</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0xB0</status>
+				<midino>0x54</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.4</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0xB0</status>
+				<midino>0x55</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.6</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0xB0</status>
+				<midino>0x56</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.8</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0xB0</status>
+				<midino>0x57</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.87</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0xB0</status>
+				<midino>0x58</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.94</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>PeakIndicator</key>
+				<status>0xB0</status>
+				<midino>0x59</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+
+			<!-- [Channel2] VU meter -->
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0xB2</status>
+				<midino>0x53</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.2</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0xB2</status>
+				<midino>0x54</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.4</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0xB2</status>
+				<midino>0x55</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.6</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0xB2</status>
+				<midino>0x56</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.8</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0xB2</status>
+				<midino>0x57</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.87</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0xB2</status>
+				<midino>0x58</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.94</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>PeakIndicator</key>
+				<status>0xB2</status>
+				<midino>0x59</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+
+			<!-- [Channel3] VU meter -->
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0xB1</status>
+				<midino>0x53</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.2</minimum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0xB1</status>
+				<midino>0x54</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.4</minimum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0xB1</status>
+				<midino>0x55</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.6</minimum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0xB1</status>
+				<midino>0x56</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.8</minimum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0xB1</status>
+				<midino>0x57</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.87</minimum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0xB1</status>
+				<midino>0x58</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.94</minimum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>PeakIndicator</key>
+				<status>0xB1</status>
+				<midino>0x59</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+
+			<!-- [Channel4] VU meter -->
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0xB3</status>
+				<midino>0x53</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.2</minimum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0xB3</status>
+				<midino>0x54</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.4</minimum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0xB3</status>
+				<midino>0x55</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.6</minimum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0xB3</status>
+				<midino>0x56</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.8</minimum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0xB3</status>
+				<midino>0x57</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.87</minimum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0xB3</status>
+				<midino>0x58</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.94</minimum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>PeakIndicator</key>
+				<status>0xB3</status>
+				<midino>0x59</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+		</outputs>
 	</controller>
 </MixxxControllerPreset>
