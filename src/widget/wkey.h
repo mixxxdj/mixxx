@@ -18,7 +18,6 @@ class WKey : public WLabel  {
   private slots:
     void setValue(double dValue);
     void preferencesUpdated(double dValue);
-    void setCents();
 
   private:
     double m_dOldValue;
