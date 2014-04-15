@@ -35,6 +35,8 @@
 #include "util/cmdlineargs.h"
 #include "util/version.h"
 
+#include <QFile>
+#include <QFileInfo>
 #ifdef __FFMPEGFILE__
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -109,8 +111,30 @@ void MessageHandler(QtMsgType type,
     if (!Logfile.isOpen()) {
         // This Must be done in the Message Handler itself, to guarantee that the
         // QApplication is initialized
-        QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
+        QString logLocation = CmdlineArgs::Instance().getSettingsPath();
+        QString logFileName;
 
+        // Rotate old logfiles
+        //FIXME: cerr << doesn't get printed until after mixxx quits (???)
+        for (int i = 9; i >= 0; --i) {
+            if (i == 0) {
+                logFileName = QString("%1/mixxx.log").arg(logLocation);
+            } else {
+                logFileName = QString("%1/mixxx.log.%2").arg(logLocation).arg(i);
+            }
+            QFileInfo logbackup(logFileName);
+            if (logbackup.exists()) {
+                QString olderlogname =
+                        QString("%1/mixxx.log.%2").arg(logLocation).arg(i + 1);
+                // This should only happen with number 10
+                if (QFileInfo(olderlogname).exists()) {
+                    QFile::remove(olderlogname);
+                }
+                if (!QFile::rename(logFileName, olderlogname)) {
+                    std::cerr << "Error rolling over logfile " << logFileName.toStdString();
+                }
+            }
+        }
         // XXX will there ever be a case that we can't write to our current
         // working directory?
         Logfile.setFileName(logFileName);
