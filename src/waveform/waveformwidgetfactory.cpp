@@ -13,6 +13,8 @@
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
+#include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
@@ -220,9 +222,11 @@ void WaveformWidgetFactory::destroyWidgets() {
 }
 
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
-    // Do not hold the pointer to of timer listeners since they may be deleted
+    // Do not hold the pointer to of timer listeners since they may be deleted.
+    // We don't activate update() or repaint() directly so listener widgets
+    // can decide whether to paint or not.
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(repaint()),
+            pWidget, SLOT(maybeUpdate()),
             Qt::DirectConnection);
 }
 
@@ -416,8 +420,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::render() {
-    ScopedTimer t(QString("WaveformWidgetFactory::render() %1waveforms")
-            .arg(m_waveformWidgetHolders.size()));
+    ScopedTimer t("WaveformWidgetFactory::render() %1waveforms", m_waveformWidgetHolders.size());
 
     //int paintersSetupTime0 = 0;
     //int paintersSetupTime1 = 0;
@@ -464,6 +467,8 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
+    ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms", m_waveformWidgetHolders.size());
+
     // Do this in an extra slot to be sure to hit the desired interval
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
@@ -529,6 +534,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
             developerOnly = HSVWaveformWidget::developerOnly();
             break;
+        case WaveformWidgetType::RGBWaveform:
+            widgetName = RGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = RGBWaveformWidget::useOpenGl();
+            useOpenGLShaders = RGBWaveformWidget::useOpenGLShaders();
+            developerOnly = RGBWaveformWidget::developerOnly();
+            break;
         case WaveformWidgetType::QtSimpleWaveform:
             widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
@@ -564,6 +575,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = GLVSyncTestWidget::useOpenGl();
             useOpenGLShaders = GLVSyncTestWidget::useOpenGLShaders();
             developerOnly = GLVSyncTestWidget::developerOnly();
+            break;
+        case WaveformWidgetType::GLRGBWaveform:
+            widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLRGBWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
         default:
             continue;
@@ -601,12 +618,19 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
     WaveformWidgetAbstract* widget = NULL;
     if (viewer) {
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            type = WaveformWidgetType::EmptyWaveform;
+        }
+
         switch(type) {
         case WaveformWidgetType::SoftwareWaveform:
             widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::HSVWaveform:
             widget = new HSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::RGBWaveform:
+            widget = new RGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::QtSimpleWaveform:
             widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
@@ -619,6 +643,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::GLWaveform:
             widget = new GLWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLRGBWaveform:
+            widget = new GLRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::GLSLWaveform:
             widget = new GLSLWaveformWidget(viewer->getGroup(), viewer);
@@ -659,7 +686,7 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 
 void WaveformWidgetFactory::startVSync(MixxxMainWindow* mixxxMainWindow) {
     m_vsyncThread = new VSyncThread(mixxxMainWindow);
-    m_vsyncThread->start();
+    m_vsyncThread->start(QThread::NormalPriority);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),
             this, SLOT(render()));

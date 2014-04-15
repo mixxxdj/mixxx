@@ -24,19 +24,9 @@
 #include <QDomNode>
 #include <QMap>
 #include <QHash>
+#include <QMetaType>
 
 #include "util/debug.h"
-
-/*
-typedef enum {
-    MIDI_EMPTY            = 0,
-    MIDI_KEY              = 1,
-    MIDI_CTRL             = 2,
-    MIDI_PITCH            = 3
-} MidiType;
-*/
-
-typedef QMap<char,char> MidiValueMap;
 
 /*
   Class for the key for a specific configuration element. A key consists of a
@@ -48,17 +38,33 @@ class ConfigKey {
     ConfigKey(const QString& g, const QString& i);
     ConfigKey(const char* g, const char* i);
     static ConfigKey parseCommaSeparated(QString key);
+
+    inline bool isNull() const {
+        return group.isNull() && item.isNull();
+    }
+
     QString group, item;
 };
+Q_DECLARE_METATYPE(ConfigKey);
 
 /* comparison function for ConfigKeys. Used by a QHash in ControlObject */
 inline bool operator==(const ConfigKey &c1, const ConfigKey &c2) {
     return c1.group == c2.group && c1.item == c2.item;
 }
 
+/* stream operator function for trivial qDebug()ing of ConfigKeys */
+inline QDebug operator<<(QDebug stream, const ConfigKey &c1) {
+    stream << c1.group << "," << c1.item;
+    return stream;
+}
+
 /* QHash hash function for ConfigKey objects. */
 inline uint qHash(const ConfigKey &key) {
     return qHash(key.group) ^ qHash(key.item);
+}
+
+inline uint qHash(const QKeySequence &key) {
+    return qHash(key.toString());
 }
 
 /*
@@ -117,6 +123,7 @@ template <class ValueType> class ConfigObject {
     ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
     QString getValueString(ConfigKey k, const QString& default_string);
+    QHash<ConfigKey, ValueType> toHash() const;
 
     void clear();
     void reopen(QString file);

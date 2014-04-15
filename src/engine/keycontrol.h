@@ -20,6 +20,8 @@ class KeyControl : public EngineControl {
 
     double getKey();
 
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+
   private slots:
     void slotSetEngineKey(double);
     void slotFileKeyChanged(double);
@@ -50,6 +52,7 @@ class KeyControl : public EngineControl {
 
     /** The current effective key of the engine */
     ControlObject* m_pEngineKey;
+    ControlPotmeter* m_pEngineKeyDistance;
 
     TrackPointer m_pTrack;
 };

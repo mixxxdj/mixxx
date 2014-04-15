@@ -30,7 +30,7 @@ EngineSync::~EngineSync() {
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
-    qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+    //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     Q_ASSERT(pSyncable);
 
@@ -84,8 +84,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
-
+    //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
@@ -100,6 +99,10 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             foreach (const Syncable* other_deck, m_syncables) {
                 if (other_deck == pSyncable) {
                     // skip this deck
+                    continue;
+                }
+                if (!other_deck->getChannel()->isMaster()) {
+                    // skip non-master decks, like preview decks.
                     continue;
                 }
 
@@ -152,7 +155,8 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 }
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
-    qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    Q_UNUSED(playing);
+    //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
     if (pSyncable->getSyncMode() == SYNC_NONE) {
         return;
@@ -183,7 +187,7 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
-    qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
 
     SyncMode syncMode = pSyncable->getSyncMode();
     if (syncMode == SYNC_NONE) {
@@ -223,7 +227,7 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
     if (pSyncable == NULL) {
-        qDebug() << "WARNING: Logic Error: Called activateFollower on a NULL Syncable.";
+        qWarning() << "WARNING: Logic Error: Called activateFollower on a NULL Syncable.";
         return;
     }
 
@@ -234,7 +238,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
 
 void EngineSync::activateMaster(Syncable* pSyncable) {
     if (pSyncable == NULL) {
-        qDebug() << "WARNING: Logic Error: Called activateMaster on a NULL Syncable.";
+        qWarning() << "WARNING: Logic Error: Called activateMaster on a NULL Syncable.";
         return;
     }
 
@@ -242,7 +246,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
     if (m_pMasterSyncable == pSyncable) {
         // Sanity check.
         if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER) {
-            qDebug() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
+            qWarning() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
         }
         return;
     }
@@ -255,7 +259,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
         activateFollower(pOldChannelMaster);
     }
 
-    qDebug() << "Setting up master " << pSyncable->getGroup();
+    //qDebug() << "Setting up master " << pSyncable->getGroup();
     m_pMasterSyncable = pSyncable;
     pSyncable->notifySyncModeChanged(SYNC_MASTER);
 

@@ -1,7 +1,7 @@
 #ifndef DLGTAGFETCHER_H
 #define DLGTAGFETCHER_H
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_dlgtagfetcher.h"
 #include "trackinfoobject.h"
 #include "musicbrainz/tagfetcher.h"
@@ -10,7 +10,7 @@
 class QTreeWidget;
 
 
-class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
+class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   Q_OBJECT
 
   public:
@@ -24,7 +24,7 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
         HTTPERROR,
         FTWERROR
     };
-    
+
 
   signals:
     void next();
@@ -55,7 +55,7 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
     Data m_data;
     QString m_progress;
     TagFetcher m_TagFetcher;
-    networkError m_networkError; 
+    networkError m_networkError;
 };
 
 #endif // DLGTAGFETCHER_H

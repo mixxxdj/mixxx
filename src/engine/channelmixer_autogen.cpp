@@ -59,7 +59,7 @@ void ChannelMixer::mixChannels(const QList<EngineMaster::ChannelInfo*>& channels
     }
     if (totalActive == 0) {
         ScopedTimer t("EngineMaster::mixChannels_0active");
-        SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
+        SampleUtil::clear(pOutput, iBufferSize);
     } else if (totalActive == 1) {
         ScopedTimer t("EngineMaster::mixChannels_1active");
         const int pChannelIndex0 = activeChannels[0];
@@ -3358,7 +3358,7 @@ void ChannelMixer::mixChannels(const QList<EngineMaster::ChannelInfo*>& channels
                                    iBufferSize);
     } else {
         // Set pOutput to all 0s
-        SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
+        SampleUtil::clear(pOutput, iBufferSize);
         for (unsigned int i = 0; i < maxChannels; ++i) {
             if (channelBitvector & (1 << i)) {
                 EngineMaster::ChannelInfo* pChannelInfo = channels[i];
@@ -3421,7 +3421,7 @@ void ChannelMixer::mixChannelsRamping(const QList<EngineMaster::ChannelInfo*>& c
     }
     if (totalActive == 0) {
         ScopedTimer t("EngineMaster::mixChannels_0active");
-        SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
+        SampleUtil::clear(pOutput, iBufferSize);
     } else if (totalActive == 1) {
         ScopedTimer t("EngineMaster::mixChannels_1active");
         const int pChannelIndex0 = activeChannels[0];
@@ -7248,7 +7248,7 @@ void ChannelMixer::mixChannelsRamping(const QList<EngineMaster::ChannelInfo*>& c
                                           iBufferSize);
     } else {
         // Set pOutput to all 0s
-        SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
+        SampleUtil::clear(pOutput, iBufferSize);
         for (unsigned int i = 0; i < maxChannels; ++i) {
             if (channelBitvector & (1 << i)) {
                 EngineMaster::ChannelInfo* pChannelInfo = channels[i];

@@ -104,15 +104,12 @@ void DlgRecording::toggleRecording(bool toggle) {
 void DlgRecording::slotRecordingEnabled(bool isRecording) {
     if (isRecording) {
         pushButtonRecording->setText((tr("Stop Recording")));
-        //This will update the recorded track table view
-        m_browseModel.setPath(m_recordingDir);
-        m_timerToReadDuration->start(50);
     } else {
         pushButtonRecording->setText((tr("Start Recording")));
         label->setText("Start recording here ...");
-        m_timerToReadDuration->stop();
     }
-
+    //This will update the recorded track table view
+    m_browseModel.setPath(m_recordingDir);
 }
 /** int bytes: the number of recorded bytes within a session **/
 void DlgRecording::slotBytesRecorded(long bytes) {

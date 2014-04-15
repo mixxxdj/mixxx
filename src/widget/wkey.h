@@ -9,10 +9,11 @@
 class WKey : public WLabel  {
     Q_OBJECT
   public:
-    WKey(QWidget* pParent=NULL);
+    WKey(const char* group, QWidget* pParent=NULL);
     virtual ~WKey();
 
-    virtual void onConnectedControlValueChanged(double v);
+    virtual void onConnectedControlChanged(double dParameter, double dValue);
+    void setup(QDomNode node, const SkinContext& context);
 
   private slots:
     void setValue(double dValue);
@@ -20,7 +21,9 @@ class WKey : public WLabel  {
 
   private:
     double m_dOldValue;
+    bool m_displayCents;
     ControlObjectThread m_preferencesUpdated;
+    ControlObjectThread m_engineKeyDistance;
 };
 
 #endif /* WKEY_H */

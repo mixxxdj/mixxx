@@ -384,7 +384,7 @@ class VinylControl(Feature):
                    'engine/vinylcontrolcontrol.cpp', ]
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.cpp")
-            sources.append("#lib/xwax/lut.cpp")
+            sources.append("#lib/xwax/lut_win32.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
             sources.append("#lib/xwax/lut.c")
@@ -798,22 +798,22 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS='-pthread')
         test_env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
-        gtest_dir = test_env.Dir("#lib/gtest-1.5.0")
+        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
         # gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.5.0'))
         # build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example,
         # optional
-        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.7.0/lib'
 
         env = test_env
         SCons.Export('env')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
-        gmock_dir = test_env.Dir("#lib/gmock-1.5.0")
+        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
+        gmock_dir = test_env.Dir("#lib/gmock-1.7.0")
         # gmock_dir.addRepository(build.env.Dir('#lib/gmock-1.5.0'))
-        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
 
@@ -852,6 +852,42 @@ class Shoutcast(Feature):
         return ['dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
+
+
+class Opus(Feature):
+    def description(self):
+        return "Opus (RFC 6716) support"
+
+    def enabled(self, build):
+        build.flags['opus'] = util.get_flags(build.env, 'opus', 0)
+        if int(build.flags['opus']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('opus', 'Set to 1 to enable Opus (RFC 6716) support \
+                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        # Supported for Opus (RFC 6716)
+        # More info http://http://www.opus-codec.org/
+        if build.platform_is_linux or build.platform_is_osx \
+                or build.platform_is_bsd:
+            # Check for libopusfile
+            # I just randomly picked version numbers lower than mine for this
+            if not conf.CheckForPKG('opusfile', '0.2'):
+                raise Exception('Missing libopusfile (needs at least 0.2)')
+
+            build.env.Append(CPPDEFINES='__OPUS__')
+
+	    build.env.ParseConfig('pkg-config opusfile opus --silence-errors \
+                                  --cflags --libs')
+
+    def sources(self, build):
+        return ['soundsourceopus.cpp']
 
 
 class FFMPEG(Feature):

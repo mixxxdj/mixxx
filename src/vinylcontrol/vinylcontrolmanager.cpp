@@ -88,7 +88,7 @@ void VinylControlManager::requestReloadConfig() {
     m_pProcessor->requestReloadConfig();
 }
 
-bool VinylControlManager::vinylInputEnabled(int deck) {
+bool VinylControlManager::vinylInputConnected(int deck) {
     if (deck < 0 || deck >= m_iNumConfiguredDecks) {
         return false;
     }
@@ -96,7 +96,7 @@ bool VinylControlManager::vinylInputEnabled(int deck) {
         qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck " << deck;
         return false;
     }
-    return m_pVcEnabled.at(deck)->get() != 0;
+    return m_pProcessor->deckConfigured(deck);
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {

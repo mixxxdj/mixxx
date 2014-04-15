@@ -199,6 +199,9 @@ void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
     delete pVC;
 }
 
+bool VinylControlProcessor::deckConfigured(int index) const {
+    return m_processors[index] != NULL;
+}
 
 void VinylControlProcessor::receiveBuffer(AudioInput input,
                                           const CSAMPLE* pBuffer,

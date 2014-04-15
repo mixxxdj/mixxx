@@ -40,8 +40,13 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue>* pConfig)
           m_bStopThread(false),
           m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
           m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)) {
-    // Starts the thread and goes to the "run()" function below.
-    start(QThread::LowPriority);
+    // We use HighPriority to prevent starvation by lower-priority processes (Qt
+    // main thread, analysis, etc.). This used to be LowPriority but that is not
+    // a suitable choice since we do semi-realtime tasks (write to broadcast
+    // servers) in the sidechain thread. To get reliable timing, it's important
+    // that this work be prioritized over the GUI and non-realtime tasks. See
+    // discussion on Bug #1270583 and Bug #1194543.
+    start(QThread::HighPriority);
 }
 
 EngineSideChain::~EngineSideChain() {

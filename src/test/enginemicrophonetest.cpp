@@ -14,13 +14,13 @@ namespace {
 class EngineMicrophoneTest : public testing::Test {
   protected:
     virtual void SetUp() {
-        inputLength = MAX_BUFFER_LEN/2;
+        inputLength = MAX_BUFFER_LEN;
         outputLength = MAX_BUFFER_LEN;
         input = SampleUtil::alloc(inputLength);
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);
 
-        m_pMicrophone = new EngineMicrophone("[Microphone]");
+        m_pMicrophone = new EngineMicrophone("[Microphone]", NULL);
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 
@@ -45,7 +45,7 @@ class EngineMicrophoneTest : public testing::Test {
     template <typename T>
     void FillSequentialWithStride(T* pBuffer, T initial, T increment, T max,
                                   unsigned int stride, unsigned int length) {
-        ASSERT_EQ(0, length % stride);
+        ASSERT_EQ(0U, length % stride);
         T value = initial;
         for (unsigned int i = 0; i < length/stride; ++i) {
             for (unsigned int j = 0; j < stride; ++j) {
@@ -81,7 +81,7 @@ class EngineMicrophoneTest : public testing::Test {
 
 TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
     FillBuffer<CSAMPLE>(input, 0.1f, inputLength);
-    SampleUtil::applyGain(output, 0.0f, outputLength);
+    SampleUtil::clear(output, outputLength);
 
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
     m_pTalkover->set(1.0);
@@ -94,7 +94,7 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
 }
 
 TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
-    SampleUtil::applyGain(output, 0.0f, outputLength);
+    SampleUtil::clear(output, outputLength);
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
 
     m_pTalkover->set(0.0);
@@ -115,12 +115,12 @@ TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
 }
 
 TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
-    SampleUtil::applyGain(output, 0.0f, outputLength);
+    SampleUtil::clear(output, outputLength);
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
     m_pTalkover->set(1.0);
 
     for (int i = 0; i < 10; i++) {
-        FillSequentialWithStride<CSAMPLE>(input, 0, 0.001f, 1.0f, 1, inputLength);
+        FillSequentialWithStride<CSAMPLE>(input, 0, 0.001f, 1.0f, 2, inputLength);
         FillSequentialWithStride<CSAMPLE>(test, 0, 0.001f, 1.0f, 2, outputLength);
 
         m_pMicrophone->receiveBuffer(micInput, input, inputLength);

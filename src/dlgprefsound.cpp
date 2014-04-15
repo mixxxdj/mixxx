@@ -22,6 +22,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "util/rlimit.h"
+#include "controlobjectslave.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
@@ -66,6 +67,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(audioBufferChanged(int)));
 
+    deviceSyncComboBox->clear();
+    deviceSyncComboBox->addItem(tr("0: Polling (experimental)"));
+    deviceSyncComboBox->addItem(tr("1: No synchronization"));
+    deviceSyncComboBox->addItem(tr("2: Drift and jitter correction"));
+    deviceSyncComboBox->setCurrentIndex(2);
+    connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(syncBuffersChanged(int)));
+
     initializePaths();
     loadSettings();
 
@@ -74,6 +83,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
 
     connect(queryButton, SIGNAL(clicked()),
@@ -92,14 +103,24 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(loadSettings()));
 
     m_pMasterUnderflowCount =
-                    new ControlObjectThread("[Master]", "underflow_count");
-    connect(m_pMasterUnderflowCount, SIGNAL(valueChanged(double)),
-            this, SLOT(bufferUnderflow(double)));
+            new ControlObjectSlave("[Master]", "underflow_count", this);
+    m_pMasterUnderflowCount->connectValueChanged(SLOT(bufferUnderflow(double)));
 
     m_pMasterLatency =
-                    new ControlObjectThread("[Master]", "latency");
-    connect(m_pMasterLatency, SIGNAL(valueChanged(double)),
-            this, SLOT(masterLatencyChanged(double)));
+            new ControlObjectSlave("[Master]", "latency", this);
+    m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
+
+
+    m_pHeadDelay =
+            new ControlObjectSlave("[Master]", "headDelay", this);
+    m_pMasterDelay =
+            new ControlObjectSlave("[Master]", "delay", this);
+
+    connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(headDelayChanged(double)));
+    connect(masterDelaySpinBox, SIGNAL(valueChanged(double)),
+            this, SLOT(masterDelayChanged(double)));
+
 
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
@@ -116,8 +137,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 }
 
 DlgPrefSound::~DlgPrefSound() {
-    delete m_pMasterUnderflowCount;
-    delete m_pMasterLatency;
 }
 
 /**
@@ -320,6 +339,10 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     if (sizeIndex != -1) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
+
+    int syncIndex = m_config.getSyncBuffers();
+    deviceSyncComboBox->setCurrentIndex(syncIndex);
+
     emit(loadPaths(m_config));
     m_loading = false;
 }
@@ -381,6 +404,9 @@ void DlgPrefSound::audioBufferChanged(int index) {
             audioBufferComboBox->itemData(index).toUInt());
 }
 
+void DlgPrefSound::syncBuffersChanged(int index) {
+    m_config.setSyncBuffers(index);
+}
 
 // Slot called whenever the selected sample rate is changed. Populates the
 // audio buffer input box with SMConfig::kMaxLatency values, starting at 1ms,
@@ -473,3 +499,12 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
     currentLatency->setText(QString("%1 ms").arg(latency));
     update();
 }
+
+void DlgPrefSound::headDelayChanged(double value) {
+    m_pHeadDelay->set(value);
+}
+
+void DlgPrefSound::masterDelayChanged(double value) {
+    m_pMasterDelay->set(value);
+}
+

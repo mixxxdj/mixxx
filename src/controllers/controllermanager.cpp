@@ -11,6 +11,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
+#include "util/cmdlineargs.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -221,6 +222,12 @@ int ControllerManager::slotSetUpDevices() {
             continue;
         }
 
+        // If we are in safe mode, skip opening controllers.
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            qDebug() << "We are in safe mode -- skipping opening controller.";
+            continue;
+        }
+
         qDebug() << "Opening controller:" << name;
 
         int value = pController->open();
@@ -392,6 +399,9 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
     QList<Controller*> deviceList = getControllerList(false, true);
     QSet<QString> filenames;
 
+    // TODO(rryan): This should be split up somehow but the filename selection
+    // is dependent on all of the controllers to prevent over-writing each
+    // other. We need a better solution.
     foreach (Controller* pController, deviceList) {
         if (onlyActive && !pController->isOpen()) {
             continue;

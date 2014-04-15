@@ -120,7 +120,6 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        qDebug() << "creating speed CO " << group;
         m_COSpeeds.push_back(new ControlObjectSlave(group, "vinylcontrol_speed_type"));
         setDeckWidgetsVisible(i, true);
     }
@@ -218,7 +217,7 @@ void DlgPrefVinyl::slotUpdate()
     VinylGain->setValue( config->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputEnabled(i));
+        m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputConnected(i));
     }
 }
 

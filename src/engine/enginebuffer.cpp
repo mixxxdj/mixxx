@@ -57,9 +57,6 @@
 
 #include "trackinfoobject.h"
 
-const double kMaxPlayposRange = 1.14;
-const double kMinPlayposRange = -0.14;
-
 EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_engineLock(QMutex::Recursive),
@@ -107,12 +104,12 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
     // normalize engine samples to the range [-1.0, 1.0] we divide by SHRT_MAX
     // to preserve the previous behavior.
-    for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
+    for (unsigned int i = 0; i < MAX_BUFFER_LEN; ++i) {
         m_pDitherBuffer[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SHRT_MAX;
     }
 
     // zero out crossfade buffer
-    SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -182,10 +179,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
 
-    // Slider to show and change song position. kMinPlayposRange and
-    // kMaxPlayposRange map conveniently to the 0-127 range of 7-bit MIDI.
     m_playposSlider = new ControlLinPotmeter(
-        ConfigKey(m_group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
+        ConfigKey(m_group, "playposition"), 0.0, 1.0, true);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);
@@ -267,6 +262,10 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
     enablePitchAndTimeScaling(false);
+
+    m_pPassthroughEnabled.reset(new ControlObjectSlave(_group, "passthrough", this));
+    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
+                                               Qt::DirectConnection);
 
     //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
@@ -374,8 +373,8 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
 
 void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
-    // Write the position before the seek type, to reduce a possible race 
-    // condition effect 
+    // Write the position before the seek type, to reduce a possible race
+    // condition effect
     m_queuedPosition.setValue(newpos);
     m_iSeekQueued.fetchAndStoreRelease(seekType);
 }
@@ -452,9 +451,11 @@ void EngineBuffer::slotTrackLoading() {
     m_pTrackSamples->set(0); // Stop renderer
 }
 
-void EngineBuffer::loadFakeTrack() {
+TrackPointer EngineBuffer::loadFakeTrack() {
     TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    pTrack->setSampleRate(44100);
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
+    return pTrack;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -514,6 +515,13 @@ void EngineBuffer::ejectTrack() {
     emit(trackUnloaded(pTrack));
 }
 
+void EngineBuffer::slotPassthroughChanged(double enabled) {
+    if (enabled) {
+        // If passthrough was enabled, stop playing the current track.
+        slotControlStop(1.0);
+    }
+}
+
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change) {
     doSeek(change, SEEK_STANDARD);
@@ -530,28 +538,31 @@ void EngineBuffer::slotControlSeekExact(double abs) {
 }
 
 void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
-    if (isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
-        // This seek is ridiculous.
+    // Prevent NaN's from sneaking into the engine.
+    if (isnan(change)) {
         return;
     }
 
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(change * m_file_length_old);
 
-    // TODO(XXX) currently not limiting seeks file_length_old instead of
-    // kMaxPlayposRange.
-    if (new_playpos > m_file_length_old)
+    // Don't allow the playposition to go past the end.
+    if (new_playpos > m_file_length_old) {
         new_playpos = m_file_length_old;
+    }
 
     // Ensure that the file position is even (remember, stereo channel files...)
-    if (!even((int)new_playpos))
+    if (!even((int)new_playpos)) {
         new_playpos--;
+    }
 
+#ifdef __VINYLCONTROL__
     // Notify the vinyl control that a seek has taken place in case it is in
     // absolute mode and needs be switched to relative.
     if (m_pVinylControlControl) {
         m_pVinylControlControl->notifySeekQueued();
     }
+#endif
 
     queueNewPlaypos(new_playpos, seekType);
 }
@@ -928,7 +939,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
             }
         }
     } else if (m_fRampValue == 0.0) {
-        SampleUtil::applyGain(pOutput, 0.0, iBufferSize);
+        SampleUtil::clear(pOutput, iBufferSize);
     }
 
     if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
@@ -969,7 +980,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
 void EngineBuffer::processSeek() {
     // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
-    // the later case is ok, because we will pocess the new seek in the next call anyway. 
+    // the later case is ok, because we will pocess the new seek in the next call anyway.
     SeekRequest seekType =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     double position = m_queuedPosition.getValue();
@@ -1150,4 +1161,16 @@ void EngineBuffer::setScalerForTest(EngineBufferScale* pScale) {
     m_pScale = pScale;
     // This bool is permanently set and can't be undone.
     m_bScalerOverride = true;
+}
+
+void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    pGroupFeatures->has_current_position = true;
+    pGroupFeatures->current_position = m_filepos_play;
+
+    if (m_pBpmControl != NULL) {
+        m_pBpmControl->collectFeatures(pGroupFeatures);
+    }
+    if (m_pKeyControl != NULL) {
+        m_pKeyControl->collectFeatures(pGroupFeatures);
+    }
 }

@@ -5,6 +5,7 @@
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "controlpotmeter.h"
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
@@ -47,7 +48,14 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
 
-    m_pEngineBpm = new ControlObject(ConfigKey(_group, "bpm"));
+    // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
+    // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
+    // bpm_down controls.
+    m_pEngineBpm = new ControlPotmeter(ConfigKey(_group, "bpm"), 1, 200, true);
+    // bpm_up / bpm_down steps by 1
+    m_pEngineBpm->setStep(1);
+    // bpm_up_small / bpm_down_small steps by 0.1
+    m_pEngineBpm->setSmallStep(0.1);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineBpm(double)),
             Qt::DirectConnection);
@@ -117,6 +125,8 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     if (getSyncMode() == SYNC_NONE) {
         slotAdjustRateSlider();
     }
+    m_dUserOffset = 0.0;
+    m_dSyncAdjustment = 1.0;
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
@@ -375,7 +385,7 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*double sample_offset = beat_length * shortest_distance;
+    /*double sample_offset = dBeatLength * shortest_distance;
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
     qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
@@ -659,6 +669,8 @@ void BpmControl::trackUnloaded(TrackPointer pTrack) {
 void BpmControl::slotUpdatedTrackBeats()
 {
     if (m_pTrack) {
+        m_dUserOffset = 0.0;
+        m_dSyncAdjustment = 1.0;
         m_pBeats = m_pTrack->getBeats();
     }
 }
@@ -700,4 +712,45 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
+}
+
+void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    double fileBpm = m_pFileBpm->get();
+    if (fileBpm > 0) {
+        pGroupFeatures->has_file_bpm = true;
+        pGroupFeatures->file_bpm = fileBpm;
+    }
+
+    double bpm = m_pEngineBpm->get();
+    if (bpm > 0) {
+        pGroupFeatures->has_bpm = true;
+        pGroupFeatures->bpm = bpm;
+    }
+
+    // Without a beatgrid we don't know any beat details.
+    if (!m_pBeats) {
+        return;
+    }
+
+    // Get the current position of this deck.
+    double dThisPosition = getCurrentSample();
+    double dThisPrevBeat;
+    double dThisNextBeat;
+    double dThisBeatLength;
+    double dThisBeatFraction;
+    if (getBeatContext(m_pBeats, dThisPosition,
+                       &dThisPrevBeat, &dThisNextBeat,
+                       &dThisBeatLength, &dThisBeatFraction)) {
+        pGroupFeatures->has_prev_beat = true;
+        pGroupFeatures->prev_beat = dThisPrevBeat;
+
+        pGroupFeatures->has_next_beat = true;
+        pGroupFeatures->next_beat = dThisNextBeat;
+
+        pGroupFeatures->has_beat_length = true;
+        pGroupFeatures->beat_length = dThisBeatLength;
+
+        pGroupFeatures->has_beat_fraction = true;
+        pGroupFeatures->beat_fraction = dThisBeatFraction;
+    }
 }
