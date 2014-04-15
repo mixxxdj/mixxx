@@ -907,7 +907,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig, m_pParent);
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
     setupBaseWidget(node, pLineEditSearch);
     setupWidget(node, pLineEditSearch);
     pLineEditSearch->setup(node, *m_pContext);
