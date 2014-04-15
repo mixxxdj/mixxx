@@ -31,6 +31,7 @@
 #include "controlobject.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
+#include "util/cmdlineargs.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
@@ -390,7 +391,13 @@ int SoundManager::setupDevices() {
             qWarning() << "Output sound device clock reference not set! Using"
                        << device->getDisplayName();
         }
-        err = device->open(pNewMasterClockRef == device, m_config.getSyncBuffers());
+        int syncBuffers = m_config.getSyncBuffers();
+        // If we are in safe mode and using experimental polling support, use
+        // the default of 2 sync buffers instead.
+        if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
+            syncBuffers = 2;
+        }
+        err = device->open(pNewMasterClockRef == device, syncBuffers);
         if (err != OK) {
             goto closeAndError;
         } else {

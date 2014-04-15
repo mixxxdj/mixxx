@@ -66,6 +66,7 @@
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
 #include "util/valuetransformer.h"
+#include "util/cmdlineargs.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -886,11 +887,17 @@ QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
     WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
     if (!spinny->isValid()) {
         delete spinny;
         WLabel* dummy = new WLabel(m_pParent);
-        //: Shown when Spinny can not be displayd. Please keep \n unchanged
+        //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }

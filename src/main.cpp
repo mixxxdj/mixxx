@@ -216,6 +216,10 @@ int main(int argc, char * argv[])
     --developer             Enables developer-mode. Includes extra log info,\n\
                             stats on performance, and a Developer tools menu.\n\
 \n\
+    --safeMode              Enables safe-mode. Disables OpenGL waveforms,\n\
+                            and spinning vinyl widgets. Try this option if\n\
+                            Mixxx is crashing on startup.\n\
+\n\
     --locale LOCALE         Use a custom locale for loading translations\n\
                             (e.g 'fr')\n\
 \n\

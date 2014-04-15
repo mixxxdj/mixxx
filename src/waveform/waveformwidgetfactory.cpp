@@ -618,6 +618,10 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
     WaveformWidgetAbstract* widget = NULL;
     if (viewer) {
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            type = WaveformWidgetType::EmptyWaveform;
+        }
+
         switch(type) {
         case WaveformWidgetType::SoftwareWaveform:
             widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
