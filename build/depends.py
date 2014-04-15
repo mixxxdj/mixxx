@@ -527,6 +527,7 @@ class MixxxCore(Feature):
                    "configobject.cpp",
                    "control/control.cpp",
                    "control/controlbehavior.cpp",
+                   "control/controlmodel.cpp",
                    "controlobjectslave.cpp",
                    "controlobjectthread.cpp",
                    "controllogpotmeter.cpp",
