@@ -153,7 +153,6 @@ class OggVorbis(Dependence):
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
-
 class SndFile(Dependence):
 
     def configure(self, build, conf):
