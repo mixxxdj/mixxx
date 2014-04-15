@@ -30,7 +30,6 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_DESCRIPTION);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_FILTER);
 
-
     StatsManager* pManager = StatsManager::instance();
     if (pManager) {
         connect(pManager, SIGNAL(statUpdated(const Stat&)),
