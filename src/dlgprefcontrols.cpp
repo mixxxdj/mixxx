@@ -754,6 +754,7 @@ void DlgPrefControls::initWaveformControl() {
     // Waveform overview init
     waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"
     waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
+    waveformOverviewComboBox->addItem( tr("RGB") ); // "2"
 
     // By default we set filtered woverview = "0"
     waveformOverviewComboBox->setCurrentIndex(
