@@ -899,6 +899,7 @@ class MixxxCore(Feature):
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",
                    "util/stat.cpp",
+                   "util/statmodel.cpp",
                    "util/time.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
