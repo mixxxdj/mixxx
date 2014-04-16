@@ -171,14 +171,31 @@ QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset
     return presetName;
 }
 
-QString DlgPrefController::presetDescription(const ControllerPresetPointer pPreset) const {
-    QString description = tr("No Description");
+QString DlgPrefController::presetName(const ControllerPresetPointer pPreset) const {
     if (pPreset) {
-        QString descr = pPreset->description();
-        if (description.length() > 0)
-            description = descr;
+        QString name = pPreset->name();
+        if (name.length() > 0)
+            return name;
     }
-    return description;
+    return tr("No Name");
+}
+
+QString DlgPrefController::presetDescription(const ControllerPresetPointer pPreset) const {
+    if (pPreset) {
+        QString description = pPreset->description();
+        if (description.length() > 0)
+            return description;
+    }
+    return tr("No Description");
+}
+
+QString DlgPrefController::presetAuthor(const ControllerPresetPointer pPreset) const {
+    if (pPreset) {
+        QString author = pPreset->author();
+        if (author.length() > 0)
+            return author;
+    }
+    return tr("No Author");
 }
 
 QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset) const {
@@ -341,8 +358,9 @@ void DlgPrefController::initTableView(QTableView* pTable) {
 }
 
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
-    m_ui.labelLoadedPreset->setText(presetShortName(preset));
+    m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
+    m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
     QStringList supportLinks;
 
     QString forumLink = presetForumLink(preset);
