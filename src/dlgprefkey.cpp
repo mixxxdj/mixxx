@@ -159,8 +159,8 @@ void DlgPrefKey::slotResetToDefaults() {
         m_bAnalyserEnabled = false;
     }
 
-    radioNotationLancelot->setChecked(true);
-    setNotationLancelot(true);
+    radioNotationTraditional->setChecked(true);
+    setNotationTraditional(true);
 
     slotUpdate();
 }
