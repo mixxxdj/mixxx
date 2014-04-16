@@ -466,6 +466,15 @@ void DlgPrefController::disableDevice() {
 void DlgPrefController::addInputMapping() {
     if (m_pInputTableModel) {
         m_pInputTableModel->addEmptyMapping();
+        // Ensure the added row is visible.
+        QModelIndex left = m_pInputProxyModel->mapFromSource(
+            m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1, 0));
+        QModelIndex right = m_pInputProxyModel->mapFromSource(
+            m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1,
+                                       m_pInputTableModel->columnCount() - 1));
+        m_ui.m_pInputMappingTableView->selectionModel()->select(
+            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.m_pInputMappingTableView->scrollTo(left);
         slotDirty();
     }
 }
@@ -498,6 +507,15 @@ void DlgPrefController::clearAllInputMappings() {
 void DlgPrefController::addOutputMapping() {
     if (m_pOutputTableModel) {
         m_pOutputTableModel->addEmptyMapping();
+        // Ensure the added row is visible.
+        QModelIndex left = m_pOutputProxyModel->mapFromSource(
+            m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1, 0));
+        QModelIndex right = m_pOutputProxyModel->mapFromSource(
+            m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1,
+                                       m_pOutputTableModel->columnCount() - 1));
+        m_ui.m_pOutputMappingTableView->selectionModel()->select(
+            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.m_pOutputMappingTableView->scrollTo(left);
         slotDirty();
     }
 }
