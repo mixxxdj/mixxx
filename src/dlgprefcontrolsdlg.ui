@@ -897,7 +897,7 @@ Numark mode:
      <item row="4" column="0">
       <widget class="QLabel" name="labelFullscreenOption">
        <property name="text">
-        <string>Starts in Fullscreen Mode</string>
+        <string>Start in full screen mode</string>
        </property>
       </widget>
      </item>
