@@ -32,6 +32,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void updateVinylControlSpeed(double rpm);
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
+    void updateSlipEnabled(double enabled);
 
   protected slots:
     void maybeUpdate();

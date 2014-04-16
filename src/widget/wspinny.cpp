@@ -162,6 +162,8 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
 
     m_pSlipEnabled = new ControlObjectThread(
             group, "slip_enabled");
+    connect(m_pSlipEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(updateSlipEnabled(double)));
     m_pSlipPosition = new ControlObjectThread(
             group, "slip_playposition");
 
@@ -201,7 +203,6 @@ void WSpinny::maybeUpdate() {
     m_pVisualPlayPos->getPlaySlipAt(0,
                                     &m_dAngleCurrentPlaypos,
                                     &m_dGhostAngleCurrentPlaypos);
-    bool m_bGhostPlayback = m_pSlipEnabled->get();
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos ||
             m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos ||
             m_bGhostPlayback != m_bWasGhostPlayback ||
@@ -388,6 +389,11 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
 
 void WSpinny::updateVinylControlEnabled(double enabled) {
     m_bVinylActive = enabled;
+    m_bWidgetDirty = true;
+}
+
+void WSpinny::updateSlipEnabled(double enabled) {
+    m_bGhostPlayback = static_cast<bool>(enabled);
     m_bWidgetDirty = true;
 }
 
