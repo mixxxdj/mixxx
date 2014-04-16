@@ -37,6 +37,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void slotBytesRecorded(long);
     void refreshBrowseModel();
     void slotRestoreSearch();
+    void slotDurationRecorded(QString durationRecorded);
 
   signals:
     void loadTrack(TrackPointer tio);
@@ -50,6 +51,10 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
     QString m_recordingDir;
+
+    void refreshLabel();
+    QString m_bytesRecordedStr;
+    QString m_durationRecordedStr;
 
     RecordingManager* m_pRecordingManager;
 };

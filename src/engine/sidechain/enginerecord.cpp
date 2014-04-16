@@ -163,6 +163,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
             m_pCurrentTrack = TrackPointer();
+            m_frames = 0;
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -188,6 +189,16 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
                 m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
             }
         }
+
+        // gets recorded duration
+        m_frames += iBufferSize;
+        long sampleRate = m_pSamplerate->get() * 2;
+        int seconds = (m_frames / sampleRate) % 60;
+        int minutes = m_frames / (sampleRate * 60);
+        QString durationStr = QString("%1:%2")
+                     .arg(minutes, 2, 'f', 0, '0')
+                     .arg(seconds, 2, 'f', 0, '0');
+        emit(durationRecorded(durationStr));
 
         if (m_bCueIsEnabled) {
             if (metaDataHasChanged()) {

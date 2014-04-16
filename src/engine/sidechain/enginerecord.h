@@ -61,6 +61,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     // emitted to notify RecordingManager
     void bytesRecorded(int);
     void isRecording(bool);
+    void durationRecorded(QString);
 
   private:
     int getActiveTracks();
@@ -90,6 +91,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
 
     ControlObjectThread* m_pRecReady;
     ControlObjectThread* m_pSamplerate;
+    long m_frames;
 
     int m_iMetaDataLife;
     TrackPointer m_pCurrentTrack;

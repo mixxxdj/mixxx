@@ -20,7 +20,8 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
           m_bRecording(false),
           m_iNumberOfBytesRecored(0),
           m_split_size(0),
-          m_iNumberSplits(0) {
+          m_iNumberSplits(0),
+          m_durationRecorded("") {
     m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
@@ -38,6 +39,8 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
                 this, SLOT(slotIsRecording(bool)));
         connect(pEngineRecord, SIGNAL(bytesRecorded(int)),
                 this, SLOT(slotBytesRecorded(int)));
+        connect(pEngineRecord, SIGNAL(durationRecorded(QString)),
+                this, SLOT(slotDurationRecorded(QString)));
         pSidechain->addSideChainWorker(pEngineRecord);
     }
 }
@@ -139,6 +142,16 @@ QString& RecordingManager::getRecordingDir() {
     // Update current recording dir from preferences.
     setRecordingDir();
     return m_recordingDir;
+}
+
+// Only called when recording is active.
+void RecordingManager::slotDurationRecorded(QString durationStr)
+{
+    if(m_durationRecorded != durationStr)
+    {
+        m_durationRecorded = durationStr;
+        emit(durationRecorded(m_durationRecorded));
+    }
 }
 
 // Only called when recording is active.
