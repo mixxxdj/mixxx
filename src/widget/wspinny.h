@@ -98,7 +98,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
     bool m_bGhostPlayback;
-    bool m_bWasGhostPlayback;
     bool m_bWidgetDirty;
 };
 

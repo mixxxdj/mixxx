@@ -48,7 +48,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_dPrevTheta(0.),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
-          m_bWasGhostPlayback(false),
           m_bWidgetDirty(false) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
@@ -205,7 +204,6 @@ void WSpinny::maybeUpdate() {
                                     &m_dGhostAngleCurrentPlaypos);
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos ||
             m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos ||
-            m_bGhostPlayback != m_bWasGhostPlayback ||
             m_bWidgetDirty) {
         repaint();
     }
@@ -251,8 +249,6 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         m_fGhostAngle = calculateAngle(m_dGhostAngleCurrentPlaypos);
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
-
-    m_bWasGhostPlayback = m_bGhostPlayback;
 
     if (m_pFgImage && !m_pFgImage->isNull()) {
         // Now rotate the image and draw it on the screen.
