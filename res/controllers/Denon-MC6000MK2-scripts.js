@@ -22,6 +22,10 @@
 //   - No microphone support
 // 2014-04-14 Direct mapping
 //   - Map some controls and the VU meter LEDs directly
+// 2014-04-16 Looping
+//   - Loops: Manual, beat and beatroll
+//   - Censor: Use reverseroll instead of reverse
+//   - Scratching: Don't modify keylock mode
 ////////////////////////////////////////////////////////////////////////
 
 function DenonMC6000MK2 () {}
@@ -71,6 +75,7 @@ DenonMC6000MK2.MIXXX_JOG_RANGE = 3.0;
 DenonMC6000MK2.MIXXX_SYNC_NONE = 0;
 DenonMC6000MK2.MIXXX_SYNC_SLAVE = 1;
 DenonMC6000MK2.MIXXX_SYNC_MASTER = 2;
+DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED = -1;
 
 ////////////////////////////////////////////////////////////////////////
 // Logging functions                                                  //
@@ -362,7 +367,8 @@ DenonMC6000MK2.Deck = function (number, midiChannel) {
 	DenonMC6000MK2.decksByGroup[this.group] = this;
 	this.rateDirBackup = this.getValue("rate_dir");
 	this.setValue("rate_dir", -1);
-	this.disableScratchingTimer = undefined;
+	this.vinylMode = undefined;
+	this.syncMode = undefined;
 	this.hotCues = [];
 	this.hotCues[1] = new DenonMC6000MK2.HotCue(this, 1, 0x11, 0x12);
 	this.hotCues[2] = new DenonMC6000MK2.HotCue(this, 2, 0x13, 0x14);
@@ -642,14 +648,14 @@ DenonMC6000MK2.onHotCue4Value = function (value, group, control) {
 
 DenonMC6000MK2.Deck.prototype.onCensorButton = function (isButtonPressed) {
 	if (this.getShiftState()) {
-		if (isButtonPressed) {
-			this.toggleValue("slip_enabled");
+		this.setValue("reverseroll", false);
+		if (isButtonPressed && this.getValue("loop_enabled")) {
+			this.toggleValue("slip_mode");
 		} else {
-			this.setValue("reverse", false);
+			this.setValue("slip_mode", false);
 		}
 	} else {
-		this.setValue("slip_enabled", isButtonPressed);
-		this.setValue("reverse", isButtonPressed);
+		this.setValue("reverseroll", isButtonPressed);
 	}
 };
 
@@ -709,7 +715,6 @@ DenonMC6000MK2.Deck.prototype.isScratching = function () {
 
 DenonMC6000MK2.Deck.prototype.enableScratching = function () {
 	if (!this.isScratching()) {
-		this.disableKeyLock();
 		engine.scratchEnable(this.number,
 			DenonMC6000MK2.JOG_RESOLUTION,
 			DenonMC6000MK2.JOG_SCRATCH_RPM,
@@ -722,7 +727,6 @@ DenonMC6000MK2.Deck.prototype.enableScratching = function () {
 DenonMC6000MK2.Deck.prototype.disableScratching = function () {
 	if (this.isScratching()) {
 		engine.scratchDisable(this.number, DenonMC6000MK2.JOG_SCRATCH_RAMP);
-		// Leave keylock disabled to avoid unnatural playback and glitches!
 	}
 };
 
@@ -795,24 +799,96 @@ DenonMC6000MK2.onFilterValue = function (value, group, control) {
 
 /* Loops */
 
+DenonMC6000MK2.Deck.prototype.hasLoop = function () {
+	return (DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_start_position"))
+		&& (DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_end_position"));
+};
+
+DenonMC6000MK2.Deck.prototype.deleteLoop = function () {
+	this.setValue("loop_start_position", DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED);
+	this.setValue("loop_end_position", DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED);
+	this.triggerValue("loop_enabled");
+};
+
 DenonMC6000MK2.Deck.prototype.toggleAutoLoop = function () {
-	// TODO
+	if (this.hasLoop()) {
+		if (this.getShiftState()) {
+			this.deleteLoop();
+		} else {
+			this.setValue("reloop_exit", true);
+		}
+	} else {
+		if (this.getShiftState()) {
+			this.setValue("beatlooproll_4_activate", true);
+		} else {
+			this.setValue("beatloop_4_activate", true);
+		}
+	}
 };
 
-DenonMC6000MK2.Deck.prototype.toggleLoopIn = function () {
-	// TODO
+DenonMC6000MK2.Deck.prototype.toggleLoopInButton = function () {
+	if (this.getShiftState()) {
+		this.setValue("loop_in", false);
+		this.setValue("loop_start_position", DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED);
+		this.triggerValue("loop_enabled");
+	} else {
+		this.setValue("loop_in", true);
+	}
 };
 
-DenonMC6000MK2.Deck.prototype.toggleLoopOut = function () {
-	// TODO
+DenonMC6000MK2.Deck.prototype.toggleLoopOutButton = function () {
+	if (this.getShiftState()) {
+		this.setValue("loop_out", false);
+		this.setValue("loop_end_position", DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED);
+		this.triggerValue("loop_enabled");
+	} else {
+		this.setValue("loop_out", true);
+	}
 };
 
-DenonMC6000MK2.Deck.prototype.toggleLoopCutMinus = function () {
-	// TODO
+DenonMC6000MK2.Deck.prototype.onLoopCutMinusButton = function (isButtonPressed) {
+	this.setValue("loop_halve", isButtonPressed);
 };
 
-DenonMC6000MK2.Deck.prototype.toggleLoopCutPlus = function () {
-	// TODO
+DenonMC6000MK2.Deck.prototype.onLoopCutPlusButton = function (isButtonPressed) {
+	this.setValue("loop_double", isButtonPressed);
+};
+
+DenonMC6000MK2.Deck.prototype.onLoopEnabledValue = function (value) {
+	if (value) {
+		this.autoLoopDimmerLed.setStateBoolean(false);
+		this.autoLoopLed.setStateBoolean(true);
+	} else {
+		this.autoLoopLed.setStateBoolean(false);
+		if (this.hasLoop()) {
+			this.autoLoopDimmerLed.setStateBoolean(true);
+		} else {
+			this.autoLoopDimmerLed.setStateBoolean(false);
+		}
+	}
+};
+
+DenonMC6000MK2.onLoopEnabledValue = function (value, group, control) {
+	var deck = DenonMC6000MK2.getDeckByGroup(group);
+	deck.onLoopEnabledValue(value);
+};
+
+DenonMC6000MK2.Deck.prototype.onLoopStartPositionValue = function (value) {
+	this.loopInLed.setStateBoolean(DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED !== value);
+};
+
+DenonMC6000MK2.onLoopStartPositionValue = function (value, group, control) {
+	var deck = DenonMC6000MK2.getDeckByGroup(group);
+	deck.onLoopStartPositionValue(value);
+};
+
+DenonMC6000MK2.Deck.prototype.onLoopEndPositionValue = function (value) {
+	this.loopOutLed.setStateBoolean(DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED !== value);
+};
+
+DenonMC6000MK2.onLoopEndPositionValue = function (value, group, control) {
+	var deck = DenonMC6000MK2.getDeckByGroup(group);
+	deck.onLoopEndPositionValue(value);
 };
 
 /* Deck LEDs */
@@ -862,14 +938,17 @@ DenonMC6000MK2.Deck.prototype.connectControls = function () {
 	this.connectControl("pfl", DenonMC6000MK2.onCueMixValue);
 	this.connectControl("slip_enabled", DenonMC6000MK2.onSlipModeValue);
 	this.connectControl("filter", DenonMC6000MK2.onFilterValue);
+	this.connectControl("loop_enabled", DenonMC6000MK2.onLoopEnabledValue);
+	this.connectControl("loop_start_position", DenonMC6000MK2.onLoopStartPositionValue);
+	this.connectControl("loop_end_position", DenonMC6000MK2.onLoopEndPositionValue);
 	this.connectControl(DenonMC6000MK2.HOT_CUE_1.ctrlPrefix + "_enabled", DenonMC6000MK2.onHotCue1Value);
 	this.connectControl(DenonMC6000MK2.HOT_CUE_2.ctrlPrefix + "_enabled", DenonMC6000MK2.onHotCue2Value);
 	this.connectControl(DenonMC6000MK2.HOT_CUE_3.ctrlPrefix + "_enabled", DenonMC6000MK2.onHotCue3Value);
 	this.connectControl(DenonMC6000MK2.HOT_CUE_4.ctrlPrefix + "_enabled", DenonMC6000MK2.onHotCue4Value);
 	// default settings
 	this.enableKeyLock();
+	this.enableVinylMode();
 	this.disableSyncMode();
-	this.disableVinylMode();
 };
 
 /* Shutdown */
@@ -1323,7 +1402,7 @@ DenonMC6000MK2.onLoopInButton = function (channel, control, value, status, group
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
 	if (isButtonPressed) {
 		var deck = DenonMC6000MK2.getDeckByGroup(group);
-		deck.toggleLoopIn();
+		deck.toggleLoopInButton();
 	}
 };
 
@@ -1331,24 +1410,20 @@ DenonMC6000MK2.onLoopOutButton = function (channel, control, value, status, grou
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
 	if (isButtonPressed) {
 		var deck = DenonMC6000MK2.getDeckByGroup(group);
-		deck.toggleLoopOut();
+		deck.toggleLoopOutButton();
 	}
 };
 
 DenonMC6000MK2.onLoopCutMinusButton = function (channel, control, value, status, group) {
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
-	if (isButtonPressed) {
-		var deck = DenonMC6000MK2.getDeckByGroup(group);
-		deck.toggleLoopCutMinus();
-	}
+	var deck = DenonMC6000MK2.getDeckByGroup(group);
+	deck.onLoopCutMinusButton(isButtonPressed);
 };
 
 DenonMC6000MK2.onLoopCutPlusButton = function (channel, control, value, status, group) {
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
-	if (isButtonPressed) {
-		var deck = DenonMC6000MK2.getDeckByGroup(group);
-		deck.toggleLoopCutPlus();
-	}
+	var deck = DenonMC6000MK2.getDeckByGroup(group);
+	deck.onLoopCutPlusButton(isButtonPressed);
 };
 
 DenonMC6000MK2.onCensorButton = function (channel, control, value, status, group) {
