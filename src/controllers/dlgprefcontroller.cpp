@@ -272,8 +272,6 @@ void DlgPrefController::slotUpdate() {
     bool deviceOpen = m_pController->isOpen();
     // Check/uncheck the "Enabled" box
     m_ui.chkEnabledDevice->setChecked(deviceOpen);
-    // Enable/disable access to the preset and mapping pages.
-    m_ui.controllerTabs->setEnabled(deviceOpen);
 
     // If the controller is not mappable, disable the input and output mapping
     // sections and the learning wizard button.

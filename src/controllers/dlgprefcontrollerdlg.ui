@@ -306,7 +306,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="1" column="1">
         <widget class="QPushButton" name="btnLearningWizard">
          <property name="toolTip">
           <string>Click to start the Controller Learning wizard.</string>
