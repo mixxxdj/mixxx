@@ -18,7 +18,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
           m_recordingFile(""),
           m_recordingLocation(""),
           m_bRecording(false),
-          m_iNumberOfBytesRecored(0),
+          m_iNumberOfBytesRecorded(0),
           m_split_size(0),
           m_iNumberSplits(0),
           m_durationRecorded("") {
@@ -80,7 +80,7 @@ void RecordingManager::slotToggleRecording(double v) {
 }
 
 void RecordingManager::startRecording(bool generateFileName) {
-    m_iNumberOfBytesRecored = 0;
+    m_iNumberOfBytesRecorded = 0;
     m_split_size = getFileSplitSize();
     qDebug() << "Split size is:" << m_split_size;
     QString encodingType = m_pConfig->getValueString(
@@ -119,7 +119,7 @@ void RecordingManager::stopRecording()
     m_recReady->slotSet(RECORD_OFF);
     m_recordingFile = "";
     m_recordingLocation = "";
-    m_iNumberOfBytesRecored = 0;
+    m_iNumberOfBytesRecorded = 0;
 }
 
 void RecordingManager::setRecordingDir() {
@@ -158,15 +158,15 @@ void RecordingManager::slotDurationRecorded(QString durationStr)
 void RecordingManager::slotBytesRecorded(int bytes)
 {
     // auto conversion to long
-    m_iNumberOfBytesRecored += bytes;
-    if(m_iNumberOfBytesRecored >= m_split_size)
+    m_iNumberOfBytesRecorded += bytes;
+    if(m_iNumberOfBytesRecorded >= m_split_size)
     {
         stopRecording();
         // Dont generate a new filename.
         // This will reuse the previous filename but append a suffix.
         startRecording(false);
     }
-    emit(bytesRecorded(m_iNumberOfBytesRecored));
+    emit(bytesRecorded(m_iNumberOfBytesRecorded));
 }
 
 void RecordingManager::slotIsRecording(bool isRecordingActive)

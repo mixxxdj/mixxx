@@ -82,7 +82,7 @@ class RecordingManager : public QObject
 
     bool m_bRecording;
     // will be a very large number
-    quint64 m_iNumberOfBytesRecored;
+    quint64 m_iNumberOfBytesRecorded;
     quint64 m_split_size;
     int m_iNumberSplits;
     QString m_durationRecorded;
