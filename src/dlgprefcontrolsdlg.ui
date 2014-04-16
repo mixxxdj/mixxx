@@ -776,7 +776,7 @@
         <font/>
        </property>
        <property name="toolTip">
-        <string>Adjust the available range for the pitch change controls.</string>
+        <string>Adjust the available range for the pitch (tempo) change controls.</string>
        </property>
       </widget>
      </item>
