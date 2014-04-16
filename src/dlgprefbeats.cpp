@@ -40,7 +40,6 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
             this, SLOT(fixedtempoEnabled(int)));
     connect(boffset, SIGNAL(stateChanged(int)),
             this, SLOT(offsetEnabled(int)));
-    connect(reset, SIGNAL(clicked(bool)),     this, SLOT(setDefaults()));
 
     connect(bFastAnalysis, SIGNAL(stateChanged(int)),
             this, SLOT(fastAnalysisEnabled(int)));
@@ -60,7 +59,7 @@ DlgPrefBeats::~DlgPrefBeats() {
 void DlgPrefBeats::loadSettings(){
     if(m_pconfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID))==QString("")) {
-        setDefaults();
+        slotResetToDefaults();
         slotApply();    // Write to config file so AnalyzerBeats can get the data
         return;
     }
@@ -85,7 +84,7 @@ void DlgPrefBeats::loadSettings(){
         ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
 
     if (!m_listIdentifier.contains(pluginid)) {
-        setDefaults();
+        slotResetToDefaults();
     }
     m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
     m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
@@ -93,7 +92,7 @@ void DlgPrefBeats::loadSettings(){
     slotUpdate();
 }
 
-void DlgPrefBeats::setDefaults() {
+void DlgPrefBeats::slotResetToDefaults() {
     if (m_listIdentifier.size()==0) {
         qDebug() << "DlgPrefBeats:No Vamp plugin not found";
         return;

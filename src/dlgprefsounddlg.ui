@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>686</width>
-    <height>494</height>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -249,13 +249,6 @@
       <widget class="QPushButton" name="queryButton">
        <property name="text">
         <string>Query Devices</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="resetButton">
-       <property name="text">
-        <string>Reset to Defaults</string>
        </property>
       </widget>
      </item>

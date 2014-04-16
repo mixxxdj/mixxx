@@ -65,6 +65,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     contentsTreeWidget->setHeaderHidden(true);
 #endif
 
+    connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
+            this, SLOT(slotButtonPressed(QAbstractButton*)));
+
+
     createIcons();
 
     while (pagesWidget->count() > 0) {
@@ -332,10 +336,33 @@ void DlgPreferences::onShow() {
                 m_geometry[2].toInt(),  // width
                 m_geometry[3].toInt()); // heigth
 
-    //
     // Notify children that we are about to show.
-    //
     emit(showDlg());
+}
+
+void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
+    QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(pButton);
+    DlgPreferencePage* pCurrentPage = currentPage();
+    switch (role) {
+        case QDialogButtonBox::ResetRole:
+            if (pCurrentPage != NULL) {
+                pCurrentPage->slotResetToDefaults();
+            }
+            break;
+        case QDialogButtonBox::ApplyRole:
+            emit(applyPreferences());
+            break;
+        case QDialogButtonBox::AcceptRole:
+            emit(applyPreferences());
+            accept();
+            break;
+        case QDialogButtonBox::RejectRole:
+            emit(cancelPreferences());
+            reject();
+            break;
+        default:
+            break;
+    }
 }
 
 void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
@@ -345,10 +372,13 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
             pWidget, SLOT(slotHide()));
     connect(this, SIGNAL(showDlg()),
             pWidget, SLOT(slotUpdate()));
-    connect(buttonBox, SIGNAL(accepted()),
+
+    connect(this, SIGNAL(applyPreferences()),
             pWidget, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(rejected()),
+    connect(this, SIGNAL(cancelPreferences()),
             pWidget, SLOT(slotCancel()));
+    connect(this, SIGNAL(resetToDefaults()),
+            pWidget, SLOT(slotResetToDefaults()));
 
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
@@ -360,6 +390,21 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
     m_pageSizeHint = m_pageSizeHint.expandedTo(
             pWidget->sizeHint()+QSize(iframe, iframe));
 
+}
+
+DlgPreferencePage* DlgPreferences::currentPage() {
+    QObject* pObject = pagesWidget->currentWidget();
+    for (int i = 0; i < 2; ++i) {
+        if (pObject == NULL) {
+            return NULL;
+        }
+        QObjectList children = pObject->children();
+        if (children.isEmpty()) {
+            return NULL;
+        }
+        pObject = children[0];
+    }
+    return dynamic_cast<DlgPreferencePage*>(pObject);
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {

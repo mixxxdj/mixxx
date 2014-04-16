@@ -148,8 +148,11 @@ void DlgPrefVinyl::slotHide() {
     }
 }
 
-void DlgPrefVinyl::slotUpdate()
-{
+void DlgPrefVinyl::slotResetToDefaults() {
+    // TODO(XXX): Set the defaults.
+}
+
+void DlgPrefVinyl::slotUpdate() {
     // Set vinyl control types in the comboboxes
     int combo_index =
             ComboBoxVinylType1->findText(config->getValueString(

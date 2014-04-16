@@ -99,7 +99,7 @@ void DlgPrefKey::loadSettings(){
 
     if(m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID)) == "") {
-        setDefaults();
+        slotResetToDefaults();
         slotApply(); // Write to config file so AnalyserKey can get the data
         return;
     }
@@ -144,12 +144,12 @@ void DlgPrefKey::loadSettings(){
     }
 
     if (!m_listIdentifier.contains(pluginid)) {
-        setDefaults();
+        slotResetToDefaults();
     }
     slotUpdate();
 }
 
-void DlgPrefKey::setDefaults() {
+void DlgPrefKey::slotResetToDefaults() {
     m_bAnalyserEnabled = true;
     m_bFastAnalysisEnabled = false;
     m_bReanalyzeEnabled = false;

@@ -177,13 +177,15 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     slotApply();
 }
 
-DlgPrefShoutcast::~DlgPrefShoutcast()
-{
+DlgPrefShoutcast::~DlgPrefShoutcast() {
     delete m_pUpdateShoutcastFromPrefs;
 }
 
-void DlgPrefShoutcast::slotUpdate()
-{
+void DlgPrefShoutcast::slotResetToDefaults() {
+    // TODO(XXX): Set the defaults.
+}
+
+void DlgPrefShoutcast::slotUpdate() {
     enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
 }

@@ -89,8 +89,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
-    connect(resetButton, SIGNAL(clicked()),
-            this, SLOT(resetClicked()));
 
     connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(addPath(AudioOutput)));
@@ -483,7 +481,7 @@ void DlgPrefSound::queryClicked() {
 /**
  * Slot called when the "Reset to Defaults" button is clicked.
  */
-void DlgPrefSound::resetClicked() {
+void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig;
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
@@ -507,4 +505,3 @@ void DlgPrefSound::headDelayChanged(double value) {
 void DlgPrefSound::masterDelayChanged(double value) {
     m_pMasterDelay->set(value);
 }
-
