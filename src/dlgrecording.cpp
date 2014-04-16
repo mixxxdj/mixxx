@@ -1,13 +1,12 @@
 #include <QDesktopServices>
-#include <QDateTime>
 
+#include "controlobject.h"
+#include "controlobjectthread.h"
+#include "dlgrecording.h"
+#include "library/trackcollection.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
-#include "controlobject.h"
-#include "library/trackcollection.h"
-
-#include "dlgrecording.h"
 
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            TrackCollection* pTrackCollection,
@@ -49,11 +48,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
     label->setText(tr("Start recording here ..."));
-    // Read the duration from file
-    m_durationStr = "--:--";
-    m_timerToReadDuration = new QTimer(this);
-    connect(m_timerToReadDuration, SIGNAL(timeout()),
-            this, SLOT(slotReadDuration()));
 }
 
 DlgRecording::~DlgRecording() {
@@ -111,28 +105,24 @@ void DlgRecording::slotRecordingEnabled(bool isRecording) {
     //This will update the recorded track table view
     m_browseModel.setPath(m_recordingDir);
 }
-/** int bytes: the number of recorded bytes within a session **/
 void DlgRecording::slotBytesRecorded(long bytes) {
+    // gets number of recorded bytes
     double megabytes = bytes / 1048575.0;
-    m_bytesRecorded = QString::number(megabytes,'f',2);
-    refreshLabel();
-}
-void DlgRecording::slotReadDuration() {
-    QString location = m_pRecordingManager->getRecordingLocation();
-    if (location == "")
-        return;
+    QString bytesRecorded = QString::number(megabytes,'f',2);
 
-    TrackPointer pTrack = TrackPointer(new TrackInfoObject(location),
-                                       &QObject::deleteLater);
-    QString old = m_durationStr;
-    m_durationStr = pTrack->getDurationStr().split(".").at(0);
-    if (old != m_durationStr)
-        refreshLabel();
-}
-void DlgRecording::refreshLabel() {
-    QString message = tr("Recording to file: %1 (%2 MB written in %3)");
-    QString text = message.arg(m_pRecordingManager->getRecordingFile(),
-                               m_bytesRecorded,
-                               m_durationStr);
+    // gets duration recorded
+    long frames = bytes/2;
+    long samplerate = (new ControlObjectThread("[Master]", "samplerate"))->get() * 2;
+    int seconds = (frames/samplerate)%60;
+    int minutes = frames/(samplerate*60);
+    QString durationStr = QString("%1:%2")
+				 .arg(minutes, 2, 'f', 0, '0')
+				 .arg(seconds, 2, 'f', 0, '0');
+
+    // update label
+    QString text = tr("Recording to file: %1 (%2 MB written in %3)")
+			  .arg(m_pRecordingManager->getRecordingFile())
+			  .arg(bytesRecorded)
+			  .arg(durationStr);
     label->setText(text);
 }
