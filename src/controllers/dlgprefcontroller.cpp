@@ -59,9 +59,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
             this, SLOT(slotEnableDevice(bool)));
 
-    // We start off clean so the apply button is disabled.
-    m_ui.btnApply->setEnabled(m_bDirty);
-
     // Connect our signals to controller manager.
     connect(this, SIGNAL(openController(Controller*)),
             m_pControllerManager, SLOT(openController(Controller*)));
@@ -217,7 +214,6 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
 
 void DlgPrefController::slotDirty() {
     m_bDirty = true;
-    m_ui.btnApply->setEnabled(true);
 }
 
 QString nameForPreset(const PresetInfo& preset) {
@@ -316,7 +312,6 @@ void DlgPrefController::slotApply() {
         m_ui.comboBoxPreset->setCurrentIndex(0);
 
         m_bDirty = false;
-        m_ui.btnApply->setEnabled(false);
     }
 }
 
