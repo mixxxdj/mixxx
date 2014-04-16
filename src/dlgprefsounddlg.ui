@@ -145,7 +145,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="deviceSyncLabel">
        <property name="text">
-        <string>Synchronization Buffers</string>
+        <string>Multi-Soundcard Synchronization</string>
        </property>
       </widget>
      </item>

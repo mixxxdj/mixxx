@@ -94,7 +94,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_45);
 
-    connect(applyButton, SIGNAL(clicked()), this, SLOT(slotApply()));
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
 
@@ -148,8 +147,11 @@ void DlgPrefVinyl::slotHide() {
     }
 }
 
-void DlgPrefVinyl::slotUpdate()
-{
+void DlgPrefVinyl::slotResetToDefaults() {
+    // TODO(XXX): Set the defaults.
+}
+
+void DlgPrefVinyl::slotUpdate() {
     // Set vinyl control types in the comboboxes
     int combo_index =
             ComboBoxVinylType1->findText(config->getValueString(

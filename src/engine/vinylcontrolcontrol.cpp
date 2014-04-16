@@ -153,7 +153,7 @@ void VinylControlControl::slotControlVinylSeek(double change) {
 
     // Just seek where it wanted to originally.
     m_bSeekRequested = true;
-    seek(change);
+    seekExact(change);
     m_bSeekRequested = false;
 }
 

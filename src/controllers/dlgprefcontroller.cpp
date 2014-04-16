@@ -59,12 +59,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
             this, SLOT(slotEnableDevice(bool)));
 
-    // When the user hits apply, apply.
-    connect(m_ui.btnApply, SIGNAL(clicked()),
-            this, SLOT(slotApply()));
-    // We start off clean so the apply button is disabled.
-    m_ui.btnApply->setEnabled(m_bDirty);
-
     // Connect our signals to controller manager.
     connect(this, SIGNAL(openController(Controller*)),
             m_pControllerManager, SLOT(openController(Controller*)));
@@ -171,14 +165,31 @@ QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset
     return presetName;
 }
 
-QString DlgPrefController::presetDescription(const ControllerPresetPointer pPreset) const {
-    QString description = tr("No Description");
+QString DlgPrefController::presetName(const ControllerPresetPointer pPreset) const {
     if (pPreset) {
-        QString descr = pPreset->description();
-        if (description.length() > 0)
-            description = descr;
+        QString name = pPreset->name();
+        if (name.length() > 0)
+            return name;
     }
-    return description;
+    return tr("No Name");
+}
+
+QString DlgPrefController::presetDescription(const ControllerPresetPointer pPreset) const {
+    if (pPreset) {
+        QString description = pPreset->description();
+        if (description.length() > 0)
+            return description;
+    }
+    return tr("No Description");
+}
+
+QString DlgPrefController::presetAuthor(const ControllerPresetPointer pPreset) const {
+    if (pPreset) {
+        QString author = pPreset->author();
+        if (author.length() > 0)
+            return author;
+    }
+    return tr("No Author");
 }
 
 QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset) const {
@@ -203,7 +214,6 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
 
 void DlgPrefController::slotDirty() {
     m_bDirty = true;
-    m_ui.btnApply->setEnabled(true);
 }
 
 QString nameForPreset(const PresetInfo& preset) {
@@ -255,14 +265,13 @@ void DlgPrefController::slotUpdate() {
     bool deviceOpen = m_pController->isOpen();
     // Check/uncheck the "Enabled" box
     m_ui.chkEnabledDevice->setChecked(deviceOpen);
-    // Enable/disable access to the preset and mapping pages.
-    m_ui.controllerToolbox->setEnabled(deviceOpen);
 
     // If the controller is not mappable, disable the input and output mapping
-    // sections.
+    // sections and the learning wizard button.
     bool isMappable = m_pController->isMappable();
-    m_ui.inputMappingsPage->setEnabled(isMappable);
-    m_ui.outputMappingsPage->setEnabled(isMappable);
+    m_ui.btnLearningWizard->setEnabled(isMappable);
+    m_ui.inputMappingsTab->setEnabled(isMappable);
+    m_ui.outputMappingsTab->setEnabled(isMappable);
 }
 
 void DlgPrefController::slotCancel() {
@@ -303,7 +312,6 @@ void DlgPrefController::slotApply() {
         m_ui.comboBoxPreset->setCurrentIndex(0);
 
         m_bDirty = false;
-        m_ui.btnApply->setEnabled(false);
     }
 }
 
@@ -321,9 +329,6 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
 }
 
 void DlgPrefController::initTableView(QTableView* pTable) {
-    // Editing starts when clicking on an already selected item.
-    pTable->setEditTriggers(QAbstractItemView::SelectedClicked);
-
     // Enable selection by rows and extended selection (ctrl/shift click)
     pTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     pTable->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -344,22 +349,29 @@ void DlgPrefController::initTableView(QTableView* pTable) {
 }
 
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
-    m_ui.labelLoadedPreset->setText(presetShortName(preset));
+    m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
+    m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
     QStringList supportLinks;
+
     QString forumLink = presetForumLink(preset);
     if (forumLink.length() > 0) {
         supportLinks << forumLink;
     }
+
     QString wikiLink = presetWikiLink(preset);
     if (wikiLink.length() > 0) {
         supportLinks << wikiLink;
     }
+
+    // There is always at least one support link.
+    // TODO(rryan): This is a horrible general support link for MIDI!
+    QString troubleShooting = QString(
+        "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">%1</a>")
+            .arg(tr("Troubleshooting"));
+    supportLinks << troubleShooting;
+
     QString support = supportLinks.join("&nbsp;");
-    if (support.length() == 0) {
-        //: Shown when a MIDI controller has no links to support pages (e.g. Mixxx wiki or forums).
-        support = tr("No support available.");
-    }
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 
     // We mutate this preset so keep a reference to it while we are using it.
@@ -425,7 +437,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
 void DlgPrefController::slotEnableDevice(bool enable) {
     // Enable/disable preset info page and input/output mapping pages.
-    m_ui.controllerToolbox->setEnabled(enable);
+    m_ui.controllerTabs->setEnabled(enable);
     slotDirty();
 
     // Set tree item text to normal/bold.
@@ -445,6 +457,15 @@ void DlgPrefController::disableDevice() {
 void DlgPrefController::addInputMapping() {
     if (m_pInputTableModel) {
         m_pInputTableModel->addEmptyMapping();
+        // Ensure the added row is visible.
+        QModelIndex left = m_pInputProxyModel->mapFromSource(
+            m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1, 0));
+        QModelIndex right = m_pInputProxyModel->mapFromSource(
+            m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1,
+                                       m_pInputTableModel->columnCount() - 1));
+        m_ui.m_pInputMappingTableView->selectionModel()->select(
+            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.m_pInputMappingTableView->scrollTo(left);
         slotDirty();
     }
 }
@@ -477,6 +498,15 @@ void DlgPrefController::clearAllInputMappings() {
 void DlgPrefController::addOutputMapping() {
     if (m_pOutputTableModel) {
         m_pOutputTableModel->addEmptyMapping();
+        // Ensure the added row is visible.
+        QModelIndex left = m_pOutputProxyModel->mapFromSource(
+            m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1, 0));
+        QModelIndex right = m_pOutputProxyModel->mapFromSource(
+            m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1,
+                                       m_pOutputTableModel->columnCount() - 1));
+        m_ui.m_pOutputMappingTableView->selectionModel()->select(
+            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
+        m_ui.m_pOutputMappingTableView->scrollTo(left);
         slotDirty();
     }
 }

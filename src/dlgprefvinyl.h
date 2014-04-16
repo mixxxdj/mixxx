@@ -37,6 +37,8 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
   public slots:
     void slotUpdate();
     void slotApply();
+    void slotResetToDefaults();
+
     void slotHide();
     void slotShow();
     void VinylTypeSlotApply();

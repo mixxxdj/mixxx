@@ -421,6 +421,10 @@ void DlgPrefControls::slotUpdate()
         ComboBoxRateDir->setCurrentIndex(1);
 }
 
+void DlgPrefControls::slotResetToDefaults() {
+    // TODO(XXX): Set the defaults.
+}
+
 void DlgPrefControls::slotSetLocale(int pos) {
     QString newLocale = ComboBoxLocale->itemData(pos).toString();
     m_pConfig->set(ConfigKey("[Config]","Locale"), ConfigValue(newLocale));

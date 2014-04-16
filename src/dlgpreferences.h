@@ -69,10 +69,17 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   public slots:
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
-
+    void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();
     void showDlg();
+
+    // Emitted just after the user clicks Apply or OK.
+    void applyPreferences();
+    // Emitted if the user clicks Cancel
+    void cancelPreferences();
+    // Emitted if the user clicks Reset to Defaults.
+    void resetToDefaults();
 
   protected:
     bool eventFilter(QObject*, QEvent*);
@@ -80,6 +87,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void resizeEvent(QResizeEvent* e);
 
   private:
+    DlgPreferencePage* currentPage();
     void createIcons();
     void onShow();
     void onHide();

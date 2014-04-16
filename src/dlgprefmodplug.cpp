@@ -31,6 +31,10 @@ void DlgPrefModplug::slotUpdate() {
     loadSettings();
 }
 
+void DlgPrefModplug::slotResetToDefaults() {
+    // TODO(XXX): Set the defaults.
+}
+
 void DlgPrefModplug::loadSettings() {
     m_pUi->memoryLimit->setValue(m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY,"PerTrackMemoryLimitMB"),"256").toInt());

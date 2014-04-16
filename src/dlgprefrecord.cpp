@@ -211,6 +211,10 @@ void DlgPrefRecord::slotRecordPathChange() {
     slotApply();
 }
 
+void DlgPrefRecord::slotResetToDefaults() {
+    // TODO(XXX): Set the defaults.
+}
+
 // This function updates/refreshes the contents of this dialog.
 void DlgPrefRecord::slotUpdate() {
 

@@ -608,7 +608,11 @@
       </widget>
      </item>
      <item row="15" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale"/>
+      <widget class="QComboBox" name="ComboBoxLocale">
+       <property name="toolTip">
+        <string>Locales determine country and language specific settings.</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="1" colspan="2">
       <widget class="QLabel" name="warningLabel">
@@ -634,7 +638,7 @@
       </widget>
      </item>
      <item row="5" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxPosition">
+      <widget class="QComboBox" name="ComboBoxTooltips">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -643,6 +647,9 @@
        </property>
        <property name="font">
         <font/>
+       </property>
+       <property name="toolTip">
+        <string>A small pop-up box displays a brief description of a control's purpose when the cursor rests on the control.</string>
        </property>
       </widget>
      </item>
@@ -732,7 +739,7 @@
       </widget>
      </item>
      <item row="5" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2_3">
+      <widget class="QLabel" name="labelTooltips">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -740,18 +747,22 @@
         <font/>
        </property>
        <property name="text">
-        <string>Position display</string>
+        <string>Tool tips</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
        </property>
        <property name="buddy">
-        <cstring>ComboBoxPosition</cstring>
+        <cstring>ComboBoxTooltips</cstring>
        </property>
       </widget>
      </item>
      <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxAutoDjRequeue"/>
+      <widget class="QComboBox" name="ComboBoxAutoDjRequeue">
+       <property name="toolTip">
+        <string>Add a track to the end of the Auto DJ playlist once it is played, instead of removing it.</string>
+       </property>
+      </widget>
      </item>
      <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
@@ -763,6 +774,9 @@
        </property>
        <property name="font">
         <font/>
+       </property>
+       <property name="toolTip">
+        <string>Adjust the available range for the pitch (tempo) change controls.</string>
        </property>
       </widget>
      </item>
@@ -844,7 +858,7 @@ Numark mode:
       </widget>
      </item>
      <item row="6" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxTooltips">
+      <widget class="QComboBox" name="ComboBoxPosition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -857,7 +871,7 @@ Numark mode:
       </widget>
      </item>
      <item row="6" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2_3_2">
+      <widget class="QLabel" name="labelPositionDisplay">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -865,13 +879,13 @@ Numark mode:
         <font/>
        </property>
        <property name="text">
-        <string>Tool tips</string>
+        <string>Position display</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
        </property>
        <property name="buddy">
-        <cstring>ComboBoxTooltips</cstring>
+        <cstring>ComboBoxPosition</cstring>
        </property>
       </widget>
      </item>
@@ -897,7 +911,7 @@ Numark mode:
      <item row="4" column="0">
       <widget class="QLabel" name="labelFullscreenOption">
        <property name="text">
-        <string>Starts in Fullscreen Mode</string>
+        <string>Start in full screen mode</string>
        </property>
       </widget>
      </item>
@@ -921,6 +935,9 @@ Numark mode:
        </property>
        <property name="font">
         <font/>
+       </property>
+       <property name="toolTip">
+        <string>Select from different color schemes of a skin if available.</string>
        </property>
       </widget>
      </item>
@@ -951,16 +968,21 @@ Numark mode:
  <tabstops>
   <tabstop>ComboBoxSkinconf</tabstop>
   <tabstop>ComboBoxSchemeconf</tabstop>
-  <tabstop>ComboBoxPosition</tabstop>
+  <tabstop>ComboBoxStartInFullscreen</tabstop>
   <tabstop>ComboBoxTooltips</tabstop>
+  <tabstop>ComboBoxPosition</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>ComboBoxRateDir</tabstop>
   <tabstop>ComboBoxCueRecall</tabstop>
   <tabstop>ComboBoxCueDefault</tabstop>
   <tabstop>ComboBoxAllowTrackLoadToPlayingDeck</tabstop>
   <tabstop>ComboBoxAutoDjRequeue</tabstop>
+  <tabstop>autoDjMinimumAvailableSpinBox</tabstop>
+  <tabstop>autoDjIgnoreTimeEdit</tabstop>
+  <tabstop>autoDjIgnoreTimeCheckBox</tabstop>
   <tabstop>ComboBoxLocale</tabstop>
   <tabstop>waveformTypeComboBox</tabstop>
+  <tabstop>waveformOverviewComboBox</tabstop>
   <tabstop>frameRateSlider</tabstop>
   <tabstop>frameRateSpinBox</tabstop>
   <tabstop>allVisualGain</tabstop>
