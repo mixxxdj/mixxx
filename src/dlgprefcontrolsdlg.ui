@@ -608,7 +608,11 @@
       </widget>
      </item>
      <item row="15" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale"/>
+      <widget class="QComboBox" name="ComboBoxLocale">
+       <property name="toolTip">
+        <string>Locales determine country and language specific settings.</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="1" colspan="2">
       <widget class="QLabel" name="warningLabel">
@@ -643,6 +647,9 @@
        </property>
        <property name="font">
         <font/>
+       </property>
+       <property name="toolTip">
+        <string>A small pop-up box displays a brief description of a control's purpose when the cursor rests on the control.</string>
        </property>
       </widget>
      </item>
@@ -751,7 +758,11 @@
       </widget>
      </item>
      <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxAutoDjRequeue"/>
+      <widget class="QComboBox" name="ComboBoxAutoDjRequeue">
+       <property name="toolTip">
+        <string>Add a track to the end of the Auto DJ playlist once it is played, instead of removing it.</string>
+       </property>
+      </widget>
      </item>
      <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
@@ -763,6 +774,9 @@
        </property>
        <property name="font">
         <font/>
+       </property>
+       <property name="toolTip">
+        <string>Adjust the available range for the pitch change controls.</string>
        </property>
       </widget>
      </item>
@@ -921,6 +935,9 @@ Numark mode:
        </property>
        <property name="font">
         <font/>
+       </property>
+       <property name="toolTip">
+        <string>Select from different color schemes of a skin if available.</string>
        </property>
       </widget>
      </item>
