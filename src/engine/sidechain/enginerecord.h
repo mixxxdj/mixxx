@@ -91,13 +91,12 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
 
     ControlObjectSlave* m_pRecReady;
     ControlObjectSlave* m_pSamplerate;
-    long m_frames;
+    quint64 m_frames;
 
     int m_iMetaDataLife;
     TrackPointer m_pCurrentTrack;
 
     QByteArray m_cueFileName;
-    quint64 m_cueSamplePos;
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
 };

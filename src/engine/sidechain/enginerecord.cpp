@@ -167,7 +167,6 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             if (m_bCueIsEnabled) {
                 openCueFile();
-                m_cueSamplePos = 0;
                 m_cueTrack = 0;
             }
         } else {  // Maybe the encoder could not be initialized
@@ -206,7 +205,6 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
                 writeCueLine();
                 m_cueFile.flush();
             }
-            m_cueSamplePos += iBufferSize;
         }
     }
 }
@@ -220,14 +218,14 @@ void EngineRecord::writeCueLine() {
     unsigned long samplerate = m_pSamplerate->get() * 2;
     // CDDA is specified as having 75 frames a second
     unsigned long frames = ((unsigned long)
-                                ((m_cueSamplePos / (samplerate / 75)))
+                                ((m_frames / (samplerate / 75)))
                                     % 75);
 
     unsigned long seconds =  ((unsigned long)
-                                (m_cueSamplePos / samplerate)
+                                (m_frames / samplerate)
                                     % 60 );
 
-    unsigned long minutes = m_cueSamplePos / (samplerate * 60);
+    unsigned long minutes = m_frames / (samplerate * 60);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
             .arg((double)m_cueTrack, 2, 'f', 0, '0')
