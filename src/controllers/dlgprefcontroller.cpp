@@ -276,8 +276,9 @@ void DlgPrefController::slotUpdate() {
     m_ui.controllerTabs->setEnabled(deviceOpen);
 
     // If the controller is not mappable, disable the input and output mapping
-    // sections.
+    // sections and the learning wizard button.
     bool isMappable = m_pController->isMappable();
+    m_ui.btnLearningWizard->setEnabled(isMappable);
     m_ui.inputMappingsTab->setEnabled(isMappable);
     m_ui.outputMappingsTab->setEnabled(isMappable);
 }
