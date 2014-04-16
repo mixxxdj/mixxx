@@ -19,7 +19,7 @@
 
 #include "configobject.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "encoder/encoder.h"
 
 #ifdef __FFMPEGFILE__
@@ -42,8 +42,8 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
           m_pEncoder(NULL),
           m_pSndfile(NULL),
           m_iMetaDataLife(0) {
-    m_pRecReady = new ControlObjectThread(RECORDING_PREF_KEY, "status");
-    m_pSamplerate = new ControlObjectThread("[Master]", "samplerate");
+    m_pRecReady = new ControlObjectSlave(RECORDING_PREF_KEY, "status", this);
+    m_pSamplerate = new ControlObjectSlave("[Master]", "samplerate", this);
 }
 
 EngineRecord::~EngineRecord() {
