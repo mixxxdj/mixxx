@@ -345,12 +345,16 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     DlgPreferencePage* pCurrentPage = currentPage();
     switch (role) {
         case QDialogButtonBox::ResetRole:
+            // Only reset to defaults on the current page.
             if (pCurrentPage != NULL) {
                 pCurrentPage->slotResetToDefaults();
             }
             break;
         case QDialogButtonBox::ApplyRole:
-            emit(applyPreferences());
+            // Only apply settings on the current page.
+            if (pCurrentPage != NULL) {
+                pCurrentPage->slotApply();
+            }
             break;
         case QDialogButtonBox::AcceptRole:
             emit(applyPreferences());

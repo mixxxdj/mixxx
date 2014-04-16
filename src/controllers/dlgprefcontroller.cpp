@@ -59,9 +59,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
             this, SLOT(slotEnableDevice(bool)));
 
-    // When the user hits apply, apply.
-    connect(m_ui.btnApply, SIGNAL(clicked()),
-            this, SLOT(slotApply()));
     // We start off clean so the apply button is disabled.
     m_ui.btnApply->setEnabled(m_bDirty);
 

@@ -42,10 +42,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
             this, SLOT(refreshDevices()));
 
-    applyButton->setEnabled(false);
-    connect(applyButton, SIGNAL(clicked()),
-            this, SLOT(slotApply()));
-
     apiComboBox->clear();
     apiComboBox->addItem(tr("None"), "None");
     updateAPIs();
@@ -148,7 +144,6 @@ void DlgPrefSound::slotUpdate() {
     // for a prefs rewrite -- bkgood
     loadSettings();
     m_settingsModified = false;
-    applyButton->setEnabled(false);
 }
 
 /**
@@ -183,7 +178,6 @@ void DlgPrefSound::slotApply() {
         QMessageBox::warning(NULL, tr("Configuration error"), error);
     }
     m_settingsModified = false;
-    applyButton->setEnabled(false);
     loadSettings(); // in case SM decided to change anything it didn't like
 }
 
@@ -465,9 +459,6 @@ void DlgPrefSound::refreshDevices() {
 void DlgPrefSound::settingChanged() {
     if (m_loading) return; // doesn't count if we're just loading prefs
     m_settingsModified = true;
-    if (!applyButton->isEnabled()) {
-        applyButton->setEnabled(true);
-    }
 }
 
 /**
