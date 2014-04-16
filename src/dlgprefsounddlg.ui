@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>686</width>
-    <height>494</height>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -253,13 +253,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="resetButton">
-       <property name="text">
-        <string>Reset to Defaults</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="buttonsHSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -271,13 +264,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="applyButton">
-       <property name="text">
-        <string>Apply</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
