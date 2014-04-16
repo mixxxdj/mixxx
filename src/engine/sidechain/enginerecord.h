@@ -92,6 +92,8 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     ControlObjectSlave* m_pRecReady;
     ControlObjectSlave* m_pSamplerate;
     quint64 m_frames;
+    quint64 m_sampleRateLong;
+    QString getRecordedDurationStr();
 
     int m_iMetaDataLife;
     TrackPointer m_pCurrentTrack;

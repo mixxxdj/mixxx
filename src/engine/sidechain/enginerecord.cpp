@@ -163,7 +163,10 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
             m_pCurrentTrack = TrackPointer();
+
+            // clean frames couting and get current sample rate.
             m_frames = 0;
+            m_sampleRateLong = m_pSamplerate->get() * 2;
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -189,15 +192,11 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             }
         }
 
-        // gets recorded duration
+        // update frames counting
         m_frames += iBufferSize;
-        long sampleRate = m_pSamplerate->get() * 2;
-        int seconds = (m_frames / sampleRate) % 60;
-        int minutes = m_frames / (sampleRate * 60);
-        QString durationStr = QString("%1:%2")
-                     .arg(minutes, 2, 'f', 0, '0')
-                     .arg(seconds, 2, 'f', 0, '0');
-        emit(durationRecorded(durationStr));
+        // gets recorded duration and emit signal that will be used
+        // by RecordingManager to update the label besides start/stop button
+        emit(durationRecorded(getRecordedDurationStr()));
 
         if (m_bCueIsEnabled) {
             if (metaDataHasChanged()) {
@@ -209,23 +208,26 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     }
 }
 
+QString EngineRecord::getRecordedDurationStr() {
+    unsigned long seconds = ((unsigned long)
+                             (m_frames / m_sampleRateLong) % 60);
+
+    unsigned long minutes = m_frames / (m_sampleRateLong * 60);
+
+    return QString("%1:%2")
+                 .arg(minutes, 2, 'f', 0, '0')
+                 .arg(seconds, 2, 'f', 0, '0');
+}
+
 void EngineRecord::writeCueLine() {
     if (!m_pCurrentTrack) {
         return;
     }
 
-    // account for multiple channels
-    unsigned long samplerate = m_pSamplerate->get() * 2;
     // CDDA is specified as having 75 frames a second
     unsigned long frames = ((unsigned long)
-                                ((m_frames / (samplerate / 75)))
+                                ((m_frames / (m_sampleRateLong / 75)))
                                     % 75);
-
-    unsigned long seconds =  ((unsigned long)
-                                (m_frames / samplerate)
-                                    % 60 );
-
-    unsigned long minutes = m_frames / (samplerate * 60);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
             .arg((double)m_cueTrack, 2, 'f', 0, '0')
@@ -240,11 +242,9 @@ void EngineRecord::writeCueLine() {
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
     // for the track detection code.
-    m_cueFile.write(QString("    INDEX 01 %1:%2:%3\n").arg(
-        QString("%1").arg((double)minutes, 2, 'f', 0, '0'),
-        QString("%1").arg((double)seconds, 2, 'f', 0, '0'),
-        QString("%1").arg((double)frames, 2, 'f', 0, '0')).toLatin1()
-    );
+    m_cueFile.write(QString("    INDEX 01 %1:%2\n")
+                    .arg(getRecordedDurationStr())
+                    .arg((double)frames, 2, 'f', 0, '0').toLatin1());
 }
 
 // Encoder calls this method to write compressed audio
