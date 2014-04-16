@@ -35,8 +35,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_settingsModified(false),
-          m_loading(false),
-          m_forceApply(false) {
+          m_loading(false) {
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
@@ -150,10 +149,9 @@ void DlgPrefSound::slotUpdate() {
  * Slot called when the Apply or OK button is pressed.
  */
 void DlgPrefSound::slotApply() {
-    if (!m_settingsModified && !m_forceApply) {
+    if (!m_settingsModified) {
         return;
     }
-    m_forceApply = false;
     m_config.clearInputs();
     m_config.clearOutputs();
     emit(writePaths(&m_config));
@@ -179,16 +177,6 @@ void DlgPrefSound::slotApply() {
     }
     m_settingsModified = false;
     loadSettings(); // in case SM decided to change anything it didn't like
-}
-
-/**
- * Slot called by DlgPrefVinyl when it needs slotApply here to call setupDevices.
- * We're graced with this kludge because VC proxies are only initialized in
- * SoundManager::setupDevices and reinit is the only way to make them reread
- * their config.
- */
-void DlgPrefSound::forceApply() {
-    m_forceApply = true;
 }
 
 /**
