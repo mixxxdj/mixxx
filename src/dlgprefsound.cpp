@@ -63,9 +63,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(audioBufferChanged(int)));
 
     deviceSyncComboBox->clear();
-    deviceSyncComboBox->addItem(tr("0: Polling (experimental)"));
-    deviceSyncComboBox->addItem(tr("1: No synchronization"));
-    deviceSyncComboBox->addItem(tr("2: Drift and jitter correction"));
+    deviceSyncComboBox->addItem(tr("Default (long delay)"));
+    deviceSyncComboBox->addItem(tr("Experimental (no delay)"));
+    deviceSyncComboBox->addItem(tr("Disabled (short delay)"));
     deviceSyncComboBox->setCurrentIndex(2);
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(syncBuffersChanged(int)));
@@ -320,8 +320,17 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
 
-    int syncIndex = m_config.getSyncBuffers();
-    deviceSyncComboBox->setCurrentIndex(syncIndex);
+    int syncBuffers = m_config.getSyncBuffers();
+    if (syncBuffers == 0) {
+        // "Experimental (no delay)"))
+        deviceSyncComboBox->setCurrentIndex(1);
+    } else if (syncBuffers == 1) {
+        // "Disabled (short delay)")) = 1 buffer
+        deviceSyncComboBox->setCurrentIndex(2);
+    } else {
+        // "Default (long delay)" = 2 buffer
+        deviceSyncComboBox->setCurrentIndex(0);
+    }
 
     emit(loadPaths(m_config));
     m_loading = false;
@@ -385,7 +394,16 @@ void DlgPrefSound::audioBufferChanged(int index) {
 }
 
 void DlgPrefSound::syncBuffersChanged(int index) {
-    m_config.setSyncBuffers(index);
+    if (index == 0) {
+        // "Default (long delay)" = 2 buffer
+        m_config.setSyncBuffers(2);
+    } else if (index == 1) {
+        // "Experimental (no delay)")) = 0 buffer
+        m_config.setSyncBuffers(0);
+    } else {
+        // "Disabled (short delay)")) = 1 buffer
+        m_config.setSyncBuffers(1);
+    }
 }
 
 // Slot called whenever the selected sample rate is changed. Populates the
