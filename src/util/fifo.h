@@ -114,11 +114,10 @@ class MessagePipe {
     inline int writeMessages(const SenderMessageType* messages, int count) {
         if (m_bSerializeWrites) {
             m_serializationMutex.lock();
-        }
-        return m_receiver_messages.write(messages, count);
-        if (m_bSerializeWrites) {
+        } else {
             m_serializationMutex.unlock();
         }
+        return m_receiver_messages.write(messages, count);
     }
 
   private:
