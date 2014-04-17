@@ -7,7 +7,9 @@
 #include "defs.h"
 
 chromaprinter::chromaprinter(QObject* parent)
-             : QObject(parent){
+             : QObject(parent),
+               m_SampleRate(0),
+               m_NumSamples(0) {
 }
 
 QString chromaprinter::getFingerPrint(TrackPointer pTrack){

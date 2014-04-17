@@ -26,7 +26,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
-          m_posThreshold2(1.0f) {
+          m_posThreshold2(1.0f),
+          m_fadeDuration1(0.0f),
+          m_fadeDuration2(0.0f) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);

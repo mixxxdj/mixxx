@@ -24,6 +24,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
           m_pConfig(pConfig),
           m_pProcessor(new VinylControlProcessor(this, pConfig)),
           m_iTimerId(-1),
+          m_pNumDecks(NULL),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.

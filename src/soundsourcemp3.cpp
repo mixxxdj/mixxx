@@ -36,6 +36,13 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) :
     m_iAvgFrameSize = 0;
     m_iChannels = 0;
     rest = 0;
+
+    bitrate = 0;
+    framecount = 0;
+    currentframe = 0;
+    pos = mad_timer_zero;
+    filelength = mad_timer_zero;
+    inputbuf_len = m_file.size();
 }
 
 SoundSourceMp3::~SoundSourceMp3()

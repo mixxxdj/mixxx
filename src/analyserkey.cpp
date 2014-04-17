@@ -13,7 +13,10 @@ AnalyserKey::AnalyserKey(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_pVamp(NULL),
           m_iSampleRate(0),
-          m_iTotalSamples(0) {
+          m_iTotalSamples(0),
+          m_bPreferencesKeyDetectionEnabled(true),
+          m_bPreferencesFastAnalysisEnabled(true),
+          m_bPreferencesReanalyzeEnabled(true) {
 }
 
 AnalyserKey::~AnalyserKey(){
