@@ -304,6 +304,7 @@ void DlgPrefVinyl::VinylTypeSlotApply()
         } else if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_45) {
             m_COSpeeds[0]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
         }
+        break;
     default:
         qWarning() << "Unexpected number of vinyl speed preference items";
     }
