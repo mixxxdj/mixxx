@@ -69,8 +69,9 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
 
 void WaveformSignalColors::fallBackFromSignalColor()
 {
-    // qWarning() << "WaveformSignalColors::fallBackFromSignalColor - " \
-    //               "skin do not provide low/mid/high signal colors";
+    /* qWarning() << "WaveformSignalColors::fallBackFromSignalColor - " \
+     *               "skin do not provide low/mid/high signal colors";
+    */
 
     // NOTE(rryan): On ARM, qreal is float so it's important we use qreal here
     // and not double or float or else we will get build failures on ARM.
