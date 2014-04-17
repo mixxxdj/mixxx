@@ -15,8 +15,8 @@ AnalyserKey::AnalyserKey(ConfigObject<ConfigValue>* pConfig)
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_bPreferencesKeyDetectionEnabled(true),
-          m_bPreferencesFastAnalysisEnabled(true),
-          m_bPreferencesReanalyzeEnabled(true) {
+          m_bPreferencesFastAnalysisEnabled(false),
+          m_bPreferencesReanalyzeEnabled(false) {
 }
 
 AnalyserKey::~AnalyserKey(){
