@@ -73,24 +73,10 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetLocale(int);
     void slotSetStartInFullscreen(int index);
 
-
-    void slotSetFrameRate(int frameRate);
-    void slotSetWaveformType(int index);
-    void slotSetWaveformOverviewType(int index);
-    void slotSetDefaultZoom(int index);
-    void slotSetZoomSynchronization(bool checked);
-    void slotSetVisualGainAll(double gain);
-    void slotSetVisualGainLow(double gain);
-    void slotSetVisualGainMid(double gain);
-    void slotSetVisualGainHigh(double gain);
-    void slotSetNormalizeOverview( bool normalize);
-    void slotWaveformMeasured(float frameRate, int rtErrorCnt);
-
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
 
   private:
-    void initWaveformControl();
     void notifyRebootNecessary();
     bool checkSkinResolution(QString skin);
 

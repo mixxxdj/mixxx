@@ -33,8 +33,6 @@
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "playermanager.h"
 #include "controlobject.h"
 #include "mixxx.h"
@@ -339,26 +337,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                 );
 
     slotUpdate();
-
-    initWaveformControl();
 }
 
-DlgPrefControls::~DlgPrefControls()
-{
+DlgPrefControls::~DlgPrefControls() {
     delete m_pControlPositionDisplay;
-
-    foreach (ControlObjectThread* pControl, m_rateControls) {
-        delete pControl;
-    }
-    foreach (ControlObjectThread* pControl, m_rateDirControls) {
-        delete pControl;
-    }
-    foreach (ControlObjectThread* pControl, m_cueControls) {
-        delete pControl;
-    }
-    foreach (ControlObjectThread* pControl, m_rateRangeControls) {
-        delete pControl;
-    }
+    qDeleteAll(m_rateControls);
+    qDeleteAll(m_rateDirControls);
+    qDeleteAll(m_cueControls);
+    qDeleteAll(m_rateRangeControls);
 }
 
 void DlgPrefControls::slotUpdateSchemes()
@@ -640,131 +626,6 @@ void DlgPrefControls::slotApply()
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
 
-}
-
-void DlgPrefControls::slotSetFrameRate(int frameRate) {
-    WaveformWidgetFactory::instance()->setFrameRate(frameRate);
-}
-
-void DlgPrefControls::slotSetWaveformType(int index) {
-    if (WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index)) {
-        // It was changed to a valid type. Previously we rebooted the Mixxx GUI
-        // here but now we can update the waveforms on the fly.
-    }
-}
-
-void DlgPrefControls::slotSetWaveformOverviewType(int index) {
-    m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
-    m_mixxx->rebootMixxxView();
-}
-
-void DlgPrefControls::slotSetDefaultZoom(int index) {
-    WaveformWidgetFactory::instance()->setDefaultZoom( index + 1);
-}
-
-void DlgPrefControls::slotSetZoomSynchronization(bool checked) {
-    WaveformWidgetFactory::instance()->setZoomSync(checked);
-}
-
-void DlgPrefControls::slotSetVisualGainAll(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,gain);
-}
-
-void DlgPrefControls::slotSetVisualGainLow(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,gain);
-}
-
-void DlgPrefControls::slotSetVisualGainMid(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,gain);
-}
-
-void DlgPrefControls::slotSetVisualGainHigh(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
-}
-
-void DlgPrefControls::slotSetNormalizeOverview( bool normalize) {
-    WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
-}
-
-void DlgPrefControls::slotWaveformMeasured(float frameRate, int rtErrorCnt) {
-    frameRateAverage->setText(
-            QString::number((double)frameRate, 'f', 2) +
-            " e" +
-            QString::number(rtErrorCnt));
-}
-
-void DlgPrefControls::initWaveformControl() {
-    waveformTypeComboBox->clear();
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-
-    if (factory->isOpenGLAvailable())
-        openGlStatusIcon->setText(factory->getOpenGLVersion());
-    else
-        openGlStatusIcon->setText(tr("OpenGL not available"));
-
-    WaveformWidgetType::Type currentType = factory->getType();
-    int currentIndex = -1;
-
-    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for (int i = 0; i < handles.size(); i++) {
-        waveformTypeComboBox->addItem(handles[i].getDisplayName());
-        if (handles[i].getType() == currentType) {
-            currentIndex = i;
-        }
-    }
-
-    if (currentIndex != -1) {
-        waveformTypeComboBox->setCurrentIndex(currentIndex);
-    }
-
-    frameRateSpinBox->setValue(factory->getFrameRate());
-
-    synchronizeZoomCheckBox->setChecked( factory->isZoomSync());
-    allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
-    lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
-    midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
-    highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
-    normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
-
-    for( int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom;
-         i++) {
-        defaultZoomComboBox->addItem(QString::number( 100/double(i),'f',1) + " %");
-    }
-    defaultZoomComboBox->setCurrentIndex( factory->getDefaultZoom() - 1);
-
-    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetFrameRate(int)));
-    connect(waveformTypeComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotSetWaveformType(int)));
-    connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotSetDefaultZoom(int)));
-    connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
-            this, SLOT(slotSetZoomSynchronization(bool)));
-    connect(allVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainAll(double)));
-    connect(lowVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainLow(double)));
-    connect(midVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainMid(double)));
-    connect(highVisualGain,SIGNAL(valueChanged(double)),
-            this,SLOT(slotSetVisualGainHigh(double)));
-    connect(normalizeOverviewCheckBox,SIGNAL(toggled(bool)),
-            this,SLOT(slotSetNormalizeOverview(bool)));
-
-    connect(WaveformWidgetFactory::instance(), SIGNAL(waveformMeasured(float,int)),
-            this, SLOT(slotWaveformMeasured(float,int)));
-
-    // Waveform overview init
-    waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"
-    waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
-    waveformOverviewComboBox->addItem( tr("RGB") ); // "2"
-
-    // By default we set filtered woverview = "0"
-    waveformOverviewComboBox->setCurrentIndex(
-            m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt());
-    connect(waveformOverviewComboBox,SIGNAL(currentIndexChanged(int)),
-            this,SLOT(slotSetWaveformOverviewType(int)));
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise
