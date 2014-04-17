@@ -104,8 +104,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     slotNumDecksChanged(m_pNumDecks->get());
 }
 
-DlgPrefVinyl::~DlgPrefVinyl()
-{
+DlgPrefVinyl::~DlgPrefVinyl() {
     qDeleteAll(m_COSpeeds);
     qDeleteAll(m_signalWidgets);
 }

@@ -32,7 +32,21 @@ void DlgPrefModplug::slotUpdate() {
 }
 
 void DlgPrefModplug::slotResetToDefaults() {
-    // TODO(XXX): Set the defaults.
+    m_pUi->memoryLimit->setValue(256);
+    m_pUi->oversampling->setChecked(true);
+    m_pUi->noiseReduction->setChecked(false);
+    m_pUi->stereoSeparation->setValue(1);
+    m_pUi->maxMixChannels->setValue(128);
+    m_pUi->resampleMode->setCurrentIndex(1);
+    m_pUi->reverb->setChecked(false);
+    m_pUi->reverbDepth->setValue(50);
+    m_pUi->reverbDelay->setValue(50);
+    m_pUi->megabass->setChecked(false);
+    m_pUi->bassDepth->setValue(50);
+    m_pUi->bassCutoff->setValue(50);
+    m_pUi->surround->setChecked(false);
+    m_pUi->surroundDepth->setValue(50);
+    m_pUi->surroundDelay->setValue(50);
 }
 
 void DlgPrefModplug::loadSettings() {

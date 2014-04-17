@@ -93,26 +93,25 @@ void DlgPrefBeats::loadSettings(){
 }
 
 void DlgPrefBeats::slotResetToDefaults() {
-    if (m_listIdentifier.size()==0) {
-        qDebug() << "DlgPrefBeats:No Vamp plugin not found";
-        return;
-    }
-    if (m_listIdentifier.contains("qm-tempotracker:0")) {
-        m_selectedAnalyser = "qm-tempotracker:0";
+    if (!m_listIdentifier.isEmpty()) {
+        if (m_listIdentifier.contains("qm-tempotracker:0")) {
+            m_selectedAnalyser = "qm-tempotracker:0";
+        } else {
+            // the first one will always be the soundtouch one. defined in
+            // vamp-plugins/libmain.cpp
+            m_selectedAnalyser = m_listIdentifier.at(0);
+        }
     } else {
-        // the first one will always be the soundtouch one. defined in
-        // vamp-plugins/libmain.cpp
-        m_selectedAnalyser = m_listIdentifier.at(0);
+        qDebug() << "DlgPrefBeats:No Vamp plugin not found";
     }
+
     m_banalyserEnabled = true;
     m_bfixedtempoEnabled = true;
     m_boffsetEnabled = true;
     m_FastAnalysisEnabled = false;
     m_bReanalyze = false;
-
     m_minBpm = 70;
     m_maxBpm = 140;
-    //slotApply();
     slotUpdate();
 }
 

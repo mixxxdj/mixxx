@@ -52,6 +52,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
     connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
 
     loadSettings();
+    slotUpdate();
+    slotApply();
 }
 
 DlgPrefEQ::~DlgPrefEQ() {
@@ -94,9 +96,6 @@ void DlgPrefEQ::loadSettings() {
     // Default internal EQs to enabled.
     CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes"));
-
-    slotUpdate();
-    slotApply();
 }
 
 void DlgPrefEQ::setDefaultShelves()
@@ -111,6 +110,7 @@ void DlgPrefEQ::slotResetToDefaults() {
     setDefaultShelves();
     CheckBoxEnbEQ->setChecked(true);
     CheckBoxLoFi->setChecked(true);
+    setDefaultShelves();
     loadSettings();
     slotUpdate();
     slotApply();

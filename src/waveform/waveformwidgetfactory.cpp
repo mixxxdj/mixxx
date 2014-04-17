@@ -313,7 +313,7 @@ bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
-    if (handleIndex < 0 && handleIndex > (int)m_waveformWidgetHandles.size()) {
+    if (handleIndex < 0 || handleIndex >= (int)m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);

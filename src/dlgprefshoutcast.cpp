@@ -92,7 +92,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     tmp_string = m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre"));
     if (tmp_string.isEmpty())
-        tmp_string = "Live Mix";
+        tmp_string = tr("Live Mix");
     stream_genre->setText(tmp_string);
 
     // Stream "public" checkbox
@@ -182,7 +182,29 @@ DlgPrefShoutcast::~DlgPrefShoutcast() {
 }
 
 void DlgPrefShoutcast::slotResetToDefaults() {
-    // TODO(XXX): Set the defaults.
+    // Make sure to keep these values in sync with the constructor.
+    enableLiveBroadcasting->setChecked(false);
+    comboBoxServerType->setCurrentIndex(0);
+    mountpoint->setText("");
+    host->setText("");
+    port->setText("8000");
+    login->setText("");
+    password->setText("");
+    stream_name->setText("");
+    stream_website->setText(MIXXX_WEBSITE_URL);
+    stream_desc->setText(tr("This stream is online for testing purposes!"));
+    stream_genre->setText(tr("Live Mix"));
+    stream_public->setChecked(false);
+    ogg_dynamicupdate->setChecked(false);
+    comboBoxEncodingBitrate->setCurrentIndex(comboBoxEncodingBitrate->findData(
+            SHOUTCAST_BITRATE_128KBPS));
+    comboBoxEncodingFormat->setCurrentIndex(0);
+    comboBoxEncodingChannels->setCurrentIndex(0);
+    enableUtf8Metadata->setChecked(false);
+    enableCustomMetadata->setChecked(false);
+    metadata_format->setText(tr("$artist - $title"));
+    custom_artist->setText("");
+    custom_title->setText("");
 }
 
 void DlgPrefShoutcast::slotUpdate() {
