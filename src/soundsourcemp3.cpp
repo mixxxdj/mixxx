@@ -233,7 +233,7 @@ long SoundSourceMp3::seek(long filepos) {
         rest=-1;
 
         m_currentSeekFrameIndex = 0;
-        cur = getSeekFrame(0);
+        //cur = getSeekFrame(0);
         //frameIterator.toFront(); //Might not need to do this -- Albert June 19/2010 (during Qt3 purge)
     } else {
         //qDebug() << "seek precise";
