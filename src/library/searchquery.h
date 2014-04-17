@@ -82,7 +82,7 @@ class NumericFilterNode : public QueryNode {
   private:
     QString parseHumanReadableTime(QString durationHumanReadable);
     QString getTimeInHMS(QString durationHumanReadable);
-    QString formateInput(QString inputDuration);
+    QString formatInput(QString inputDuration);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;

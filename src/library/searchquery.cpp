@@ -172,7 +172,6 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
 
 QString NumericFilterNode::parseHumanReadableTime(QString durationHumanReadable) {
     QStringList durationRanges = durationHumanReadable.split("-");
-    qDebug()<<durationHumanReadable;
     if (durationRanges.length() == 1) {
         //qDebug()<<"only one parameter";
         return getTimeInHMS(durationHumanReadable);
@@ -186,7 +185,7 @@ QString NumericFilterNode::parseHumanReadableTime(QString durationHumanReadable)
 }
 
 QString NumericFilterNode::getTimeInHMS(QString durationHumanReadable) {
-    durationHumanReadable = formateInput(durationHumanReadable);
+    durationHumanReadable = formatInput(durationHumanReadable);
     bool parseable = false;
     double totalTime = -1;
     totalTime = durationHumanReadable.toDouble(&parseable);
@@ -250,18 +249,17 @@ QString NumericFilterNode::getTimeInHMS(QString durationHumanReadable) {
     return QString::number(totalTime);
 }
 
-QString NumericFilterNode::formateInput(QString inputDuration) {
+QString NumericFilterNode::formatInput(QString inputDuration) {
     QRegExp hour_minute_second_regexp("^(\\d+:\\d+:\\d+[hH]?)$");
     QRegExp minute_second_regexp("^(\\d+:\\d+[mM]?)$");
-    QRegExp colone_regexp(":");
 
     if (inputDuration.contains(hour_minute_second_regexp)) {
         //qDebug()<<"it's hour minute second";
         //qDebug()<<inputDuration;
         if (inputDuration.endsWith("h",Qt::CaseInsensitive)) {
                inputDuration.chop(1);
-            }
-        QStringList timeSeparated = inputDuration.split(colone_regexp);
+        }
+        QStringList timeSeparated = inputDuration.split(QRegExp(":"));
         QString hour = timeSeparated.at(0);
         QString minute = timeSeparated.at(1);
         QString second = timeSeparated.at(2);
@@ -273,8 +271,8 @@ QString NumericFilterNode::formateInput(QString inputDuration) {
         //qDebug()<<inputDuration;
         if (inputDuration.endsWith("m",Qt::CaseInsensitive)) {
                inputDuration.chop(1);
-            }
-        QStringList timeSeparated = inputDuration.split(colone_regexp);
+        }
+        QStringList timeSeparated = inputDuration.split(QRegExp(":"));
         QString minute = timeSeparated.at(0);
         QString second = timeSeparated.at(1);
         QStringList timeJoined;
