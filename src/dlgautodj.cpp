@@ -534,14 +534,15 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
         if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
-                if (nextTrack->getDuration() < m_backUpTransition)
+                if (nextTrack->getDuration() < m_backUpTransition) {
                     spinBoxTransition->setValue(nextTrack->getDuration()/2);
                     m_backUpTransition = tmp;
+                }
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
                 m_pAutoDJTableModel->removeTrack(
-                    m_pAutoDJTableModel->index(0, 0));
+                m_pAutoDJTableModel->index(0, 0));
             }
         } else {
             // we are running out of tracks
