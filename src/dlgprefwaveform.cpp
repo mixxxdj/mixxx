@@ -11,6 +11,16 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
           m_pMixxx(pMixxx) {
     setupUi(this);
 
+    // Waveform overview init
+    waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"
+    waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
+    waveformOverviewComboBox->addItem( tr("RGB") ); // "2"
+
+    // The GUI is not fully setup so connecting signals before calling
+    // slotUpdate can generate rebootMixxxView calls.
+    // TODO(XXX): Improve this awkwardness.
+    slotUpdate();
+
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetFrameRate(int)));
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
@@ -38,15 +48,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     connect(WaveformWidgetFactory::instance(), SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
 
-    // Waveform overview init
-    waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"
-    waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
-    waveformOverviewComboBox->addItem( tr("RGB") ); // "2"
-
     connect(waveformOverviewComboBox,SIGNAL(currentIndexChanged(int)),
             this,SLOT(slotSetWaveformOverviewType(int)));
-
-    slotUpdate();
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -100,6 +103,7 @@ void DlgPrefWaveform::slotApply() {
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
+    // TODO(XXX): Set the defaults.
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
