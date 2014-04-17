@@ -53,7 +53,10 @@ SoundSourceFLAC::~SoundSourceFLAC() {
 
 // soundsource overrides
 int SoundSourceFLAC::open() {
-    m_file.open(QIODevice::ReadOnly);
+    if (m_file.open(QIODevice::ReadOnly)) {
+        qWarning() << "SSFLAC: Could not read file!";
+        return ERR;
+    }
 
     m_decoder = FLAC__stream_decoder_new();
     if (m_decoder == NULL) {
