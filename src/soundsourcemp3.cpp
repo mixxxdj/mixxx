@@ -36,6 +36,13 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) :
     m_iAvgFrameSize = 0;
     m_iChannels = 0;
     rest = 0;
+
+    bitrate = 0;
+    framecount = 0;
+    currentframe = 0;
+    pos = mad_timer_zero;
+    filelength = mad_timer_zero;
+    inputbuf_len = 0;
 }
 
 SoundSourceMp3::~SoundSourceMp3()
@@ -226,7 +233,7 @@ long SoundSourceMp3::seek(long filepos) {
         rest=-1;
 
         m_currentSeekFrameIndex = 0;
-        cur = getSeekFrame(0);
+        //cur = getSeekFrame(0);
         //frameIterator.toFront(); //Might not need to do this -- Albert June 19/2010 (during Qt3 purge)
     } else {
         //qDebug() << "seek precise";
@@ -577,7 +584,7 @@ int SoundSourceMp3::parseHeader()
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    m_currentSeekFrameIndex = math_min(m_qSeekList.count()-1,
+    m_currentSeekFrameIndex = math_min((unsigned int) m_qSeekList.count()-1,
                                        m_iAvgFrameSize ? (unsigned int)(pos/m_iAvgFrameSize) : 0);
     MadSeekFrameType* temp = getSeekFrame(m_currentSeekFrameIndex);
 

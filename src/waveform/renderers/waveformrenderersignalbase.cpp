@@ -17,7 +17,24 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
       m_pLowKillControlObject(NULL),
       m_pMidKillControlObject(NULL),
       m_pHighKillControlObject(NULL),
-      m_alignment(Qt::AlignCenter) {
+      m_alignment(Qt::AlignCenter),
+      m_pColors(0),
+      m_axesColor_r(0),
+      m_axesColor_g(0),
+      m_axesColor_b(0),
+      m_axesColor_a(0),
+      m_signalColor_r(0),
+      m_signalColor_g(0),
+      m_signalColor_b(0),
+      m_lowColor_r(0),
+      m_lowColor_g(0),
+      m_lowColor_b(0),
+      m_midColor_r(0),
+      m_midColor_g(0),
+      m_midColor_b(0),
+      m_highColor_r(0),
+      m_highColor_g(0),
+      m_highColor_b(0) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {

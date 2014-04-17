@@ -117,7 +117,6 @@ class BpmControl : public EngineControl {
     // playposition.
     ControlPushButton* m_pTranslateBeats;
 
-    double m_dLoopSize; // Only used to see if we shouldn't quantize position.
     double m_dPreviousSample;
 
     // Master Sync objects and values.
