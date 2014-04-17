@@ -97,12 +97,14 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
             }
 
             // do crossfade from the current buffer into the new loop beginning
-            double mix_amount = 0.0;
-            double mix_inc = 2.0 / static_cast<double>(samples_read);
-            for (int i = 0; i < samples_read; i += 2) {
-                base_buffer[i] = base_buffer[i] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i] * mix_amount;
-                base_buffer[i+1] = base_buffer[i+1] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i+1] * mix_amount;
-                mix_amount += mix_inc;
+            if (samples_read != 0) { // avoid division by zero
+                double mix_amount = 0.0;
+                double mix_inc = 2.0 / static_cast<double>(samples_read);
+                for (int i = 0; i < samples_read; i += 2) {
+                    base_buffer[i] = base_buffer[i] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i] * mix_amount;
+                    base_buffer[i+1] = base_buffer[i+1] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i+1] * mix_amount;
+                    mix_amount += mix_inc;
+                }
             }
         }
     }
