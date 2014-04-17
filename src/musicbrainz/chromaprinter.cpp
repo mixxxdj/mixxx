@@ -8,8 +8,8 @@
 
 chromaprinter::chromaprinter(QObject* parent)
              : QObject(parent),
-               m_SampleRate(0),
-               m_NumSamples(0) {
+               m_NumSamples(0),
+               m_SampleRate(0) {
 }
 
 QString chromaprinter::getFingerPrint(TrackPointer pTrack){
