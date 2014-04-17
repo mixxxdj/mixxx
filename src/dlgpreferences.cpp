@@ -45,6 +45,7 @@
 #include "dlgpreflibrary.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefwaveform.h"
+#include "dlgprefautodj.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
@@ -95,6 +96,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wcontrols);
     m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig);
     addPageWidget(m_wwaveform);
+    m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
+    addPageWidget(m_wautodj);
     m_weq = new DlgPrefEQ(this, m_pConfig);
     addPageWidget(m_weq);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
@@ -170,6 +173,12 @@ void DlgPreferences::createIcons() {
     m_pWaveformButton->setText(0, tr("Waveforms"));
     m_pWaveformButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pWaveformButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
+    m_pAutoDJButton->setText(0, tr("AutoDJ"));
+    m_pAutoDJButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pAutoDJButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pEqButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.png"));
@@ -260,6 +269,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wcontrols);
     } else if (current == m_pWaveformButton) {
         switchToPage(m_wwaveform);
+    } else if (current == m_pAutoDJButton) {
+        switchToPage(m_wautodj);
     } else if (current == m_pEqButton) {
         switchToPage(m_weq);
     } else if (current == m_pCrossfaderButton) {
