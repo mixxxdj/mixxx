@@ -26,6 +26,10 @@
 //   - Loops: Manual, beat and beatroll
 //   - Censor: Use reverseroll instead of reverse
 //   - Scratching: Don't modify keylock mode
+// 2014-04-17 Track loading
+//   - Solo cue mix when loading a track (can also triggered manually
+//     by pressing Shift + Cue Mix)
+//   - Slip mode fixes (still does not always work as expected)
 ////////////////////////////////////////////////////////////////////////
 
 function DenonMC6000MK2 () {}
@@ -76,6 +80,7 @@ DenonMC6000MK2.MIXXX_SYNC_NONE = 0;
 DenonMC6000MK2.MIXXX_SYNC_SLAVE = 1;
 DenonMC6000MK2.MIXXX_SYNC_MASTER = 2;
 DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED = -1;
+//DenonMC6000MK2.MIXXX_BEATLOOPS = [ "0.0625", "0.125", "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64"  ];
 
 ////////////////////////////////////////////////////////////////////////
 // Logging functions                                                  //
@@ -409,6 +414,7 @@ DenonMC6000MK2.Deck.prototype.triggerValue = function (key) {
 
 DenonMC6000MK2.Deck.prototype.loadSelectedTrack = function () {
 	this.setValue("LoadSelectedTrack", true);
+	this.setCueMixSolo();
 };
 
 DenonMC6000MK2.Deck.prototype.unloadTrack = function () {
@@ -508,8 +514,19 @@ DenonMC6000MK2.onSyncModeValue = function (value, group, control) {
 
 /* Cue Mix */
 
+DenonMC6000MK2.Deck.prototype.setCueMixSolo = function () {
+	for (var deckGroup in DenonMC6000MK2.decksByGroup) {
+		var deck = DenonMC6000MK2.getDeckByGroup(deckGroup);
+		deck.setValue("pfl", this === deck);
+	}
+};
+
 DenonMC6000MK2.Deck.prototype.toggleCueMix = function () {
-	this.toggleValue("pfl");
+	if (this.getShiftState()) {
+		this.setCueMixSolo();
+	} else {
+		this.toggleValue("pfl");
+	}
 };
 
 DenonMC6000MK2.Deck.prototype.onCueMixValue = function (value) {
@@ -649,10 +666,8 @@ DenonMC6000MK2.onHotCue4Value = function (value, group, control) {
 DenonMC6000MK2.Deck.prototype.onCensorButton = function (isButtonPressed) {
 	if (this.getShiftState()) {
 		this.setValue("reverseroll", false);
-		if (isButtonPressed && this.getValue("loop_enabled")) {
-			this.toggleValue("slip_mode");
-		} else {
-			this.setValue("slip_mode", false);
+		if (isButtonPressed) {
+			this.toggleValue("slip_enabled");
 		}
 	} else {
 		this.setValue("reverseroll", isButtonPressed);
@@ -800,8 +815,8 @@ DenonMC6000MK2.onFilterValue = function (value, group, control) {
 /* Loops */
 
 DenonMC6000MK2.Deck.prototype.hasLoop = function () {
-	return (DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_start_position"))
-		&& (DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_end_position"));
+	return (DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_start_position")) &&
+		(DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_end_position"));
 };
 
 DenonMC6000MK2.Deck.prototype.deleteLoop = function () {

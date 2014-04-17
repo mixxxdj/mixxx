@@ -1871,6 +1871,7 @@
 				</options>
 			</control>
 		</controls>
+
 		<outputs>
 			<!-- VU meter - 1st green -->
 			<output>
