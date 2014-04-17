@@ -67,7 +67,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLShaderAvailable(false),
         m_vsyncThread(NULL),
         m_frameCnt(0),
-        m_actualFrameRate(0) {
+        m_actualFrameRate(0),
+        m_vSyncType(0) {
 
     m_visualGain[All] = 1.5;
     m_visualGain[Low] = 1.0;
