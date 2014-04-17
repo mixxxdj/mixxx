@@ -584,7 +584,7 @@ int SoundSourceMp3::parseHeader()
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    m_currentSeekFrameIndex = math_min(m_qSeekList.count()-1,
+    m_currentSeekFrameIndex = math_min((unsigned int) m_qSeekList.count()-1,
                                        m_iAvgFrameSize ? (unsigned int)(pos/m_iAvgFrameSize) : 0);
     MadSeekFrameType* temp = getSeekFrame(m_currentSeekFrameIndex);
 
