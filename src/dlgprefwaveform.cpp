@@ -103,7 +103,41 @@ void DlgPrefWaveform::slotApply() {
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
-    // TODO(XXX): Set the defaults.
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+
+    // Get the default we ought to use based on whether the user has OpenGL or
+    // not.
+    WaveformWidgetType::Type defaultType = factory->autoChooseWidgetType();
+    int currentIndex = -1;
+    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
+    for (int i = 0; i < handles.size(); ++i) {
+        if (handles[i].getType() == defaultType) {
+            currentIndex = i;
+        }
+    }
+    if (currentIndex != -1) {
+        waveformTypeComboBox->setCurrentIndex(currentIndex);
+    }
+
+    allVisualGain->setValue(1.5);
+    lowVisualGain->setValue(1.0);
+    midVisualGain->setValue(1.0);
+    highVisualGain->setValue(1.0);
+
+    // Default zoom level is 3 in WaveformWidgetFactory.
+    defaultZoomComboBox->setCurrentIndex(3 + 1);
+
+    // Don't synchronize zoom by default.
+    synchronizeZoomCheckBox->setChecked(false);
+
+    // Filtered overview.
+    waveformOverviewComboBox->setCurrentIndex(0);
+
+    // Don't normalize overview.
+    normalizeOverviewCheckBox->setChecked(false);
+
+    // 30FPS is the default
+    frameRateSlider->setValue(30);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
