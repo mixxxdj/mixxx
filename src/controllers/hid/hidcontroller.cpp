@@ -52,7 +52,7 @@ QString safeDecodeWideString(wchar_t* pStr, size_t max_length) {
     }
     // pStr is untrusted since it might be non-null terminated.
     wchar_t* tmp = new wchar_t[max_length+1];
-    memset(tmp, 0, sizeof(tmp[0]) * sizeof(tmp));
+    memset(tmp, 0, sizeof(tmp[0]) * sizeof(*tmp));
     // wcsnlen is not available on all platforms, so just make a temporary
     // buffer
     wcsncpy(tmp, pStr, max_length);
@@ -88,7 +88,7 @@ HidController::HidController(const hid_device_info deviceInfo)
     if (deviceInfo.serial_number != NULL) {
         size_t serial_max_length = 512;
         hid_serial_raw = new wchar_t[serial_max_length+1];
-        memset(hid_serial_raw, 0, sizeof(hid_serial_raw[0]) * sizeof(hid_serial_raw));
+        memset(hid_serial_raw, 0, sizeof(hid_serial_raw[0]) * sizeof(*hid_serial_raw));
         wcsncpy(hid_serial_raw, deviceInfo.serial_number, serial_max_length);
     }
 
