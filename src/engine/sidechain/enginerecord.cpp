@@ -307,7 +307,10 @@ bool EngineRecord::openFile() {
         // We can use a QFile to write compressed audio.
         if (m_pEncoder) {
             m_file.setFileName(m_fileName);
-            m_file.open(QIODevice::WriteOnly);
+            if (!m_file.open(QIODevice::WriteOnly)) {
+                qDebug() << "Could not write:" << m_fileName;
+                return false;
+            }
             if (m_file.handle() != -1) {
                 m_dataStream.setDevice(&m_file);
             }
@@ -338,7 +341,10 @@ bool EngineRecord::openCueFile() {
 
     qDebug() << "Opening Cue File:" << m_cueFileName;
     m_cueFile.setFileName(m_cueFileName);
-    m_cueFile.open(QIODevice::WriteOnly);
+    if (!m_cueFile.open(QIODevice::WriteOnly)) {
+        qDebug() << "Could not write Cue File:" << m_cueFileName;
+        return false;
+    }
 
     if (m_baAuthor.length() > 0) {
         m_cueFile.write(QString("PERFORMER \"%1\"\n")
