@@ -56,7 +56,7 @@ QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
     int success = chromaprint_feed(ctx, pData, m_NumSamples);
     if (!success) {
         qDebug() << "could not generate fingerprint";
-        delete pData;
+        delete [] pData;
         return QString();
     }
     chromaprint_finish(ctx);
@@ -79,7 +79,7 @@ QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
         chromaprint_dealloc(encoded);
     }
     chromaprint_free(ctx);
-    delete pData;
+    delete [] pData;
 
     qDebug("generating fingerprint took: %d ms" , timerGeneratingFingerPrint.elapsed());
 
