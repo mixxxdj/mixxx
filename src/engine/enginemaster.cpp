@@ -395,7 +395,7 @@ void EngineMaster::process(const int iBufferSize) {
         SampleUtil::applyRampingGain(m_pMaster, m_masterVolumeOld,
                                      master_volume, iBufferSize);
     } else {
-        SampleUtil::applyGain(m_pHead, master_volume, iBufferSize);
+        SampleUtil::applyGain(m_pMaster, master_volume, iBufferSize);
     }
     m_masterVolumeOld = master_volume;
 
