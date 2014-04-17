@@ -115,7 +115,7 @@ VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig)
       m_pluginbuf(new CSAMPLE*[2]),
       m_plugin(NULL),
       m_bDoNotAnalyseMoreSamples(false),
-      m_FastAnalysisEnabled(true),
+      m_FastAnalysisEnabled(false),
       m_iMaxSamplesToAnalyse(0),
       m_pConfig(pconfig) {
 }

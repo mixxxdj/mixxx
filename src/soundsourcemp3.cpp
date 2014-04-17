@@ -42,7 +42,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) :
     currentframe = 0;
     pos = mad_timer_zero;
     filelength = mad_timer_zero;
-    inputbuf_len = m_file.size();
+    inputbuf_len = 0;
 }
 
 SoundSourceMp3::~SoundSourceMp3()

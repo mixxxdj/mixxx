@@ -61,7 +61,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     ControlObjectThread* m_pPlay;
     ControlObjectThread* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
-    ControlObjectThread* m_pRate;
     ControlObjectThread* m_pTrackSamples;
     ControlObjectThread* m_pTrackSampleRate;
     ControlObjectThread* m_pScratch;

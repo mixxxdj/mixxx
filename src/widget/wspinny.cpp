@@ -26,7 +26,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pPlay(NULL),
           m_pPlayPos(NULL),
           m_pVisualPlayPos(NULL),
-          m_pRate(NULL),
           m_pTrackSamples(NULL),
           m_pTrackSampleRate(NULL),
           m_pScratch(NULL),
