@@ -192,11 +192,16 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             }
         }
 
-        // update frames counting
+        // update frames counting and recorded duration (seconds)
         m_frames += iBufferSize;
+        unsigned long lastDuration = m_recordedDuration;
+        m_recordedDuration = m_frames / m_sampleRateLong;
+
         // gets recorded duration and emit signal that will be used
         // by RecordingManager to update the label besides start/stop button
-        emit(durationRecorded(getRecordedDurationStr()));
+        if (lastDuration != m_recordedDuration) {
+            emit(durationRecorded(getRecordedDurationStr()));
+        }
 
         if (m_bCueIsEnabled) {
             if (metaDataHasChanged()) {
@@ -209,14 +214,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 QString EngineRecord::getRecordedDurationStr() {
-    unsigned long seconds = ((unsigned long)
-                             (m_frames / m_sampleRateLong) % 60);
-
-    unsigned long minutes = m_frames / (m_sampleRateLong * 60);
-
     return QString("%1:%2")
-                 .arg(minutes, 2, 'f', 0, '0')
-                 .arg(seconds, 2, 'f', 0, '0');
+                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0') // minutes
+                 .arg(m_recordedDuration, 2, 'f', 0, '0');     // seconds
 }
 
 void EngineRecord::writeCueLine() {
@@ -225,7 +225,7 @@ void EngineRecord::writeCueLine() {
     }
 
     // CDDA is specified as having 75 frames a second
-    unsigned long frames = ((unsigned long)
+    unsigned long cueFrame = ((unsigned long)
                                 ((m_frames / (m_sampleRateLong / 75)))
                                     % 75);
 
@@ -244,7 +244,7 @@ void EngineRecord::writeCueLine() {
     // for the track detection code.
     m_cueFile.write(QString("    INDEX 01 %1:%2\n")
                     .arg(getRecordedDurationStr())
-                    .arg((double)frames, 2, 'f', 0, '0').toLatin1());
+                    .arg((double)cueFrame, 2, 'f', 0, '0').toLatin1());
 }
 
 // Encoder calls this method to write compressed audio
