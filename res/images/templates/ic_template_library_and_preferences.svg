@@ -61,7 +61,7 @@
        dotted="false" />
   </sodipodi:namedview>
   <title
-     id="title5647">Mixxx 1.13+ iconset</title>
+     id="title5647">Mixxx 1.12+ iconset</title>
   <defs
      id="defs28">
     <linearGradient
@@ -1414,7 +1414,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Mixxx 1.13+ iconset</dc:title>
+        <dc:title>Mixxx 1.12+ iconset</dc:title>
         <dc:subject>
           <rdf:Bag>
             <rdf:li>Mixxx</rdf:li>
@@ -1432,7 +1432,7 @@
            rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
         <dc:date>2014-04-18</dc:date>
         <dc:source>www.mixxx.org</dc:source>
-        <dc:description>Iconset for use in Mixxx 1.13+. Optimized for 48px (16px)icon size. Contains icons for preference menue and  library widget
+        <dc:description>Iconset for use in Mixxx 1.12s+. Optimized for 48px (16px)icon size. Contains icons for preference menue and  library widget
 
 Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
         <dc:coverage />
@@ -3373,7 +3373,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          x="3.2128906"
          y="3.9195313"
          id="tspan4269"
-         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.13+</tspan><tspan
+         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.12+</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
          y="5.93678"
