@@ -20,8 +20,11 @@
 #include "controlobjectthread.h"
 
 ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
-                                 bool allowOutOfBounds)
-        : ControlObject(key),
+                                 bool allowOutOfBounds,
+                                 bool bIgnoreNops,
+                                 bool bTrack,
+                                 bool bPersist)
+        : ControlObject(key, bIgnoreNops, bTrack, bPersist),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
     setStep(m_dValueRange / 10.0);
