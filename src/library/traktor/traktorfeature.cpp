@@ -403,8 +403,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                     TreeItem * item = new TreeItem(name,current_path, this, parent);
                     parent->appendChild(item);
                     parent = item;
-               }
-               if (type == "PLAYLIST") {
+               } else if (type == "PLAYLIST") {
                     current_path += delimiter;
                     current_path += name;
                     //qDebug() << "Playlist: " +current_path << " has parent " << parent->data().toString();
