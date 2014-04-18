@@ -16,6 +16,12 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
     waveformOverviewComboBox->addItem( tr("RGB") ); // "2"
 
+    // Populate zoom options.
+    for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
+         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
+        defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
+    }
+
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
@@ -87,11 +93,6 @@ void DlgPrefWaveform::slotUpdate() {
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
-
-    for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
-        defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
-    }
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
 
     // By default we set filtered woverview = "0"
