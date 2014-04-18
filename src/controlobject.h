@@ -67,13 +67,18 @@ class ControlObject : public QObject {
     }
 
     // Return the key of the object
-    inline ConfigKey getKey() const { return m_key; }
+    inline ConfigKey getKey() const {
+        return m_key;
+    }
+
     // Returns the value of the ControlObject
     inline double get() const {
         return m_pControl ? m_pControl->get() : 0.0;
     }
+
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
+
     // Sets the ControlObject value. May require confirmation by owner.
     inline void set(double value) {
         if (m_pControl) {
@@ -88,8 +93,13 @@ class ControlObject : public QObject {
     }
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
+
     // Sets the default value
-    void reset();
+    inline void reset() {
+        if (m_pControl) {
+            m_pControl->reset();
+        }
+    }
 
     inline void setDefaultValue(double dValue) {
         if (m_pControl) {
