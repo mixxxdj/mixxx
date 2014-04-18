@@ -40,6 +40,7 @@ class EngineVinylSoundEmu : public EngineObject {
     double m_dOldSpeed;
     CSAMPLE m_fNoise[NOISE_BUFFER_SIZE];
     int m_iNoisePos;
+    CSAMPLE m_crossfadeBuffer[MAX_BUFFER_LEN];
 };
 
 #endif
