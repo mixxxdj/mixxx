@@ -29,6 +29,13 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
     setStep(m_dValueRange / 10.0);
     setSmallStep(m_dValueRange / 100.0);
+
+    double default_value = m_dMinValue + 0.5 * m_dValueRange;
+    setDefaultValue(default_value);
+    if (!bPersist) {
+        set(default_value);
+    }
+    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
 ControlPotmeter::~ControlPotmeter() {
@@ -56,16 +63,11 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue - m_dMinValue;
     m_bAllowOutOfBounds = allowOutOfBounds;
-    double default_value = m_dMinValue + 0.5 * m_dValueRange;
 
     if (m_pControl) {
         m_pControl->setBehavior(
                 new ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
     }
-
-    setDefaultValue(default_value);
-    set(default_value);
-    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
