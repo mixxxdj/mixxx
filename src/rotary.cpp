@@ -22,12 +22,12 @@
 #include "controlobject.h"
 
 Rotary::Rotary()
+    : m_iFilterPos(0),
+      m_dCalibration(1.0),
+      m_dLastValue(0.0),
+      m_iCalibrationCount(0)
 {
-    m_dCalibration = 1.;
-    m_dLastValue = 0.;
-
     m_iFilterLength = kiRotaryFilterMaxLen;
-    m_iFilterPos = 0;
     m_pFilter = new double[m_iFilterLength];
     for (int i=0; i<m_iFilterLength; ++i)
         m_pFilter[i] = 0.;

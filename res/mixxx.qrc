@@ -3,16 +3,17 @@
         <file>images/mixxx-icon.png</file>
         <file>images/ic_mixxx_window.png</file>
         <file>images/templates/logo_mixxx.png</file>
-        <file>images/preferences/ic_preferences_keydetect.png</file>
+        <file>images/preferences/ic_preferences_autodj.png</file>
         <file>images/preferences/ic_preferences_bpmdetect.png</file>
         <file>images/preferences/ic_preferences_broadcast.png</file>
         <file>images/preferences/ic_preferences_controllers.png</file>
-        <file>images/preferences/ic_preferences_midicontrollers.png</file>
         <file>images/preferences/ic_preferences_crossfader.png</file>
         <file>images/preferences/ic_preferences_effects.png</file>
         <file>images/preferences/ic_preferences_equalizers.png</file>
         <file>images/preferences/ic_preferences_interface.png</file>
+        <file>images/preferences/ic_preferences_keydetect.png</file>
         <file>images/preferences/ic_preferences_library.png</file>
+        <file>images/preferences/ic_preferences_midicontrollers.png</file>
         <file>images/preferences/ic_preferences_modplug.png</file>
         <file>images/preferences/ic_preferences_recording.png</file>
         <file>images/preferences/ic_preferences_replaygain.png</file>
@@ -20,8 +21,10 @@
         <file>images/preferences/ic_preferences_soundhardware.png</file>
         <file>images/preferences/ic_preferences_vinyl.png</file>
         <file>images/preferences/ic_preferences_warning.png</file>
+        <file>images/preferences/ic_preferences_waveforms.png</file>
         <file>images/library/crates_art.png</file>
         <file>images/library/ic_library_autodj.png</file>
+        <file>images/library/ic_library_banshee.png</file>
         <file>images/library/ic_library_browse.png</file>
         <file>images/library/ic_library_crates.png</file>
         <file>images/library/ic_library_drag_and_drop.png</file>
@@ -32,13 +35,12 @@
         <file>images/library/ic_library_locked.png</file>
         <file>images/library/ic_library_playlist.png</file>
         <file>images/library/ic_library_prepare.png</file>
+        <file>images/library/ic_library_preview_pause.png</file>
+        <file>images/library/ic_library_preview_play.png</file>
         <file>images/library/ic_library_promotracks.png</file>
         <file>images/library/ic_library_recordings.png</file>
         <file>images/library/ic_library_rhythmbox.png</file>
         <file>images/library/ic_library_traktor.png</file>
-        <file>images/library/ic_library_banshee.png</file>
-        <file>images/library/ic_library_preview_play.png</file>
-        <file>images/library/ic_library_preview_pause.png</file>
         <file>images/library/ic_library_checked.png</file>
         <file>images/library/ic_library_unchecked.png</file>
         <file>skins/cross.png</file>
@@ -65,8 +67,8 @@
         <file>translations/mixxx_fr.qm</file>
         <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
-        <file>translations/mixxx_hr.qm</file>
         <file>translations/mixxx_he.qm</file>
+        <file>translations/mixxx_hr.qm</file>
         <file>translations/mixxx_hu.qm</file>
         <file>translations/mixxx_hy.qm</file>
         <file>translations/mixxx_ia.qm</file>

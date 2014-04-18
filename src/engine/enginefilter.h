@@ -36,7 +36,6 @@ class EngineFilter : public EngineObject {
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
   protected:
-    const double *coefs;
     double iir;
     double fir;
     double tmp;

@@ -88,6 +88,8 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
     m_bHeaderParsed = false;
+    m_bBpmLock = false;
+    m_Rating = 0;
 
     // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
     // ignore those. Tracks will get a new ID from the database.

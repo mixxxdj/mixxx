@@ -67,7 +67,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLShaderAvailable(false),
         m_vsyncThread(NULL),
         m_frameCnt(0),
-        m_actualFrameRate(0) {
+        m_actualFrameRate(0),
+        m_vSyncType(0) {
 
     m_visualGain[All] = 1.5;
     m_visualGain[Low] = 1.0;
@@ -312,7 +313,7 @@ bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
-    if (handleIndex < 0 && handleIndex > (int)m_waveformWidgetHandles.size()) {
+    if (handleIndex < 0 || handleIndex >= (int)m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);

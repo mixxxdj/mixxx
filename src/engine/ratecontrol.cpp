@@ -17,9 +17,11 @@
 
 #include <QtDebug>
 
-// Static default values for rate buttons (percents)
+// Static default values for rate buttons (percents). Note that these are not
+// actually used -- the preferences code sets the values that are stored in the
+// user's configuration. These are just fail safe defaults.
 double RateControl::m_dTemp = 4.00; //(eg. 4.00%)
-double RateControl::m_dTempSmall = 1.00;
+double RateControl::m_dTempSmall = 2.00;
 double RateControl::m_dPerm = 0.50;
 double RateControl::m_dPermSmall = 0.05;
 
