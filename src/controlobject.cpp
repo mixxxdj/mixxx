@@ -80,10 +80,6 @@ double ControlObject::getMidiParameter() const {
     return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 
-double ControlObject::get() const {
-    return m_pControl ? m_pControl->get() : 0.0;
-}
-
 // static
 double ControlObject::get(const ConfigKey& key) {
     QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
@@ -93,18 +89,6 @@ double ControlObject::get(const ConfigKey& key) {
 void ControlObject::reset() {
     if (m_pControl) {
         m_pControl->reset();
-    }
-}
-
-void ControlObject::set(double value) {
-    if (m_pControl) {
-        m_pControl->set(value, this);
-    }
-}
-
-void ControlObject::setAndConfirm(double value) {
-    if (m_pControl) {
-        m_pControl->setAndConfirm(value, this);
     }
 }
 
