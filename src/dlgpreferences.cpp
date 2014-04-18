@@ -175,8 +175,8 @@ void DlgPreferences::createIcons() {
     m_pWaveformButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
-    m_pAutoDJButton->setText(0, tr("AutoDJ"));
+    m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_autodj.png"));
+    m_pAutoDJButton->setText(0, tr("Auto DJ"));
     m_pAutoDJButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pAutoDJButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
