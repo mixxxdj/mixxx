@@ -115,7 +115,7 @@ class EngineBuffer : public EngineObject {
     void addControl(EngineControl* pControl);
 
     // Return the current rate (not thread-safe)
-    double getRate();
+    double getSpeed();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)

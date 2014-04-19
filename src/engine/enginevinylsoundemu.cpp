@@ -27,14 +27,11 @@
  *   these slow speeds.
  */
 
-EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue>* pConfig,
-                                         const char* group)
-        : m_pConfig(pConfig),
-          m_pRateEngine(ControlObject::getControl(
-              ConfigKey(group, "rateEngine"))),
-          m_dSpeed(0.0),
+EngineVinylSoundEmu::EngineVinylSoundEmu(const char* group)
+        : m_dSpeed(0.0),
           m_dOldSpeed(0.0),
           m_iNoisePos(0) {
+    Q_UNUSED(group);
     // Generate dither values. When engine samples used to be within [SHRT_MIN,
     // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
     // normalize engine samples to the range [-1.0, 1.0] we divide by SHRT_MAX
@@ -48,9 +45,11 @@ EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue>* pConfig,
 EngineVinylSoundEmu::~EngineVinylSoundEmu() {
 }
 
-void EngineVinylSoundEmu::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
-    m_dSpeed = m_pRateEngine->get();
+void EngineVinylSoundEmu::setSpeed(double speed) {
+    m_dSpeed = speed;
+}
 
+void EngineVinylSoundEmu::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
     const double thresholdSpeed = 0.070; //Scale volume if playback speed is below 7%.
     const double ditherSpeed = 0.85; //Dither if playback speed is below 85%.
 

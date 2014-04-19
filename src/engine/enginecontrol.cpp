@@ -129,7 +129,7 @@ EngineBuffer* EngineControl::pickSyncTarget() {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the deck is playing then go with it immediately.
-                if (fabs(pBuffer->getRate()) > 0) {
+                if (fabs(pBuffer->getSpeed()) > 0) {
                     return pBuffer;
                 }
                 // Otherwise hold out for a deck that might be playing but
