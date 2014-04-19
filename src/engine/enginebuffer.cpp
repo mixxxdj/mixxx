@@ -86,6 +86,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_pScaleLinear(NULL),
           m_pScaleST(NULL),
           m_pScaleRB(NULL),
+          m_pScaleKeylock(NULL),
           m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
@@ -194,6 +195,9 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     // Sample rate
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
+    m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
+    m_pKeylockEngine->connectValueChanged(this, SLOT(slotKeylockEngineChanged(double)));
+
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
 
@@ -261,6 +265,11 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
+    if (m_pKeylockEngine->get() == SOUNDTOUCH) {
+        m_pScaleKeylock = m_pScaleST;
+    } else {
+        m_pScaleKeylock = m_pScaleRB;
+    }
     enablePitchAndTimeScaling(false);
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(_group, "passthrough", this));
@@ -345,8 +354,8 @@ void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
         return;
     }
 
-    if (bEnable && m_pScale != m_pScaleRB) {
-        m_pScale = m_pScaleRB;
+    if (bEnable && m_pScale != m_pScaleKeylock) {
+        m_pScale = m_pScaleKeylock;
         m_bScalerChanged = true;
     } else if (!bEnable && m_pScale != m_pScaleLinear) {
         m_pScale = m_pScaleLinear;
@@ -641,6 +650,21 @@ void EngineBuffer::slotControlSlip(double v)
 
     m_bSlipEnabled = enabled;
     m_bSlipToggled = true;
+}
+
+void EngineBuffer::slotKeylockEngineChanged(double d_index) {
+    int index = static_cast<int>(d_index);
+    if (index == 0) {
+        m_pScaleKeylock = m_pScaleST;
+    } else {
+        m_pScaleKeylock = m_pScaleRB;
+    }
+
+    if (m_pScale != m_pScaleLinear && m_pScale != m_pScaleKeylock) {
+        qDebug() << "User changed keylock engines while keylock was on";
+        m_pScale = m_pScaleKeylock;
+        m_bScalerChanged = true;
+    }
 }
 
 

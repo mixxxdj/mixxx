@@ -17,6 +17,7 @@
 #include <QMessageBox>
 #include "dlgprefsound.h"
 #include "dlgprefsounditem.h"
+#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "playermanager.h"
 #include "soundmanager.h"
@@ -70,6 +71,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(syncBuffersChanged(int)));
 
+    keylockComboBox->clear();
+    keylockComboBox->addItem(EngineBuffer::getKeylockEngineName(0));
+    keylockComboBox->addItem(EngineBuffer::getKeylockEngineName(1));
+    keylockComboBox->setCurrentIndex(1);
+
     initializePaths();
     loadSettings();
 
@@ -80,6 +86,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(keylockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
 
     connect(queryButton, SIGNAL(clicked()),
@@ -111,6 +119,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
+
+    m_pKeylockEngine =
+            new ControlObjectSlave("[Master]", "keylock_engine", this);
 
     connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(headDelayChanged(double)));
@@ -155,6 +166,11 @@ void DlgPrefSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
+
+    m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+                   keylockComboBox->currentIndex());
+    m_pKeylockEngine->set(keylockComboBox->currentIndex());
+
     m_config.clearInputs();
     m_config.clearOutputs();
     emit(writePaths(&m_config));
@@ -334,6 +350,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         // "Default (long delay)" = 2 buffer
         deviceSyncComboBox->setCurrentIndex(0);
     }
+
+    int keylockEngine =
+            m_pConfig->getValueString(ConfigKey("[Master]",
+                                                "keylock_engine")).toInt();
+    keylockComboBox->setCurrentIndex(keylockEngine);
 
     emit(loadPaths(m_config));
     m_loading = false;
