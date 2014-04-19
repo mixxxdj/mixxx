@@ -44,7 +44,6 @@
         <file>images/library/ic_library_checked.png</file>
         <file>images/library/ic_library_unchecked.png</file>
         <file>skins/cross.png</file>
-        <file>shaders/computemaxsignal.frag</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
         <file>translations/mixxx_ar.qm</file>
