@@ -436,8 +436,6 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 }
 
 void DlgPrefController::slotEnableDevice(bool enable) {
-    // Enable/disable preset info page and input/output mapping pages.
-    m_ui.controllerTabs->setEnabled(enable);
     slotDirty();
 
     // Set tree item text to normal/bold.
