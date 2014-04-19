@@ -354,6 +354,10 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
         m_frameShaderProgram->release();
 
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+
         if (m_bDumpPng) {
             m_framebuffer->toImage().save("m_framebuffer.png");
             m_bDumpPng = false;
