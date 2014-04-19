@@ -1,8 +1,7 @@
 #version 120
 
-uniform int viewportWidth;
-uniform int viewportHeigth;
-
+uniform vec2 framebufferSize;
+uniform vec4 axesColor;
 uniform vec4 lowColor;
 uniform vec4 midColor;
 uniform vec4 highColor;
@@ -20,8 +19,7 @@ uniform float lastVisualIndex;
 
 uniform sampler2D waveformDataTexture;
 
-vec4 getWaveformData(float index)
-{
+vec4 getWaveformData(float index) {
     vec2 uv_data;
     uv_data.y = floor(index / float(textureStride));
     uv_data.x = floor(index - uv_data.y * float(textureStride));
@@ -29,55 +27,71 @@ vec4 getWaveformData(float index)
     return texture2D(waveformDataTexture, uv_data / float(textureStride));
 }
 
-void main(void)
-{
+void main(void) {
     vec2 uv = gl_TexCoord[0].st;
+    vec4 pixel = gl_FragCoord;
 
-    float new_currentIndex = floor(firstVisualIndex + uv.x * (lastVisualIndex - firstVisualIndex))*2;
-    if (uv.y > 0.5) {
+    float new_currentIndex = floor(firstVisualIndex + uv.x *
+                                   (lastVisualIndex - firstVisualIndex)) * 2;
+
+    // Texture coordinates put (0,0) at the bottom left, so show the right
+    // channel if we are in the bottom half.
+    if (uv.y < 0.5) {
         new_currentIndex += 1;
     }
 
-    if (new_currentIndex < 0 || new_currentIndex > waveformLength - 1) {
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-      return;
-    }
-
-    vec4 new_currentData = getWaveformData(new_currentIndex);
-
-    new_currentData *= allGain;
-    new_currentData.x *= lowGain;
-    new_currentData.y *= midGain;
-    new_currentData.z *= highGain;
-
-    //(vrince) debug see pre-computed signal
-    //gl_FragColor = rawFiltredSignal;
-    //return;
-
     vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
+    bool lowShowing = false;
+    bool midShowing = false;
+    bool highShowing = false;
+    // We don't exit early if the waveform data is not valid because we may want
+    // to show other things (e.g. the axes lines) even when we are on a pixel
+    // that does not have valid waveform data.
+    if (new_currentIndex >= 0 && new_currentIndex <= waveformLength - 1) {
+      vec4 new_currentData = getWaveformData(new_currentIndex);
 
-    float ourDistance = abs((uv.y - 0.5) * 2.0);
-    vec4 signalDistance = new_currentData - ourDistance;
+      new_currentData *= allGain;
+      new_currentData.x *= lowGain;
+      new_currentData.y *= midGain;
+      new_currentData.z *= highGain;
 
-    if (signalDistance.x > 0.0) {
-      outputColor.x += lowColor.x;
-      outputColor.y += lowColor.y;
-      outputColor.z += lowColor.z;
-      outputColor.w = 0.8;
+      //(vrince) debug see pre-computed signal
+      //gl_FragColor = new_currentData;
+      //return;
+
+      // Represents the [-1, 1] distance of this pixel. Subtracting this from
+      // the signal data in new_currentData, we can tell if a signal band should
+      // show in this pixel if the component is > 0.
+      float ourDistance = abs((uv.y - 0.5) * 2.0);
+      vec4 signalDistance = new_currentData - ourDistance;
+
+      lowShowing = signalDistance.x > 0.0;
+      midShowing = signalDistance.y > 0.0;
+      highShowing = signalDistance.z > 0.0;
     }
 
-    if (signalDistance.y > 0.0) {
-      outputColor.x += midColor.x;
-      outputColor.y += midColor.y;
-      outputColor.z += midColor.z;
-      outputColor.w = 0.85;
+    // Draw the axes color as the lowest item on the screen.
+    if (abs(framebufferSize.y / 2 - pixel.y) <= 1) {
+      outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
+      outputColor.w = 1.0;
     }
 
-    if (signalDistance.z > 0.0) {
-      outputColor.x += highColor.x;
-      outputColor.y += highColor.y;
-      outputColor.z += highColor.z;
-      outputColor.w = 0.9;
+    if (lowShowing) {
+      float lowAlpha = 0.8;
+      outputColor.xyz = mix(outputColor.xyz, lowColor.xyz, lowAlpha);
+      outputColor.w = 1.0;
+    }
+
+    if (midShowing) {
+      float midAlpha = 0.85;
+      outputColor.xyz = mix(outputColor.xyz, midColor.xyz, midAlpha);
+      outputColor.w = 1.0;
+    }
+
+    if (highShowing) {
+      float highAlpha = 0.9;
+      outputColor.xyz = mix(outputColor.xyz, highColor.xyz, highAlpha);
+      outputColor.w = 1.0;
     }
 
     /*

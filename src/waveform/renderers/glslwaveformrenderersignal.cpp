@@ -305,6 +305,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
         glViewport(0, 0, m_framebuffer->width(), m_framebuffer->height());
 
+        m_frameShaderProgram->setUniformValue("framebufferSize", QVector2D(
+            m_framebuffer->width(), m_framebuffer->height()));
         m_frameShaderProgram->setUniformValue("waveformLength", dataSize);
         m_frameShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
         m_frameShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
@@ -317,6 +319,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("midGain", midGain);
         m_frameShaderProgram->setUniformValue("highGain", highGain);
 
+        m_frameShaderProgram->setUniformValue("axesColor", QVector4D(m_axesColor_r, m_axesColor_g,
+                                                                     m_axesColor_b, m_axesColor_a));
         m_frameShaderProgram->setUniformValue("lowColor", QVector4D(m_lowColor_r, m_lowColor_g,
                                                                     m_lowColor_b, 1.0));
         m_frameShaderProgram->setUniformValue("midColor", QVector4D(m_midColor_r, m_midColor_g,
