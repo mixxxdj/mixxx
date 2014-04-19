@@ -135,6 +135,7 @@ QScriptValue ByteArrayClass::property(const QScriptValue &object,
             return QScriptValue();
         return uint(ba->at(pos)) & 255;
     }
+    return QScriptValue();
 }
 //! [4]
 
