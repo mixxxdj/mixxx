@@ -19,6 +19,7 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
     virtual void onSetTrack();
     virtual void onResize();
 
+    void debugClick();
     bool loadShaders();
     bool loadTexture();
 
@@ -37,6 +38,7 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
     QGLFramebufferObject* m_framebuffer;
 
     int m_signalFrameBufferRatio;
+    bool m_bDumpPng;
 
     //shaders
     bool m_shadersValid;

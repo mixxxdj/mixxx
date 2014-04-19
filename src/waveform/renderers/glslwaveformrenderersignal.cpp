@@ -49,6 +49,11 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
         delete m_framebuffer;
 }
 
+void GLSLWaveformRendererSignal::debugClick() {
+    loadShaders();
+    m_bDumpPng = true;
+}
+
 bool GLSLWaveformRendererSignal::loadShaders() {
     qDebug() << "GLWaveformRendererSignalShader::loadShaders";
     m_shadersValid = false;
@@ -451,6 +456,11 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_framebuffer->release();
 
         m_frameShaderProgram->release();
+
+        if (m_bDumpPng) {
+            m_framebuffer->toImage().save("m_framebuffer.png");
+            m_bDumpPng = false;
+        }
     }
 
     glMatrixMode(GL_PROJECTION);
