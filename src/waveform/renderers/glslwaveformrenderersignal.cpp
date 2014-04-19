@@ -54,13 +54,13 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     m_frameShaderProgram->removeAllShaders();
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, "./res/shaders/passthrough.vert")) {
+            QGLShader::Vertex, ":shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
     }
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, "./res/shaders/filteredsignal.frag")) {
+            QGLShader::Fragment, ":shaders/filteredsignal.frag")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
