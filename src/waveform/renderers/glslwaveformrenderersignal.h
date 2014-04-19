@@ -34,15 +34,12 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
 
     //Frame buffer for two pass rendering
     bool m_frameBuffersValid;
-    QGLFramebufferObject* m_signalMaxbuffer;
     QGLFramebufferObject* m_framebuffer;
 
-    int m_signalFrameBufferRatio;
     bool m_bDumpPng;
 
     //shaders
     bool m_shadersValid;
-    QGLShaderProgram* m_signalMaxShaderProgram;
     QGLShaderProgram* m_frameShaderProgram;
 };
 

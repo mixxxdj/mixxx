@@ -1,3 +1,5 @@
+#version 120
+
 uniform int viewportWidth;
 uniform int viewportHeigth;
 
@@ -5,14 +7,48 @@ uniform vec4 lowColor;
 uniform vec4 midColor;
 uniform vec4 highColor;
 
+uniform int waveformLength;
 uniform int textureSize;
-uniform sampler2D signalTexture;
+uniform int textureStride;
+
+uniform float allGain;
+uniform float lowGain;
+uniform float midGain;
+uniform float highGain;
+uniform float firstVisualIndex;
+uniform float lastVisualIndex;
+
+uniform sampler2D waveformDataTexture;
+
+vec4 getWaveformData(float index)
+{
+    vec2 uv_data;
+    uv_data.y = floor(index / float(textureStride));
+    uv_data.x = floor(index - uv_data.y * float(textureStride));
+    // Divide again to convert to normalized UV coordinates.
+    return texture2D(waveformDataTexture, uv_data / float(textureStride));
+}
 
 void main(void)
 {
     vec2 uv = gl_TexCoord[0].st;
 
-    vec4 rawFiltredSignal = texture2D(signalTexture, uv);
+    float new_currentIndex = floor(firstVisualIndex + uv.x * (lastVisualIndex - firstVisualIndex))*2;
+    if (uv.y > 0.5) {
+        new_currentIndex += 1;
+    }
+
+    if (new_currentIndex < 0 || new_currentIndex > waveformLength - 1) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+      return;
+    }
+
+    vec4 new_currentData = getWaveformData(new_currentIndex);
+
+    new_currentData *= allGain;
+    new_currentData.x *= lowGain;
+    new_currentData.y *= midGain;
+    new_currentData.z *= highGain;
 
     //(vrince) debug see pre-computed signal
     //gl_FragColor = rawFiltredSignal;
@@ -21,7 +57,7 @@ void main(void)
     vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
 
     float ourDistance = abs((uv.y - 0.5) * 2.0);
-    vec4 signalDistance = rawFiltredSignal - ourDistance;
+    vec4 signalDistance = new_currentData - ourDistance;
 
     if (signalDistance.x > 0.0) {
       outputColor.x += lowColor.x;

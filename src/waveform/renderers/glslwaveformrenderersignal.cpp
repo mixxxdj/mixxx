@@ -12,7 +12,6 @@
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
     m_shadersValid = false;
-    m_signalMaxShaderProgram = 0;
     m_frameShaderProgram = 0;
 
     m_textureId = 0;
@@ -21,24 +20,14 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
     m_loadedWaveform = 0;
 
     m_frameBuffersValid = false;
-    m_signalMaxbuffer = 0;
     m_framebuffer = 0;
 
-    m_signalFrameBufferRatio = 2;
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
 
     if (m_textureId)
         glDeleteTextures(1,&m_textureId);
-
-    if (m_signalMaxShaderProgram) {
-        m_signalMaxShaderProgram->removeAllShaders();
-        delete m_signalMaxShaderProgram;
-    }
-
-    if (m_signalMaxbuffer)
-        delete m_signalMaxbuffer;
 
     if (m_frameShaderProgram) {
         m_frameShaderProgram->removeAllShaders();
@@ -58,34 +47,6 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     qDebug() << "GLWaveformRendererSignalShader::loadShaders";
     m_shadersValid = false;
 
-    if (m_signalMaxShaderProgram->isLinked()) {
-        m_signalMaxShaderProgram->release();
-    }
-
-    m_signalMaxShaderProgram->removeAllShaders();
-
-    if (!m_signalMaxShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, "./res/shaders/passthrough.vert")) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_signalMaxShaderProgram->log();
-        return false;
-    }
-    if (!m_signalMaxShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, "./res/shaders/computemaxsignal.frag")) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_signalMaxShaderProgram->log();
-        return false;
-    }
-    if (!m_signalMaxShaderProgram->link()) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - " << m_signalMaxShaderProgram->log();
-        return false;
-    }
-
-    if (!m_signalMaxShaderProgram->bind()) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - shadrers binding failed";
-        return false;
-    }
-
     if (m_frameShaderProgram->isLinked()) {
         m_frameShaderProgram->release();
     }
@@ -95,13 +56,13 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     if (!m_frameShaderProgram->addShaderFromSourceFile(
             QGLShader::Vertex, "./res/shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_signalMaxShaderProgram->log();
+                 << m_frameShaderProgram->log();
         return false;
     }
     if (!m_frameShaderProgram->addShaderFromSourceFile(
             QGLShader::Fragment, "./res/shaders/filteredsignal.frag")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_signalMaxShaderProgram->log();
+                 << m_frameShaderProgram->log();
         return false;
     }
     if (!m_frameShaderProgram->link()) {
@@ -214,14 +175,6 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
     int bufferWidth = m_waveformRenderer->getWidth();
     int bufferHeight = m_waveformRenderer->getHeight();
 
-    if (m_signalMaxbuffer)
-        delete m_signalMaxbuffer;
-
-    m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth * 4, 2);
-
-    if (!m_signalMaxbuffer->isValid())
-        qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - signal frame buffer not valid";
-
     if (m_framebuffer)
         delete m_framebuffer;
 
@@ -231,7 +184,7 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
     if (!m_framebuffer->isValid())
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
 
-    m_frameBuffersValid = m_framebuffer->isValid() && m_signalMaxbuffer->isValid();
+    m_frameBuffersValid = m_framebuffer->isValid();
 
     //qDebug() << m_waveformRenderer->getWidth();
     //qDebug() << m_waveformRenderer->getWidth()*3;
@@ -240,9 +193,6 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
 
 bool GLSLWaveformRendererSignal::onInit(){
     m_loadedWaveform = 0;
-
-    if (!m_signalMaxShaderProgram)
-        m_signalMaxShaderProgram = new QGLShaderProgram();
 
     if (!m_frameShaderProgram)
         m_frameShaderProgram = new QGLShaderProgram();
@@ -337,74 +287,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     //qDebug() << "GAIN" << allGain << lowGain << midGain << highGain;
 
-    //compute signal max
-    {
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho(firstVisualIndex, lastVisualIndex, -1.0, 1.0, -10.0, 10.0);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-        glTranslatef(.0f,.0f,.0f);
-
-        m_signalMaxShaderProgram->bind();
-        glViewport(0, 0, m_signalMaxbuffer->width(), m_signalMaxbuffer->height());
-
-        // TODO(XXX) all these accesses of the waveform info need to be made
-        // thread safe.
-        m_signalMaxShaderProgram->setUniformValue("waveformLength", dataSize);
-        m_signalMaxShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
-        m_signalMaxShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
-        m_signalMaxShaderProgram->setUniformValue("playPosition",(float)m_waveformRenderer->getPlayPos());
-        m_signalMaxShaderProgram->setUniformValue("zoomFactor",(int)m_waveformRenderer->getZoomFactor());
-        m_signalMaxShaderProgram->setUniformValue("width",m_signalMaxbuffer->width());
-        m_signalMaxShaderProgram->setUniformValue("signalFrameBufferRatio",m_signalFrameBufferRatio);
-
-        m_signalMaxShaderProgram->setUniformValue("firstVisualIndex", (float)firstVisualIndex);
-        m_signalMaxShaderProgram->setUniformValue("lastVisualIndex", (float)lastVisualIndex);
-
-        m_signalMaxShaderProgram->setUniformValue("allGain", allGain);
-        m_signalMaxShaderProgram->setUniformValue("lowGain", lowGain);
-        m_signalMaxShaderProgram->setUniformValue("midGain", midGain);
-        m_signalMaxShaderProgram->setUniformValue("highGain", highGain);
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, m_textureId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        m_signalMaxbuffer->bind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glCallList(m_unitQuadListId);
-
-        glBegin(GL_QUADS);
-        {
-            glTexCoord2f(0.0,0.0);
-            glVertex3f(firstVisualIndex,-1.0f,0.0f);
-
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(lastVisualIndex,-1.0f,0.0f);
-
-            glTexCoord2f(1.0,1.0);
-            glVertex3f(lastVisualIndex,1.0f, 0.0f);
-
-            glTexCoord2f(0.0,1.0);
-            glVertex3f(firstVisualIndex,1.0f,0.0f);
-        }
-        glEnd();
-
-
-        m_signalMaxbuffer->release();
-
-        m_signalMaxShaderProgram->release();
-
-        //m_signalMaxbuffer->toImage().save("m_signalMaxbuffer.png");
-    }
-
-    glLoadIdentity();
-
     //paint into frame buffer
     {
         glMatrixMode(GL_PROJECTION);
@@ -423,12 +305,27 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
         glViewport(0, 0, m_framebuffer->width(), m_framebuffer->height());
 
-        m_frameShaderProgram->setUniformValue("lowColor", m_pColors->getLowColor());
-        m_frameShaderProgram->setUniformValue("midColor", m_pColors->getMidColor());
-        m_frameShaderProgram->setUniformValue("highColor", m_pColors->getHighColor());
+        m_frameShaderProgram->setUniformValue("waveformLength", dataSize);
+        m_frameShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
+        m_frameShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
+
+        m_frameShaderProgram->setUniformValue("firstVisualIndex", (float)firstVisualIndex);
+        m_frameShaderProgram->setUniformValue("lastVisualIndex", (float)lastVisualIndex);
+
+        m_frameShaderProgram->setUniformValue("allGain", allGain);
+        m_frameShaderProgram->setUniformValue("lowGain", lowGain);
+        m_frameShaderProgram->setUniformValue("midGain", midGain);
+        m_frameShaderProgram->setUniformValue("highGain", highGain);
+
+        m_frameShaderProgram->setUniformValue("lowColor", QVector4D(m_lowColor_r, m_lowColor_g,
+                                                                    m_lowColor_b, 1.0));
+        m_frameShaderProgram->setUniformValue("midColor", QVector4D(m_midColor_r, m_midColor_g,
+                                                                    m_midColor_b, 1.0));
+        m_frameShaderProgram->setUniformValue("highColor", QVector4D(m_highColor_r, m_highColor_g,
+                                                                    m_highColor_b, 1.0));
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, m_signalMaxbuffer->texture());
+        glBindTexture(GL_TEXTURE_2D, m_textureId);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
