@@ -260,21 +260,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
-    if (m_pLowFilterControlObject &&
-            m_pMidFilterControlObject &&
-            m_pHighFilterControlObject) {
-        lowGain = m_pLowFilterControlObject->get();
-        midGain = m_pMidFilterControlObject->get();
-        highGain = m_pHighFilterControlObject->get();
-    }
-    allGain = m_waveformRenderer->getGain();
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
-    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
-    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
-    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
-
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize/2.0;
     double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize/2.0;
@@ -298,8 +284,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         glPushMatrix();
         glLoadIdentity();
         glTranslatef(.0f,.0f,.0f);
-
-        //glScalef((float)m_signalMaxbuffer->width()/(float)m_framebuffer->width(), 1.0, 1.0);
 
         m_frameShaderProgram->bind();
 
@@ -340,16 +324,16 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         glBegin(GL_QUADS);
         {
             glTexCoord2f(0.0,0.0);
-            glVertex3f(firstVisualIndex,-1.0f,0.0f);
+            glVertex3f(firstVisualIndex, -1.0f, 0.0f);
 
             glTexCoord2f(1.0, 0.0);
-            glVertex3f(lastVisualIndex,-1.0f,0.0f);
+            glVertex3f(lastVisualIndex, -1.0f, 0.0f);
 
             glTexCoord2f(1.0,1.0);
-            glVertex3f(lastVisualIndex,1.0f, 0.0f);
+            glVertex3f(lastVisualIndex, 1.0f, 0.0f);
 
             glTexCoord2f(0.0,1.0);
-            glVertex3f(firstVisualIndex,1.0f,0.0f);
+            glVertex3f(firstVisualIndex, 1.0f, 0.0f);
         }
         glEnd();
 
@@ -377,30 +361,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glPushMatrix();
     glLoadIdentity();
 
-    //float scale = (float)m_framebuffer->width()/(2.0*(float)m_waveformRenderer->getWidth());
-    //scale /= (1.0+m_waveformRenderer->getRateAdjust());
-
-    //NOTE: (vrince) try to move the camera to limit the stepping effect of actual versus current position centering
-    //The following code must be paired with the shader that compute signal value in texture/gemometry world
-    /*const int visualSamplePerPixel = m_signalFrameBufferRatio * m_waveformRenderer->getZoomFactor();
-    const int nearestCurrentIndex = int(floor(indexPosition));
-    const float actualIndexPosition = indexPosition - float(nearestCurrentIndex%(2*visualSamplePerPixel));
-    const float deltaPosition = (indexPosition - actualIndexPosition);
-    const float range = float(visualSamplePerPixel * m_waveformRenderer->getWidth());
-    const float deltaInGeometry = deltaPosition / range;*/
-
     glTranslatef(0.0, 0.0, 0.0);
-    //glScalef(scale, 1.0, 1.0);
-
-    /*
-    //TODO: (vrince) make this line work sometime
-    glBegin(GL_LINES); {
-        glColor4f(m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a);
-        glVertex2f(0,0);
-        glVertex2f(m_waveformRenderer->getWidth(),0);
-    }
-    glEnd();
-    */
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
