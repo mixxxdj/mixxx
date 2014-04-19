@@ -2,6 +2,7 @@
 
 #include <QDomNode>
 
+#include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
@@ -106,4 +107,41 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     signal.getRgbF(&m_signalColor_r, &m_signalColor_g, &m_signalColor_b);
 
     onSetup(node);
+}
+
+void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
+                                          float* pMidGain, float* pHighGain) {
+        // Per-band gain from the EQ knobs.
+    float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
+    if (m_pLowFilterControlObject &&
+            m_pMidFilterControlObject &&
+            m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
+    }
+    allGain = m_waveformRenderer->getGain();
+
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
+    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
+    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
+    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+
+    if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
+        lowGain = 0;
+    }
+
+    if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
+        midGain = 0;
+    }
+
+    if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
+        highGain = 0;
+    }
+
+    *pAllGain = allGain;
+    *pLowGain = lowGain;
+    *pMidGain = midGain;
+    *pHighGain = highGain;
 }
