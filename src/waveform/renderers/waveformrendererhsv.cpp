@@ -61,10 +61,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
             (double)m_waveformRenderer->getWidth();
 
     float allGain(1.0);
-    allGain = m_waveformRenderer->getGain();
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
+    getGains(&allGain, NULL, NULL, NULL);
 
     // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
     // important we use qreal here and not double or float or else we will get
