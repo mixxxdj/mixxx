@@ -58,7 +58,7 @@ class EngineFilterBlock : public EngineObject {
     static ControlPushButton *s_EnableEq;
 
     int m_iOldSampleRate;
-    double old_low, old_mid, old_high;
+    double old_low, old_mid, old_high, old_dry;
 
     int ilowFreq, ihighFreq;
     bool blofi;

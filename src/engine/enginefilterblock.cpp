@@ -223,14 +223,22 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
         }
     }
 
-    SampleUtil::copy2WithGain(pOutput,
+    if (fDry != old_dry) {
+        SampleUtil::copy3WithRampingGain(pOutput,
+                                         m_pTemp4, 1.0f, 1.0f,
+                                         m_pTemp4, 0, 0,
+                                         pIn, old_dry, fDry,
+                                         iBufferSize);
+    } else {
+        SampleUtil::copy2WithGain(pOutput,
                       m_pTemp4, 1.0f,
                       pIn, fDry, iBufferSize);
+    }
 
-    qDebug() << "EngineFilterBlock::process()" << fDry;
-
+    //qDebug() << "EngineFilterBlock::process()" << fDry;
 
     old_low = fLow;
     old_mid = fMid;
     old_high = fHigh;
+    old_dry = fDry;
 }
