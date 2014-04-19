@@ -141,7 +141,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pXFaderReverse = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
 
-    m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"));
+    m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),
+                                         true, false, true);
     m_pKeylockEngine->set(_config->getValueString(
             ConfigKey(group, "keylock_engine")).toDouble());
 }

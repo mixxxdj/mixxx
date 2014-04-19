@@ -196,7 +196,9 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
     m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
-    m_pKeylockEngine->connectValueChanged(this, SLOT(slotKeylockEngineChanged(double)));
+    m_pKeylockEngine->connectValueChanged(this,
+                                          SLOT(slotKeylockEngineChanged(double)),
+                                          Qt::DirectConnection);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
@@ -354,8 +356,14 @@ void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
         return;
     }
 
-    if (bEnable && m_pScale != m_pScaleKeylock) {
-        m_pScale = m_pScaleKeylock;
+    // m_pScaleKeylock could change out from under us, so cache it.
+    // Casting away volatile is ok here, because the thing that scalekeylock
+    // is pointing to will always be valid.
+    EngineBufferScale* keylock_scale =
+            const_cast<EngineBufferScale*>(m_pScaleKeylock);
+
+    if (bEnable && m_pScale != keylock_scale) {
+        m_pScale = keylock_scale;
         m_bScalerChanged = true;
     } else if (!bEnable && m_pScale != m_pScaleLinear) {
         m_pScale = m_pScaleLinear;
@@ -653,17 +661,13 @@ void EngineBuffer::slotControlSlip(double v)
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double d_index) {
-    int index = static_cast<int>(d_index);
-    if (index == 0) {
+    // GCC is dumb, it doesn't think d_index is being used.
+    Q_UNUSED(d_index);
+    KeylockEngine engine = static_cast<KeylockEngine>(d_index);
+    if (engine == SOUNDTOUCH) {
         m_pScaleKeylock = m_pScaleST;
     } else {
         m_pScaleKeylock = m_pScaleRB;
-    }
-
-    if (m_pScale != m_pScaleLinear && m_pScale != m_pScaleKeylock) {
-        qDebug() << "User changed keylock engines while keylock was on";
-        m_pScale = m_pScaleKeylock;
-        m_bScalerChanged = true;
     }
 }
 
