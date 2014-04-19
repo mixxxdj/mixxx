@@ -12,6 +12,7 @@
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererAbstract(waveformWidgetRenderer),
+      m_pEQEnabled(NULL),
       m_pLowFilterControlObject(NULL),
       m_pMidFilterControlObject(NULL),
       m_pHighFilterControlObject(NULL),
@@ -43,6 +44,8 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() {
 }
 
 void WaveformRendererSignalBase::deleteControls() {
+    if (m_pEQEnabled)
+        delete m_pEQEnabled;
     if (m_pLowFilterControlObject)
         delete m_pLowFilterControlObject;
     if (m_pMidFilterControlObject)
@@ -61,6 +64,10 @@ bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
+    m_pEQEnabled = new ControlObjectThread(
+        ConfigKey("[Mixer Profile]", "EnableEQs"));
+    m_pLowFilterControlObject = new ControlObjectThread(
+            m_waveformRenderer->getGroup(),"filterLow");
     m_pLowFilterControlObject = new ControlObjectThread(
             m_waveformRenderer->getGroup(),"filterLow");
     m_pMidFilterControlObject = new ControlObjectThread(
@@ -122,28 +129,31 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
         // Per-band gain from the EQ knobs.
         float lowGain(1.0), midGain(1.0), highGain(1.0);
 
-        if (m_pLowFilterControlObject &&
-            m_pMidFilterControlObject &&
-            m_pHighFilterControlObject) {
-            lowGain = m_pLowFilterControlObject->get();
-            midGain = m_pMidFilterControlObject->get();
-            highGain = m_pHighFilterControlObject->get();
-        }
+        // Only adjust low/mid/high gains if EQs are enabled.
+        if (m_pEQEnabled->get() > 0.0) {
+            if (m_pLowFilterControlObject &&
+                m_pMidFilterControlObject &&
+                m_pHighFilterControlObject) {
+                lowGain = m_pLowFilterControlObject->get();
+                midGain = m_pMidFilterControlObject->get();
+                highGain = m_pHighFilterControlObject->get();
+            }
 
-        lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
-        midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
-        highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+            lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
+            midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
+            highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
 
-        if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
-            lowGain = 0;
-        }
+            if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
+                lowGain = 0;
+            }
 
-        if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
-            midGain = 0;
-        }
+            if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
+                midGain = 0;
+            }
 
-        if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
-            highGain = 0;
+            if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
+                highGain = 0;
+            }
         }
 
         if (pLowGain != NULL) {

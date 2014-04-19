@@ -26,10 +26,10 @@ public:
                   float* highGain);
 
   protected:
+    ControlObjectThread* m_pEQEnabled;
     ControlObjectThread* m_pLowFilterControlObject;
     ControlObjectThread* m_pMidFilterControlObject;
     ControlObjectThread* m_pHighFilterControlObject;
-
     ControlObjectThread* m_pLowKillControlObject;
     ControlObjectThread* m_pMidKillControlObject;
     ControlObjectThread* m_pHighKillControlObject;
