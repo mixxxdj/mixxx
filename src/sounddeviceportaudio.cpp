@@ -35,6 +35,7 @@
 #include "util/trace.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
+#include "controlobjectslave.h"
 
 static const int kDriftReserve = 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kFifoSize = 2 * kDriftReserve + 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
@@ -53,8 +54,6 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_outputDrift(false),
           m_inputDrift(false),
           m_bSetThreadPriority(false),
-          m_pMasterUnderflowCount(ControlObject::getControl(
-              ConfigKey("[Master]", "underflow_count"))),
           m_underflowUpdateCount(0),
           m_syncBuffers(2) {
     // Setting parent class members:
@@ -64,9 +63,16 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
     m_strDisplayName = QString(deviceInfo->name);
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
+
+    m_pMasterUnderflowCount = new ControlObjectSlave("[Master]", "underflow_count");
+    m_pMasterAudioCpuUsage = new ControlObjectSlave("[Master]", "audio_cpu_usage");
+    m_pMasterAudioCpuOverload  = new ControlObjectSlave("[Master]", "audio_cpu_overload");
 }
 
 SoundDevicePortAudio::~SoundDevicePortAudio() {
+    delete m_pMasterUnderflowCount;
+    delete m_pMasterAudioCpuUsage;
+    delete m_pMasterAudioCpuOverload;
 }
 
 int SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
@@ -763,7 +769,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
                 m_underflowHappend) {
             if (m_pMasterUnderflowCount) {
                 m_pMasterUnderflowCount->set(
-                    m_pMasterUnderflowCount->get() + 1);
+                        m_pMasterUnderflowCount->get() + 1);
             }
             m_underflowUpdateCount = 40;
             m_underflowHappend = 0; // reseting her is not thread save,

@@ -74,6 +74,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"), true, true);
     m_pMasterAudioBufferSize = new ControlObject(ConfigKey(group, "audio_buffer_size"));
     m_pMasterUnderflowCount = new ControlObject(ConfigKey(group, "underflow_count"), true, true);
+    m_pAudioCpuUsage = new ControlPotmeter(ConfigKey(group, "audio_cpu_usage"), 0.0, 1.0);
+    m_pAudioCpuOverload  = new ControlPotmeter(ConfigKey(group, "audio_cpu_overload"), 0.0, 1.0);
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
@@ -167,6 +169,8 @@ EngineMaster::~EngineMaster() {
     delete m_pMasterAudioBufferSize;
     delete m_pMasterRate;
     delete m_pMasterUnderflowCount;
+    delete m_pAudioCpuUsage;
+    delete m_pAudioCpuOverload;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
