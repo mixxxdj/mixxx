@@ -64,7 +64,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
-    m_pMasterUnderflowCount = new ControlObjectSlave("[Master]", "underflow_count");
+    m_pMasterUnderflowCount = new ControlObjectSlave("[Master]", "audio_cpu_overload_count");
     m_pMasterAudioCpuUsage = new ControlObjectSlave("[Master]", "audio_cpu_usage");
     m_pMasterAudioCpuOverload  = new ControlObjectSlave("[Master]", "audio_cpu_overload");
 }
