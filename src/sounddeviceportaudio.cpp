@@ -795,7 +795,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
         m_pMasterAudioCpuUsage->set(secInAudioCb/(m_framesSinceAudioCpuUsageUpdate/m_dSampleRate));
         m_nsInAudioCb = 0;
         m_framesSinceAudioCpuUsageUpdate = 0;
-        qDebug() << m_pMasterAudioCpuUsage << m_pMasterAudioCpuUsage->get() << secInAudioCb;
+        //qDebug() << m_pMasterAudioCpuUsage << m_pMasterAudioCpuUsage->get() << secInAudioCb;
     }
 
     //Note: Input is processed first so that any ControlObject changes made in
