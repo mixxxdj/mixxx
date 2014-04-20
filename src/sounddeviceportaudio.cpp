@@ -36,6 +36,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
 #include "controlobjectslave.h"
+#include "util/performancetimer.h"
 
 static const int kDriftReserve = 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kFifoSize = 2 * kDriftReserve + 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
@@ -55,6 +56,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_inputDrift(false),
           m_bSetThreadPriority(false),
           m_underflowUpdateCount(0),
+          m_nsInAudioCb(0),
+          m_framesSinceAudioCpuUsageUpdate(0),
           m_syncBuffers(2) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
@@ -752,6 +755,8 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
                                           CSAMPLE *out, const CSAMPLE *in,
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
+    PerformanceTimer timer;
+    timer.start();
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
@@ -782,6 +787,15 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
         }
     } else {
         --m_underflowUpdateCount;
+    }
+
+    m_framesSinceAudioCpuUsageUpdate += framesPerBuffer;
+    if (m_framesSinceAudioCpuUsageUpdate > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+        double secInAudioCb = (double)m_nsInAudioCb/1000000000.0;
+        m_pMasterAudioCpuUsage->set(secInAudioCb/(m_framesSinceAudioCpuUsageUpdate/m_dSampleRate));
+        m_nsInAudioCb = 0;
+        m_framesSinceAudioCpuUsageUpdate = 0;
+        qDebug() << m_pMasterAudioCpuUsage << m_pMasterAudioCpuUsage->get() << secInAudioCb;
     }
 
     //Note: Input is processed first so that any ControlObject changes made in
@@ -818,6 +832,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
 
     m_pSoundManager->writeProcess();
 
+    m_nsInAudioCb += (int)timer.elapsed();
     return paContinue;
 }
 
