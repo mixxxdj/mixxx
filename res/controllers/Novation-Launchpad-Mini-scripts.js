@@ -4,90 +4,8 @@
 /*      Author: marczis based on zestoi's work                  */
 /****************************************************************/
 
-NLM = new Controller();
-
-
-
-NLM.init = function()
-{
-        this.page = 0;
-
-        //Init hw
-        midi.sendShortMsg(0xb0, 0x0, 0x0);
-        midi.sendShortMsg(0xb0, 0x0, 0x28);
-
-        // select buffer 0
-        midi.sendShortMsg(0xb0, 0x68, 3);
-        NLM.setColor(7, 8, "hi_amber");
-        print("=============================");
-        NLM.btnstate = new Array();
-        for ( x = 0 ; x < 9 ; x++ ) {
-            NLM.btnstate[x] = new Array();
-            for ( y = 0 ; y < 9 ; y++ ) {
-                NLM.btnstate[x][y] = false;
-//                NLM.setColor(x, y, "hi_yellow");
-            }
-        }
-};
-
-NLM.setColor = function(x, y, color)
-{
-    //First line is special
-    if ( y == 8 ) {
-        x += 0x68;
-        midi.sendShortMsg(0xb0, x, this.colcode()[color]);
-        return;
-    }
-    midi.sendShortMsg(0x90, x+y*16, this.colcode()[color]);
-
-};
-
-NLM.shutdown = function()
-{
-
-};
-
-NLM.incomingData = function(channel, control, value, status, group)
-{
-        print("Incoming data");
-        print("cha: " + channel);
-        print("con: " + control);
-        print("val: " + value);
-        print("sta: " + status);
-        print("grp: " + group);
-
-        //Just to make life easier
-        var pressed = (value == 127);
-        //Translate midi btn into index
-        var y = Math.floor(control / 16);
-        var x = control - y * 16;
-        if ( y == 6 && x > 8 ) {
-            y = 8;
-            x -= 8;
-        }
-        if ( y == 6 && x == 8 && status == 176 ) {
-            y = 8; x = 0;
-        }
-
-        print( "COO: " + y + ":" + x);
-        //NLM.setColor(col, row, "hi_red");
-        //NLM.btnstate[col][row] = pressed;
-        //print ("NEWSTATE: " + NLM.btnstate[col][row])
-
-        //Special case, when we switch page
-        if (x == 8 && pressed) {
-            NLM.setColor(8, NLM.page, "black");
-            NLM.page = y;
-            NLM.setColor(x,y, "hi_amber");
-            print ("New page:" + NLM.page);
-            //No more process
-            return
-        }
-
-
-};
-
-NLM.colcode = function()
+//Common helpers
+colorCode = function()
 {
     return {
         black: 4,
@@ -121,6 +39,142 @@ NLM.colcode = function()
         flash_lo_yellow: 33
     }
 };
+
+//Different kind of callbacks for the buttons.
+DefaultCallback = function(nlm, key)
+{
+    if ( key.pressed ) return;
+    print("Key[" + this.x + ":" + this.y + "]");
+    if ( key.color == colorCode()["hi_red"] ) {
+        key.setColor("hi_green");
+    } else {
+        key.setColor("hi_red");
+    }
+}
+
+PageSelectCallback = function(nlm, key)
+{
+    if (key.pressed) {
+        nlm.btns[nlm.page][8][nlm.page].setColor("black");
+        nlm.page = key.y;
+        nlm.btns[nlm.page][8][nlm.page].setColor("hi_amber");
+    }
+    nlm.drawPage();
+}
+
+//Define the controller
+
+NLM = new Controller();
+NLM.init = function()
+{
+        this.page = 0;
+
+        //Init hw
+        midi.sendShortMsg(0xb0, 0x0, 0x0);
+        //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling <-- Figure out whats wrong with this
+
+        // select buffer 0
+        midi.sendShortMsg(0xb0, 0x68, 3);
+        //midi.sendShortMsg(0xb0, 0x0, 0x31);
+        print("=============================");
+        //Setup btnstate which is for phy. state
+        NLM.btns = new Array();
+        for ( page = 0; page < 8 ; page++ ) {
+            NLM.btns[page] = new Array();
+            for ( x = 0 ; x < 9 ; x++ ) {
+                NLM.btns[page][x] = new Array();
+                for ( y = 0 ; y < 9 ; y++ ) {
+                    var tmp = new Key;
+                    tmp.init(x,y);
+                    if (x == 8) {
+                        tmp.callback = PageSelectCallback;
+                    }
+
+                    NLM.btns[page][x][y] = tmp;
+//                    NLM.setColor(x, y, "hi_yellow");
+                }
+            }
+        }
+
+        NLM.btns[NLM.page][8][0].setColor("hi_amber");
+
+};
+
+
+NLM.shutdown = function()
+{
+
+};
+
+NLM.incomingData = function(channel, control, value, status, group)
+{
+        print("Incoming data");
+        print("cha: " + channel);
+        print("con: " + control);
+        print("val: " + value);
+        print("sta: " + status);
+        print("grp: " + group);
+
+        //Just to make life easier
+        var pressed = (value == 127);
+        //Translate midi btn into index
+        var y = Math.floor(control / 16);
+        var x = control - y * 16;
+        if ( y == 6 && x > 8 ) {
+            y = 8;
+            x -= 8;
+        }
+        if ( y == 6 && x == 8 && status == 176 ) {
+            y = 8; x = 0;
+        }
+
+        print( "COO: " + y + ":" + x);
+        NLM.btns[NLM.page][x][y].pressed = pressed;
+        NLM.btns[NLM.page][x][y].callback(NLM, NLM.btns[NLM.page][x][y]);
+        //print ("NEWSTATE: " + NLM.btnstate[col][row])
+};
+
+NLM.drawPage = function() {
+    for ( x = 0 ; x < 9 ; x++ ) {
+        for ( y = 0 ; y < 9 ; y++ ) {
+            NLM.btns[NLM.page][x][y].draw();
+        }
+    }
+}
+
+//Define one Key
+Key = Object;
+Key.prototype.color = colorCode("black");
+Key.prototype.x = 0;
+Key.prototype.y = 0;
+Key.prototype.pressed = false;
+
+Key.prototype.init = function(x,y)
+{
+    this.x = x;
+    this.y = y;
+    //print("Key created");
+}
+
+Key.prototype.setColor = function(color)
+{
+    //First line is special
+    this.color = colorCode()[color];
+    this.draw();
+};
+
+Key.prototype.draw = function()
+{
+    if ( this.y == 8 ) {
+        midi.sendShortMsg(0xb0, this.x + 0x68, this.color);
+        return;
+    }
+    midi.sendShortMsg(0x90, this.x+this.y*16, this.color);
+    //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling
+}
+
+Key.prototype.callback = DefaultCallback;
+
 
 /*
 NovationLaunchpad = {
