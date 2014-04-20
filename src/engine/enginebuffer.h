@@ -334,7 +334,7 @@ class EngineBuffer : public EngineObject {
     EngineBufferScaleRubberBand* m_pScaleRB;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
-    volatile EngineBufferScale* m_pScaleKeylock;
+    EngineBufferScale* volatile m_pScaleKeylock;
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

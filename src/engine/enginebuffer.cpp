@@ -357,10 +357,7 @@ void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
     }
 
     // m_pScaleKeylock could change out from under us, so cache it.
-    // Casting away volatile is ok here, because the thing that scalekeylock
-    // is pointing to will always be valid.
-    EngineBufferScale* keylock_scale =
-            const_cast<EngineBufferScale*>(m_pScaleKeylock);
+    EngineBufferScale* keylock_scale = m_pScaleKeylock;
 
     if (bEnable && m_pScale != keylock_scale) {
         m_pScale = keylock_scale;

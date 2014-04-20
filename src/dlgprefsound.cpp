@@ -502,6 +502,8 @@ void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig;
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
+    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
+    m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);
     settingChanged(); // force the apply button to enable
 }
 
