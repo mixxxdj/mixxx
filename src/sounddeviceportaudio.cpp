@@ -764,20 +764,24 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
 
     VisualPlayPosition::setTimeInfo(timeInfo);
 
-    if (!m_underflowUpdateCount) {
-        if ((statusFlags & (paOutputUnderflow | paInputOverflow)) ||
-                m_underflowHappend) {
-            if (m_pMasterUnderflowCount) {
-                m_pMasterUnderflowCount->set(
-                        m_pMasterUnderflowCount->get() + 1);
-            }
-            m_underflowUpdateCount = 40;
+    if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
+        m_underflowHappend = true;
+    }
+
+    if (m_underflowUpdateCount == 0) {
+        if (m_underflowHappend) {
+            m_pMasterAudioCpuOverload->set(1.0);
+            m_pMasterUnderflowCount->set(
+                    m_pMasterUnderflowCount->get() + 1);
+            m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_dSampleRate / framesPerBuffer / 1000;
             m_underflowHappend = 0; // reseting her is not thread save,
                                     // but that is OK, because we count only
-                                    // 1/40 of underflows
+                                    // 1 underflow each 500 ms
+        } else {
+            m_pMasterAudioCpuOverload->set(0.0);
         }
     } else {
-        m_underflowUpdateCount--;
+        --m_underflowUpdateCount;
     }
 
     //Note: Input is processed first so that any ControlObject changes made in
