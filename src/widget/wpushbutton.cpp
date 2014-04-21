@@ -238,10 +238,17 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
         m_bPressed = (dValue == 1.0);
     }
 
+    double value = getControlParameterDisplay();
+    int idx = static_cast<int>(value) % m_iNoStates;
+    setProperty("displayValue", idx);
+    // According to http://stackoverflow.com/a/3822243 this is the least
+    // expensive way to restyle just this widget.
+    // These calls trigger the repaint.
     // Since we expect button connections to not change at high frequency we
     // don't try to detect whether things have changed for WPushButton, we just
     // re-render.
-    update();
+    style()->unpolish(this);
+    style()->polish(this);
 }
 
 void WPushButton::paintEvent(QPaintEvent* e) {
@@ -287,12 +294,6 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     if (!text.isEmpty()) {
         p.drawText(rect(), m_align.at(idx), text);
     }
-
-    setProperty("displayValue", idx);
-    // According to http://stackoverflow.com/a/3822243 this is the least
-    // expensive way to restyle just this widget.
-    style()->unpolish(this);
-    style()->polish(this);
 }
 
 void WPushButton::mousePressEvent(QMouseEvent * e) {

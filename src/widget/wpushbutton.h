@@ -52,16 +52,12 @@ class WPushButton : public WWidget {
     // The declaration #MyButton[displayValue="0"] { } will define the style
     // when the widget is in state 0.  This allows for effects like reversing
     // background and foreground colors to indicate enabled/disabled state.
-    Q_PROPERTY(int displayValue READ readDisplayValue WRITE setDisplayValue)
+    Q_PROPERTY(int displayValue READ readDisplayValue)
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
         int idx = static_cast<int>(value) % m_iNoStates;
         return idx;
-    }
-
-    void setDisplayValue(int val) {
-        setControlParameter(static_cast<double>(val));
     }
 
     void setup(QDomNode node, const SkinContext& context);
