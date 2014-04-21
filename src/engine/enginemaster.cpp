@@ -52,9 +52,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
           m_bRampingGain(bRampingGain),
           m_masterVolumeOld(0.0),
           m_headphoneMasterGainOld(0.0),
-          m_headphoneVolumeOld(1.0),
-          m_bMasterOutputConnected(false),
-          m_bHeadphoneOutputConnected(false) {
+          m_headphoneVolumeOld(1.0) {
     m_bBusOutputConnected[0] = false;
     m_bBusOutputConnected[1] = false;
     m_bBusOutputConnected[2] = false;
@@ -145,6 +143,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                                          true, false, true);
     m_pKeylockEngine->set(_config->getValueString(
             ConfigKey(group, "keylock_engine")).toDouble());
+
+    m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),true, false, true); // persist = true
+    m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
 }
 
 EngineMaster::~EngineMaster() {
@@ -173,6 +174,9 @@ EngineMaster::~EngineMaster() {
     delete m_pMasterAudioBufferSize;
     delete m_pMasterRate;
     delete m_pMasterUnderflowCount;
+
+    delete m_pMasterEnabled;
+    delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
@@ -556,10 +560,11 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
 void EngineMaster::onOutputConnected(AudioOutput output) {
     switch (output.getType()) {
         case AudioOutput::MASTER:
-            m_bMasterOutputConnected = true;
+            // not used, because we need the master buffer for headphone mix
+            // and recording/broadcasting as well
             break;
         case AudioOutput::HEADPHONES:
-            m_bHeadphoneOutputConnected = true;
+            m_pMasterEnabled->set(1.0);
             break;
         case AudioOutput::BUS:
             m_bBusOutputConnected[output.getIndex()] = true;
@@ -575,10 +580,11 @@ void EngineMaster::onOutputConnected(AudioOutput output) {
 void EngineMaster::onOutputDisconnected(AudioOutput output) {
     switch (output.getType()) {
         case AudioOutput::MASTER:
-            m_bMasterOutputConnected = false;
+            // not used, because we need the master buffer for headphone mix
+            // and recording/broadcasting as well
             break;
         case AudioOutput::HEADPHONES:
-            m_bHeadphoneOutputConnected = false;
+            m_pMasterEnabled->set(1.0);
             break;
         case AudioOutput::BUS:
             m_bBusOutputConnected[output.getIndex()] = false;
