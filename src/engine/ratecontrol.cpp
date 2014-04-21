@@ -143,11 +143,13 @@ RateControl::RateControl(const char* _group,
     m_pOldScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));  // Deprecated
 
     // Scratch enable toggle
-    m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
-    m_pScratchToggle->set(0);
+    m_pScratchEnable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
+    m_pScratchEnable->set(0);
 
-    m_pScratch2AlwaysOn = new ControlPushButton(ConfigKey(_group, "scratch2_always_on"));
-    m_pScratch2AlwaysOn->set(0);
+    m_pScratch2Scratching = new ControlPushButton(ConfigKey(_group, "scratch2_scratching"));
+    // Enable by default, because it was always scratching befor introducing this control.
+    m_pScratch2Scratching->set(1.0);
+
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
@@ -191,7 +193,7 @@ RateControl::~RateControl() {
     delete m_pWheel;
     delete m_pScratch;
     delete m_pOldScratch;
-    delete m_pScratchToggle;
+    delete m_pScratchEnable;
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
@@ -417,13 +419,13 @@ double RateControl::calculateRate(double baserate, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
-        bool useScratch2Value = m_pScratchToggle->get() != 0;
+        bool useScratch2Value = m_pScratchEnable->get() != 0;
 
-        // scratch2_enable is normally enough to determine if the user is
-        // scratching or not, but some controllers have it on all the time,
-        // and if they have told us they do this the signal shouldn't be
-        // reported.
-        if (useScratch2Value && !m_pScratch2AlwaysOn->get()) {
+        // By default scratch2_enable enough to determine if the user is
+        // scratching or not. Moving platter controllers have to disable
+        // "scratch2_scratching" if they are not scratching, to allow things
+        // like key-lock
+        if (useScratch2Value && m_pScratch2Scratching->get()) {
             *reportScratching = true;
         }
 
@@ -490,30 +492,30 @@ double RateControl::calculateRate(double baserate, bool paused,
         if (m_pScratchController->isEnabled()) {
             rate = m_pScratchController->getRate();
             *reportScratching = true;
-        }
+        } else {
+            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+            if (getSyncMode() == SYNC_FOLLOWER && !paused &&
+                !bVinylControlEnabled && !useScratch2Value) {
+                if (m_pBpmControl == NULL) {
+                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                    return 1.0;
+                }
 
-        // If master sync is on, respond to it -- but vinyl and scratch mode always override.
-        if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-            !bVinylControlEnabled && !useScratch2Value) {
-            if (m_pBpmControl == NULL) {
-                qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
-                return 1.0;
+                rate = m_pBpmControl->getSyncedRate();
+                double userTweak = getTempRate() + wheelFactor + jogFactor;
+                bool userTweakingSync = userTweak != 0.0;
+                rate += userTweak;
+
+                rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
             }
-
-            rate = m_pBpmControl->getSyncedRate();
-            double userTweak = getTempRate() + wheelFactor + jogFactor;
-            bool userTweakingSync = userTweak != 0.0;
-            rate += userTweak;
-
-            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
-        }
-        // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
-        // Reverse with vinyl is only ok if absolute mode isn't on.
-        int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
-        if (m_pReverseButton->get()
-                && !m_pScratchToggle->get()
-                && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
-            rate = -rate;
+            // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
+            // Reverse with vinyl is only ok if absolute mode isn't on.
+            int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+            if (m_pReverseButton->get()
+                    && !m_pScratchEnable->get()
+                    && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+                rate = -rate;
+            }
         }
     }
 
