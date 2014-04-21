@@ -514,6 +514,16 @@ void DlgPrefSound::slotResetToDefaults() {
     loadSettings(newConfig);
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
     m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);
+
+    masterMixComboBox->setCurrentIndex(1);
+    m_pMasterEnabled->set(1.0);
+
+    masterDelaySpinBox->setValue(0.0);
+    m_pMasterDelay->set(0.0);
+
+    headDelaySpinBox->setValue(0.0);
+    m_pHeadDelay->set(0.0);
+
     settingChanged(); // force the apply button to enable
 }
 
