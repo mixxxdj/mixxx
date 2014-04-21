@@ -52,6 +52,7 @@ void main(void) {
     // that does not have valid waveform data.
     if (new_currentIndex >= 0 && new_currentIndex <= waveformLength - 1) {
       vec4 new_currentData = getWaveformData(new_currentIndex);
+      vec4 new_currentDataUnscaled = new_currentData;
 
       new_currentData *= allGain;
       new_currentData.x *= lowGain;
@@ -74,7 +75,6 @@ void main(void) {
 
       // Now do it all over again for the unscaled version of the waveform,
       // which we will draw at very low opacity.
-      vec4 new_currentDataUnscaled = getWaveformData(new_currentIndex);
       new_currentDataUnscaled *= allGain;
       float ourDistanceUnscaled = abs((uv.y - 0.5) * 2.0);
       vec4 signalDistanceUnscaled = new_currentDataUnscaled - ourDistanceUnscaled;
@@ -84,6 +84,9 @@ void main(void) {
     }
 
     // Draw the axes color as the lowest item on the screen.
+    // TODO(owilliams): The "4" in this line makes sure the axis gets
+    // rendered even when the waveform is fairly short.  Really this
+    // value should be based on the size of the widget.
     if (abs(framebufferSize.y / 2 - pixel.y) <= 4) {
       outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
       outputColor.w = 1.0;
