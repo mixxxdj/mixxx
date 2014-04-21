@@ -57,7 +57,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
           m_bSetThreadPriority(false),
           m_underflowUpdateCount(0),
           m_nsInAudioCb(0),
-          m_framesSinceAudioCpuUsageUpdate(0),
+          m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
@@ -67,15 +67,15 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
-    m_pMasterUnderflowCount = new ControlObjectSlave("[Master]", "audio_cpu_overload_count");
-    m_pMasterAudioCpuUsage = new ControlObjectSlave("[Master]", "audio_cpu_usage");
-    m_pMasterAudioCpuOverload  = new ControlObjectSlave("[Master]", "audio_cpu_overload");
+    m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]", "audio_latency_overload_count");
+    m_pMasterAudioLatencyUsage = new ControlObjectSlave("[Master]", "audio_latency_usage");
+    m_pMasterAudioLatencyOverload  = new ControlObjectSlave("[Master]", "audio_latency_overload");
 }
 
 SoundDevicePortAudio::~SoundDevicePortAudio() {
-    delete m_pMasterUnderflowCount;
-    delete m_pMasterAudioCpuUsage;
-    delete m_pMasterAudioCpuOverload;
+    delete m_pMasterAudioLatencyOverloadCount;
+    delete m_pMasterAudioLatencyUsage;
+    delete m_pMasterAudioLatencyOverload;
 }
 
 int SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
@@ -287,8 +287,8 @@ int SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
         ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
         ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
 
-        if (m_pMasterUnderflowCount) {
-            m_pMasterUnderflowCount->set(0);
+        if (m_pMasterAudioLatencyOverloadCount) {
+            m_pMasterAudioLatencyOverloadCount->set(0);
         }
     }
     m_pStream = pStream;
@@ -559,7 +559,7 @@ int SoundDevicePortAudio::callbackProcessDrift(const unsigned int framesPerBuffe
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
     Q_UNUSED(timeInfo);
-    //Trace trace("SoundDevicePortAudio::callbackProcessDrift " + getInternalName());
+    Trace trace("SoundDevicePortAudio::callbackProcessDrift " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     // Turn on TimeCritical priority for the callback thread. If we are running
@@ -695,7 +695,7 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
     Q_UNUSED(timeInfo);
-    //Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
+    Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     // Turn on TimeCritical priority for the callback thread. If we are running
@@ -775,27 +775,27 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
 
     if (m_underflowUpdateCount == 0) {
         if (m_underflowHappend) {
-            m_pMasterAudioCpuOverload->set(1.0);
-            m_pMasterUnderflowCount->set(
-                    m_pMasterUnderflowCount->get() + 1);
+            m_pMasterAudioLatencyOverload->set(1.0);
+            m_pMasterAudioLatencyOverloadCount->set(
+                    m_pMasterAudioLatencyOverloadCount->get() + 1);
             m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_dSampleRate / framesPerBuffer / 1000;
             m_underflowHappend = 0; // reseting her is not thread save,
                                     // but that is OK, because we count only
                                     // 1 underflow each 500 ms
         } else {
-            m_pMasterAudioCpuOverload->set(0.0);
+            m_pMasterAudioLatencyOverload->set(0.0);
         }
     } else {
         --m_underflowUpdateCount;
     }
 
-    m_framesSinceAudioCpuUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioCpuUsageUpdate > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
-        double secInAudioCb = (double)m_nsInAudioCb/1000000000.0;
-        m_pMasterAudioCpuUsage->set(secInAudioCb/(m_framesSinceAudioCpuUsageUpdate/m_dSampleRate));
+    m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+        double secInAudioCb = (double)m_nsInAudioCb / 1000000000.0;
+        m_pMasterAudioLatencyUsage->set(secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
         m_nsInAudioCb = 0;
-        m_framesSinceAudioCpuUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioCpuUsage << m_pMasterAudioCpuUsage->get() << secInAudioCb;
+        m_framesSinceAudioLatencyUsageUpdate = 0;
+        //qDebug() << m_pMasterAudioLatencyUsage << m_pMasterAudioLatencyUsage->get();
     }
 
     //Note: Input is processed first so that any ControlObject changes made in

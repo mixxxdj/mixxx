@@ -91,13 +91,13 @@ class SoundDevicePortAudio : public SoundDevice {
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
-    ControlObjectSlave* m_pMasterUnderflowCount;
-    ControlObjectSlave* m_pMasterAudioCpuUsage;
-    ControlObjectSlave* m_pMasterAudioCpuOverload;
+    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
+    ControlObjectSlave* m_pMasterAudioLatencyUsage;
+    ControlObjectSlave* m_pMasterAudioLatencyOverload;
     int m_underflowUpdateCount;
     static volatile int m_underflowHappend;
     int m_nsInAudioCb;
-    int m_framesSinceAudioCpuUsageUpdate;
+    int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
 };
 
