@@ -12,6 +12,8 @@
 #include <QDirIterator>
 
 #include "controllers/controllerpresetinfo.h"
+#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
 #include "controllers/defs_controllers.h"
 #include "xmlparse.h"
@@ -144,8 +146,76 @@ PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig)
     fileExtensions.append(QString(HID_PRESET_EXTENSION));
     fileExtensions.append(QString(BULK_PRESET_EXTENSION));
 
+    m_presetFileHandlersByExtension[QString(MIDI_PRESET_EXTENSION)] =
+            new MidiControllerPresetFileHandler();
+    m_presetFileHandlersByExtension[QString(HID_PRESET_EXTENSION)] =
+            new HidControllerPresetFileHandler();
+    m_presetFileHandlersByExtension[QString(BULK_PRESET_EXTENSION)] =
+            new HidControllerPresetFileHandler();
+
     loadSupportedPresets();
 }
+
+PresetInfoEnumerator::~PresetInfoEnumerator() {
+    for (QMap<QString, ControllerPresetFileHandler*>::iterator it =
+                 m_presetFileHandlersByExtension.begin();
+         it != m_presetFileHandlersByExtension.end(); it++) {
+        delete it.value();
+        it = m_presetFileHandlersByExtension.erase(it);
+    }
+}
+
+ControllerPresetPointer PresetInfoEnumerator::loadPreset(const QString& pathOrFilename,
+                                                         const QStringList& presetPaths) {
+    QString scriptPath = pathOrFilename;
+    QFileInfo scriptPathInfo(pathOrFilename);
+
+    // If the path is not absolute, search for it in presetPaths.
+    if (scriptPathInfo.isAbsolute()) {
+        qDebug() << "Loading controller preset directly:" << scriptPath;
+    } else {
+        qDebug() << "Searching for controller preset" << scriptPath
+                 << "in paths:" << presetPaths.join(",");
+        bool found = false;
+        foreach (const QString& presetPath, presetPaths) {
+            QDir presetDir(presetPath);
+
+            if (presetDir.exists(pathOrFilename)) {
+                scriptPath = presetDir.absoluteFilePath(pathOrFilename);
+                scriptPathInfo = QFileInfo(scriptPath);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            qDebug() << "Could not find" << pathOrFilename
+                     << "in any preset path.";
+            return ControllerPresetPointer();
+        }
+    }
+
+    if (!scriptPathInfo.exists() || !scriptPathInfo.isReadable()) {
+        qDebug() << "Preset" << scriptPath << "does not exist or is unreadable.";
+        return ControllerPresetPointer();
+    }
+
+    // TODO(XXX): This means filenames can't have .foo.midi.xml filenames. We
+    // should regex match against the end.
+    // NOTE(rryan): We prepend a dot because all the XXX_PRESET_EXTENSION
+    // defines include the dot.
+    QString extension = "." + scriptPathInfo.completeSuffix();
+
+    ControllerPresetFileHandler* pHandler =
+            m_presetFileHandlersByExtension.value(extension, NULL);
+    if (pHandler == NULL) {
+        qDebug() << "Preset" << scriptPath << "has an unrecognized extension.";
+        return ControllerPresetPointer();
+    }
+
+    // NOTE(rryan): We don't provide a device name. It's unused currently.
+    return pHandler->load(scriptPath, QString());
+}
+
 
 bool PresetInfoEnumerator::isValidExtension(const QString extension) {
     if (presetsByExtension.contains(extension))

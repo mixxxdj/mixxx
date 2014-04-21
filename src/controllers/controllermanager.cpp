@@ -195,6 +195,8 @@ int ControllerManager::slotSetUpDevices() {
     QSet<QString> filenames;
     int error = 0;
 
+    QScopedPointer<PresetInfoEnumerator> pie(new PresetInfoEnumerator(m_pConfig));
+
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
 
@@ -203,18 +205,23 @@ int ControllerManager::slotSetUpDevices() {
         }
 
         // The filename for this device name.
-        const QString ofilename = presetFilenameFromName(name);
+        QString presetBaseName = presetFilenameFromName(name);
+
         // The first unique filename for this device (appends numbers at the end
         // if we have already seen a controller by this name on this run of
         // Mixxx.
-        QString filename = firstAvailableFilename(filenames, ofilename);
+        presetBaseName = firstAvailableFilename(filenames, presetBaseName);
 
-        if (!loadPreset(pController, filename)) {
+        ControllerPresetPointer pPreset =
+                pie->loadPreset(presetBaseName + pController->presetExtension(),
+                                getPresetPaths(m_pConfig));
+
+        if (!loadPreset(pController, pPreset)) {
             // TODO(XXX) : auto load midi preset here.
             continue;
         }
 
-        if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
+        if (m_pConfig->getValueString(ConfigKey("[Controller]", presetBaseName)) != "1") {
             continue;
         }
 
@@ -330,58 +337,6 @@ bool ControllerManager::loadPreset(Controller* pController,
         ConfigKey("[ControllerPreset]",
                   presetFilenameFromName(pController->getName())),
         preset->filePath());
-    return true;
-}
-
-bool ControllerManager::loadPreset(Controller* pController,
-                                   const QString& filename) {
-    QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
-    if (!handler) {
-        qWarning() << "Failed to get a file handler for" << pController->getName()
-                   << "Unable to load preset.";
-        return false;
-    }
-
-    // Handle case when filename is already valid full path to mapping
-    // (coming from presetInfo.path)
-    QString filenameWithExt;
-    QString filepath;
-    QFileInfo fileinfo(filename);
-    if (fileinfo.isFile()) {
-        filenameWithExt = fileinfo.baseName();
-        filepath = fileinfo.absoluteFilePath();
-    } else {
-        filenameWithExt = filename + pController->presetExtension();
-        filepath = userPresetsPath(m_pConfig).append(filenameWithExt);
-    }
-
-    // If the file isn't present in the user's directory, check the local
-    // presets path.
-    if (!QFile::exists(filepath)) {
-        filepath = localPresetsPath(m_pConfig).append(filenameWithExt);
-    }
-
-    // If the file isn't present in the user's directory, check res/
-    if (!QFile::exists(filepath)) {
-        filepath = resourcePresetsPath(m_pConfig).append(filenameWithExt);
-    }
-
-    if (!QFile::exists(filepath)) {
-        qWarning() << "Cannot find" << filenameWithExt << "in either"
-                   << resourcePresetsPath(m_pConfig)
-                   << "or the user's Mixxx directories (" + localPresetsPath(m_pConfig)
-                   << userPresetsPath(m_pConfig) + ")";
-        return false;
-    }
-
-    ControllerPresetPointer pPreset = handler->load(filepath, filename);
-    if (!pPreset) {
-        qWarning() << "Unable to load preset" << filepath;
-        return false;
-    }
-
-    loadPreset(pController, pPreset);
-    //qDebug() << "Successfully loaded preset" << filepath;
     return true;
 }
 

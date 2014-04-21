@@ -74,8 +74,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             m_pControllerManager, SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
             m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
-    connect(this, SIGNAL(loadPreset(Controller*, QString)),
-            m_pControllerManager, SLOT(loadPreset(Controller*, QString)));
 
     // Input mappings
     connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
@@ -361,9 +359,15 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     }
 
     QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
+    QScopedPointer<PresetInfoEnumerator> pie(new PresetInfoEnumerator(m_pConfig));
 
-    // Applied on prefs close
-    emit(loadPreset(m_pController, presetPath));
+    ControllerPresetPointer pPreset = pie->loadPreset(
+        presetPath, ControllerManager::getPresetPaths(m_pConfig));
+
+    // TODO(rryan): We really should not load the preset here. We should load it
+    // into the preferences GUI and then load it to the actual controller once
+    // the user hits apply.
+    emit(loadPreset(m_pController, pPreset));
     slotDirty();
 }
 
