@@ -123,6 +123,15 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
 
+    m_pMasterEnabled =
+            new ControlObjectSlave("[Master]", "enabled", this);
+    masterMixComboBox->addItem("disabled");
+    masterMixComboBox->addItem("enabled");
+    masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
+    connect(masterMixComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(masterMixChanged(int)));
+
+
     m_pKeylockEngine =
             new ControlObjectSlave("[Master]", "keylock_engine", this);
 
@@ -523,4 +532,8 @@ void DlgPrefSound::headDelayChanged(double value) {
 
 void DlgPrefSound::masterDelayChanged(double value) {
     m_pMasterDelay->set(value);
+}
+
+void DlgPrefSound::masterMixChanged(int value) {
+    m_pMasterEnabled->set(value);
 }
