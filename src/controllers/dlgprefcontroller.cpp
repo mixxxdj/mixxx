@@ -303,14 +303,6 @@ void DlgPrefController::slotCancel() {
 
 void DlgPrefController::slotApply() {
     if (m_bDirty) {
-        bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
-        bool enabled = m_pController->isOpen();
-        if (wantEnabled && !enabled) {
-            enableDevice();
-        } else if (!wantEnabled && enabled) {
-            disableDevice();
-        }
-
         // Apply the presets and load the resulting preset.
         if (m_pInputTableModel != NULL) {
             m_pInputTableModel->apply();
@@ -349,6 +341,14 @@ void DlgPrefController::slotApply() {
 
         //Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
+
+        bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
+        bool enabled = m_pController->isOpen();
+        if (wantEnabled && !enabled) {
+            enableDevice();
+        } else if (!wantEnabled && enabled) {
+            disableDevice();
+        }
 
         m_bDirty = false;
     }
