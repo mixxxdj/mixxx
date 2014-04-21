@@ -123,6 +123,16 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
 
+    m_pMasterEnabled =
+            new ControlObjectSlave("[Master]", "enabled", this);
+    masterMixComboBox->addItem(tr("Disabled"));
+    masterMixComboBox->addItem(tr("Enabled"));
+    masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
+    connect(masterMixComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(masterMixChanged(int)));
+    m_pMasterEnabled->connectValueChanged(this, SLOT(masterEnabledChanged(double)));
+
+
     m_pKeylockEngine =
             new ControlObjectSlave("[Master]", "keylock_engine", this);
 
@@ -504,6 +514,16 @@ void DlgPrefSound::slotResetToDefaults() {
     loadSettings(newConfig);
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
     m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);
+
+    masterMixComboBox->setCurrentIndex(1);
+    m_pMasterEnabled->set(1.0);
+
+    masterDelaySpinBox->setValue(0.0);
+    m_pMasterDelay->set(0.0);
+
+    headDelaySpinBox->setValue(0.0);
+    m_pHeadDelay->set(0.0);
+
     settingChanged(); // force the apply button to enable
 }
 
@@ -524,3 +544,13 @@ void DlgPrefSound::headDelayChanged(double value) {
 void DlgPrefSound::masterDelayChanged(double value) {
     m_pMasterDelay->set(value);
 }
+
+void DlgPrefSound::masterMixChanged(int value) {
+    m_pMasterEnabled->set(value);
+}
+
+void DlgPrefSound::masterEnabledChanged(double value) {
+    masterMixComboBox->setCurrentIndex(value ? 1 : 0);
+}
+
+
