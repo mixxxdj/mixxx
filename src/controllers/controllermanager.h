@@ -38,6 +38,9 @@ class ControllerManager : public QObject {
 
     static QList<QString> getScriptPaths(ConfigObject<ConfigValue>* pConfig);
 
+    bool importScript(const QString& scriptPath, QString* newScriptFileName);
+    static bool checksumFile(const QString& filename, quint16* pChecksum);
+
   signals:
     void devicesChanged();
     void requestSetUpDevices();

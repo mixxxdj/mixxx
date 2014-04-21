@@ -426,3 +426,87 @@ QList<QString> ControllerManager::getScriptPaths(ConfigObject<ConfigValue>* pCon
     scriptPaths.append(resourcePresetsPath(pConfig));
     return scriptPaths;
 }
+
+// static
+bool ControllerManager::checksumFile(const QString& filename,
+                                     quint16* pChecksum) {
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+
+    qint64 fileSize = file.size();
+    const char* pFile = reinterpret_cast<char*>(file.map(0, fileSize));
+
+    if (pFile == NULL) {
+        file.close();
+        return false;
+    }
+
+    *pChecksum = qChecksum(pFile, fileSize);
+    file.close();
+    return true;
+}
+
+bool ControllerManager::importScript(const QString& scriptPath,
+                                     QString* newScriptFileName) {
+    QDir resourcePresets(resourcePresetsPath(m_pConfig));
+    QDir userPresets(userPresetsPath(m_pConfig));
+
+    QFile scriptFile(scriptPath);
+    QFileInfo script(scriptFile);
+
+    if (!script.exists() || !script.isReadable()) {
+        qWarning() << "ControllerManager::importScript script does not exist"
+                   << "or is unreadable:" << scriptPath;
+        return false;
+    }
+
+    // Not fatal if we can't checksum but still warn about it.
+    quint16 scriptChecksum = 0;
+    bool scriptChecksumGood = checksumFile(scriptPath, &scriptChecksum);
+    if (!scriptChecksumGood) {
+        qWarning() << "ControllerManager::importScript could not checksum file:"
+                   << scriptPath;
+    }
+
+    // The name we will save this file as in our local script repository. The
+    // conflict resolution logic below will mutate this variable if the name is
+    // already taken.
+    QString scriptFileName = script.fileName();
+
+    // For a file like "myfile.foo.bar.js", scriptBaseName is "myfile.foo.bar"
+    // and scriptSuffix is "js".
+    QString scriptBaseName = script.completeBaseName();
+    QString scriptSuffix = script.suffix();
+    int conflictNumber = 1;
+
+    // This script exists.
+    while (userPresets.exists(scriptFileName)) {
+        // If the two files are identical. We're done.
+        quint16 localScriptChecksum = 0;
+        if (checksumFile(userPresets.filePath(scriptFileName), &localScriptChecksum) &&
+            scriptChecksumGood && scriptChecksum == localScriptChecksum) {
+            *newScriptFileName = scriptFileName;
+            return true;
+        }
+
+        // Otherwise, we need to rename the file to a non-conflicting
+        // name. Insert a .X where X is a counter that we count up until we find
+        // a filename that does not exist.
+        scriptFileName = QString("%1.%2.%3").arg(
+            scriptBaseName,
+            QString::number(conflictNumber++),
+            scriptSuffix);
+    }
+
+    QString destinationPath = userPresets.filePath(scriptFileName);
+    if (!scriptFile.copy(destinationPath)) {
+        qDebug() << "ControllerManager::importScript could not copy script to"
+                 << "local preset path:" << destinationPath;
+        return false;
+    }
+
+    *newScriptFileName = scriptFileName;
+    return true;
+}
