@@ -24,14 +24,29 @@ class ControllerPreset {
     ControllerPreset() {}
     virtual ~ControllerPreset() {}
 
+    struct ScriptFileInfo {
+        ScriptFileInfo()
+                : builtin(false) {
+
+        }
+
+        QString name;
+        QString functionPrefix;
+        bool builtin;
+    };
+
     /** addScriptFile(QString,QString)
      * Adds an entry to the list of script file names & associated list of function prefixes
      * @param filename Name of the XML file to add
      * @param functionprefix Function prefix to add
      */
-    void addScriptFile(QString filename, QString functionprefix) {
-        scriptFileNames.append(filename);
-        scriptFunctionPrefixes.append(functionprefix);
+    void addScriptFile(QString filename, QString functionprefix,
+                       bool builtin=false) {
+        ScriptFileInfo info;
+        info.name = filename;
+        info.functionPrefix = functionprefix;
+        info.builtin = builtin;
+        scripts.append(info);
     }
 
     inline void setDeviceId(const QString id) {
@@ -114,10 +129,7 @@ class ControllerPreset {
     virtual void accept(ConstControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
-    // Data elements
-    // TODO(XXX) make private
-    QList<QString> scriptFileNames;
-    QList<QString> scriptFunctionPrefixes;
+    QList<ScriptFileInfo> scripts;
     // Optional list of controller device match details
     QList< QHash<QString,QString> > m_productMatches;
 
