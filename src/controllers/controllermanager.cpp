@@ -75,9 +75,6 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
         QDir().mkpath(localPresets);
     }
 
-    // Initialize preset info parsers
-    m_pPresetInfoManager = new PresetInfoEnumerator(m_pConfig);
-
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
@@ -117,7 +114,6 @@ ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
-    delete m_pPresetInfoManager;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
@@ -387,10 +383,6 @@ bool ControllerManager::loadPreset(Controller* pController,
     loadPreset(pController, pPreset);
     //qDebug() << "Successfully loaded preset" << filepath;
     return true;
-}
-
-PresetInfoEnumerator* ControllerManager::getPresetInfoManager() {
-    return m_pPresetInfoManager;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {

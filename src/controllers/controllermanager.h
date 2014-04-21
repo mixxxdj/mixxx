@@ -30,7 +30,6 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    PresetInfoEnumerator* getPresetInfoManager();
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit(requestSetUpDevices()); };
@@ -83,7 +82,6 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
-    PresetInfoEnumerator* m_pPresetInfoManager;
 };
 
 #endif  // CONTROLLERMANAGER_H
