@@ -343,7 +343,7 @@ bool ControllerManager::loadPreset(Controller* pController,
     QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
     if (!handler) {
         qWarning() << "Failed to get a file handler for" << pController->getName()
-                   << " Unable to load preset.";
+                   << "Unable to load preset.";
         return false;
     }
 
