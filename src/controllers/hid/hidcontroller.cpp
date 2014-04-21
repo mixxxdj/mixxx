@@ -56,6 +56,7 @@ QString safeDecodeWideString(wchar_t* pStr, size_t max_length) {
     // wcsnlen is not available on all platforms, so just make a temporary
     // buffer
     wcsncpy(tmp, pStr, max_length);
+    tmp[max_length] = 0;
     QString result = QString::fromWCharArray(tmp);
     delete [] tmp;
     return result;
@@ -83,6 +84,7 @@ HidController::HidController(const hid_device_info deviceInfo)
     hid_path = new char[PATH_MAX+1];
     memset(hid_path, 0, sizeof(hid_path[0]) * sizeof(*hid_path));
     strncpy(hid_path, deviceInfo.path, PATH_MAX);
+    hid_path[PATH_MAX] = 0;
 
     hid_serial_raw = NULL;
     if (deviceInfo.serial_number != NULL) {
@@ -90,6 +92,7 @@ HidController::HidController(const hid_device_info deviceInfo)
         hid_serial_raw = new wchar_t[serial_max_length+1];
         memset(hid_serial_raw, 0, sizeof(hid_serial_raw[0]) * sizeof(*hid_serial_raw));
         wcsncpy(hid_serial_raw, deviceInfo.serial_number, serial_max_length);
+        hid_serial_raw[serial_max_length] = 0;
     }
 
     hid_serial = safeDecodeWideString(deviceInfo.serial_number, 512);
