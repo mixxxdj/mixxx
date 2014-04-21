@@ -87,7 +87,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectSlave* m_pMasterUnderflowCount;
+    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
     ControlObjectSlave* m_pMasterLatency;
     ControlObjectSlave* m_pHeadDelay;
     ControlObjectSlave* m_pMasterDelay;
