@@ -78,9 +78,7 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
     }
 }
 
-void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferSize) {
-    Q_UNUSED(pInput);
-
+void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     if (sampleBuffer) {
         memcpy(pOut, sampleBuffer, iBufferSize * sizeof(pOut[0]));
@@ -95,9 +93,9 @@ void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferS
         // volume.
         m_vuMeter.collectFeatures(&features);
         // Process effects enabled for this channel
-        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
+        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
                                          features);
     }
     // Update VU meter
-    m_vuMeter.process(pOut, pOut, iBufferSize);
+    m_vuMeter.process(pOut, iBufferSize);
 }

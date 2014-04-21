@@ -31,7 +31,7 @@ class EngineVinylSoundEmu : public EngineObject {
     virtual ~EngineVinylSoundEmu();
 
     void setSpeed(double speed);
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
     double m_dSpeed;

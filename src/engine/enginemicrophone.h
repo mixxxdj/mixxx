@@ -24,7 +24,7 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     bool isActive();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
-    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
+    virtual void process(CSAMPLE* pOutput, const int iBufferSize);
 
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the callback thread of

@@ -133,7 +133,7 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
 
     // The process methods all run in the audio callback.
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
 
     const char* getGroup();

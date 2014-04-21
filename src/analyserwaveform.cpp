@@ -14,6 +14,8 @@
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"
 
+#define fabs(x) (x < 0 ? -x : x)
+
 AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
         m_skipProcessing(false),
         m_waveform(NULL),
