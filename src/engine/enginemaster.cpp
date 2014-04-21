@@ -140,10 +140,16 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
     m_pXFaderReverse = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
+
+    m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),
+                                         true, false, true);
+    m_pKeylockEngine->set(_config->getValueString(
+            ConfigKey(group, "keylock_engine")).toDouble());
 }
 
 EngineMaster::~EngineMaster() {
     qDebug() << "in ~EngineMaster()";
+    delete m_pKeylockEngine;
     delete m_pCrossfader;
     delete m_pBalance;
     delete m_pHeadMix;
