@@ -330,11 +330,15 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Compute headphone mix
     // Head phone left/right mix
-    CSAMPLE cf_val = m_pHeadMix->get();
-    CSAMPLE chead_gain = 0.5*(-cf_val+1.);
-    CSAMPLE cmaster_gain = 0.5*(cf_val+1.);
-    // qDebug() << "head val " << cf_val << ", head " << chead_gain
-    //          << ", master " << cmaster_gain;
+    CSAMPLE chead_gain = 1;
+    CSAMPLE cmaster_gain = 0;
+    if (masterEnabled) {
+        CSAMPLE cf_val = m_pHeadMix->get();
+        chead_gain = 0.5 * (-cf_val + 1.);
+        cmaster_gain = 0.5 * (cf_val + 1.);
+        // qDebug() << "head val " << cf_val << ", head " << chead_gain
+        //          << ", master " << cmaster_gain;
+    }
 
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
