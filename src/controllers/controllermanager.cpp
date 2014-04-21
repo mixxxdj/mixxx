@@ -200,8 +200,6 @@ int ControllerManager::slotSetUpDevices() {
     QSet<QString> filenames;
     int error = 0;
 
-    QScopedPointer<PresetInfoEnumerator> pie(new PresetInfoEnumerator(m_pConfig));
-
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
 
