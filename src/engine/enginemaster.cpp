@@ -560,11 +560,11 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
 void EngineMaster::onOutputConnected(AudioOutput output) {
     switch (output.getType()) {
         case AudioOutput::MASTER:
-            // not used, because we need the master buffer for headphone mix
-            // and recording/broadcasting as well
+            // overwrite config option if a master output is configured
+            m_pMasterEnabled->set(1.0);
             break;
         case AudioOutput::HEADPHONES:
-            m_pMasterEnabled->set(1.0);
+            m_pHeadphoneEnabled->set(1.0);
             break;
         case AudioOutput::BUS:
             m_bBusOutputConnected[output.getIndex()] = true;
@@ -584,7 +584,7 @@ void EngineMaster::onOutputDisconnected(AudioOutput output) {
             // and recording/broadcasting as well
             break;
         case AudioOutput::HEADPHONES:
-            m_pMasterEnabled->set(1.0);
+            m_pHeadphoneEnabled->set(1.0);
             break;
         case AudioOutput::BUS:
             m_bBusOutputConnected[output.getIndex()] = false;

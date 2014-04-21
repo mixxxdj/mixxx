@@ -62,6 +62,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void headDelayChanged(double value);
     void masterDelayChanged(double value);
     void masterMixChanged(int value);
+    void masterEnabledChanged(double value);
 
   private slots:
     void addPath(AudioOutput output);
