@@ -71,6 +71,11 @@ class DlgPrefController : public DlgPreferencePage {
     void removeOutputMappings();
     void clearAllOutputMappings();
 
+    // Scripts
+    void addScript();
+    void removeScript();
+    void openScript();
+
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:

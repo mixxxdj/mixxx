@@ -86,18 +86,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Per-band gain from the EQ knobs.
-    float lowGain(1.0), midGain(1.0), highGain(1.0);
-    if (m_pLowFilterControlObject && m_pMidFilterControlObject && m_pHighFilterControlObject) {
-        lowGain = m_pLowFilterControlObject->get();
-        midGain = m_pMidFilterControlObject->get();
-        highGain = m_pHighFilterControlObject->get();
-    }
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
-    lowGain  *= factory->getVisualGain(WaveformWidgetFactory::Low);
-    midGain  *= factory->getVisualGain(WaveformWidgetFactory::Mid);
-    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
@@ -109,7 +99,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.0f, visualGain * m_waveformRenderer->getGain(), 1.0f);
+        glScalef(1.0f, allGain, 1.0f);
 
         glLineWidth(1.2);
         glDisable(GL_LINE_SMOOTH);
@@ -181,7 +171,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.0f, visualGain * m_waveformRenderer->getGain(), 1.0f);
+        glScalef(1.0f, allGain, 1.0f);
 
         glLineWidth(1.2);
         glEnable(GL_LINE_SMOOTH);

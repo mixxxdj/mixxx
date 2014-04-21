@@ -17,6 +17,7 @@
 #include <QMessageBox>
 #include "dlgprefsound.h"
 #include "dlgprefsounditem.h"
+#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "playermanager.h"
 #include "soundmanager.h"
@@ -70,6 +71,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(syncBuffersChanged(int)));
 
+    keylockComboBox->clear();
+    for (int i = 0; i < EngineBuffer::KEYLOCK_ENGINE_COUNT; ++i) {
+        keylockComboBox->addItem(
+                EngineBuffer::getKeylockEngineName(
+                        static_cast<EngineBuffer::KeylockEngine>(i)));
+    }
+    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
+
     initializePaths();
     loadSettings();
 
@@ -80,6 +89,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(keylockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
 
     connect(queryButton, SIGNAL(clicked()),
@@ -108,6 +119,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             new ControlObjectSlave("[Master]", "headDelay", this);
     m_pMasterDelay =
             new ControlObjectSlave("[Master]", "delay", this);
+
+    headDelaySpinBox->setValue(m_pHeadDelay->get());
+    masterDelaySpinBox->setValue(m_pMasterDelay->get());
+
+    m_pKeylockEngine =
+            new ControlObjectSlave("[Master]", "keylock_engine", this);
 
     connect(headDelaySpinBox, SIGNAL(valueChanged(double)),
             this, SLOT(headDelayChanged(double)));
@@ -152,6 +169,9 @@ void DlgPrefSound::slotApply() {
     if (!m_settingsModified) {
         return;
     }
+
+    m_pKeylockEngine->set(keylockComboBox->currentIndex());
+
     m_config.clearInputs();
     m_config.clearOutputs();
     emit(writePaths(&m_config));
@@ -482,6 +502,8 @@ void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig;
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
+    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
+    m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);
     settingChanged(); // force the apply button to enable
 }
 

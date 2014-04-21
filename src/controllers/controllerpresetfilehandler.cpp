@@ -88,7 +88,7 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
             .firstChildElement("file");
 
     // Default currently required file
-    preset->addScriptFile(REQUIRED_SCRIPT_FILE, "");
+    preset->addScriptFile(REQUIRED_SCRIPT_FILE, "", true);
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
@@ -170,19 +170,19 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
     QDomElement scriptFiles = doc.createElement("scriptfiles");
     controller.appendChild(scriptFiles);
 
-    for (int i = 0; i < preset.scriptFileNames.count(); i++) {
-        QString filename = preset.scriptFileNames.at(i);
-
-        // Don't need to write anything for the required mapping file.
-        if (filename != REQUIRED_SCRIPT_FILE) {
-            qDebug() << "  writing script block for" << filename;
-            QString functionPrefix = preset.scriptFunctionPrefixes.at(i);
-            QDomElement scriptFile = doc.createElement("file");
-
-            scriptFile.setAttribute("filename", filename);
-            scriptFile.setAttribute("functionprefix", functionPrefix);
-            scriptFiles.appendChild(scriptFile);
+    foreach (const ControllerPreset::ScriptFileInfo& script, preset.scripts) {
+        QString filename = script.name;
+        // Don't need to write anything for built-in files.
+        if (script.builtin) {
+            continue;
         }
+        qDebug() << "writing script block for" << filename;
+        QString functionPrefix = script.functionPrefix;
+        QDomElement scriptFile = doc.createElement("file");
+
+        scriptFile.setAttribute("filename", filename);
+        scriptFile.setAttribute("functionprefix", functionPrefix);
+        scriptFiles.appendChild(scriptFile);
     }
     return doc;
 }

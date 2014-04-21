@@ -88,6 +88,10 @@ class HID(Feature):
             conf.CheckLib(['pthread', 'libpthread'])
             conf.CheckLib(['rt', 'librt'])
 
+            # -pthread tells GCC to do the right thing regardless of system
+            build.env.Append(CCFLAGS='-pthread')
+            build.env.Append(LINKFLAGS='-pthread')
+
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
         elif build.platform_is_osx:
@@ -1126,7 +1130,9 @@ class Optimize(Feature):
             # -funroll-loops. We need to justify our use of these aggressive
             # optimizations with data.
             build.env.Append(
-                CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
+                CCFLAGS='-O3 -ffast-math -funroll-loops')
+            if not int(build.flags['profiling']):
+                build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
             if optimize_level == 1:
                 # only includes what we already applied

@@ -19,14 +19,17 @@ public:
     virtual bool onInit() {return true;}
     virtual void onSetup(const QDomNode &node) = 0;
 
-protected:
+  protected:
     void deleteControls();
 
-protected:
+    void getGains(float* pAllGain, float* pLowGain, float* pMidGain,
+                  float* highGain);
+
+  protected:
+    ControlObjectThread* m_pEQEnabled;
     ControlObjectThread* m_pLowFilterControlObject;
     ControlObjectThread* m_pMidFilterControlObject;
     ControlObjectThread* m_pHighFilterControlObject;
-
     ControlObjectThread* m_pLowKillControlObject;
     ControlObjectThread* m_pMidKillControlObject;
     ControlObjectThread* m_pHighKillControlObject;
