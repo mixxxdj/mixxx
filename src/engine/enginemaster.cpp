@@ -310,6 +310,9 @@ void EngineMaster::process(const int iBufferSize) {
     }
     Trace t("EngineMaster::process");
 
+    bool masterEnabled = m_pMasterEnabled->get();
+    bool headphoneEnabled = m_pHeadphoneEnabled->get();
+
     int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     // Update internal master sync.
     m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
@@ -379,102 +382,113 @@ void EngineMaster::process(const int iBufferSize) {
         }
     }
 
-    // Mix the three channels together. We already mixed the busses together
-    // with the channel gains and overall master gain.
-    SampleUtil::copy3WithGain(m_pMaster,
-                              m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
-                              m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
-                              m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
-                              iBufferSize);
+    if (masterEnabled) {
+        // Mix the three channels together. We already mixed the busses together
+        // with the channel gains and overall master gain.
+        SampleUtil::copy3WithGain(m_pMaster,
+                                  m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
+                                  m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
+                                  m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
+                                  iBufferSize);
 
-    // Process master channel effects
-    if (m_pEngineEffectsManager) {
-        GroupFeatureState masterFeatures;
-        // Well, this is delayed by one buffer (it's dependent on the
-        // output). Oh well.
+        // Process master channel effects
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState masterFeatures;
+            // Well, this is delayed by one buffer (it's dependent on the
+            // output). Oh well.
+            if (m_pVumeter != NULL) {
+                m_pVumeter->collectFeatures(&masterFeatures);
+            }
+            m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster,
+                                             iBufferSize, masterFeatures);
+        }
+
+        // Apply master volume after effects.
+        CSAMPLE master_volume = m_pMasterVolume->get();
+        if (m_bRampingGain) {
+            SampleUtil::applyRampingGain(m_pMaster, m_masterVolumeOld,
+                                         master_volume, iBufferSize);
+        } else {
+            SampleUtil::applyGain(m_pMaster, master_volume, iBufferSize);
+        }
+        m_masterVolumeOld = master_volume;
+
+        // Balance values
+        CSAMPLE balright = 1.;
+        CSAMPLE balleft = 1.;
+        CSAMPLE bal = m_pBalance->get();
+        if (bal > 0.) {
+            balleft -= bal;
+        } else if (bal < 0.) {
+            balright += bal;
+        }
+
+        // Perform balancing on main out
+        SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
+
+        // Update VU meter (it does not return anything). Needs to be here so that
+        // master balance is reflected in the VU meter.
         if (m_pVumeter != NULL) {
-            m_pVumeter->collectFeatures(&masterFeatures);
+            m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
         }
-        m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster,
-                                         iBufferSize, masterFeatures);
-    }
+        // Submit master samples to the side chain to do shoutcasting, recording,
+        // etc. (cpu intensive non-realtime tasks)
+        if (m_pSideChain != NULL) {
+            m_pSideChain->writeSamples(m_pMaster, iBufferSize);
+        }
 
-    // Apply master volume after effects.
-    CSAMPLE master_volume = m_pMasterVolume->get();
-    if (m_bRampingGain) {
-        SampleUtil::applyRampingGain(m_pMaster, m_masterVolumeOld,
-                                     master_volume, iBufferSize);
-    } else {
-        SampleUtil::applyGain(m_pHead, master_volume, iBufferSize);
-    }
-    m_masterVolumeOld = master_volume;
-
-    // Balance values
-    CSAMPLE balright = 1.;
-    CSAMPLE balleft = 1.;
-    CSAMPLE bal = m_pBalance->get();
-    if (bal>0.)
-        balleft -= bal;
-    else if (bal<0.)
-        balright += bal;
-
-    // Perform balancing on main out
-    SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
-
-    // Update VU meter (it does not return anything). Needs to be here so that
-    // master balance is reflected in the VU meter.
-    if (m_pVumeter != NULL) {
-        m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
-    }
-
-    // Submit master samples to the side chain to do shoutcasting, recording,
-    // etc. (cpu intensive non-realtime tasks)
-    if (m_pSideChain != NULL) {
-        m_pSideChain->writeSamples(m_pMaster, iBufferSize);
-    }
-
-    // Add master to headphone with appropriate gain
-    if (m_bRampingGain) {
-        SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
-                                       m_headphoneMasterGainOld,
-                                       cmaster_gain, iBufferSize);
-    } else {
-        SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
-    }
-    m_headphoneMasterGainOld = cmaster_gain;
-
-    // Process headphone channel effects
-    if (m_pEngineEffectsManager) {
-        GroupFeatureState headphoneFeatures;
-        m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead,
-                                         iBufferSize, headphoneFeatures);
-    }
-
-    // Head volume
-    CSAMPLE headphoneVolume = m_pHeadVolume->get();
-    if (m_bRampingGain) {
-        SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld,
-                                     headphoneVolume, iBufferSize);
-    } else {
-        SampleUtil::applyGain(m_pHead, headphoneVolume, iBufferSize);
-    }
-    m_headphoneVolumeOld = headphoneVolume;
-
-    // If Head Split is enabled, replace the left channel of the pfl buffer
-    // with a mono mix of the headphone buffer, and the right channel of the pfl
-    // buffer with a mono mix of the master output buffer.
-    if (m_pHeadSplitEnabled->get()) {
-        for (int i = 0; i + 1 < iBufferSize; i += 2) {
-            m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
-            m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
+        // Add master to headphone with appropriate gain
+        if (headphoneEnabled) {
+            if (m_bRampingGain) {
+                SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
+                                               m_headphoneMasterGainOld,
+                                               cmaster_gain, iBufferSize);
+            } else {
+                SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
+            }
+            m_headphoneMasterGainOld = cmaster_gain;
         }
     }
 
-    m_pMasterDelay->process(m_pMaster, m_pMaster, iBufferSize);
-    m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
 
-    //Master/headphones interleaving is now done in
-    //SoundManager::requestBuffer() - Albert Nov 18/07
+    if (headphoneEnabled) {
+        // Process headphone channel effects
+        if (m_pEngineEffectsManager) {
+            GroupFeatureState headphoneFeatures;
+            m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead,
+                                             iBufferSize, headphoneFeatures);
+        }
+        // Head volume
+        CSAMPLE headphoneVolume = m_pHeadVolume->get();
+        if (m_bRampingGain) {
+            SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld,
+                                         headphoneVolume, iBufferSize);
+        } else {
+            SampleUtil::applyGain(m_pHead, headphoneVolume, iBufferSize);
+        }
+        m_headphoneVolumeOld = headphoneVolume;
+    }
+
+    if (masterEnabled && headphoneEnabled) {
+        // If Head Split is enabled, replace the left channel of the pfl buffer
+        // with a mono mix of the headphone buffer, and the right channel of the pfl
+        // buffer with a mono mix of the master output buffer.
+        if (m_pHeadSplitEnabled->get()) {
+            for (int i = 0; i + 1 < iBufferSize; i += 2) {
+                m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
+                m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
+            }
+        }
+    }
+
+    if (masterEnabled) {
+        m_pMasterDelay->process(m_pMaster, m_pMaster, iBufferSize);
+    } else {
+        SampleUtil::clear(m_pMaster, iBufferSize);
+    }
+    if (headphoneEnabled) {
+        m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
+    }
 
     // We're close to the end of the callback. Wake up the engine worker
     // scheduler so that it runs the workers.
