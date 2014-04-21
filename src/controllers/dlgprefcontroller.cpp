@@ -257,11 +257,10 @@ void DlgPrefController::enumeratePresets() {
     QList<PresetInfo> presets = pie->getPresets(m_pController->presetExtension());
 
     PresetInfo match;
-    foreach (PresetInfo preset, presets) {
+    foreach (const PresetInfo& preset, presets) {
         m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
-            break;
         }
     }
 

@@ -55,7 +55,7 @@ class DlgPrefController : public DlgPreferencePage {
     void loadPreset(Controller* pController, QString controllerName, bool force);
     void loadPreset(Controller* pController, ControllerPresetPointer pPreset);
     void mappingStarted();
-    void mappingEnded();;
+    void mappingEnded();
 
   private slots:
     void slotPresetLoaded(ControllerPresetPointer preset);
