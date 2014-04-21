@@ -11,12 +11,10 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QDesktopServices>
-#include <QScopedPointer>
 #include <QtAlgorithms>
 
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controllerlearningeventfilter.h"
-#include "controllers/controllerpresetinfo.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
@@ -253,7 +251,7 @@ void DlgPrefController::enumeratePresets() {
 
     m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
-    QScopedPointer<PresetInfoEnumerator> pie(new PresetInfoEnumerator(m_pConfig));
+    PresetInfoEnumerator* pie =  m_pControllerManager->getMainThreadPresetEnumerator();
     QList<PresetInfo> presets = pie->getPresets(m_pController->presetExtension());
 
     PresetInfo match;

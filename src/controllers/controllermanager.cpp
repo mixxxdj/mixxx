@@ -75,6 +75,10 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
         QDir().mkpath(localPresets);
     }
 
+    // Initialize preset info parsers. This object is only for use in the main
+    // thread. Do not touch it from within ControllerManager.
+    m_pMainThreadPresetEnumerator = new PresetInfoEnumerator(m_pConfig);
+
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
@@ -114,6 +118,7 @@ ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
+    delete m_pMainThreadPresetEnumerator;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
@@ -338,6 +343,10 @@ bool ControllerManager::loadPreset(Controller* pController,
                   presetFilenameFromName(pController->getName())),
         preset->filePath());
     return true;
+}
+
+PresetInfoEnumerator* ControllerManager::getMainThreadPresetEnumerator() {
+    return m_pMainThreadPresetEnumerator;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {
