@@ -89,6 +89,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlObjectSlave* m_pMasterLatency;
     ControlObjectSlave* m_pHeadDelay;
     ControlObjectSlave* m_pMasterDelay;
+    ControlObjectSlave* m_pKeylockEngine;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
