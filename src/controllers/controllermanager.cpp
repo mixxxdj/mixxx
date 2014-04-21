@@ -11,6 +11,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
+#include "util/cmdlineargs.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -218,6 +219,12 @@ int ControllerManager::slotSetUpDevices() {
         }
 
         if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
+            continue;
+        }
+
+        // If we are in safe mode, skip opening controllers.
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            qDebug() << "We are in safe mode -- skipping opening controller.";
             continue;
         }
 

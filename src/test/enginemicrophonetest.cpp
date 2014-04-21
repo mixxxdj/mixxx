@@ -14,7 +14,7 @@ namespace {
 class EngineMicrophoneTest : public testing::Test {
   protected:
     virtual void SetUp() {
-        inputLength = MAX_BUFFER_LEN/2;
+        inputLength = MAX_BUFFER_LEN;
         outputLength = MAX_BUFFER_LEN;
         input = SampleUtil::alloc(inputLength);
         output = SampleUtil::alloc(outputLength);
@@ -120,7 +120,7 @@ TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
     m_pTalkover->set(1.0);
 
     for (int i = 0; i < 10; i++) {
-        FillSequentialWithStride<CSAMPLE>(input, 0, 0.001f, 1.0f, 1, inputLength);
+        FillSequentialWithStride<CSAMPLE>(input, 0, 0.001f, 1.0f, 2, inputLength);
         FillSequentialWithStride<CSAMPLE>(test, 0, 0.001f, 1.0f, 2, outputLength);
 
         m_pMicrophone->receiveBuffer(micInput, input, inputLength);

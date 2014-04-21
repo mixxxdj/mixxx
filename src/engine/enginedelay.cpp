@@ -19,22 +19,21 @@
 #include "controlobjectslave.h"
 #include "sampleutil.h"
 
-const int kiMaxDelay = 20000; // 104 ms @ 96 kb/s
-const double kdMaxDelayPot = 100; // 100 ms
+const int kiMaxDelay = 40000; // 208 ms @ 96 kb/s
+const double kdMaxDelayPot = 200; // 200 ms
 
 EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
         : m_iDelayPos(0),
           m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
     SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
-    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot);
+    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, true);
     m_pDelayPot->setDefaultValue(0);
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
     m_pSampleRate = new ControlObjectSlave(group, "samplerate", this);
     m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()), Qt::DirectConnection);
-
 }
 
 EngineDelay::~EngineDelay() {

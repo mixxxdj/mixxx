@@ -33,6 +33,7 @@
 #include "defs_urls.h"
 #include "dlgabout.h"
 #include "dlgpreferences.h"
+#include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
 #include "effects/effectsmanager.h"
@@ -87,6 +88,7 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
+          m_pDeveloperToolsDlg(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
@@ -418,9 +420,12 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
 
-    // If we were told to start in fullscreen mode on the command-line,
+    // If we were told to start in fullscreen mode on the command-line
+    // or if user chose always starts in fullscreen mode,
     // then turn on fullscreen mode.
-    if (args.getStartInFullscreen()) {
+    bool fullscreenPref = m_pConfig->getValueString(
+                ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
+    if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
     emit(newSkinLoaded());
@@ -541,18 +546,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pPrefDlg;
 
-    // HACK: Save config again. We saved it once before doing some dangerous
-    // stuff. We only really want to save it here, but the first one was just
-    // a precaution. The earlier one can be removed when stuff is more stable
-    // at exit.
-    m_pConfig->Save();
-
-    qDebug() << "delete config " << qTime.elapsed();
-    Sandbox::shutdown();
-
-    ControlDoublePrivate::setUserConfig(NULL);
-    delete m_pConfig;
-
     delete m_pTouchShift;
 
     PlayerInfo::destroy();
@@ -590,6 +583,18 @@ MixxxMainWindow::~MixxxMainWindow() {
        }
     }
     qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
+
+    // HACK: Save config again. We saved it once before doing some dangerous
+    // stuff. We only really want to save it here, but the first one was just
+    // a precaution. The earlier one can be removed when stuff is more stable
+    // at exit.
+    m_pConfig->Save();
+
+    qDebug() << "delete config " << qTime.elapsed();
+    Sandbox::shutdown();
+
+    ControlDoublePrivate::setUserConfig(NULL);
+    delete m_pConfig;
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
@@ -1276,6 +1281,19 @@ void MixxxMainWindow::initActions()
     connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
 
+    QString developerToolsTitle = tr("Developer Tools");
+    QString developerToolsText = tr("Opens the developer tools dialog");
+    m_pDeveloperTools = new QAction(developerToolsTitle, this);
+    m_pDeveloperTools->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_DeveloperTools"),
+                                                  tr("Ctrl+Shift+D"))));
+    m_pDeveloperTools->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperTools->setStatusTip(developerToolsText);
+    m_pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
+    connect(m_pDeveloperTools, SIGNAL(triggered()),
+            this, SLOT(slotDeveloperTools()));
+
     // TODO: This code should live in a separate class.
     m_TalkoverMapper = new QSignalMapper(this);
     connect(m_TalkoverMapper, SIGNAL(mapped(int)),
@@ -1349,6 +1367,7 @@ void MixxxMainWindow::initMenuBar()
 
     // Developer Menu
     m_pDeveloperMenu->addAction(m_pDeveloperReloadSkin);
+    m_pDeveloperMenu->addAction(m_pDeveloperTools);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -1443,6 +1462,20 @@ void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
 void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
     Q_UNUSED(toggle);
     rebootMixxxView();
+}
+
+void MixxxMainWindow::slotDeveloperTools() {
+    if (m_pDeveloperToolsDlg == NULL) {
+        m_pDeveloperToolsDlg = new DlgDeveloperTools(this, m_pConfig);
+        connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                this, SLOT(slotDeveloperToolsClosed()));
+    }
+    m_pDeveloperToolsDlg->show();
+    m_pDeveloperToolsDlg->activateWindow();
+}
+
+void MixxxMainWindow::slotDeveloperToolsClosed() {
+    m_pDeveloperToolsDlg = NULL;
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle)

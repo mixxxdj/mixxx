@@ -7,6 +7,11 @@
 
 #include "configobject.h"
 
+// The second value of each OpCode will be the channel number the message
+// corresponds to.  So 0xB0 is a CC on the first channel, and 0xB1 is a CC
+// on the second channel.  When working with incoming midi data, first call
+// MidiUtils::opCodeFromStatus to translate from raw status values to opcodes,
+// then compare to these enums.
 typedef enum {
     MIDI_NOTE_OFF       = 0x80,
     MIDI_NOTE_ON        = 0x90,
@@ -121,15 +126,8 @@ struct MidiOutput {
 };
 
 struct MidiKey {
-    MidiKey()
-            : status(0),
-              control(0) {
-    }
-
-    MidiKey(unsigned char status, unsigned char control)
-            : status(status),
-              control(control) {
-    }
+    MidiKey();
+    MidiKey(unsigned char status, unsigned char control);
 
     bool operator==(const MidiKey& other) const {
         return key == other.key;
@@ -155,9 +153,17 @@ struct MidiInputMapping {
               options(options) {
     }
 
+    MidiInputMapping(MidiKey key, MidiOptions options, const ConfigKey& control)
+            : key(key),
+              options(options),
+              control(control) {
+    }
+
+    // Don't use descriptions in operator== since we only use equality testing
+    // for unit tests.
     bool operator==(const MidiInputMapping& other) const {
         return key == other.key && options == other.options &&
-                control == other.control && description == other.description;
+                control == other.control;
     }
 
     MidiKey key;

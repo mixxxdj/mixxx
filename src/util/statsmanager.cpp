@@ -2,6 +2,7 @@
 #include <QMutexLocker>
 #include <QTextStream>
 #include <QFile>
+#include <QMetaType>
 
 #include "util/statsmanager.h"
 #include "util/compatibility.h"
@@ -17,6 +18,7 @@ bool StatsManager::s_bStatsManagerEnabled = false;
 StatsPipe::StatsPipe(StatsManager* pManager)
         : FIFO<StatReport>(kStatsPipeSize),
           m_pManager(pManager) {
+    qRegisterMetaType<Stat>("Stat");
 }
 
 StatsPipe::~StatsPipe() {
@@ -176,6 +178,7 @@ void StatsManager::processIncomingStatReports() {
             info.m_type = report.type;
             info.m_compute = report.compute;
             info.processReport(report);
+            emit(statUpdated(info));
 
             if (CmdlineArgs::Instance().getTimelineEnabled() &&
                     (report.type == Stat::EVENT ||
@@ -201,6 +204,14 @@ void StatsManager::run() {
         // want to print the most accurate stat report on shutdown.
         processIncomingStatReports();
         m_statsPipeLock.unlock();
+
+        if (deref(m_emitAllStats) == 1) {
+            for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
+                 it != m_stats.end(); ++it) {
+                emit(statUpdated(it.value()));
+            }
+            m_emitAllStats = 0;
+        }
 
         if (deref(m_quit) == 1) {
             qDebug() << "StatsManager thread shutting down.";

@@ -126,10 +126,6 @@ void ControlDoublePrivate::getControls(
     s_qCOHashMutex.unlock();
 }
 
-double ControlDoublePrivate::get() const {
-    return m_value.getValue();
-}
-
 void ControlDoublePrivate::reset() {
     double defaultValue = m_defaultValue.getValue();
     // NOTE: pSender = NULL is important. The originator of this action does
@@ -154,7 +150,6 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
 void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
     setInner(value, pSender);
 }
-
 
 void ControlDoublePrivate::setInner(double value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {

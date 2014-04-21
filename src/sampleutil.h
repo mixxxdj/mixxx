@@ -109,9 +109,19 @@ class SampleUtil {
     // range [fMin, fMax]. If pDest and pSrc are aliases, will not copy -- will
     // only clamp. Returns true if any samples in pSrc were outside the range
     // [fMin, fMax].
-    static bool copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
-                                CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                 int iNumSamples);
+
+    // returns a SAMPLE that is between -1 and +1
+    inline static CSAMPLE clampSample(CSAMPLE in) {
+        if (in > 1.0f) {
+            return 1.0f;
+        }
+        if (in < -1.0f) {
+            return -1.0f;
+        }
+        return in;
+    }
 
     // Interleave the samples in pSrc1 and pSrc2 into pDest. iNumSamples must be
     // the number of samples in pSrc1 and pSrc2, and pDest must have at least

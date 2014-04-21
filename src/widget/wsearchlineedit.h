@@ -16,8 +16,7 @@
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
-                    QWidget* pParent);
+    WSearchLineEdit(QWidget* pParent);
     virtual ~WSearchLineEdit();
 
     void setup(QDomNode node, const SkinContext& context);

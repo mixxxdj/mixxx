@@ -46,6 +46,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_pShoutMetaData(NULL),
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
+          m_iShoutFailures(0),
           m_pConfig(_config),
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),

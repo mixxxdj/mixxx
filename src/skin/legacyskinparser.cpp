@@ -51,6 +51,7 @@
 #include "widget/weffectparameter.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
+#include "widget/woverviewrgb.h"
 #include "widget/wspinny.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -65,6 +66,7 @@
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
 #include "util/valuetransformer.h"
+#include "util/cmdlineargs.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -709,12 +711,14 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 
     WOverview* overviewWidget = NULL;
 
-    // HSV = "1" or "Filtered" = "0" (LMH) waveform overview type
-    if (m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"),
-            "0").toInt() == 0) {
+    // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
+    int type = m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+    if (type == 0) {
         overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
-    } else {
+    } else if (type == 1) {
         overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+    } else {
+        overviewWidget = new WOverviewRGB(pSafeChannelStr, m_pConfig, m_pParent);
     }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
@@ -883,11 +887,17 @@ QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
     WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
     if (!spinny->isValid()) {
         delete spinny;
         WLabel* dummy = new WLabel(m_pParent);
-        //: Shown when Spinny can not be displayd. Please keep \n unchanged
+        //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
@@ -907,7 +917,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig, m_pParent);
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
     setupBaseWidget(node, pLineEditSearch);
     setupWidget(node, pLineEditSearch);
     pLineEditSearch->setup(node, *m_pContext);

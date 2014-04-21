@@ -47,7 +47,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     QString nextTitle(tr("Now test it out!"));
     QString nextInstructionBody(tr(
-            "If you manipulate the control, you should see the Mixxx UI "
+            "If you manipulate the control, you should see the Mixxx user interface "
             "respond the way you expect."));
     QString nextTroubleshootTitle(tr("Not quite right?"));
     QString nextTroubleshootBody(tr(
@@ -159,6 +159,9 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
     midiOptionSoftTakeover->setChecked(false);
     midiOptionSwitchMode->setChecked(false);
 
+    progressBarWiggleFeedback->setValue(0);
+    progressBarWiggleFeedback->setMinimum(0);
+    progressBarWiggleFeedback->setMaximum(300);
     progressBarWiggleFeedback->hide();
 
     labelMappedTo->setText("");
@@ -166,6 +169,10 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
 }
 
 void DlgControllerLearning::slotChooseControlPressed() {
+    // If we learned messages, commit them.
+    if (m_messagesLearned) {
+        commitMapping();
+    }
     resetWizard();
     stackedWidget->setCurrentWidget(page1Choose);
     startListening();
@@ -227,14 +234,14 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
         stackedWidget->setCurrentWidget(page2Learn);
     }
 
-    if (status == MIDI_CC) {
+    // If we get a few messages, it's probably a rotation control so let's give
+    // feedback.  If we only get one or two messages, it's probably a button
+    // and we shouldn't show the progress bar.
+    if (m_messages.length() > 4) {
         if (progressBarWiggleFeedback->isVisible()) {
             progressBarWiggleFeedback->setValue(
                     progressBarWiggleFeedback->value() + 1);
         } else {
-            progressBarWiggleFeedback->setValue(0);
-            progressBarWiggleFeedback->setMinimum(0);
-            progressBarWiggleFeedback->setMaximum(10);
             progressBarWiggleFeedback->show();
         }
     }
@@ -246,7 +253,8 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // Unless this is a MIDI_CC and the progress bar is full, restart the
     // timer.  That way the user won't just push buttons forever and wonder
     // why the wizard never advances.
-    if (status != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
+    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
+    if (opCode != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
         m_lastMessageTimer.start();
     }
 }
@@ -273,16 +281,7 @@ void DlgControllerLearning::slotTimerExpired() {
     // It's been a timer interval since we last got a message. Let's try to
     // detect mappings.
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(m_messages);
-
-    // Add control and description info to each learned input mapping.
-    for (MidiInputMappings::iterator it = mappings.begin();
-         it != mappings.end(); ++it) {
-        MidiInputMapping& mapping = *it;
-        mapping.control = m_currentControl;
-        mapping.description = QString("MIDI Learned from %1 messages.")
-                .arg(m_messages.size());
-    }
+            LearningUtils::guessMidiInputMappings(m_currentControl, m_messages);
 
     if (mappings.isEmpty()) {
         labelErrorText->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));

@@ -432,9 +432,9 @@ const char* EngineBuffer::getGroup()
     return m_group;
 }
 
-double EngineBuffer::getRate()
+double EngineBuffer::getSpeed()
 {
-    return m_rate_old;
+    return m_speed_old;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -1039,15 +1039,10 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_pSyncControl->reportTrackPosition(fFractionalPlaypos);
 
     // Update indicators that are only updated after every
-    // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
-    // rateEngine)
+    // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesCalculated > (m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
-
-        if (speed != m_rateEngine->get()) {
-            m_rateEngine->set(speed);
-        }
 
         // Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateCnt;
@@ -1060,8 +1055,12 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         m_iSamplesCalculated = 0;
     }
 
+    if (speed != m_rateEngine->get()) {
+        m_rateEngine->set(speed);
+    }
+
     // Update visual control object, this needs to be done more often than the
-    // rateEngine and playpos slider
+    // playpos slider
     m_visualPlayPos->set(fFractionalPlaypos, speed,
             (double)iBufferSize/m_file_length_old,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
