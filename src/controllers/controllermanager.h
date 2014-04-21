@@ -36,6 +36,11 @@ class ControllerManager : public QObject {
     void setUpDevices() { emit(requestSetUpDevices()); };
     void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
 
+    static QList<QString> getScriptPaths(ConfigObject<ConfigValue>* pConfig);
+
+    bool importScript(const QString& scriptPath, QString* newScriptFileName);
+    static bool checksumFile(const QString& filename, quint16* pChecksum);
+
   signals:
     void devicesChanged();
     void requestSetUpDevices();
@@ -72,8 +77,6 @@ class ControllerManager : public QObject {
     }
 
   private:
-    QList<QString> getScriptPaths();
-
     ConfigObject<ConfigValue> *m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;

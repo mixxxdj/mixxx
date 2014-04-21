@@ -169,14 +169,14 @@ void DlgPreferences::createIcons() {
     m_pControlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pWaveformButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pWaveformButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
+    m_pWaveformButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_waveforms.png"));
     m_pWaveformButton->setText(0, tr("Waveforms"));
     m_pWaveformButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pWaveformButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
-    m_pAutoDJButton->setText(0, tr("AutoDJ"));
+    m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_autodj.png"));
+    m_pAutoDJButton->setText(0, tr("Auto DJ"));
     m_pAutoDJButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pAutoDJButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 

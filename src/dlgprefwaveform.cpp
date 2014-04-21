@@ -16,6 +16,20 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
     waveformOverviewComboBox->addItem( tr("RGB") ); // "2"
 
+    // Populate waveform options.
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
+    for (int i = 0; i < handles.size(); ++i) {
+        waveformTypeComboBox->addItem(handles[i].getDisplayName(),
+                                      handles[i].getType());
+    }
+
+    // Populate zoom options.
+    for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
+         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
+        defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
+    }
+
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
@@ -28,7 +42,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     connect(frameRateSlider, SIGNAL(valueChanged(int)),
             frameRateSpinBox, SLOT(setValue(int)));
 
-    connect(waveformTypeComboBox, SIGNAL(currentIndexChanged(int)),
+    connect(waveformTypeComboBox, SIGNAL(activated(int)),
             this, SLOT(slotSetWaveformType(int)));
     connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotSetDefaultZoom(int)));
@@ -44,10 +58,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this,SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox,SIGNAL(toggled(bool)),
             this,SLOT(slotSetNormalizeOverview(bool)));
-
-    connect(WaveformWidgetFactory::instance(), SIGNAL(waveformMeasured(float,int)),
+    connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
-
     connect(waveformOverviewComboBox,SIGNAL(currentIndexChanged(int)),
             this,SLOT(slotSetWaveformOverviewType(int)));
 }
@@ -65,38 +77,27 @@ void DlgPrefWaveform::slotUpdate() {
     }
 
     WaveformWidgetType::Type currentType = factory->getType();
-    int currentIndex = -1;
-
-    waveformTypeComboBox->clear();
-    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for (int i = 0; i < handles.size(); ++i) {
-        waveformTypeComboBox->addItem(handles[i].getDisplayName());
-        if (handles[i].getType() == currentType) {
-            currentIndex = i;
-        }
-    }
-
-    if (currentIndex != -1) {
+    int currentIndex = waveformTypeComboBox->findData(currentType);
+    if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
 
     frameRateSpinBox->setValue(factory->getFrameRate());
+    frameRateSlider->setValue(factory->getFrameRate());
     synchronizeZoomCheckBox->setChecked(factory->isZoomSync());
     allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
     lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
-
-    for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
-        defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
-    }
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
 
     // By default we set filtered woverview = "0"
-    waveformOverviewComboBox->setCurrentIndex(
-            m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt());
+    int overviewType = m_pConfig->getValueString(
+            ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+    if (overviewType != waveformOverviewComboBox->currentIndex()) {
+        waveformOverviewComboBox->setCurrentIndex(overviewType);
+    }
 }
 
 void DlgPrefWaveform::slotApply() {
@@ -108,15 +109,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Get the default we ought to use based on whether the user has OpenGL or
     // not.
     WaveformWidgetType::Type defaultType = factory->autoChooseWidgetType();
-    int currentIndex = -1;
-    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for (int i = 0; i < handles.size(); ++i) {
-        if (handles[i].getType() == defaultType) {
-            currentIndex = i;
-        }
-    }
-    if (currentIndex != -1) {
-        waveformTypeComboBox->setCurrentIndex(currentIndex);
+    int defaultIndex = waveformTypeComboBox->findData(defaultType);
+    if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
+        waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
 
     allVisualGain->setValue(1.5);
@@ -149,11 +144,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     if (index < 0) {
         return;
     }
-
-    if (WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index)) {
-        // It was changed to a valid type. Previously we rebooted the Mixxx GUI
-        // here but now we can update the waveforms on the fly.
-    }
+    WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {

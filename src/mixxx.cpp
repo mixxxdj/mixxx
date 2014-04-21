@@ -546,18 +546,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pPrefDlg;
 
-    // HACK: Save config again. We saved it once before doing some dangerous
-    // stuff. We only really want to save it here, but the first one was just
-    // a precaution. The earlier one can be removed when stuff is more stable
-    // at exit.
-    m_pConfig->Save();
-
-    qDebug() << "delete config " << qTime.elapsed();
-    Sandbox::shutdown();
-
-    ControlDoublePrivate::setUserConfig(NULL);
-    delete m_pConfig;
-
     delete m_pTouchShift;
 
     PlayerInfo::destroy();
@@ -595,6 +583,18 @@ MixxxMainWindow::~MixxxMainWindow() {
        }
     }
     qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
+
+    // HACK: Save config again. We saved it once before doing some dangerous
+    // stuff. We only really want to save it here, but the first one was just
+    // a precaution. The earlier one can be removed when stuff is more stable
+    // at exit.
+    m_pConfig->Save();
+
+    qDebug() << "delete config " << qTime.elapsed();
+    Sandbox::shutdown();
+
+    ControlDoublePrivate::setUserConfig(NULL);
+    delete m_pConfig;
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
