@@ -693,7 +693,7 @@ void DlgPrefController::openScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.insert(index.row());
     }
-    QList<QString> scriptPaths = m_pControllerManager->getScriptPaths(m_pConfig);
+    QList<QString> scriptPaths = m_pControllerManager->getPresetPaths(m_pConfig);
 
     foreach (int row, selectedRows) {
         QString scriptName = m_ui.m_pScriptsTableWidget->item(row, 0)->text();

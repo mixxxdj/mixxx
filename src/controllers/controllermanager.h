@@ -35,7 +35,7 @@ class ControllerManager : public QObject {
     void setUpDevices() { emit(requestSetUpDevices()); };
     void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
 
-    static QList<QString> getScriptPaths(ConfigObject<ConfigValue>* pConfig);
+    static QList<QString> getPresetPaths(ConfigObject<ConfigValue>* pConfig);
 
     bool importScript(const QString& scriptPath, QString* newScriptFileName);
     static bool checksumFile(const QString& filename, quint16* pChecksum);

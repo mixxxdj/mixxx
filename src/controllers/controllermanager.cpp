@@ -234,7 +234,7 @@ int ControllerManager::slotSetUpDevices() {
             }
             continue;
         }
-        pController->applyPreset(getScriptPaths(m_pConfig));
+        pController->applyPreset(getPresetPaths(m_pConfig));
     }
 
     maybeStartOrStopPolling();
@@ -299,7 +299,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(getScriptPaths(m_pConfig));
+        pController->applyPreset(getPresetPaths(m_pConfig));
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->set(ConfigKey(
@@ -409,7 +409,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
 }
 
 // static
-QList<QString> ControllerManager::getScriptPaths(ConfigObject<ConfigValue>* pConfig) {
+QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
     QList<QString> scriptPaths;
     scriptPaths.append(userPresetsPath(pConfig));
     scriptPaths.append(localPresetsPath(pConfig));
