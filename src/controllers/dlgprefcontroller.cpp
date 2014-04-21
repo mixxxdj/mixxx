@@ -7,6 +7,11 @@
 
 #include <QtDebug>
 #include <QFileInfo>
+#include <QFileDialog>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QDesktopServices>
+#include <QtAlgorithms>
 
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -32,6 +37,7 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
 
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
+    initTableView(m_ui.m_pScriptsTableWidget);
 
     connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
             this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
@@ -86,6 +92,16 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             this, SLOT(removeOutputMappings()));
     connect(m_ui.btnClearAllOutputMappings, SIGNAL(clicked()),
             this, SLOT(clearAllOutputMappings()));
+
+    // Scripts
+    connect(m_ui.m_pScriptsTableWidget, SIGNAL(cellChanged(int, int)),
+            this, SLOT(slotDirty()));
+    connect(m_ui.btnAddScript, SIGNAL(clicked()),
+            this, SLOT(addScript()));
+    connect(m_ui.btnRemoveScript, SIGNAL(clicked()),
+            this, SLOT(removeScript()));
+    connect(m_ui.btnOpenScript, SIGNAL(clicked()),
+            this, SLOT(openScript()));
 
     slotUpdate();
 }
@@ -303,6 +319,28 @@ void DlgPrefController::slotApply() {
             m_pOutputTableModel->apply();
         }
 
+        // Load script info from the script table.
+        m_pPreset->scripts.clear();
+        for (int i = 0; i < m_ui.m_pScriptsTableWidget->rowCount(); ++i) {
+            QString scriptFile = m_ui.m_pScriptsTableWidget->item(i, 0)->text();
+
+            // Skip empty rows.
+            if (scriptFile.isEmpty()) {
+                continue;
+            }
+
+            QString scriptPrefix = m_ui.m_pScriptsTableWidget->item(i, 1)->text();
+
+            bool builtin = m_ui.m_pScriptsTableWidget->item(i, 2)
+                    ->checkState() == Qt::Checked;
+
+            ControllerPreset::ScriptFileInfo info;
+            info.name = scriptFile;
+            info.functionPrefix = scriptPrefix;
+            info.builtin = builtin;
+            m_pPreset->scripts.append(info);
+        }
+
         // Load the resulting preset (which has been mutated by the input/output
         // table models). The controller clones the preset so we aren't touching
         // the same preset.
@@ -433,6 +471,39 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_pOutputProxyModel = pOutputProxyModel;
     delete m_pOutputTableModel;
     m_pOutputTableModel = pOutputModel;
+
+    // Populate the script tab with the scripts this preset uses.
+    m_ui.m_pScriptsTableWidget->setRowCount(preset->scripts.length());
+    m_ui.m_pScriptsTableWidget->setColumnCount(3);
+    m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
+        0, new QTableWidgetItem(tr("Filename")));
+    m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
+        1, new QTableWidgetItem(tr("Function Prefix")));
+    m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
+        2, new QTableWidgetItem(tr("Built-in")));
+
+    for (int i = 0; i < preset->scripts.length(); ++i) {
+        const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
+
+        QTableWidgetItem* pScriptName = new QTableWidgetItem(script.name);
+        m_ui.m_pScriptsTableWidget->setItem(i, 0, pScriptName);
+        pScriptName->setFlags(pScriptName->flags() & ~Qt::ItemIsEditable);
+
+        QTableWidgetItem* pScriptPrefix = new QTableWidgetItem(
+                script.functionPrefix);
+        m_ui.m_pScriptsTableWidget->setItem(i, 1, pScriptPrefix);
+
+        // If the script is built-in don't allow editing of the prefix.
+        if (script.builtin) {
+            pScriptPrefix->setFlags(pScriptPrefix->flags() & ~Qt::ItemIsEditable);
+        }
+
+        QTableWidgetItem* pScriptBuiltin = new QTableWidgetItem();
+        pScriptBuiltin->setCheckState(script.builtin ? Qt::Checked : Qt::Unchecked);
+        pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEditable |
+                                                             Qt::ItemIsUserCheckable));
+        m_ui.m_pScriptsTableWidget->setItem(i, 2, pScriptBuiltin);
+    }
 }
 
 void DlgPrefController::slotEnableDevice(bool enable) {
@@ -531,5 +602,106 @@ void DlgPrefController::clearAllOutputMappings() {
     if (m_pOutputTableModel) {
         m_pOutputTableModel->clear();
         slotDirty();
+    }
+}
+
+void DlgPrefController::addScript() {
+    QString scriptFile = QFileDialog::getOpenFileName(
+        this, tr("Add Script"),
+        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation),
+        tr("Controller Script Files (*.js)"));
+
+    if (scriptFile.isNull()) {
+        return;
+    }
+
+    QString importedScriptFileName;
+    if (!m_pControllerManager->importScript(scriptFile, &importedScriptFileName)) {
+        QMessageBox::warning(this, tr("Add Script"),
+                             tr("Could not add script file: '%s'"));
+        return;
+    }
+
+    // Don't allow duplicate entries in the table. This could happen if the file
+    // is missing (and the user added it to try and fix this) or if the file is
+    // already in the presets directory with an identical checksum.
+    for (int i = 0; i < m_ui.m_pScriptsTableWidget->rowCount(); ++i) {
+        if (m_ui.m_pScriptsTableWidget->item(i, 0)->text() == importedScriptFileName) {
+            return;
+        }
+    }
+
+    int newRow = m_ui.m_pScriptsTableWidget->rowCount();
+    m_ui.m_pScriptsTableWidget->setRowCount(newRow + 1);
+    QTableWidgetItem* pScriptName = new QTableWidgetItem(importedScriptFileName);
+    m_ui.m_pScriptsTableWidget->setItem(newRow, 0, pScriptName);
+    pScriptName->setFlags(pScriptName->flags() & ~Qt::ItemIsEditable);
+
+    QTableWidgetItem* pScriptPrefix = new QTableWidgetItem("");
+    m_ui.m_pScriptsTableWidget->setItem(newRow, 1, pScriptPrefix);
+
+    QTableWidgetItem* pScriptBuiltin = new QTableWidgetItem();
+    pScriptBuiltin->setCheckState(Qt::Unchecked);
+    pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEditable |
+                                                         Qt::ItemIsUserCheckable));
+    m_ui.m_pScriptsTableWidget->setItem(newRow, 2, pScriptBuiltin);
+
+    slotDirty();
+}
+
+void DlgPrefController::removeScript() {
+    QModelIndexList selectedIndices = m_ui.m_pScriptsTableWidget->selectionModel()
+            ->selection().indexes();
+    if (selectedIndices.isEmpty()) {
+        return;
+    }
+
+    QList<int> selectedRows;
+    foreach (QModelIndex index, selectedIndices) {
+        selectedRows.append(index.row());
+    }
+    qSort(selectedRows);
+
+    int lastRow = -1;
+    while (!selectedRows.empty()) {
+        int row = selectedRows.takeLast();
+        if (row == lastRow) {
+            continue;
+        }
+
+        // You can't remove a builtin script.
+        QTableWidgetItem* pItem = m_ui.m_pScriptsTableWidget->item(row, 2);
+        if (pItem->checkState() == Qt::Checked) {
+            continue;
+        }
+
+        lastRow = row;
+        m_ui.m_pScriptsTableWidget->removeRow(row);
+    }
+    slotDirty();
+}
+
+void DlgPrefController::openScript() {
+    QModelIndexList selectedIndices = m_ui.m_pScriptsTableWidget->selectionModel()
+            ->selection().indexes();
+    if (selectedIndices.isEmpty()) {
+        return;
+    }
+
+    QSet<int> selectedRows;
+    foreach (QModelIndex index, selectedIndices) {
+        selectedRows.insert(index.row());
+    }
+    QList<QString> scriptPaths = m_pControllerManager->getScriptPaths(m_pConfig);
+
+    foreach (int row, selectedRows) {
+        QString scriptName = m_ui.m_pScriptsTableWidget->item(row, 0)->text();
+        foreach (QString scriptPath, scriptPaths) {
+            QFileInfo file(scriptPath + "/" + scriptName);
+            if (file.exists()) {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(
+                    file.absoluteFilePath()));
+            }
+        }
     }
 }
