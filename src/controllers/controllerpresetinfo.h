@@ -70,8 +70,6 @@ class PresetInfoEnumerator {
     bool hasPresetInfo(const QString path);
 
     PresetInfo getPresetInfo(const QString path);
-    ControllerPresetPointer loadPreset(const QString& path,
-                                       const QStringList& presetPaths);
 
     // Return cached list of presets for this extension
     QList<PresetInfo> getPresets(const QString extension);

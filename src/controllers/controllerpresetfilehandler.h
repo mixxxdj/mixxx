@@ -16,6 +16,9 @@ class ControllerPresetFileHandler {
     ControllerPresetFileHandler() {};
     virtual ~ControllerPresetFileHandler() {};
 
+    static ControllerPresetPointer loadPreset(const QString& path,
+                                              const QStringList& presetPaths);
+
     /** load(QString,QString,bool)
      * Overloaded function for convenience
      * @param path The path to a controller preset XML file.

@@ -357,10 +357,9 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     }
 
     QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
-    QScopedPointer<PresetInfoEnumerator> pie(new PresetInfoEnumerator(m_pConfig));
 
-    ControllerPresetPointer pPreset = pie->loadPreset(
-        presetPath, ControllerManager::getPresetPaths(m_pConfig));
+    ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
+            presetPath, ControllerManager::getPresetPaths(m_pConfig));
 
     // TODO(rryan): We really should not load the preset here. We should load it
     // into the preferences GUI and then load it to the actual controller once

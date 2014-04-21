@@ -218,8 +218,9 @@ int ControllerManager::slotSetUpDevices() {
         presetBaseName = firstAvailableFilename(filenames, presetBaseName);
 
         ControllerPresetPointer pPreset =
-                pie->loadPreset(presetBaseName + pController->presetExtension(),
-                                getPresetPaths(m_pConfig));
+                ControllerPresetFileHandler::loadPreset(
+                    presetBaseName + pController->presetExtension(),
+                    getPresetPaths(m_pConfig));
 
         if (!loadPreset(pController, pPreset)) {
             // TODO(XXX) : auto load midi preset here.
