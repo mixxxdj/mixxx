@@ -213,7 +213,7 @@ int ControllerManager::slotSetUpDevices() {
         // Mixxx.
         QString filename = firstAvailableFilename(filenames, ofilename);
 
-        if (!loadPreset(pController, filename, true)) {
+        if (!loadPreset(pController, filename)) {
             // TODO(XXX) : auto load midi preset here.
             continue;
         }
@@ -338,8 +338,7 @@ bool ControllerManager::loadPreset(Controller* pController,
 }
 
 bool ControllerManager::loadPreset(Controller* pController,
-                                   const QString &filename,
-                                   const bool force) {
+                                   const QString& filename) {
     QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
     if (!handler) {
         qWarning() << "Failed to get a file handler for" << pController->getName()
@@ -379,8 +378,7 @@ bool ControllerManager::loadPreset(Controller* pController,
         return false;
     }
 
-    ControllerPresetPointer pPreset = handler->load(
-        filepath, filename, force);
+    ControllerPresetPointer pPreset = handler->load(filepath, filename);
     if (!pPreset) {
         qWarning() << "Unable to load preset" << filepath;
         return false;

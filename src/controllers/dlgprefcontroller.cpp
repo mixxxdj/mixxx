@@ -72,8 +72,8 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             m_pControllerManager, SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
             m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
-    connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
-            m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
+    connect(this, SIGNAL(loadPreset(Controller*, QString)),
+            m_pControllerManager, SLOT(loadPreset(Controller*, QString)));
 
     // Input mappings
     connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
@@ -361,7 +361,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
 
     // Applied on prefs close
-    emit(loadPreset(m_pController, presetPath, true));
+    emit(loadPreset(m_pController, presetPath));
     slotDirty();
 }
 

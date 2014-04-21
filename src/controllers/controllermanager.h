@@ -64,8 +64,7 @@ class ControllerManager : public QObject {
     void slotShutdown();
     bool loadPreset(Controller* pController,
                     ControllerPresetPointer preset);
-    bool loadPreset(Controller* pController, const QString &filename,
-                    const bool force);
+    bool loadPreset(Controller* pController, const QString &filename);
     // Calls poll() on all devices that have isPolling() true.
     void pollDevices();
     void startPolling();

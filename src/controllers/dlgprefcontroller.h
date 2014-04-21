@@ -52,7 +52,7 @@ class DlgPrefController : public DlgPreferencePage {
     void controllerEnabled(DlgPrefController*, bool);
     void openController(Controller* pController);
     void closeController(Controller* pController);
-    void loadPreset(Controller* pController, QString controllerName, bool force);
+    void loadPreset(Controller* pController, QString controllerName);
     void loadPreset(Controller* pController, ControllerPresetPointer pPreset);
     void mappingStarted();
     void mappingEnded();

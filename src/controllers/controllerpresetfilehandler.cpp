@@ -10,11 +10,10 @@
 #include "controllers/defs_controllers.h"
 
 ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
-                                                          const QString deviceName,
-                                                          const bool forceLoad) {
+                                                          const QString deviceName) {
     qDebug() << "Loading controller preset from" << path;
     ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
-                                           deviceName, forceLoad);
+                                           deviceName);
     if (pPreset) {
         pPreset->setFilePath(path);
     }
@@ -49,30 +48,16 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
 }
 
 QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
-                                                           const QString deviceName,
-                                                           const bool forceLoad) {
-    // All callers of this method as of 4/2012 provide forceLoad true so the
-    // deviceId check is not really used.
+                                                           const QString deviceName) {
+    Q_UNUSED(deviceName);
     if (root.isNull()) {
         return QDomElement();
     }
 
-    QDomElement controller = root.firstChildElement("controller");
-
-    // For each controller in the preset XML... (Only parse the <controller>
-    // block if its id matches our device name, otherwise keep looking at the
-    // next controller blocks....)
-    while (!controller.isNull()) {
-        // Get deviceid
-        QString device = controller.attribute("id", "");
-        if (device != rootDeviceName(deviceName) && !forceLoad) {
-            controller = controller.nextSiblingElement("controller");
-        } else {
-            qDebug() << device << "settings found";
-            break;
-        }
-    }
-    return controller;
+    // TODO(XXX): Controllers can have multiple <controller> blocks. We should
+    // expose this to the user and let them pick them as alternate "versions" of
+    // a preset.
+    return root.firstChildElement("controller");
 }
 
 void ControllerPresetFileHandler::addScriptFilesToPreset(

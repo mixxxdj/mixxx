@@ -15,13 +15,12 @@
 #define DEFAULT_OUTPUT_OFF  0x00
 
 ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
-                                                              const QString deviceName,
-                                                              const bool forceLoad) {
+                                                              const QString deviceName) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
 
-    QDomElement controller = getControllerNode(root, deviceName, forceLoad);
+    QDomElement controller = getControllerNode(root, deviceName);
     if (controller.isNull()) {
         return ControllerPresetPointer();
     }
