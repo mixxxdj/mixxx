@@ -148,7 +148,8 @@ RateControl::RateControl(const char* _group,
     m_pScratchEnable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
     m_pScratchEnable->set(0);
 
-    m_pScratch2Scratching = new ControlPushButton(ConfigKey(_group, "scratch2_scratching"));
+    m_pScratch2Scratching = new ControlPushButton(ConfigKey(_group,
+                                                            "scratch2_indicates_scratching"));
     // Enable by default, because it was always scratching befor introducing this control.
     m_pScratch2Scratching->set(1.0);
 
