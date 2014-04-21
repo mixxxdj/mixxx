@@ -20,6 +20,8 @@ class KeyControl : public EngineControl {
 
     double getKey();
 
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+
   private slots:
     void slotSetEngineKey(double);
     void slotFileKeyChanged(double);
@@ -37,7 +39,6 @@ class KeyControl : public EngineControl {
     double m_dPitchCompensationOldPitch;
 
     // ControlObjects that come from EngineBuffer
-    ControlObject* m_pPlayButton;
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
@@ -50,6 +51,7 @@ class KeyControl : public EngineControl {
 
     /** The current effective key of the engine */
     ControlObject* m_pEngineKey;
+    ControlPotmeter* m_pEngineKeyDistance;
 
     TrackPointer m_pTrack;
 };

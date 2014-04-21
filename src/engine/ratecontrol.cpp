@@ -15,15 +15,13 @@
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
-#ifdef __VINYLCONTROL__
-#include "engine/vinylcontrolcontrol.h"
-#endif
-
 #include <QtDebug>
 
-// Static default values for rate buttons (percents)
+// Static default values for rate buttons (percents). Note that these are not
+// actually used -- the preferences code sets the values that are stored in the
+// user's configuration. These are just fail safe defaults.
 double RateControl::m_dTemp = 4.00; //(eg. 4.00%)
-double RateControl::m_dTempSmall = 1.00;
+double RateControl::m_dTempSmall = 2.00;
 double RateControl::m_dPerm = 0.50;
 double RateControl::m_dPermSmall = 0.05;
 
@@ -45,7 +43,10 @@ RateControl::RateControl(const char* _group,
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
-    m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
+    // Allow rate slider to go out of bounds so that master sync rate
+    // adjustments are not capped.
+    m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"),
+                                        -1.0, 1.0, true);
 
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate

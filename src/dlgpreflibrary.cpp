@@ -89,9 +89,21 @@ void DlgPrefLibrary::slotExtraPlugins() {
     QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
 }
 
+void DlgPrefLibrary::slotResetToDefaults() {
+    checkBox_library_scan->setChecked(false);
+    checkbox_ID3_sync->setChecked(false);
+    checkBox_use_relative_path->setChecked(false);
+    checkBox_show_rhythmbox->setChecked(true);
+    checkBox_show_banshee->setChecked(true);
+    checkBox_show_itunes->setChecked(true);
+    checkBox_show_traktor->setChecked(true);
+    radioButton_dbclick_bottom->setChecked(false);
+    radioButton_dbclick_top->setChecked(false);
+    radioButton_dbclick_deck->setChecked(true);
+}
+
 void DlgPrefLibrary::slotUpdate() {
     initialiseDirList();
-    //Bundled songs stat tracking
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
@@ -106,6 +118,19 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
+
+    switch (m_pconfig->getValueString(ConfigKey("[Library]","TrackLoadAction"),
+                                      QString::number(LOAD_TRACK_DECK)).toInt()) {
+    case ADD_TRACK_BOTTOM:
+            radioButton_dbclick_bottom->setChecked(true);
+            break;
+    case ADD_TRACK_TOP:
+            radioButton_dbclick_top->setChecked(true);
+            break;
+    default:
+            radioButton_dbclick_deck->setChecked(true);
+            break;
+    }
 }
 
 void DlgPrefLibrary::slotAddDir() {
@@ -214,6 +239,16 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
+    int dbclick_status;
+    if (radioButton_dbclick_bottom->isChecked()) {
+            dbclick_status = ADD_TRACK_BOTTOM;
+    } else if (radioButton_dbclick_top->isChecked()) {
+            dbclick_status = ADD_TRACK_TOP;
+    } else {
+            dbclick_status = LOAD_TRACK_DECK;
+    }
+    m_pconfig->set(ConfigKey("[Library]","TrackLoadAction"),
+                ConfigValue(dbclick_status));
 
     m_pconfig->Save();
 }

@@ -18,23 +18,28 @@
 #define ENGINEDELAY_H
 
 #include "engine/engineobject.h"
+#include "configobject.h"
 
 class ControlPotmeter;
-
-const int kiMaxDelay = 20000;
+class ControlObjectSlave;
 
 class EngineDelay : public EngineObject {
     Q_OBJECT
   public:
-    EngineDelay(const char* group);
+    EngineDelay(const char* group, ConfigKey delayControl);
     virtual ~EngineDelay();
 
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
+  public slots:
+    void slotDelayChanged();
+
   private:
-    ControlPotmeter* m_pPotmeter;
+    ControlPotmeter* m_pDelayPot;
+    ControlObjectSlave* m_pSampleRate;
     CSAMPLE* m_pDelayBuffer;
-    int m_iDelay, m_iDelayPos;
+    int m_iDelayPos;
+    int m_iDelay;
 };
 
 #endif

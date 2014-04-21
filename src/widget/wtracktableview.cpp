@@ -17,6 +17,7 @@
 #include "soundsourceproxy.h"
 #include "playermanager.h"
 #include "util/dnd.h"
+#include "dlgpreflibrary.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -359,11 +360,25 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         return;
     }
-
-    TrackModel* trackModel = getTrackModel();
-    TrackPointer pTrack;
-    if (trackModel && (pTrack = trackModel->getTrack(index))) {
-        emit(loadTrack(pTrack));
+    // Read the current TrackLoadAction settings
+    int action = DlgPrefLibrary::LOAD_TRACK_DECK; // default action
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        action = m_pConfig->getValueString(ConfigKey("[Library]","TrackLoadAction")).toInt();
+    }
+    switch (action) {
+    case DlgPrefLibrary::ADD_TRACK_BOTTOM:
+            sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
+            break;
+    case DlgPrefLibrary::ADD_TRACK_TOP:
+            sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
+            break;
+    default: // load track to next available deck
+            TrackModel* trackModel = getTrackModel();
+            TrackPointer pTrack;
+            if (trackModel && (pTrack = trackModel->getTrack(index))) {
+                emit(loadTrack(pTrack));
+            }
+            break;
     }
 }
 

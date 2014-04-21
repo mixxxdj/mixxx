@@ -9,12 +9,14 @@
 
 #define TEMP_EXTENSION ".tmp"
 
-SongDownloader::SongDownloader(QObject* parent) : QObject(parent) {
+SongDownloader::SongDownloader(QObject* parent)
+    : QObject(parent),
+      m_pDownloadedFile(NULL),
+      m_pReply(NULL),
+      m_pRequest(NULL) {
     qDebug() << "SongDownloader constructed";
 
     m_pNetwork = new QNetworkAccessManager();
-    m_pDownloadedFile = NULL;
-    m_pRequest = NULL;
     //connect(m_pNetwork, SIGNAL(finished(QNetworkReply*)),
     //     this, SLOT(finishedSlot(QNetworkReply*)));
 }

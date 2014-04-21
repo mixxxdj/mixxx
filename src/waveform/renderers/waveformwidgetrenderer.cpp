@@ -16,7 +16,7 @@
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
-WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group)
+WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
       m_trackInfoObject(0),
       m_height(-1),
@@ -53,7 +53,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group)
     currentFrame = 0;
     m_lastFrameTime = 0;
     m_lastSystemFrameTime = 0;
-    for( int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 100; ++i) {
         m_lastSystemFramesTime[i] = 0;
         m_lastSystemFramesTime[i] = 0;
     }
@@ -63,7 +63,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group)
 WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     //qDebug() << "~WaveformWidgetRenderer";
 
-    for( int i = 0; i < m_rendererStack.size(); ++i)
+    for (int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
     delete m_pRateControlObject;
@@ -123,7 +123,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //vRince for the moment only more than one sample per pixel is supported
     //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
     double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
-    m_visualSamplePerPixel = math_max( 1.0, visualSamplePerPixel);
+    m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
 
     if (m_trackInfoObject) {
         m_audioSamplePerPixel = m_visualSamplePerPixel * m_trackInfoObject->getWaveform()->getAudioVisualRatio();
@@ -163,7 +163,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
              */
 }
 
-void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
+void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_lastSystemFrameTime = m_timer->restart();
@@ -198,9 +198,9 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     int systemMax = -1;
     int frameMax = -1;
-    for( int i = 0; i < 100; ++i) {
-        frameMax = math_max( frameMax, m_lastFramesTime[i]);
-        systemMax = math_max( systemMax, m_lastSystemFramesTime[i]);
+    for (int i = 0; i < 100; ++i) {
+        frameMax = math_max(frameMax, m_lastFramesTime[i]);
+        systemMax = math_max(systemMax, m_lastSystemFramesTime[i]);
     }
 
     //hud debug display
@@ -234,7 +234,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
 void WaveformWidgetRenderer::resize(int width, int height) {
     m_width = width;
     m_height = height;
-    for( int i = 0; i < m_rendererStack.size(); ++i) {
+    for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->setDirty(true);
         m_rendererStack[i]->onResize();
     }
@@ -250,16 +250,7 @@ void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& cont
 void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = zoom;
-    m_zoomFactor = math_max( s_waveformMinZoom, math_min( m_zoomFactor, s_waveformMaxZoom));
-}
-
-double WaveformWidgetRenderer::transformSampleIndexInRendererWorld(int sampleIndex) const {
-    const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
-    return transformPositionInRendererWorld(relativePosition);
-}
-
-double WaveformWidgetRenderer::transformPositionInRendererWorld(double position) const {
-    return m_trackPixelCount * (position - m_firstDisplayedPosition);
+    m_zoomFactor = math_max(s_waveformMinZoom, math_min(m_zoomFactor, s_waveformMaxZoom));
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
@@ -267,7 +258,7 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     //used to postpone first display until track sample is actually available
     m_trackSamples = -1.0;
 
-    for( int i = 0; i < m_rendererStack.size(); ++i) {
+    for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->onSetTrack();
     }
 }

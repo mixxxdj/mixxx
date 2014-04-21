@@ -38,7 +38,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 
     //Server type combobox
     comboBoxServerType->addItem(tr("Icecast 2"), SHOUTCAST_SERVER_ICECAST2);
-    comboBoxServerType->addItem(tr("Shoutcast"), SHOUTCAST_SERVER_SHOUTCAST);
+    comboBoxServerType->addItem(tr("Shoutcast 1"), SHOUTCAST_SERVER_SHOUTCAST);
     comboBoxServerType->addItem(tr("Icecast 1"), SHOUTCAST_SERVER_ICECAST1);
 
     int tmp_index = comboBoxServerType->findData(m_pConfig->getValueString(
@@ -92,7 +92,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     tmp_string = m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre"));
     if (tmp_string.isEmpty())
-        tmp_string = "Live Mix";
+        tmp_string = tr("Live Mix");
     stream_genre->setText(tmp_string);
 
     // Stream "public" checkbox
@@ -177,13 +177,37 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     slotApply();
 }
 
-DlgPrefShoutcast::~DlgPrefShoutcast()
-{
+DlgPrefShoutcast::~DlgPrefShoutcast() {
     delete m_pUpdateShoutcastFromPrefs;
 }
 
-void DlgPrefShoutcast::slotUpdate()
-{
+void DlgPrefShoutcast::slotResetToDefaults() {
+    // Make sure to keep these values in sync with the constructor.
+    enableLiveBroadcasting->setChecked(false);
+    comboBoxServerType->setCurrentIndex(0);
+    mountpoint->setText("");
+    host->setText("");
+    port->setText("8000");
+    login->setText("");
+    password->setText("");
+    stream_name->setText("");
+    stream_website->setText(MIXXX_WEBSITE_URL);
+    stream_desc->setText(tr("This stream is online for testing purposes!"));
+    stream_genre->setText(tr("Live Mix"));
+    stream_public->setChecked(false);
+    ogg_dynamicupdate->setChecked(false);
+    comboBoxEncodingBitrate->setCurrentIndex(comboBoxEncodingBitrate->findData(
+            SHOUTCAST_BITRATE_128KBPS));
+    comboBoxEncodingFormat->setCurrentIndex(0);
+    comboBoxEncodingChannels->setCurrentIndex(0);
+    enableUtf8Metadata->setChecked(false);
+    enableCustomMetadata->setChecked(false);
+    metadata_format->setText(tr("$artist - $title"));
+    custom_artist->setText("");
+    custom_title->setText("");
+}
+
+void DlgPrefShoutcast::slotUpdate() {
     enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
 }

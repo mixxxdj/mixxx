@@ -16,7 +16,7 @@
 	Under the following conditions:
 	Attribution - You must attribute the work in the manner specified by the author or licensor
 	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor, 
+	A attribution should include the following: The name of the author and/or licensor,
 	the title of the work, the URL that is associated with the work.
 
 	Share Alike - If you alter, transform, or build upon this work, you may distribute
@@ -66,7 +66,7 @@
 		<attribute config_key="[Spinny2],show_spinny">1</attribute>
 		<attribute config_key="[Samplers],show_samplers">0</attribute>
 		<attribute config_key="[Microphone],show_microphone">0</attribute>
-		<attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+		<attribute config_key="[VinylControl],show_vinylcontrol">0</attribute>
 		<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 	</attributes>
 	</manifest>
@@ -3271,7 +3271,7 @@
 
 				<!--Spacing between treeview and searchbar-->
 				QTreeView { margin: 6px 0px 0px 0px; }
-				
+
 				<!--triangle for closed/opened branches in treeview-->
 				QTreeView { show-decoration-selected: 0; } <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
 				QTreeView::branch:has-children:!has-siblings:closed,
@@ -3289,6 +3289,7 @@
 					<Splitter>
 						<Size>me,me</Size>
 						<Style></Style>
+                                                <SplitSizesConfigKey>[Deere1920x1080-FullHD],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<SplitSizes>1,10</SplitSizes>
 						<Children>
 							<WidgetGroup>
@@ -3327,7 +3328,7 @@
 													-->
 													<Text>
 														<TooltipId>text</TooltipId>
-														<Style>QLabel { 
+														<Style>QLabel {
 														font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 														background-color: transparent;
 														color: #ACACAC;
@@ -3453,7 +3454,7 @@
 												border-bottom: 1px solid #656565;
 												background: transparent;
 												}
-												</Style>												
+												</Style>
 												<Children>
 												<!--
 												**********************************************
@@ -3470,7 +3471,7 @@
 														<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 													</Connection>
 												</StatusLight>
-					
+
 												<!--
 												**********************************************
 												Visual - Volume level display
@@ -3704,7 +3705,7 @@
 			</WidgetGroup>
 		</Children>
 		<Connection>
-			<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+			<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 			<BindProperty>visible</BindProperty>
 		</Connection>
 	</WidgetGroup>
@@ -3935,7 +3936,7 @@
 						</State>
 						<Pos>253,104</Pos>
 						<Connection>
-							<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+							<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 						</Connection>
 					</PushButton>
 

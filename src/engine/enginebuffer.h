@@ -20,6 +20,7 @@
 
 #include <QMutex>
 #include <QAtomicInt>
+#include <gtest/gtest_prod.h>
 
 #include "defs.h"
 #include "engine/engineobject.h"
@@ -103,6 +104,12 @@ class EngineBuffer : public EngineObject {
         SEEK_PHASE
     };
 
+    enum KeylockEngine {
+        SOUNDTOUCH,
+        RUBBERBAND,
+        KEYLOCK_ENGINE_COUNT,
+    };
+
     EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
@@ -114,7 +121,7 @@ class EngineBuffer : public EngineObject {
     void addControl(EngineControl* pControl);
 
     // Return the current rate (not thread-safe)
-    double getRate();
+    double getSpeed();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)
@@ -136,6 +143,8 @@ class EngineBuffer : public EngineObject {
     double getVisualPlayPos();
     double getTrackSamples();
 
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
 
@@ -143,7 +152,18 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScale);
 
     // For dependency injection of fake tracks.
-    void loadFakeTrack();
+    TrackPointer loadFakeTrack();
+
+    static QString getKeylockEngineName(KeylockEngine engine) {
+        switch (engine) {
+        case SOUNDTOUCH:
+            return tr("Soundtouch (faster)");
+        case RUBBERBAND:
+            return tr("Rubberband (better)");
+        default:
+            return tr("Unknown (bad value)");
+        }
+    }
 
   public slots:
     void slotControlPlayRequest(double);
@@ -156,6 +176,7 @@ class EngineBuffer : public EngineObject {
     void slotControlSeekAbs(double);
     void slotControlSeekExact(double);
     void slotControlSlip(double);
+    void slotKeylockEngineChanged(double);
 
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
@@ -175,6 +196,8 @@ class EngineBuffer : public EngineObject {
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
+    // Fired when passthrough mode is enabled or disabled.
+    void slotPassthroughChanged(double v);
 
   private:
     void enablePitchAndTimeScaling(bool bEnable);
@@ -208,6 +231,8 @@ class EngineBuffer : public EngineObject {
     ConfigObject<ConfigValue>* m_pConfig;
 
     LoopingControl* m_pLoopingControl;
+    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
@@ -287,7 +312,9 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
+    ControlObjectSlave* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 
@@ -305,6 +332,9 @@ class EngineBuffer : public EngineObject {
     // Object used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
     EngineBufferScaleRubberBand* m_pScaleRB;
+    // The keylock engine is configurable, so it could flip flop between
+    // ScaleST and ScaleRB during a single callback.
+    EngineBufferScale* volatile m_pScaleKeylock;
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

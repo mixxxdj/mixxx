@@ -23,13 +23,15 @@
 #include "track/keyutils.h"
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
-        : EngineBufferScale(),
-          m_pReadAheadManager(pReadAheadManager) {
-    m_dRate = 1.0;
-    m_dOldRate = 1.0;
-    m_dCurSampleIndex = 0.0;
-    m_dNextSampleIndex = 0.0;
-
+    : EngineBufferScale(),
+      m_bBackwards(false),
+      m_bClear(false),
+      m_dRate(1.0),
+      m_dOldRate(1.0),
+      m_pReadAheadManager(pReadAheadManager),
+      m_dCurSampleIndex(0.0),
+      m_dNextSampleIndex(0.0)
+{
     for (int i=0; i<2; i++)
         m_fPrevSample[i] = 0.0f;
 
@@ -40,7 +42,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
     buffer_count=0;*/
-    SampleUtil::applyGain(buffer_int, 0.0, kiLinearScaleReadAheadLength);
+    SampleUtil::clear(buffer_int, kiLinearScaleReadAheadLength);
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -235,7 +237,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         *samples_read += read_samples;
 
         // Zero the remaining samples if we didn't fill them.
-        SampleUtil::applyGain(write_buf, 0.0f, samples_needed);
+        SampleUtil::clear(write_buf, samples_needed);
 
         // update our class members so next time we need to scale it's ok. we do
         // blow away the fractional sample position here
@@ -377,7 +379,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         i +=2 ;
     }
 
-    SampleUtil::applyGain(&buf[i], 0.0f, buf_size - i);
+    SampleUtil::clear(&buf[i], buf_size - i);
 
     return buf;
 }

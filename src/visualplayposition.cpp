@@ -15,6 +15,9 @@ VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
           m_key(key) {
     m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
+    m_audioBufferSize->connectValueChanged(
+            this, SLOT(slotAudioBufferSizeChanged(double)));
+    m_dAudioBufferSize = m_audioBufferSize->get();
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
@@ -50,7 +53,7 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transfered to the DAC
         // When the next display frame is displayed
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferSize->get() / 1000;
+        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize / 1000;
         //qDebug() << "delta Pos" << playPos - m_playPosOld << offset;
         //m_playPosOld = playPos;
         return playPos;
@@ -69,7 +72,7 @@ void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition, doub
         int dacFromNow = usElapsed - data.m_callbackEntrytoDac;
         int offset = dacFromNow - usFromNow;
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferSize->get() / 1000;
+        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize / 1000;
         *playPosition = playPos;
         *slipPosition = data.m_pSlipPosition;
     }
@@ -82,6 +85,10 @@ double VisualPlayPosition::getEnginePlayPos() {
     } else {
         return -1;
     }
+}
+
+void VisualPlayPosition::slotAudioBufferSizeChanged(double size) {
+    m_dAudioBufferSize = size;
 }
 
 //static

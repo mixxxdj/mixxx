@@ -11,7 +11,7 @@
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 
-HSVWaveformWidget::HSVWaveformWidget( const char* group, QWidget* parent)
+HSVWaveformWidget::HSVWaveformWidget(const char* group, QWidget* parent)
     : QWidget(parent),
       WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
@@ -35,7 +35,7 @@ void HSVWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(this);
 }
 
-void HSVWaveformWidget::paintEvent( QPaintEvent* event) {
+void HSVWaveformWidget::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     draw(&painter,event);
 }

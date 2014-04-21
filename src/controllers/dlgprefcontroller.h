@@ -9,9 +9,13 @@
 #define DLGPREFCONTROLLER_H_
 
 #include <QHash>
+#include <QSortFilterProxyModel>
 
+#include "controllers/controllerinputmappingtablemodel.h"
+#include "controllers/controlleroutputmappingtablemodel.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
+#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 #include "preferences/dlgpreferencepage.h"
@@ -29,48 +33,55 @@ class DlgPrefController : public DlgPreferencePage {
     virtual ~DlgPrefController();
 
   public slots:
-    // Called when the OK button is pressed.
-    virtual void slotApply();
-    // Called when the dialog is displayed.
-    virtual void slotUpdate();
-    virtual void slotDeviceState(int state);
-    // Loads the specified XML preset.
+    // Called when we should apply / save our changes.
+    void slotApply();
+    // Called when we should cancel the changes made.
+    void slotCancel();
+    // Called when preference dialog (not this dialog) is displayed.
+    void slotUpdate();
+    // Called when the user toggles the enabled checkbox.
+    void slotEnableDevice(bool enable);
+    // Called when the user selects a preset from the combobox.
     void slotLoadPreset(int index);
     // Mark that we need to apply the settings.
-    void slotDirty ();
+    void slotDirty();
     // Reload the mappings in the dropdown dialog
     void enumeratePresets();
 
   signals:
-    void deviceStateChanged(DlgPrefController*, bool);
+    void controllerEnabled(DlgPrefController*, bool);
     void openController(Controller* pController);
     void closeController(Controller* pController);
     void loadPreset(Controller* pController, QString controllerName, bool force);
-
-  protected:
-    Controller* getController() const {
-        return m_pController;
-    }
-    ControllerManager* getControllerManager() const {
-        return m_pControllerManager;
-    }
-    void addWidgetToLayout(QWidget* pWidget);
-    bool isEnabled() const {
-        return m_ui.chkEnabledDevice->isChecked();
-    }
-    Ui::DlgPrefControllerDlg& getUi() {
-        return m_ui;
-    }
+    void loadPreset(Controller* pController, ControllerPresetPointer pPreset);
+    void mappingStarted();
+    void mappingEnded();;
 
   private slots:
     void slotPresetLoaded(ControllerPresetPointer preset);
 
+    // Input mappings
+    void addInputMapping();
+    void showLearningWizard();
+    void removeInputMappings();
+    void clearAllInputMappings();
+
+    // Output mappings
+    void addOutputMapping();
+    void removeOutputMappings();
+    void clearAllOutputMappings();
+
+    void midiInputMappingsLearned(const MidiInputMappings& mappings);
+
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
+    QString presetName(const ControllerPresetPointer pPreset) const;
+    QString presetAuthor(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
     void savePreset(QString path);
+    void initTableView(QTableView* pTable);
 
     void enableDevice();
     void disableDevice();
@@ -79,8 +90,12 @@ class DlgPrefController : public DlgPreferencePage {
     ConfigObject<ConfigValue>* m_pConfig;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
-    QGridLayout* m_pLayout;
-    QSpacerItem* m_pVerticalSpacer;
+    DlgControllerLearning* m_pDlgControllerLearning;
+    ControllerPresetPointer m_pPreset;
+    ControllerInputMappingTableModel* m_pInputTableModel;
+    QSortFilterProxyModel* m_pInputProxyModel;
+    ControllerOutputMappingTableModel* m_pOutputTableModel;
+    QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
 };
 

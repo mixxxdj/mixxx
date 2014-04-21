@@ -31,6 +31,9 @@
 #include "soundsourcemp3.h"
 #endif
 #include "soundsourceoggvorbis.h"
+#ifdef __OPUS__
+#include "soundsourceopus.h"
+#endif
 #ifdef __COREAUDIO__
 #include "soundsourcecoreaudio.h"
 #endif
@@ -98,6 +101,10 @@ void SoundSourceProxy::loadPlugins() {
         pluginDirs << QDir(pluginPath);
     }
 
+    const QString dataLocation = QDesktopServices::storageLocation(
+            QDesktopServices::DataLocation);
+    const QString applicationPath = QCoreApplication::applicationDirPath();
+
 #ifdef __LINUX__
     // TODO(rryan): Why can't we use applicationDirPath() and assume it's in the
     // 'bin' folder of $PREFIX, so we just traverse
@@ -107,12 +114,22 @@ void SoundSourceProxy::loadPlugins() {
         pluginDirs << libPluginDir;
     }
 
-    QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    QDir dataPluginDir(dataLocation);
     if (dataPluginDir.cd("plugins") && dataPluginDir.cd("soundsource")) {
         pluginDirs << dataPluginDir;
     }
+
+    // For people who build from source.
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("lin32_build") && developer32Root.cd("plugins")) {
+        pluginDirs << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("lin64_build") && developer64Root.cd("plugins")) {
+        pluginDirs << developer64Root.absolutePath();
+    }
 #elif __WINDOWS__
-    QDir appPluginDir(QCoreApplication::applicationDirPath());
+    QDir appPluginDir(applicationPath);
     if (appPluginDir.cd("plugins") && appPluginDir.cd("soundsource")) {
         pluginDirs << appPluginDir;
     }
@@ -121,12 +138,22 @@ void SoundSourceProxy::loadPlugins() {
     // TODO(XXX): Our SCons bundle target doesn't handle plugin subdirectories
     // :( so we can't do:
     //blah/Mixxx.app/Contents/PlugIns/soundsource
-    QDir bundlePluginDir(QCoreApplication::applicationDirPath());
+    QDir bundlePluginDir(applicationPath);
     if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
         pluginDirs << bundlePluginDir;
     }
 
-    QDir dataPluginDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    // For people who build from source.
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("osx32_build") && developer32Root.cd("plugins")) {
+        pluginDirs << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("osx64_build") && developer64Root.cd("plugins")) {
+        pluginDirs << developer64Root.absolutePath();
+    }
+
+    QDir dataPluginDir(dataLocation);
     if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("soundsource")) {
         pluginDirs << dataPluginDir;
     }
@@ -153,6 +180,10 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #endif
     if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
         return new SoundSourceOggVorbis(qFilename);
+#ifdef __OPUS__
+    } else if (SoundSourceOpus::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceOpus(qFilename);
+#endif
 #ifdef __MAD__
     } else if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
         return new SoundSourceMp3(qFilename);
@@ -341,6 +372,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
 #endif
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
+#ifdef __OPUS__
+    supportedFileExtensions.append(SoundSourceOpus::supportedFileExtensions());
+#endif
 #ifdef __SNDFILE__
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
 #endif

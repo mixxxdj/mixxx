@@ -50,17 +50,16 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
     connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
-    connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
 
     loadSettings();
+    slotUpdate();
+    slotApply();
 }
 
-DlgPrefEQ::~DlgPrefEQ()
-{
+DlgPrefEQ::~DlgPrefEQ() {
 }
 
-void DlgPrefEQ::loadSettings()
-{
+void DlgPrefEQ::loadSettings() {
     QString highEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency"));
     QString highEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"));
     QString lowEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency"));
@@ -97,9 +96,6 @@ void DlgPrefEQ::loadSettings()
     // Default internal EQs to enabled.
     CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes"));
-
-    slotUpdate();
-    slotApply();
 }
 
 void DlgPrefEQ::setDefaultShelves()
@@ -110,11 +106,11 @@ void DlgPrefEQ::setDefaultShelves()
     m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"), ConfigValue(250.0));
 }
 
-/** Resets settings */
-void DlgPrefEQ::reset() {
+void DlgPrefEQ::slotResetToDefaults() {
     setDefaultShelves();
     CheckBoxEnbEQ->setChecked(true);
     CheckBoxLoFi->setChecked(true);
+    setDefaultShelves();
     loadSettings();
     slotUpdate();
     slotApply();

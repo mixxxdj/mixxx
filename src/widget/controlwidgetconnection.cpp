@@ -70,10 +70,10 @@ QString ControlParameterWidgetConnection::toDebugString() const {
                  emitOptionToString(m_emitOption));
 }
 
-void ControlParameterWidgetConnection::slotControlValueChanged(double v) {
+void ControlParameterWidgetConnection::slotControlValueChanged(double value) {
     if (m_directionOption & DIR_TO_WIDGET) {
-        double parameter = getControlParameterForValue(v);
-        m_pWidget->onConnectedControlValueChanged(parameter);
+        double parameter = getControlParameterForValue(value);
+        m_pWidget->onConnectedControlChanged(parameter, value);
     }
 }
 

@@ -138,21 +138,8 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
     const double gain = (lastVisualIndex - firstVisualIndex) /
             (double)m_waveformRenderer->getWidth();
 
-    // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0);
-    if (m_pLowFilterControlObject &&
-            m_pMidFilterControlObject &&
-            m_pHighFilterControlObject) {
-        lowGain = m_pLowFilterControlObject->get();
-        midGain = m_pMidFilterControlObject->get();
-        highGain = m_pHighFilterControlObject->get();
-    }
-
-    //apply separate visual gain
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
-    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
-    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+    getGains(NULL, &lowGain, &midGain, &highGain);
 
     //NOTE(vrince) Please help me find a better name for "channelSeparation"
     //this variable stand for merged channel ... 1 = merged & 2 = separated
@@ -294,10 +281,10 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     painter->resetTransform();
 
     //visual gain
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
+    float allGain(1.0);
+    getGains(&allGain, NULL, NULL, NULL);
 
-    double heightGain = visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0;
+    double heightGain = allGain * (double)m_waveformRenderer->getHeight()/255.0;
     if (m_alignment == Qt::AlignTop) {
         painter->translate(0.0, 0.0);
         painter->scale(1.0, heightGain);
@@ -310,8 +297,8 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     }
 
     //draw reference line
-    if( m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_axesColor);
+    if (m_alignment == Qt::AlignCenter) {
+        painter->setPen(m_pColors->getAxesColor());
         painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
     }
 

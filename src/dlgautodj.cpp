@@ -26,7 +26,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
-          m_posThreshold2(1.0f) {
+          m_posThreshold2(1.0f),
+          m_fadeDuration1(0.0f),
+          m_fadeDuration2(0.0f) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -105,7 +107,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(m_pCOTEnabledAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(enableAutoDJCo(double)));
 
-    // playposition is from -0.14 to + 1.14
+    // playposition is from 0 to 1 (though out of range sets are allowed)
     m_pCOPlayPos1 = new ControlObjectThread("[Channel1]", "playposition");
     m_pCOPlayPos2 = new ControlObjectThread("[Channel2]", "playposition");
     m_pCOPlay1 = new ControlObjectThread("[Channel1]", "play");

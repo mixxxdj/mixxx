@@ -37,20 +37,14 @@ void VampAnalyser::initializePluginPaths() {
     QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
             : QStringList();
 
-    const QString homeLocation = QDesktopServices::storageLocation(
-            QDesktopServices::HomeLocation);
     const QString dataLocation = QDesktopServices::storageLocation(
             QDesktopServices::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __WINDOWS__
     QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins")) {
-        if (winVampPath.cd("vamp")) {
-            pathElements << winVampPath.absolutePath().replace("/","\\");
-        } else {
-            qDebug() << winVampPath.absolutePath() << "does not exist!";
-        }
+    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
+        pathElements << winVampPath.absolutePath().replace("/","\\");
     } else {
         qDebug() << winVampPath.absolutePath() << "does not exist!";
     }
@@ -110,11 +104,20 @@ void VampAnalyser::initializePluginPaths() {
 #endif
 }
 
-VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig) {
-    m_pluginbuf = new CSAMPLE*[2];
-    m_plugin = NULL;
-    m_bDoNotAnalyseMoreSamples = false;
-    m_pConfig = pconfig;
+VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig)
+    : m_iSampleCount(0),
+      m_iOUT(0),
+      m_iRemainingSamples(0),
+      m_iBlockSize(0),
+      m_iStepSize(0),
+      m_rate(0),
+      m_iOutput(0),
+      m_pluginbuf(new CSAMPLE*[2]),
+      m_plugin(NULL),
+      m_bDoNotAnalyseMoreSamples(false),
+      m_FastAnalysisEnabled(false),
+      m_iMaxSamplesToAnalyse(0),
+      m_pConfig(pconfig) {
 }
 
 VampAnalyser::~VampAnalyser() {
@@ -124,13 +127,8 @@ VampAnalyser::~VampAnalyser() {
 
 bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
                         const int samplerate, const int TotalSamples, bool bFastAnalysis) {
-    m_iOutput = 0;
-    m_rate = 0;
-    m_iMaxSamplesToAnalyse = 0;
     m_iRemainingSamples = TotalSamples;
     m_rate = samplerate;
-    m_iSampleCount = 0;
-    m_iOUT = 0;
 
     if (samplerate <= 0.0) {
         qDebug() << "VampAnalyser: Track has non-positive samplerate";
