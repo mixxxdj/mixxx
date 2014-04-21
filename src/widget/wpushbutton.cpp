@@ -91,7 +91,6 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                     // Default is center.
                     m_align.replace(iState, Qt::AlignCenter);
                 }
-                m_style.replace(iState, context.selectString(state, "Style"));
             }
         }
         state = state.nextSibling();
@@ -194,7 +193,6 @@ void WPushButton::setStates(int iStates) {
     m_pressedPixmaps.resize(iStates);
     m_unpressedPixmaps.resize(iStates);
     m_text.resize(iStates);
-    m_style.resize(iStates);
     m_align.resize(iStates);
 }
 
@@ -289,6 +287,12 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     if (!text.isEmpty()) {
         p.drawText(rect(), m_align.at(idx), text);
     }
+
+    setProperty("displayValue", idx);
+    // According to http://stackoverflow.com/a/3822243 this is the least
+    // expensive way to restyle just this widget.
+    style()->unpolish(this);
+    style()->polish(this);
 }
 
 void WPushButton::mousePressEvent(QMouseEvent * e) {

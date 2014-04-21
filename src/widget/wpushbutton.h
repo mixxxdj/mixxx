@@ -48,6 +48,22 @@ class WPushButton : public WWidget {
         return m_bPressed;
     }
 
+    // The displayValue property is used to restyle the pushbutton with CSS.
+    // The declaration #MyButton[displayValue="0"] { } will define the style
+    // when the widget is in state 0.  This allows for effects like reversing
+    // background and foreground colors to indicate enabled/disabled state.
+    Q_PROPERTY(int displayValue READ readDisplayValue WRITE setDisplayValue)
+
+    int readDisplayValue() const {
+        double value = getControlParameterDisplay();
+        int idx = static_cast<int>(value) % m_iNoStates;
+        return idx;
+    }
+
+    void setDisplayValue(int val) {
+        setControlParameter(static_cast<double>(val));
+    }
+
     void setup(QDomNode node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
@@ -78,7 +94,6 @@ class WPushButton : public WWidget {
     // Array of associated pixmaps
     int m_iNoStates;
     QVector<QString> m_text;
-    QVector<QString> m_style;
     QVector<PaintablePointer> m_pressedPixmaps;
     QVector<PaintablePointer> m_unpressedPixmaps;
 
