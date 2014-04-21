@@ -132,7 +132,7 @@
      <item row="8" column="0">
       <widget class="QLabel" name="keylockLabel">
        <property name="text">
-        <string>Keylock / Pitch-Bending Engine</string>
+        <string>Keylock/Pitch-Bending Engine</string>
        </property>
        <property name="buddy">
         <cstring>keylockComboBox</cstring>
