@@ -694,16 +694,14 @@ void DlgPrefController::openScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.insert(index.row());
     }
-    QList<QString> scriptPaths = m_pControllerManager->getPresetPaths(m_pConfig);
+    QList<QString> scriptPaths = ControllerManager::getPresetPaths(m_pConfig);
 
     foreach (int row, selectedRows) {
         QString scriptName = m_ui.m_pScriptsTableWidget->item(row, 0)->text();
-        foreach (QString scriptPath, scriptPaths) {
-            QFileInfo file(scriptPath + "/" + scriptName);
-            if (file.exists()) {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(
-                    file.absoluteFilePath()));
-            }
+
+        QString scriptPath = ControllerManager::getAbsolutePath(scriptName, scriptPaths);
+        if (!scriptPath.isEmpty()) {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(scriptPath));
         }
     }
 }
