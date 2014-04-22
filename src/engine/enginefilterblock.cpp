@@ -180,64 +180,62 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
 
     setFilters();
 
-    // If the user has never touched the Eq controls (they are still at zero)
-    // Then pass through.  As soon as the user twiddles one, actually activate
-    // the EQ code and crossfade to it.  This will save CPU if the user never
-    // uses EQ but also doesn't know to disable it.
-    if (m_eqNeverTouched) {
-        if (fLow != 1. || fMid != 1. || fHigh != 1.) {
-            // First process the new EQ'd signals.
-            low->process(pIn, m_pLowBuf, iBufferSize);
-            band->process(pIn, m_pBandBuf, iBufferSize);
-            high->process(pIn, m_pHighBuf, iBufferSize);
-            memcpy(m_pTemp4, pIn, iBufferSize * sizeof(CSAMPLE));
-
-            // Build the new EQ'd buffer in pOutput.
-            SampleUtil::copy3WithGain(m_pTemp4,
-                                      m_pLowBuf, fLow,
-                                      m_pBandBuf, fMid,
-                                      m_pHighBuf, fHigh, iBufferSize);
-
-            // Fade from unaffected (pIn) to the EQ'd buffer (now in pOutput).
-            SampleUtil::linearCrossfadeBuffers(m_pTemp4, pIn, m_pTemp4,
-                                               iBufferSize);
-
-            m_eqNeverTouched = false;
-        } else {
-            SampleUtil::copyWithGain(m_pTemp4, pIn, 1, iBufferSize);
-        }
-    } else {
+    // Process the new EQ'd signals.
+    // They use up to 16 frames history so in case we are just starting,
+    // 16 frames are junk, this is handled by ramp_delay
+    int ramp_delay = 0;
+    if (fLow || old_low) {
         low->process(pIn, m_pLowBuf, iBufferSize);
+        if(old_low == 0) {
+            ramp_delay = 30;
+        }
+    }
+    if (fMid || old_mid) {
         band->process(pIn, m_pBandBuf, iBufferSize);
+        if(old_mid== 0) {
+            ramp_delay = 30;
+        }
+    }
+    if (fHigh || old_high) {
         high->process(pIn, m_pHighBuf, iBufferSize);
-
-        if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
-            SampleUtil::copy3WithRampingGain(m_pTemp4,
-                                             m_pLowBuf, old_low, fLow,
-                                             m_pBandBuf, old_mid, fMid,
-                                             m_pHighBuf, old_high, fHigh,
-                                             iBufferSize);
-        } else {
-            SampleUtil::copy3WithGain(m_pTemp4,
-                              m_pLowBuf, fLow,
-                              m_pBandBuf, fMid,
-                              m_pHighBuf, fHigh, iBufferSize);
+        if(old_high == 0) {
+            ramp_delay = 30;
         }
     }
 
-    if (fDry != old_dry) {
-        SampleUtil::copy3WithRampingGain(pOutput,
-                                         m_pTemp4, 1.0f, 1.0f,
-                                         m_pTemp4, 0, 0,
+    if (ramp_delay) {
+        // first use old gains
+        SampleUtil::copy4WithGain(pOutput,
+                                  pIn, old_dry,
+                                  m_pLowBuf, old_low,
+                                  m_pBandBuf, old_mid,
+                                  m_pHighBuf, old_high,
+                                  ramp_delay);
+        // Now ramp the remaining frames
+        SampleUtil::copy4WithRampingGain(&pOutput[ramp_delay],
+                                         &pIn[ramp_delay], old_dry, fDry,
+                                         &m_pLowBuf[ramp_delay], old_low, fLow,
+                                         &m_pBandBuf[ramp_delay], old_mid, fMid,
+                                         &m_pHighBuf[ramp_delay], old_high, fHigh,
+                                         iBufferSize - ramp_delay);
+    } else if (fLow != old_low ||
+            fMid != old_mid ||
+            fHigh != old_high ||
+            fDry != old_dry) {
+        SampleUtil::copy4WithRampingGain(pOutput,
                                          pIn, old_dry, fDry,
+                                         m_pLowBuf, old_low, fLow,
+                                         m_pBandBuf, old_mid, fMid,
+                                         m_pHighBuf, old_high, fHigh,
                                          iBufferSize);
     } else {
-        SampleUtil::copy2WithGain(pOutput,
-                      m_pTemp4, 1.0f,
-                      pIn, fDry, iBufferSize);
+        SampleUtil::copy4WithGain(pOutput,
+                                  pIn, fDry,
+                                  m_pLowBuf, fLow,
+                                  m_pBandBuf, fMid,
+                                  m_pHighBuf, fHigh,
+                                  iBufferSize);
     }
-
-    //qDebug() << "EngineFilterBlock::process()" << fDry;
 
     old_low = fLow;
     old_mid = fMid;
