@@ -38,6 +38,12 @@ class ControllerManager : public QObject {
 
     static QList<QString> getPresetPaths(ConfigObject<ConfigValue>* pConfig);
 
+    // If pathOrFilename is an absolute path, returns it. If it is a relative
+    // path and it is contained within any of the directories in presetPaths,
+    // returns the path to the first file in the path that exists.
+    static QString getAbsolutePath(const QString& pathOrFilename,
+                                   const QStringList& presetPaths);
+
     bool importScript(const QString& scriptPath, QString* newScriptFileName);
     static bool checksumFile(const QString& filename, quint16* pChecksum);
 
