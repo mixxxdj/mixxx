@@ -85,12 +85,6 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp4 = new CSAMPLE[MAX_BUFFER_LEN];
-
-    memset(m_pLowBuf, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pBandBuf, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pHighBuf, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp4, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     old_low = old_mid = old_high = 1.0;
 }
@@ -100,7 +94,6 @@ EngineFilterBlock::~EngineFilterBlock()
     delete high;
     delete band;
     delete low;
-    delete [] m_pTemp4;
     delete [] m_pHighBuf;
     delete [] m_pBandBuf;
     delete [] m_pLowBuf;
