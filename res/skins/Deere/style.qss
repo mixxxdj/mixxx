@@ -36,6 +36,11 @@
   margin: 0px;
 }
 
+#Sampler {
+  border: 1px solid #555;
+  border-left:none;
+}
+
 /*******************************************************************************
  ** END BORDER *****************************************************************
  *******************************************************************************/
@@ -130,8 +135,13 @@ WLabel {
   padding: 2px;
 }
 
-#ArtistGutter WLabel, #BPMGutter WLabel, #PositionGutter WLabel {
+#DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
   font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+}
+
+#SamplerTextRow #ArtistGutter WLabel, #SamplerTextRow #BPMGutter WLabel, #SamplerTextRow #PositionGutter WLabel {
+  font: bold 12pt/14pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
 }
 
@@ -139,8 +149,14 @@ WLabel {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
+#DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
   font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#SamplerTextRow #TitleGutter WLabel {
+  font: bold 14pt/12pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
   text-align: left;
 }
@@ -217,6 +233,10 @@ WLabel {
 
 #Deck4, #DeckMixer4 {
   background-color: pink;
+}
+
+#Sampler {
+  background-color: cyan;
 }
 
 #LibraryContainer {
