@@ -36,10 +36,6 @@ class MidiController : public Controller {
 
     virtual bool savePreset(const QString fileName) const;
 
-    virtual ControllerPresetFileHandler* getFileHandler() const {
-        return new MidiControllerPresetFileHandler();
-    }
-
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 

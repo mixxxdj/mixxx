@@ -88,16 +88,10 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     }
 
     if (clipped) {
-        if (m_ctrlPeakIndicator->get() != 1.) {
-            m_ctrlPeakIndicator->set(1.);
-        }
+        m_ctrlPeakIndicator->set(1.);
         m_peakDuration = PEAK_DURATION * sampleRate / iBufferSize / 2000;
-    }
-
-    if (m_peakDuration <= 0) {
-        if (m_ctrlPeakIndicator->get() == 1.) {
-            m_ctrlPeakIndicator->set(0.);
-        }
+    } else if (m_peakDuration <= 0) {
+        m_ctrlPeakIndicator->set(0.);
     } else {
         --m_peakDuration;
     }
