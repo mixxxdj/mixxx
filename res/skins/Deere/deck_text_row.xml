@@ -7,7 +7,7 @@
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>TextRow</ObjectName>
+    <ObjectName>DeckTextRow</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
