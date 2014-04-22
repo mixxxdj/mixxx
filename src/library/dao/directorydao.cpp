@@ -146,12 +146,13 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     }
 
     query.prepare(QString("SELECT location FROM track_locations"));
-    if (query.exec()) {
-        while (query.next()) {
-            qDebug() << query.value(0).toString();
-        }
-    } else {
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not select track locations";
+        return QSet<int>();
+    }
+
+    while (query.next()) {
+        qDebug() << query.value(0).toString();
     }
 
     qDebug() << "Relocated tracks:" << ids.size();
