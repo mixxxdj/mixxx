@@ -446,4 +446,12 @@ void Tooltips::addStandardTooltips() {
     add("time")
             << tr("Clock")
             << tr("Displays the current time.");
+
+    add("audio_latency_usage")
+            << tr("Fraction of latency used for audio processing")
+            << tr("A high value indicates that audible underflows are likely")
+            << tr("You should not enable keylock, effects or additional decks in this situation");
+
+    add("audio_latency_overload")
+            << tr("Indicates that the audio buffer is to small to do all audio processing");
 }
