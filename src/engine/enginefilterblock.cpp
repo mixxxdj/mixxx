@@ -82,14 +82,14 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     filterKillHigh = new ControlPushButton(ConfigKey(group, "filterHighKill"));
     filterKillHigh->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp4 = new CSAMPLE[MAX_BUFFER_LEN];
 
-    memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pLowBuf, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pBandBuf, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pHighBuf, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp4, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     old_low = old_mid = old_high = 1.0;
@@ -101,9 +101,9 @@ EngineFilterBlock::~EngineFilterBlock()
     delete band;
     delete low;
     delete [] m_pTemp4;
-    delete [] m_pTemp3;
-    delete [] m_pTemp2;
-    delete [] m_pTemp1;
+    delete [] m_pHighBuf;
+    delete [] m_pBandBuf;
+    delete [] m_pLowBuf;
     delete filterpotLow;
     delete filterKillLow;
     delete filterpotMid;
@@ -149,7 +149,6 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
             band = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
             high = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
         }
-
     }
 }
 
@@ -162,13 +161,16 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
         return;
     }
 
-    float fLow=0.f, fMid=0.f, fHigh=0.f;
-    if (filterKillLow->get()==0.)
-        fLow = filterpotLow->get(); //*0.7;
-    if (filterKillMid->get()==0.)
-        fMid = filterpotMid->get(); //*1.1;
-    if (filterKillHigh->get()==0.)
-        fHigh = filterpotHigh->get(); //*1.2;
+    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
+    if (filterKillLow->get() == 0.) {
+        fLow = filterpotLow->get();
+    }
+    if (filterKillMid->get() == 0.) {
+        fMid = filterpotMid->get();
+    }
+    if (filterKillHigh->get() == 0.) {
+        fHigh = filterpotHigh->get();
+    }
 
     // tweak gains for RGBW
     float fDry = qMin(qMin(fLow, fMid), fHigh);
@@ -185,16 +187,16 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
     if (m_eqNeverTouched) {
         if (fLow != 1. || fMid != 1. || fHigh != 1.) {
             // First process the new EQ'd signals.
-            low->process(pIn, m_pTemp1, iBufferSize);
-            band->process(pIn, m_pTemp2, iBufferSize);
-            high->process(pIn, m_pTemp3, iBufferSize);
+            low->process(pIn, m_pLowBuf, iBufferSize);
+            band->process(pIn, m_pBandBuf, iBufferSize);
+            high->process(pIn, m_pHighBuf, iBufferSize);
             memcpy(m_pTemp4, pIn, iBufferSize * sizeof(CSAMPLE));
 
             // Build the new EQ'd buffer in pOutput.
             SampleUtil::copy3WithGain(m_pTemp4,
-                                      m_pTemp1, fLow,
-                                      m_pTemp2, fMid,
-                                      m_pTemp3, fHigh, iBufferSize);
+                                      m_pLowBuf, fLow,
+                                      m_pBandBuf, fMid,
+                                      m_pHighBuf, fHigh, iBufferSize);
 
             // Fade from unaffected (pIn) to the EQ'd buffer (now in pOutput).
             SampleUtil::linearCrossfadeBuffers(m_pTemp4, pIn, m_pTemp4,
@@ -205,21 +207,21 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
             SampleUtil::copyWithGain(m_pTemp4, pIn, 1, iBufferSize);
         }
     } else {
-        low->process(pIn, m_pTemp1, iBufferSize);
-        band->process(pIn, m_pTemp2, iBufferSize);
-        high->process(pIn, m_pTemp3, iBufferSize);
+        low->process(pIn, m_pLowBuf, iBufferSize);
+        band->process(pIn, m_pBandBuf, iBufferSize);
+        high->process(pIn, m_pHighBuf, iBufferSize);
 
         if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
             SampleUtil::copy3WithRampingGain(m_pTemp4,
-                                             m_pTemp1, old_low, fLow,
-                                             m_pTemp2, old_mid, fMid,
-                                             m_pTemp3, old_high, fHigh,
+                                             m_pLowBuf, old_low, fLow,
+                                             m_pBandBuf, old_mid, fMid,
+                                             m_pHighBuf, old_high, fHigh,
                                              iBufferSize);
         } else {
             SampleUtil::copy3WithGain(m_pTemp4,
-                              m_pTemp1, fLow,
-                              m_pTemp2, fMid,
-                              m_pTemp3, fHigh, iBufferSize);
+                              m_pLowBuf, fLow,
+                              m_pBandBuf, fMid,
+                              m_pHighBuf, fHigh, iBufferSize);
         }
     }
 

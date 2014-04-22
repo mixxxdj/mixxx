@@ -47,7 +47,7 @@ class EngineFilterBlock : public EngineObject {
   private:
     void setFilters(bool forceSetting = false);
 
-    CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3, *m_pTemp4;
+    CSAMPLE *m_pLowBuf, *m_pBandBuf, *m_pHighBuf, *m_pTemp4;
     EngineObject *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
