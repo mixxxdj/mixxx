@@ -6,8 +6,6 @@
 
 #Mixer {
   border: 1px solid #555;
-  border-left: none;
-  border-right: none;
 }
 
 #UpperTextRow {
@@ -17,6 +15,7 @@
 
 #DeckRows {
   border: 1px solid #555;
+  border-top: none;
 }
 
 /* Prevent a 2px border where the decks meet. */
@@ -34,6 +33,24 @@
   border-bottom: 1px solid #555;
   background-color: transparent;
   margin: 0px;
+}
+
+/* Rounded corners to split things up */
+
+#Deck1, #Deck3 {
+  border-bottom-right-radius:5px;
+  border-top-right-radius:5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #555;
+}
+
+#Deck2, #Deck4 {
+  border-bottom-left-radius:5px;
+  border-top-left-radius:5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #555;
 }
 
 #Sampler {
