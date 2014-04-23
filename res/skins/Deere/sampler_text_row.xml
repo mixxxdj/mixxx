@@ -22,35 +22,35 @@
           <WidgetGroup>
             <ObjectName>TitleGutter</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,max</SizePolicy>
+            <SizePolicy>min,max</SizePolicy>
             <Children>
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
+                <SizePolicy>me,min</SizePolicy>
                 <Property>title</Property>
                 <Group><Variable name="group"/></Group>
-                <MinimumSize>-1,20</MinimumSize>
               </TrackProperty>
-            </Children>
-          </WidgetGroup>
-          <WidgetGroup>
-            <ObjectName>BPMGutter</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,max</SizePolicy>
-            <Children>
-              <Key>
-                <Group><Variable name="group"/></Group>
-                <MinimumSize>40,20</MinimumSize>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                </Connection>
-              </Key>
-              <NumberBpm>
-                <Group><Variable name="group"/></Group>
-                <MinimumSize>40,20</MinimumSize>
-                <Connection>
-                  <ConfigKey> <Variable name="group"/>,visual_bpm</ConfigKey>
-                </Connection>
-              </NumberBpm>
+              <WidgetGroup>
+                <ObjectName>BPMGutter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,max</SizePolicy>
+                <Children>
+                  <Key>
+                    <Group><Variable name="group"/></Group>
+                    <SizePolicy>min,</SizePolicy>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                    </Connection>
+                  </Key>
+                  <NumberBpm>
+                    <Group><Variable name="group"/></Group>
+                    <SizePolicy>min,</SizePolicy>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </NumberBpm>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
@@ -71,18 +71,17 @@
               <TrackProperty>
                 <TooltipId>track_artist</TooltipId>
                 <Property>artist</Property>
+                <SizePolicy>me,min</SizePolicy>
                 <Group><Variable name="group"/></Group>
-                <MinimumSize>-1,15</MinimumSize>
               </TrackProperty>
             </Children>
           </WidgetGroup>
           <WidgetGroup>
             <ObjectName>PositionGutter</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,max</SizePolicy>
+            <SizePolicy>min,max</SizePolicy>
             <Children>
               <NumberPos>
-                <Size>100,20</Size>
                 <Group><Variable name="group"/></Group>
               </NumberPos>
             </Children>

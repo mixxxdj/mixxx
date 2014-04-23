@@ -1,7 +1,7 @@
 <!DOCTYPE template>
 <!--
   Description:
-    Deck visual row (waveform and spinny).
+    Deck text row
   Variables:
     group: the group to connect to
 -->
@@ -46,7 +46,7 @@
                     <Group><Variable name="group"/></Group>
                     <SizePolicy>min,</SizePolicy>
                     <Connection>
-                      <ConfigKey> <Variable name="group"/>,visual_bpm</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                     </Connection>
                   </NumberBpm>
                 </Children>
