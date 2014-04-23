@@ -72,8 +72,6 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
             m_pControllerManager, SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
             m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
-    connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
-            m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
 
     // Input mappings
     connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
@@ -253,15 +251,14 @@ void DlgPrefController::enumeratePresets() {
 
     m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
-    PresetInfoEnumerator* pie =  m_pControllerManager->getPresetInfoManager();
+    PresetInfoEnumerator* pie =  m_pControllerManager->getMainThreadPresetEnumerator();
     QList<PresetInfo> presets = pie->getPresets(m_pController->presetExtension());
 
     PresetInfo match;
-    foreach (PresetInfo preset, presets) {
+    foreach (const PresetInfo& preset, presets) {
         m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
-            break;
         }
     }
 
@@ -302,14 +299,6 @@ void DlgPrefController::slotCancel() {
 
 void DlgPrefController::slotApply() {
     if (m_bDirty) {
-        bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
-        bool enabled = m_pController->isOpen();
-        if (wantEnabled && !enabled) {
-            enableDevice();
-        } else if (!wantEnabled && enabled) {
-            disableDevice();
-        }
-
         // Apply the presets and load the resulting preset.
         if (m_pInputTableModel != NULL) {
             m_pInputTableModel->apply();
@@ -349,6 +338,14 @@ void DlgPrefController::slotApply() {
         //Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
 
+        bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
+        bool enabled = m_pController->isOpen();
+        if (wantEnabled && !enabled) {
+            enableDevice();
+        } else if (!wantEnabled && enabled) {
+            disableDevice();
+        }
+
         m_bDirty = false;
     }
 }
@@ -361,8 +358,34 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
 
     QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
 
-    // Applied on prefs close
-    emit(loadPreset(m_pController, presetPath, true));
+    ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
+            presetPath, ControllerManager::getPresetPaths(m_pConfig));
+
+    // Import the preset scripts to the user scripts folder.
+    for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
+                 pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
+        // No need to import builtin scripts.
+        if (it->builtin) {
+            continue;
+        }
+
+        QString scriptPath = ControllerManager::getAbsolutePath(
+                it->name, ControllerManager::getPresetPaths(m_pConfig));
+
+
+        QString importedScriptFileName;
+        // If a conflict exists then importScript will provide a new filename to
+        // use. If importing fails then load the preset anyway without the
+        // import.
+        if (m_pControllerManager->importScript(scriptPath, &importedScriptFileName)) {
+            it->name = importedScriptFileName;
+        }
+    }
+
+    // TODO(rryan): We really should not load the preset here. We should load it
+    // into the preferences GUI and then load it to the actual controller once
+    // the user hits apply.
+    emit(loadPreset(m_pController, pPreset));
     slotDirty();
 }
 
@@ -692,16 +715,14 @@ void DlgPrefController::openScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.insert(index.row());
     }
-    QList<QString> scriptPaths = m_pControllerManager->getScriptPaths(m_pConfig);
+    QList<QString> scriptPaths = ControllerManager::getPresetPaths(m_pConfig);
 
     foreach (int row, selectedRows) {
         QString scriptName = m_ui.m_pScriptsTableWidget->item(row, 0)->text();
-        foreach (QString scriptPath, scriptPaths) {
-            QFileInfo file(scriptPath + "/" + scriptName);
-            if (file.exists()) {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(
-                    file.absoluteFilePath()));
-            }
+
+        QString scriptPath = ControllerManager::getAbsolutePath(scriptName, scriptPaths);
+        if (!scriptPath.isEmpty()) {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(scriptPath));
         }
     }
 }
