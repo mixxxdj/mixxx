@@ -214,6 +214,7 @@ WSliderComposed {
 #KnobLabel {
   background-color: white;
   border: 1px solid black;
+  qproperty-alignment: 'AlignCenter | AlignVCenter';
 }
 
 #Mixer {
