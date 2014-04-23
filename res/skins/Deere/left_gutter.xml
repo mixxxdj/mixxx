@@ -9,7 +9,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-
+      <Template src="skin:spacer.xml"/>
       <Template src="skin:deck_left.xml">
         <SetVariable name="i">1</SetVariable>
         <!-- Camo Green -->
@@ -30,7 +30,7 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-
+      <Template src="skin:spacer.xml"/>
     </Children>
   </WidgetGroup>
 </Template>
