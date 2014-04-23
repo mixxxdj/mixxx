@@ -44,6 +44,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
           m_iMetaDataLife(0) {
     m_pRecReady = new ControlObjectSlave(RECORDING_PREF_KEY, "status", this);
     m_pSamplerate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_sampleRate = m_pSamplerate->get();
 }
 
 EngineRecord::~EngineRecord() {
@@ -64,6 +65,7 @@ void EngineRecord::updateFromPreferences() {
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
+    m_sampleRate = m_pSamplerate->get();
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
@@ -80,7 +82,7 @@ void EngineRecord::updateFromPreferences() {
         m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if(m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
-                                  m_pSamplerate->get()) < 0) {
+                                   m_sampleRate) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
@@ -98,7 +100,7 @@ void EngineRecord::updateFromPreferences() {
         m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
-                                   m_pSamplerate->get()) < 0) {
+                                   m_sampleRate) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
@@ -166,7 +168,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
             // clean frames couting and get current sample rate.
             m_frames = 0;
-            m_sampleRateLong = m_pSamplerate->get() * 2;
+            m_sampleRate = m_pSamplerate->get();
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -193,9 +195,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         }
 
         // update frames counting and recorded duration (seconds)
-        m_frames += iBufferSize;
+        m_frames += iBufferSize / 2;
         unsigned long lastDuration = m_recordedDuration;
-        m_recordedDuration = m_frames / m_sampleRateLong;
+        m_recordedDuration = m_frames / m_sampleRate;
 
         // gets recorded duration and emit signal that will be used
         // by RecordingManager to update the label besides start/stop button
@@ -226,7 +228,7 @@ void EngineRecord::writeCueLine() {
 
     // CDDA is specified as having 75 frames a second
     unsigned long cueFrame = ((unsigned long)
-                                ((m_frames / (m_sampleRateLong / 75)))
+                                ((m_frames / (m_sampleRate / 75)))
                                     % 75);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
@@ -275,9 +277,8 @@ bool EngineRecord::fileOpen() {
 bool EngineRecord::openFile() {
     // Unfortunately, we cannot use QFile for writing WAV and AIFF audio.
     if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF){
-        unsigned long samplerate = m_pSamplerate->get();
         // set sfInfo
-        m_sfInfo.samplerate = samplerate;
+        m_sfInfo.samplerate = m_sampleRate;
         m_sfInfo.channels = 2;
 
         if (m_encoding == ENCODING_WAVE)
