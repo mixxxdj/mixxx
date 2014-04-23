@@ -2245,37 +2245,37 @@
 <context>
     <name>ControllerEngine</name>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="529"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="533"/>
         <source>Uncaught exception at line %1 in file %2: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="535"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="539"/>
         <source>Uncaught exception at line %1 in passed code: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="555"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="559"/>
         <source>Controller script error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="556"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="560"/>
         <source>A control you just used is not working properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="557"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="561"/>
         <source>The script code needs to be fixed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="558"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="562"/>
         <source>For now, you can: Ignore this error for this session but you may experience erratic behavior.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="559"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="563"/>
         <source>Try to recover by resetting your controller.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3117,74 +3117,100 @@ You tried to learn: %1,%2</source>
 <context>
     <name>DlgPrefController</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="104"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="118"/>
         <source>Apply device settings?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="105"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="119"/>
         <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="152"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="166"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="157"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="171"/>
         <source>%1 by %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="174"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="188"/>
         <source>No Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="183"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="197"/>
         <source>No Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="192"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="206"/>
         <source>No Author</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="371"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="432"/>
         <source>Troubleshooting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="502"/>
+        <source>Filename</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="504"/>
+        <source>Function Prefix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="506"/>
+        <source>Built-in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="579"/>
         <source>Clear Input Mappings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="488"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="580"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="620"/>
         <source>Clear Output Mappings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="621"/>
         <source>Are you sure you want to clear all output mappings?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="633"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="643"/>
+        <source>Add Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="635"/>
+        <source>Controller Script Files (*.js)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="644"/>
+        <source>Could not add script file: &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DlgPrefControllerDlg</name>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="20"/>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="257"/>
         <source>(device category goes here)</source>
@@ -3228,18 +3254,25 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="360"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="432"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="485"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="370"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="439"/>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="492"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="312"/>
         <source>Click to start the Controller Learning wizard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="20"/>
+        <source>Controller Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3273,17 +3306,87 @@ Apply settings and continue?</source>
         <source>Output Mappings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="470"/>
+        <source>Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="512"/>
+        <source>Open In Text Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DlgPrefControllersDlg</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="13"/>
-        <source>Form3</source>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="14"/>
+        <source>Controller Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="34"/>
-        <source>No controllers available.</source>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="20"/>
+        <source>Controllers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="32"/>
+        <source>Controllers allow you to control Mixxx with physical devices (for example USB MIDI or HID controllers). Controllers that Mixxx recognizes are shown in the &quot;Controllers&quot; section in the sidebar.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="66"/>
+        <source>Mixxx did not detect any controllers. If you connected the controller while Mixxx was running you must restart Mixxx first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
+        <source>Presets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
+        <source>Open Local Preset Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <source>Open User Preset Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
+        <source>Open System Preset Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <source>Resources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4793,38 +4896,48 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="181"/>
+        <location filename="../../src/dlgprefsound.cpp" line="128"/>
+        <source>Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefsound.cpp" line="129"/>
+        <source>Enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefsound.cpp" line="191"/>
         <source>a device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="182"/>
+        <location filename="../../src/dlgprefsound.cpp" line="192"/>
         <source>An unknown error occurred</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="185"/>
+        <location filename="../../src/dlgprefsound.cpp" line="195"/>
         <source>sound device &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="190"/>
+        <location filename="../../src/dlgprefsound.cpp" line="200"/>
         <source>Two outputs cannot share channels on %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="193"/>
+        <location filename="../../src/dlgprefsound.cpp" line="203"/>
         <source>Error opening %1
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="449"/>
+        <location filename="../../src/dlgprefsound.cpp" line="459"/>
         <source>%1 ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="196"/>
+        <location filename="../../src/dlgprefsound.cpp" line="206"/>
         <source>Configuration error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4901,37 +5014,42 @@ milliseconds</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="180"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="174"/>
+        <source>Master Mix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefsounddlg.ui" line="190"/>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="200"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="210"/>
         <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="223"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="233"/>
         <source>Hints</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="229"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="239"/>
         <source>Enable Real-Time scheduling (currently disabled), see the &lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&gt;Mixxx Wiki&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="242"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="252"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="252"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="262"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="267"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="277"/>
         <source>Query Devices</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8244,6 +8362,36 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="448"/>
         <source>Displays the current time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="451"/>
+        <source>Audio Latency Usage Meter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="452"/>
+        <source>Displays the fraction of latency used for audio processing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="453"/>
+        <source>A high value indicates that audible glitches are likely.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="454"/>
+        <source>Do not enable keylock, effects or additional decks in this situation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="457"/>
+        <source>Audio Latency Overload Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="458"/>
+        <source>Indicates that the audio buffer is to small to do all audio processing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
