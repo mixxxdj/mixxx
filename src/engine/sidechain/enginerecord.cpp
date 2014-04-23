@@ -217,8 +217,8 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
 QString EngineRecord::getRecordedDurationStr() {
     return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0') // minutes
-                 .arg(m_recordedDuration, 2, 'f', 0, '0');     // seconds
+                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
+                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
 }
 
 void EngineRecord::writeCueLine() {
