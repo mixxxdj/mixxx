@@ -417,8 +417,6 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                                          query_insert_to_playlist_tracks);
                 }
             }
-            // if (xml.name() == "ENTRY" && inPlaylistTag) {
-            // }
         }
 
         if (xml.isEndElement()) {
