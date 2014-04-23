@@ -9,8 +9,6 @@
     <Layout>vertical</Layout>
     <SizePolicy>f,min</SizePolicy>
     <Children>
-      <Template src="skin:mixer_status_bar.xml"/>
-
       <WidgetGroup>
         <ObjectName>DeckControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
