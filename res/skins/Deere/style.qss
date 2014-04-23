@@ -73,10 +73,6 @@ WSliderComposed {
   background-color: rgba(200, 200, 200, 128);
 }
 
-WLabel {
-  qproperty-alignment: 'AlignCenter';
-}
-
 #ControlsRow {
   qproperty-layoutSpacing: 5;
   margin-top: 1px;
@@ -232,7 +228,6 @@ WLabel {
 #DeckControls {
   qproperty-layoutSpacing: 0;
 }
-
 
 #MainDeckContainer {
   background-color: red;
