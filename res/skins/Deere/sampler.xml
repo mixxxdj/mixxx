@@ -8,11 +8,11 @@
 <Template>
   <SetVariable name="group">[Sampler<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
-    <ObjectName>Sampler<Variable name="i"/></ObjectName>
+    <ObjectName>Sampler</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
-    <MinimumSize>300,100</MinimumSize>
     <Children>
+      <Template src="skin:sampler_text_row.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

@@ -63,5 +63,13 @@
         </Children>
       </WidgetStack>
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Invert/>
+        <Add>1</Add>
+      </Transform>
+    </Connection>
   </WidgetGroup>
 </Template>

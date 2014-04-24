@@ -1,13 +1,13 @@
 <!DOCTYPE template>
 <!--
   Description:
-    Deck text row
+    Sampler text row.
   Variables:
     group: the group to connect to
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckTextRow</ObjectName>
+    <ObjectName>SamplerTextRow</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
@@ -74,16 +74,16 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Group><Variable name="group"/></Group>
               </TrackProperty>
-              <WidgetGroup>
-                <ObjectName>PositionGutter</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,max</SizePolicy>
-                <Children>
-                  <NumberPos>
-                    <Group><Variable name="group"/></Group>
-                  </NumberPos>
-                </Children>
-              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>PositionGutter</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <NumberPos>
+                <Group><Variable name="group"/></Group>
+              </NumberPos>
             </Children>
           </WidgetGroup>
         </Children>

@@ -27,14 +27,14 @@
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
 
-  <MinimumSize>1024,-1</MinimumSize>
+  <MinimumSize>800,-1</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
   <Children>
     <SetVariable name="SmallSquareButtonMinimumSize">15,15</SetVariable>
     <SetVariable name="SmallSquareButtonMaximumSize">15,15</SetVariable>
-    <SetVariable name="SmallSquareButtonSizePolicy">me,me</SetVariable>
+    <SetVariable name="SmallSquareButtonSizePolicy">f,f</SetVariable>
 
     <SetVariable name="SmallWideButtonMinimumSize">30,15</SetVariable>
     <SetVariable name="SmallWideButtonMaximumSize">30,15</SetVariable>
@@ -42,12 +42,13 @@
 
     <SetVariable name="SmallHorizontalStretchButtonMinimumSize">-1,15</SetVariable>
     <SetVariable name="SmallHorizontalStretchButtonMaximumSize">-1,15</SetVariable>
-    <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,me</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,f</SetVariable>
 
     <SetVariable name="SmallVerticalStretchButtonMinimumSize">15,-1</SetVariable>
-    <SetVariable name="SmallVerticalStretchButtonMaximumSize">16,-1</SetVariable>
-    <SetVariable name="SmallVerticalStretchButtonSizePolicy">me,me</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
 
+    <Template src="skin:tool_bar.xml"/>
     <Template src="skin:main_decks.xml"/>
     <Template src="skin:sample_decks.xml"/>
     <Template src="skin:effect_rack.xml"/>

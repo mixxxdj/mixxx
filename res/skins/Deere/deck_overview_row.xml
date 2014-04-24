@@ -9,7 +9,7 @@
   <WidgetGroup>
     <ObjectName>OverviewRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <MinimumSize>-1,40</MinimumSize>
     <MaximumSize>-1,60</MaximumSize>
     <Children>

@@ -6,8 +6,6 @@
 
 #Mixer {
   border: 1px solid #555;
-  border-left: none;
-  border-right: none;
 }
 
 #UpperTextRow {
@@ -17,6 +15,7 @@
 
 #DeckRows {
   border: 1px solid #555;
+  border-top: none;
 }
 
 /* Prevent a 2px border where the decks meet. */
@@ -36,6 +35,29 @@
   margin: 0px;
 }
 
+/* Rounded corners to split things up */
+
+#Deck1, #Deck3 {
+  border-bottom-right-radius:5px;
+  border-top-right-radius:5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #555;
+}
+
+#Deck2, #Deck4 {
+  border-bottom-left-radius:5px;
+  border-top-left-radius:5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #555;
+}
+
+#Sampler {
+  border: 1px solid #555;
+  border-left:none;
+}
+
 /*******************************************************************************
  ** END BORDER *****************************************************************
  *******************************************************************************/
@@ -51,12 +73,10 @@ WSliderComposed {
   background-color: rgba(200, 200, 200, 128);
 }
 
-WLabel {
-  qproperty-alignment: 'AlignCenter';
-}
-
 #ControlsRow {
   qproperty-layoutSpacing: 5;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }
 
 /* Make the hotcue button grid have black borders between all buttons */
@@ -110,6 +130,10 @@ WLabel {
   background-color: green;
 }
 
+#ToolBar {
+  background-color: pink;
+}
+
 /* All widget groups that are children of #DeckRows should AlignTop. */
 #DeckRows > WWidgetGroup {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
@@ -126,8 +150,13 @@ WLabel {
   padding: 2px;
 }
 
-#ArtistGutter WLabel, #BPMGutter WLabel, #PositionGutter WLabel {
+#DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
   font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+}
+
+#SamplerTextRow #ArtistGutter WLabel, #SamplerTextRow #BPMGutter WLabel, #SamplerTextRow #PositionGutter WLabel {
+  font: bold 12pt/14pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
 }
 
@@ -135,8 +164,14 @@ WLabel {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
+#DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
   font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#SamplerTextRow #TitleGutter WLabel {
+  font: bold 14pt/12pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   text-transform: none;
   text-align: left;
 }
@@ -179,6 +214,7 @@ WLabel {
 #KnobLabel {
   background-color: white;
   border: 1px solid black;
+  qproperty-alignment: 'AlignCenter | AlignVCenter';
 }
 
 #Mixer {
@@ -193,7 +229,6 @@ WLabel {
 #DeckControls {
   qproperty-layoutSpacing: 0;
 }
-
 
 #MainDeckContainer {
   background-color: red;
@@ -213,6 +248,10 @@ WLabel {
 
 #Deck4, #DeckMixer4 {
   background-color: pink;
+}
+
+#Sampler {
+  background-color: cyan;
 }
 
 #LibraryContainer {

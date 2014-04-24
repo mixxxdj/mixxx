@@ -9,23 +9,20 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-
-      <!-- grows to fill the space between the top and the first deck -->
-      <WidgetGroup>
-        <ObjectName>SpaceFiller</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
-      </WidgetGroup>
-
-      <Template src="skin:deck.xml">
+      <Template src="skin:spacer.xml"/>
+      <Template src="skin:deck_right.xml">
         <SetVariable name="i">2</SetVariable>
+        <!-- Cyan -->
+        <SetVariable name="DeckColor">#00FFFF</SetVariable>
       </Template>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck.xml">
+          <Template src="skin:deck_right.xml">
             <SetVariable name="i">4</SetVariable>
+            <!-- Pink -->
+            <SetVariable name="DeckColor">#FFC0CB</SetVariable>
           </Template>
         </Children>
         <Connection>
@@ -33,14 +30,7 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-
-      <!-- grows to fill the space between the last deck and the bottom of the
-           mixer column -->
-      <WidgetGroup>
-        <ObjectName>SpaceFiller</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
-      </WidgetGroup>
+      <Template src="skin:spacer.xml"/>
     </Children>
   </WidgetGroup>
 </Template>
