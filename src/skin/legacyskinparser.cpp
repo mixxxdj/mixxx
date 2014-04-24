@@ -544,14 +544,24 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     ControlObject* pPrevControl = controlFromConfigNode(
             node.toElement(), "PrevControl", &createdPrev);
 
-    WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
+    bool createdCurrentPage = false;
+    ControlObject* pCurrentPageControl = NULL;
+    QString currentpage_co = node.attribute("currentpage");
+    if (currentpage_co.length() > 0) {
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(currentpage_co);
+        QString persist_co = node.attribute("persist");
+        bool persist = m_pContext->selectAttributeBool(node, "persist", false);
+        pCurrentPageControl = controlFromConfigKey(configKey, persist,
+                                                   &createdCurrentPage);
+    }
+
+    WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl,
+                                            pPrevControl, pCurrentPageControl);
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     setupConnections(node, pStack);
     setupBaseWidget(node, pStack);
     setupWidget(node, pStack);
-    pStack->Init();
-
 
     if (createdNext && pNextControl) {
         pNextControl->setParent(pStack);
@@ -561,11 +571,14 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
         pPrevControl->setParent(pStack);
     }
 
-    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
+    if (createdCurrentPage) {
+        pCurrentPageControl->setParent(pStack);
+    }
 
     QWidget* pOldParent = m_pParent;
     m_pParent = pStack;
 
+    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     if (!childrenNode.isNull()) {
         // Descend chilren
         QDomNodeList children = childrenNode.childNodes();
@@ -600,8 +613,6 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             if (trigger_configkey.length() > 0) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
-                // TODO(rryan): Allow persist enabling. Not sure what the best
-                // option is -- need to think about it.
                 pControl = controlFromConfigKey(configKey, false, &created);
                 if (created) {
                     // If we created the control, parent it to the child widget so
@@ -612,6 +623,10 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             pStack->addWidgetWithControl(pChild, pControl);
         }
     }
+
+    // Init the widget last now that all the children have been created,
+    // so if the current page was saved we can switch to the correct page.
+    pStack->Init();
     m_pParent = pOldParent;
     return pStack;
 }

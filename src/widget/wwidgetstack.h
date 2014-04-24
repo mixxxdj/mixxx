@@ -38,8 +38,13 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
   public:
     WWidgetStack(QWidget* pParent,
                  ControlObject* pNextControl,
-                 ControlObject* pPrevControl);
+                 ControlObject* pPrevControl,
+                 ControlObject* pCurrentPageControl);
     virtual ~WWidgetStack();
+
+    // We don't want to change pages until all the pages have been added,
+    // so we override Init and hook up the connection there.
+    virtual void Init();
 
     // QStackedWidget sizeHint and minimumSizeHint are the largest of all the
     // widgets in the stack. This is presumably to prevent UI resizes when the
@@ -56,6 +61,10 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
   private slots:
     void onNextControlChanged(double v);
     void onPrevControlChanged(double v);
+    // Fired when the control object tells us to change pages.
+    void onCurrentPageControlChanged(double v);
+    // Fired when we change pages.
+    void onCurrentPageChanged(int);
     void hideIndex(int index);
 
   private:
@@ -63,6 +72,7 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     QSignalMapper m_hideMapper;
     ControlObjectThread m_nextControl;
     ControlObjectThread m_prevControl;
+    ControlObjectThread m_currentPageControl;
 };
 
 #endif /* WWIDGETSTACK_H */
