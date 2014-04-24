@@ -24,7 +24,7 @@ inline T math_clamp(const T& value, const T& min, const T& max) {
 
 // NOTE(rryan): It is an error to call even() on a floating point number. Do not
 // hack this to support floating point values! The programmer should be required
-// to recognize to manually convert to avoid errors.
+// to manually convert so they are aware of the conversion.
 template <typename T>
 inline bool even(const T& value) {
     return value % 2 == 0;

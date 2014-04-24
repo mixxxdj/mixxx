@@ -6,5 +6,4 @@ typedef short int SAMPLE;
 // float sample data
 typedef float CSAMPLE;
 
-
 #endif /* TYPES_H */
