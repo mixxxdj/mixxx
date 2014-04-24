@@ -150,12 +150,11 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
     }
 }
 
-void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+void EngineFilterBlock::process(CSAMPLE* pInOut, const int iBufferSize) {
     ScopedTimer t("EngineFilterBlock::process");
 
     // Check if EQ processing is disabled.
     if (!s_EnableEq->get()) {
-        SampleUtil::copyWithGain(pOutput, pIn, 1, iBufferSize);
         return;
     }
 
@@ -174,41 +173,24 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
     // the EQ code and crossfade to it.  This will save CPU if the user never
     // uses EQ but also doesn't know to disable it.
     if (m_eqNeverTouched) {
-        if (fLow != 1. || fMid != 1. || fHigh != 1.) {
-            // First process the new EQ'd signals.
-            low->process(pIn, m_pTemp1, iBufferSize);
-            band->process(pIn, m_pTemp2, iBufferSize);
-            high->process(pIn, m_pTemp3, iBufferSize);
-
-            // Build the new EQ'd buffer in pOutput.
-            SampleUtil::copy3WithGain(pOutput,
-                                      m_pTemp1, fLow,
-                                      m_pTemp2, fMid,
-                                      m_pTemp3, fHigh, iBufferSize);
-
-            // Fade from unaffected (pIn) to the EQ'd buffer (now in pOutput).
-            SampleUtil::linearCrossfadeBuffers(pOutput, pIn, pOutput,
-                                               iBufferSize);
-
-            m_eqNeverTouched = false;
-        } else {
-            SampleUtil::copyWithGain(pOutput, pIn, 1, iBufferSize);
+        if (fLow == 1. && fMid == 1. && fHigh == 1.) {
+            return;
         }
-        return;
+        m_eqNeverTouched = false;
     }
 
-    low->process(pIn, m_pTemp1, iBufferSize);
-    band->process(pIn, m_pTemp2, iBufferSize);
-    high->process(pIn, m_pTemp3, iBufferSize);
+    low->process(pInOut, m_pTemp1, iBufferSize);
+    band->process(pInOut, m_pTemp2, iBufferSize);
+    high->process(pInOut, m_pTemp3, iBufferSize);
 
     if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
-        SampleUtil::copy3WithRampingGain(pOutput,
+        SampleUtil::copy3WithRampingGain(pInOut,
                                          m_pTemp1, old_low, fLow,
                                          m_pTemp2, old_mid, fMid,
                                          m_pTemp3, old_high, fHigh,
                                          iBufferSize);
     } else {
-        SampleUtil::copy3WithGain(pOutput,
+        SampleUtil::copy3WithGain(pInOut,
                           m_pTemp1, fLow,
                           m_pTemp2, fMid,
                           m_pTemp3, fHigh, iBufferSize);

@@ -60,7 +60,7 @@ EnginePregain::~EnginePregain()
     s_pReplayGainBoost = NULL;
 }
 
-void EnginePregain::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     float fEnableReplayGain = s_pEnableReplayGain->get();
     float fReplayGainBoost = s_pReplayGainBoost->get();
@@ -117,10 +117,10 @@ void EnginePregain::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBuf
 
     if (fGain != m_fPrevGain) {
         // Prevent soundwave discontinuities by interpolating from old to new gain.
-        SampleUtil::copyWithRampingGain(pOutput, pIn, m_fPrevGain, fGain, iBufferSize);
+        SampleUtil::applyRampingGain(pInOut, m_fPrevGain, fGain, iBufferSize);
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
-        SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
+        SampleUtil::applyGain(pInOut, fGain, iBufferSize);
     }
     m_fPrevGain = fGain;
 }

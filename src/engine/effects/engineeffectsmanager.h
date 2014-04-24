@@ -27,7 +27,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
     virtual void process(const QString& group,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
+                         CSAMPLE* pInOut,
                          const unsigned int numSamples,
                          const GroupFeatureState& groupFeatures);
 

@@ -669,7 +669,7 @@ void EngineBuffer::slotKeylockEngineChanged(double d_index) {
 }
 
 
-void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSize)
+void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 {
     Q_ASSERT(even(iBufferSize));
     m_pReader->process();

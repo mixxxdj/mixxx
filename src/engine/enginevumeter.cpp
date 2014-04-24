@@ -50,7 +50,7 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlPeakIndicator;
 }
 
-void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize) {
+void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
 
     int sampleRate = (int)m_pSampleRate->get();

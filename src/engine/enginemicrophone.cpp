@@ -78,8 +78,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
     }
 }
 
-void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferSize) {
-    Q_UNUSED(pInput);
+void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.
@@ -97,9 +96,9 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
         // This is out of date by a callback but some effects will want the RMS
         // volume.
         m_vuMeter.collectFeatures(&features);
-        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
+        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
                                          features);
     }
     // Update VU meter
-    m_vuMeter.process(pOut, pOut, iBufferSize);
+    m_vuMeter.process(pOut, iBufferSize);
 }

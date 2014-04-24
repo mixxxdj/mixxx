@@ -14,6 +14,10 @@
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"
 
+#warning "override standard fabs()"
+#define fabs(x) ((x) < 0 ? -(x) : (x)) // This is a hotfix, to avoid using the double version for float values
+
+
 AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
         m_skipProcessing(false),
         m_waveform(NULL),
