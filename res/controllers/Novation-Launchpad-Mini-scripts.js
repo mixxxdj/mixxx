@@ -24,6 +24,7 @@ colorCode = function()
         hi_yellow: 50 + 4,
         lo_yellow: 33 + 4,
 
+        /*
         flash_lo_red: 1,
         flash_mi_red: 2,
         flash_hi_red: 3,
@@ -37,30 +38,126 @@ colorCode = function()
         flash_lo_orange: 18,
         flash_hi_yellow: 50,
         flash_lo_yellow: 33
+        TODO fix these*/
     }
 };
 
 //Different kind of callbacks for the buttons.
 DefaultCallback = function(nlm, key)
 {
-    if ( key.pressed ) return;
-    print("Key[" + this.x + ":" + this.y + "]");
-    if ( key.color == colorCode()["hi_red"] ) {
-        key.setColor("hi_green");
+    this.nlm = nlm;
+    this.key = key;
+}
+DefaultCallback.prototype.f = function()
+{
+    /*
+    if ( this.key.pressed ) return;
+    print("Key[" + this.key.x + ":" + this.key.y + "]");
+    if ( this.key.color == colorCode()["hi_red"] ) {
+        this.key.setColor("hi_green");
     } else {
-        key.setColor("hi_red");
+        this.key.setColor("hi_red");
     }
+    */
 }
 
 PageSelectCallback = function(nlm, key)
 {
-    if (key.pressed) {
-        nlm.btns[nlm.page][8][nlm.page].setColor("black");
-        nlm.page = key.y;
-        nlm.btns[nlm.page][8][nlm.page].setColor("hi_amber");
-    }
-    nlm.drawPage();
+    this.nlm = nlm;
+    this.key = key;
 }
+PageSelectCallback.prototype.f = function()
+{
+    if (this.key.pressed) {
+        this.nlm.btns[this.nlm.page][8][this.nlm.page].setColor("black");
+        this.nlm.page = this.key.y;
+        this.nlm.btns[this.nlm.page][8][this.nlm.page].setColor("hi_amber");
+    }
+    this.nlm.drawPage();
+}
+
+PushBtnCallback = function(key, group, control, vdef, vpress, colordef, colorpress)
+{
+    this.key = key;
+
+    this.group      = group;
+    this.control    = control;
+    this.vdef       = vdef;
+    this.vpress     = vpress;
+    this.colordef   = colordef;
+    this.colorpress = colorpress;
+
+    this.key.setColor(colordef);
+}
+
+PushBtnCallback.prototype.f = function()
+{
+    if (this.key.pressed) {
+        engine.setValue(this.group, this.control, this.vpress);
+        this.key.setColor(this.colorpress);
+    } else {
+        engine.setValue(this.group, this.control, this.vdef);
+        this.key.setColor(this.colordef);
+    }
+}
+
+ShiftCallback = function(nlm, key)
+{
+    this.key = key;
+    this.nlm = nlm;
+
+    this.key.setColor("lo_green");
+}
+
+ShiftCallback.prototype.f = function()
+{
+    this.nlm.shiftstate = this.key.pressed;
+    if (this.key.pressed) {
+        this.key.setColor("hi_red");
+    } else {
+        this.key.setColor("lo_green");
+    }
+}
+
+HotCueActCallback = function(nlm, key, deck, hotcue)
+{
+    this.nlm   = nlm;
+    this.group = "[Channel" + deck + "]";
+    this.ctrl_act = "hotcue_" + hotcue + "_activate";
+    this.ctrl_del = "hotcue_" + hotcue + "_clear";
+    this.state   = "hotcue_" + hotcue + "_enabled";
+    this.key = key;
+
+    this.setled();
+    engine.connectControl(this.group, this.state, this.setled);
+}
+
+HotCueActCallback.prototype.setled = function()
+{
+    if (engine.getValue(this.group, this.state) == 1) {
+        this.key.setColor("lo_green");
+    } else {
+        this.key.setColor("lo_red");
+    }
+}
+
+HotCueActCallback.prototype.f = function()
+{
+    if (this.nlm.shiftstate) {
+        ctrl = this.ctrl_del;
+    } else {
+        ctrl = this.ctrl_act;
+    }
+
+    if (this.key.pressed) {
+        engine.setValue(this.group, ctrl, 1);
+        this.key.setColor("hi_amber");
+    } else {
+        engine.setValue(this.group, ctrl, 0);
+        this.setled();
+    }
+}
+
 
 //Define the controller
 
@@ -68,6 +165,7 @@ NLM = new Controller();
 NLM.init = function()
 {
         this.page = 0;
+        this.shiftstate = false;
 
         //Init hw
         midi.sendShortMsg(0xb0, 0x0, 0x0);
@@ -76,7 +174,7 @@ NLM.init = function()
         // select buffer 0
         midi.sendShortMsg(0xb0, 0x68, 3);
         //midi.sendShortMsg(0xb0, 0x0, 0x31);
-        print("=============================");
+        //print("=============================");
         //Setup btnstate which is for phy. state
         NLM.btns = new Array();
         for ( page = 0; page < 8 ; page++ ) {
@@ -86,8 +184,16 @@ NLM.init = function()
                 for ( y = 0 ; y < 9 ; y++ ) {
                     var tmp = new Key;
                     tmp.init(x,y);
+
+                    //Setup shift
+                    if (y == 8 && x == 7) {
+                        tmp.callback = new ShiftCallback(NLM, tmp);
+                    } else
+                    //Setup Page selectors
                     if (x == 8) {
-                        tmp.callback = PageSelectCallback;
+                        tmp.callback = new PageSelectCallback(NLM, tmp);
+                    } else {
+                        tmp.callback = new DefaultCallback(NLM, tmp);
                     }
 
                     NLM.btns[page][x][y] = tmp;
@@ -95,8 +201,17 @@ NLM.init = function()
                 }
             }
         }
-
+        //Set default page led
         NLM.btns[NLM.page][8][0].setColor("hi_amber");
+
+        //Set ChX CueButtons
+        for ( deck = 1; deck < 5; deck++ ) {
+            for ( hc = 1 ; hc < 9 ; hc++ ) {
+                x = hc-1;
+                y = (deck-1)*2+1;
+                NLM.btns[0][x][y].callback = new HotCueActCallback(NLM, NLM.btns[0][x][y], deck, hc);
+            }
+        }
 
 };
 
@@ -108,12 +223,12 @@ NLM.shutdown = function()
 
 NLM.incomingData = function(channel, control, value, status, group)
 {
-        print("Incoming data");
-        print("cha: " + channel);
-        print("con: " + control);
-        print("val: " + value);
-        print("sta: " + status);
-        print("grp: " + group);
+        //print("Incoming data");
+        //print("cha: " + channel);
+        //print("con: " + control);
+        //print("val: " + value);
+        //print("sta: " + status);
+        //print("grp: " + group);
 
         //Just to make life easier
         var pressed = (value == 127);
@@ -130,8 +245,7 @@ NLM.incomingData = function(channel, control, value, status, group)
 
         print( "COO: " + y + ":" + x);
         NLM.btns[NLM.page][x][y].pressed = pressed;
-        NLM.btns[NLM.page][x][y].callback(NLM, NLM.btns[NLM.page][x][y]);
-        //print ("NEWSTATE: " + NLM.btnstate[col][row])
+        NLM.btns[NLM.page][x][y].callback.f();
 };
 
 NLM.drawPage = function() {
@@ -173,7 +287,7 @@ Key.prototype.draw = function()
     //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling
 }
 
-Key.prototype.callback = DefaultCallback;
+Key.prototype.callback = Object;
 
 
 /*
