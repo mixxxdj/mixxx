@@ -134,7 +134,9 @@ HotCueActCallback = function(nlm, key, deck, hotcue)
 
 HotCueActCallback.prototype.setled = function()
 {
-    if (engine.getValue(this.group, this.state) == 1) {
+    if (this.key.pressed) {
+        this.key.setColor("hi_amber");
+    } else if (engine.getValue(this.group, this.state) == 1) {
         this.key.setColor("lo_green");
     } else {
         this.key.setColor("lo_red");
@@ -151,13 +153,14 @@ HotCueActCallback.prototype.f = function()
 
     if (this.key.pressed) {
         engine.setValue(this.group, ctrl, 1);
-        this.key.setColor("hi_amber");
     } else {
         engine.setValue(this.group, ctrl, 0);
-        this.setled();
     }
+
+    this.setled();
 }
 
+//TODO create seek bar ?
 
 //Define the controller
 
