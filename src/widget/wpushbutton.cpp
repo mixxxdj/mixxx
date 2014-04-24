@@ -258,7 +258,6 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     QStylePainter p(this);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    double value = getControlParameterDisplay();
     if (m_iNoStates == 0) {
         return;
     }
@@ -277,7 +276,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
         return;
     }
 
-    int idx = static_cast<int>(value) % m_iNoStates;
+    int idx = readDisplayValue();
     // Just in case m_iNoStates is somehow different from pixmaps.size().
     if (idx < 0) {
         idx = 0;
