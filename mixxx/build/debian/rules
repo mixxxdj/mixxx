@@ -65,8 +65,8 @@ clean:
 	# hand cleaning!
 	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
 	rm -f build/*.pyc
-	test -e .sconsign.dblite && rm -f .sconsign.dblite
-	test -e .sconf_temp && rm -rf .sconf_temp
+	rm -f .sconsign.dblite
+	rm -rf .sconf_temp
 
 	rm -f $(CURDIR)/debian/tmp
 
