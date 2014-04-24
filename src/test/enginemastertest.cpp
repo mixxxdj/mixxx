@@ -3,7 +3,8 @@
 
 #include <QtDebug>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "engine/enginemaster.h"
 #include "engine/enginechannel.h"
 #include "test/mixxxtest.h"
@@ -27,7 +28,7 @@ class EngineChannelMock : public EngineChannel {
     MOCK_METHOD0(isActive, bool());
     MOCK_CONST_METHOD0(isMaster, bool());
     MOCK_CONST_METHOD0(isPFL, bool());
-    MOCK_METHOD2(process, void(CSAMPLE* pOut, const int iBufferSize));
+    MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
 };
 
 class EngineMasterTest : public MixxxTest {

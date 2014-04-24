@@ -43,11 +43,11 @@ public:
     SoundSourceProxy(TrackPointer pTrack);
     ~SoundSourceProxy();
     static void loadPlugins();
-    int open();
+    Result open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
-    int parseHeader();
+    Result parseHeader();
     unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();

@@ -21,6 +21,7 @@
 #include "dlgprefeq.h"
 #include "engine/enginefilteriir.h"
 #include "controlobject.h"
+#include "util/math.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
 #define ENABLE_INTERNAL_EQ "EnableEQs"
@@ -223,10 +224,10 @@ double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
 }
 
 void DlgPrefEQ::validate_levels() {
-    m_highEqFreq = math_max(math_min(m_highEqFreq, kFrequencyUpperLimit),
-                            kFrequencyLowerLimit);
-    m_lowEqFreq = math_max(math_min(m_lowEqFreq, kFrequencyUpperLimit),
-                           kFrequencyLowerLimit);
+    m_highEqFreq = math_clamp<double>(m_highEqFreq, kFrequencyLowerLimit,
+                                      kFrequencyUpperLimit);
+    m_lowEqFreq = math_clamp<double>(m_lowEqFreq, kFrequencyLowerLimit,
+                                     kFrequencyUpperLimit);
     if (m_lowEqFreq == m_highEqFreq) {
         if (m_lowEqFreq == kFrequencyLowerLimit) {
             ++m_highEqFreq;

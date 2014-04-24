@@ -26,7 +26,8 @@
 #include <taglib/xiphcomment.h>
 #include <taglib/mp4tag.h>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 
 #define MIXXX_SOUNDSOURCE_API_VERSION 5
 /** @note SoundSource API Version history:
@@ -58,12 +59,12 @@ class SoundSource
 public:
     SoundSource(QString qFilename);
     virtual ~SoundSource();
-    virtual int open() = 0;
+    virtual Result open() = 0;
     virtual long seek(long) = 0;
     virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
     virtual long unsigned length() = 0;
     static float str2bpm( QString sBpm );
-    virtual int parseHeader() = 0;
+    virtual Result parseHeader() = 0;
     //static QList<QString> supportedFileExtensions(); //CRAP can't do this!
     /** Return a list of cue points stored in the file */
     virtual QList<long> *getCuePoints();

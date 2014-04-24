@@ -1,5 +1,6 @@
 #include "control/controlbehavior.h"
 #include "control/control.h"
+#include "util/math.h"
 
 bool ControlNumericBehavior::setFilter(double* dValue) {
     Q_UNUSED(dValue);

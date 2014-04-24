@@ -4,6 +4,7 @@
 #include "sampleutil.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "util/math.h"
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
                                  unsigned int iChainNumber)

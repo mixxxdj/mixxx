@@ -29,6 +29,7 @@
 #include <taglib/wavpackfile.h>
 
 #include "soundsource.h"
+#include "util/math.h"
 
 namespace Mixxx
 {

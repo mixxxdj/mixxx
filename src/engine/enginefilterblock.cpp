@@ -26,6 +26,7 @@
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
 #include "util/timer.h"
+#include "util/defs.h"
 
 ControlPotmeter* EngineFilterBlock::s_loEqFreq = NULL;
 ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;

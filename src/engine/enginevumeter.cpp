@@ -102,7 +102,7 @@ void EngineVuMeter::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     pGroupFeatures->has_rms_volume_sum = true;
 }
 
-void EngineVuMeter::doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume)
+void EngineVuMeter::doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume)
 {
     if (currentVolume > newVolume)
         currentVolume -= DECAY_SMOOTHING * (currentVolume - newVolume);

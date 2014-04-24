@@ -4,7 +4,6 @@
 #include <QSharedPointer>
 #include <QDomDocument>
 
-#include "defs.h"
 #include "util.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"

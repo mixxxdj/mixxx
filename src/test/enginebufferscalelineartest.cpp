@@ -4,7 +4,8 @@
 #include <QtDebug>
 #include <QVector>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/math.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginebufferscalelinear.h"
 #include "test/mixxxtest.h"

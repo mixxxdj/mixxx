@@ -7,6 +7,12 @@
 #include "library/dao/cue.h"
 #include "trackinfoobject.h"
 
+const int kMinBPM = 30;
+const int kMaxBPM = 240;
+// Maximum allowed interval between beats in milli seconds (calculated from
+// minBPM)
+const int kMaxInterval = static_cast<int>(1000.0 * (60.0 / kMinBPM));
+
 DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
@@ -57,7 +63,7 @@ void DlgTrackInfo::init(){
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
     m_bpmTapTimer.start();
-    for (int i = 0; i < filterLength; ++i) {
+    for (int i = 0; i < kFilterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
     }
 }
@@ -346,21 +352,21 @@ void DlgTrackInfo::slotBpmTap() {
     int elapsed = m_bpmTapTimer.elapsed();
     m_bpmTapTimer.restart();
 
-    if (elapsed <= maxInterval) {
+    if (elapsed <= kMaxInterval) {
         // Move back in filter one sample
-        for (int i = 1; i < filterLength; ++i) {
+        for (int i = 1; i < kFilterLength; ++i) {
             m_bpmTapFilter[i-1] = m_bpmTapFilter[i];
         }
 
-        m_bpmTapFilter[filterLength-1] = 60000.0f/elapsed;
-        if (m_bpmTapFilter[filterLength-1] > maxBPM)
-            m_bpmTapFilter[filterLength-1] = maxBPM;
+        m_bpmTapFilter[kFilterLength-1] = 60000.0f/elapsed;
+        if (m_bpmTapFilter[kFilterLength-1] > kMaxBPM)
+            m_bpmTapFilter[kFilterLength-1] = kMaxBPM;
 
         double temp = 0.;
-        for (int i = 0; i < filterLength; ++i) {
+        for (int i = 0; i < kFilterLength; ++i) {
             temp += m_bpmTapFilter[i];
         }
-        temp /= filterLength;
+        temp /= kFilterLength;
         spinBpm->setValue(temp);
     }
 }

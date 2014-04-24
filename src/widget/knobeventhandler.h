@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QPoint>
 
-#include "defs.h"
+#include "util/math.h"
 
 template <class T>
 class KnobEventHandler {
@@ -33,7 +33,7 @@ class KnobEventHandler {
         double value = pWidget->getControlParameter() + dist / 127.0;
 
         // Clamp to [0.0, 1.0]
-        value = math_max(0.0, math_min(1.0, value));
+        value = math_clamp(value, 0.0, 1.0);
 
         return value;
     }
@@ -89,7 +89,7 @@ class KnobEventHandler {
         double newValue = pWidget->getControlParameter() + wheelDirection;
 
         // Clamp to [0.0, 1.0]
-        newValue = math_max(0.0, math_min(1.0, newValue));
+        newValue = math_clamp(newValue, 0.0, 1.0);
 
         pWidget->setControlParameter(newValue);
         pWidget->update();

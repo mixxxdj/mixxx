@@ -5,8 +5,6 @@
   * @brief USB Bulk controller backend
   *
   */
-#include <time.h>
-#include <stdio.h>
 #include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"
