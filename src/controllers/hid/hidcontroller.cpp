@@ -9,7 +9,7 @@
 #include <wchar.h>
 #include <string.h>
 
-#include "defs.h" // for PATH_MAX on Windows
+#include "util/path.h" // for PATH_MAX on Windows
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/defs_controllers.h"
 #include "util/compatibility.h"

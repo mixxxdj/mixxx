@@ -1,4 +1,5 @@
 #include "effects/native/bitcrushereffect.h"
+#include "util/math.h"
 
 // static
 QString BitCrusherEffect::getId() {
@@ -68,7 +69,7 @@ void BitCrusherEffect::processGroup(const QString& group,
 
     CSAMPLE bit_depth = m_pBitDepthParameter ?
             m_pBitDepthParameter->value().toDouble() : 1.0;
-    bit_depth = math_max(bit_depth, 1);
+    bit_depth = math_max(bit_depth, 1.0f);
 
     const CSAMPLE scale = pow(2, bit_depth - 1);
 

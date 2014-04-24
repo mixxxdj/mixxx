@@ -1,4 +1,3 @@
-#include <cmath>
 #include <QtDebug>
 
 #include "waveform/waveform.h"
@@ -163,7 +162,7 @@ void Waveform::reset() {
 }
 
 void Waveform::initalise(int audioSampleRate, int audioSamples,
-        int desiredVisualSampleRate, int maxVisualSamples) {
+                         int desiredVisualSampleRate, int maxVisualSamples) {
     int numberOfVisualSamples;
 
     if (audioSampleRate) {

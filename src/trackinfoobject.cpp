@@ -35,6 +35,7 @@
 #include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 #include "util/time.h"
+#include "util/math.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,

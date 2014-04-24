@@ -4,7 +4,7 @@
 #include <QString>
 #include <QMap>
 
-#include "defs.h"
+#include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
 
 class EngineEffect;

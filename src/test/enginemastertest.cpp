@@ -3,7 +3,8 @@
 
 #include <QtDebug>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "engine/enginemaster.h"
 #include "engine/enginechannel.h"
 #include "test/mixxxtest.h"
@@ -27,7 +28,7 @@ class EngineChannelMock : public EngineChannel {
     MOCK_METHOD0(isActive, bool());
     MOCK_CONST_METHOD0(isMaster, bool());
     MOCK_CONST_METHOD0(isPFL, bool());
-    MOCK_METHOD3(process, void(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize));
+    MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
 };
 
 class EngineMasterTest : public MixxxTest {
@@ -86,7 +87,7 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
             .WillOnce(Return(false));
 
     // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
 
@@ -138,10 +139,10 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
             .WillOnce(Return(false));
 
     // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel2, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
 
@@ -193,10 +194,10 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
             .WillOnce(Return(true));
 
     // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel2, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
 
@@ -263,13 +264,13 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
             .WillOnce(Return(false));
 
     // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel2, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
-    EXPECT_CALL(*pChannel3, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel3, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
 
@@ -336,13 +337,13 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
             .WillOnce(Return(true));
 
     // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel2, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
-    EXPECT_CALL(*pChannel3, process(_, _, MAX_BUFFER_LEN))
+    EXPECT_CALL(*pChannel3, process(_, MAX_BUFFER_LEN))
             .Times(1)
             .WillOnce(Return());
 
@@ -378,7 +379,7 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
             .WillOnce(Return(true));
 
     // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel, process(_, _, _))
+    EXPECT_CALL(*pChannel, process(_, _))
             .Times(1)
             .WillOnce(Return());
 

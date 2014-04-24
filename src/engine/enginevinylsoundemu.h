@@ -17,7 +17,8 @@
 #ifndef ENGINEVINYLSOUNDEMU_H
 #define ENGINEVINYLSOUNDEMU_H
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "engine/engineobject.h"
 
 class ControlObject;

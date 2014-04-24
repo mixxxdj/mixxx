@@ -7,8 +7,7 @@
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
-
-#include "defs.h"
+#include "util/math.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -107,8 +106,8 @@ void WaveformRendererHSV::draw(QPainter* painter,
         // We now know that some subset of [visualFrameStart, visualFrameStop]
         // lies within the valid range of visual frames. Clamp
         // visualFrameStart/Stop to within [0, lastVisualFrame].
-        visualFrameStart = math_max(math_min(lastVisualFrame, visualFrameStart), 0);
-        visualFrameStop = math_max(math_min(lastVisualFrame, visualFrameStop), 0);
+        visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
+        visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
 
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;

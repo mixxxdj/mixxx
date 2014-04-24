@@ -4,6 +4,7 @@
 #include "waveform/waveform.h"
 
 #include "waveform/waveformwidgetfactory.h"
+#include "util/math.h"
 
 #include <qgl.h>
 

@@ -3,10 +3,10 @@
 
 #include <QString>
 #include <QList>
-#include <cmath>
 
 #include "proto/keys.pb.h"
 #include "track/keys.h"
+#include "util/math.h"
 
 class KeyUtils {
   public:

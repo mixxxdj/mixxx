@@ -12,7 +12,6 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
-#include "mathstuff.h"
 #include "playermanager.h"
 
 // #include <QScriptSyntaxCheckResult>

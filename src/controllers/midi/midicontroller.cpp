@@ -13,6 +13,7 @@
 #include "controlobject.h"
 #include "errordialoghandler.h"
 #include "playermanager.h"
+#include "util/math.h"
 
 MidiController::MidiController()
         : Controller() {

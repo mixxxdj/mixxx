@@ -9,7 +9,6 @@
 #include "waveform/waveformwidgetfactory.h"
 
 #include "controlpotmeter.h"
-#include "defs.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
@@ -28,6 +27,7 @@
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
+#include "util/math.h"
 
 ///////////////////////////////////////////
 
@@ -266,7 +266,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 }
 
 void WaveformWidgetFactory::setFrameRate(int frameRate) {
-    m_frameRate = math_min(120, math_max(1, frameRate));
+    m_frameRate = math_clamp(frameRate, 1, 120);
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
@@ -361,8 +361,8 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
 }
 
 void WaveformWidgetFactory::setDefaultZoom(int zoom) {
-    m_defaultZoom = math_max(WaveformWidgetRenderer::s_waveformMinZoom,
-                             math_min(zoom, WaveformWidgetRenderer::s_waveformMaxZoom));
+    m_defaultZoom = math_clamp(zoom, WaveformWidgetRenderer::s_waveformMinZoom,
+                               WaveformWidgetRenderer::s_waveformMaxZoom);
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }

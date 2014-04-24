@@ -1,6 +1,3 @@
-
-#include <math.h>
-
 #include <QtDebug>
 #include <QFileInfo>
 
@@ -12,6 +9,7 @@
 #include "soundsourceproxy.h"
 #include "sampleutil.h"
 #include "util/counter.h"
+#include "util/math.h"
 
 // currently CachingReaderWorker::kChunkLength is 65536 (0x10000);
 // For 80 chunks we need 5242880 (0x500000) bytes (5 MiB) of Memory
@@ -404,8 +402,8 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // It is completely possible that chunk_remaining_samples is less than
         // zero. If the caller is trying to read from beyond the end of the
         // file, then this can happen. We should tolerate it.
-        int samples_to_read = math_max(0, math_min(samples_remaining,
-                                                   chunk_remaining_samples));
+        int samples_to_read = math_clamp(samples_remaining, 0,
+                                         chunk_remaining_samples);
 
         // If we did not decide to read any samples from this chunk then that
         // means we have exhausted all the samples in the song.
@@ -485,11 +483,11 @@ void CachingReader::hintAndMaybeWake(const QVector<Hint>& hintList) {
             qDebug() << "ERROR: Negative hint length. Ignoring.";
             continue;
         }
-        int start_sample = math_max(0, math_min(
-                m_iTrackNumSamplesCallbackSafe, hint.sample));
+        int start_sample = math_clamp(hint.sample, 0,
+                                      m_iTrackNumSamplesCallbackSafe);
         int start_chunk = chunkForSample(start_sample);
-        int end_sample = math_max(0, math_min(
-                m_iTrackNumSamplesCallbackSafe, hint.sample + hint.length - 1));
+        int end_sample = math_clamp(hint.sample + hint.length - 1, 0,
+                                    m_iTrackNumSamplesCallbackSafe);
         int end_chunk = chunkForSample(end_sample);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {

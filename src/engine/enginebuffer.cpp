@@ -31,7 +31,6 @@
 #include "engine/enginebufferscalerubberband.h"
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
-#include "mathstuff.h"
 #include "engine/sync/enginesync.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
@@ -47,6 +46,8 @@
 #include "engine/clockcontrol.h"
 #include "engine/enginemaster.h"
 #include "util/timer.h"
+#include "util/math.h"
+#include "util/defs.h"
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
@@ -336,7 +337,7 @@ EngineBuffer::~EngineBuffer()
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     double fFractionalPlaypos = 0.0;
     if (m_file_length_old != 0.) {
-        fFractionalPlaypos = math_min(absolutePlaypos, m_file_length_old);
+        fFractionalPlaypos = math_min<double>(absolutePlaypos, m_file_length_old);
         fFractionalPlaypos /= m_file_length_old;
     } else {
         fFractionalPlaypos = 0.;
@@ -566,7 +567,7 @@ void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
     }
 
     // Ensure that the file position is even (remember, stereo channel files...)
-    if (!even((int)new_playpos)) {
+    if (!even(static_cast<int>(new_playpos))) {
         new_playpos--;
     }
 
@@ -805,7 +806,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             }
 
             // Even.
-            if (!even(m_filepos_play)) {
+            if (!even(static_cast<int>(m_filepos_play))) {
                 qWarning() << "ERROR: filepos_play is not even:" << m_filepos_play;
                 m_filepos_play--;
             }
@@ -1034,7 +1035,7 @@ void EngineBuffer::processSeek() {
             double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
             if (offset != 0.0) {
                 double dNewPlaypos = round(dThisPosition + offset);
-                if (!even(dNewPlaypos)) {
+                if (!even(static_cast<int>(dNewPlaypos))) {
                     dNewPlaypos--;
                 }
                 setNewPlaypos(dNewPlaypos);

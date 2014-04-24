@@ -21,13 +21,14 @@
 
 #include <QtDebug>
 #include <limits.h>
-#include <math.h>
 
 #include "vinylcontrol/vinylcontrolxwax.h"
 #include "util/timer.h"
 #include "controlobjectthread.h"
 #include "controlobject.h"
 #include "sampleutil.h"
+#include "util/math.h"
+#include "util/defs.h"
 
 /****** TODO *******
    Stuff to maybe implement here

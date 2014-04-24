@@ -7,10 +7,7 @@
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
-
-#include "defs.h"
-
-#define MAX3(a, b, c)  ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
+#include "util/math.h"
 
 WaveformRendererRGB::WaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -122,8 +119,8 @@ void WaveformRendererRGB::draw(QPainter* painter,
         // We now know that some subset of [visualFrameStart, visualFrameStop]
         // lies within the valid range of visual frames. Clamp
         // visualFrameStart/Stop to within [0, lastVisualFrame].
-        visualFrameStart = math_max(math_min(lastVisualFrame, visualFrameStart), 0);
-        visualFrameStop = math_max(math_min(lastVisualFrame, visualFrameStop), 0);
+        visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
+        visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
 
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop  = visualFrameStop * 2;
@@ -139,9 +136,9 @@ void WaveformRendererRGB::draw(QPainter* painter,
             const WaveformData& waveformData = *(data + i);
             const WaveformData& waveformDataNext = *(data + i + 1);
 
-            maxLow  = MAX3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
-            maxMid  = MAX3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
-            maxHigh = MAX3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
+            maxLow  = math_max3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
+            maxMid  = math_max3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
+            maxHigh = math_max3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
             maxAllA = math_max(maxAllA, waveformData.filtered.all);
             maxAllB = math_max(maxAllB, waveformDataNext.filtered.all);
         }
@@ -151,7 +148,7 @@ void WaveformRendererRGB::draw(QPainter* painter,
         int blue  = maxLow * m_lowColor.blue()  + maxMid * m_midColor.blue()  + maxHigh * m_highColor.blue();
 
         // Compute maximum (needed for value normalization)
-        float max = (float) MAX3(red, green, blue);
+        float max = (float) math_max3(red, green, blue);
 
         // Prevent division by zero
         if (max > 0.0f) {

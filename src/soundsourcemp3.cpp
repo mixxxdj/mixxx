@@ -14,11 +14,12 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtDebug>
+
 #include <taglib/mpegfile.h>
 
 #include "soundsourcemp3.h"
-#include <QtDebug>
-
+#include "util/math.h"
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) :
         Mixxx::SoundSource(qFilename),
@@ -76,8 +77,7 @@ QList<QString> SoundSourceMp3::supportedFileExtensions()
     return list;
 }
 
-int SoundSourceMp3::open()
-{
+Result SoundSourceMp3::open() {
     m_file.setFileName(m_qFilename);
     if (!m_file.open(QIODevice::ReadOnly)) {
         //qDebug() << "MAD: Open failed:" << m_qFilename;
@@ -558,8 +558,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     return Total_samples_decoded;
 }
 
-int SoundSourceMp3::parseHeader()
-{
+Result SoundSourceMp3::parseHeader() {
     setType("mp3");
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
     TagLib::MPEG::File f(qBAFilename.constData());
@@ -645,4 +644,3 @@ inline signed int SoundSourceMp3::madScale(mad_fixed_t sample)
 
     return sample >> (MAD_F_FRACBITS + 1 - 16);
 }
-

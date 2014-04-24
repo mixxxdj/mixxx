@@ -11,7 +11,7 @@
 #include "engine/loopingcontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
-#include "mathstuff.h"
+#include "util/math.h"
 
 #include "trackinfoobject.h"
 #include "track/beats.h"
@@ -390,7 +390,7 @@ void LoopingControl::slotLoopIn(double val) {
         // set loop-in position
         int pos =
                 (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
-                static_cast<int>(floorf(m_pClosestBeat->get())) : m_iCurrentSample;
+                static_cast<int>(floor(m_pClosestBeat->get())) : m_iCurrentSample;
 
         // If we're looping and the loop-in and out points are now so close
         //  that the loop would be inaudible (which can happen easily with
@@ -433,7 +433,7 @@ void LoopingControl::slotLoopOut(double val) {
     if (val) {
         int pos =
                 (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
-                static_cast<int>(floorf(m_pClosestBeat->get())) : m_iCurrentSample;
+                static_cast<int>(floor(m_pClosestBeat->get())) : m_iCurrentSample;
 
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
@@ -720,8 +720,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             // closest beat might be ahead of play position which would cause a seek.
             // TODO: If in reverse, should probably choose nextBeat.
             double cur_pos = getCurrentSample();
-            double prevBeat =
-                    floorf(m_pBeats->findPrevBeat(cur_pos));
+            double prevBeat = floor(m_pBeats->findPrevBeat(cur_pos));
 
             if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
                 if (beats >= 1.0) {
@@ -734,8 +733,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                     //
                     // If we press 1/2 beatloop we want loop from 50% to 100%,
                     // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                    double nextBeat =
-                            floorf(m_pBeats->findNextBeat(cur_pos));
+                    double nextBeat = floor(m_pBeats->findNextBeat(cur_pos));
                     double beat_len = nextBeat - prevBeat;
                     double loops_per_beat = 1.0 / beats;
                     double beat_pos = cur_pos - prevBeat;
@@ -746,7 +744,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                 }
 
             } else {
-                loop_in = floorf(cur_pos);
+                loop_in = floor(cur_pos);
             }
 
 
@@ -755,7 +753,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             }
         }
 
-        int fullbeats = static_cast<int>(floorf(beats));
+        int fullbeats = static_cast<int>(floor(beats));
         double fracbeats = beats - static_cast<double>(fullbeats);
 
         // Now we need to calculate the length of the beatloop. We do this by
