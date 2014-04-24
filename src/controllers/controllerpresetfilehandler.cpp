@@ -7,14 +7,59 @@
 */
 
 #include "controllers/controllerpresetfilehandler.h"
+#include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/hid/hidcontrollerpresetfilehandler.h"
+
+// static
+ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& pathOrFilename,
+                                                                const QStringList& presetPaths) {
+    qDebug() << "Searching for controller preset" << pathOrFilename
+             << "in paths:" << presetPaths.join(",");
+    QString scriptPath = ControllerManager::getAbsolutePath(pathOrFilename,
+                                                            presetPaths);
+
+    if (scriptPath.isEmpty()) {
+        qDebug() << "Could not find" << pathOrFilename
+                 << "in any preset path.";
+        return ControllerPresetPointer();
+    }
+
+    QFileInfo scriptPathInfo(scriptPath);
+    if (!scriptPathInfo.exists() || !scriptPathInfo.isReadable()) {
+        qDebug() << "Preset" << scriptPath << "does not exist or is unreadable.";
+        return ControllerPresetPointer();
+    }
+
+    // TODO(XXX): This means filenames can't have .foo.midi.xml filenames. We
+    // should regex match against the end.
+    // NOTE(rryan): We prepend a dot because all the XXX_PRESET_EXTENSION
+    // defines include the dot.
+    QString extension = "." + scriptPathInfo.completeSuffix();
+
+    ControllerPresetFileHandler* pHandler = NULL;
+    if (scriptPath.endsWith(MIDI_PRESET_EXTENSION, Qt::CaseInsensitive)) {
+        pHandler = new MidiControllerPresetFileHandler();
+    } else if (scriptPath.endsWith(HID_PRESET_EXTENSION, Qt::CaseInsensitive) ||
+               scriptPath.endsWith(BULK_PRESET_EXTENSION, Qt::CaseInsensitive)) {
+        pHandler = new HidControllerPresetFileHandler();
+    }
+
+    if (pHandler == NULL) {
+        qDebug() << "Preset" << scriptPath << "has an unrecognized extension.";
+        return ControllerPresetPointer();
+    }
+
+    // NOTE(rryan): We don't provide a device name. It's unused currently.
+    return pHandler->load(scriptPath, QString());
+}
 
 ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
-                                                          const QString deviceName,
-                                                          const bool forceLoad) {
+                                                          const QString deviceName) {
     qDebug() << "Loading controller preset from" << path;
     ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
-                                           deviceName, forceLoad);
+                                           deviceName);
     if (pPreset) {
         pPreset->setFilePath(path);
     }
@@ -49,30 +94,16 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
 }
 
 QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
-                                                           const QString deviceName,
-                                                           const bool forceLoad) {
-    // All callers of this method as of 4/2012 provide forceLoad true so the
-    // deviceId check is not really used.
+                                                           const QString deviceName) {
+    Q_UNUSED(deviceName);
     if (root.isNull()) {
         return QDomElement();
     }
 
-    QDomElement controller = root.firstChildElement("controller");
-
-    // For each controller in the preset XML... (Only parse the <controller>
-    // block if its id matches our device name, otherwise keep looking at the
-    // next controller blocks....)
-    while (!controller.isNull()) {
-        // Get deviceid
-        QString device = controller.attribute("id", "");
-        if (device != rootDeviceName(deviceName) && !forceLoad) {
-            controller = controller.nextSiblingElement("controller");
-        } else {
-            qDebug() << device << "settings found";
-            break;
-        }
-    }
-    return controller;
+    // TODO(XXX): Controllers can have multiple <controller> blocks. We should
+    // expose this to the user and let them pick them as alternate "versions" of
+    // a preset.
+    return root.firstChildElement("controller");
 }
 
 void ControllerPresetFileHandler::addScriptFilesToPreset(
@@ -88,7 +119,7 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
             .firstChildElement("file");
 
     // Default currently required file
-    preset->addScriptFile(REQUIRED_SCRIPT_FILE, "");
+    preset->addScriptFile(REQUIRED_SCRIPT_FILE, "", true);
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
@@ -170,19 +201,19 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
     QDomElement scriptFiles = doc.createElement("scriptfiles");
     controller.appendChild(scriptFiles);
 
-    for (int i = 0; i < preset.scriptFileNames.count(); i++) {
-        QString filename = preset.scriptFileNames.at(i);
-
-        // Don't need to write anything for the required mapping file.
-        if (filename != REQUIRED_SCRIPT_FILE) {
-            qDebug() << "  writing script block for" << filename;
-            QString functionPrefix = preset.scriptFunctionPrefixes.at(i);
-            QDomElement scriptFile = doc.createElement("file");
-
-            scriptFile.setAttribute("filename", filename);
-            scriptFile.setAttribute("functionprefix", functionPrefix);
-            scriptFiles.appendChild(scriptFile);
+    foreach (const ControllerPreset::ScriptFileInfo& script, preset.scripts) {
+        QString filename = script.name;
+        // Don't need to write anything for built-in files.
+        if (script.builtin) {
+            continue;
         }
+        qDebug() << "writing script block for" << filename;
+        QString functionPrefix = script.functionPrefix;
+        QDomElement scriptFile = doc.createElement("file");
+
+        scriptFile.setAttribute("filename", filename);
+        scriptFile.setAttribute("functionprefix", functionPrefix);
+        scriptFiles.appendChild(scriptFile);
     }
     return doc;
 }

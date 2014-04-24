@@ -20,8 +20,7 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
               const QString deviceName, const QString fileName) const;
 
   private:
-    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName,
-                                         const bool forceLoad);
+    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName);
 
     void addControlsToDocument(const MidiControllerPreset& preset,
                                QDomDocument* doc) const;
