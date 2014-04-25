@@ -51,5 +51,9 @@ void WNumber::onConnectedControlChanged(double dParameter, double dValue) {
 void WNumber::setValue(double dValue) {
     double v = dValue + m_dConstFactor;
 
-    setText(QString(m_qsText).append(QString::number(v, 'f', m_iNoDigits)));
+    if (m_qsText.contains("%1")) {
+        setText(m_qsText.arg(QString::number(v, 'f', m_iNoDigits)));
+    } else {
+        setText(m_qsText + QString::number(v, 'f', m_iNoDigits));
+    }
 }
