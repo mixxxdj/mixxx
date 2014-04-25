@@ -71,7 +71,7 @@ void BitCrusherEffect::processGroup(const QString& group,
             m_pBitDepthParameter->value().toDouble() : 1.0;
     bit_depth = math_max(bit_depth, 1.0f);
 
-    const CSAMPLE scale = pow(2, bit_depth - 1);
+    const CSAMPLE scale = pow(2.0f, bit_depth - 1);
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
