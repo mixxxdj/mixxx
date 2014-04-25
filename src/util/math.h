@@ -40,9 +40,13 @@ inline bool even(const T& value) {
 #define isnan(x) _isnan(x)
 #define isinf(x) (!_finite(x))
 #else
-// for isnan() everywhere else use cmath.h's version
-using std::isnan;
-using std::isinf;
+// for isnan() and isinf() everywhere else use the cmath version. We define
+// these as macros to prevent clashing with c++11 built-ins in the global
+// namespace. If you say "using std::isnan;" then this will fail to build with
+// std=c++11. See https://bugs.webkit.org/show_bug.cgi?id=59249 for some
+// relevant discussion.
+#define isnan std::isnan
+#define isinf std::isinf
 #endif
 
 inline int roundUpToPowerOf2(int v) {
