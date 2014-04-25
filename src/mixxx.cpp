@@ -1729,8 +1729,7 @@ void MixxxMainWindow::slotHelpManual() {
     }
 #elif defined(__LINUX__)
     // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    resourceDir.cd("doc");
-    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
+    if (resourceDir.cd("doc") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
                 resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }

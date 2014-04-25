@@ -104,10 +104,11 @@ class MessagePipe {
         if (m_bSerializeWrites) {
             m_serializationMutex.lock();
         }
-        return m_receiver_messages.write(messages, count);
+        int result = m_receiver_messages.write(messages, count);
         if (m_bSerializeWrites) {
             m_serializationMutex.unlock();
         }
+        return result;
     }
 
   private:

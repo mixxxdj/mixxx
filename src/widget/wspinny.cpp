@@ -33,6 +33,7 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pSignalEnabled(NULL),
           m_pSlipEnabled(NULL),
           m_pSlipPosition(NULL),
+          m_dInitialPos(0.),
           m_iVinylInput(-1),
           m_bVinylActive(false),
           m_bSignalActive(true),
