@@ -87,7 +87,7 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
     m_pTalkover->set(1.0);
 
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
-    m_pMicrophone->process(output, output, outputLength);
+    m_pMicrophone->process(output, outputLength);
 
     // Check that the output matches the input data.
     AssertWholeBufferEquals(output, 0.1f, outputLength);
@@ -100,7 +100,7 @@ TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
     m_pTalkover->set(0.0);
     FillBuffer<CSAMPLE>(input, 0.1f, inputLength);
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
-    m_pMicrophone->process(output, output, outputLength);
+    m_pMicrophone->process(output, outputLength);
     // Check that the output matches the input data.
     AssertWholeBufferEquals(output, 0.0f, outputLength);
 
@@ -109,7 +109,7 @@ TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
     m_pTalkover->set(1.0);
     FillBuffer<CSAMPLE>(input, 0.2f, inputLength);
     m_pMicrophone->receiveBuffer(micInput, input, inputLength);
-    m_pMicrophone->process(output, output, outputLength);
+    m_pMicrophone->process(output, outputLength);
     // Check that the output matches the input data.
     AssertWholeBufferEquals(output, 0.2f, outputLength);
 }
@@ -124,7 +124,7 @@ TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
         FillSequentialWithStride<CSAMPLE>(test, 0, 0.001f, 1.0f, 2, outputLength);
 
         m_pMicrophone->receiveBuffer(micInput, input, inputLength);
-        m_pMicrophone->process(output, output, outputLength);
+        m_pMicrophone->process(output, outputLength);
 
         // Check that the output matches the expected output
         AssertBuffersEqual<CSAMPLE>(output, test, outputLength);
