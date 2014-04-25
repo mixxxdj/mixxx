@@ -13,6 +13,8 @@
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
 #include "playermanager.h"
+// to tell the msvs compiler about `isnan`
+#include "util/math.h"
 
 // #include <QScriptSyntaxCheckResult>
 

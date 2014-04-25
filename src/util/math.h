@@ -63,4 +63,10 @@ inline int roundUpToPowerOf2(int v) {
     return v;
 }
 
+#ifdef __WINDOWS__
+inline int round(double x){
+    return x < 0.0 ? ceil(x - 0.5) : floor(x + 0.5);
+}
+#endif
+
 #endif /* MATH_H */

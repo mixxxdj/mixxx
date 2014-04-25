@@ -337,7 +337,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
             unscaled_samples_needed -= buffer_int_size;
             //shift the index by the size of the old buffer
-            m_dCurSampleIndex -= old_bufsize / 2;
+            m_dCurSampleIndex -= old_bufsize / 2.;
         }
 
         // Now that the buffer is up to date, we can get the value of the sample

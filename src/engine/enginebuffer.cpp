@@ -661,7 +661,7 @@ void EngineBuffer::slotControlSlip(double v)
 void EngineBuffer::slotKeylockEngineChanged(double d_index) {
     // GCC is dumb, it doesn't think d_index is being used.
     Q_UNUSED(d_index);
-    KeylockEngine engine = static_cast<KeylockEngine>(d_index);
+    KeylockEngine engine = static_cast<KeylockEngine>(int(d_index));
     if (engine == SOUNDTOUCH) {
         m_pScaleKeylock = m_pScaleST;
     } else {
