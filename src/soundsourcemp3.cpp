@@ -416,7 +416,7 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted) {
             }
         }
         mad_synth_frame(Synth, Frame);
-        no = math_min(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
+        no = math_min<int>(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
         Total_samples_decoded += 2*no;
     }
 
@@ -530,7 +530,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 
 //         qDebug() << "synthlen " << Synth->pcm.length << ", remain " << (samples_wanted-Total_samples_decoded);
-        no = math_min(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
+        no = math_min<int>(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (i=0; i<no; i++)
         {
             // Left channel
