@@ -258,6 +258,8 @@ class MixxxBuild(object):
         cachefile = os.path.join(self.get_cache_dir(), 'custom.py')
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
+        vars.Add('virtualize',
+                 'Dynamically swap out the build directory when switching Git branches.', 1)
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
         if self.platform_is_windows:
             vars.Add('sqlitedll', 'Set to 1 to enable including QSQLite.dll.\
@@ -283,7 +285,15 @@ class MixxxBuild(object):
         vars.Save(cachefile, self.env)
 
     def virtualize_build_dir(self):
-        # Symlinks don't work on Windows.
+        # WARNING: Do not use SCons self.env.SConsignFile to change the location
+        # of .sconsign.dblite or turn build_dir into a symlink. It will mostly
+        # seem to work fine but eventually cause strange build issues (not
+        # re-building a necessary object file, etc.) and cause instability.
+        # See also: asantoni's warning in get_cache_dir. rryan 6/2013
+        should_virtualize = int(Script.ARGUMENTS.get('virtualize', 1))
+        if not should_virtualize:
+            return
+
         if self.host_platform == 'windows':
             return
 
