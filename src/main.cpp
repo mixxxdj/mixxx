@@ -26,6 +26,7 @@
 #include <QFile>
 
 #include <stdio.h>
+#include <iostream>
 
 #include "mixxx.h"
 #include "mixxxapplication.h"
