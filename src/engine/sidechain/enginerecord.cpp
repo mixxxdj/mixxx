@@ -351,6 +351,8 @@ bool EngineRecord::openCueFile() {
 
     qDebug() << "Opening Cue File:" << m_cueFileName;
     m_cueFile.setFileName(m_cueFileName);
+
+    // TODO(rryan): maybe we need to use the sandbox to get read/write rights on Mac OS ?!
     if (!m_cueFile.open(QIODevice::WriteOnly)) {
         qDebug() << "Could not write Cue File:" << m_cueFileName;
         return false;
