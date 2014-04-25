@@ -14,15 +14,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef __WINDOWS__
-#pragma intrinsic(fabs)
-#endif
-
 #include "engine/enginevumeter.h"
 #include "controlpotmeter.h"
 #include "controlobjectslave.h"
 #include "sampleutil.h"
-
+#include "util/math.h"
 
 EngineVuMeter::EngineVuMeter(const char* group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
