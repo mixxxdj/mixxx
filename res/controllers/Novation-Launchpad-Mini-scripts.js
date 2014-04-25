@@ -43,9 +43,8 @@ colorCode = function()
 };
 
 //Different kind of callbacks for the buttons.
-DefaultCallback = function(nlm, key)
+DefaultCallback = function(key)
 {
-    this.nlm = nlm;
     this.key = key;
 }
 DefaultCallback.prototype.f = function()
@@ -61,19 +60,18 @@ DefaultCallback.prototype.f = function()
     */
 }
 
-PageSelectCallback = function(nlm, key)
+PageSelectCallback = function(key)
 {
-    this.nlm = nlm;
     this.key = key;
 }
 PageSelectCallback.prototype.f = function()
 {
     if (this.key.pressed) {
-        this.nlm.btns[this.nlm.page][8][this.nlm.page].setColor("black");
-        this.nlm.page = this.key.y;
-        this.nlm.btns[this.nlm.page][8][this.nlm.page].setColor("hi_amber");
+        NLM.btns[NLM.page][8][NLM.page].setColor("black");
+        NLM.page = this.key.y;
+        NLM.btns[NLM.page][8][NLM.page].setColor("hi_amber");
     }
-    this.nlm.drawPage();
+    NLM.drawPage();
 }
 
 PushBtnCallback = function(key, group, control, vdef, vpress, colordef, colorpress)
@@ -101,17 +99,15 @@ PushBtnCallback.prototype.f = function()
     }
 }
 
-ShiftCallback = function(nlm, key)
+ShiftCallback = function(key)
 {
     this.key = key;
-    this.nlm = nlm;
-
     this.key.setColor("lo_green");
 }
 
 ShiftCallback.prototype.f = function()
 {
-    this.nlm.shiftstate = this.key.pressed;
+    NLM.shiftstate = this.key.pressed;
     if (this.key.pressed) {
         this.key.setColor("hi_yellow");
     } else {
@@ -119,9 +115,8 @@ ShiftCallback.prototype.f = function()
     }
 }
 
-HotCueActCallback = function(nlm, key, deck, hotcue)
+HotCueActCallback = function(key, deck, hotcue)
 {
-    this.nlm   = nlm;
     this.group = "[Channel" + deck + "]";
     this.ctrl_act = "hotcue_" + hotcue + "_activate";
     this.ctrl_del = "hotcue_" + hotcue + "_clear";
@@ -145,7 +140,7 @@ HotCueActCallback.prototype.setled = function()
 
 HotCueActCallback.prototype.f = function()
 {
-    if (this.nlm.shiftstate) {
+    if (NLM.shiftstate) {
         ctrl = this.ctrl_del;
     } else {
         ctrl = this.ctrl_act;
@@ -263,8 +258,8 @@ LoopModeCallback.prototype.f = function()
 NLM = new Controller();
 NLM.init = function()
 {
-        this.page = 0;
-        this.shiftstate = false;
+        NLM.page = 0;
+        NLM.shiftstate = false;
 
         //Init hw
         midi.sendShortMsg(0xb0, 0x0, 0x0);
@@ -282,17 +277,17 @@ NLM.init = function()
                 NLM.btns[page][x] = new Array();
                 for ( y = 0 ; y < 9 ; y++ ) {
                     var tmp = new Key;
-                    tmp.init(x,y);
+                    tmp.init(x,y, page);
 
                     //Setup shift
                     if (y == 8 && x == 7) {
-                        tmp.callback = new ShiftCallback(NLM, tmp);
+                        tmp.callback = new ShiftCallback(tmp);
                     } else
                     //Setup Page selectors
                     if (x == 8) {
-                        tmp.callback = new PageSelectCallback(NLM, tmp);
+                        tmp.callback = new PageSelectCallback(tmp);
                     } else {
-                        tmp.callback = new DefaultCallback(NLM, tmp);
+                        tmp.callback = new DefaultCallback(tmp);
                     }
 
                     NLM.btns[page][x][y] = tmp;
@@ -308,7 +303,7 @@ NLM.init = function()
             for ( hc = 1 ; hc < 9 ; hc++ ) {
                 x = hc-1;
                 y = (deck-1)*2+1;
-                NLM.btns[0][x][y].callback = new HotCueActCallback(NLM, NLM.btns[0][x][y], deck, hc);
+                NLM.btns[0][x][y].callback = new HotCueActCallback(NLM.btns[0][x][y], deck, hc);
             }
         }
 
@@ -376,10 +371,11 @@ Key.prototype.x = 0;
 Key.prototype.y = 0;
 Key.prototype.pressed = false;
 
-Key.prototype.init = function(x,y)
+Key.prototype.init = function(x,y, page)
 {
     this.x = x;
     this.y = y;
+    this.page = page;
     //print("Key created");
 }
 
@@ -392,6 +388,7 @@ Key.prototype.setColor = function(color)
 
 Key.prototype.draw = function()
 {
+    if ( this.page != NLM.page ) return;
     if ( this.y == 8 ) {
         midi.sendShortMsg(0xb0, this.x + 0x68, this.color);
         return;
