@@ -1,12 +1,8 @@
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 #include <QtDebug>
 #include <QApplication>
 #include <QUrl>
 #include <QMimeData>
 
-#include "mathstuff.h"
 #include "wimagestore.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
@@ -16,6 +12,7 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "util/dnd.h"
+#include "util/math.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),

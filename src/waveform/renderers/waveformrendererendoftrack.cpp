@@ -4,7 +4,6 @@
 
 #include "waveformrendererendoftrack.h"
 
-#include "defs.h"
 #include "waveformwidgetrenderer.h"
 
 #include "controlobject.h"

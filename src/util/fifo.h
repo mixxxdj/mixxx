@@ -8,6 +8,7 @@
 
 #include "util/pa_ringbuffer.h"
 #include "util/reference.h"
+#include "util/math.h"
 #include "util.h"
 
 template <class DataType>
@@ -62,18 +63,6 @@ class FIFO {
         return PaUtil_AdvanceRingBufferReadIndex(&m_ringBuffer, count);
     }
   private:
-    int roundUpToPowerOf2(int v) {
-        // From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-        v--;
-        v |= v >> 1;
-        v |= v >> 2;
-        v |= v >> 4;
-        v |= v >> 8;
-        v |= v >> 16;
-        v++;
-        return v;
-    }
-
     DataType* m_data;
     PaUtilRingBuffer m_ringBuffer;
     DISALLOW_COPY_AND_ASSIGN(FIFO<DataType>);

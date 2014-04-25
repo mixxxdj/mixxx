@@ -14,15 +14,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef __WINDOWS__
-#pragma intrinsic(fabs)
-#endif
-
 #include "engine/enginevumeter.h"
 #include "controlpotmeter.h"
 #include "controlobjectslave.h"
 #include "sampleutil.h"
-
+#include "util/math.h"
 
 EngineVuMeter::EngineVuMeter(const char* group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
@@ -50,7 +46,7 @@ EngineVuMeter::~EngineVuMeter()
     delete m_ctrlPeakIndicator;
 }
 
-void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize) {
+void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
 
     int sampleRate = (int)m_pSampleRate->get();
@@ -102,7 +98,7 @@ void EngineVuMeter::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     pGroupFeatures->has_rms_volume_sum = true;
 }
 
-void EngineVuMeter::doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume)
+void EngineVuMeter::doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume)
 {
     if (currentVolume > newVolume)
         currentVolume -= DECAY_SMOOTHING * (currentVolume - newVolume);

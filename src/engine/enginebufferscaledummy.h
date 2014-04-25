@@ -20,7 +20,7 @@
 
 #include <QObject>
 
-#include "defs.h"
+#include "util/types.h"
 #include "engine/enginebufferscale.h"
 
 class ReadAheadManager;

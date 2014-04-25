@@ -13,6 +13,7 @@
 
 class EffectsManager;
 class EngineEffectsManager;
+class ControlLogpotmeter;
 
 // EngineAux is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager
@@ -25,7 +26,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     bool isActive();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
-    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
+    virtual void process(CSAMPLE* pOutput, const int iBufferSize);
 
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the callback thread of
@@ -48,6 +49,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
     ControlPushButton* m_pPassing;
+    ControlLogpotmeter* m_pPregain;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };

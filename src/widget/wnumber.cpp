@@ -17,11 +17,6 @@
 
 #include "widget/wnumber.h"
 
-#include <math.h>
-#include <QVBoxLayout>
-
-#include "widget/wskincolor.h"
-
 WNumber::WNumber(QWidget* pParent)
         : WLabel(pParent),
           m_iNoDigits(2),

@@ -3,10 +3,8 @@
 #include <QPainter>
 
 #include "util/timer.h"
-
+#include "util/math.h"
 #include "waveform/waveform.h"
-
-#define MAX3(a, b, c)  ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
 WOverviewRGB::WOverviewRGB(const char* pGroup,
                            ConfigObject<ConfigValue>* pConfig, QWidget* parent)
@@ -80,7 +78,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
         mid = m_pWaveform->getMid(currentCompletion);
         high = m_pWaveform->getHigh(currentCompletion);
 
-        max = (float) MAX3(low, mid, high);
+        max = (float) math_max3(low, mid, high);
         if (max > 0.0f) {
             color.setRgbF(low / max, mid / max, high / max);
             painter.setPen(color);
@@ -91,7 +89,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
         mid = m_pWaveform->getMid(currentCompletion + 1);
         high = m_pWaveform->getHigh(currentCompletion + 1);
 
-        max = (float) MAX3(low, mid, high);
+        max = (float) math_max3(low, mid, high);
         if (max > 0.0f) {
             color.setRgbF(low / max, mid / max, high / max);
             painter.setPen(color);

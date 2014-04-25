@@ -5,8 +5,8 @@
 
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
-
-#include "mathstuff.h"
+#include "util/math.h"
+#include "util/defs.h"
 #include "engine/enginecontrol.h"
 #include "cachingreader.h"
 
@@ -46,8 +46,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                 m_iCurrentPosition - loop_trigger :
                 loop_trigger - m_iCurrentPosition;
         preloop_samples = samples_available;
-        samples_needed = math_max(0, math_min(samples_needed,
-                                              samples_available));
+        samples_needed = math_clamp(samples_needed, 0, samples_available);
     }
 
     if (in_reverse) {

@@ -21,10 +21,10 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "defs.h"
 #include "widget/wpixmapstore.h"
 #include "widget/controlwidgetconnection.h"
 #include "util/debug.h"
+#include "util/math.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
@@ -156,7 +156,7 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
     double newValue = m_dOldValue + wheelDirection;
 
     // Clamp to [0.0, 1.0]
-    newValue = math_max(0.0, math_min(1.0, newValue));
+    newValue = math_clamp(newValue, 0.0, 1.0);
 
     setControlParameter(newValue);
     // Value is unused in WSliderComposed.

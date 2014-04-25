@@ -9,6 +9,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "widget/wwidget.h"
+#include "util/math.h"
 
 #define CONFIG_KEY "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -496,7 +497,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             pushButtonFadeNow->setEnabled(false);
         }
 
-        float posFadeEnd = math_min(1.0, m_posThreshold2 + fadeDuration);
+        float posFadeEnd = math_min(1.0f, m_posThreshold2 + fadeDuration);
 
         if (value >= posFadeEnd) {
             // Pre-End State

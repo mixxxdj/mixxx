@@ -7,8 +7,6 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "controlobjectthread.h"
 
-#include "mathstuff.h"
-
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
     m_shadersValid = false;

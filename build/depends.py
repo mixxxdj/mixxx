@@ -713,8 +713,6 @@ class MixxxCore(Feature):
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
 
-                   "mathstuff.cpp",
-
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",
                    "musicbrainz/gzip.cpp",
@@ -1030,6 +1028,9 @@ class MixxxCore(Feature):
             build.env.Append(
                 CPPDEFINES='_ATL_MIN_CRT')  # Helps prevent duplicate symbols
             # Need this on Windows until we have UTF16 support in Mixxx
+	    # use stl min max defines
+	    # http://connect.microsoft.com/VisualStudio/feedback/details/553420/std-cpp-max-and-std-cpp-min-not-available-in-visual-c-2010
+            build.env.Append(CPPDEFINES='NOMINMAX')
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(
                 CPPDEFINES='WIN%s' % build.bitwidth)  # WIN32 or WIN64
