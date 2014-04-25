@@ -2,7 +2,6 @@
 // Created 10/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifdef __WINDOWS__
-#pragma intrinsic(fabs)sc
 #include <QtGlobal>
 typedef qint64 int64_t;
 typedef qint32 int32_t;
@@ -11,6 +10,7 @@ typedef qint32 int32_t;
 #include <QtDebug>
 
 #include "sampleutil.h"
+#include "util/math.h"
 
 // static
 CSAMPLE* SampleUtil::alloc(unsigned int size) {

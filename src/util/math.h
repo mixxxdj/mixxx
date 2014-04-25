@@ -39,6 +39,8 @@ inline bool even(const T& value) {
 #include <float.h>
 #define isnan(x) _isnan(x)
 #define isinf(x) (!_finite(x))
+// Ask VC++ to emit an intrinsic for fabs instead of calling std::fabs.
+#pragma intrinsic(fabs)
 #else
 // for isnan() and isinf() everywhere else use the cmath version. We define
 // these as macros to prevent clashing with c++11 built-ins in the global
