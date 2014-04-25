@@ -753,7 +753,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             }
         }
 
-        int fullbeats = static_cast<int>(floor(beats));
+        int fullbeats = static_cast<int>(beats);
         double fracbeats = beats - static_cast<double>(fullbeats);
 
         // Now we need to calculate the length of the beatloop. We do this by

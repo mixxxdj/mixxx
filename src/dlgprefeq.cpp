@@ -188,7 +188,7 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
         return minValue;
     }
     double dsliderPos = (eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
-    dsliderPos = pow(dsliderPos, 1./4.) * (maxValue - minValue) + minValue;
+    dsliderPos = pow(dsliderPos, 1.0 / 4.0) * (maxValue - minValue) + minValue;
     return dsliderPos;
 }
 

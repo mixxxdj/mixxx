@@ -84,7 +84,7 @@ class KeyUtils {
         // TODO(rryan) benchmark on Intel / AMD / ARM processors and pick accordingly.
         //static const lg2 = log(2); // 0.69314718056f
         //return exp(lg2 * octaveChange);
-        return pow(2, octaveChange);
+        return pow(2.0, octaveChange);
     }
 
     static inline double powerOf2ToOctaveChange(const double& power_of_2) {
