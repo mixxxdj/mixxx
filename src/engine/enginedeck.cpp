@@ -73,7 +73,6 @@ EngineDeck::~EngineDeck() {
 }
 
 void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
-    GroupFeatureState features;
     // Feed the incoming audio through if passthrough is active
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     if (isPassthroughActive() && sampleBuffer) {
@@ -90,7 +89,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
         // Process the raw audio
         m_pBuffer->process(pOut, iBufferSize);
-        m_pBuffer->collectFeatures(&features);
+        m_pBuffer->collectFeatures(&m_groupFeatureState);
         // Emulate vinyl sounds
         m_pVinylSoundEmu->setSpeed(m_pBuffer->getSpeed());
         m_pVinylSoundEmu->process(pOut, iBufferSize);
@@ -105,9 +104,9 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     if (m_pEngineEffectsManager != NULL) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
-        m_pVUMeter->collectFeatures(&features);
+        m_pVUMeter->collectFeatures(&m_groupFeatureState);
         m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         features);
+                                         m_groupFeatureState);
     }
     // Update VU meter
     m_pVUMeter->process(pOut, iBufferSize);
