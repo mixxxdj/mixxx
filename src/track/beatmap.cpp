@@ -187,6 +187,12 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
         BeatList::const_iterator it =
                 qLowerBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
+        // If dSamples is right on the beat, LessThan will start us at the
+        // previus beat.
+        if (dSamples == framesToSamples(it->frame_position())) {
+            ++it;
+        }
+
         // Count down until n=1
         while (it != m_beats.end()) {
             if (!it->enabled()) {
@@ -204,6 +210,11 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
         BeatList::const_iterator it =
                 qUpperBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
+        // If dSamples is right on the beat, LessThan will start us at the
+        // previus beat.
+        if (dSamples == framesToSamples(it->frame_position())) {
+            ++it;
+        }
 
         // Count up until n=-1
         while (it != m_beats.begin()) {

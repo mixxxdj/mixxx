@@ -144,17 +144,15 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     }
 
     double beatFraction = (dSamples - firstBeatSample()) / m_dBeatLength;
-    const double prevBeat = floor(beatFraction);
-    const double nextBeat = ceil(beatFraction);
+    double prevBeat = floor(beatFraction);
+    double nextBeat = ceil(beatFraction);
 
     // If the position is within 1/100th of the next or previous beat, treat it
     // as if it is that beat.
     const double kEpsilon = .01;
-
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
-        beatFraction = nextBeat;
-    } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
-        beatFraction = prevBeat;
+        ++nextBeat;
+        ++prevBeat;
     }
 
     double dClosestBeat;

@@ -39,6 +39,8 @@ class QuantizeControl : public EngineControl {
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+
+    int m_oldClosestSample;
 };
 
 #endif // QUANTIZECONTROL_H

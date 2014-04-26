@@ -736,6 +736,12 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 
     // Get the current position of this deck.
     double dThisPosition = getCurrentSample();
+
+    // No need to recalculate.
+    if (dThisPosition == m_dPreviousSample) {
+        return;
+    }
+
     double dThisPrevBeat;
     double dThisNextBeat;
     double dThisBeatLength;
