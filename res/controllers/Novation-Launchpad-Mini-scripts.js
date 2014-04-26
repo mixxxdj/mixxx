@@ -280,29 +280,27 @@ function LoopKey(deck, loop)
     return that;
 }
 
-LoopCallback = function(key, deck, loop)
+function LoopModeKey()
 {
-    this.key = key;
-}
+    var that = new Key();
+    that.setColor("lo_yellow");
 
-LoopModeCallback = function(key)
-{
-    this.key = key;
-    this.key.setColor("lo_yellow");
-}
-
-LoopModeCallback.prototype.f = function()
-{
-    if (this.key.pressed) {
-        if (LoopCallback.mode == 0) {
-            LoopCallback.setMode(1);
-            this.key.setColor("lo_orange");
-        } else {
-            LoopCallback.setMode(0);
-            this.key.setColor("lo_yellow");
+    that.callback = function()
+    {
+        if (this.pressed) {
+            if (LoopKey.mode == 0) {
+                LoopKey.setMode(1);
+                this.setColor("lo_orange");
+            } else {
+                LoopKey.setMode(0);
+                this.setColor("lo_yellow");
+            }
         }
     }
+
+    return that;
 }
+
 
 //Define the controller
 
@@ -364,20 +362,21 @@ NLM.init = function()
             NLM.btns[0][0][y].init(0, y, 0);
             //Set Chx LoopButtons
             NLM.btns[0][2][y] = LoopKey(deck, "0.0625");
-            NLM.btns[0][2][y].init(0, y, 2);
+            NLM.btns[0][2][y].init(2, y, 0);
             NLM.btns[0][3][y] = LoopKey(deck, "0.125");
-            NLM.btns[0][3][y].init(0, y, 3);
+            NLM.btns[0][3][y].init(3, y, 0);
             NLM.btns[0][4][y] = LoopKey(deck, "0.25");
-            NLM.btns[0][4][y].init(0, y, 4);
+            NLM.btns[0][4][y].init(4, y, 0);
             NLM.btns[0][5][y] = LoopKey(deck, "0.5");
-            NLM.btns[0][5][y].init(0, y, 5);
+            NLM.btns[0][5][y].init(5, y, 0);
             NLM.btns[0][6][y] = LoopKey(deck, "1");
-            NLM.btns[0][6][y].init(0, y, 6);
+            NLM.btns[0][6][y].init(6, y, 0);
             NLM.btns[0][7][y] = LoopKey(deck, "2");
-            NLM.btns[0][7][y].init(0, y, 7);
+            NLM.btns[0][7][y].init(7, y, 0);
         }
 
-        //- NLM.btns[0][2][8].callback = new LoopModeCallback(NLM.btns[0][2][8]);
+        NLM.btns[0][2][8] = LoopModeKey();
+        NLM.btns[0][2][8].init(2, 8, 0);
 
         this.drawPage();
 };
