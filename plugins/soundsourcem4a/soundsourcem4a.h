@@ -42,12 +42,12 @@ class SoundSourceM4A : public SoundSource {
     public:
         SoundSourceM4A(QString qFileName);
         ~SoundSourceM4A();
-        int open();
+        Result open();
         long seek(long);
         int initializeDecoder();
         unsigned read(unsigned long size, const SAMPLE*);
         unsigned long length();
-        int parseHeader();
+        Result parseHeader();
         static QList<QString> supportedFileExtensions();
     private:
         int trackId;
