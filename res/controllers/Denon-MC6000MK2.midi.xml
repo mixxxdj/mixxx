@@ -388,8 +388,26 @@
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x17</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x17</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotCue1Button</key>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x18</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -398,7 +416,16 @@
 				<group>[Channel1]</group>
 				<midino>0x18</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotCue2Button</key>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x19</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -407,7 +434,16 @@
 				<group>[Channel1]</group>
 				<midino>0x19</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotCue3Button</key>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x20</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -416,7 +452,7 @@
 				<group>[Channel1]</group>
 				<midino>0x20</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onHotCue4Button</key>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -812,7 +848,25 @@
 				<group>[Channel2]</group>
 				<midino>0x17</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotCue1Button</key>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x17</midino>
+				<status>0x82</status>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x18</midino>
+				<status>0x82</status>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -821,7 +875,16 @@
 				<group>[Channel2]</group>
 				<midino>0x18</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotCue2Button</key>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x19</midino>
+				<status>0x82</status>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -830,7 +893,16 @@
 				<group>[Channel2]</group>
 				<midino>0x19</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotCue3Button</key>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x20</midino>
+				<status>0x82</status>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -839,7 +911,7 @@
 				<group>[Channel2]</group>
 				<midino>0x20</midino>
 				<status>0x92</status>
-				<key>DenonMC6000MK2.onHotCue4Button</key>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1234,8 +1306,26 @@
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x17</midino>
+				<status>0x81</status>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x17</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotCue1Button</key>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x18</midino>
+				<status>0x81</status>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1244,7 +1334,16 @@
 				<group>[Channel3]</group>
 				<midino>0x18</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotCue2Button</key>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x19</midino>
+				<status>0x81</status>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1253,7 +1352,16 @@
 				<group>[Channel3]</group>
 				<midino>0x19</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotCue3Button</key>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x20</midino>
+				<status>0x81</status>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1262,7 +1370,7 @@
 				<group>[Channel3]</group>
 				<midino>0x20</midino>
 				<status>0x91</status>
-				<key>DenonMC6000MK2.onHotCue4Button</key>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1657,8 +1765,26 @@
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x17</midino>
+				<status>0x83</status>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x17</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotCue1Button</key>
+				<key>DenonMC6000MK2.onHotcue1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x18</midino>
+				<status>0x83</status>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1667,7 +1793,16 @@
 				<group>[Channel4]</group>
 				<midino>0x18</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotCue2Button</key>
+				<key>DenonMC6000MK2.onHotcue2Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x19</midino>
+				<status>0x83</status>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1676,7 +1811,16 @@
 				<group>[Channel4]</group>
 				<midino>0x19</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotCue3Button</key>
+				<key>DenonMC6000MK2.onHotcue3Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x20</midino>
+				<status>0x83</status>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1685,7 +1829,7 @@
 				<group>[Channel4]</group>
 				<midino>0x20</midino>
 				<status>0x93</status>
-				<key>DenonMC6000MK2.onHotCue4Button</key>
+				<key>DenonMC6000MK2.onHotcue4Button</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -1873,7 +2017,7 @@
 		</controls>
 
 		<outputs>
-			<!-- VU meter - 1st green -->
+			<!-- VU meter: 1st green -->
 			<output>
 				<group>[Channel1]</group>
 				<key>VuMeter</key>
@@ -1910,7 +2054,7 @@
 				<off>0x00</off>
 				<minimum>0.2</minimum>
 			</output>
-			<!-- VU meter - 2nd green -->
+			<!-- VU meter: 2nd green -->
 			<output>
 				<group>[Channel1]</group>
 				<key>VuMeter</key>
@@ -1947,7 +2091,7 @@
 				<off>0x00</off>
 				<minimum>0.4</minimum>
 			</output>
-			<!-- VU meter - 3rd green -->
+			<!-- VU meter: 3rd green -->
 			<output>
 				<group>[Channel1]</group>
 				<key>VuMeter</key>
@@ -1984,7 +2128,7 @@
 				<off>0x00</off>
 				<minimum>0.6</minimum>
 			</output>
-			<!-- VU meter - 1st yellow -->
+			<!-- VU meter: 1st yellow -->
 			<output>
 				<group>[Channel1]</group>
 				<key>VuMeter</key>
@@ -2021,7 +2165,7 @@
 				<off>0x00</off>
 				<minimum>0.8</minimum>
 			</output>
-			<!-- VU meter - 2nd yellow -->
+			<!-- VU meter: 2nd yellow -->
 			<output>
 				<group>[Channel1]</group>
 				<key>VuMeter</key>
@@ -2058,7 +2202,7 @@
 				<off>0x00</off>
 				<minimum>0.87</minimum>
 			</output>
-			<!-- VU meter - 3rd yellow -->
+			<!-- VU meter: 3rd yellow -->
 			<output>
 				<group>[Channel1]</group>
 				<key>VuMeter</key>
@@ -2095,7 +2239,7 @@
 				<off>0x00</off>
 				<minimum>0.94</minimum>
 			</output>
-			<!-- VU meter - red (peak) -->
+			<!-- VU meter: red (peak) -->
 			<output>
 				<group>[Channel1]</group>
 				<key>PeakIndicator</key>
