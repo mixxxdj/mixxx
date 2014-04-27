@@ -76,7 +76,7 @@ void AnalyserGain::finalise(TrackPointer tio) {
         return;
     }
 
-    float fReplayGain_Result = pow(10.0f, ReplayGainOutput / 20.0f);
+    float fReplayGain_Result = db2ratio(ReplayGainOutput);
 
     //qDebug() << "ReplayGain result is" << ReplayGainOutput << "pow:" << fReplayGain_Result;
     //qDebug()<<"ReplayGain outputs "<< ReplayGainOutput << "db for track "<< tio->getFilename();

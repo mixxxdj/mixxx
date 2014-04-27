@@ -69,4 +69,14 @@ inline int round(double x){
 }
 #endif
 
+template <typename T>
+inline const T ratio2db(const T a) {
+    return log10(a) * 20;
+}
+
+template <typename T>
+inline const T db2ratio(const T a) {
+    return pow(10, a / 20);
+}
+
 #endif /* MATH_H */

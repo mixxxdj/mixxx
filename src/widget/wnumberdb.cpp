@@ -34,7 +34,7 @@ void WNumberDb::onConnectedControlChanged(double dParameter, double dValue) {
 void WNumberDb::setValue(double dValue) {
     QString strDb;
     if (dValue != 0.0) {
-        double v = log10(dValue) * 20;
+        double v = ratio2db(dValue);
         strDb = QString::number(v, 'f', m_iNoDigits);
     } else {
         strDb = "-" + QString(QChar(0x221E));
