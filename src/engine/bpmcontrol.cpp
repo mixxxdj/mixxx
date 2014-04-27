@@ -54,9 +54,9 @@ BpmControl::BpmControl(const char* _group,
     // bpm_down controls.
     m_pEngineBpm = new ControlPotmeter(ConfigKey(_group, "bpm"), 1, 200, true);
     // bpm_up / bpm_down steps by 1
-    m_pEngineBpm->setStep(1);
+    m_pEngineBpm->setStepCount(200 - 1);
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm->setSmallStep(0.1);
+    m_pEngineBpm->setSmallStepCount ((200 - 1) * 10);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineBpm(double)),
             Qt::DirectConnection);

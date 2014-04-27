@@ -22,9 +22,9 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     m_pClockBpm.reset(new ControlPotmeter(ConfigKey(m_group, "bpm"),
                                           1, 200, true));
     // bpm_up / bpm_down steps by 1
-    m_pClockBpm->setStep(1);
+    m_pClockBpm->setStepCount(200 - 1);
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pClockBpm->setSmallStep(0.1);
+    m_pClockBpm->setSmallStepCount((200 - 1) * 10);
 
     connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
