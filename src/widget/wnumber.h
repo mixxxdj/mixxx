@@ -39,9 +39,6 @@ class WNumber : public WLabel  {
   protected:
     // Number of digits to round to.
     int m_iNoDigits;
-
-    // Constant factor added to value.
-    double m_dConstFactor;
 };
 
 #endif
