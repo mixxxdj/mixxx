@@ -4,25 +4,17 @@
 
 #include <QLabel>
 
-#include "widget/wlabel.h"
+#include "widget/wnumber.h"
 #include "skin/skincontext.h"
 
-class WNumberDb : public WLabel  {
+class WNumberDb : public WNumber {
     Q_OBJECT
   public:
-    WNumberDb(QWidget* pParent=NULL);
+    WNumberDb(QWidget* pParent = NULL);
     virtual ~WNumberDb();
-
-    virtual void setup(QDomNode node, const SkinContext& context);
-
-    virtual void onConnectedControlChanged(double dParameter, double dValue);
 
   public slots:
     virtual void setValue(double dValue);
-
-  protected:
-    // Number of digits to round to.
-    int m_iNoDigits;
 };
 
 #endif // WNUMBERDB_H
