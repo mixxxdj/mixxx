@@ -8,7 +8,6 @@
 #include "soundsourcemodplug.h"
 
 #include "util/timer.h"
-#include "util/math.h"
 
 /* read files in 512k chunks */
 #define CHUNKSIZE (1 << 19)

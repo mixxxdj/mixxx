@@ -9,6 +9,7 @@
 #include <QString>
 
 #include "soundsource.h"
+#include "util/math.h"
 
 namespace ModPlug {
 #include <libmodplug/modplug.h>
@@ -22,7 +23,7 @@ class SoundSourceModPlug : public Mixxx::SoundSource
   public:
     SoundSourceModPlug(QString qFilename);
     ~SoundSourceModPlug();
-    int open();
+    Result open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
