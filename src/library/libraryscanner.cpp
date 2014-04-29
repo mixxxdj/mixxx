@@ -36,6 +36,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 m_playlistDao(m_database),
                 m_crateDao(m_database),
                 m_directoryDao(m_database),
+                m_coverArtDao(m_database),
                 m_analysisDao(m_database, collection->getConfig()),
                 m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
                            m_analysisDao,m_directoryDao, collection->getConfig()),
@@ -161,6 +162,7 @@ void LibraryScanner::run() {
     m_playlistDao.setDatabase(m_database);
     m_analysisDao.setDatabase(m_database);
     m_directoryDao.setDatabase(m_database);
+    m_coverArtDao.setDatabase(m_database);
 
     m_libraryHashDao.initialize();
     m_cueDao.initialize();
@@ -168,6 +170,7 @@ void LibraryScanner::run() {
     m_playlistDao.initialize();
     m_analysisDao.initialize();
     m_directoryDao.initialize();
+    m_coverArtDao.initialize();
 
     resetCancel();
 

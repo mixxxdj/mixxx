@@ -791,6 +791,7 @@ class MixxxCore(Feature):
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
                    "library/dao/analysisdao.cpp",
+                   "library/dao/coverartdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
