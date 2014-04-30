@@ -49,7 +49,7 @@ Key.prototype.y = -1;
 Key.prototype.page = -1;
 Key.prototype.pressed = false;
 
-Key.prototype.init = function(x,y, page)
+Key.prototype.init = function(page, x, y)
 {
     this.x = x;
     this.y = y;
@@ -110,6 +110,18 @@ function PushKey(colordef, colorpush) {
         this.setColor(this.colordef);
     }
 
+    return that;
+}
+
+function PushKeyBin(colordef, colorpush, group, control, pushval) {
+    var that = PushKey(colordef, colorpush);
+
+    that.onPushOrig = that.onPush;
+    that.onPush = function()
+    {
+        engine.setValue(group, control, pushval);
+        this.onPushOrig();
+    }
     return that;
 }
 
@@ -301,6 +313,37 @@ function LoopModeKey()
     return that;
 }
 
+function LoadKey(channel)
+{
+    var that = PushKey("hi_green","hi_amber");
+
+    that.group   = "[Channel" + channel + "]";
+    that.control = "LoadSelectedTrack";
+
+    that.onPushOrig = that.onPush;
+
+    that.onPush = function()
+    {
+        engine.setValue(this.group, this.control, 1);
+        this.onPushOrig();
+    }
+
+    that.event = function() {
+        if (engine.getValue(this.group, "play")) {
+            this.colordef = "lo_red";
+        } else {
+            this.colordef = "hi_green";
+        }
+        this.setColor(this.colordef);
+    }
+
+    that.conEvent = function() {
+        engine.connectControl(this.group, "play", this.event);
+    }
+
+    that.conEvent();
+    return that;
+}
 
 //Define the controller
 
@@ -309,7 +352,8 @@ NLM.init = function()
 {
         NLM.page = 0;
         NLM.shiftstate = false;
-        NLM.numofdecks = engine.getValue("[Master]", "num_decks");
+        //TODO !!! NLM.numofdecks = engine.getValue("[Master]", "num_decks");
+        NLM.numofdecks = 4;
 
         //Init hw
         midi.sendShortMsg(0xb0, 0x0, 0x0);
@@ -335,52 +379,68 @@ NLM.init = function()
                         tmp = ShiftKey();
                     }
 
-                    tmp.init(x,y, page);
-                    NLM.btns[page][x][y] = tmp;
-//                    NLM.setColor(x, y, "hi_yellow");
+                    NLM.setupBtn(page,x,y, tmp);
                 }
             }
         }
         //Set default page led
         NLM.btns[NLM.page][8][0].setColor("hi_amber");
 
-        //TODO make this dynamic based on numofdecks !
+        // ============== PAGE 1 ===============
         //Set ChX CueButtons
         for ( deck = 1; deck <= NLM.numofdecks; deck++ ) {
             for ( hc = 1 ; hc < 9 ; hc++ ) {
                 x = hc-1;
                 y = (deck-1)*2+1;
-                NLM.btns[0][x][y] = HotCueKey(deck, hc);
-                NLM.btns[0][x][y].init(x,y, 0);
+                NLM.setupBtn(0,x,y, HotCueKey(deck, hc));
             }
         }
 
         for ( deck = 1; deck <= NLM.numofdecks; deck++ ) {
             y = (deck-1)*2;
             //Set Chx PlayButton
-            NLM.btns[0][0][y] = PlayKey(deck);
-            NLM.btns[0][0][y].init(0, y, 0);
+            NLM.setupBtn(0,0,y, PlayKey(deck));
             //Set Chx LoopButtons
-            NLM.btns[0][2][y] = LoopKey(deck, "0.0625");
-            NLM.btns[0][2][y].init(2, y, 0);
-            NLM.btns[0][3][y] = LoopKey(deck, "0.125");
-            NLM.btns[0][3][y].init(3, y, 0);
-            NLM.btns[0][4][y] = LoopKey(deck, "0.25");
-            NLM.btns[0][4][y].init(4, y, 0);
-            NLM.btns[0][5][y] = LoopKey(deck, "0.5");
-            NLM.btns[0][5][y].init(5, y, 0);
-            NLM.btns[0][6][y] = LoopKey(deck, "1");
-            NLM.btns[0][6][y].init(6, y, 0);
-            NLM.btns[0][7][y] = LoopKey(deck, "2");
-            NLM.btns[0][7][y].init(7, y, 0);
+            NLM.setupBtn(0,2,y, LoopKey(deck, "0.0625"));
+            NLM.setupBtn(0,3,y, LoopKey(deck, "0.125"));
+            NLM.setupBtn(0,4,y, LoopKey(deck, "0.25"));
+            NLM.setupBtn(0,5,y, LoopKey(deck, "0.5"));
+            NLM.setupBtn(0,6,y, LoopKey(deck, "1"));
+            NLM.setupBtn(0,7,y, LoopKey(deck, "2"));
         }
 
-        NLM.btns[0][2][8] = LoopModeKey();
-        NLM.btns[0][2][8].init(2, 8, 0);
+        NLM.setupBtn(0,2,8, LoopModeKey());
+
+        // ============== PAGE 2 ===============
+
+        // Right side, playlist scroll
+        NLM.setupBtn(7,6,0, PushKeyBin("lo_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", -50));
+        NLM.setupBtn(7,6,1, PushKeyBin("mi_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", -10));
+        NLM.setupBtn(7,6,2, PushKeyBin("hi_amber", "hi_amber", "[Playlist]", "SelectPrevTrack", 1));
+        NLM.setupBtn(7,6,3, PushKeyBin("hi_green", "hi_amber", "[Playlist]", "LoadSelectedIntoFirstStopped", 1));
+        NLM.setupBtn(7,6,4, PushKeyBin("hi_amber", "hi_amber", "[Playlist]", "SelectNextTrack", 1));
+        NLM.setupBtn(7,6,5, PushKeyBin("mi_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", 10));
+        NLM.setupBtn(7,6,6, PushKeyBin("lo_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", 50));
+
+        NLM.setupBtn(7,5,2, LoadKey(1));
+        NLM.setupBtn(7,7,2, LoadKey(2));
+        NLM.setupBtn(7,5,4, LoadKey(3));
+        NLM.setupBtn(7,7,4, LoadKey(4));
+
+        // Left side, playlists
+
+        NLM.setupBtn(7,1,2, PushKeyBin("hi_green", "hi_amber", "[Playlist]", "SelectPrevPlaylist", 1));
+        NLM.setupBtn(7,1,3, PushKeyBin("hi_yellow", "hi_amber", "[Playlist]", "ToggleSelectedSidebarItem", 1));
+        NLM.setupBtn(7,1,4, PushKeyBin("hi_green", "hi_amber", "[Playlist]", "SelectNextPlaylist", 1));
 
         this.drawPage();
 };
 
+NLM.setupBtn = function(page, x, y, btn)
+{
+    NLM.btns[page][x][y] = btn;
+    NLM.btns[page][x][y].init(page, x, y);
+}
 
 NLM.shutdown = function()
 {
@@ -409,7 +469,7 @@ NLM.incomingData = function(channel, control, value, status, group)
             y = 8; x = 0;
         }
 
-        print( "COO: " + y + ":" + x);
+        print( "COO: " + NLM.page + ":" + x + ":" + y);
         NLM.btns[NLM.page][x][y].pressed = pressed;
         NLM.btns[NLM.page][x][y].callback();
 };
