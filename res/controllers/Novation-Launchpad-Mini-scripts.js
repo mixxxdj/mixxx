@@ -345,6 +345,35 @@ function LoadKey(channel)
     return that;
 }
 
+function ZoomKey(dir)
+{
+    var that = PushKey("lo_green", "hi_amber");
+
+    that.dir  = dir;
+
+    that.onPushOrig = that.onPush;
+    that.onPush = function()
+    {
+        if ( ZoomKey.zoom < 6 && this.dir == "+" ) {
+            ZoomKey.zoom++;
+        }
+        if ( ZoomKey.zoom > 1 && this.dir == "-") {
+            ZoomKey.zoom--;
+        }
+
+        for ( ch = 1 ; ch <= NLM.numofdecks ; ch++ ) {
+            print("Zoom:" + ZoomKey.zoom);
+            var group = "[Channel" + ch + "]";
+            engine.setValue(group, "waveform_zoom", ZoomKey.zoom);
+        }
+
+        this.onPushOrig();
+    }
+
+    return that;
+}
+ZoomKey.zoom = 3;
+
 //Define the controller
 
 NLM = new Controller();
@@ -375,8 +404,22 @@ NLM.init = function()
                         tmp = PageSelectKey();
                     }
 
-                    if (y == 8 && x == 7) {
-                        tmp = ShiftKey();
+                    if (y == 8) {
+                        if (x == 0) {
+                            tmp = ZoomKey("-");
+                        }
+
+                        if (x == 1) {
+                            tmp = ZoomKey("+");
+                        }
+
+                        if (x == 7) {
+                            tmp = ShiftKey();
+                        }
+                    }
+
+                    if (y == 8 && x == 1) {
+
                     }
 
                     NLM.setupBtn(page,x,y, tmp);
