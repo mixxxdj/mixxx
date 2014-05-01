@@ -375,12 +375,9 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 
     TagLib::ID3v2::FrameList covertArtFrame = id3v2->frameListMap()["APIC"];
     if (!covertArtFrame.isEmpty()) {
-
         TagLib::ID3v2::AttachedPictureFrame* picframe = static_cast
                 <TagLib::ID3v2::AttachedPictureFrame*>(covertArtFrame.front());
-
         TagLib::ByteVector data = picframe->picture();
-
         QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
                                               data.data()),
                                               data.size());
@@ -513,6 +510,17 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
             qDebug() << "MP4" << TStringToQString((*it).first) << "-"
                      << TStringToQString((*it).second.toStringList().toString());
         }
+    }
+
+    // Get Cover Art
+    if (mp4->itemListMap().contains("covr")) {
+        TagLib::MP4::CoverArtList coverArtList = mp4->itemListMap()["covr"]
+                                                        .toCoverArtList();
+        TagLib::ByteVector data = coverArtList.front().data();
+        QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
+                                              data.data()),
+                                              data.size());
+        setCoverArt(picture);
     }
 
     // Get BPM
