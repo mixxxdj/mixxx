@@ -396,6 +396,21 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
         }
     }
 
+    // Get Cover Art
+    if (ape->itemListMap().contains("COVER ART (FRONT)"))
+    {
+        const TagLib::ByteVector nullStringTerminator(1, 0);
+        TagLib::ByteVector item = ape->itemListMap()["COVER ART (FRONT)"].value();
+        int pos = item.find(nullStringTerminator);	// skip the filename
+        if (++pos > 0) {
+            const TagLib::ByteVector& data = item.mid(pos);
+            QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
+                                                  data.data()),
+                                                  data.size());
+            setCoverArt(picture);
+        }
+    }
+
     if (ape->itemListMap().contains("BPM")) {
         QString sBpm = TStringToQString(ape->itemListMap()["BPM"].toString());
         processBpmString("APE", sBpm);
