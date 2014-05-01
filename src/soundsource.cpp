@@ -373,6 +373,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
         setGrouping(sGrouping);
     }
 
+    // Get Cover Art
     TagLib::ID3v2::FrameList covertArtFrame = id3v2->frameListMap()["APIC"];
     if (!covertArtFrame.isEmpty()) {
         TagLib::ID3v2::AttachedPictureFrame* picframe = static_cast
@@ -432,6 +433,16 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
                 it != xiph->fieldListMap().end(); ++it) {
             qDebug() << "XIPH" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
         }
+    }
+
+    // Get Cover Art
+    if (xiph->fieldListMap().contains("COVERART")) {
+        TagLib::ByteVector data = xiph->fieldListMap()["COVERART"]
+                                    .front().data(TagLib::String::Latin1);
+        QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
+                                              data.data()),
+                                              data.size());
+        setCoverArt(picture);
     }
 
     // Some tags use "BPM" so check for that.
