@@ -62,6 +62,7 @@ const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 class ScopedTransaction;
 class PlaylistDAO;
 class AnalysisDao;
+class CoverArtDAO;
 class CueDAO;
 class CrateDAO;
 class DirectoryDAO;
@@ -71,7 +72,7 @@ class TrackDAO : public QObject, public virtual DAO {
   public:
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
-    TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
+    TrackDAO(QSqlDatabase& database, CoverArtDAO& coverArtDao, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao, DirectoryDAO& directoryDao,
              ConfigObject<ConfigValue>* pConfig = NULL);
@@ -154,6 +155,7 @@ class TrackDAO : public QObject, public virtual DAO {
     static void deleteTrack(TrackInfoObject* pTrack);
 
     QSqlDatabase& m_database;
+    CoverArtDAO& m_coverArtDao;
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
     CrateDAO& m_crateDao;

@@ -11,6 +11,7 @@
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "trackinfoobject.h"
+#include "library/dao/coverartdao.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
@@ -30,6 +31,7 @@ enum { UndefinedRecordIndex = -2 };
 #define TRACK_CACHE_SIZE 5
 
 TrackDAO::TrackDAO(QSqlDatabase& database,
+                   CoverArtDAO& coverArtDao,
                    CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    CrateDAO& crateDao,
@@ -37,6 +39,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    DirectoryDAO& directoryDao,
                    ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
+          m_coverArtDao(coverArtDao),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_crateDao(crateDao),
@@ -314,7 +317,6 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
-
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
 
     // We no longer store the wavesummary in the library table.
