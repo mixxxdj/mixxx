@@ -17,15 +17,16 @@
 
 #include <QtDebug>
 
-#include <taglib/tag.h>
+#include <taglib/attachedpictureframe.h>
 #include <taglib/audioproperties.h>
-#include <taglib/vorbisfile.h>
+#include <taglib/id3v1tag.h>
 #include <taglib/id3v2frame.h>
 #include <taglib/id3v2header.h>
-#include <taglib/id3v1tag.h>
+#include <taglib/tag.h>
+#include <taglib/textidentificationframe.h>
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
-#include <taglib/textidentificationframe.h>
+#include <taglib/vorbisfile.h>
 #include <taglib/wavpackfile.h>
 
 #include "soundsource.h"
@@ -147,6 +148,10 @@ int SoundSource::getChannels()
 {
     return m_iChannels;
 }
+QImage SoundSource::getCoverArt()
+{
+    return m_coverArt;
+}
 
 void SoundSource::setArtist(QString artist)
 {
@@ -215,6 +220,10 @@ void SoundSource::setSampleRate(unsigned int samplerate)
 void SoundSource::setChannels(int channels)
 {
     m_iChannels = channels;
+}
+void SoundSource::setCoverArt(QImage picture)
+{
+    m_coverArt = picture;
 }
 QString SoundSource::getKey(){
     return m_sKey;
@@ -362,6 +371,20 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     if (!groupingFrame.isEmpty()) {
         QString sGrouping = TStringToQString(groupingFrame.front()->toString());
         setGrouping(sGrouping);
+    }
+
+    TagLib::ID3v2::FrameList covertArtFrame = id3v2->frameListMap()["APIC"];
+    if (!covertArtFrame.isEmpty()) {
+
+        TagLib::ID3v2::AttachedPictureFrame* picframe = static_cast
+                <TagLib::ID3v2::AttachedPictureFrame*>(covertArtFrame.front());
+
+        TagLib::ByteVector data = picframe->picture();
+
+        QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
+                                              data.data()),
+                                              data.size());
+        setCoverArt(picture);
     }
 
     return true;

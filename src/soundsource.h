@@ -18,6 +18,7 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
+#include <QImage>
 #include <QString>
 
 #include <taglib/tfile.h>
@@ -90,6 +91,7 @@ public:
     virtual int getBitrate();
     virtual unsigned int getSampleRate();
     virtual int getChannels();
+    virtual QImage getCoverArt();
 
     virtual void setArtist(QString);
     virtual void setTitle(QString);
@@ -109,6 +111,7 @@ public:
     virtual void setBitrate(int);
     virtual void setSampleRate(unsigned int);
     virtual void setChannels(int);
+    virtual void setCoverArt(QImage);
 protected:
 
     // Automatically collects generic data from a TagLib File: title, artist,
@@ -136,6 +139,7 @@ protected:
     QString m_sComposer;
     QString m_sGrouping;
     QString m_sTrackNumber;
+    QImage m_coverArt;
     float m_fReplayGain;
     QString m_sKey;
     float m_fBPM;
