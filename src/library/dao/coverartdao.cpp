@@ -4,8 +4,13 @@
 
 #include "library/dao/coverartdao.h"
 
-CoverArtDAO::CoverArtDAO(QSqlDatabase& database)
-    : m_database(database) {
+CoverArtDAO::CoverArtDAO(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig),
+          m_database(database) {
+    if (!QDir().mkpath(getStoragePath())) {
+        qDebug() << "WARNING: Could not create cover arts storage path. "
+                 << "Mixxx will be unable to store analyses.";
+    }
 }
 
 CoverArtDAO::~CoverArtDAO() {
@@ -17,18 +22,15 @@ void CoverArtDAO::initialize() {
              << m_database.connectionName();
 }
 
-void CoverArtDAO::saveCoverArt(TrackInfoObject* pTrack,
-                               ConfigObject<ConfigValue>* pConfig) {
-
-    QString settingsPath = pConfig->getSettingsPath();
-    QString coverArtFolder = "/coverArt/";
-    QDir dir(settingsPath.append(coverArtFolder));
-    QDir().mkpath(dir.absolutePath());
-
+void CoverArtDAO::saveCoverArt(TrackInfoObject* pTrack) {
     QString coverArtName = pTrack->getAlbum();
-    QString location = dir.absolutePath().append("/").append(coverArtName);
-
     QImage image = pTrack->getCoverArt();
     if (!image.isNull())
-        image.save(location, "JPG");
+        image.save(getStoragePath().append(coverArtName), "JPG");
+}
+
+QString CoverArtDAO::getStoragePath() const {
+    QString settingsPath = m_pConfig->getSettingsPath();
+    QDir dir(settingsPath.append("/coverArt/"));
+    return dir.absolutePath().append("/");
 }

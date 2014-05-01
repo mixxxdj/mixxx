@@ -542,7 +542,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        m_coverArtDao.saveCoverArt(pTrack, m_pConfig);
+        m_coverArtDao.saveCoverArt(pTrack);
         pTrack->setDirty(false);
     }
     m_tracksAddedSet.insert(trackId);
