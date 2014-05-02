@@ -138,8 +138,7 @@ function PageSelectKey() {
     return that;
 }
 
-function ShiftKey()
-{
+function ShiftKey() {
     var that = PushKey("lo_green", "hi_yellow");
 
     that.onPushOrig = that.onPush;
@@ -159,8 +158,7 @@ function ShiftKey()
     return that;
 }
 
-function HotCueKey(deck, hotcue)
-{
+function HotCueKey(deck, hotcue) {
     var that = new Key();
     that.deck = deck;
     that.hotcue = hotcue;
@@ -206,8 +204,7 @@ function HotCueKey(deck, hotcue)
     return that;
 }
 
-function PlayKey(deck)
-{
+function PlayKey(deck) {
     var that = new Key();
     that.group = "[Channel" + deck + "]";
     that.ctrl  = "play";
@@ -239,8 +236,7 @@ function PlayKey(deck)
     return that;
 }
 
-function LoopKey(deck, loop)
-{
+function LoopKey(deck, loop) {
     var that = new Key();
 
     that.group = "[Channel" + deck + "]";
@@ -292,8 +288,7 @@ function LoopKey(deck, loop)
     return that;
 }
 
-function LoopModeKey()
-{
+function LoopModeKey() {
     var that = new Key();
     that.setColor("lo_yellow");
 
@@ -313,8 +308,7 @@ function LoopModeKey()
     return that;
 }
 
-function LoadKey(channel)
-{
+function LoadKey(channel) {
     var that = PushKey("hi_green","hi_amber");
 
     that.group   = "[Channel" + channel + "]";
@@ -345,8 +339,7 @@ function LoadKey(channel)
     return that;
 }
 
-function ZoomKey(dir)
-{
+function ZoomKey(dir) {
     var that = PushKey("lo_green", "hi_amber");
 
     that.dir  = dir;
@@ -373,6 +366,42 @@ function ZoomKey(dir)
     return that;
 }
 ZoomKey.zoom = 3;
+
+function SeekKey(ch, pos) {
+    var that = new Key();
+
+    that.pos  = 0.125 * pos;
+    that.grp = "[Channel"+ ch + "]";
+
+    that.setled = function()
+    {
+        if (engine.getValue(this.grp, "playposition") >= this.pos) {
+            this.setColor("hi_red");
+        } else {
+            this.setColor("lo_green");
+        }
+    }
+
+    that.conEvent = function()
+    {
+        engine.connectControl(this.grp, "beat_active", this.setled);
+    }
+
+    that.conEvent();
+
+    that.onPush = function()
+    {
+        engine.setValue(this.grp, "playposition", this.pos);
+        SeekKey[ch].forEach(function(e) { e.setled(); });
+    }
+
+    that.setled();
+
+    if ( SeekKey[ch] == undefined ) SeekKey[ch] = new Array();
+    SeekKey[ch][pos] = that;
+    return that;
+}
+SeekKey.keys = new Array();
 
 //Define the controller
 
@@ -429,7 +458,7 @@ NLM.init = function()
         //Set default page led
         NLM.btns[NLM.page][8][0].setColor("hi_amber");
 
-        // ============== PAGE 1 ===============
+        // ============== PAGE 0 ===============
         //Set ChX CueButtons
         for ( deck = 1; deck <= NLM.numofdecks; deck++ ) {
             for ( hc = 1 ; hc < 9 ; hc++ ) {
@@ -454,7 +483,7 @@ NLM.init = function()
 
         NLM.setupBtn(0,2,8, LoopModeKey());
 
-        // ============== PAGE 2 ===============
+        // ============== PAGE 7 ===============
 
         // Right side, playlist scroll
         NLM.setupBtn(7,6,0, PushKeyBin("lo_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", -50));
@@ -475,6 +504,17 @@ NLM.init = function()
         NLM.setupBtn(7,1,2, PushKeyBin("hi_green", "hi_amber", "[Playlist]", "SelectPrevPlaylist", 1));
         NLM.setupBtn(7,1,3, PushKeyBin("hi_yellow", "hi_amber", "[Playlist]", "ToggleSelectedSidebarItem", 1));
         NLM.setupBtn(7,1,4, PushKeyBin("hi_green", "hi_amber", "[Playlist]", "SelectNextPlaylist", 1));
+
+        // ============== PAGE 1 ===============
+
+        //SeekButtons
+        for(i = 0 ; i < 8 ; i++) {
+            for ( ch = 1 ; ch <= NLM.numofdecks; ch++ ) {
+                NLM.setupBtn(1,i,ch*2-1, SeekKey(ch, i));
+            }
+        }
+
+
 
         this.drawPage();
 };
