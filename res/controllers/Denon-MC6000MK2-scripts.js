@@ -11,9 +11,18 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2014-04-30
+// Revision: 2014-05-02
 //
 // Changelog:
+// 2014-05-02 Sampler modes + crossfader configuration
+//   - Support 2 different sampler modes:
+//     - Hold (the new default)
+//     - Trigger
+//     The default sampler mode can be changed by setting
+//     DenonMC6000MK2.DEFAULT_SAMPLER_MODE appropriately.
+//   - Assignment of crossfader to channels
+//   - Modify contour of crossfader curve
+//   - Delete unused booth level control
 // 2014-04-30 Only 4+4 samplers (shared between decks)
 //   - MIDI debugging revealed that the sampler controls
 //     buttons/LEDs are sending/receiving on MIDI Ch0 (left side)
@@ -67,6 +76,13 @@ function DenonMC6000MK2 () {}
 ////////////////////////////////////////////////////////////////////////
 // Tunable constants                                                  //
 ////////////////////////////////////////////////////////////////////////
+
+DenonMC6000MK2.SAMPLER_MODE = {
+	HOLD:    { value: 1, name: "Hold",    description: "Play sample from beginning to end while pressing the Sample button" },
+	TRIGGER: { value: 2, name: "Trigger", description: "Play sample from beginning to end until stopped by pressing Shift + Sample button" }
+};
+
+DenonMC6000MK2.DEFAULT_SAMPLER_MODE = DenonMC6000MK2.SAMPLER_MODE.HOLD;
 
 DenonMC6000MK2.JOG_SPIN_CUE_PEAK = 0.7; // [0.0, 1.0]
 DenonMC6000MK2.JOG_SPIN_CUE_EXPONENT = 0.5; // 1.0 = linear response
@@ -430,15 +446,42 @@ DenonMC6000MK2.Sampler.prototype.isPlaying = function () {
 	return engine.getValue(this.group, "play");
 };
 
-DenonMC6000MK2.Sampler.prototype.onButtonPressed = function() {
-	if (this.isTrackLoaded()) {
-		if (DenonMC6000MK2.shiftState) {
-			engine.setValue(this.group, "start_stop", true);
-		} else {
-			engine.setValue(this.group, "start_play", true);
-		}
-	} else {
-		this.loadSelectedTrack();
+DenonMC6000MK2.Sampler.prototype.onButton = function(isButtonPressed) {
+	switch (DenonMC6000MK2.DEFAULT_SAMPLER_MODE) {
+		case DenonMC6000MK2.SAMPLER_MODE.TRIGGER:
+			if (isButtonPressed) {
+				if (this.isTrackLoaded()) {
+					if (DenonMC6000MK2.shiftState) {
+						engine.setValue(this.group, "start_stop", true);
+					} else {
+						engine.setValue(this.group, "start_play", true);
+					}
+				} else {
+					this.loadSelectedTrack();
+				}
+			}
+			break;
+		case DenonMC6000MK2.SAMPLER_MODE.HOLD:
+			if (this.isTrackLoaded()) {
+				if (isButtonPressed) {
+					if (DenonMC6000MK2.shiftState) {
+						engine.setValue(this.group, "eject", true);
+					} else {
+						engine.setValue(this.group, "start_play", true);
+					}
+				} else {
+					// continue playing if shift is pressed when
+					// releasing the pressed button
+					if (!DenonMC6000MK2.shiftState) {
+						engine.setValue(this.group, "start_stop", true);
+					}
+				}
+			} else {
+				if (isButtonPressed) {
+					this.loadSelectedTrack();
+				}
+			}
+			break;
 	}
 };
 
@@ -519,6 +562,20 @@ DenonMC6000MK2.Deck.prototype.toggleValue = function (key) {
 
 DenonMC6000MK2.Deck.prototype.triggerValue = function (key) {
 	engine.trigger(this.group, key);
+};
+
+/* Xfader */
+
+DenonMC6000MK2.Deck.prototype.assignXfaderLeft = function () {
+	this.setValue("orientation", 0);
+};
+
+DenonMC6000MK2.Deck.prototype.assignXfaderCenter = function () {
+	this.setValue("orientation", 1);
+};
+
+DenonMC6000MK2.Deck.prototype.assignXfaderRight = function () {
+	this.setValue("orientation", 2);
 };
 
 /* Tracks */
@@ -1351,17 +1408,37 @@ DenonMC6000MK2.onFilterKnobRight = function (channel, control, value, status, gr
 };
 
 DenonMC6000MK2.onXfaderContour = function (channel, control, value, status, group) {
-	// TODO
-};
-
-DenonMC6000MK2.onBoothLevel = function (channel, control, value, status, group) {
-	// TODO
+	script.crossfaderCurve(value, /*min=*/0x00, /*max=*/0x7F);
 };
 
 
 ////////////////////////////////////////////////////////////////////////
 // MIDI [Channel<n>] callback functions                               //
 ////////////////////////////////////////////////////////////////////////
+
+DenonMC6000MK2.onXfaderAssignLeftButton = function (channel, control, value, status, group) {
+	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
+	if (isButtonPressed) {
+		var deck = DenonMC6000MK2.getDeckByGroup(group);
+		deck.assignXfaderLeft();
+	}
+};
+
+DenonMC6000MK2.onXfaderAssignThruButton = function (channel, control, value, status, group) {
+	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
+	if (isButtonPressed) {
+		var deck = DenonMC6000MK2.getDeckByGroup(group);
+		deck.assignXfaderCenter();
+	}
+};
+
+DenonMC6000MK2.onXfaderAssignRightButton = function (channel, control, value, status, group) {
+	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
+	if (isButtonPressed) {
+		var deck = DenonMC6000MK2.getDeckByGroup(group);
+		deck.assignXfaderRight();
+	}
+};
 
 DenonMC6000MK2.onShiftButton = function (channel, control, value, status, group) {
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
@@ -1537,10 +1614,8 @@ DenonMC6000MK2.onCensorButton = function (channel, control, value, status, group
 
 DenonMC6000MK2.onSamplerButton = function (channel, control, value, status, group) {
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
-	if (isButtonPressed) {
-		var sampler = DenonMC6000MK2.getSamplerByGroup(group);
-		sampler.onButtonPressed();
-	}
+	var sampler = DenonMC6000MK2.getSamplerByGroup(group);
+	sampler.onButton(isButtonPressed);
 };
 
 DenonMC6000MK2.onFx1Efx1Button = function (channel, control, value, status, group) {

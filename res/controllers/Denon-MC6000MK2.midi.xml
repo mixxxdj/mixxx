@@ -250,15 +250,6 @@
 				<key>headVolume</key>
 				<options/>
 			</control>
-			<control>
-				<group>[Master]</group>
-				<midino>0x1B</midino>
-				<status>0xB0</status>
-				<key>DenonMC6000MK2.onBoothLevel</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
 
 			<!-- Left-side [Sampler1/2/3/4] Controls (MIDI Ch0) -->
 			<control>
@@ -467,6 +458,33 @@
 				<midino>0x5C</midino>
 				<status>0x90</status>
 				<key>DenonMC6000MK2.onFx2AssignButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x31</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x32</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x33</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -867,6 +885,33 @@
 					<script-binding/>
 				</options>
 			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x34</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x35</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x36</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
 
 			<!-- [Channel2] - MIDI Ch2 Controls -->
 			<control>
@@ -1263,6 +1308,33 @@
 					<script-binding/>
 				</options>
 			</control>
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x3A</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x3B</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
+				<midino>0x3C</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
 
 			<!-- [Channel3] - MIDI Ch1 Controls -->
 			<control>
@@ -1655,6 +1727,33 @@
 				<midino>0x5F</midino>
 				<status>0x90</status>
 				<key>DenonMC6000MK2.onFx2AssignButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x3D</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignLeftButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x3E</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignThruButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<midino>0x3F</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onXfaderAssignRightButton</key>
 				<options>
 					<script-binding/>
 				</options>
