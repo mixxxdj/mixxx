@@ -170,6 +170,65 @@ void ControlLinPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double 
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
+
+
+ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
+                             double minDB, double maxDB,
+                             double neutralParameter)
+        : ControlPotmeterBehavior(0.0, db2ratio(maxDB), false),
+          m_neutralParameter(neutralParameter),
+          m_minDB(minDB),
+          m_maxDB(maxDB),
+          m_offset(db2ratio(m_minDB)) {
+}
+
+ControlAudioTaperPotBehavior::~ControlAudioTaperPotBehavior() {
+}
+
+double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
+    if (dValue <= 0.0) {
+        return 0;
+    } else if (dValue < 1.0) {
+        // db + linear overlay to reach
+        // m_minDB = 0
+        // 0 dB = m_neutralParame;
+        double overlay = m_offset * (1 - dValue);
+        return (db2ratio(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+    } else if (dValue == 1.0) {
+        return m_neutralParameter;
+    } else if (dValue < m_dMaxValue) {
+        // m_maxDB = 1
+        // 0 dB = m_neutralParame;
+        return (db2ratio(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
+    } else {
+        return 1.0;
+    }
+}
+
+double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
+    if (dParam <= 0.0) {
+        return 0;
+    } else if (dParam < m_neutralParameter) {
+        // db + linear overlay to reach
+        // m_minDB = 0
+        // 0 dB = m_neutralParame;
+        double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
+        return (ratio2db(db) - m_offset) / (1 - m_offset) ;
+    } else if (dParam == m_neutralParameter) {
+        return 1.0;
+    } else if (dParam < 1.0) {
+        // m_maxDB = 1
+        // 0 dB = m_neutralParame;
+        return ratio2db((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
+    } else {
+        return 1.0;
+    }
+}
+
+
+
+
+
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
     return (dValue * 200.0 + 64) / 127.0;
 }

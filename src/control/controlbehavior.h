@@ -70,6 +70,22 @@ class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
                                            ControlDoublePrivate* pControl);
 };
 
+class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
+  public:
+    ControlAudioTaperPotBehavior(double minDB, double maxDB,
+                                 double neutralParameter);
+    virtual ~ControlAudioTaperPotBehavior();
+
+    virtual double valueToParameter(double dValue);
+    virtual double parameterToValue(double dParam);
+
+  protected:
+    double m_neutralParameter;
+    double m_minDB;
+    double m_maxDB;
+    double m_offset;
+};
+
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
   public:
     virtual double valueToParameter(double dValue);
