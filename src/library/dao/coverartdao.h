@@ -23,6 +23,7 @@ class CoverArtDAO : public QObject, public virtual DAO {
     QSqlDatabase& m_database;
 
     QString getStoragePath() const;
+    QString searchCoverArt(TrackInfoObject* pTrack);
 };
 
 #endif // COVERARTDAO_H
