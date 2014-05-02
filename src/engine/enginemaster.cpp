@@ -23,6 +23,7 @@
 #include "configobject.h"
 #include "controllogpotmeter.h"
 #include "controlpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
@@ -507,8 +508,8 @@ void EngineMaster::process(const int iBufferSize) {
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
-    pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
-            ConfigKey(pChannel->getGroup(), "volume"), 1.0);
+    pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
+            ConfigKey(pChannel->getGroup(), "volume"), -70, 0, 1.0);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pMuteControl = new ControlPushButton(
