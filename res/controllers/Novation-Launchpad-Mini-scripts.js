@@ -392,13 +392,13 @@ function SeekKey(ch, pos) {
     that.onPush = function()
     {
         engine.setValue(this.grp, "playposition", this.pos);
-        SeekKey[ch].forEach(function(e) { e.setled(); });
+        SeekKey.keys[ch].forEach(function(e) { e.setled(); });
     }
 
     that.setled();
 
-    if ( SeekKey[ch] == undefined ) SeekKey[ch] = new Array();
-    SeekKey[ch][pos] = that;
+    if ( SeekKey.keys[ch] == undefined ) SeekKey.keys[ch] = new Array();
+    SeekKey.keys[ch][pos] = that;
     return that;
 }
 SeekKey.keys = new Array();
