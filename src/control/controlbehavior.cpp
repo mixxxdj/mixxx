@@ -186,6 +186,7 @@ ControlAudioTaperPotBehavior::~ControlAudioTaperPotBehavior() {
 }
 
 double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
+    double dParam = 1.0;
     if (dValue <= 0.0) {
         return 0;
     } else if (dValue < 1.0) {
@@ -193,36 +194,37 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
         // m_minDB = 0
         // 0 dB = m_neutralParame;
         double overlay = m_offset * (1 - dValue);
-        return (db2ratio(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+        dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
     } else if (dValue == 1.0) {
-        return m_neutralParameter;
+        dParam = m_neutralParameter;
     } else if (dValue < m_dMaxValue) {
         // m_maxDB = 1
         // 0 dB = m_neutralParame;
-        return (db2ratio(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
-    } else {
-        return 1.0;
+        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
     }
+    //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
+    return dParam;
 }
 
 double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
+    double dValue = 1;
     if (dParam <= 0.0) {
-        return 0;
+        dValue = 0;
     } else if (dParam < m_neutralParameter) {
         // db + linear overlay to reach
         // m_minDB = 0
         // 0 dB = m_neutralParame;
         double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
-        return (ratio2db(db) - m_offset) / (1 - m_offset) ;
+        dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
     } else if (dParam == m_neutralParameter) {
-        return 1.0;
-    } else if (dParam < 1.0) {
+        dValue = 1.0;
+    } else if (dParam <= 1.0) {
         // m_maxDB = 1
         // 0 dB = m_neutralParame;
-        return ratio2db((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
-    } else {
-        return 1.0;
+        dValue = db2ratio((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
     }
+    //qDebug() << "ControlAudioTaperPotBehavior::parameterToValue" << "dValue =" << dValue << "dParam =" << dParam;
+    return dValue;
 }
 
 
