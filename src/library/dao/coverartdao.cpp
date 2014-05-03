@@ -33,9 +33,18 @@ void CoverArtDAO::saveCoverArt(TrackInfoObject* pTrack) {
 
 QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
     const char* defaultImageFormat = "JPG";
-    QString coverArtName = QString("%1 %2")
-                                   .arg(pTrack->getArtist())
-                                   .arg(pTrack->getAlbum());
+
+    // default cover art name
+    QString coverArtName;
+    if (pTrack->getArtist() != "") {
+        coverArtName.append(pTrack->getArtist());
+    }
+    if (pTrack->getAlbum() != "") {
+        coverArtName.append(pTrack->getArtist());
+    }
+    if (coverArtName == "") {
+        coverArtName = pTrack->getFilename();
+    }
 
     // Starts with default location
     QString coverArtLocation = getStoragePath().append(coverArtName);
