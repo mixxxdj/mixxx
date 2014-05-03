@@ -40,7 +40,7 @@ QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
         coverArtName.append(pTrack->getArtist());
     }
     if (pTrack->getAlbum() != "") {
-        coverArtName.append(pTrack->getArtist());
+        coverArtName.append(pTrack->getAlbum());
     }
     if (coverArtName == "") {
         coverArtName = pTrack->getFilename();
