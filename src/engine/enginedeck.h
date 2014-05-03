@@ -83,6 +83,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
     EngineEffectsManager* m_pEngineEffectsManager;
+    GroupFeatureState m_groupFeatureState;
 
     // Begin vinyl passthrough fields
     ControlPushButton* m_pPassing;

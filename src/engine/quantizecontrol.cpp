@@ -13,7 +13,8 @@
 
 QuantizeControl::QuantizeControl(const char* pGroup,
                                  ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(pGroup, pConfig) {
+        : EngineControl(pGroup, pConfig),
+          m_oldClosestSample(-1) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize"));
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -80,6 +81,12 @@ double QuantizeControl::process(const double dRate,
     if (!even(iCurrentSample)) {
         iCurrentSample--;
     }
+
+    // No need to recalculate if nothing changed.
+    if (iCurrentSample == m_oldClosestSample) {
+        return kNoTrigger;
+    }
+    m_oldClosestSample = iCurrentSample;
 
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
