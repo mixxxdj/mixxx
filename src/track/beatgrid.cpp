@@ -153,10 +153,10 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
         beatFraction = nextBeat;
-	prevBeat = nextBeat;
+        prevBeat = nextBeat;
     } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
         beatFraction = prevBeat;
-    	nextBeat = prevBeat;
+        nextBeat = prevBeat;
     }
 
     double dClosestBeat;
