@@ -509,7 +509,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
-            ConfigKey(pChannel->getGroup(), "volume"), -50, 20, 0.7);
+            ConfigKey(pChannel->getGroup(), "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pMuteControl = new ControlPushButton(
