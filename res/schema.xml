@@ -392,7 +392,7 @@ METADATA
 	id INTEGER primary key AUTOINCREMENT,
 	location TEXT UNIQUE
       );
-      ALTER TABLE library ADD COLUMN cover_art INTEGER DEFAULT 1;
+      ALTER TABLE library ADD COLUMN cover_art INTEGER;
     </sql>
   </revision>
 </schema>
