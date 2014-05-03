@@ -153,9 +153,15 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
         beatFraction = nextBeat;
+        // If we are going to pretend we were actually on nextBeat then prevBeat
+        // needs to be re-calculated. Since it is floor(beatFraction), that's
+        // the same as nextBeat.
         prevBeat = nextBeat;
     } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
         beatFraction = prevBeat;
+        // If we are going to pretend we were actually on prevBeat then nextBeat
+        // needs to be re-calculated. Since it is ceil(beatFraction), that's
+        // the same as prevBeat.
         nextBeat = prevBeat;
     }
 
