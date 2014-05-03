@@ -3,6 +3,7 @@
 #include <QThread>
 
 #include "library/dao/coverartdao.h"
+#include "library/queryutil.h"
 
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -22,17 +23,68 @@ void CoverArtDAO::initialize() {
              << m_database.connectionName();
 }
 
+QString CoverArtDAO::getStoragePath() const {
+    QString settingsPath = m_pConfig->getSettingsPath();
+    QDir dir(settingsPath.append("/coverArt/"));
+    return dir.absolutePath().append("/");
+}
+
 void CoverArtDAO::saveCoverArt(TrackInfoObject* pTrack) {
-    QString coverArtLocation = searchCoverArt(pTrack);
+    // search cover art file (in disk) and get its location
+    QString coverArtLocation = searchCoverArtFile(pTrack);
 
     // cover art found
     if (coverArtLocation != "") {
-        // TODO: sql insertion
+        // search cover.location in database
+        int coverId = getCoverArtID(coverArtLocation);
+
+        QSqlQuery query(m_database);
+
+        // if cover art isn't in database
+        if (!coverId) { // insert new
+            query.prepare(QString(
+                "INSERT INTO cover_art (location) "
+                "VALUES (:location)"));
+            query.bindValue(":location", coverArtLocation);
+            if (!query.exec()) {
+                LOG_FAILED_QUERY(query) << "couldn't save new cover art";
+                return;
+            }
+            coverId = query.lastInsertId().toInt();
+        }
+
+        // update library.cover_art with coverId
+        query.prepare(QString(
+            "UPDATE library "
+            "SET cover_art = :coverId "
+            "WHERE id = :trackId"));
+        query.bindValue(":coverId", coverId);
+        query.bindValue(":trackId", pTrack->getId());
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query) << "couldn't update existing cover art";
+            return;
+        }
     }
 }
 
-QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
-    const char* defaultImageFormat = "JPG";
+int CoverArtDAO::getCoverArtID(QString location) {
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+        "SELECT id FROM cover_art "
+        "WHERE location = :location"));
+    query.bindValue(":location", location);
+    if (query.exec()) {
+        if (query.next()) {
+            return query.value(0).toInt();
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+    return 0;
+}
+
+QString CoverArtDAO::searchCoverArtFile(TrackInfoObject* pTrack) {
+    const char* defaultImageFormat = "jpg";
 
     // default cover art name
     QString coverArtName;
@@ -50,13 +102,16 @@ QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
     QString coverArtLocation = getStoragePath().append(coverArtName);
 
     // Some image extensions
-    QLatin1String format(".(jpe?g|png|gif|bmp)");
+    QStringList extList;
+    extList << "jpg" << "jpeg" << "png" << "gif" << "bmp";
 
     //
     // Step 1: Look for cover art in cache directory.
     //
-    if(QFile::exists(coverArtLocation + format)) {
-        return coverArtLocation;
+    foreach (QString ext, extList) {
+        if(QFile::exists(coverArtLocation + ext)) {
+            return coverArtLocation + "." + ext;
+        }
     }
 
     //
@@ -66,7 +121,7 @@ QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
     // If the track has embedded cover art, store it
     if (!image.isNull()) {
         if(image.save(coverArtLocation, defaultImageFormat)) {
-            return coverArtLocation;
+            return coverArtLocation + "." + defaultImageFormat;
         }
     }
 
@@ -75,6 +130,7 @@ QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
     //
     // Implements regular expressions for image extensions
     static QList<QRegExp> regExpList;
+    QLatin1String format(".(jpe?g|png|gif|bmp)");
     if (regExpList.isEmpty()) {
         regExpList << QRegExp(".*cover.*" + format, Qt::CaseInsensitive)
                    << QRegExp(".*front.*" + format, Qt::CaseInsensitive)
@@ -91,7 +147,7 @@ QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
             if (filename.contains(re)) {
                 QImage image(f.absoluteFilePath());
                 if (image.save(coverArtLocation, defaultImageFormat)) {
-                    return coverArtLocation;
+                    return coverArtLocation + "." + defaultImageFormat;
                 }
                 break;
             }
@@ -102,10 +158,4 @@ QString CoverArtDAO::searchCoverArt(TrackInfoObject* pTrack) {
     // Not found.
     //
     return "";
-}
-
-QString CoverArtDAO::getStoragePath() const {
-    QString settingsPath = m_pConfig->getSettingsPath();
-    QDir dir(settingsPath.append("/coverArt/"));
-    return dir.absolutePath().append("/");
 }
