@@ -12,7 +12,7 @@
 
 class EffectsManager;
 class EngineEffectsManager;
-class ControlLogpotmeter;
+class ControlAudioTaperPot;
 
 // EngineMicrophone is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager
@@ -50,7 +50,7 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
-    ControlLogpotmeter* m_pPregain;
+    ControlAudioTaperPot* m_pPregain;
     const CSAMPLE* volatile m_sampleBuffer;
 
     bool m_wasActive;

@@ -21,7 +21,7 @@
 #include "engine/engineobject.h"
 
 class ControlObjectSlave;
-class ControlLogpotmeter;
+class ControlAudioTaperPot;
 class ControlPotmeter;
 class ControlPushButton;
 
@@ -49,7 +49,7 @@ class EngineFilterBlock : public EngineObject {
 
     CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3;
     EngineObjectConstIn *low, *band, *high;
-    ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
+    ControlAudioTaperPot *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
     ControlObjectSlave* m_pSampleRate;
 

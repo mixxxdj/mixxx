@@ -227,7 +227,40 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     return dValue;
 }
 
+double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
+    // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
+    // center. The industry convention is that 64 is center.
+    // We fake things a little bit here to hit the m_neutralParameter
+    // always on a full Midi integer
+    double dParam = valueToParameter(dValue);
+    double dMidiParam = dParam * 127.0;
+    if (m_neutralParameter != 1.0) {
+        double midiNeutral = ceil(m_neutralParameter * 127);
+        double correction = (midiNeutral - (m_neutralParameter * 127)) / midiNeutral;
+        if (dParam < m_neutralParameter) {
+            dMidiParam += correction * dMidiParam;
+        } else {
+            dMidiParam -= correction * (dMidiParam - midiNeutral);
+        }
+    }
+    return dMidiParam;
+}
 
+void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o, double dMidiParam,
+                                                           ControlDoublePrivate* pControl) {
+    Q_UNUSED(o);
+    double dParam = dMidiParam / 127.0;
+    if (m_neutralParameter != 1.0) {
+        double midiNeutral = ceil(m_neutralParameter * 127);
+        double correction = ((midiNeutral / 127) - m_neutralParameter) / midiNeutral;
+        if (dMidiParam < midiNeutral) {
+            dParam += correction * dMidiParam;
+        } else {
+            dParam -= correction * (dMidiParam - midiNeutral);
+        }
+    }
+    pControl->set(parameterToValue(dParam), NULL);
+}
 
 
 

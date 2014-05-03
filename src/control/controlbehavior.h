@@ -78,6 +78,9 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
 
     virtual double valueToParameter(double dValue);
     virtual double parameterToValue(double dParam);
+    virtual double valueToMidiParameter(double dValue);
+    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
+                                           ControlDoublePrivate* pControl);
 
   protected:
     double m_neutralParameter;
