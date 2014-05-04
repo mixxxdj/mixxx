@@ -742,6 +742,7 @@ class MixxxCore(Feature):
                    "library/missingtablemodel.cpp",
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
+		   "library/coverart.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",

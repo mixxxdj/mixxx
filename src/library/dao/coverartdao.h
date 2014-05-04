@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSqlDatabase>
 
+#include "library/coverart.h"
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
 
@@ -21,11 +22,8 @@ class CoverArtDAO : public QObject, public virtual DAO {
     QString getCoverArtLocation(int id);
 
    private:
-    ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase& m_database;
-
-    QString getStoragePath() const;
-    QString searchCoverArtFile(TrackInfoObject* pTrack);
+    CoverArt* m_pCoverArt;
 };
 
 #endif // COVERARTDAO_H
