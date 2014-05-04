@@ -153,6 +153,9 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
+    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            pLibraryWidget, SLOT(slotLoadCoverArt(TrackPointer)));
+
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -233,6 +236,10 @@ void Library::slotCreatePlaylist() {
 
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
+}
+
+void Library::slotLoadCoverArt(TrackPointer pTrack) {
+    emit(loadCoverArt(pTrack));
 }
 
 void Library::onSkinLoadFinished() {

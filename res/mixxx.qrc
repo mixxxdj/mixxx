@@ -103,5 +103,9 @@
         <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
+        <file>images/library/ic_library_cover_hide.png</file>
+        <file>images/library/ic_library_cover_show.png</file>
+        <file>images/library/ic_library_zoom_in.png</file>
+        <file>images/library/vinyl-record.png</file>
     </qresource>
 </RCC>

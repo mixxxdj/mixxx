@@ -31,6 +31,7 @@
 
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
+#include "widget/wcoverart.h"
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
@@ -435,6 +436,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
     } else if (nodeName == "TableView") {
         result = wrapWidget(parseTableView(node));
+    } else if (nodeName == "CoverArt") {
+        result = wrapWidget(parseCoverArt(node));
     } else if (nodeName == "SearchBox") {
         result = wrapWidget(parseSearchBox(node));
     } else if (nodeName == "WidgetGroup") {
@@ -953,6 +956,21 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
     return pLineEditSearch;
 }
 
+QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig);
+    setupBaseWidget(node, pCoverArt);
+    setupWidget(node, pCoverArt);
+    pCoverArt->setup(node, *m_pContext);
+
+    // Connect cover art signals to the library
+    connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
+            pCoverArt, SLOT(slotHideCoverArt()));
+    connect(m_pLibrary, SIGNAL(trackSelected(pTrack)),
+            pCoverArt, SLOT(slotLoadCoverArt(pTrack)));
+
+    return pCoverArt;
+}
+
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
@@ -1015,10 +1033,13 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     QWidget* pLineEditSearch = parseSearchBox(node);
     m_pParent = oldParent;
 
+    QWidget* pCoverArt = parseCoverArt(node);
+
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
     vl->setContentsMargins(0,0,0,0); //Fill entire space
     vl->addWidget(pLineEditSearch);
     vl->addWidget(pLibrarySidebar);
+    vl->addWidget(pCoverArt);
     pLibrarySidebarPage->setLayout(vl);
 
     pSplitter->addWidget(pLibrarySidebarPage);

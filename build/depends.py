@@ -713,6 +713,7 @@ class MixxxCore(Feature):
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
+		   "widget/wcoverart.cpp",
 
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",

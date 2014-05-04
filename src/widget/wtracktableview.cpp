@@ -125,6 +125,22 @@ WTrackTableView::~WTrackTableView() {
     delete m_pSamplerMenu;
 }
 
+void WTrackTableView::selectionChanged(const QItemSelection &selected,
+                                       const QItemSelection &deselected) {
+    Q_UNUSED(selected);
+    Q_UNUSED(deselected);
+    const QModelIndex index = selectionModel()->currentIndex();
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    if (index.isValid()) {
+        TrackPointer pTrack;
+        if (indices.size() == 1) {
+            pTrack = getTrackModel()->getTrack(index);
+        }
+        emit(trackSelected(pTrack));
+        update();
+    }
+}
+
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //qDebug() << "WTrackTableView::loadTrackModel()" << model;
