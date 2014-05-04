@@ -87,6 +87,7 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     double m_minDB;
     double m_maxDB;
     double m_offset;
+    double m_midiCorrection;
 };
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
