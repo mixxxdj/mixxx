@@ -17,6 +17,8 @@ class CoverArtDAO : public QObject, public virtual DAO {
     void initialize();
 
     void saveCoverArt(TrackInfoObject*);
+    int getCoverArtID(QString location);
+    QString getCoverArtLocation(int id);
 
    private:
     ConfigObject<ConfigValue>* m_pConfig;
@@ -24,7 +26,6 @@ class CoverArtDAO : public QObject, public virtual DAO {
 
     QString getStoragePath() const;
     QString searchCoverArtFile(TrackInfoObject* pTrack);
-    int getCoverArtID(QString location);
 };
 
 #endif // COVERARTDAO_H

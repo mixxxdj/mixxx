@@ -842,7 +842,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QSqlQuery query(m_database);
 
     query.prepare(
-        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, "
+        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, cover_art, "
         "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
@@ -864,6 +864,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int yearColumn = queryRecord.indexOf("year");
         const int genreColumn = queryRecord.indexOf("genre");
         const int composerColumn = queryRecord.indexOf("composer");
+        const int coverArtColumn = queryRecord.indexOf("cover_art");
         const int groupingColumn = queryRecord.indexOf("grouping");
         const int trackNumberColumn = queryRecord.indexOf("tracknumber");
         const int commentColumn = queryRecord.indexOf("comment");
@@ -899,6 +900,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString year = query.value(yearColumn).toString();
             QString genre = query.value(genreColumn).toString();
             QString composer = query.value(composerColumn).toString();
+            int coverArtId = query.value(coverArtColumn).toInt();
             QString grouping = query.value(groupingColumn).toString();
             QString tracknumber = query.value(trackNumberColumn).toString();
             QString comment = query.value(commentColumn).toString();
@@ -947,6 +949,11 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setSampleRate(samplerate);
             pTrack->setCuePoint((float)cuepoint);
             pTrack->setReplayGain(replaygain.toFloat());
+
+            QImage coverArt;
+            if (coverArt.load(m_coverArtDao.getCoverArtLocation(coverArtId))) {
+                pTrack->setCoverArt(coverArt);
+            }
 
             QString beatsVersion = query.value(beatsVersionColumn).toString();
             QString beatsSubVersion = query.value(beatsSubVersionColumn).toString();

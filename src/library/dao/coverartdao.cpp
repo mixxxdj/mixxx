@@ -83,6 +83,22 @@ int CoverArtDAO::getCoverArtID(QString location) {
     return 0;
 }
 
+QString CoverArtDAO::getCoverArtLocation(int id) {
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+        "SELECT location FROM cover_art "
+        "WHERE id = :id"));
+    query.bindValue(":id", id);
+    if (query.exec()) {
+        if (query.next()) {
+            return query.value(0).toString();
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+    return 0;
+}
+
 QString CoverArtDAO::searchCoverArtFile(TrackInfoObject* pTrack) {
     const char* defaultImageFormat = "jpg";
 
