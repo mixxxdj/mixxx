@@ -11,7 +11,6 @@ WCoverArt::WCoverArt(QWidget* parent,
         : QWidget(parent),
           WBaseWidget(this),
           m_pConfig(pConfig),
-          m_bCoverIsEmpty(false),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
           m_sDefaultCover(":/images/library/vinyl-record.png"),
@@ -102,7 +101,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
             m_bCoverIsVisible = false;
             resize(sizeHint());
         } else {
-            if (!m_bCoverIsEmpty) {
+            if (m_sCurrentCover != m_sDefaultCover) {
                 QLabel *lb = new QLabel(this, Qt::Popup |
                                               Qt::Tool |
                                               Qt::CustomizeWindowHint |
@@ -145,7 +144,7 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
                     && lastPoint.y() < (height() / 5) + 5) {
                 setCursor(Qt::ArrowCursor);
             } else {
-                if (m_bCoverIsEmpty) {
+                if (m_sCurrentCover == m_sDefaultCover) {
                     setCursor(Qt::ArrowCursor);
                 } else {
                     QPixmap pix(":/images/library/ic_library_zoom_in.png");

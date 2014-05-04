@@ -33,7 +33,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
   private:
     ConfigObject<ConfigValue>* m_pConfig;
 
-    bool m_bCoverIsEmpty;
     bool m_bCoverIsHovered;
     bool m_bCoverIsVisible;
 
