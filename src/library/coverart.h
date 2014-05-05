@@ -11,7 +11,7 @@ class CoverArt : public QObject {
     CoverArt(ConfigObject<ConfigValue> *pConfig);
     virtual ~CoverArt();
 
-    QString searchCoverArtFile(TrackInfoObject* pTrack);
+    QString searchCoverArtFile(TrackInfoObject *pTrack);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

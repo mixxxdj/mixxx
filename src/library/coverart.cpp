@@ -37,25 +37,28 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
 
     // Some image extensions
     QStringList extList;
-    extList << "jpg" << "jpeg" << "png" << "gif" << "bmp";
+    extList << ".jpg" << ".jpeg" << ".png" << ".gif" << ".bmp";
 
     //
     // Step 1: Look for cover art in cache directory.
     //
     foreach (QString ext, extList) {
         if(QFile::exists(coverArtLocation + ext)) {
-            return coverArtLocation + "." + ext;
+            return coverArtLocation + ext;
         }
     }
+    coverArtLocation.append(".");
+    coverArtLocation.append(defaultImageFormat);
 
     //
     // Step 2: Look for embedded cover art.
     //
     QImage image = pTrack->getCoverArt();
+
     // If the track has embedded cover art, store it
     if (!image.isNull()) {
         if(image.save(coverArtLocation, defaultImageFormat)) {
-            return coverArtLocation + "." + defaultImageFormat;
+            return coverArtLocation;
         }
     }
 
@@ -81,7 +84,7 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
             if (filename.contains(re)) {
                 QImage image(f.absoluteFilePath());
                 if (image.save(coverArtLocation, defaultImageFormat)) {
-                    return coverArtLocation + "." + defaultImageFormat;
+                    return coverArtLocation;
                 }
                 break;
             }
