@@ -75,7 +75,7 @@ public:
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
-    void slotLoadCoverArt(TrackPointer pTrack);
+    void slotLoadCoverArt(TrackPointer);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -86,7 +86,7 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
-    void loadCoverArt(TrackPointer pTrack);
+    void loadCoverArt(QImage picture);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

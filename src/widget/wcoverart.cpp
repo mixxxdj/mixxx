@@ -12,9 +12,9 @@ WCoverArt::WCoverArt(QWidget* parent,
           WBaseWidget(this),
           m_pConfig(pConfig),
           m_bCoverIsHovered(false),
-          m_bCoverIsVisible(false),
-          m_sDefaultCover(":/images/library/vinyl-record.png"),
-          m_sCurrentCover(m_sDefaultCover) {
+          m_bCoverIsVisible(false) {
+    m_defaultCover = QImage(":/images/library/vinyl-record.png");
+    m_currentCover = m_defaultCover;
 }
 
 WCoverArt::~WCoverArt() {
@@ -49,7 +49,12 @@ void WCoverArt::slotHideCoverArt() {
     setMinimumSize(0, 20);
 }
 
-void WCoverArt::slotLoadCoverArt(TrackPointer pTrack) {
+void WCoverArt::slotLoadCoverArt(QImage picture) {
+    if (picture.isNull()) {
+        m_currentCover = m_defaultCover;
+    } else {
+        m_currentCover = picture;
+    }
     update();
 }
 
@@ -59,13 +64,11 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     painter.drawLine(0,0,width(),0);
 
     if (m_bCoverIsVisible) {
-        if (!m_coverArt.load(m_sCurrentCover)) {
-            m_coverArt.load(m_sDefaultCover);
-        }
-        m_coverArt = m_coverArt.scaled(QSize(height()-10, height()-10),
-                                       Qt::KeepAspectRatioByExpanding,
-                                       Qt::SmoothTransformation);
-        painter.drawImage(width()/2-height()/2+4, 6, m_coverArt);
+        QImage scaledCover = m_currentCover.scaled(
+                    QSize(height()-10, height()-10),
+                    Qt::KeepAspectRatioByExpanding,
+                    Qt::SmoothTransformation);
+        painter.drawImage(width()/2-height()/2+4, 6, scaledCover);
     } else {
         QImage sc = QImage(":/images/library/ic_library_cover_show.png");
         sc = sc.scaled(height()-1, height()-1,
@@ -101,17 +104,18 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
             m_bCoverIsVisible = false;
             resize(sizeHint());
         } else {
-            if (m_sCurrentCover != m_sDefaultCover) {
+            if (m_currentCover.operator!=(m_defaultCover)) {
                 QLabel *lb = new QLabel(this, Qt::Popup |
                                               Qt::Tool |
                                               Qt::CustomizeWindowHint |
                                               Qt::WindowCloseButtonHint);
                 lb->setWindowModality(Qt::ApplicationModal);
-                int index = m_sCurrentCover.lastIndexOf("/");
-                QString title = m_sCurrentCover.mid(index + 1);
-                lb->setWindowTitle(title);
+                //int index = m_sCurrentCover.lastIndexOf("/");
+                //QString title = m_sCurrentCover.mid(index + 1);
+                //lb->setWindowTitle(title);
+                lb->setWindowTitle(tr("Cover Art"));
 
-                QPixmap px = QPixmap(m_sCurrentCover);
+                QPixmap px = QPixmap::fromImage(m_currentCover);
                 QSize sz = QApplication::activeWindow()->size();
 
                 if (px.height() > sz.height() / 1.2) {
@@ -144,7 +148,7 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
                     && lastPoint.y() < (height() / 5) + 5) {
                 setCursor(Qt::ArrowCursor);
             } else {
-                if (m_sCurrentCover == m_sDefaultCover) {
+                if (m_currentCover.operator==(m_defaultCover)) {
                     setCursor(Qt::ArrowCursor);
                 } else {
                     QPixmap pix(":/images/library/ic_library_zoom_in.png");

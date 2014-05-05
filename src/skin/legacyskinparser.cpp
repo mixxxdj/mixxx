@@ -965,8 +965,8 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
     // Connect cover art signals to the library
     connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
             pCoverArt, SLOT(slotHideCoverArt()));
-    connect(m_pLibrary, SIGNAL(trackSelected(pTrack)),
-            pCoverArt, SLOT(slotLoadCoverArt(pTrack)));
+    connect(m_pLibrary, SIGNAL(loadCoverArt(QImage)),
+            pCoverArt, SLOT(slotLoadCoverArt(QImage)));
 
     return pCoverArt;
 }
