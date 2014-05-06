@@ -24,21 +24,6 @@ colorCode = function()
         hi_yellow: 50 + 4,
         lo_yellow: 33 + 4,
 
-        /*
-        flash_lo_red: 1,
-        flash_mi_red: 2,
-        flash_hi_red: 3,
-        flash_lo_green: 16,
-        flash_mi_green: 32,
-        flash_hi_green: 48,
-        flash_lo_amber: 17,
-        flash_mi_amber: 34,
-        flash_hi_amber: 51,
-        flash_hi_orange: 35,
-        flash_lo_orange: 18,
-        flash_hi_yellow: 50,
-        flash_lo_yellow: 33
-        TODO fix these*/
     }
 };
 //Define one Key
@@ -410,8 +395,8 @@ NLM.init = function()
 {
         NLM.page = 0;
         NLM.shiftstate = false;
-        //TODO !!! NLM.numofdecks = engine.getValue("[Master]", "num_decks");
-        NLM.numofdecks = 4;
+        NLM.numofdecks = engine.getValue("[Master]", "num_decks");
+        // For testing NLM.numofdecks = 4;
 
         //Init hw
         midi.sendShortMsg(0xb0, 0x0, 0x0);
