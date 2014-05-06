@@ -22,14 +22,12 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
 
     // default cover art name
     QString coverArtName;
-    if (pTrack->getArtist() != "") {
-        coverArtName.append(pTrack->getArtist());
-    }
-    if (pTrack->getAlbum() != "") {
-        coverArtName.append(pTrack->getAlbum());
-    }
-    if (coverArtName == "") {
+    QString artist = pTrack->getArtist();
+    QString album = pTrack->getAlbum();
+    if (artist.isEmpty() && album.isEmpty()) {
         coverArtName = pTrack->getFilename();
+    } else {
+        coverArtName = artist + " - " + album;
     }
 
     // Starts with default location
