@@ -50,7 +50,11 @@ void WCoverArt::slotHideCoverArt() {
 }
 
 void WCoverArt::slotLoadCoverArt(const QString& location) {
-    m_sCurrentCover = location.isEmpty() ? m_sDefaultCover : location;
+    if (QFile::exists(location)) {
+        m_sCurrentCover = location;
+    } else {
+        m_sCurrentCover = m_sDefaultCover;
+    }
     update();
 }
 
