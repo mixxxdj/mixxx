@@ -153,8 +153,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(slotLoadCoverArt(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadCoverArt(const QString&)),
+            this, SLOT(slotLoadCoverArt(const QString&)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
@@ -238,11 +238,7 @@ void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 
-void Library::slotLoadCoverArt(TrackPointer pTrack) {
-    QString location;
-    if (!pTrack.isNull()) {
-        location = pTrack->getCoverArt();
-    }
+void Library::slotLoadCoverArt(const QString& location) {
     emit(loadCoverArt(location));
 }
 

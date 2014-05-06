@@ -75,7 +75,7 @@ public:
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
-    void slotLoadCoverArt(TrackPointer);
+    void slotLoadCoverArt(const QString& location);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
