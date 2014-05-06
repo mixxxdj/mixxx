@@ -64,26 +64,26 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     painter.drawLine(0,0,width(),0);
 
     if (m_bCoverIsVisible) {
-        QImage cover = QImage(m_sCurrentCover).scaled(
+        QPixmap cover = QPixmap(m_sCurrentCover).scaled(
                                         QSize(height()-10, height()-10),
                                         Qt::KeepAspectRatioByExpanding,
                                         Qt::SmoothTransformation);
-        painter.drawImage(width()/2-height()/2+4, 6, cover);
+        painter.drawPixmap(width()/2-height()/2+4, 6, cover);
     } else {
-        QImage sc = QImage(":/images/library/ic_library_cover_show.png");
+        QPixmap sc = QPixmap(":/images/library/ic_library_cover_show.png");
         sc = sc.scaled(height()-1, height()-1,
                        Qt::KeepAspectRatioByExpanding,
                        Qt::SmoothTransformation);
-        painter.drawImage(0, 1 ,sc);
+        painter.drawPixmap(0, 1 ,sc);
         painter.drawText(25, 15, tr("Show Cover Art"));
     }
 
     if (m_bCoverIsVisible && m_bCoverIsHovered) {
-        QImage hc = QImage(":/images/library/ic_library_cover_hide.png");
+        QPixmap hc = QPixmap(":/images/library/ic_library_cover_hide.png");
         hc = hc.scaled(20, 20,
                        Qt::KeepAspectRatioByExpanding,
                        Qt::SmoothTransformation);
-        painter.drawImage(width()-21, 6, hc);
+        painter.drawPixmap(width()-21, 6, hc);
     }
 }
 
