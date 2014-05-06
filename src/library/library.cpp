@@ -239,7 +239,11 @@ void Library::slotCreateCrate() {
 }
 
 void Library::slotLoadCoverArt(TrackPointer pTrack) {
-    emit(loadCoverArt(pTrack->getCoverArt()));
+    QString location;
+    if (!pTrack.isNull()) {
+        location = pTrack->getCoverArt();
+    }
+    emit(loadCoverArt(location));
 }
 
 void Library::onSkinLoadFinished() {

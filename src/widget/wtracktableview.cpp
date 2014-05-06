@@ -129,16 +129,16 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
-    const QModelIndex index = selectionModel()->currentIndex();
+    TrackPointer pTrack;
     const QModelIndexList indices = selectionModel()->selectedRows();
-    if (index.isValid()) {
-        TrackPointer pTrack;
-        if (indices.size() == 1) {
-            pTrack = getTrackModel()->getTrack(index);
+    if ((indices.size() == 1) && (indices[0].isValid())) {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            pTrack = trackModel->getTrack(indices[0]);
         }
-        emit(trackSelected(pTrack));
-        update();
     }
+    emit(trackSelected(pTrack));
+    update();
 }
 
 // slot
