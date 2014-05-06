@@ -51,7 +51,7 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
     //
     // Step 2: Look for embedded cover art.
     //
-    QImage image = pTrack->getCoverArt();
+    QImage image = pTrack->getEmbeddedCoverArt();
 
     // If the track has embedded cover art, store it
     if (!image.isNull()) {

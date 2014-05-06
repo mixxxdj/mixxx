@@ -86,7 +86,7 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
-    void loadCoverArt(QImage picture);
+    void loadCoverArt(const QString& location);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

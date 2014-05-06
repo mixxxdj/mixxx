@@ -196,7 +196,7 @@ void TrackInfoObject::parse() {
         setChannels(pProxiedSoundSource->getChannels());
         setKeyText(pProxiedSoundSource->getKey(),
                    mixxx::track::io::key::FILE_METADATA);
-        setCoverArt(pProxiedSoundSource->getCoverArt());
+        setEmbeddedCoverArt(pProxiedSoundSource->getCoverArt());
         setHeaderParsed(true);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
@@ -671,17 +671,30 @@ int TrackInfoObject::getChannels() const {
     return m_iChannels;
 }
 
-void TrackInfoObject::setCoverArt(QImage picture) {
+void TrackInfoObject::setCoverArt(const QString& location) {
     QMutexLocker lock(&m_qMutex);
-    if (m_coverArt != picture) {
-        m_coverArt = picture;
+    if (m_sCoverArt != location) {
+        m_sCoverArt = location;
         setDirty(true);
     }
 }
 
-QImage TrackInfoObject::getCoverArt() const {
+QString TrackInfoObject::getCoverArt() const {
     QMutexLocker lock(&m_qMutex);
-    return m_coverArt;
+    return m_sCoverArt;
+}
+
+QImage TrackInfoObject::getEmbeddedCoverArt() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_embeddedCoverArt;
+}
+
+void TrackInfoObject::setEmbeddedCoverArt(QImage picture) {
+    QMutexLocker lock(&m_qMutex);
+    if (m_embeddedCoverArt != picture) {
+        m_embeddedCoverArt = picture;
+        setDirty(true);
+    }
 }
 
 int TrackInfoObject::getLength() const {

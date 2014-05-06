@@ -21,7 +21,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   public slots:
     void slotHideCoverArt();
-    void slotLoadCoverArt(QImage picture);
+    void slotLoadCoverArt(const QString &location);
 
   protected:
     void paintEvent(QPaintEvent*);
@@ -36,8 +36,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bCoverIsHovered;
     bool m_bCoverIsVisible;
 
-    QImage m_defaultCover;
-    QImage m_currentCover;
+    QString m_sDefaultCover;
+    QString m_sCurrentCover;
 };
 
 #endif // WCOVERART_H
