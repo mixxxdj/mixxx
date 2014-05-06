@@ -15,7 +15,6 @@ class ControlNumericBehavior {
     // be changed.
     virtual bool setFilter(double* dValue);
 
-    virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
@@ -30,7 +29,6 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     virtual ~ControlPotmeterBehavior();
 
     virtual bool setFilter(double* dValue);
-    virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
@@ -41,7 +39,6 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     double m_dMinValue;
     double m_dMaxValue;
     double m_dValueRange;
-    double m_dDefaultValue;
     bool m_bAllowOutOfBounds;
 };
 
@@ -50,7 +47,6 @@ class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
     ControlLogPotmeterBehavior(double dMinValue, double dMaxValue);
     virtual ~ControlLogPotmeterBehavior();
 
-    virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
     virtual double parameterToValue(double dParam);
 

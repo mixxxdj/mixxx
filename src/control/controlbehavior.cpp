@@ -7,10 +7,6 @@ bool ControlNumericBehavior::setFilter(double* dValue) {
     return true;
 }
 
-double ControlNumericBehavior::defaultValue(double dDefault) const {
-    return dDefault;
-}
-
 double ControlNumericBehavior::valueToParameter(double dValue) {
     return dValue;
 }
@@ -34,7 +30,6 @@ ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxVa
         : m_dMinValue(dMinValue),
           m_dMaxValue(dMaxValue),
           m_dValueRange(m_dMaxValue - m_dMinValue),
-          m_dDefaultValue(m_dMinValue + 0.5 * m_dValueRange),
           m_bAllowOutOfBounds(allowOutOfBounds) {
 }
 
@@ -50,11 +45,6 @@ bool ControlPotmeterBehavior::setFilter(double* dValue) {
         }
     }
     return true;
-}
-
-double ControlPotmeterBehavior::defaultValue(double dDefault) const {
-    Q_UNUSED(dDefault);
-    return m_dDefaultValue;
 }
 
 double ControlPotmeterBehavior::valueToParameter(double dValue) {
@@ -109,11 +99,6 @@ ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double 
 }
 
 ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
-}
-
-double ControlLogPotmeterBehavior::defaultValue(double dDefault) const {
-    Q_UNUSED(dDefault);
-    return 1.0;
 }
 
 double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
