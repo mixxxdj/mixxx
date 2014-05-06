@@ -302,6 +302,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":title", pTrack->getTitle());
     m_pQueryLibraryInsert->bindValue(":album", pTrack->getAlbum());
     m_pQueryLibraryInsert->bindValue(":album_artist", pTrack->getAlbumArtist());
+    m_pQueryLibraryInsert->bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArt()));
     m_pQueryLibraryInsert->bindValue(":year", pTrack->getYear());
     m_pQueryLibraryInsert->bindValue(":genre", pTrack->getGenre());
     m_pQueryLibraryInsert->bindValue(":composer", pTrack->getComposer());
@@ -398,14 +399,14 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
-            "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
+	    "(artist, title, album, album_artist, cover_art, year, genre, tracknumber, composer, "
             "grouping, filetype, location, comment, url, duration, rating, key, key_id, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
             "keys_version, keys_sub_version, keys) "
             "VALUES ("
-            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
+	    ":artist, :title, :album, :album_artist, :cover_art, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
@@ -842,7 +843,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QSqlQuery query(m_database);
 
     query.prepare(
-        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, cover_art, "
+	"SELECT library.id, artist, title, album, album_artist, cover_art, year, genre, composer, "
         "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
@@ -861,10 +862,10 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int titleColumn = queryRecord.indexOf("title");
         const int albumColumn = queryRecord.indexOf("album");
         const int albumArtistColumn = queryRecord.indexOf("album_artist");
+	const int coverArtColumn = queryRecord.indexOf("cover_art");
         const int yearColumn = queryRecord.indexOf("year");
         const int genreColumn = queryRecord.indexOf("genre");
         const int composerColumn = queryRecord.indexOf("composer");
-        const int coverArtColumn = queryRecord.indexOf("cover_art");
         const int groupingColumn = queryRecord.indexOf("grouping");
         const int trackNumberColumn = queryRecord.indexOf("tracknumber");
         const int commentColumn = queryRecord.indexOf("comment");
@@ -897,10 +898,10 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString title = query.value(titleColumn).toString();
             QString album = query.value(albumColumn).toString();
             QString albumArtist = query.value(albumArtistColumn).toString();
+	    int coverArtId = query.value(coverArtColumn).toInt();
             QString year = query.value(yearColumn).toString();
             QString genre = query.value(genreColumn).toString();
             QString composer = query.value(composerColumn).toString();
-            int coverArtId = query.value(coverArtColumn).toInt();
             QString grouping = query.value(groupingColumn).toString();
             QString tracknumber = query.value(trackNumberColumn).toString();
             QString comment = query.value(commentColumn).toString();
@@ -935,6 +936,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
             pTrack->setAlbumArtist(albumArtist);
+	    pTrack->setCoverArt(m_coverArtDao.getCoverArtLocation(coverArtId));
             pTrack->setYear(year);
             pTrack->setGenre(genre);
             pTrack->setComposer(composer);
@@ -949,11 +951,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setSampleRate(samplerate);
             pTrack->setCuePoint((float)cuepoint);
             pTrack->setReplayGain(replaygain.toFloat());
-
-            QImage coverArt;
-            if (coverArt.load(m_coverArtDao.getCoverArtLocation(coverArtId))) {
-                pTrack->setCoverArt(coverArt);
-            }
 
             QString beatsVersion = query.value(beatsVersionColumn).toString();
             QString beatsSubVersion = query.value(beatsSubVersionColumn).toString();
@@ -1104,7 +1101,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
-                  "title=:title, album=:album, album_artist=:album_artist, "
+		  "title=:title, album=:album, "
+		  "album_artist=:album_artist, cover_art=:cover_art, "
                   "year=:year, genre=:genre, composer=:composer, "
                   "grouping=:grouping, filetype=:filetype, "
                   "tracknumber=:tracknumber, comment=:comment, url=:url, "
@@ -1122,6 +1120,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
     query.bindValue(":album_artist", pTrack->getAlbumArtist());
+    query.bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArt()));
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":composer", pTrack->getComposer());
@@ -1201,6 +1200,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
+    m_coverArtDao.saveCoverArt(pTrack);
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";

@@ -25,7 +25,7 @@ void CoverArtDAO::saveCoverArt(TrackInfoObject* pTrack) {
     QString coverArtLocation = m_pCoverArt->searchCoverArtFile(pTrack);
 
     // cover art found
-    if (coverArtLocation != "") {
+    if (!coverArtLocation.isEmpty()) {
         // search cover.location in database
         int coverId = getCoverArtID(coverArtLocation);
 
@@ -87,5 +87,5 @@ QString CoverArtDAO::getCoverArtLocation(int id) {
     } else {
         LOG_FAILED_QUERY(query);
     }
-    return 0;
+    return "";
 }
