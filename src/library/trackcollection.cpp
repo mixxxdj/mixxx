@@ -72,6 +72,10 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
+#ifdef __SQLITE3__
+    installSorting(m_db);
+#endif
+
     int requiredSchemaVersion = 23;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
@@ -103,10 +107,6 @@ bool TrackCollection::checkForTables() {
         }
         return false;
     }
-
-#ifdef __SQLITE3__
-    installSorting(m_db);
-#endif
 
     m_trackDao.initialize();
     m_playlistDao.initialize();
@@ -149,7 +149,7 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource)
 #ifdef __SQLITE3__
 // from public domain code
 // http://www.archivum.info/qt-interest@trolltech.com/2008-12/00584/Re-%28Qt-interest%29-Qt-Sqlite-UserDefinedFunction.html
-void TrackCollection::installSorting( QSqlDatabase &db) {
+void TrackCollection::installSorting(QSqlDatabase &db) {
     QVariant v = db.driver()->handle();
     if (v.isValid() && strcmp(v.typeName(), "sqlite3*") == 0) {
         // v.data() returns a pointer to the handle
@@ -159,7 +159,7 @@ void TrackCollection::installSorting( QSqlDatabase &db) {
                     handle,
                     "localeAwareCompare",
                     SQLITE_UTF16, // ANY would be nice, but we only  encode in 16 anyway.
-                    0,
+                    NULL,
                     sqliteLocaleAwareCompare);
             if (result != SQLITE_OK)
             qWarning() << "Could not add string collation function: " << result;

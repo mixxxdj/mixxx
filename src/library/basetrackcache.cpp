@@ -553,8 +553,12 @@ QString BaseTrackCache::orderByClause(int sortColumn,
     }
     s.append(sort_field);
 
-    s += (sortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
-            QLatin1String(" DESC");
+    if (type == QVariant::String) {
+        s.append(" COLLATE localeAwareCompare");
+    }
+
+    s.append((sortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
+            QLatin1String(" DESC"));
     return s;
 }
 
