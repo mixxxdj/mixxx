@@ -1294,9 +1294,9 @@ class LocaleCompare(Feature):
         return 1
 
     def enabled(self, build):
-        build.flags['localecomapre'] = util.get_flags(build.env, 'localecomapre',
+        build.flags['localecompare'] = util.get_flags(build.env, 'localecompare',
                                             self.default(build))
-        if int(build.flags['localecomapre']):
+        if int(build.flags['localecompare']):
             return True
         return False
 
