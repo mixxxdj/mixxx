@@ -1285,3 +1285,31 @@ class AutoDjCrates(Feature):
 
     def sources(self, build):
         return ['library/dao/autodjcratesdao.cpp']
+
+class LocaleCompare(Feature):
+    def description(self):
+        return "Locale Aware Compare for Sqlite"
+
+    def default(self, build):
+        return 1
+
+    def enabled(self, build):
+        build.flags['localecomapre'] = util.get_flags(build.env, 'localecomapre',
+                                            self.default(build))
+        if int(build.flags['localecomapre']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('localecomapre', 'Set to 1 to enable Locale Aware Compare support for Sqlite.',
+                 self.default(build))
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not conf.CheckLib(['sqlite3']):
+            raise Exception(
+                'Missing libsqlite3.- exiting!')
+        build.env.Append(CPPDEFINES='__SQLITE3__')
+
+

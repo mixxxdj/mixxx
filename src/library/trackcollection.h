@@ -66,6 +66,13 @@ class TrackCollection : public QObject
     }
 
   private:
+#ifdef __SQLITE3__
+    void installSorting(QSqlDatabase &db);
+    static int sqliteLocaleAwareCompare(void* pArg,
+                                        int len1, const void* data1,
+                                        int len2, const void* data2);
+#endif
+
     ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;

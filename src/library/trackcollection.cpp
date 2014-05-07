@@ -1,4 +1,7 @@
 #include <QtSql>
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#endif
 #include <QtDebug>
 
 #include "library/trackcollection.h"
@@ -101,6 +104,10 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
+#ifdef __SQLITE3__
+    installSorting(m_db);
+#endif
+
     m_trackDao.initialize();
     m_playlistDao.initialize();
     m_crateDao.initialize();
@@ -138,3 +145,49 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource)
     Q_ASSERT(m_defaultTrackSource.isNull());
     m_defaultTrackSource = trackSource;
 }
+
+#ifdef __SQLITE3__
+// from public domain code
+// http://www.archivum.info/qt-interest@trolltech.com/2008-12/00584/Re-%28Qt-interest%29-Qt-Sqlite-UserDefinedFunction.html
+void TrackCollection::installSorting( QSqlDatabase &db) {
+    QVariant v = db.driver()->handle();
+    if (v.isValid() && strcmp(v.typeName(), "sqlite3*") == 0) {
+        // v.data() returns a pointer to the handle
+        sqlite3* handle = *static_cast<sqlite3**>(v.data());
+        if (handle != 0) { // check that it is not NULL
+            int result = sqlite3_create_collation(
+                    handle,
+                    "localeAwareCompare",
+                    SQLITE_UTF16, // ANY would be nice, but we only  encode in 16 anyway.
+                    0,
+                    sqliteLocaleAwareCompare);
+            if (result != SQLITE_OK)
+            qWarning() << "Could not add string collation function: " << result;
+        } else {
+            qWarning() << "Could not get sqlite handle";
+        }
+    } else {
+        qWarning() << "handle variant returned typename " << v.typeName();
+    }
+}
+
+// The collating function callback is invoked with a copy of the pArg
+// application data pointer and with two strings in the encoding specified
+// by the eTextRep argument.
+// The collating function must return an integer that is negative, zero,
+// or positive if the first string is less than, equal to, or greater
+// than the second, respectively.
+//static
+int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
+                                    int len1, const void* data1,
+                                    int len2, const void* data2 )
+{
+    Q_UNUSED(pArg);
+    // Construct a QString without copy
+    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
+                                           len1 / sizeof(QChar));
+    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
+                                           len2 / sizeof(QChar));
+    return QString::localeAwareCompare(string1, string2);
+}
+#endif
