@@ -1,3 +1,8 @@
+#DecksSizer {
+  background-color: #fff;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
 #DecksLeftContainer, #DecksRightContainer, #SkinContainer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
