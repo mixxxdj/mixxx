@@ -2,11 +2,11 @@
 	<WidgetGroup>
 	    <ObjectName>WaveformMixerContainer</ObjectName>
 		<Layout>vertical</Layout>
-		<SizePolicy>me,min</SizePolicy>
+		<SizePolicy>e,max</SizePolicy>
 		<Children>
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
-				<SizePolicy>me,min</SizePolicy>
+				<SizePolicy>me,f</SizePolicy>
 				<Children>
 					<Template src="skin:spinny.xml">
 						<SetVariable name="channum">3</SetVariable>
@@ -22,6 +22,7 @@
 			</WidgetGroup>
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
 				<Children>
 					<Template src="skin:spinny.xml">
 						<SetVariable name="channum">1</SetVariable>
@@ -33,6 +34,7 @@
 			</WidgetGroup>
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
 				<Children>
 					<Template src="skin:spinny.xml">
 						<SetVariable name="channum">2</SetVariable>
@@ -43,7 +45,7 @@
 				</Children>
 			</WidgetGroup>
 			<WidgetGroup>
-				<SizePolicy>me,min</SizePolicy>
+				<SizePolicy>me,f</SizePolicy>
 				<Layout>horizontal</Layout>
 				<Children>
 					<Template src="skin:spinny.xml">

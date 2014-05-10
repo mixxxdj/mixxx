@@ -103,14 +103,17 @@
   background-color: #1e1e1e;
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
-  border-top: 0px;
   border-left: 0px;
   border-right: 0px;
 }
 
+#ClockWidget {
+  qproperty-layoutAlignment: 'AlignBottom | AlignLeft';
+  padding: 3px;
+}
+
 #PrimaryMixer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  background-color: #1e1e1e;
   padding: 0px;
   margin: 0px;
 }
@@ -125,12 +128,26 @@
 
 #MixerChannel {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  background-color: #1e1e1e;
+}
+
+#MixerChannelHoriz {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
+
+#MixerLeftMargin {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#MixerRightMargin {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#MasterKnobs {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
 #MasterSync {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  background-color: #1e1e1e;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 1px;
   padding-left: 2px;
 }
@@ -382,6 +399,7 @@ qproperty-layoutAlignment: 'AlignCenter';
 #WaveformMixerContainer {
   border: 1px solid #585858;
   border-bottom: 0px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #RateContainer3 {

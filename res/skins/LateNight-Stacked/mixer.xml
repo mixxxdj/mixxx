@@ -1,14 +1,15 @@
 <Template>
 	<WidgetGroup>
 	    <ObjectName>Mixer</ObjectName>
-		<SizePolicy>me,min</SizePolicy>
-		<MinimumSize>340,-1</MinimumSize>
+		<SizePolicy>e,max</SizePolicy>
+        <MinimumSize>150,-1</MinimumSize>
+		<MaximumSize>1000,-1</MaximumSize>
 		<Layout>horizontal</Layout>
 		<Children>
 		    <WidgetGroup>
                 <ObjectName>MicContainer</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>max,min</SizePolicy>
                 <Children>
                     <Template src="skin:microphone.xml"/>
                 </Children>
@@ -16,77 +17,104 @@
 			<WidgetGroup>
 			    <ObjectName>PrimaryMixer</ObjectName> 
 				<Layout>vertical</Layout>
-				<SizePolicy>me,min</SizePolicy>
+				<SizePolicy>me,max</SizePolicy>
 				<Children>
-					  <WidgetGroup>
-					    <ObjectName>MasterSync</ObjectName>
-					    <SizePolicy>me,min</SizePolicy>
-						<Layout>horizontal</Layout>
-						<Children>
-							<PushButton>
-								<TooltipId>sync_master</TooltipId>
-								<Style></Style>
-								<NumberStates>2</NumberStates>
-								<State>
-									<Number>0</Number>
-									<Pressed>btn_mastersync_master_on.png</Pressed>
-									<Unpressed>btn_mastersync_master_off.png</Unpressed>
-								</State>
-								<State>
-									<Number>1</Number>
-									<Pressed>btn_mastersync_master_on.png</Pressed>
-									<Unpressed>btn_mastersync_master_on.png</Unpressed>
-								</State>
-								<Pos>4,4</Pos>
-								<Connection>
-									<ConfigKey>[InternalClock],sync_master</ConfigKey>
-									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-									<ButtonState>LeftButton</ButtonState>
-								</Connection>
-							</PushButton>
-							<NumberBpm>
-								<TooltipId>visual_bpm</TooltipId>
-								<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-									Unicode, Arial, Verdana, sans-serif;
-									background-color:
-									transparent; color: #EECE33; text-align: left;padding-left:
-									1px;
-									}
-								</Style>
-								<Channel>1</Channel>
-								<NumberOfDigits>1</NumberOfDigits>
-								<Connection>
-									<ConfigKey>[InternalClock],bpm</ConfigKey>
-								</Connection>
-							</NumberBpm>
-						</Children>
-					</WidgetGroup>
 					<WidgetGroup>
 					    <Layout>horizontal</Layout>
-					    <SizePolicy>me,min</SizePolicy>
+					    <SizePolicy>me,max</SizePolicy>
 					    <Children>
-					        <WidgetGroup>
+                           <WidgetGroup>
+                              <Layout>vertical</Layout>
+                              <Children>
+                                 <WidgetGroup>
+                                    <ObjectName>MasterSync</ObjectName>
+                                    <SizePolicy>max,me</SizePolicy>
+                                    <Layout>horizontal</Layout>
+                                    <Children>
+                                        <PushButton>
+                                            <TooltipId>sync_master</TooltipId>
+                                            <Style></Style>
+                                            <NumberStates>2</NumberStates>
+                                            <State>
+                                                <Number>0</Number>
+                                                <Pressed>btn_mastersync_master_on.png</Pressed>
+                                                <Unpressed>btn_mastersync_master_off.png</Unpressed>
+                                            </State>
+                                            <State>
+                                                <Number>1</Number>
+                                                <Pressed>btn_mastersync_master_on.png</Pressed>
+                                                <Unpressed>btn_mastersync_master_on.png</Unpressed>
+                                            </State>
+                                            <Pos>4,4</Pos>
+                                            <Connection>
+                                                <ConfigKey>[InternalClock],sync_master</ConfigKey>
+                                                <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                                <ButtonState>LeftButton</ButtonState>
+                                            </Connection>
+                                        </PushButton>
+                                        <NumberBpm>
+                                            <TooltipId>visual_bpm</TooltipId>
+                                            <Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
+                                                Unicode, Arial, Verdana, sans-serif;
+                                                background-color:
+                                                transparent; color: #EECE33; text-align: left;padding-left:
+                                                1px;
+                                                }
+                                            </Style>
+                                            <Channel>1</Channel>
+                                            <NumberOfDigits>1</NumberOfDigits>
+                                            <Connection>
+                                                <ConfigKey>[InternalClock],bpm</ConfigKey>
+                                            </Connection>
+                                        </NumberBpm>
+                                    </Children>
+                                </WidgetGroup>
+                                <WidgetGroup>
+                                    <ObjectName>ClockWidget</ObjectName>
+                                    <Layout>horizontal</Layout>
+                                    <SizePolicy>me,me</SizePolicy>
+                                    <Children>
+                                        <WidgetGroup>
+                                          <Layout>horizontal</Layout>
+                                          <SizePolicy>max,max</SizePolicy>
+                                          <Children>
+                                            <Time>
+                                              <TooltipId>time</TooltipId>
+                                              <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                                                        background-color: transparent; color: #EECE33; }
+                                              </Style>
+                                              <ShowSeconds>false</ShowSeconds>
+                                              <ClockFormat>12</ClockFormat>
+                                          </Time>
+                                        </Children>
+                                      </WidgetGroup>
+                                    </Children>
+                                  </WidgetGroup>
+                                </Children>
+                              </WidgetGroup>
+					       <WidgetGroup>
 				                <ObjectName>MixerLeftMargin</ObjectName>
 				                <Layout>horizontal</Layout>
 				                <SizePolicy>me,min</SizePolicy>
-				                <MinimumSize>50,-1</MinimumSize>
+				                <MinimumSize>1,-1</MinimumSize>
 				                <Children>
 				                </Children>
 				            </WidgetGroup>
 							<WidgetGroup>
 								<ObjectName>MixerContainer</ObjectName>
 								<Layout>vertical</Layout>
-								<SizePolicy>min,min</SizePolicy>
+								<SizePolicy>e,max</SizePolicy>
 								<Children>
 									<WidgetGroup>
-									    <SizePolicy>min,min</SizePolicy>
+									    <SizePolicy>max,min</SizePolicy>
 										<Layout>horizontal</Layout>
+                                        <MaximumSize>400,400</MaximumSize>
 										<Children>
-										    <WidgetGroup>
-										        <SizePolicy>min,min</SizePolicy>
+										   <WidgetGroup>
+										        <SizePolicy>max,min</SizePolicy>
 									            <Layout>horizontal</Layout>
 									            <Children>
-													<Template src="skin:mixer_channel.xml">
+													<Template src="skin:mixer_channel_vertical.xml">
 														<SetVariable name="channum">3</SetVariable>
 		        									</Template>
 									            </Children>
@@ -95,7 +123,6 @@
 									                <BindProperty>visible</BindProperty>
 									            </Connection>
 									        </WidgetGroup>
-										
 											<Template src="skin:mixer_channel.xml">
 												<SetVariable name="channum">1</SetVariable>
 											</Template>
@@ -103,10 +130,10 @@
 												<SetVariable name="channum">2</SetVariable>
 											</Template>
 				                           <WidgetGroup>
-				                                <SizePolicy>min,min</SizePolicy>
+				                                <SizePolicy>max,min</SizePolicy>
 		                                        <Layout>horizontal</Layout>
 		                                        <Children>
-		                                            <Template src="skin:mixer_channel.xml">
+		                                            <Template src="skin:mixer_channel_vertical.xml">
 		                                                <SetVariable name="channum">4</SetVariable>
 		                                            </Template>
 		                                        </Children>
@@ -120,8 +147,8 @@
 									<WidgetGroup>
 									    <ObjectName>CrossFadeContainer</ObjectName>
 										<Layout>horizontal</Layout>
-										<SizePolicy>me,min</SizePolicy>
-										<MinimumSize>240,-1</MinimumSize>
+										<SizePolicy>me,max</SizePolicy>
+										<MinimumSize>150,50</MinimumSize>
 										<Children>
 										    <WidgetGroup>
 										        <ObjectName>Crossfader</ObjectName>
@@ -148,7 +175,7 @@
                                 <ObjectName>MixerRightMargin</ObjectName>
                                 <Layout>horizontal</Layout>
                                 <SizePolicy>me,min</SizePolicy>
-                                <MinimumSize>50,-1</MinimumSize>
+                                <MinimumSize>1,-1</MinimumSize>
                                 <Children>
                                 </Children>
                             </WidgetGroup>
@@ -156,50 +183,22 @@
 					</WidgetGroup>
 				</Children>
 			</WidgetGroup>
-			<WidgetGroup> <!-- Master Controls -->
+			<WidgetGroup> 
 			    <ObjectName>MasterControls</ObjectName>
-			    <SizePolicy>min,min</SizePolicy>
-                <MinimumSize>55,310</MinimumSize>
+			    <SizePolicy>max,min</SizePolicy>
+                <MinimumSize>100,220</MinimumSize>
+                <Layout>vertical</Layout>
                 <Children>
-                    <Knob>
-                        <TooltipId>master_volume</TooltipId>
-                        <Style></Style>
-                        <NumberStates>64</NumberStates>
-                        <Path>knobs/knob_rotary_s%1.png</Path>
-                        <Pos>3,10</Pos>
-                        <Connection>
-                            <ConfigKey>[Master],volume</ConfigKey>
-                        </Connection>
-                    </Knob>
-                    <Label>
-                        <Pos>3,48</Pos>
-                        <ObjectName>KnobLabel</ObjectName>
-                        <Text>Master</Text>
-                    </Label>
-                    <Knob>
-                        <TooltipId>balance</TooltipId>
-                        <Style></Style>
-                        <NumberStates>63</NumberStates>
-                        <Path>knobs/knob_rotary_s%1.png</Path>
-                        <Pos>3,58</Pos>
-                        <Connection>
-                            <ConfigKey>[Master],balance</ConfigKey>
-                        </Connection>
-                    </Knob>
-                    <Label>
-                        <Pos>1,96</Pos>
-	                    <ObjectName>KnobLabel</ObjectName>
-	                    <Text>Balance</Text>
-	                </Label>
-                    <WidgetGroup> <!-- Master VU Meter -->
-                        <Pos>13,110</Pos>
+                    
+                    <WidgetGroup> 
+                        <Size>100,100</Size>
                         <Children>
                             <StatusLight>
                                 <TooltipId>PeakIndicator</TooltipId>
                                 <Style></Style>
                                 <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
                                 <PathBack>btn_clipping1.png</PathBack>
-                                <Pos>0,0</Pos>
+                                <Pos>38,5</Pos>
                                 <Connection>
                                     <ConfigKey>[Master],PeakIndicator</ConfigKey>
                                 </Connection>
@@ -209,7 +208,7 @@
                                 <Style></Style>
                                 <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
                                 <PathBack>btn_clipping1.png</PathBack>
-                                <Pos>11,0</Pos>
+                                <Pos>49,5</Pos>
                                 <Connection>
                                     <ConfigKey>[Master],PeakIndicator</ConfigKey>
                                 </Connection>
@@ -219,7 +218,7 @@
                                 <Style></Style>
                                 <PathVu>btn_volume_display1_over.png</PathVu>
                                 <PathBack>btn_volume_display1.png</PathBack>
-                                <Pos>0,15</Pos>
+                                <Pos>38,20</Pos>
                                 <Horizontal>false</Horizontal>
                                 <PeakHoldSize>5</PeakHoldSize>
                                 <PeakHoldTime>500</PeakHoldTime>
@@ -234,7 +233,7 @@
                                 <Style></Style>
                                 <PathVu>btn_volume_display1_over.png</PathVu>
                                 <PathBack>btn_volume_display1.png</PathBack>
-                                <Pos>11,15</Pos>
+                                <Pos>49,20</Pos>
                                 <Horizontal>false</Horizontal>
                                 <PeakHoldSize>5</PeakHoldSize>
                                 <PeakHoldTime>500</PeakHoldTime>
@@ -245,39 +244,76 @@
                                 </Connection>
                             </VuMeter>
                         </Children>
-                    </WidgetGroup>  <!-- /Master VU Meter -->
-                    <Knob>
-                        <TooltipId>headphone_volume</TooltipId>
-                        <Style></Style>
-                        <NumberStates>64</NumberStates>
-                        <Path>knobs/knob_rotary_s%1.png</Path>
-                        <Pos>3,216</Pos>
-                        <Connection>
-                            <ConfigKey>[Master],headVolume</ConfigKey>
-                        </Connection>
-                    </Knob>
-                    <Label>
-                        <Pos>0,252</Pos>
-                        <ObjectName>KnobLabel</ObjectName>
-                        <Text>Head Vol</Text>
-                    </Label>
-                    <Knob>
-                        <TooltipId>headMix</TooltipId>
-                        <Style></Style>
-                        <NumberStates>64</NumberStates>
-                        <Path>knobs/knob_rotary_s%1.png</Path>
-                        <Pos>3,263</Pos>
-                        <Connection>
-                            <ConfigKey>[Master],headMix</ConfigKey>
-                        </Connection>
-                    </Knob>
-                    <Label>
-                        <Pos>0,300</Pos>
-                        <ObjectName>KnobLabel</ObjectName>
-                        <Text>Pre/Main</Text>
-                    </Label>
+                    </WidgetGroup>  
+                    <WidgetGroup>
+                        <ObjectName>MasterKnobs</ObjectName>
+                        <SizePolicy>f,f</SizePolicy>
+                        <Size>100,110</Size>
+                        <Children>
+                          <Knob>
+                              <TooltipId>master_volume</TooltipId>
+                              <Style></Style>
+                              <NumberStates>64</NumberStates>
+                              <Path>knobs/knob_rotary_s%1.png</Path>
+                              <Pos>3,10</Pos>
+                              <Connection>
+                                  <ConfigKey>[Master],volume</ConfigKey>
+                              </Connection>
+                          </Knob>
+                          <Label>
+                              <Pos>3,48</Pos>
+                              <ObjectName>KnobLabel</ObjectName>
+                              <Text>Master</Text>
+                          </Label>
+                          <Knob>
+                              <TooltipId>balance</TooltipId>
+                              <Style></Style>
+                              <NumberStates>63</NumberStates>
+                              <Path>knobs/knob_rotary_s%1.png</Path>
+                              <Pos>3,58</Pos>
+                              <Connection>
+                                  <ConfigKey>[Master],balance</ConfigKey>
+                              </Connection>
+                          </Knob>
+                          <Label>
+                              <Pos>1,96</Pos>
+                              <ObjectName>KnobLabel</ObjectName>
+                              <Text>Balance</Text>
+                          </Label>
+                          <Knob>
+                              <TooltipId>headphone_volume</TooltipId>
+                              <Style></Style>
+                              <NumberStates>64</NumberStates>
+                              <Path>knobs/knob_rotary_s%1.png</Path>
+                              <Pos>53,10</Pos>
+                              <Connection>
+                                  <ConfigKey>[Master],headVolume</ConfigKey>
+                              </Connection>
+                          </Knob>
+                          <Label>
+                              <Pos>50,48</Pos>
+                              <ObjectName>KnobLabel</ObjectName>
+                              <Text>Head Vol</Text>
+                          </Label>
+                          <Knob>
+                              <TooltipId>headMix</TooltipId>
+                              <Style></Style>
+                              <NumberStates>64</NumberStates>
+                              <Path>knobs/knob_rotary_s%1.png</Path>
+                              <Pos>53,58</Pos>
+                              <Connection>
+                                  <ConfigKey>[Master],headMix</ConfigKey>
+                              </Connection>
+                          </Knob>
+                          <Label>
+                              <Pos>50,96</Pos>
+                              <ObjectName>KnobLabel</ObjectName>
+                              <Text>Pre/Main</Text>
+                          </Label>
+                       </Children>
+                    </WidgetGroup>
                 </Children>
-            </WidgetGroup>  <!-- /Master Controls -->
+            </WidgetGroup>
 		</Children>
 	</WidgetGroup> 
 </Template>
