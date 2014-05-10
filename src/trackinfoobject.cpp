@@ -214,47 +214,38 @@ void TrackInfoObject::parse() {
 void TrackInfoObject::parseArtist() {
     QMutexLocker lock(&m_qMutex);
     QString filename = m_fileInfo.fileName();
+    filename = filename.replace("_", " ");
     if (filename.count('-') == 1) {
         m_sArtist = filename.section('-', 0, 0).trimmed();
-        m_sArtist = m_sArtist.replace("_", " ");
-        setDirty(true);
     }
+    setDirty(true);
 }
 
 void TrackInfoObject::parseTitle() {
     QMutexLocker lock(&m_qMutex);
     QString filename = m_fileInfo.fileName();
+    filename = filename.replace("_", " ");
     if (filename.count('-') == 1) {
         m_sTitle = filename.section('-', 1, 1).trimmed();
-        m_sTitle = m_sTitle.replace("_", " ");
-        setDirty(true);
+        // Remove the file type from m_sTitle
+        m_sTitle = m_sTitle.section('.', 0, -2).trimmed();
+    } else {
+        m_sTitle = filename.section('.', 0, -2).trimmed();
     }
+    setDirty(true);
 }
 
 void TrackInfoObject::parseFilename() {
-    QMutexLocker lock(&m_qMutex);
-    QString filename = m_fileInfo.fileName();
     // If the file name has the following form: "Artist - Title.type", extract
     // Artist, Title and type fields
-    if (filename.count('-') == 1) {
-        m_sArtist = filename.section('-', 0, 0).trimmed(); // Get the first part
-        m_sTitle = filename.section('-', 1, 1); // Get the second part
-        m_sTitle = m_sTitle.section('.', 0, -2).trimmed(); // Remove the ending
-        if (m_sTitle.isEmpty()) {
-            m_sTitle = filename.section('.', 0, -2).trimmed();
-        }
-    } else {
-        m_sTitle = filename.section('.', 0, -2).trimmed(); // Remove the ending
-    }
-
-    // Replace underscores with spaces for Artist and Title
-    m_sArtist = m_sArtist.replace("_", " ");
-    m_sTitle = m_sTitle.replace("_", " ");
+    parseArtist();
+    parseTitle();
 
     // Add no comment
     m_sComment.clear();
 
     // Find the type
+    QString filename = m_fileInfo.fileName();
     m_sType = filename.section(".",-1).toLower().trimmed();
     setDirty(true);
 }
