@@ -812,6 +812,7 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     m_playlistDao.removeTracksFromPlaylists(ids);
     m_crateDao.removeTracksFromCrates(ids);
     m_analysisDao.deleteAnalysises(ids);
+    m_coverArtDao.deleteUnusedCoverArts();
 
     QSet<int> tracksRemovedSet = QSet<int>::fromList(ids);
     emit(tracksRemoved(tracksRemovedSet));

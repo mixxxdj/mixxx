@@ -17,6 +17,14 @@ QString CoverArt::getStoragePath() const {
     return dir.absolutePath().append("/");
 }
 
+bool CoverArt::deleteFile(const QString& location) {
+    QFile file(location);
+    if (file.exists()) {
+        return file.remove();
+    }
+    return true;
+}
+
 QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
     const char* defaultImageFormat = "jpg";
 

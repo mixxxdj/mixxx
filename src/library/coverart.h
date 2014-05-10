@@ -11,6 +11,7 @@ class CoverArt : public QObject {
     CoverArt(ConfigObject<ConfigValue> *pConfig);
     virtual ~CoverArt();
 
+    bool deleteFile(const QString& location);
     QString searchCoverArtFile(TrackInfoObject *pTrack);
 
   private:

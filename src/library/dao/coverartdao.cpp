@@ -58,6 +58,40 @@ void CoverArtDAO::saveCoverArt(TrackInfoObject* pTrack) {
     }
 }
 
+bool CoverArtDAO::deleteCoverArt(const int coverId) {
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM cover_art WHERE id = :id");
+    query.bindValue(":id", coverId);
+    if (query.exec()) {
+        return true;
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+    return false;
+}
+
+bool CoverArtDAO::deleteUnusedCoverArts() {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT id, location FROM cover_art "
+                  "WHERE id not in ("
+                      "SELECT cover_art FROM cover_art INNER JOIN library "
+                      "ON library.cover_art = cover_art.id "
+                      "GROUP BY cover_art"
+                  ")");
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    while (query.next()) {
+        if (m_pCoverArt->deleteFile(query.value(1).toString())) {
+            deleteCoverArt(query.value(0).toInt());
+        }
+    }
+    return true;
+}
+
 int CoverArtDAO::getCoverArtID(QString location) {
     QSqlQuery query(m_database);
     query.prepare(QString(
