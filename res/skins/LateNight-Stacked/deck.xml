@@ -16,6 +16,17 @@
                        <Layout>vertical</Layout>
                        <SizePolicy>min,me</SizePolicy>
 	                   <Children>
+                           <Key>
+                              <Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans
+                                  Unicode, Arial, Verdana, sans-serif;
+                                  background-color: transparent; color: #EECE33; padding: 0px; margin: 0px;}
+                              </Style>
+                              <Group>[Channel<Variable name="channum"/>]</Group>
+                              <SizePolicy>min,min</SizePolicy>
+                              <Connection>
+                                <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+                              </Connection>
+                           </Key>
                            <NumberBpm>
                               <TooltipId>visual_bpm</TooltipId>
                               <Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans

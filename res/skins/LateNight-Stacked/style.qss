@@ -4,7 +4,6 @@
 }
 
 #UILowerHalf {
-  background-color: #00f;
 }
 
 #DecksLeftContainer, #DecksRightContainer, #SkinContainer {
