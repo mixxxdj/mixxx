@@ -170,10 +170,14 @@ void TrackInfoObject::parse() {
         // TODO(rryan): Should we re-visit this decision?
         if (!(pProxiedSoundSource->getArtist().isEmpty())) {
             setArtist(pProxiedSoundSource->getArtist());
+        } else {
+            parseArtist();
         }
 
         if (!(pProxiedSoundSource->getTitle().isEmpty())) {
             setTitle(pProxiedSoundSource->getTitle());
+        } else {
+            parseTitle();
         }
 
         if (!(pProxiedSoundSource->getType().isEmpty())) {
@@ -207,6 +211,25 @@ void TrackInfoObject::parse() {
     }
 }
 
+void TrackInfoObject::parseArtist() {
+    QMutexLocker lock(&m_qMutex);
+    QString filename = m_fileInfo.fileName();
+    if (filename.count('-') == 1) {
+        m_sArtist = filename.section('-', 0, 0).trimmed();
+        m_sArtist = m_sArtist.replace("_", " ");
+        setDirty(true);
+    }
+}
+
+void TrackInfoObject::parseTitle() {
+    QMutexLocker lock(&m_qMutex);
+    QString filename = m_fileInfo.fileName();
+    if (filename.count('-') == 1) {
+        m_sTitle = filename.section('-', 1, 1).trimmed();
+        m_sTitle = m_sTitle.replace("_", " ");
+        setDirty(true);
+    }
+}
 
 void TrackInfoObject::parseFilename() {
     QMutexLocker lock(&m_qMutex);
