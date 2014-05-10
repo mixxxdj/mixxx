@@ -1,0 +1,24 @@
+<Template>
+    <WidgetGroup>
+        <ObjectName>DecksRightContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+            <Template src="skin:deck.xml">
+	            <SetVariable name="channum">2</SetVariable>
+	        </Template>
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                    <Template src="skin:deck.xml">
+                        <SetVariable name="channum">4</SetVariable>
+                    </Template>
+                </Children>
+                <Connection>
+                    <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup>
+        </Children>
+    </WidgetGroup>
+</Template>
