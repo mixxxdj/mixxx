@@ -12,7 +12,7 @@
          WidgetStack with a 'fixed' size policy makes the group track the
          minimum size of the current stack widget. -->
     <SizePolicy>me,f</SizePolicy>
-        <ObjectName>EffectRackContainer</ObjectName>
+    <ObjectName>EffectRackContainer</ObjectName>
     <Children>
       <WidgetStack currentpage="[EffectRack1],current" persist="true">
         <SizePolicy>me,min</SizePolicy>

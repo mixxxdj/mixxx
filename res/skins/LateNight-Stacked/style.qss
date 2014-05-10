@@ -1,6 +1,10 @@
 #DecksSizer {
-  background-color: #fff;
+  background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#UILowerHalf {
+  background-color: #00f;
 }
 
 #DecksLeftContainer, #DecksRightContainer, #SkinContainer {

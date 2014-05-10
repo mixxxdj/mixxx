@@ -64,7 +64,10 @@
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
+        <!-- <MinimumSize>1280,525</MinimumSize>-->
+        <!-- <MinimumSize>0,525</MinimumSize>-->
+        <MaximumSize>1920,525</MaximumSize>
         <Children>
             <!-- <WidgetGroup>
 	            <ObjectName>DeckLeftMargin</ObjectName>
@@ -116,9 +119,16 @@
             </PushButton>
         </Children>
     </WidgetGroup>
-
-    <Template src="skin:sample_decks_container.xml"/>
-    <Template src="skin:effect_rack.xml"/>
-    <Template src="skin:library.xml"/>
+    <WidgetGroup>
+        <ObjectName>UILowerHalf</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,e</SizePolicy>
+        <MaximumSize>1920,800</MaximumSize>
+        <Children>
+            <Template src="skin:sample_decks_container.xml"/>
+            <Template src="skin:effect_rack.xml"/>
+            <Template src="skin:library.xml"/>
+        </Children>
+    </WidgetGroup>
   </Children>
 </skin>
