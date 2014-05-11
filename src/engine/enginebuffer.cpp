@@ -714,9 +714,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // need to use pitch and time scaling. Scratching always disables
         // keylock because keylock sounds terrible when not going at a constant
         // rate.
-        // High seek speeds also disables keylock.
+        // High seek speeds also disables keylock.  Our pitch slider could go
+        // to 90%, so that's the cutoff point.
         bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0) &&
-                                          fabs(speed) < 1.5;
+                                          fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
         processSeek();
