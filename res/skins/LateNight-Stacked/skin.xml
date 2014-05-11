@@ -69,24 +69,9 @@
         <!-- <MinimumSize>0,525</MinimumSize>-->
         <MaximumSize>1920,525</MaximumSize>
         <Children>
-            <!-- <WidgetGroup>
-	            <ObjectName>DeckLeftMargin</ObjectName>
-	            <Layout>horizontal</Layout>
-	            <SizePolicy>min,min</SizePolicy>
-	            <MinimumSize>0,-1</MinimumSize>
-	            <Children>
-	            </Children>
-	        </WidgetGroup>-->
             <Template src="skin:decks_left.xml"/>
             <Template src="skin:waveform_and_mixer.xml"/>
             <Template src="skin:decks_right.xml"/>
-            <!-- <WidgetGroup>
-	            <ObjectName>DeckRightMargin</ObjectName>
-	            <Layout>horizontal</Layout>
-	            <SizePolicy>min,min</SizePolicy>
-	            <MinimumSize>0,-1</MinimumSize>
-	            <Children></Children>
-	        </WidgetGroup>-->
         </Children>
     </WidgetGroup>
     <WidgetGroup>

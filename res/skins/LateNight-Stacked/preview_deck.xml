@@ -10,7 +10,7 @@
 			    <ObjectName>PreviewColumnOne</ObjectName>
 				<Layout>vertical</Layout>
 				<SizePolicy>min,min</SizePolicy>
-				<MinimumSize>-1,40</MinimumSize>
+				<MinimumSize>,40</MinimumSize>
 				<Children>
 					<WidgetGroup>
 					    <ObjectName>PreviewTitleEject</ObjectName>

@@ -396,7 +396,7 @@
 				<Layout>vertical</Layout>
 				<SizePolicy>min,min</SizePolicy>
 				<ObjectName>SamplerVU</ObjectName>
-				<MinimumSize>22,-1</MinimumSize>
+				<MinimumSize>22,</MinimumSize>
 				<Children>
 					<StatusLight>
 						<TooltipId>PeakIndicator</TooltipId>
@@ -426,7 +426,7 @@
 				<Layout>vertical</Layout>
 				<SizePolicy>min,min</SizePolicy>
 				<ObjectName>SamplerPitch</ObjectName>
-				<MinimumSize>40,-1</MinimumSize>
+				<MinimumSize>40,</MinimumSize>
 				<Children>
 					<SliderComposed>
 						<TooltipId>rate</TooltipId>

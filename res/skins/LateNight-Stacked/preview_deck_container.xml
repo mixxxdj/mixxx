@@ -4,7 +4,7 @@
     <WidgetGroup>
         <Layout>vertical</Layout>
         <SizePolicy>min,f</SizePolicy>
-        <MinimumSize>100,-1</MinimumSize>
+        <MinimumSize>100,</MinimumSize>
         <Children>
 			<WidgetStack currentpage="[PreviewDeck],current" persist="true">
 				<ObjectName>PreviewDeckContainer</ObjectName>

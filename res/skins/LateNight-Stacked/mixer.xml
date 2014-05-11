@@ -2,8 +2,8 @@
 	<WidgetGroup>
 	    <ObjectName>Mixer</ObjectName>
 		<SizePolicy>e,max</SizePolicy>
-        <MinimumSize>150,-1</MinimumSize>
-		<MaximumSize>1000,-1</MaximumSize>
+        <MinimumSize>150,</MinimumSize>
+		<MaximumSize>1000,</MaximumSize>
 		<Layout>horizontal</Layout>
 		<Children>
 		    <WidgetGroup>
@@ -28,8 +28,9 @@
                               <Children>
                                  <WidgetGroup>
                                     <ObjectName>MasterSync</ObjectName>
-                                    <SizePolicy>max,me</SizePolicy>
-                                    <Layout>horizontal</Layout>
+                                    <SizePolicy>f,me</SizePolicy>
+                                    <Size>50,</Size>
+                                    <Layout>vertical</Layout>
                                     <Children>
                                         <PushButton>
                                             <TooltipId>sync_master</TooltipId>
@@ -96,7 +97,7 @@
 				                <ObjectName>MixerLeftMargin</ObjectName>
 				                <Layout>horizontal</Layout>
 				                <SizePolicy>me,min</SizePolicy>
-				                <MinimumSize>1,-1</MinimumSize>
+				                <MinimumSize>1,</MinimumSize>
 				                <Children>
 				                </Children>
 				            </WidgetGroup>
@@ -175,7 +176,7 @@
                                 <ObjectName>MixerRightMargin</ObjectName>
                                 <Layout>horizontal</Layout>
                                 <SizePolicy>me,min</SizePolicy>
-                                <MinimumSize>1,-1</MinimumSize>
+                                <MinimumSize>1,</MinimumSize>
                                 <Children>
                                 </Children>
                             </WidgetGroup>
