@@ -19,6 +19,9 @@
 #define TRACKCOLLECTION_H
 
 #include <QtSql>
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#endif
 #include <QList>
 #include <QRegExp>
 #include <QSharedPointer>
@@ -71,6 +74,16 @@ class TrackCollection : public QObject
     static int sqliteLocaleAwareCompare(void* pArg,
                                         int len1, const void* data1,
                                         int len2, const void* data2);
+    static void sqliteLike(sqlite3_context *p,
+                          int aArgc,
+                          sqlite3_value **aArgv);
+    static void makeLatinLow(QChar* c, int count);
+    static int likeCompare(
+            const QChar* pattern,
+            int patterenSize,
+            const QChar* string,
+            int stringSize,
+            const QChar esc);
 #endif
 
     ConfigObject<ConfigValue>* m_pConfig;
