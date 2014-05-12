@@ -68,7 +68,7 @@ class TrackCollection : public QObject
         return m_pConfig;
     }
 
-  private:
+  protected:
 #ifdef __SQLITE3__
     void installSorting(QSqlDatabase &db);
     static int sqliteLocaleAwareCompare(void* pArg,
@@ -78,7 +78,11 @@ class TrackCollection : public QObject
                           int aArgc,
                           sqlite3_value **aArgv);
     static void makeLatinLow(QChar* c, int count);
-    static int likeCompare(
+    static int likeCompareLatinLow(
+            QString* pattern,
+            QString* string,
+            const QChar esc);
+    static int likeCompareInner(
             const QChar* pattern,
             int patterenSize,
             const QChar* string,
@@ -86,6 +90,7 @@ class TrackCollection : public QObject
             const QChar esc);
 #endif
 
+  private:
     ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;

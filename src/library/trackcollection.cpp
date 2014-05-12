@@ -229,10 +229,7 @@ void TrackCollection::sqliteLike(sqlite3_context *context,
     }
 
     QString stringB = QString::fromUtf8(b); // Like String
-    makeLatinLow(stringB.data(), stringB.length());
-
     QString stringA = QString::fromUtf8(a);
-    makeLatinLow(stringA.data(), stringA.length());
 
     QChar esc = '\0'; // Escape
     if (aArgc == 3) {
@@ -246,11 +243,7 @@ void TrackCollection::sqliteLike(sqlite3_context *context,
         }
     }
 
-    //qDebug() << "stringB" << stringB << (void*)b;
-    //qDebug() << "stringA" << stringA << (void*)a;
-    //qDebug() << "esc" << esc;
-
-    int ret = likeCompare(stringB.data(), stringB.size(), stringA.data(), stringA.size(), esc);
+    int ret = likeCompareLatinLow(&stringB, &stringA, esc);
     sqlite3_result_int64(context, ret);
     return;
 }
@@ -267,12 +260,23 @@ void TrackCollection::makeLatinLow(QChar* c, int count) {
     }
 }
 
+//static
+int TrackCollection::likeCompareLatinLow(
+        QString* pattern,
+        QString* string,
+        const QChar esc) {
+    makeLatinLow(pattern->data(), pattern->length());
+    makeLatinLow(string->data(), string->length());
+    //qDebug() << *pattern << *string;
+    return likeCompareInner(pattern->data(), pattern->length(), string->data(), string->length(), esc);
+}
+
 // Compare two strings for equality where the first string is
 // a "LIKE" expression. Return true (1) if they are the same and
 // false (0) if they are different.
 // This is the original sqlite3 icuLikeCompare rewritten for QChar
 //static
-int TrackCollection::likeCompare(
+int TrackCollection::likeCompareInner(
   const QChar* pattern, // LIKE pattern
   int patternSize,
   const QChar* string, // The string to compare against
@@ -322,7 +326,7 @@ int TrackCollection::likeCompare(
             }
 
             while (iString < stringSize) {
-                if (likeCompare(&pattern[iPattern], patternSize - iPattern,
+                if (likeCompareInner(&pattern[iPattern], patternSize - iPattern,
                                 &string[iString], stringSize - iString, esc)) {
                     return 1;
                 }
