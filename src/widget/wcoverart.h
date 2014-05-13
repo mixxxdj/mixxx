@@ -31,13 +31,22 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void leaveEvent(QEvent*);
 
   private:
+    QPixmap scaledCoverArt(QPixmap normal);
+
     ConfigObject<ConfigValue>* m_pConfig;
 
     bool m_bCoverIsHovered;
     bool m_bCoverIsVisible;
+    bool m_bDefaultCover;
 
-    QString m_sDefaultCover;
-    QString m_sCurrentCover;
+    QPixmap m_defaultCover;
+    QString m_sCoverTitle;
+    QPixmap m_currentCover;
+    QPixmap m_currentScaledCover;
+
+    QPixmap m_iconHide;
+    QPixmap m_iconShow;
+    QCursor m_zoomCursor;
 };
 
 #endif // WCOVERART_H

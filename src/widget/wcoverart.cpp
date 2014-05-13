@@ -13,8 +13,30 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_pConfig(pConfig),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
-          m_sDefaultCover(":/images/library/vinyl-record.png"),
-          m_sCurrentCover(m_sDefaultCover) {
+          m_bDefaultCover(true) {
+    // initialize cover art images
+    m_defaultCover = QPixmap(":/images/library/vinyl-record.png");
+    m_currentCover = m_defaultCover;
+    m_currentScaledCover = m_defaultCover;
+
+    // load icon to hide cover
+    m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
+    m_iconHide = m_iconHide.scaled(20,
+                                   20,
+                                   Qt::KeepAspectRatioByExpanding,
+                                   Qt::SmoothTransformation);
+
+    // load icon to show cover
+    m_iconShow = QPixmap(":/images/library/ic_library_cover_show.png");
+    m_iconShow = m_iconShow.scaled(height() - 1,
+                                   height() - 1,
+                                   Qt::KeepAspectRatioByExpanding,
+                                   Qt::SmoothTransformation);
+
+    // load zoom cursor
+    QPixmap zoomImg(":/images/library/ic_library_zoom_in.png");
+    zoomImg = zoomImg.scaled(24, 24);
+    m_zoomCursor = QCursor(zoomImg);
 }
 
 WCoverArt::~WCoverArt() {
@@ -51,11 +73,23 @@ void WCoverArt::slotHideCoverArt() {
 
 void WCoverArt::slotLoadCoverArt(const QString& location) {
     if (QFile::exists(location)) {
-        m_sCurrentCover = location;
+        m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
+        m_currentCover = QPixmap(location);
+        m_currentScaledCover = scaledCoverArt(m_currentCover);
+        m_bDefaultCover = false;
     } else {
-        m_sCurrentCover = m_sDefaultCover;
+        m_sCoverTitle = "Cover Art";
+        m_currentCover = m_defaultCover;
+        m_currentScaledCover = m_defaultCover;
+        m_bDefaultCover = true;
     }
     update();
+}
+
+QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
+    return normal.scaled(QSize(height()-10, height()-10),
+                         Qt::KeepAspectRatioByExpanding,
+                         Qt::SmoothTransformation);
 }
 
 void WCoverArt::paintEvent(QPaintEvent*) {
@@ -64,26 +98,14 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     painter.drawLine(0,0,width(),0);
 
     if (m_bCoverIsVisible) {
-        QPixmap cover = QPixmap(m_sCurrentCover).scaled(
-                                        QSize(height()-10, height()-10),
-                                        Qt::KeepAspectRatioByExpanding,
-                                        Qt::SmoothTransformation);
-        painter.drawPixmap(width()/2-height()/2+4, 6, cover);
+        painter.drawPixmap(width()/2-height()/2+4, 6, m_currentScaledCover);
     } else {
-        QPixmap sc = QPixmap(":/images/library/ic_library_cover_show.png");
-        sc = sc.scaled(height()-1, height()-1,
-                       Qt::KeepAspectRatioByExpanding,
-                       Qt::SmoothTransformation);
-        painter.drawPixmap(0, 1 ,sc);
+        painter.drawPixmap(0, 1 ,m_iconShow);
         painter.drawText(25, 15, tr("Show Cover Art"));
     }
 
     if (m_bCoverIsVisible && m_bCoverIsHovered) {
-        QPixmap hc = QPixmap(":/images/library/ic_library_cover_hide.png");
-        hc = hc.scaled(20, 20,
-                       Qt::KeepAspectRatioByExpanding,
-                       Qt::SmoothTransformation);
-        painter.drawPixmap(width()-21, 6, hc);
+        painter.drawPixmap(width()-21, 6, m_iconHide);
     }
 }
 
@@ -104,17 +126,15 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
             m_bCoverIsVisible = false;
             resize(sizeHint());
         } else {
-            if (m_sCurrentCover != m_sDefaultCover) {
+            if (!m_bDefaultCover) {
                 QLabel *lb = new QLabel(this, Qt::Popup |
                                               Qt::Tool |
                                               Qt::CustomizeWindowHint |
                                               Qt::WindowCloseButtonHint);
                 lb->setWindowModality(Qt::ApplicationModal);
-                int index = m_sCurrentCover.lastIndexOf("/");
-                QString title = m_sCurrentCover.mid(index + 1);
-                lb->setWindowTitle(title);
+                lb->setWindowTitle(m_sCoverTitle);
 
-                QPixmap px = QPixmap(m_sCurrentCover);
+                QPixmap px = m_currentCover;
                 QSize sz = QApplication::activeWindow()->size();
 
                 if (px.height() > sz.height() / 1.2) {
@@ -147,12 +167,10 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
                     && lastPoint.y() < (height() / 5) + 5) {
                 setCursor(Qt::ArrowCursor);
             } else {
-                if (m_sCurrentCover == m_sDefaultCover) {
+                if (m_bDefaultCover) {
                     setCursor(Qt::ArrowCursor);
                 } else {
-                    QPixmap pix(":/images/library/ic_library_zoom_in.png");
-                    pix = pix.scaled(24, 24);
-                    setCursor(QCursor(pix));
+                    setCursor(m_zoomCursor);
                 }
             }
         } else {
