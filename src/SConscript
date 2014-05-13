@@ -609,7 +609,7 @@ if 'makerelease' in COMMAND_LINE_TARGETS:
 def ubuntu_append_changelog(debian_dir,
                             package_name, package_version,
                             description,
-                            distro='karmic',
+                            distro='lucid',
                             urgency='low',
                             author="Mixxx Buildbot <builds@mixxx.org>"):
         now_formatted = time.strftime("%a,  %d %b %Y %H:%M:%S +0000", time.gmtime())

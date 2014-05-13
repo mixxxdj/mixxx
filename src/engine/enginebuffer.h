@@ -22,7 +22,7 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "defs.h"
+#include "util/types.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
 #include "configobject.h"
@@ -104,6 +104,12 @@ class EngineBuffer : public EngineObject {
         SEEK_PHASE
     };
 
+    enum KeylockEngine {
+        SOUNDTOUCH,
+        RUBBERBAND,
+        KEYLOCK_ENGINE_COUNT,
+    };
+
     EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
@@ -115,7 +121,7 @@ class EngineBuffer : public EngineObject {
     void addControl(EngineControl* pControl);
 
     // Return the current rate (not thread-safe)
-    double getRate();
+    double getSpeed();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)
@@ -127,7 +133,7 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
 
     // The process methods all run in the audio callback.
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
 
     const char* getGroup();
@@ -148,6 +154,17 @@ class EngineBuffer : public EngineObject {
     // For dependency injection of fake tracks.
     TrackPointer loadFakeTrack();
 
+    static QString getKeylockEngineName(KeylockEngine engine) {
+        switch (engine) {
+        case SOUNDTOUCH:
+            return tr("Soundtouch (faster)");
+        case RUBBERBAND:
+            return tr("Rubberband (better)");
+        default:
+            return tr("Unknown (bad value)");
+        }
+    }
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -159,6 +176,7 @@ class EngineBuffer : public EngineObject {
     void slotControlSeekAbs(double);
     void slotControlSeekExact(double);
     void slotControlSlip(double);
+    void slotKeylockEngineChanged(double);
 
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
@@ -294,6 +312,7 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
+    ControlObjectSlave* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
     QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 
@@ -313,6 +332,9 @@ class EngineBuffer : public EngineObject {
     // Object used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
     EngineBufferScaleRubberBand* m_pScaleRB;
+    // The keylock engine is configurable, so it could flip flop between
+    // ScaleST and ScaleRB during a single callback.
+    EngineBufferScale* volatile m_pScaleKeylock;
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

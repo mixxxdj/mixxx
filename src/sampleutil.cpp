@@ -2,7 +2,6 @@
 // Created 10/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifdef __WINDOWS__
-#pragma intrinsic(fabs)sc
 #include <QtGlobal>
 typedef qint64 int64_t;
 typedef qint32 int32_t;
@@ -11,6 +10,7 @@ typedef qint32 int32_t;
 #include <QtDebug>
 
 #include "sampleutil.h"
+#include "util/math.h"
 
 // static
 CSAMPLE* SampleUtil::alloc(unsigned int size) {
@@ -236,35 +236,11 @@ bool SampleUtil::isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
 }
 
 // static
-bool SampleUtil::copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
-                                 CSAMPLE* pDest, const CSAMPLE* pSrc,
+void SampleUtil::copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                  int iNumSamples) {
-    bool clamped = false;
-    if (pSrc == pDest) {
-        for (int i = 0; i < iNumSamples; ++i) {
-            CSAMPLE sample = pSrc[i];
-            if (sample > fMax) {
-                clamped = true;
-                pDest[i] = fMax;
-            } else if (sample < fMin) {
-                clamped = true;
-                pDest[i] = fMin;
-            }
-        }
-    } else {
-        for (int i = 0; i < iNumSamples; ++i) {
-            CSAMPLE sample = pSrc[i];
-            if (sample > fMax) {
-                sample = fMax;
-                clamped = true;
-            } else if (sample < fMin) {
-                sample = fMin;
-                clamped = true;
-            }
-            pDest[i] = sample;
-        }
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = clampSample(pSrc[i]);
     }
-    return clamped;
 }
 
 // static

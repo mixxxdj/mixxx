@@ -6,7 +6,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
         : m_pConfig(pConfig),
           m_group(group),
           m_iLeadInTime(m_pConfig->getValueString(
-              ConfigKey(VINYL_PREF_KEY,"lead_in_time")).toInt()),
+              ConfigKey(group, "vinylcontrol_lead_in_time")).toInt()),
           m_dVinylPosition(0.0),
           m_fTimecodeQuality(0.0f) {
     // Get Control objects

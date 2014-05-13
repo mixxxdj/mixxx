@@ -28,14 +28,14 @@
 #endif
 #include <sndfile.h>
 
-#include "encoder/encodercallback.h"
 #include "configobject.h"
+#include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "trackinfoobject.h"
 
-class Encoder;
 class ConfigKey;
-class ControlObjectThread;
+class ControlObjectSlave;
+class Encoder;
 
 class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
@@ -61,6 +61,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     // emitted to notify RecordingManager
     void bytesRecorded(int);
     void isRecording(bool);
+    void durationRecorded(QString);
 
   private:
     int getActiveTracks();
@@ -88,14 +89,17 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     SNDFILE* m_pSndfile;
     SF_INFO m_sfInfo;
 
-    ControlObjectThread* m_pRecReady;
-    ControlObjectThread* m_pSamplerate;
+    ControlObjectSlave* m_pRecReady;
+    ControlObjectSlave* m_pSamplerate;
+    quint64 m_frames;
+    quint64 m_sampleRate;
+    quint64 m_recordedDuration;
+    QString getRecordedDurationStr();
 
     int m_iMetaDataLife;
     TrackPointer m_pCurrentTrack;
 
     QByteArray m_cueFileName;
-    quint64 m_cueSamplePos;
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
 };

@@ -43,6 +43,7 @@ class GuiTick;
 class DlgPreferences;
 class SoundManager;
 class ControlPushButton;
+class DlgDeveloperTools;
 
 #include "configobject.h"
 #include "util/cmdlineargs.h"
@@ -119,6 +120,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
     void slotDeveloperReloadSkin(bool toggle);
+    // Open the developer tools dialog.
+    void slotDeveloperTools();
+    void slotDeveloperToolsClosed();
 
     void slotToCenterOfPrimaryScreen();
 
@@ -133,11 +137,6 @@ class MixxxMainWindow : public QMainWindow {
 
   signals:
     void newSkinLoaded();
-
-    // Emitted when the UI is showing a dialog window -- this is used to
-    // tell MixxxKeyboard to clear its list of active keys because it might
-    // not get Key Release signals.
-    void showDlg();
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
@@ -236,6 +235,8 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pHelpManual;
 
     QAction* m_pDeveloperReloadSkin;
+    QAction* m_pDeveloperTools;
+    DlgDeveloperTools* m_pDeveloperToolsDlg;
 
     int m_iNoPlaylists;
 

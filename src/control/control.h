@@ -58,7 +58,9 @@ class ControlDoublePrivate : public QObject {
     // ValueChangeRequest slot.
     void setAndConfirm(double value, QObject* pSender);
     // Gets the control value.
-    double get() const;
+    inline double get() const {
+        return m_value.getValue();
+    }
     // Resets the control value to its default.
     void reset();
 

@@ -19,17 +19,22 @@ public:
     virtual bool onInit() {return true;}
     virtual void onSetup(const QDomNode &node) = 0;
 
-protected:
+  protected:
     void deleteControls();
 
-protected:
+    void getGains(float* pAllGain, float* pLowGain, float* pMidGain,
+                  float* highGain);
+
+  protected:
+    ControlObjectThread* m_pEQEnabled;
     ControlObjectThread* m_pLowFilterControlObject;
     ControlObjectThread* m_pMidFilterControlObject;
     ControlObjectThread* m_pHighFilterControlObject;
-
     ControlObjectThread* m_pLowKillControlObject;
     ControlObjectThread* m_pMidKillControlObject;
     ControlObjectThread* m_pHighKillControlObject;
+
+    Qt::Alignment m_alignment;
 
     const WaveformSignalColors* m_pColors;
     qreal m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
@@ -37,8 +42,6 @@ protected:
     qreal m_lowColor_r, m_lowColor_g, m_lowColor_b;
     qreal m_midColor_r, m_midColor_g, m_midColor_b;
     qreal m_highColor_r, m_highColor_g, m_highColor_b;
-
-    Qt::Alignment m_alignment;
 };
 
 #endif // WAVEFORMRENDERERSIGNALBASE_H

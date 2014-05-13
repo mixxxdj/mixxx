@@ -52,10 +52,10 @@ class DlgPrefController : public DlgPreferencePage {
     void controllerEnabled(DlgPrefController*, bool);
     void openController(Controller* pController);
     void closeController(Controller* pController);
-    void loadPreset(Controller* pController, QString controllerName, bool force);
+    void loadPreset(Controller* pController, QString controllerName);
     void loadPreset(Controller* pController, ControllerPresetPointer pPreset);
     void mappingStarted();
-    void mappingEnded();;
+    void mappingEnded();
 
   private slots:
     void slotPresetLoaded(ControllerPresetPointer preset);
@@ -71,10 +71,17 @@ class DlgPrefController : public DlgPreferencePage {
     void removeOutputMappings();
     void clearAllOutputMappings();
 
+    // Scripts
+    void addScript();
+    void removeScript();
+    void openScript();
+
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
+    QString presetName(const ControllerPresetPointer pPreset) const;
+    QString presetAuthor(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;

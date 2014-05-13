@@ -26,6 +26,7 @@
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
 #include "util/timer.h"
+#include "util/defs.h"
 
 ControlPotmeter* EngineFilterBlock::s_loEqFreq = NULL;
 ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;
@@ -145,12 +146,11 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
     }
 }
 
-void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+void EngineFilterBlock::process(CSAMPLE* pInOut, const int iBufferSize) {
     ScopedTimer t("EngineFilterBlock::process");
 
     // Check if EQ processing is disabled.
     if (!s_EnableEq->get()) {
-        SampleUtil::copyWithGain(pOutput, pIn, 1, iBufferSize);
         return;
     }
 
@@ -178,19 +178,19 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
     // 16 frames are junk, this is handled by ramp_delay
     int ramp_delay = 0;
     if (fLow || old_low) {
-        low->process(pIn, m_pLowBuf, iBufferSize);
+        low->process(pInOut, m_pLowBuf, iBufferSize);
         if(old_low == 0) {
             ramp_delay = 30;
         }
     }
     if (fMid || old_mid) {
-        band->process(pIn, m_pBandBuf, iBufferSize);
+        band->process(pInOut, m_pBandBuf, iBufferSize);
         if(old_mid== 0) {
             ramp_delay = 30;
         }
     }
     if (fHigh || old_high) {
-        high->process(pIn, m_pHighBuf, iBufferSize);
+        high->process(pInOut, m_pHighBuf, iBufferSize);
         if(old_high == 0) {
             ramp_delay = 30;
         }
@@ -198,15 +198,15 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
 
     if (ramp_delay) {
         // first use old gains
-        SampleUtil::copy4WithGain(pOutput,
-                                  pIn, old_dry,
+        SampleUtil::copy4WithGain(pInOut,
+                                  pInOut, old_dry,
                                   m_pLowBuf, old_low,
                                   m_pBandBuf, old_mid,
                                   m_pHighBuf, old_high,
                                   ramp_delay);
         // Now ramp the remaining frames
-        SampleUtil::copy4WithRampingGain(&pOutput[ramp_delay],
-                                         &pIn[ramp_delay], old_dry, fDry,
+        SampleUtil::copy4WithRampingGain(&pInOut[ramp_delay],
+                                         &pInOut[ramp_delay], old_dry, fDry,
                                          &m_pLowBuf[ramp_delay], old_low, fLow,
                                          &m_pBandBuf[ramp_delay], old_mid, fMid,
                                          &m_pHighBuf[ramp_delay], old_high, fHigh,
@@ -215,15 +215,15 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
             fMid != old_mid ||
             fHigh != old_high ||
             fDry != old_dry) {
-        SampleUtil::copy4WithRampingGain(pOutput,
-                                         pIn, old_dry, fDry,
+        SampleUtil::copy4WithRampingGain(pInOut,
+                                         pInOut, old_dry, fDry,
                                          m_pLowBuf, old_low, fLow,
                                          m_pBandBuf, old_mid, fMid,
                                          m_pHighBuf, old_high, fHigh,
                                          iBufferSize);
     } else {
-        SampleUtil::copy4WithGain(pOutput,
-                                  pIn, fDry,
+        SampleUtil::copy4WithGain(pInOut,
+                                  pInOut, fDry,
                                   m_pLowBuf, fLow,
                                   m_pBandBuf, fMid,
                                   m_pHighBuf, fHigh,

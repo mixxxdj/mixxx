@@ -5,8 +5,9 @@
 #include <QFile>
 #include <QtDebug>
 
-#include "util/timer.h"
 #include "soundsourcemodplug.h"
+
+#include "util/timer.h"
 
 /* read files in 512k chunks */
 #define CHUNKSIZE (1 << 19)
@@ -69,7 +70,7 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
     ModPlug::ModPlug_SetSettings(&s_settings);
 }
 
-int SoundSourceModPlug::open() {
+Result SoundSourceModPlug::open() {
     ScopedTimer t("SoundSourceModPlug::open()");
 
     if (m_pModFile == NULL) {
@@ -150,8 +151,7 @@ unsigned SoundSourceModPlug::read(unsigned long size,
     return copySamples;
 }
 
-int SoundSourceModPlug::parseHeader()
-{
+Result SoundSourceModPlug::parseHeader() {
     if (m_pModFile == NULL) {
         // an error occured
         qDebug() << "Could not parse module header of " << m_qFilename;

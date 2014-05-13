@@ -14,11 +14,12 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtDebug>
+
 #include <taglib/mpegfile.h>
 
 #include "soundsourcemp3.h"
-#include <QtDebug>
-
+#include "util/math.h"
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) :
         Mixxx::SoundSource(qFilename),
@@ -36,6 +37,13 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) :
     m_iAvgFrameSize = 0;
     m_iChannels = 0;
     rest = 0;
+
+    bitrate = 0;
+    framecount = 0;
+    currentframe = 0;
+    pos = mad_timer_zero;
+    filelength = mad_timer_zero;
+    inputbuf_len = 0;
 }
 
 SoundSourceMp3::~SoundSourceMp3()
@@ -69,8 +77,7 @@ QList<QString> SoundSourceMp3::supportedFileExtensions()
     return list;
 }
 
-int SoundSourceMp3::open()
-{
+Result SoundSourceMp3::open() {
     m_file.setFileName(m_qFilename);
     if (!m_file.open(QIODevice::ReadOnly)) {
         //qDebug() << "MAD: Open failed:" << m_qFilename;
@@ -226,7 +233,7 @@ long SoundSourceMp3::seek(long filepos) {
         rest=-1;
 
         m_currentSeekFrameIndex = 0;
-        cur = getSeekFrame(0);
+        //cur = getSeekFrame(0);
         //frameIterator.toFront(); //Might not need to do this -- Albert June 19/2010 (during Qt3 purge)
     } else {
         //qDebug() << "seek precise";
@@ -409,7 +416,7 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted) {
             }
         }
         mad_synth_frame(Synth, Frame);
-        no = math_min(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
+        no = math_min<int>(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
         Total_samples_decoded += 2*no;
     }
 
@@ -523,7 +530,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 
 //         qDebug() << "synthlen " << Synth->pcm.length << ", remain " << (samples_wanted-Total_samples_decoded);
-        no = math_min(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
+        no = math_min<int>(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
         for (i=0; i<no; i++)
         {
             // Left channel
@@ -551,8 +558,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     return Total_samples_decoded;
 }
 
-int SoundSourceMp3::parseHeader()
-{
+Result SoundSourceMp3::parseHeader() {
     setType("mp3");
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
     TagLib::MPEG::File f(qBAFilename.constData());
@@ -577,7 +583,7 @@ int SoundSourceMp3::parseHeader()
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    m_currentSeekFrameIndex = math_min(m_qSeekList.count()-1,
+    m_currentSeekFrameIndex = math_min((unsigned int) m_qSeekList.count()-1,
                                        m_iAvgFrameSize ? (unsigned int)(pos/m_iAvgFrameSize) : 0);
     MadSeekFrameType* temp = getSeekFrame(m_currentSeekFrameIndex);
 
@@ -638,4 +644,3 @@ inline signed int SoundSourceMp3::madScale(mad_fixed_t sample)
 
     return sample >> (MAD_F_FRACBITS + 1 - 16);
 }
-

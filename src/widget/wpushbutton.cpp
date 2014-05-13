@@ -82,6 +82,15 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                     setPixmap(iState, false, context.getSkinPath(pixmapName));
                 }
                 m_text.replace(iState, context.selectString(state, "Text"));
+                QString alignment = context.selectString(state, "Alignment");
+                if (alignment == "left") {
+                    m_align.replace(iState, Qt::AlignLeft);
+                } else if (alignment == "right") {
+                    m_align.replace(iState, Qt::AlignRight);
+                } else {
+                    // Default is center.
+                    m_align.replace(iState, Qt::AlignCenter);
+                }
             }
         }
         state = state.nextSibling();
@@ -184,6 +193,7 @@ void WPushButton::setStates(int iStates) {
     m_pressedPixmaps.resize(iStates);
     m_unpressedPixmaps.resize(iStates);
     m_text.resize(iStates);
+    m_align.resize(iStates);
 }
 
 void WPushButton::setPixmap(int iState, bool bPressed, const QString& filename) {
@@ -228,10 +238,17 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
         m_bPressed = (dValue == 1.0);
     }
 
+    double value = getControlParameterDisplay();
+    int idx = static_cast<int>(value) % m_iNoStates;
+    setProperty("displayValue", idx);
+    // According to http://stackoverflow.com/a/3822243 this is the least
+    // expensive way to restyle just this widget.
+    // These calls trigger the repaint.
     // Since we expect button connections to not change at high frequency we
     // don't try to detect whether things have changed for WPushButton, we just
     // re-render.
-    update();
+    style()->unpolish(this);
+    style()->polish(this);
 }
 
 void WPushButton::paintEvent(QPaintEvent* e) {
@@ -241,7 +258,6 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     QStylePainter p(this);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    double value = getControlParameterDisplay();
     if (m_iNoStates == 0) {
         return;
     }
@@ -260,7 +276,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
         return;
     }
 
-    int idx = static_cast<int>(value) % m_iNoStates;
+    int idx = readDisplayValue();
     // Just in case m_iNoStates is somehow different from pixmaps.size().
     if (idx < 0) {
         idx = 0;
@@ -275,7 +291,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 
     QString text = m_text.at(idx);
     if (!text.isEmpty()) {
-        p.drawText(rect(), Qt::AlignCenter, text);
+        p.drawText(rect(), m_align.at(idx), text);
     }
 }
 

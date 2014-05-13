@@ -6,6 +6,7 @@
 
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
+#include "util/math.h"
 
 #include <QLinearGradient>
 
@@ -62,10 +63,10 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     painter->setRenderHint(QPainter::Antialiasing);
     painter->resetTransform();
 
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    const double  visualGain = factory->getVisualGain(WaveformWidgetFactory::All);
+    float allGain(1.0);
+    getGains(&allGain, NULL, NULL, NULL);
 
-    double heightGain = visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0;
+    double heightGain = allGain * (double)m_waveformRenderer->getHeight()/255.0;
     if (m_alignment == Qt::AlignTop) {
         painter->translate(0.0, 0.0);
         painter->scale(1.0, heightGain);
@@ -169,8 +170,8 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             // visualFrameStop] lies within the valid range of visual
             // frames. Clamp visualFrameStart/Stop to within [0,
             // lastVisualFrame].
-            visualFrameStart = math_max(math_min(lastVisualFrame, visualFrameStart), 0);
-            visualFrameStop = math_max(math_min(lastVisualFrame, visualFrameStop), 0);
+            visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
+            visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
 
             int visualIndexStart = visualFrameStart * 2 + channel;
             int visualIndexStop = visualFrameStop * 2 + channel;

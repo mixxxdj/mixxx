@@ -10,9 +10,6 @@
 #include <QDesktopServices>
 #include <QCoreApplication>
 #include <QStringList>
-#include <stdlib.h>
-#include <iostream>
-#include <stdio.h>
 
 #include "vamp/vampanalyser.h"
 
@@ -104,11 +101,20 @@ void VampAnalyser::initializePluginPaths() {
 #endif
 }
 
-VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig) {
-    m_pluginbuf = new CSAMPLE*[2];
-    m_plugin = NULL;
-    m_bDoNotAnalyseMoreSamples = false;
-    m_pConfig = pconfig;
+VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig)
+    : m_iSampleCount(0),
+      m_iOUT(0),
+      m_iRemainingSamples(0),
+      m_iBlockSize(0),
+      m_iStepSize(0),
+      m_rate(0),
+      m_iOutput(0),
+      m_pluginbuf(new CSAMPLE*[2]),
+      m_plugin(NULL),
+      m_bDoNotAnalyseMoreSamples(false),
+      m_FastAnalysisEnabled(false),
+      m_iMaxSamplesToAnalyse(0),
+      m_pConfig(pconfig) {
 }
 
 VampAnalyser::~VampAnalyser() {
@@ -118,13 +124,8 @@ VampAnalyser::~VampAnalyser() {
 
 bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
                         const int samplerate, const int TotalSamples, bool bFastAnalysis) {
-    m_iOutput = 0;
-    m_rate = 0;
-    m_iMaxSamplesToAnalyse = 0;
     m_iRemainingSamples = TotalSamples;
     m_rate = samplerate;
-    m_iSampleCount = 0;
-    m_iOUT = 0;
 
     if (samplerate <= 0.0) {
         qDebug() << "VampAnalyser: Track has non-positive samplerate";

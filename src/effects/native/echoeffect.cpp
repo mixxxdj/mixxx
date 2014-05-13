@@ -2,10 +2,8 @@
 
 #include "effects/native/echoeffect.h"
 
-#include "mathstuff.h"
 #include "sampleutil.h"
 
-#define OFFSET_RING(index, increment, length) (index + increment) % length
 #define INCREMENT_RING(index, increment, length) index = (index + increment) % length
 
 // static

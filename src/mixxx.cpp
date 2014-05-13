@@ -33,6 +33,7 @@
 #include "defs_urls.h"
 #include "dlgabout.h"
 #include "dlgpreferences.h"
+#include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
 #include "effects/effectsmanager.h"
@@ -70,6 +71,7 @@
 #include "util/sandbox.h"
 #include "playerinfo.h"
 #include "waveform/guitick.h"
+#include "util/math.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -87,6 +89,7 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
+          m_pDeveloperToolsDlg(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
@@ -341,8 +344,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
-
-    // Init keyboard after preferences so the keyboard can listen for
     initializeKeyboard();
 
     // Try open player device If that fails, the preference panel is opened.
@@ -420,9 +421,12 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
 
-    // If we were told to start in fullscreen mode on the command-line,
+    // If we were told to start in fullscreen mode on the command-line
+    // or if user chose always starts in fullscreen mode,
     // then turn on fullscreen mode.
-    if (args.getStartInFullscreen()) {
+    bool fullscreenPref = m_pConfig->getValueString(
+                ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
+    if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
     emit(newSkinLoaded());
@@ -543,18 +547,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pPrefDlg;
 
-    // HACK: Save config again. We saved it once before doing some dangerous
-    // stuff. We only really want to save it here, but the first one was just
-    // a precaution. The earlier one can be removed when stuff is more stable
-    // at exit.
-    m_pConfig->Save();
-
-    qDebug() << "delete config " << qTime.elapsed();
-    Sandbox::shutdown();
-
-    ControlDoublePrivate::setUserConfig(NULL);
-    delete m_pConfig;
-
     delete m_pTouchShift;
 
     PlayerInfo::destroy();
@@ -592,6 +584,18 @@ MixxxMainWindow::~MixxxMainWindow() {
        }
     }
     qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
+
+    // HACK: Save config again. We saved it once before doing some dangerous
+    // stuff. We only really want to save it here, but the first one was just
+    // a precaution. The earlier one can be removed when stuff is more stable
+    // at exit.
+    m_pConfig->Save();
+
+    qDebug() << "delete config " << qTime.elapsed();
+    Sandbox::shutdown();
+
+    ControlDoublePrivate::setUserConfig(NULL);
+    delete m_pConfig;
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
@@ -769,7 +773,7 @@ void MixxxMainWindow::initializeKeyboard() {
     // Workaround for today: MixxxKeyboard calls delete
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
-    m_pKeyboard = new MixxxKeyboard(this, m_pPrefDlg, keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
+    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
@@ -848,8 +852,6 @@ int MixxxMainWindow::noSoundDlg(void)
     QPushButton *exitButton = msgBox.addButton(tr("Exit"),
         QMessageBox::ActionRole);
 
-    emit(showDlg());
-
     while (true)
     {
         msgBox.exec();
@@ -906,8 +908,6 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
     QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
     QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
     QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
-
-    emit(showDlg());
 
     while (true)
     {
@@ -1282,6 +1282,19 @@ void MixxxMainWindow::initActions()
     connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
 
+    QString developerToolsTitle = tr("Developer Tools");
+    QString developerToolsText = tr("Opens the developer tools dialog");
+    m_pDeveloperTools = new QAction(developerToolsTitle, this);
+    m_pDeveloperTools->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_DeveloperTools"),
+                                                  tr("Ctrl+Shift+D"))));
+    m_pDeveloperTools->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperTools->setStatusTip(developerToolsText);
+    m_pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
+    connect(m_pDeveloperTools, SIGNAL(triggered()),
+            this, SLOT(slotDeveloperTools()));
+
     // TODO: This code should live in a separate class.
     m_TalkoverMapper = new QSignalMapper(this);
     connect(m_TalkoverMapper, SIGNAL(mapped(int)),
@@ -1355,6 +1368,7 @@ void MixxxMainWindow::initMenuBar()
 
     // Developer Menu
     m_pDeveloperMenu->addAction(m_pDeveloperReloadSkin);
+    m_pDeveloperMenu->addAction(m_pDeveloperTools);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -1390,8 +1404,6 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             deckWarningMessage + "\n" + areYouSure,
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
-
-        emit(showDlg());
 
         if (ret != QMessageBox::Yes)
             return;
@@ -1451,6 +1463,20 @@ void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
 void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
     Q_UNUSED(toggle);
     rebootMixxxView();
+}
+
+void MixxxMainWindow::slotDeveloperTools() {
+    if (m_pDeveloperToolsDlg == NULL) {
+        m_pDeveloperToolsDlg = new DlgDeveloperTools(this, m_pConfig);
+        connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                this, SLOT(slotDeveloperToolsClosed()));
+    }
+    m_pDeveloperToolsDlg->show();
+    m_pDeveloperToolsDlg->activateWindow();
+}
+
+void MixxxMainWindow::slotDeveloperToolsClosed() {
+    m_pDeveloperToolsDlg = NULL;
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle)
@@ -1531,7 +1557,6 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
                     tr("There is no input device selected for this vinyl control.\n"
                        "Please select an input device in the sound hardware preferences first."),
                     QMessageBox::Ok, QMessageBox::Ok);
-            emit(showDlg());
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(PlayerManager::groupForDeck(deck),
@@ -1565,7 +1590,6 @@ void MixxxMainWindow::slotControlPassthrough(int index) {
                 tr("There is no input device selected for this passthrough control.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
-        emit(showDlg());
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
@@ -1594,7 +1618,6 @@ void MixxxMainWindow::slotControlAuxiliary(int index) {
                 tr("There is no input device selected for this auxiliary input.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
-        emit(showDlg());
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
@@ -1615,8 +1638,7 @@ void MixxxMainWindow::slotCheckboxVinylControl(int deck) {
 }
 
 void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
-    int num_decks =
-            static_cast<int>(math_min(dNumDecks, kMaximumVinylControlInputs));
+    int num_decks = math_min<int>(dNumDecks, kMaximumVinylControlInputs);
 
 #ifdef __VINYLCONTROL__
     // Only show menu items to activate vinyl inputs that exist.
@@ -1665,7 +1687,6 @@ void MixxxMainWindow::slotTalkoverChanged(int mic_num) {
                 tr("There is no input device selected for this microphone.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
-    emit(showDlg());
     m_pPrefDlg->show();
     m_pPrefDlg->showSoundHardwarePage();
 }
@@ -1708,8 +1729,7 @@ void MixxxMainWindow::slotHelpManual() {
     }
 #elif defined(__LINUX__)
     // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    resourceDir.cd("doc");
-    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
+    if (resourceDir.cd("doc") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
                 resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
@@ -1758,7 +1778,6 @@ void MixxxMainWindow::rebootMixxxView() {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
-        emit(showDlg());
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
@@ -1893,7 +1912,6 @@ void MixxxMainWindow::checkDirectRendering() {
                "direct rendering may not be present, but you should<br>"
                "not experience degraded performance."));
         m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
-        emit(showDlg());
     }
 }
 
@@ -1916,7 +1934,6 @@ bool MixxxMainWindow::confirmExit() {
             break;
         }
     }
-    emit(showDlg());
     if (playing) {
         QMessageBox::StandardButton btn = QMessageBox::question(this,
             tr("Confirm Exit"),

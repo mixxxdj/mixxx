@@ -46,7 +46,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 
-    virtual void process(const CSAMPLE* pInput, CSAMPLE* pOutput, const int iBufferSize);
+    virtual void process(CSAMPLE* pOutput, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
@@ -78,7 +78,6 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pBuffer;
-    EngineClipping* m_pClipping;
     EngineFilterBlock* m_pFilter;
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
@@ -87,8 +86,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     // Begin vinyl passthrough fields
     ControlPushButton* m_pPassing;
-    CSAMPLE* m_pConversionBuffer;
-    CircularBuffer<CSAMPLE> m_sampleBuffer;
+    const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
 };

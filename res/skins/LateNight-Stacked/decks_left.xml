@@ -1,0 +1,31 @@
+<Template>
+    <WidgetGroup>
+        <ObjectName>DecksSizer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+            <WidgetGroup>
+                <ObjectName>DecksLeftContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                    <Template src="skin:deck.xml">
+        	            <SetVariable name="channum">1</SetVariable>
+        	        </Template>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                            <Template src="skin:deck.xml">
+                                <SetVariable name="channum">3</SetVariable>
+                            </Template>
+                        </Children>
+                        <Connection>
+                            <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </WidgetGroup>
+                </Children>
+            </WidgetGroup>
+        </Children>
+    </WidgetGroup>
+</Template>

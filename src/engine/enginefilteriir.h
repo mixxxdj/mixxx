@@ -18,9 +18,9 @@
 #define ENGINEFILTERIIR_H
 
 #include "engine/engineobject.h"
-#include "defs.h"
+#include "util/types.h"
 
-class EngineFilterIIR : public EngineObject {
+class EngineFilterIIR : public EngineObjectConstIn {
     Q_OBJECT
   public:
     EngineFilterIIR(const double* pCoefs, int iOrder);

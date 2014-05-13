@@ -20,37 +20,28 @@
 #include <QKeyEvent>
 #include <QEvent>
 
-#include "dlgpreferences.h"
-#include "mixxx.h"
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
 #include "util/cmdlineargs.h"
 
 
-
-MixxxKeyboard::MixxxKeyboard(MixxxMainWindow *pMainWindow,
-                             DlgPreferences *pDlgPreferences,
-                             ConfigObject<ConfigValueKbd>* pKbdConfigObject,
+MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
                              QObject* parent, const char* name)
         : QObject(parent),
           m_pKbdConfigObject(NULL) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
-    connect(pMainWindow, SIGNAL(showDlg()),
-            this, SLOT(slotDialogShown()));
-    connect(pDlgPreferences, SIGNAL(showDlg()),
-            this, SLOT(slotDialogShown()));
 }
 
 MixxxKeyboard::~MixxxKeyboard() {
 }
 
-void MixxxKeyboard::slotDialogShown() {
-    m_qActiveKeyList.clear();
-}
-
 bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
-    if (e->type() == QEvent::KeyPress) {
+    if (e->type() == QEvent::FocusOut) {
+        // If we lose focus, we need to clear out the active key list
+        // because we might not get Key Release events.
+        m_qActiveKeyList.clear();
+    } else if (e->type() == QEvent::KeyPress) {
         QKeyEvent* ke = (QKeyEvent *)e;
 
 #ifdef __APPLE__
@@ -141,12 +132,10 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             }
         }
         return matched;
-    } else {
-        if (e->type() == QEvent::KeyboardLayoutChange) {
-            // This event is not fired on ubunty natty, why?
-            // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-            //qDebug() << "QEvent::KeyboardLayoutChange";
-        }
+    } else if (e->type() == QEvent::KeyboardLayoutChange) {
+        // This event is not fired on ubunty natty, why?
+        // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
+        //qDebug() << "QEvent::KeyboardLayoutChange";
     }
     return false;
 }

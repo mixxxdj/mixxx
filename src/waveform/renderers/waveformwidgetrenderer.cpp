@@ -5,13 +5,9 @@
 #include "widget/wwidget.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
-#include "defs.h"
 #include "visualplayposition.h"
-#include "mathstuff.h"
-
+#include "util/math.h"
 #include "util/performancetimer.h"
-
-#include <QPainter>
 
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
@@ -249,8 +245,7 @@ void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& cont
 
 void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
-    m_zoomFactor = zoom;
-    m_zoomFactor = math_max(s_waveformMinZoom, math_min(m_zoomFactor, s_waveformMaxZoom));
+    m_zoomFactor = math_clamp<double>(zoom, s_waveformMinZoom, s_waveformMaxZoom);
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {

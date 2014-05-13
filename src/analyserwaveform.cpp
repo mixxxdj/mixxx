@@ -3,7 +3,6 @@
 #include <QTime>
 #include <QMutexLocker>
 #include <QtDebug>
-#include <time.h>
 
 #include "analyserwaveform.h"
 #include "engine/engineobject.h"

@@ -27,7 +27,6 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
 
   private:
     void activateButtons(bool enable);
-    TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     MissingTableModel* m_pMissingTableModel;
 };

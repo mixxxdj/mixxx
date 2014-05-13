@@ -9,6 +9,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "widget/wwidget.h"
+#include "util/math.h"
 
 #define CONFIG_KEY "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -26,7 +27,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
-          m_posThreshold2(1.0f) {
+          m_posThreshold2(1.0f),
+          m_fadeDuration1(0.0f),
+          m_fadeDuration2(0.0f) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -494,7 +497,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             pushButtonFadeNow->setEnabled(false);
         }
 
-        float posFadeEnd = math_min(1.0, m_posThreshold2 + fadeDuration);
+        float posFadeEnd = math_min(1.0f, m_posThreshold2 + fadeDuration);
 
         if (value >= posFadeEnd) {
             // Pre-End State
@@ -532,14 +535,15 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
         if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
-                if (nextTrack->getDuration() < m_backUpTransition)
+                if (nextTrack->getDuration() < m_backUpTransition) {
                     spinBoxTransition->setValue(nextTrack->getDuration()/2);
                     m_backUpTransition = tmp;
+                }
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
                 m_pAutoDJTableModel->removeTrack(
-                    m_pAutoDJTableModel->index(0, 0));
+                m_pAutoDJTableModel->index(0, 0));
             }
         } else {
             // we are running out of tracks

@@ -42,13 +42,13 @@ class EngineFilterBlock : public EngineObject {
     EngineFilterBlock(const char* group);
     virtual ~EngineFilterBlock();
 
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
     void setFilters(bool forceSetting = false);
 
     CSAMPLE *m_pLowBuf, *m_pBandBuf, *m_pHighBuf;
-    EngineObject *low, *band, *high;
+    EngineObjectConstIn *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
     ControlObjectSlave* m_pSampleRate;

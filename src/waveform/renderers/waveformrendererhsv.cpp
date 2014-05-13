@@ -7,8 +7,7 @@
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
-
-#include "defs.h"
+#include "util/math.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -61,10 +60,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
             (double)m_waveformRenderer->getWidth();
 
     float allGain(1.0);
-    allGain = m_waveformRenderer->getGain();
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
+    getGains(&allGain, NULL, NULL, NULL);
 
     // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
     // important we use qreal here and not double or float or else we will get
@@ -110,8 +106,8 @@ void WaveformRendererHSV::draw(QPainter* painter,
         // We now know that some subset of [visualFrameStart, visualFrameStop]
         // lies within the valid range of visual frames. Clamp
         // visualFrameStart/Stop to within [0, lastVisualFrame].
-        visualFrameStart = math_max(math_min(lastVisualFrame, visualFrameStart), 0);
-        visualFrameStop = math_max(math_min(lastVisualFrame, visualFrameStop), 0);
+        visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
+        visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
 
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;

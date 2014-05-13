@@ -37,8 +37,6 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
           m_COTReverse(CONFIG_KEY, "xFaderReverse") {
     setupUi(this);
 
-    connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
-
     QButtonGroup crossfaderModes;
     crossfaderModes.addButton(radioButtonAdditive);
     crossfaderModes.addButton(radioButtonConstantPower);
@@ -84,7 +82,7 @@ void DlgPrefCrossfader::loadSettings() {
 }
 
 /** Set the default values for all the widgets */
-void DlgPrefCrossfader::setDefaults() {
+void DlgPrefCrossfader::slotResetToDefaults() {
     SliderXFader->setValue(0);
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);
