@@ -13,6 +13,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobjectslave.h"
+#include "util/math.h"
 
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
@@ -416,11 +417,12 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
             const double adjust = 1.0 + (-error * kSyncAdjustmentProportional);
             // Cap the difference between the last adjustment and this one.
             double delta = adjust - m_dSyncAdjustment;
-            delta = math_max(-kSyncDeltaCap, math_min(kSyncDeltaCap, delta));
+            delta = math_clamp(delta, -kSyncDeltaCap, kSyncDeltaCap);
 
             // Cap the adjustment between -kSyncAdjustmentCap and +kSyncAdjustmentCap
-            m_dSyncAdjustment = 1.0 + math_max(
-                -kSyncAdjustmentCap, math_min(kSyncAdjustmentCap, m_dSyncAdjustment - 1.0 + delta));
+            m_dSyncAdjustment = 1.0 + math_clamp(
+                    m_dSyncAdjustment - 1.0 + delta,
+                    -kSyncAdjustmentCap, kSyncAdjustmentCap);
         } else {
             // We are in sync, no adjustment needed.
             m_dSyncAdjustment = 1.0;

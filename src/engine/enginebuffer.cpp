@@ -31,7 +31,6 @@
 #include "engine/enginebufferscalerubberband.h"
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
-#include "mathstuff.h"
 #include "engine/sync/enginesync.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
@@ -47,6 +46,8 @@
 #include "engine/clockcontrol.h"
 #include "engine/enginemaster.h"
 #include "util/timer.h"
+#include "util/math.h"
+#include "util/defs.h"
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
@@ -336,7 +337,7 @@ EngineBuffer::~EngineBuffer()
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     double fFractionalPlaypos = 0.0;
     if (m_file_length_old != 0.) {
-        fFractionalPlaypos = math_min(absolutePlaypos, m_file_length_old);
+        fFractionalPlaypos = math_min<double>(absolutePlaypos, m_file_length_old);
         fFractionalPlaypos /= m_file_length_old;
     } else {
         fFractionalPlaypos = 0.;
@@ -566,7 +567,7 @@ void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
     }
 
     // Ensure that the file position is even (remember, stereo channel files...)
-    if (!even((int)new_playpos)) {
+    if (!even(static_cast<int>(new_playpos))) {
         new_playpos--;
     }
 
@@ -660,7 +661,7 @@ void EngineBuffer::slotControlSlip(double v)
 void EngineBuffer::slotKeylockEngineChanged(double d_index) {
     // GCC is dumb, it doesn't think d_index is being used.
     Q_UNUSED(d_index);
-    KeylockEngine engine = static_cast<KeylockEngine>(d_index);
+    KeylockEngine engine = static_cast<KeylockEngine>(int(d_index));
     if (engine == SOUNDTOUCH) {
         m_pScaleKeylock = m_pScaleST;
     } else {
@@ -669,7 +670,7 @@ void EngineBuffer::slotKeylockEngineChanged(double d_index) {
 }
 
 
-void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSize)
+void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 {
     Q_ASSERT(even(iBufferSize));
     m_pReader->process();
@@ -713,9 +714,10 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
         // need to use pitch and time scaling. Scratching always disables
         // keylock because keylock sounds terrible when not going at a constant
         // rate.
-        // High seek speeds also disables keylock.
+        // High seek speeds also disables keylock.  Our pitch slider could go
+        // to 90%, so that's the cutoff point.
         bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0) &&
-                                          fabs(speed) < 1.5;
+                                          fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
         processSeek();
@@ -805,7 +807,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
             }
 
             // Even.
-            if (!even(m_filepos_play)) {
+            if (!even(static_cast<int>(m_filepos_play))) {
                 qWarning() << "ERROR: filepos_play is not even:" << m_filepos_play;
                 m_filepos_play--;
             }
@@ -1034,7 +1036,7 @@ void EngineBuffer::processSeek() {
             double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
             if (offset != 0.0) {
                 double dNewPlaypos = round(dThisPosition + offset);
-                if (!even(dNewPlaypos)) {
+                if (!even(static_cast<int>(dNewPlaypos))) {
                     dNewPlaypos--;
                 }
                 setNewPlaypos(dNewPlaypos);

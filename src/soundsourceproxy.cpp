@@ -307,12 +307,11 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 }
 
 
-int SoundSourceProxy::open()
-{
+Result SoundSourceProxy::open() {
     if (!m_pSoundSource) {
-        return 0;
+        return ERR;
     }
-    int retVal = m_pSoundSource->open();
+    Result retVal = m_pSoundSource->open();
 
     //Update some metadata (currently only the duration)
     //after a song is open()'d. Eg. We don't know the length
@@ -335,7 +334,7 @@ int SoundSourceProxy::open()
 long SoundSourceProxy::seek(long l)
 {
     if (!m_pSoundSource) {
-    return 0;
+	return 0;
     }
     return m_pSoundSource->seek(l);
 }
@@ -356,7 +355,7 @@ long unsigned SoundSourceProxy::length()
     return m_pSoundSource->length();
 }
 
-int SoundSourceProxy::parseHeader() {
+Result SoundSourceProxy::parseHeader() {
     return m_pSoundSource ? m_pSoundSource->parseHeader() : ERR;
 }
 

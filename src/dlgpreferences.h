@@ -66,6 +66,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
     void addPageWidget(DlgPreferencePage* pWidget);
     void removePageWidget(DlgPreferencePage* pWidget);
+    void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pWidget);
 
   public slots:

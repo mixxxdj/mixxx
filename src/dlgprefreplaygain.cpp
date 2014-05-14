@@ -1,6 +1,7 @@
 #include "dlgprefreplaygain.h"
 
 #include "controlobject.h"
+#include "util/math.h"
 
 #define CONFIG_KEY "[ReplayGain]"
 
@@ -8,7 +9,7 @@
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
         :  DlgPreferencePage(parent),
            config(_config),
-           m_COTInitialBoost(CONFIG_KEY, "InitialReplayGainBoost"),
+           m_COTReplayGainBoost(CONFIG_KEY, "ReplayGainBoost"),
            m_COTEnabled(CONFIG_KEY, "ReplayGainEnabled") {
     setupUi(this);
 
@@ -83,13 +84,11 @@ void DlgPrefReplayGain::slotUpdateBoost() {
 }
 
 void DlgPrefReplayGain::slotUpdate() {
-    if (config->getValueString(ConfigKey(CONFIG_KEY,"ReplayGainEnabled")).toInt()==1)
-    {
+    if (config->getValueString(
+            ConfigKey(CONFIG_KEY,"ReplayGainEnabled")).toInt()==1) {
         EnableAnalyser->setEnabled(true);
         SliderBoost->setEnabled(true);
-    }
-    else
-    {
+    } else {
         EnableAnalyser->setChecked(false);
         EnableAnalyser->setEnabled(false);
         SliderBoost->setEnabled(false);
@@ -97,8 +96,11 @@ void DlgPrefReplayGain::slotUpdate() {
 }
 
 void DlgPrefReplayGain::slotApply() {
-    m_COTInitialBoost.slotSet(SliderBoost->value());
+    double replayGainBoostDb = SliderBoost->value();
+    m_COTReplayGainBoost.set(db2ratio(replayGainBoostDb));
     int iRGenabled = 0;
-    if (EnableGain->isChecked()) iRGenabled = 1;
-    m_COTEnabled.slotSet(iRGenabled);
+    if (EnableGain->isChecked()) {
+        iRGenabled = 1;
+    }
+    m_COTEnabled.set(iRGenabled);
 }

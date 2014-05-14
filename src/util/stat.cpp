@@ -1,11 +1,11 @@
 #include <limits>
-#include <cmath>
 
 #include <QStringList>
 #include <QtDebug>
 
 #include "util/stat.h"
 #include "util/time.h"
+#include "util/math.h"
 #include "util/statsmanager.h"
 
 Stat::Stat()

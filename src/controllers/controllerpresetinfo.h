@@ -19,6 +19,8 @@
 #include <QDomElement>
 
 #include "configobject.h"
+#include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetfilehandler.h"
 
 class PresetInfo {
   public:
@@ -60,7 +62,7 @@ class PresetInfo {
 class PresetInfoEnumerator {
   public:
     PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig);
-    virtual ~PresetInfoEnumerator() {};
+    virtual ~PresetInfoEnumerator();
 
     bool isValidExtension(const QString extension);
 
@@ -89,7 +91,7 @@ class PresetInfoEnumerator {
     // Cached presets by extension. Map format is:
     // [extension,[preset_path,preset]]
     QMap<QString, QMap<QString, PresetInfo> > presetsByExtension;
-
+    QMap<QString, ControllerPresetFileHandler*> m_presetFileHandlersByExtension;
 };
 
 #endif

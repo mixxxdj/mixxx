@@ -17,7 +17,8 @@
 #ifndef ENGINEVINYLSOUNDEMU_H
 #define ENGINEVINYLSOUNDEMU_H
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "engine/engineobject.h"
 
 class ControlObject;
@@ -31,7 +32,7 @@ class EngineVinylSoundEmu : public EngineObject {
     virtual ~EngineVinylSoundEmu();
 
     void setSpeed(double speed);
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
     double m_dSpeed;

@@ -66,13 +66,13 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
         return;
     }
 
-    if (pPreset->scriptFileNames.isEmpty()) {
+    if (pPreset->scripts.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return;
     }
 
-    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scriptFileNames);
-    m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
+    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
+    m_pEngine->initializeScripts(pPreset->scripts);
 }
 
 void Controller::startLearning() {

@@ -2,12 +2,7 @@
 
 #include "engine/positionscratchcontroller.h"
 #include "engine/enginebufferscale.h" // for MIN_SEEK_SPEED
-#include "mathstuff.h"
-
-#ifdef _MSC_VER
-#include <float.h>  // for _finite() on VC++
-#define isinf(x) (!_finite(x))
-#endif
+#include "util/math.h"
 
 class VelocityController {
   public:

@@ -4,17 +4,17 @@
 #include <QTime>
 #include <QImage>
 #include <QSqlDatabase>
+#include <limits>
 
 #include "configobject.h"
 #include "analyser.h"
 #include "waveform/waveform.h"
-
-#include <limits>
+#include "util/math.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
 
-class EngineObject;
+class EngineObjectConstIn;
 class EngineFilterButterworth8;
 class EngineFilterIIR;
 class Waveform;
@@ -175,7 +175,7 @@ class AnalyserWaveform : public Analyser {
     int m_currentStride;
     int m_currentSummaryStride;
 
-    EngineObject* m_filter[FilterCount];
+    EngineObjectConstIn* m_filter[FilterCount];
     std::vector<float> m_buffers[FilterCount];
 
     QTime* m_timer;

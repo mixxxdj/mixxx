@@ -1,11 +1,10 @@
 #include <QtDebug>
-#include <time.h>
-#include <math.h>
+#include <replaygain.h>
 
 #include "sampleutil.h"
 #include "trackinfoobject.h"
 #include "analyserrg.h"
-#include "../lib/replaygain/replaygain.h"
+#include "util/math.h"
 
 AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigReplayGain = _config;
@@ -77,13 +76,11 @@ void AnalyserGain::finalise(TrackPointer tio) {
         return;
     }
 
-    float fReplayGain_Result = pow(10,(ReplayGainOutput)/20);
+    float fReplayGain_Result = db2ratio(ReplayGainOutput);
 
     //qDebug() << "ReplayGain result is" << ReplayGainOutput << "pow:" << fReplayGain_Result;
     //qDebug()<<"ReplayGain outputs "<< ReplayGainOutput << "db for track "<< tio->getFilename();
     tio->setReplayGain(fReplayGain_Result);
     //if(fReplayGain_Result) qDebug() << "ReplayGain Analyser found a ReplayGain value of "<< 20*log10(fReplayGain_Result) << "dB for track " << (tio->getFilename());
     m_bStepControl=false;
-    //m_iStartTime = clock() - m_iStartTime;
-    //qDebug() << "AnalyserGain :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
 }

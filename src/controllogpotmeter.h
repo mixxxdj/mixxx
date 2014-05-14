@@ -20,7 +20,6 @@
 
 #include "controlpotmeter.h"
 #include "configobject.h"
-#include <algorithm>
 
 /**
  *@author Tue and Ken Haste Andersen

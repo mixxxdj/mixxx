@@ -12,8 +12,9 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
-#include "mathstuff.h"
 #include "playermanager.h"
+// to tell the msvs compiler about `isnan`
+#include "util/math.h"
 
 // #include <QScriptSyntaxCheckResult>
 
@@ -208,7 +209,7 @@ void ControllerEngine::initializeScriptEngine() {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
-                                       QList<QString> scriptFileNames) {
+                                       const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     // Set the Debug flag
     if (m_pController)
         m_bDebug = m_pController->debugging();
@@ -218,11 +219,11 @@ void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
     m_lastScriptPaths = scriptPaths;
 
     // scriptPaths holds the paths to search in when we're looking for scripts
-    foreach (QString curScriptFileName, scriptFileNames) {
-        evaluate(curScriptFileName, scriptPaths);
+    foreach (const ControllerPreset::ScriptFileInfo& script, scripts) {
+        evaluate(script.name, scriptPaths);
 
-        if (m_scriptErrors.contains(curScriptFileName)) {
-            qDebug() << "Errors occured while loading " << curScriptFileName;
+        if (m_scriptErrors.contains(script.name)) {
+            qDebug() << "Errors occured while loading " << script.name;
         }
     }
 
@@ -252,10 +253,10 @@ void ControllerEngine::scriptHasChanged(QString scriptFilename) {
     }
 
     initializeScriptEngine();
-    loadScriptFiles(m_lastScriptPaths, pPreset->scriptFileNames);
+    loadScriptFiles(m_lastScriptPaths, pPreset->scripts);
 
     qDebug() << "Re-initializing scripts";
-    initializeScripts(pPreset->scriptFunctionPrefixes);
+    initializeScripts(pPreset->scripts);
 }
 
 /* -------- ------------------------------------------------------
@@ -264,8 +265,12 @@ void ControllerEngine::scriptHasChanged(QString scriptFilename) {
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
-    m_scriptFunctionPrefixes = scriptFunctionPrefixes;
+void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
+
+    m_scriptFunctionPrefixes.clear();
+    foreach (const ControllerPreset::ScriptFileInfo& script, scripts) {
+        m_scriptFunctionPrefixes.append(script.functionPrefix);
+    }
 
     QScriptValueList args;
     args << QScriptValue(m_pController->getName());
@@ -795,6 +800,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
         ControllerEngineConnection cb;
         cb.key = key;
         cb.id = callback.toString();
+        cb.ce = this;
 
         if (disconnect) {
             disconnectControl(cb);

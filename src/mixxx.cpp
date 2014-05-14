@@ -71,6 +71,7 @@
 #include "util/sandbox.h"
 #include "playerinfo.h"
 #include "waveform/guitick.h"
+#include "util/math.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -1637,8 +1638,7 @@ void MixxxMainWindow::slotCheckboxVinylControl(int deck) {
 }
 
 void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
-    int num_decks =
-            static_cast<int>(math_min(dNumDecks, kMaximumVinylControlInputs));
+    int num_decks = math_min<int>(dNumDecks, kMaximumVinylControlInputs);
 
 #ifdef __VINYLCONTROL__
     // Only show menu items to activate vinyl inputs that exist.
@@ -1729,8 +1729,7 @@ void MixxxMainWindow::slotHelpManual() {
     }
 #elif defined(__LINUX__)
     // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    resourceDir.cd("doc");
-    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
+    if (resourceDir.cd("doc") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
                 resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }

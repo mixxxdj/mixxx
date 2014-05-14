@@ -15,11 +15,11 @@ class SoundSourceOpus : public Mixxx::SoundSource {
 public:
     SoundSourceOpus(QString qFilename);
     ~SoundSourceOpus();
-    int open();
+    Result open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
-    int parseHeader();
+    Result parseHeader();
     static QList<QString> supportedFileExtensions();
 private:
     int m_iChannels;
