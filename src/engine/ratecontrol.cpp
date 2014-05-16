@@ -26,6 +26,8 @@ double RateControl::m_dPerm = 0.50;
 double RateControl::m_dPermSmall = 0.05;
 
 int RateControl::m_iRateRampSensitivity = 250;
+const double RateControl::kWheelMultiplier = 40.0;
+const double RateControl::kPausedJogMultiplier = 18.0;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(const char* _group,
@@ -142,11 +144,11 @@ RateControl::RateControl(const char* _group,
     // Scratch controller, this is an accumulator which is useful for
     // controllers that return individiual +1 or -1s, these get added up and
     // cleared when we read
-    m_pScratch = new ControlObject(ConfigKey(_group, "scratch2"));
+    m_pScratch2 = new ControlObject(ConfigKey(_group, "scratch2"));
 
     // Scratch enable toggle
-    m_pScratchEnable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
-    m_pScratchEnable->set(0);
+    m_pScratch2Enable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
+    m_pScratch2Enable->set(0);
 
     m_pScratch2Scratching = new ControlPushButton(ConfigKey(_group,
                                                             "scratch2_indicates_scratching"));
@@ -194,8 +196,8 @@ RateControl::~RateControl() {
     delete buttonRatePermUpSmall;
 
     delete m_pWheel;
-    delete m_pScratch;
-    delete m_pScratchEnable;
+    delete m_pScratch2;
+    delete m_pScratch2Enable;
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
@@ -421,12 +423,12 @@ double RateControl::calculateRate(double baserate, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
-        bool useScratch2Value = m_pScratchEnable->get() != 0;
+        bool useScratch2Value = m_pScratch2Enable->get() != 0;
 
         // By default scratch2_enable enough to determine if the user is
         // scratching or not. Moving platter controllers have to disable
-        // "scratch2_scratching" if they are not scratching, to allow things
-        // like key-lock
+        // "scratch2_indicates_scratching" if they are not scratching,
+        // to allow things like key-lock.
         if (useScratch2Value && m_pScratch2Scratching->get()) {
             *reportScratching = true;
         }
@@ -437,17 +439,17 @@ double RateControl::calculateRate(double baserate, bool paused,
             }
             rate = m_pVCRate->get();
         } else {
-            double scratchFactor = m_pScratch->get();
-            // Don't trust values from m_pScratch
+            double scratchFactor = m_pScratch2->get();
+            // Don't trust values from m_pScratch2
             if (isnan(scratchFactor)) {
                 scratchFactor = 0.0;
             }
             if (paused) {
                 // Stopped. Wheel, jog and scratch controller all scrub through audio.
                 if (useScratch2Value) {
-                    rate = scratchFactor + jogFactor + wheelFactor * 40.0;
+                    rate = scratchFactor + jogFactor + wheelFactor * kWheelMultiplier;
                 } else {
-                    rate = jogFactor * 18 + wheelFactor;
+                    rate = jogFactor * kPausedJogMultiplier + wheelFactor;
                 }
             } else {
                 // The buffer is playing, so calculate the buffer rate.
@@ -498,7 +500,7 @@ double RateControl::calculateRate(double baserate, bool paused,
             // Reverse with vinyl is only ok if absolute mode isn't on.
             int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
             if (m_pReverseButton->get()
-                    && !m_pScratchEnable->get()
+                    && !m_pScratch2Enable->get()
                     && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
                 rate = -rate;
             }

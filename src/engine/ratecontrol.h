@@ -109,10 +109,10 @@ public:
     ControlObject* m_pForwardButton;
 
     ControlTTRotary* m_pWheel;
-    ControlObject* m_pScratch;
+    ControlObject* m_pScratch2;
     PositionScratchController* m_pScratchController;
 
-    ControlPushButton* m_pScratchEnable;
+    ControlPushButton* m_pScratch2Enable;
     ControlObject* m_pJog;
     ControlObject* m_pVCRate;
     ControlObject* m_pVCEnabled;
@@ -172,6 +172,10 @@ public:
     static enum RATERAMP_MODE m_eRateRampMode;
     // The Rate Temp Sensitivity, the higher it is the slower it gets
     static int m_iRateRampSensitivity;
+    // Factor applied to the deprecated "wheel" rate value.
+    static const double kWheelMultiplier;
+    // Factor applied to jogwheels when the track is paused to speed up seeking.
+    static const double kPausedJogMultiplier;
     // Temporary pitchrate, added to the permanent rate for calculateRate
     double m_dRateTemp;
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
