@@ -21,7 +21,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
     vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
-    controlScratch      = new ControlObjectThread(group, "scratch2");
+    controlScratch      = new ControlObjectThread(group, "vinylcontrol_rate");
     rateSlider          = new ControlObjectThread(group, "rate");    //Range -1.0 to 1.0
     playButton          = new ControlObjectThread(group, "play");
     duration            = new ControlObjectThread(group, "duration");
