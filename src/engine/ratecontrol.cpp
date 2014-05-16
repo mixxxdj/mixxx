@@ -431,31 +431,21 @@ double RateControl::calculateRate(double baserate, bool paused,
             *reportScratching = true;
         }
 
-        double scratchFactor = m_pScratch->get();
-        double vinylFactor = 0;
-        // Don't trust values from m_pScratch
-        if (isnan(scratchFactor)) {
-            scratchFactor = 0.0;
-        }
-
-        bool bVinylControlScratching = m_pVCScratching && m_pVCScratching->get() > 0.0;
-        if (bVinylControlEnabled) {
-            vinylFactor = m_pVCRate->get();
-            if (bVinylControlScratching) {
-                *isScratching = true;
-            }
-        }
-
         if (bVinylControlEnabled) {
             if (m_pVCScratching && m_pVCScratching->get() > 0.0) {
                 *reportScratching = true;
             }
-            rate = scratchFactor;
+            rate = m_pVCRate->get();
         } else {
+            double scratchFactor = m_pScratch->get();
+            // Don't trust values from m_pScratch
+            if (isnan(scratchFactor)) {
+                scratchFactor = 0.0;
+            }
             if (paused) {
                 // Stopped. Wheel, jog and scratch controller all scrub through audio.
                 if (useScratch2Value) {
-                    rate = scratchFactor + vinylFactor + jogFactor + wheelFactor * 40.0;
+                    rate = scratchFactor + jogFactor + wheelFactor * 40.0;
                 } else {
                     rate = jogFactor * 18 + wheelFactor;
                 }
@@ -470,7 +460,7 @@ double RateControl::calculateRate(double baserate, bool paused,
 
                 // New scratch behavior - overrides playback speed (and old behavior)
                 if (useScratch2Value) {
-                    rate = scratchFactor + vinylFactor;
+                    rate = scratchFactor;
                 } else {
 
                     rate = 1. + getRawRate() + getTempRate();
