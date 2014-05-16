@@ -106,12 +106,12 @@ public:
     ControlObject* m_pForwardButton;
 
     ControlTTRotary* m_pWheel;
-    ControlTTRotary* m_pScratch;
-    ControlTTRotary* m_pOldScratch;
+    ControlObject* m_pScratch;
     PositionScratchController* m_pScratchController;
 
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
+    ControlObject* m_pVCRate;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
     ControlObject* m_pVCMode;

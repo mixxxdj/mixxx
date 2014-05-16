@@ -80,6 +80,7 @@ RateControl::RateControl(const char* _group,
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
     m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
+    m_pVCRate = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_rate"));
 
     // Permanent rate-change buttons
     buttonRatePermDown =
@@ -141,8 +142,7 @@ RateControl::RateControl(const char* _group,
     // Scratch controller, this is an accumulator which is useful for
     // controllers that return individiual +1 or -1s, these get added up and
     // cleared when we read
-    m_pScratch = new ControlTTRotary(ConfigKey(_group, "scratch2"));
-    m_pOldScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));  // Deprecated
+    m_pScratch = new ControlObject(ConfigKey(_group, "scratch2"));
 
     // Scratch enable toggle
     m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
@@ -189,7 +189,6 @@ RateControl::~RateControl() {
 
     delete m_pWheel;
     delete m_pScratch;
-    delete m_pOldScratch;
     delete m_pScratchToggle;
     delete m_pJog;
     delete m_pJogFilter;
@@ -418,32 +417,27 @@ double RateControl::calculateRate(double baserate, bool paused,
         bool scratchEnable = m_pScratchToggle->get() != 0 || bVinylControlEnabled;
 
         double scratchFactor = m_pScratch->get();
+        double vinylFactor = 0;
         // Don't trust values from m_pScratch
         if (isnan(scratchFactor)) {
             scratchFactor = 0.0;
         }
 
-        // Old Scratch works without scratchEnable
-        double oldScratchFactor = m_pOldScratch->get(); // Deprecated
-        // Don't trust values from m_pScratch
-        if (isnan(oldScratchFactor)) {
-            oldScratchFactor = 0.0;
-        }
-
-        // If vinyl control is enabled and scratching then also set isScratching
         bool bVinylControlScratching = m_pVCScratching && m_pVCScratching->get() > 0.0;
-        if (bVinylControlEnabled && bVinylControlScratching) {
-            *isScratching = true;
+        if (bVinylControlEnabled) {
+            vinylFactor = m_pVCRate->get();
+            if (bVinylControlScratching) {
+                *isScratching = true;
+            }
         }
 
         if (paused) {
             // Stopped. Wheel, jog and scratch controller all scrub through audio.
             // New scratch behavior overrides old
             if (scratchEnable) {
-                rate = scratchFactor + jogFactor + wheelFactor * 40.0;
+                rate = scratchFactor + vinylFactor + jogFactor + wheelFactor * 40.0;
             } else {
-                // Just remove oldScratchFactor in future
-                rate = oldScratchFactor + jogFactor * 18 + wheelFactor;
+                rate = jogFactor * 18 + wheelFactor;
             }
         } else {
             // The buffer is playing, so calculate the buffer rate.
@@ -456,18 +450,11 @@ double RateControl::calculateRate(double baserate, bool paused,
 
             // New scratch behavior - overrides playback speed (and old behavior)
             if (scratchEnable) {
-                rate = scratchFactor;
+                rate = scratchFactor + vinylFactor;
             } else {
 
                 rate = 1. + getRawRate() + getTempRate();
                 rate += wheelFactor;
-
-                // Deprecated old scratch behavior
-                if (oldScratchFactor < 0.) {
-                    rate *= (oldScratchFactor - 1.);
-                } else if (oldScratchFactor > 0.) {
-                    rate *= (oldScratchFactor + 1.);
-                }
             }
 
             rate += jogFactor;
