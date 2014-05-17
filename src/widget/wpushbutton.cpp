@@ -249,6 +249,8 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     // re-render.
     style()->unpolish(this);
     style()->polish(this);
+    // These calls don't always trigger the repaint, so call it explicitly.
+    repaint();
 }
 
 void WPushButton::paintEvent(QPaintEvent* e) {
