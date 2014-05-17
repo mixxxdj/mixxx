@@ -127,7 +127,7 @@
 											<Template src="skin:mixer_channel.xml">
 												<SetVariable name="channum">1</SetVariable>
 											</Template>
-											<Template src="skin:mixer_channel.xml">
+											<Template src="skin:mixer_channel_reversed.xml">
 												<SetVariable name="channum">2</SetVariable>
 											</Template>
 				                           <WidgetGroup>

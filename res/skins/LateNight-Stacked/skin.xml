@@ -75,33 +75,106 @@
         </Children>
     </WidgetGroup>
     <WidgetGroup>
-        <ObjectName>FourDeckButton</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <ObjectName>UIButtons</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>e,min</SizePolicy>
         <Children>
-            <PushButton>
-                <Size>40f,20f</Size>
-                <ObjectName>FourDeckToggleButton</ObjectName>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>2DECK</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>4DECK</Text>
-                </State>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                  <ConnectValueToWidget>false</ConnectValueToWidget>
-                </Connection>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                </Connection>
-            </PushButton>
+            <WidgetGroup>
+                <ObjectName>FourDeckButton</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>40f,20f</Size>
+                        <ObjectName>FourDeckToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>2DECK</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>4DECK</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConnectValueToWidget>false</ConnectValueToWidget>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>FourDeckButton</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>40f,20f</Size>
+                        <ObjectName>FourDeckToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>MIXER</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>MIXER</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConnectValueToWidget>false</ConnectValueToWidget>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>FourDeckButton</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>40f,20f</Size>
+                        <ObjectName>FourDeckToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>VINYL</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>VINYL</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConnectValueToWidget>false</ConnectValueToWidget>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>UIButtonMargin</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children></Children>
+            </WidgetGroup>
         </Children>
     </WidgetGroup>
     <WidgetGroup>
