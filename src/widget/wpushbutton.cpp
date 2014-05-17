@@ -243,7 +243,6 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     setProperty("displayValue", idx);
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
-    // These calls trigger the repaint.
     // Since we expect button connections to not change at high frequency we
     // don't try to detect whether things have changed for WPushButton, we just
     // re-render.
