@@ -19,8 +19,7 @@
 
 WNumber::WNumber(QWidget* pParent)
         : WLabel(pParent),
-          m_iNoDigits(2),
-          m_dConstFactor(0.0) {
+          m_iNoDigits(2) {
 }
 
 WNumber::~WNumber() {
@@ -33,12 +32,6 @@ void WNumber::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "NumberOfDigits")) {
         m_iNoDigits = context.selectInt(node, "NumberOfDigits");
     }
-
-    // Constant factor
-    if (context.hasNode(node, "ConstFactor")) {
-        m_dConstFactor = context.selectString(node, "ConstFactor").toDouble();
-    }
-
     setValue(0.);
 }
 
@@ -49,7 +42,9 @@ void WNumber::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WNumber::setValue(double dValue) {
-    double v = dValue + m_dConstFactor;
-
-    setText(QString(m_qsText).append(QString::number(v, 'f', m_iNoDigits)));
+    if (m_qsText.contains("%1")) {
+        setText(m_qsText.arg(QString::number(dValue, 'f', m_iNoDigits)));
+    } else {
+        setText(m_qsText + QString::number(dValue, 'f', m_iNoDigits));
+    }
 }

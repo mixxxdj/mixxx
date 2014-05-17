@@ -287,9 +287,9 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
 
 void SoundSource::parseReplayGainString (QString sReplayGain) {
     QString ReplayGainstring = sReplayGain.remove( " dB" );
-    float fReplayGain = pow(10.0f, ReplayGainstring.toFloat() / 20.0f);
-    //I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
-    //This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
+    float fReplayGain = db2ratio(ReplayGainstring.toFloat());
+    // I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
+    // This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
     if (fReplayGain == 1.0f) {
         fReplayGain = 0.0f;
     }

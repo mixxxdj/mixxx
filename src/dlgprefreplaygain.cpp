@@ -97,7 +97,7 @@ void DlgPrefReplayGain::slotUpdate() {
 
 void DlgPrefReplayGain::slotApply() {
     double replayGainBoostDb = SliderBoost->value();
-    m_COTReplayGainBoost.set(pow(10.0, replayGainBoostDb / 20.0));
+    m_COTReplayGainBoost.set(db2ratio(replayGainBoostDb));
     int iRGenabled = 0;
     if (EnableGain->isChecked()) {
         iRGenabled = 1;

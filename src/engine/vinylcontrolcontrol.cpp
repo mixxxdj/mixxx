@@ -99,7 +99,7 @@ void VinylControlControl::slotControlVinylSeek(double change) {
 
         //if in preroll, always seek
         if (new_playpos < 0) {
-            seek(change);
+            seekExact(new_playpos);
             return;
         }
 
@@ -118,7 +118,7 @@ void VinylControlControl::slotControlVinylSeek(double change) {
             return;
         }
 
-        double distance = 0;
+        double shortest_distance = 0;
         int nearest_playpos = -1;
 
         QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
@@ -132,9 +132,9 @@ void VinylControlControl::slotControlVinylSeek(double change) {
             int cue_position = pCue->getPosition();
             //pick cues closest to new_playpos
             if ((nearest_playpos == -1) ||
-                (fabs(new_playpos - cue_position) < distance)) {
+                (fabs(new_playpos - cue_position) < shortest_distance)) {
                 nearest_playpos = cue_position;
-                distance = fabs(new_playpos - cue_position);
+                shortest_distance = fabs(new_playpos - cue_position);
             }
         }
 
@@ -154,7 +154,7 @@ void VinylControlControl::slotControlVinylSeek(double change) {
 
     // Just seek where it wanted to originally.
     m_bSeekRequested = true;
-    seekExact(change);
+    seekExact(new_playpos);
     m_bSeekRequested = false;
 }
 
