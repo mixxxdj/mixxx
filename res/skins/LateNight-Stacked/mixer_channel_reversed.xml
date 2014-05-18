@@ -167,6 +167,52 @@
           <MinimumSize>100,160</MinimumSize>
           <Children>
             <WidgetGroup>
+              <Size>16,1</Size>
+              <Children>
+                <StatusLight>
+                    <TooltipId>PeakIndicator</TooltipId>
+                    <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
+                    <PathBack>btn_clipping1.png</PathBack>
+                    <Pos>1,50</Pos>
+                    <Connection>
+                        <ConfigKey>[Channel<Variable name="channum"/>],PeakIndicator</ConfigKey>
+                    </Connection>
+                </StatusLight>
+                <VuMeter>
+                    <TooltipId>channel_VuMeter</TooltipId>
+                    <PathVu>btn_volume_display1_over.png</PathVu>
+                    <PathBack>btn_volume_display1.png</PathBack>
+                    <Pos>1,66</Pos>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                        <ConfigKey>[Channel<Variable name="channum"/>],VuMeter</ConfigKey>
+                    </Connection>
+                </VuMeter>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <ObjectName>MixerChannel</ObjectName>
+              <SizePolicy>f,f</SizePolicy>
+              <Size>55,160</Size>
+              <Children>
+                <SliderComposed>
+                  <TooltipId>channel_volume</TooltipId>
+                  <Handle>knob_volume1.png</Handle>
+                  <Slider>slider_volume1.png</Slider>
+                  <Horizontal>false</Horizontal>
+                  <Pos>1,50</Pos>
+                  <Connection>
+                    <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
+                    <EmitOnDownPress>false</EmitOnDownPress>
+                  </Connection>
+                </SliderComposed>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
               <ObjectName>MixerChannel</ObjectName>
               <SizePolicy>f,min</SizePolicy>
               <MinimumSize>75,160</MinimumSize>
@@ -285,52 +331,6 @@
                         <ConfigKey>[Channel<Variable name="channum"/>],filterLow</ConfigKey>
                     </Connection>
                 </Knob>
-              </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-              <ObjectName>MixerChannel</ObjectName>
-              <SizePolicy>f,f</SizePolicy>
-              <Size>55,160</Size>
-              <Children>
-                <SliderComposed>
-                  <TooltipId>channel_volume</TooltipId>
-                  <Handle>knob_volume1.png</Handle>
-                  <Slider>slider_volume1.png</Slider>
-                  <Horizontal>false</Horizontal>
-                  <Pos>1,50</Pos>
-                  <Connection>
-                    <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
-                    <EmitOnDownPress>false</EmitOnDownPress>
-                  </Connection>
-                </SliderComposed>
-              </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-              <Size>16,1</Size>
-              <Children>
-                <StatusLight>
-                    <TooltipId>PeakIndicator</TooltipId>
-                    <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-                    <PathBack>btn_clipping1.png</PathBack>
-                    <Pos>1,50</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],PeakIndicator</ConfigKey>
-                    </Connection>
-                </StatusLight>
-                <VuMeter>
-                    <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>btn_volume_display1_over.png</PathVu>
-                    <PathBack>btn_volume_display1.png</PathBack>
-                    <Pos>1,66</Pos>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>2</PeakFallStep>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],VuMeter</ConfigKey>
-                    </Connection>
-                </VuMeter>
               </Children>
             </WidgetGroup>
           </Children>

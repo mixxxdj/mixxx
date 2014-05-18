@@ -2,7 +2,7 @@
 	<WidgetGroup>
 	    <ObjectName>WaveformMixerContainer</ObjectName>
 		<Layout>vertical</Layout>
-		<SizePolicy>e,max</SizePolicy>
+		<SizePolicy>e,e</SizePolicy>
 		<Children>
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
@@ -60,7 +60,23 @@
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
-			<Template src="skin:mixer.xml"/>
+            <WidgetGroup>
+                <ObjectName>HorizBorder</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <Size>,1</Size>
+                <Children></Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                    <Template src="skin:mixer.xml"/>
+                </Children>
+                <Connection>
+                    <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup> 
 		</Children>
 	</WidgetGroup>
 </Template>

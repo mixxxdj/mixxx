@@ -15,7 +15,7 @@
                 </Children>
             </WidgetGroup>
 			<WidgetGroup>
-			    <ObjectName>PrimaryMixer</ObjectName> 
+			    <ObjectName>PrimaryMixer</ObjectName>
 				<Layout>vertical</Layout>
 				<SizePolicy>me,max</SizePolicy>
 				<Children>
@@ -63,7 +63,7 @@
                                                 }
                                             </Style>
                                             <Channel>1</Channel>
-                                            <NumberOfDigits>1</NumberOfDigits>
+                                            <NumberOfDigits>2</NumberOfDigits>
                                             <Connection>
                                                 <ConfigKey>[InternalClock],bpm</ConfigKey>
                                             </Connection>
@@ -127,7 +127,7 @@
 											<Template src="skin:mixer_channel.xml">
 												<SetVariable name="channum">1</SetVariable>
 											</Template>
-											<Template src="skin:mixer_channel.xml">
+											<Template src="skin:mixer_channel_reversed.xml">
 												<SetVariable name="channum">2</SetVariable>
 											</Template>
 				                           <WidgetGroup>
@@ -184,14 +184,14 @@
 					</WidgetGroup>
 				</Children>
 			</WidgetGroup>
-			<WidgetGroup> 
+			<WidgetGroup>
 			    <ObjectName>MasterControls</ObjectName>
 			    <SizePolicy>max,min</SizePolicy>
                 <MinimumSize>100,220</MinimumSize>
                 <Layout>vertical</Layout>
                 <Children>
-                    
-                    <WidgetGroup> 
+
+                    <WidgetGroup>
                         <Size>100,100</Size>
                         <Children>
                             <StatusLight>
@@ -245,7 +245,7 @@
                                 </Connection>
                             </VuMeter>
                         </Children>
-                    </WidgetGroup>  
+                    </WidgetGroup>
                     <WidgetGroup>
                         <ObjectName>MasterKnobs</ObjectName>
                         <SizePolicy>f,f</SizePolicy>
@@ -316,5 +316,5 @@
                 </Children>
             </WidgetGroup>
 		</Children>
-	</WidgetGroup> 
+	</WidgetGroup>
 </Template>
