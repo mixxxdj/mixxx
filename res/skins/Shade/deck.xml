@@ -69,7 +69,7 @@
 						<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
 						<WidgetGroup>
 							<Pos>2,43</Pos>
-							<Size>316,117</Size>
+							<Size>313,117</Size>
 							<Layout>horizontal</Layout>
 							<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 							<Children>
@@ -155,7 +155,7 @@
 										<WidgetGroup>
 											<!--<Pos>296,0</Pos>-->
 											<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
-											<Size>86,82</Size>
+											<Size>82,82</Size>
 											<Children>
 												<!--
 												**********************************************
