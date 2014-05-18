@@ -87,7 +87,8 @@ void WCoverArt::slotLoadCoverArt(const QString& location) {
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
-    return normal.scaled(QSize(height()-10, height()-10),
+    int height = parentWidget()->height()/3;
+    return normal.scaled(QSize(height-10, height-10),
                          Qt::KeepAspectRatioByExpanding,
                          Qt::SmoothTransformation);
 }
