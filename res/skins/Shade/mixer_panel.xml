@@ -477,11 +477,13 @@
 						-->
 						<Time>
 							<TooltipId>time</TooltipId>
-							<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-							background-color: transparent; color: #191F24; text-align: right; }
+							<Style>
+								QLabel { 
+									font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+									background-color: transparent; color: #191F24; text-align:center; 
+								}
 							</Style>
-							<Pos>112,15</Pos>
-							<Size>50,20</Size>
+							<Pos>113,15</Pos>
 							<ShowSeconds>false</ShowSeconds>
 							<ClockFormat>24</ClockFormat>
 						</Time>
