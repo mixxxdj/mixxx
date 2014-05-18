@@ -143,12 +143,12 @@ function ShiftKey() {
     return that;
 }
 
-function HotCueKey(deck, hotcue) {
+function HotCueKey(ctrl, deck, hotcue) {
     var that = new Key();
     that.deck = deck;
     that.hotcue = hotcue;
 
-    that.group = "[Channel" + deck + "]";
+    that.group = "[" + ctrl + deck + "]";
     that.ctrl_act = "hotcue_" + hotcue + "_activate";
     that.ctrl_del = "hotcue_" + hotcue + "_clear";
     that.state   = "hotcue_" + hotcue + "_enabled";
@@ -189,9 +189,9 @@ function HotCueKey(deck, hotcue) {
     return that;
 }
 
-function PlayKey(deck) {
+function PlayKey(ctrl, deck) {
     var that = new Key();
-    that.group = "[Channel" + deck + "]";
+    that.group = "[" + ctrl + deck + "]";
     that.ctrl  = "play";
     that.state = "play_indicator";
 
@@ -293,10 +293,10 @@ function LoopModeKey() {
     return that;
 }
 
-function LoadKey(channel) {
+function LoadKey(ctrl, channel) {
     var that = PushKey("hi_green","hi_amber");
 
-    that.group   = "[Channel" + channel + "]";
+    that.group   = "[" + ctrl + channel + "]";
     that.control = "LoadSelectedTrack";
 
     that.onPushOrig = that.onPush;
@@ -443,20 +443,20 @@ NLM.init = function()
         //Set default page led
         NLM.btns[NLM.page][8][0].setColor("hi_amber");
 
-        // ============== PAGE 0 ===============
+        // ============== PAGE A ===============
         //Set ChX CueButtons
         for ( deck = 1; deck <= NLM.numofdecks; deck++ ) {
             for ( hc = 1 ; hc < 9 ; hc++ ) {
                 x = hc-1;
                 y = (deck-1)*2+1;
-                NLM.setupBtn(0,x,y, HotCueKey(deck, hc));
+                NLM.setupBtn(0,x,y, HotCueKey("Channel", deck, hc));
             }
         }
 
         for ( deck = 1; deck <= NLM.numofdecks; deck++ ) {
             y = (deck-1)*2;
             //Set Chx PlayButton
-            NLM.setupBtn(0,0,y, PlayKey(deck));
+            NLM.setupBtn(0,0,y, PlayKey("Channel", deck));
             //Set Chx LoopButtons
             NLM.setupBtn(0,2,y, LoopKey(deck, "0.0625"));
             NLM.setupBtn(0,3,y, LoopKey(deck, "0.125"));
@@ -468,7 +468,7 @@ NLM.init = function()
 
         NLM.setupBtn(0,2,8, LoopModeKey());
 
-        // ============== PAGE 7 ===============
+        // ============== PAGE H ===============
 
         // Right side, playlist scroll
         NLM.setupBtn(7,6,0, PushKeyBin("lo_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", -50));
@@ -479,10 +479,20 @@ NLM.init = function()
         NLM.setupBtn(7,6,5, PushKeyBin("mi_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", 10));
         NLM.setupBtn(7,6,6, PushKeyBin("lo_amber", "hi_amber", "[Playlist]", "SelectTrackKnob", 50));
 
-        NLM.setupBtn(7,5,2, LoadKey(1));
-        NLM.setupBtn(7,7,2, LoadKey(2));
-        NLM.setupBtn(7,5,4, LoadKey(3));
-        NLM.setupBtn(7,7,4, LoadKey(4));
+        NLM.setupBtn(7,5,2, LoadKey("Channel",1));
+        NLM.setupBtn(7,7,2, LoadKey("Channel",2));
+        NLM.setupBtn(7,5,4, LoadKey("Channel",3));
+        NLM.setupBtn(7,7,4, LoadKey("Channel",4));
+        
+        NLM.setupBtn(7,0,6, LoadKey("Sampler",1));
+        NLM.setupBtn(7,1,6, LoadKey("Sampler",2));
+        NLM.setupBtn(7,2,6, LoadKey("Sampler",3));
+        NLM.setupBtn(7,3,6, LoadKey("Sampler",4));
+        
+        NLM.setupBtn(7,0,7, LoadKey("Sampler",5));
+        NLM.setupBtn(7,1,7, LoadKey("Sampler",6));
+        NLM.setupBtn(7,2,7, LoadKey("Sampler",7));
+        NLM.setupBtn(7,3,7, LoadKey("Sampler",8));
 
         // Left side, playlists
 
@@ -490,7 +500,7 @@ NLM.init = function()
         NLM.setupBtn(7,1,3, PushKeyBin("hi_yellow", "hi_amber", "[Playlist]", "ToggleSelectedSidebarItem", 1));
         NLM.setupBtn(7,1,4, PushKeyBin("hi_green", "hi_amber", "[Playlist]", "SelectNextPlaylist", 1));
 
-        // ============== PAGE 1 ===============
+        // ============== PAGE B ===============
 
         //SeekButtons
         for(i = 0 ; i < 8 ; i++) {
@@ -498,6 +508,18 @@ NLM.init = function()
                 NLM.setupBtn(1,i,ch*2-1, SeekKey(ch, i));
             }
         }
+        
+        // ============== PAGE C ===============
+        
+        // Add Sampler playbuttons
+        for(var channel = 1 ; channel < 9 ; channel++) {
+            NLM.setupBtn(2, 0, channel-1, PlayKey("Sampler", channel));
+            NLM.setupBtn(2, 1, channel-1, PushKeyBin("hi_orange", "hi_red", "[Sampler" + channel + "]", "beatsync", 1));
+            for(i = 1 ; i < 5 ; i++) {
+                NLM.setupBtn(2, 3+i, channel-1, HotCueKey("Sampler", channel, i));
+            }
+        }
+        
 
 
 
