@@ -1,7 +1,8 @@
 #include "library/coverart.h"
 
 CoverArt::CoverArt(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig) {
+        : m_pConfig(pConfig),
+          m_cDefaultImageFormat("jpg") {
     if (!QDir().mkpath(getStoragePath())) {
         qDebug() << "WARNING: Could not create cover arts storage path. "
                  << "Mixxx will be unable to store analyses.";
@@ -26,8 +27,6 @@ bool CoverArt::deleteFile(const QString& location) {
 }
 
 QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
-    const char* defaultImageFormat = "jpg";
-
     // default cover art name
     QString coverArtName;
     QString artist = pTrack->getArtist();
@@ -54,7 +53,7 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
         }
     }
     coverArtLocation.append(".");
-    coverArtLocation.append(defaultImageFormat);
+    coverArtLocation.append(m_cDefaultImageFormat);
 
     //
     // Step 2: Look for embedded cover art.
@@ -63,7 +62,7 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
 
     // If the track has embedded cover art, store it
     if (!image.isNull()) {
-        if(image.save(coverArtLocation, defaultImageFormat)) {
+        if(image.save(coverArtLocation, m_cDefaultImageFormat)) {
             return coverArtLocation;
         }
     }
@@ -89,7 +88,7 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
         foreach (QRegExp re, regExpList) {
             if (filename.contains(re)) {
                 QImage image(f.absoluteFilePath());
-                if (image.save(coverArtLocation, defaultImageFormat)) {
+                if (image.save(coverArtLocation, m_cDefaultImageFormat)) {
                     return coverArtLocation;
                 }
                 break;

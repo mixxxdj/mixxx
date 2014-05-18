@@ -12,10 +12,12 @@ class CoverArt : public QObject {
     virtual ~CoverArt();
 
     bool deleteFile(const QString& location);
-    QString searchCoverArtFile(TrackInfoObject *pTrack);
+    QString searchCoverArtFile(TrackInfoObject* pTrack);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
+
+    const char* m_cDefaultImageFormat;
 
     QString getStoragePath() const;
 };
