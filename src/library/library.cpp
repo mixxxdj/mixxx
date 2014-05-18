@@ -153,6 +153,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
+    connect(pTrackTableView, SIGNAL(scrollValueChanged(int)),
+            this, SLOT(slotScrollValueChanged(int)));
     connect(pTrackTableView, SIGNAL(loadCoverArt(const QString&)),
             this, SLOT(slotLoadCoverArt(const QString&)));
 
@@ -236,6 +238,10 @@ void Library::slotCreatePlaylist() {
 
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
+}
+
+void Library::slotScrollValueChanged(int scrollPos) {
+    emit(scrollValueChanged(scrollPos));
 }
 
 void Library::slotLoadCoverArt(const QString& location) {

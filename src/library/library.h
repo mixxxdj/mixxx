@@ -76,6 +76,7 @@ public:
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
     void slotLoadCoverArt(const QString& location);
+    void slotScrollValueChanged(int scrollPos);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -87,6 +88,7 @@ public:
     void searchCleared();
     void searchStarting();
     void loadCoverArt(const QString& location);
+    void scrollValueChanged(int);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

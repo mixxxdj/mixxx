@@ -26,10 +26,12 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void loadCoverArt(const QString& location);
+    void scrollValueChanged(int);
 
   public slots:
     void saveVScrollBarPos();
     void restoreVScrollBarPos();
+    void slotScrollValueChanged(int scrollPos);
 
   private:
     void loadVScrollBarPosState();
