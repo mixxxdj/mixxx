@@ -28,8 +28,8 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     // load icon to show cover
     m_iconShow = QPixmap(":/images/library/ic_library_cover_show.png");
-    m_iconShow = m_iconShow.scaled(height() - 1,
-                                   height() - 1,
+    m_iconShow = m_iconShow.scaled(19,
+                                   19,
                                    Qt::KeepAspectRatioByExpanding,
                                    Qt::SmoothTransformation);
 
