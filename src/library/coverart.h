@@ -20,6 +20,9 @@ class CoverArt : public QObject {
     const char* m_cDefaultImageFormat;
 
     QString getStoragePath() const;
+    bool saveFile(QImage cover, QString location);
+    QString searchInDiskCache(QString coverArtName);
+    QString searchInTrackDirectory(QString directory);
 };
 
 #endif // COVERART_H
