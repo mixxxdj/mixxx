@@ -66,28 +66,9 @@ Cue* CueDAO::cueFromRow(const QSqlQuery& query) const {
     return cue;
 }
 
-Cue* CueDAO::getCue(const int cueId) {
-    qDebug() << "CueDAO::getCue" << QThread::currentThread() << m_database.connectionName();
-    if (m_cues.contains(cueId)) {
-        return m_cues[cueId];
-    }
-
-    QSqlQuery query(m_database);
-    query.prepare("SELECT * FROM " CUE_TABLE " WHERE id = :id");
-    query.bindValue(":id", cueId);
-    if (query.exec()) {
-        if (query.next()) {
-            return cueFromRow(query);
-        }
-    } else {
-        LOG_FAILED_QUERY(query);
-    }
-    return NULL;
-}
-
 QList<Cue*> CueDAO::getCuesForTrack(const int trackId) const {
     //qDebug() << "CueDAO::getCuesForTrack" << QThread::currentThread() << m_database.connectionName();
-    QSet<Cue*> cues;
+    QList<Cue*> cues;
     // A hash from hotcue index to cue id and cue*, used to detect if more
     // than one cue has been assigned to a single hotcue id.
     QMap<int, QPair<int, Cue*> > dupe_hotcues;
@@ -111,18 +92,18 @@ QList<Cue*> CueDAO::getCuesForTrack(const int trackId) const {
             if (hotcueId != -1) {
                 if (dupe_hotcues.contains(hotcueId)) {
                     m_cues.remove(dupe_hotcues[hotcueId].first);
-                    cues.remove(dupe_hotcues[hotcueId].second);
+                    cues.removeOne(dupe_hotcues[hotcueId].second);
                 }
                 dupe_hotcues[hotcueId] = qMakePair(cueId, cue);
             }
             if (cue != NULL) {
-                cues.insert(cue);
+                cues.push_back(cue);
             }
         }
     } else {
         LOG_FAILED_QUERY(query);
     }
-    return cues.toList();
+    return cues;
 }
 
 bool CueDAO::deleteCuesForTrack(const int trackId) {
