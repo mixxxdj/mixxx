@@ -1,8 +1,8 @@
 <Template>
 						<WidgetGroup>
 							<Pos>0,0</Pos>
-							<Size>254,104</Size>
-							<Style>QGroupBox { border: 0px solid green;  margin: 0px 4px 4px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+							<Size>254,105</Size>
+							<Style>QGroupBox { border: 0px solid green;  margin: 0px 2px 4px 1px; background: url(skin:/style/style_bg_sampler.png); } </Style>
 							<Children>
 								<!--
 								**********************************************
