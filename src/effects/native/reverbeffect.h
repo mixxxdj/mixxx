@@ -1,4 +1,4 @@
-// Ported from SWH Plate Reverb 1423.
+// Ported from CAPS Reverb.
 // This effect is GPL code.
 
 #ifndef REVERBEFFECT_H

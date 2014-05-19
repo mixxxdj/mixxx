@@ -83,13 +83,9 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     filterKillHigh = new ControlPushButton(ConfigKey(group, "filterHighKill"));
     filterKillHigh->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
-
-    memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
 
     old_low = old_mid = old_high = 1.0;
 }
@@ -99,9 +95,9 @@ EngineFilterBlock::~EngineFilterBlock()
     delete high;
     delete band;
     delete low;
-    delete [] m_pTemp3;
-    delete [] m_pTemp2;
-    delete [] m_pTemp1;
+    delete [] m_pHighBuf;
+    delete [] m_pBandBuf;
+    delete [] m_pLowBuf;
     delete filterpotLow;
     delete filterKillLow;
     delete filterpotMid;
@@ -147,7 +143,6 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
             band = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
             high = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
         }
-
     }
 }
 
@@ -159,45 +154,84 @@ void EngineFilterBlock::process(CSAMPLE* pInOut, const int iBufferSize) {
         return;
     }
 
-    float fLow=0.f, fMid=0.f, fHigh=0.f;
-    if (filterKillLow->get()==0.)
-        fLow = filterpotLow->get(); //*0.7;
-    if (filterKillMid->get()==0.)
-        fMid = filterpotMid->get(); //*1.1;
-    if (filterKillHigh->get()==0.)
-        fHigh = filterpotHigh->get(); //*1.2;
+    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
+    if (filterKillLow->get() == 0.) {
+        fLow = filterpotLow->get();
+    }
+    if (filterKillMid->get() == 0.) {
+        fMid = filterpotMid->get();
+    }
+    if (filterKillHigh->get() == 0.) {
+        fHigh = filterpotHigh->get();
+    }
+
+    // tweak gains for RGBW
+    float fDry = qMin(qMin(fLow, fMid), fHigh);
+    fLow -= fDry;
+    fMid -= fDry;
+    fHigh -= fDry;
 
     setFilters();
 
-    // If the user has never touched the Eq controls (they are still at zero)
-    // Then pass through.  As soon as the user twiddles one, actually activate
-    // the EQ code and crossfade to it.  This will save CPU if the user never
-    // uses EQ but also doesn't know to disable it.
-    if (m_eqNeverTouched) {
-        if (fLow == 1. && fMid == 1. && fHigh == 1.) {
-            return;
+    // Process the new EQ'd signals.
+    // They use up to 16 frames history so in case we are just starting,
+    // 16 frames are junk, this is handled by ramp_delay
+    int ramp_delay = 0;
+    if (fLow || old_low) {
+        low->process(pInOut, m_pLowBuf, iBufferSize);
+        if(old_low == 0) {
+            ramp_delay = 30;
         }
-        m_eqNeverTouched = false;
+    }
+    if (fMid || old_mid) {
+        band->process(pInOut, m_pBandBuf, iBufferSize);
+        if(old_mid== 0) {
+            ramp_delay = 30;
+        }
+    }
+    if (fHigh || old_high) {
+        high->process(pInOut, m_pHighBuf, iBufferSize);
+        if(old_high == 0) {
+            ramp_delay = 30;
+        }
     }
 
-    low->process(pInOut, m_pTemp1, iBufferSize);
-    band->process(pInOut, m_pTemp2, iBufferSize);
-    high->process(pInOut, m_pTemp3, iBufferSize);
-
-    if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
-        SampleUtil::copy3WithRampingGain(pInOut,
-                                         m_pTemp1, old_low, fLow,
-                                         m_pTemp2, old_mid, fMid,
-                                         m_pTemp3, old_high, fHigh,
+    if (ramp_delay) {
+        // first use old gains
+        SampleUtil::copy4WithGain(pInOut,
+                                  pInOut, old_dry,
+                                  m_pLowBuf, old_low,
+                                  m_pBandBuf, old_mid,
+                                  m_pHighBuf, old_high,
+                                  ramp_delay);
+        // Now ramp the remaining frames
+        SampleUtil::copy4WithRampingGain(&pInOut[ramp_delay],
+                                         &pInOut[ramp_delay], old_dry, fDry,
+                                         &m_pLowBuf[ramp_delay], old_low, fLow,
+                                         &m_pBandBuf[ramp_delay], old_mid, fMid,
+                                         &m_pHighBuf[ramp_delay], old_high, fHigh,
+                                         iBufferSize - ramp_delay);
+    } else if (fLow != old_low ||
+            fMid != old_mid ||
+            fHigh != old_high ||
+            fDry != old_dry) {
+        SampleUtil::copy4WithRampingGain(pInOut,
+                                         pInOut, old_dry, fDry,
+                                         m_pLowBuf, old_low, fLow,
+                                         m_pBandBuf, old_mid, fMid,
+                                         m_pHighBuf, old_high, fHigh,
                                          iBufferSize);
     } else {
-        SampleUtil::copy3WithGain(pInOut,
-                          m_pTemp1, fLow,
-                          m_pTemp2, fMid,
-                          m_pTemp3, fHigh, iBufferSize);
+        SampleUtil::copy4WithGain(pInOut,
+                                  pInOut, fDry,
+                                  m_pLowBuf, fLow,
+                                  m_pBandBuf, fMid,
+                                  m_pHighBuf, fHigh,
+                                  iBufferSize);
     }
 
     old_low = fLow;
     old_mid = fMid;
     old_high = fHigh;
+    old_dry = fDry;
 }
