@@ -102,6 +102,7 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
 
     //
     // Step 1: Look for cover art in disk-cache directory.
+    //         (all embedded covers will already be there)
     //
     QString coverArtLocation = searchInDiskCache(coverArtName);
 
@@ -109,25 +110,19 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
         return coverArtLocation;  // FOUND!
     }
 
+    //
+    // Step 2: Look for cover stored in track diretory.
+    //
+    QImage image(searchInTrackDirectory(pTrack->getDirectory()));
+
     // load default location
     coverArtLocation = getDefaultCoverLocation(coverArtName);
 
-    //
-    // Step 2: Look for embedded cover art.
-    //
-    QImage image = pTrack->getEmbeddedCoverArt();
-
-    // If the track doesn't have embedded cover art
-    if (image.isNull()) {
-        //
-        // Step 3: Look for cover stored in track diretory
-        //
-        image = QImage(searchInTrackDirectory(pTrack->getDirectory()));
-    }
-
-    // try to store the image found in our disk-cache!
-    if (saveFile(image, coverArtLocation)) {
-        return coverArtLocation;  // FOUND!
+    if (!image.isNull()) {
+        // try to store the image in our disk-cache!
+        if (saveFile(image, coverArtLocation)) {
+            return coverArtLocation;  // FOUND!
+        }
     }
 
     //

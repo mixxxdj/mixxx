@@ -18,6 +18,7 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
                                     QString filename);
 
     bool deleteFile(const QString& location);
+    bool saveFile(QImage cover, QString location);
     QString searchCoverArtFile(TrackInfoObject* pTrack);
 
   protected:
@@ -31,7 +32,6 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
 
     const char* m_cDefaultImageFormat;
 
-    bool saveFile(QImage cover, QString location);
     QString searchInDiskCache(QString coverArtName);
     QString searchInTrackDirectory(QString directory);
 };

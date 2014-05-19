@@ -150,8 +150,6 @@ class TrackInfoObject : public QObject {
     void setCoverArt(const QString &location);
     // Get Cover Art
     QString getCoverArt() const;
-    // Get Embedded Cover Art
-    QImage getEmbeddedCoverArt() const;
 
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
@@ -312,9 +310,6 @@ class TrackInfoObject : public QObject {
     // Special flag for telling if the track location was changed.
     bool m_bLocationChanged;
 
-    // Set Embedded Cover Art
-    void setEmbeddedCoverArt(QImage picture);
-
     // The file
     QFileInfo m_fileInfo;
 
@@ -341,8 +336,6 @@ class TrackInfoObject : public QObject {
     QString m_sTrackNumber;
     // Cover Art Location
     QString m_sCoverArt;
-    // Embedded Cover Art
-    QImage m_embeddedCoverArt;
 
 
     // File type

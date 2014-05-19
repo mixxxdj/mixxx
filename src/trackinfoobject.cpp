@@ -25,10 +25,10 @@
 
 #include "trackinfoobject.h"
 
+#include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
-#include "controlobject.h"
-#include "waveform/waveform.h"
+#include "library/coverart.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
@@ -36,6 +36,7 @@
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 #include "util/math.h"
+#include "waveform/waveform.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,
@@ -196,7 +197,23 @@ void TrackInfoObject::parse() {
         setChannels(pProxiedSoundSource->getChannels());
         setKeyText(pProxiedSoundSource->getKey(),
                    mixxx::track::io::key::FILE_METADATA);
-        setEmbeddedCoverArt(pProxiedSoundSource->getCoverArt());
+
+        // store cover art in disk-cache
+        QImage image = pProxiedSoundSource->getCoverArt();
+        if (!image.isNull()) {
+            CoverArt* pCoverArt = CoverArt::instance();
+
+            QString coverName = pCoverArt->getDefaultCoverName(
+                                    m_sArtist,
+                                    m_sAlbum,
+                                    m_fileInfo.fileName()
+                                );
+
+            QString coverLocation = pCoverArt->getDefaultCoverLocation(coverName);
+
+            CoverArt::instance()->saveFile(image, coverLocation);
+        }
+
         setHeaderParsed(true);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
@@ -682,19 +699,6 @@ void TrackInfoObject::setCoverArt(const QString& location) {
 QString TrackInfoObject::getCoverArt() const {
     QMutexLocker lock(&m_qMutex);
     return m_sCoverArt;
-}
-
-QImage TrackInfoObject::getEmbeddedCoverArt() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_embeddedCoverArt;
-}
-
-void TrackInfoObject::setEmbeddedCoverArt(QImage picture) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_embeddedCoverArt != picture) {
-        m_embeddedCoverArt = picture;
-        setDirty(true);
-    }
 }
 
 int TrackInfoObject::getLength() const {
