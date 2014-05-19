@@ -279,6 +279,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     delete pModplugPrefs; // not needed anymore
 #endif
 
+    CoverArt::create();
+    CoverArt::instance()->setConfig(m_pConfig);
+
     m_pLibrary = new Library(this, m_pConfig,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);

@@ -1,15 +1,20 @@
 #include "library/coverart.h"
 
-CoverArt::CoverArt(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig),
+CoverArt::CoverArt()
+        : m_pConfig(NULL),
           m_cDefaultImageFormat("jpg") {
+}
+
+CoverArt::~CoverArt() {
+}
+
+void CoverArt::setConfig(ConfigObject<ConfigValue>* pConfig) {
+    m_pConfig = pConfig;
+
     if (!QDir().mkpath(getStoragePath())) {
         qDebug() << "WARNING: Could not create cover arts storage path. "
                  << "Mixxx will be unable to store analyses.";
     }
-}
-
-CoverArt::~CoverArt() {
 }
 
 QString CoverArt::getStoragePath() const {

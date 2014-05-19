@@ -8,7 +8,7 @@
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database,
                          ConfigObject<ConfigValue>* pConfig)
         : m_database(database),
-          m_pCoverArt(new CoverArt(pConfig)) {
+          m_pCoverArt(CoverArt::instance()) {
 }
 
 CoverArtDAO::~CoverArtDAO() {

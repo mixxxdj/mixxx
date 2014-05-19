@@ -4,15 +4,21 @@
 #include <QObject>
 
 #include "trackinfoobject.h"
+#include "util/singleton.h"
 
-class CoverArt : public QObject {
+class CoverArt : public QObject, public Singleton<CoverArt> {
     Q_OBJECT
   public:
-    CoverArt(ConfigObject<ConfigValue> *pConfig);
-    virtual ~CoverArt();
+    void setConfig(ConfigObject<ConfigValue>* pConfig);
 
     bool deleteFile(const QString& location);
     QString searchCoverArtFile(TrackInfoObject* pTrack);
+
+  protected:
+    CoverArt();
+    virtual ~CoverArt();
+
+    friend class Singleton<CoverArt>;
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
