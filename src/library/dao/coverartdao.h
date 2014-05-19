@@ -11,7 +11,7 @@
 class CoverArtDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
-    CoverArtDAO(QSqlDatabase& database, ConfigObject<ConfigValue> *pConfig);
+    CoverArtDAO(QSqlDatabase& database);
     virtual ~CoverArtDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; }
 

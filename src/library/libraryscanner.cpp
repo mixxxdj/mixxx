@@ -36,7 +36,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 m_playlistDao(m_database),
                 m_crateDao(m_database),
                 m_directoryDao(m_database),
-                m_coverArtDao(m_database, collection->getConfig()),
+                m_coverArtDao(m_database),
                 m_analysisDao(m_database, collection->getConfig()),
                 m_trackDao(m_database, m_coverArtDao, m_cueDao, m_playlistDao,
                            m_crateDao, m_analysisDao,m_directoryDao,
