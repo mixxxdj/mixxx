@@ -135,7 +135,7 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
         if (trackModel && (pTrack = trackModel->getTrack(indices[0]))) {
-            coverLocation = pTrack->getCoverArt();
+            coverLocation = pTrack->getCoverArtLocation();
         }
     }
     emit(loadCoverArt(coverLocation));

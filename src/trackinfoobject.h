@@ -146,10 +146,10 @@ class TrackInfoObject : public QObject {
     int getChannels() const;
     // Output a formatted string with all the info
     QString getInfo() const;
-    // Set Cover Art
-    void setCoverArt(const QString &location);
+    // Set Cover Art Location
+    void setCoverArtLocation(const QString &location);
     // Get Cover Art
-    QString getCoverArt() const;
+    QString getCoverArtLocation() const;
 
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
@@ -335,7 +335,7 @@ class TrackInfoObject : public QObject {
     // Track Number
     QString m_sTrackNumber;
     // Cover Art Location
-    QString m_sCoverArt;
+    QString m_sCoverArtLocation;
 
 
     // File type

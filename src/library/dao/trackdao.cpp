@@ -302,7 +302,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":title", pTrack->getTitle());
     m_pQueryLibraryInsert->bindValue(":album", pTrack->getAlbum());
     m_pQueryLibraryInsert->bindValue(":album_artist", pTrack->getAlbumArtist());
-    m_pQueryLibraryInsert->bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArt()));
+    m_pQueryLibraryInsert->bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArtLocation()));
     m_pQueryLibraryInsert->bindValue(":year", pTrack->getYear());
     m_pQueryLibraryInsert->bindValue(":genre", pTrack->getGenre());
     m_pQueryLibraryInsert->bindValue(":composer", pTrack->getComposer());
@@ -937,7 +937,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
             pTrack->setAlbumArtist(albumArtist);
-            pTrack->setCoverArt(m_coverArtDao.getCoverArtLocation(coverArtId));
+            pTrack->setCoverArtLocation(m_coverArtDao.getCoverArtLocation(coverArtId));
             pTrack->setYear(year);
             pTrack->setGenre(genre);
             pTrack->setComposer(composer);
@@ -1121,7 +1121,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
     query.bindValue(":album_artist", pTrack->getAlbumArtist());
-    query.bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArt()));
+    query.bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArtLocation()));
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":composer", pTrack->getComposer());
