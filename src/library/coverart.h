@@ -11,6 +11,12 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
   public:
     void setConfig(ConfigObject<ConfigValue>* pConfig);
 
+    QString getStoragePath() const;
+    QString getDefaultCoverLocation(QString coverArtName);
+    QString getDefaultCoverName(QString artist,
+                                    QString album,
+                                    QString filename);
+
     bool deleteFile(const QString& location);
     QString searchCoverArtFile(TrackInfoObject* pTrack);
 
@@ -25,7 +31,6 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
 
     const char* m_cDefaultImageFormat;
 
-    QString getStoragePath() const;
     bool saveFile(QImage cover, QString location);
     QString searchInDiskCache(QString coverArtName);
     QString searchInTrackDirectory(QString directory);

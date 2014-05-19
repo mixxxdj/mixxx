@@ -80,16 +80,25 @@ QString CoverArt::searchInTrackDirectory(QString directory) {
     return QString();
 }
 
+QString CoverArt::getDefaultCoverLocation(QString coverArtName) {
+    return getStoragePath() + coverArtName + "." + m_cDefaultImageFormat;
+}
+
+QString CoverArt::getDefaultCoverName(QString artist,
+                                      QString album,
+                                      QString filename) {
+    if (artist.isEmpty() && album.isEmpty()) {
+         return filename;
+    } else {
+        return artist + " - " + album;
+    }
+}
+
 QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
     // creates default cover art name
-    QString coverArtName;
-    QString artist = pTrack->getArtist();
-    QString album = pTrack->getAlbum();
-    if (artist.isEmpty() && album.isEmpty()) {
-        coverArtName = pTrack->getFilename();
-    } else {
-        coverArtName = artist + " - " + album;
-    }
+    QString coverArtName = getDefaultCoverName(pTrack->getArtist(),
+                                               pTrack->getAlbum(),
+                                               pTrack->getFilename());
 
     //
     // Step 1: Look for cover art in disk-cache directory.
@@ -101,10 +110,7 @@ QString CoverArt::searchCoverArtFile(TrackInfoObject* pTrack) {
     }
 
     // load default location
-    coverArtLocation.append(getStoragePath())
-                    .append(coverArtName)
-                    .append(".")
-                    .append(m_cDefaultImageFormat);
+    coverArtLocation = getDefaultCoverLocation(coverArtName);
 
     //
     // Step 2: Look for embedded cover art.
