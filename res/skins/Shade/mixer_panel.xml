@@ -209,11 +209,16 @@
 						<PushButton>
 							<TooltipId>cue_default_cue_gotoandstop</TooltipId>
 							<Style></Style>
-							<NumberStates>1</NumberStates>
+							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_cue1_overdown.png</Pressed>
+								<Pressed>btn_cue1_down.png</Pressed>
 								<Unpressed>btn_cue1.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_cue1_overdown.png</Pressed>
+								<Unpressed>btn_cue1_over.png</Unpressed>
 							</State>
 							<Pos>11,205</Pos>
 							<Connection>
@@ -226,15 +231,22 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>RightButton</ButtonState>
 							</Connection>
+							<Connection>
+								<ConfigKey>[Channel1],cue_indicator</ConfigKey>							</Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>cue_default_cue_gotoandstop</TooltipId>
 							<Style></Style>
-							<NumberStates>1</NumberStates>
+							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_cue2_overdown.png</Pressed>
+								<Pressed>btn_cue2_down.png</Pressed>
 								<Unpressed>btn_cue2.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_cue2_overdown.png</Pressed>
+								<Unpressed>btn_cue2_over.png</Unpressed>
 							</State>
 							<Pos>203,205</Pos>
 							<Connection>
@@ -246,6 +258,9 @@
 								<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>RightButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel2],cue_indicator</ConfigKey>
 							</Connection>
 						</PushButton>
 	
