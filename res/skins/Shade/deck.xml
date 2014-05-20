@@ -349,7 +349,7 @@
 							<Property>title</Property>
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>0,4</Pos>
-							<Size>230f,18</Size>
+							<Size>310f,18</Size>
 						</TrackProperty>
 	
 						<!--
@@ -365,7 +365,7 @@
 							<Property>artist</Property>
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>0,24</Pos>
-							<Size>210f,18</Size>
+							<Size>230f,18</Size>
 						</TrackProperty>
 		
 						<!--
