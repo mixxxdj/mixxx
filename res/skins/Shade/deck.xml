@@ -479,21 +479,24 @@
 						<PushButton>
 							<TooltipId>beatsync_beatsync_tempo</TooltipId>
 							<Style></Style>
-							<NumberStates>1</NumberStates>
+							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_sync1_overdown.png</Pressed>
-								<Unpressed>btn_sync1.png</Unpressed>
+								<Pressed>btn_sync_sampler_down.png</Pressed>
+								<Unpressed>btn_sync_sampler.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_sync_sampler_overdown.png</Pressed>
+								<Unpressed>btn_sync_sampler_over.png</Unpressed>
 							</State>
 							<Pos>321,7</Pos>
 							<Connection>
-								<ConfigKey>[Channel<Variable name="channum"/>],beatsync</ConfigKey>
-								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								<ConfigKey>[Channel<Variable name="channum"/>],sync_enabled</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
 								<ConfigKey>[Channel<Variable name="channum"/>],beatsync_tempo</ConfigKey>
-								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>RightButton</ButtonState>
 							</Connection>
 						</PushButton>
