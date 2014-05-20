@@ -148,7 +148,6 @@
 							<TooltipId>play_cue_set</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
-							<RightClickIsPushButton>true</RightClickIsPushButton>
 							<State>
 								<Number>0</Number>
 								<Pressed>btn_play1_down.png</Pressed>
@@ -162,21 +161,20 @@
 							<Pos>11,226</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],play</ConfigKey>
-								<EmitOnDownPress>true</EmitOnDownPress>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
 								<ConfigKey>[Channel1],cue_set</ConfigKey>
-								<EmitOnDownPress>true</EmitOnDownPress>
 								<ButtonState>RightButton</ButtonState>
-								<ConnectValueToWidget>false</ConnectValueToWidget>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel1],play_indicator</ConfigKey>
 							</Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>play_cue_set</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
-							<RightClickIsPushButton>true</RightClickIsPushButton>
 							<State>
 								<Number>0</Number>
 								<Pressed>btn_play2_down.png</Pressed>
@@ -190,14 +188,14 @@
 							<Pos>203,226</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],play</ConfigKey>
-								<EmitOnDownPress>true</EmitOnDownPress>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
 								<ConfigKey>[Channel2],cue_set</ConfigKey>
-								<EmitOnDownPress>true</EmitOnDownPress>
 								<ButtonState>RightButton</ButtonState>
-								<ConnectValueToWidget>false</ConnectValueToWidget>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel2],play_indicator</ConfigKey>
 							</Connection>
 						</PushButton>
 	
