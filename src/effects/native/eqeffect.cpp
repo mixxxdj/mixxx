@@ -54,15 +54,15 @@ EffectManifest EqEffect::getManifest() {
     return manifest;
 }
 
-EqEffectGroupState::EqEffectGroupState() {
-        low = new EngineFilterButterworth8Low(44100, 246);
-        band = new EngineFilterButterworth8Band(44100, 246, 2484);
-        high = new EngineFilterButterworth8High(44100, 2484);
-        m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
-        m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
-        m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
-        old_low = old_mid = old_high = 1.0;
-        old_dry = 0;
+EqEffectGroupState::EqEffectGroupState()
+        : old_low(1.0), old_mid(1.0), old_high(1.0),
+          old_dry(0) {
+    low = new EngineFilterButterworth8Low(44100, 246);
+    band = new EngineFilterButterworth8Band(44100, 246, 2484);
+    high = new EngineFilterButterworth8High(44100, 2484);
+    m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
 }
 
 EqEffectGroupState::~EqEffectGroupState() {
