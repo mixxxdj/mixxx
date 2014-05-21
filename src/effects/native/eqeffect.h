@@ -17,9 +17,19 @@ class EqEffectGroupState {
 public:
     EqEffectGroupState();
     ~EqEffectGroupState();
-    CSAMPLE *m_pLowBuf, *m_pBandBuf, *m_pHighBuf;
-    double old_low, old_mid, old_high, old_dry;
-    EngineObjectConstIn *low, *band, *high;
+
+    EngineObjectConstIn* low;
+    EngineObjectConstIn* band;
+    EngineObjectConstIn* high;
+
+    double old_low;
+    double old_mid;
+    double old_high;
+    double old_dry;
+
+    CSAMPLE* m_pLowBuf;
+    CSAMPLE* m_pBandBuf;
+    CSAMPLE* m_pHighBuf;
 };
 
 class EqEffect : public GroupEffectProcessor<EqEffectGroupState> {
