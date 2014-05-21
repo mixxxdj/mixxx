@@ -36,7 +36,6 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_iHandleLength(0),
       m_bHorizontal(false),
       m_bReverse(false),
-      // m_eDirection(up),
       m_bEventWhileDrag(true),
       m_bDrag(false),
       m_pSlider(NULL),
