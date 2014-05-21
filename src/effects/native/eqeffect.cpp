@@ -23,7 +23,6 @@ EffectManifest EqEffect::getManifest() {
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    low->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     low->setDefault(1.);
     low->setMinimum(0);
     low->setMaximum(4.);
@@ -36,7 +35,6 @@ EffectManifest EqEffect::getManifest() {
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    mid->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     mid->setDefault(1.);
     mid->setMinimum(0);
     mid->setMaximum(4.);
@@ -49,7 +47,6 @@ EffectManifest EqEffect::getManifest() {
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    high->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     high->setDefault(1.);
     high->setMinimum(0);
     high->setMaximum(4.);
