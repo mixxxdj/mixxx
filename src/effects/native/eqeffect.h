@@ -49,4 +49,4 @@ class EqEffect : public GroupEffectProcessor<EqEffectGroupState> {
     DISALLOW_COPY_AND_ASSIGN(EqEffect);
 };
 
-#endif /* BITCRUSHEREFFECT_H */
+#endif /* EQEFFECT_H */
