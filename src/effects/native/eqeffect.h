@@ -59,7 +59,12 @@ class EqEffect : public GroupEffectProcessor<EqEffectGroupState> {
     EngineEffectParameter* m_pPotMid;
     EngineEffectParameter* m_pPotHigh;
 
+    ControlObjectSlave* m_pLoFreqCorner;
+    ControlObjectSlave* m_pHiFreqCorner;
+
     int m_oldSampleRate;
+    int m_loFreq;
+    int m_hiFreq;
 
     DISALLOW_COPY_AND_ASSIGN(EqEffect);
 };
