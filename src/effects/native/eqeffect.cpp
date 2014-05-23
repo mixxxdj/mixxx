@@ -89,12 +89,10 @@ EqEffect::EqEffect(EngineEffect* pEffect,
           m_pPotHigh(pEffect->getParameterById("high")),
           m_oldSampleRate(0) {
     Q_UNUSED(manifest);
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }
 
 EqEffect::~EqEffect() {
     //qDebug() << debugString() << "destroyed";
-    delete m_pSampleRate;
 }
 
 void EqEffect::processGroup(const QString& group,
@@ -116,7 +114,7 @@ void EqEffect::processGroup(const QString& group,
     fMid -= fDry;
     fHigh -= fDry;
 
-    int sampleRate = static_cast<int>(m_pSampleRate->get());
+    int sampleRate = getSampleRate();
     if (sampleRate != m_oldSampleRate) {
         pState->setFilters(sampleRate, 246, 2484);
         m_oldSampleRate = sampleRate;

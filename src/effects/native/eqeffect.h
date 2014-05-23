@@ -58,7 +58,6 @@ class EqEffect : public GroupEffectProcessor<EqEffectGroupState> {
     EngineEffectParameter* m_pPotLow;
     EngineEffectParameter* m_pPotMid;
     EngineEffectParameter* m_pPotHigh;
-    ControlObjectSlave* m_pSampleRate;
 
     int m_oldSampleRate;
 
