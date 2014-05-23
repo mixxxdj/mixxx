@@ -87,7 +87,7 @@ EqEffect::EqEffect(EngineEffect* pEffect,
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
-          m_oldSampleRate(0) {
+          m_oldSampleRate(0), m_loFreq(0), m_hiFreq(0) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
