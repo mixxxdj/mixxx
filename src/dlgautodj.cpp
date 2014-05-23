@@ -44,8 +44,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
 
+    // Auto DJ should show tracks that have been hidden in the library.
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                 "mixxx.db.model.autodj");
+                                                 "mixxx.db.model.autodj",
+                                                 true);
     PlaylistDAO& playlistDao = pTrackCollection->getPlaylistDAO();
     int playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
