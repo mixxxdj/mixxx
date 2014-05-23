@@ -3,6 +3,7 @@
 
 #include <QMap>
 
+#include "controlobjectslave.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -17,6 +18,8 @@ class EqEffectGroupState {
 public:
     EqEffectGroupState();
     ~EqEffectGroupState();
+
+    void setFilters(int sampleRate, int lowFreq, int highFreq);
 
     EngineObjectConstIn* low;
     EngineObjectConstIn* band;
@@ -55,6 +58,9 @@ class EqEffect : public GroupEffectProcessor<EqEffectGroupState> {
     EngineEffectParameter* m_pPotLow;
     EngineEffectParameter* m_pPotMid;
     EngineEffectParameter* m_pPotHigh;
+    ControlObjectSlave* m_pSampleRate;
+
+    int m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(EqEffect);
 };

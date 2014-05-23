@@ -55,14 +55,12 @@ EffectManifest EqEffect::getManifest() {
 }
 
 EqEffectGroupState::EqEffectGroupState()
-        : old_low(1.0), old_mid(1.0), old_high(1.0),
-          old_dry(0) {
-    low = new EngineFilterButterworth8Low(44100, 246);
-    band = new EngineFilterButterworth8Band(44100, 246, 2484);
-    high = new EngineFilterButterworth8High(44100, 2484);
+        : low(0), band(0), high(0),old_low(1.0),
+          old_mid(1.0), old_high(1.0), old_dry(0) {
     m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    setFilters(48000, 246, 2484);
 }
 
 EqEffectGroupState::~EqEffectGroupState() {
@@ -74,16 +72,29 @@ EqEffectGroupState::~EqEffectGroupState() {
     delete m_pHighBuf;
 }
 
+void EqEffectGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
+    delete low;
+    delete band;
+    delete high;
+
+    low = new EngineFilterButterworth8Low(sampleRate, lowFreq);
+    band = new EngineFilterButterworth8Band(sampleRate, lowFreq, highFreq);
+    high = new EngineFilterButterworth8High(sampleRate, highFreq);
+}
+
 EqEffect::EqEffect(EngineEffect* pEffect,
                    const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")) {
+          m_pPotHigh(pEffect->getParameterById("high")),
+          m_oldSampleRate(0) {
     Q_UNUSED(manifest);
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }
 
 EqEffect::~EqEffect() {
     //qDebug() << debugString() << "destroyed";
+    delete m_pSampleRate;
 }
 
 void EqEffect::processGroup(const QString& group,
@@ -104,6 +115,12 @@ void EqEffect::processGroup(const QString& group,
     fLow -= fDry;
     fMid -= fDry;
     fHigh -= fDry;
+
+    int sampleRate = static_cast<int>(m_pSampleRate->get());
+    if (sampleRate != m_oldSampleRate) {
+        pState->setFilters(sampleRate, 246, 2484);
+        m_oldSampleRate = sampleRate;
+    }
 
     // Process the new EQ'd signals.
     // They use up to 16 frames history so in case we are just starting,
