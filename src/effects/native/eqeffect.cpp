@@ -89,10 +89,14 @@ EqEffect::EqEffect(EngineEffect* pEffect,
           m_pPotHigh(pEffect->getParameterById("high")),
           m_oldSampleRate(0) {
     Q_UNUSED(manifest);
+    m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
+    m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
 }
 
 EqEffect::~EqEffect() {
     //qDebug() << debugString() << "destroyed";
+    delete m_pLoFreqCorner;
+    delete m_pHiFreqCorner;
 }
 
 void EqEffect::processGroup(const QString& group,
@@ -115,9 +119,13 @@ void EqEffect::processGroup(const QString& group,
     fHigh -= fDry;
 
     int sampleRate = getSampleRate();
-    if (sampleRate != m_oldSampleRate) {
-        pState->setFilters(sampleRate, 246, 2484);
+    if (m_oldSampleRate != sampleRate ||
+            (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
+            (m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
+        m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
+        m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
         m_oldSampleRate = sampleRate;
+        pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
     }
 
     // Process the new EQ'd signals.
