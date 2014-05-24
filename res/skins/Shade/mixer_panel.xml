@@ -308,47 +308,54 @@
 	
 						<!--
 						**********************************************
-						Button- FX (Flanger)
+						FX Button
 						**********************************************
 						-->
 						<PushButton>
-							<TooltipId>flanger</TooltipId>
+							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_fx1_down.png</Pressed>
-								<Unpressed>btn_fx1.png</Unpressed>
+								<Pressed>btn_kill_down.png</Pressed>
+								<Unpressed>btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_fx1_overdown.png</Pressed>
-								<Unpressed>btn_fx1_over.png</Unpressed>
+								<Pressed>btn_kill_overdown.png</Pressed>
+								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>11,49</Pos>
+							<Pos>11,57</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],flanger</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit1],group_[Channel1]_enable</ConfigKey>
+								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
+					    
 						<PushButton>
-							<TooltipId>flanger</TooltipId>
+							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_fx2_down.png</Pressed>
-								<Unpressed>btn_fx1.png</Unpressed>
+								<Pressed>btn_kill_down.png</Pressed>
+								<Unpressed>btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_fx2_overdown.png</Pressed>
-								<Unpressed>btn_fx2_over.png</Unpressed>
+								<Pressed>btn_kill_overdown.png</Pressed>
+								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>214,49</Pos>
+							<Pos>230,57</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],flanger</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit2],group_[Channel2]_enable</ConfigKey>
+								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
+						
+
 	
 						<!--
 						**********************************************
@@ -559,33 +566,43 @@
 						**********************************************
 						-->
 						<Knob>
-							<TooltipId>lfoDelay</TooltipId>
+							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>171,51</Pos>
+							<Pos>32,51</Pos>
 							<Connection>
-								<ConfigKey>[Flanger],lfoDelay</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit1],mix</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>
-							<TooltipId>lfoDepth</TooltipId>
+							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>114,51</Pos>
+							<Pos>65,51</Pos>
 							<Connection>
-								<ConfigKey>[Flanger],lfoDepth</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit1],parameter</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>
-							<TooltipId>lfoPeriod</TooltipId>
+							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>57,51</Pos>
+							<Pos>163,51</Pos>
 							<Connection>
-								<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit2],parameter</ConfigKey>
+							</Connection>
+						</Knob>
+						<Knob>
+							<TooltipId></TooltipId>
+							<Style></Style>
+							<NumberStates>63</NumberStates>
+							<Path>knobs/knob_rotary_s%1.png</Path>
+							<Pos>196,51</Pos>
+							<Connection>
+								<ConfigKey>[EffectRack1_EffectUnit2],mix</ConfigKey>
 							</Connection>
 						</Knob>
 	
