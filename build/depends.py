@@ -743,6 +743,7 @@ class MixxxCore(Feature):
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 		   "library/coverart.cpp",
+		   "library/coverartcache.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
