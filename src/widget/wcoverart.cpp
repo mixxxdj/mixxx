@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QPainter>
 
+#include "library/coverartcache.h"
 #include "wcoverart.h"
 #include "wskincolor.h"
 
@@ -37,6 +38,9 @@ WCoverArt::WCoverArt(QWidget* parent,
     QPixmap zoomImg(":/images/library/ic_library_zoom_in.png");
     zoomImg = zoomImg.scaled(24, 24);
     m_zoomCursor = QCursor(zoomImg);
+
+    connect(CoverArtCache::getInstance(), SIGNAL(pixmapFound(QString, QPixmap)),
+            this, SLOT(slotPixmapFound(QString, QPixmap)));
 }
 
 WCoverArt::~WCoverArt() {
@@ -71,19 +75,29 @@ void WCoverArt::slotHideCoverArt() {
     setMinimumSize(0, 20);
 }
 
-void WCoverArt::slotLoadCoverArt(const QString& location) {
-    if (QFile::exists(location)) {
+void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
+    if (m_requestedLocations.contains(location)) {
         m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
-        m_currentCover = QPixmap(location);
+        m_currentCover = pixmap;
         m_currentScaledCover = scaledCoverArt(m_currentCover);
         m_bDefaultCover = false;
-    } else {
-        m_sCoverTitle = "Cover Art";
-        m_currentCover = m_defaultCover;
-        m_currentScaledCover = m_defaultCover;
-        m_bDefaultCover = true;
+        update();
+
+        m_requestedLocations.removeOne(location);
     }
+}
+
+void WCoverArt::slotLoadCoverArt(const QString& location) {
+    m_sCoverTitle = "Cover Art";
+    m_currentCover = m_defaultCover;
+    m_currentScaledCover = m_defaultCover;
+    m_bDefaultCover = true;
     update();
+
+    if (!m_requestedLocations.contains(location)) {
+        m_requestedLocations.append(location);
+        CoverArtCache::getInstance()->requestPixmap(location);
+    }
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
