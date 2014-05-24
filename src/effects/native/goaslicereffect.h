@@ -16,14 +16,11 @@ struct GoaSlicerGroupState {
             // https://bugs.launchpad.net/mixxx/+bug/1208816.
             : length(2048),
               slope(512) {
-        SampleUtil::applyGain(slicerRight, 0, MAX_BUFFER_LEN);
-        SampleUtil::applyGain(slicerLeft, 0, MAX_BUFFER_LEN);
     }
 
-    CSAMPLE slicerRight[MAX_BUFFER_LEN];
-    CSAMPLE slicerLeft[MAX_BUFFER_LEN];
     unsigned int length;
     unsigned int slope;
+    unsigned int period;
 };
 
 class GoaSlicerEffect : public GroupEffectProcessor<GoaSlicerGroupState> {
@@ -42,12 +39,14 @@ class GoaSlicerEffect : public GroupEffectProcessor<GoaSlicerGroupState> {
                       const GroupFeatureState& groupFeatures);
 
   private:
+    
     QString debugString() const {
         return getId();
     }
 
     EngineEffectParameter* m_pLengthParameter;
     EngineEffectParameter* m_pSlopeParameter;
+    EngineEffectParameter* m_pPeriodParameter;
 
     DISALLOW_COPY_AND_ASSIGN(GoaSlicerEffect);
 };
