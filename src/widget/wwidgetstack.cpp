@@ -33,19 +33,32 @@ void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
 
 WWidgetStack::WWidgetStack(QWidget* pParent,
                            ControlObject* pNextControl,
-                           ControlObject* pPrevControl)
+                           ControlObject* pPrevControl,
+                           ControlObject* pCurrentPageControl)
         : QStackedWidget(pParent),
           WBaseWidget(this),
           m_nextControl(pNextControl ? pNextControl->getKey() : ConfigKey()),
-          m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()) {
+          m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
+          m_currentPageControl(
+                  pCurrentPageControl ?
+                  pCurrentPageControl->getKey() : ConfigKey()) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),
             this, SLOT(onPrevControlChanged(double)));
+    connect(&m_currentPageControl, SIGNAL(valueChanged(double)),
+            this, SLOT(onCurrentPageControlChanged(double)));
     connect(&m_showMapper, SIGNAL(mapped(int)),
             this, SLOT(setCurrentIndex(int)));
     connect(&m_hideMapper, SIGNAL(mapped(int)),
             this, SLOT(hideIndex(int)));
+}
+
+// override
+void WWidgetStack::Init() {
+    WBaseWidget::Init();
+    connect(this, SIGNAL(currentChanged(int)),
+            this, SLOT(onCurrentPageChanged(int)));
 }
 
 WWidgetStack::~WWidgetStack() {
@@ -83,6 +96,15 @@ void WWidgetStack::onPrevControlChanged(double v) {
     }
 }
 
+void WWidgetStack::onCurrentPageChanged(int index) {
+    m_currentPageControl.set(static_cast<double>(index));
+}
+
+void WWidgetStack::onCurrentPageControlChanged(double v) {
+    int newIndex = static_cast<int>(v);
+    setCurrentIndex(newIndex);
+}
+
 void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl) {
     int index = addWidget(pWidget);
     if (pControl) {
@@ -100,6 +122,10 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                 &m_hideMapper, SLOT(map()));
         connect(this, SIGNAL(currentChanged(int)),
                 pListener, SLOT(onCurrentWidgetChanged(int)));
+    }
+
+    if (m_currentPageControl.get() == index) {
+        setCurrentIndex(index);
     }
 }
 

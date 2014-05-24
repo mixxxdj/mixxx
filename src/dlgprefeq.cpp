@@ -21,6 +21,7 @@
 #include "dlgprefeq.h"
 #include "engine/enginefilteriir.h"
 #include "controlobject.h"
+#include "util/math.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
 #define ENABLE_INTERNAL_EQ "EnableEQs"
@@ -50,17 +51,16 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
     connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
-    connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
 
     loadSettings();
+    slotUpdate();
+    slotApply();
 }
 
-DlgPrefEQ::~DlgPrefEQ()
-{
+DlgPrefEQ::~DlgPrefEQ() {
 }
 
-void DlgPrefEQ::loadSettings()
-{
+void DlgPrefEQ::loadSettings() {
     QString highEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency"));
     QString highEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"));
     QString lowEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency"));
@@ -97,9 +97,6 @@ void DlgPrefEQ::loadSettings()
     // Default internal EQs to enabled.
     CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes"));
-
-    slotUpdate();
-    slotApply();
 }
 
 void DlgPrefEQ::setDefaultShelves()
@@ -110,11 +107,11 @@ void DlgPrefEQ::setDefaultShelves()
     m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"), ConfigValue(250.0));
 }
 
-/** Resets settings */
-void DlgPrefEQ::reset() {
+void DlgPrefEQ::slotResetToDefaults() {
     setDefaultShelves();
     CheckBoxEnbEQ->setChecked(true);
     CheckBoxLoFi->setChecked(true);
+    setDefaultShelves();
     loadSettings();
     slotUpdate();
     slotApply();
@@ -191,7 +188,7 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
         return minValue;
     }
     double dsliderPos = (eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
-    dsliderPos = pow(dsliderPos, 1./4.) * (maxValue - minValue) + minValue;
+    dsliderPos = pow(dsliderPos, 1.0 / 4.0) * (maxValue - minValue) + minValue;
     return dsliderPos;
 }
 
@@ -227,10 +224,10 @@ double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
 }
 
 void DlgPrefEQ::validate_levels() {
-    m_highEqFreq = math_max(math_min(m_highEqFreq, kFrequencyUpperLimit),
-                            kFrequencyLowerLimit);
-    m_lowEqFreq = math_max(math_min(m_lowEqFreq, kFrequencyUpperLimit),
-                           kFrequencyLowerLimit);
+    m_highEqFreq = math_clamp<double>(m_highEqFreq, kFrequencyLowerLimit,
+                                      kFrequencyUpperLimit);
+    m_lowEqFreq = math_clamp<double>(m_lowEqFreq, kFrequencyLowerLimit,
+                                     kFrequencyUpperLimit);
     if (m_lowEqFreq == m_highEqFreq) {
         if (m_lowEqFreq == kFrequencyLowerLimit) {
             ++m_highEqFreq;

@@ -31,6 +31,9 @@
 #include "soundsourcemp3.h"
 #endif
 #include "soundsourceoggvorbis.h"
+#ifdef __OPUS__
+#include "soundsourceopus.h"
+#endif
 #ifdef __COREAUDIO__
 #include "soundsourcecoreaudio.h"
 #endif
@@ -177,6 +180,10 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #endif
     if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
         return new SoundSourceOggVorbis(qFilename);
+#ifdef __OPUS__
+    } else if (SoundSourceOpus::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceOpus(qFilename);
+#endif
 #ifdef __MAD__
     } else if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
         return new SoundSourceMp3(qFilename);
@@ -300,12 +307,11 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 }
 
 
-int SoundSourceProxy::open()
-{
+Result SoundSourceProxy::open() {
     if (!m_pSoundSource) {
-        return 0;
+        return ERR;
     }
-    int retVal = m_pSoundSource->open();
+    Result retVal = m_pSoundSource->open();
 
     //Update some metadata (currently only the duration)
     //after a song is open()'d. Eg. We don't know the length
@@ -328,7 +334,7 @@ int SoundSourceProxy::open()
 long SoundSourceProxy::seek(long l)
 {
     if (!m_pSoundSource) {
-    return 0;
+	return 0;
     }
     return m_pSoundSource->seek(l);
 }
@@ -349,7 +355,7 @@ long unsigned SoundSourceProxy::length()
     return m_pSoundSource->length();
 }
 
-int SoundSourceProxy::parseHeader() {
+Result SoundSourceProxy::parseHeader() {
     return m_pSoundSource ? m_pSoundSource->parseHeader() : ERR;
 }
 
@@ -365,6 +371,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
 #endif
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
+#ifdef __OPUS__
+    supportedFileExtensions.append(SoundSourceOpus::supportedFileExtensions());
+#endif
 #ifdef __SNDFILE__
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
 #endif

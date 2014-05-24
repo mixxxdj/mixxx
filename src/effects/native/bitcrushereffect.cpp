@@ -1,4 +1,5 @@
 #include "effects/native/bitcrushereffect.h"
+#include "util/math.h"
 
 // static
 QString BitCrusherEffect::getId() {
@@ -24,7 +25,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     depth->setDefault(16);
-    depth->setMinimum(1);
+    depth->setMinimum(4);
     depth->setMaximum(16);
 
     EffectManifestParameter* frequency = manifest.addParameter();
@@ -37,7 +38,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     frequency->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     frequency->setDefault(1.0);
-    frequency->setMinimum(0.0);
+    frequency->setMinimum(0.02);
     frequency->setMaximum(1.0);
 
     return manifest;
@@ -68,9 +69,9 @@ void BitCrusherEffect::processGroup(const QString& group,
 
     CSAMPLE bit_depth = m_pBitDepthParameter ?
             m_pBitDepthParameter->value().toDouble() : 1.0;
-    bit_depth = math_max(bit_depth, 1);
+    bit_depth = math_max(bit_depth, 1.0f);
 
-    const CSAMPLE scale = pow(2, bit_depth - 1);
+    const CSAMPLE scale = pow(2.0f, bit_depth - 1);
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {

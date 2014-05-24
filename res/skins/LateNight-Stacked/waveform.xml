@@ -1,0 +1,79 @@
+<Template>
+	<WidgetGroup>
+		<Layout>vertical</Layout>
+		<SizePolicy>me,min</SizePolicy>
+		<MinimumSize>200,</MinimumSize>
+		<Children>
+			<!--If you want the waveforms center to adjust when resizing in a collapsing widget
+			(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
+			and don't specify the Waveform's <Size>. So you would have:
+			Parent WidgetGroup
+				Waveform Widget (no Widgetgroup)
+				Child WidgetGroup for Spinny
+					Spinny Widget
+			-->
+			<!--
+			**********************************************
+			Visual- Waveform
+			**********************************************
+			-->
+			<Visual>
+				<TooltipId>waveform_display</TooltipId>
+				<Style></Style>
+				<Channel><Variable name="channum"/></Channel>
+				<Pos>0,0</Pos>
+				<!--See comment about <Size> above-->
+				<!--<Size>i,110</Size>-->
+				<BgColor>#0e0e0e</BgColor>
+				<!--<BgPixmap>style/style_bg_waveform1.png</BgPixmap>-->
+				<SignalColor>#EECE33</SignalColor>
+				<SignalHighColor>#F0EBD1</SignalHighColor>
+				<SignalMidColor>#EECE33</SignalMidColor>
+				<SignalLowColor>#E4C739</SignalLowColor>
+				<BeatColor>#ffffff</BeatColor>
+				<BeatHighlightColor></BeatHighlightColor>
+				<PlayPosColor>#00FF00</PlayPosColor>
+				<EndOfTrackColor>#EA0000</EndOfTrackColor>
+				<DefaultMark>
+					<Align>top</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+					<Text> %1 </Text>
+				</DefaultMark>
+				<MarkRange>
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#00FF00</Color>
+					<DisabledColor>#FFFFFF</DisabledColor>
+				</MarkRange>
+				<Mark>
+					<Control>loop_start_position</Control>
+					<Text>IN</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>loop_end_position</Control>
+					<Text>OUT</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<!--
+				The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+					- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+					- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+				-->
+				<Mark>
+					<Control>cue_point</Control>
+					<Text>CUE</Text>
+					<Align>top</Align>
+					<Color>#FF001C</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+			</Visual>
+		</Children>
+	</WidgetGroup>
+</Template>

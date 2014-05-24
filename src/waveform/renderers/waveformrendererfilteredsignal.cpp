@@ -7,7 +7,7 @@
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
-#include "defs.h"
+#include "util/math.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -64,21 +64,8 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
             (double)m_waveformRenderer->getWidth();
 
     // Per-band gain from the EQ knobs.
-    float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
-    if (m_pLowFilterControlObject &&
-            m_pMidFilterControlObject &&
-            m_pHighFilterControlObject) {
-        lowGain = m_pLowFilterControlObject->get();
-        midGain = m_pMidFilterControlObject->get();
-        highGain = m_pHighFilterControlObject->get();
-    }
-    allGain = m_waveformRenderer->getGain();
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
-    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
-    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
-    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
 
@@ -127,8 +114,8 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         // We now know that some subset of [visualFrameStart, visualFrameStop]
         // lies within the valid range of visual frames. Clamp
         // visualFrameStart/Stop to within [0, lastVisualFrame].
-        visualFrameStart = math_max(math_min(lastVisualFrame, visualFrameStart), 0);
-        visualFrameStop = math_max(math_min(lastVisualFrame, visualFrameStop), 0);
+        visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
+        visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
 
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;

@@ -11,6 +11,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
+#include "util/cmdlineargs.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -74,8 +75,9 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
         QDir().mkpath(localPresets);
     }
 
-    // Initialize preset info parsers
-    m_pPresetInfoManager = new PresetInfoEnumerator(m_pConfig);
+    // Initialize preset info parsers. This object is only for use in the main
+    // thread. Do not touch it from within ControllerManager.
+    m_pMainThreadPresetEnumerator = new PresetInfoEnumerator(m_pConfig);
 
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
@@ -116,7 +118,7 @@ ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
-    delete m_pPresetInfoManager;
+    delete m_pMainThreadPresetEnumerator;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
@@ -206,18 +208,30 @@ int ControllerManager::slotSetUpDevices() {
         }
 
         // The filename for this device name.
-        const QString ofilename = presetFilenameFromName(name);
+        QString presetBaseName = presetFilenameFromName(name);
+
         // The first unique filename for this device (appends numbers at the end
         // if we have already seen a controller by this name on this run of
         // Mixxx.
-        QString filename = firstAvailableFilename(filenames, ofilename);
+        presetBaseName = firstAvailableFilename(filenames, presetBaseName);
 
-        if (!loadPreset(pController, filename, true)) {
+        ControllerPresetPointer pPreset =
+                ControllerPresetFileHandler::loadPreset(
+                    presetBaseName + pController->presetExtension(),
+                    getPresetPaths(m_pConfig));
+
+        if (!loadPreset(pController, pPreset)) {
             // TODO(XXX) : auto load midi preset here.
             continue;
         }
 
-        if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
+        if (m_pConfig->getValueString(ConfigKey("[Controller]", presetBaseName)) != "1") {
+            continue;
+        }
+
+        // If we are in safe mode, skip opening controllers.
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            qDebug() << "We are in safe mode -- skipping opening controller.";
             continue;
         }
 
@@ -231,7 +245,7 @@ int ControllerManager::slotSetUpDevices() {
             }
             continue;
         }
-        pController->applyPreset(getScriptPaths());
+        pController->applyPreset(getPresetPaths(m_pConfig));
     }
 
     maybeStartOrStopPolling();
@@ -296,7 +310,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(getScriptPaths());
+        pController->applyPreset(getPresetPaths(m_pConfig));
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->set(ConfigKey(
@@ -330,62 +344,8 @@ bool ControllerManager::loadPreset(Controller* pController,
     return true;
 }
 
-bool ControllerManager::loadPreset(Controller* pController,
-                                   const QString &filename,
-                                   const bool force) {
-    QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
-    if (!handler) {
-        qWarning() << "Failed to get a file handler for" << pController->getName()
-                   << " Unable to load preset.";
-        return false;
-    }
-
-    // Handle case when filename is already valid full path to mapping
-    // (coming from presetInfo.path)
-    QString filenameWithExt;
-    QString filepath;
-    QFileInfo fileinfo(filename);
-    if (fileinfo.isFile()) {
-        filenameWithExt = fileinfo.baseName();
-        filepath = fileinfo.absoluteFilePath();
-    } else {
-        filenameWithExt = filename + pController->presetExtension();
-        filepath = userPresetsPath(m_pConfig).append(filenameWithExt);
-    }
-
-    // If the file isn't present in the user's directory, check the local
-    // presets path.
-    if (!QFile::exists(filepath)) {
-        filepath = localPresetsPath(m_pConfig).append(filenameWithExt);
-    }
-
-    // If the file isn't present in the user's directory, check res/
-    if (!QFile::exists(filepath)) {
-        filepath = resourcePresetsPath(m_pConfig).append(filenameWithExt);
-    }
-
-    if (!QFile::exists(filepath)) {
-        qWarning() << "Cannot find" << filenameWithExt << "in either"
-                   << resourcePresetsPath(m_pConfig)
-                   << "or the user's Mixxx directories (" + localPresetsPath(m_pConfig)
-                   << userPresetsPath(m_pConfig) + ")";
-        return false;
-    }
-
-    ControllerPresetPointer pPreset = handler->load(
-        filepath, filename, force);
-    if (!pPreset) {
-        qWarning() << "Unable to load preset" << filepath;
-        return false;
-    }
-
-    loadPreset(pController, pPreset);
-    //qDebug() << "Successfully loaded preset" << filepath;
-    return true;
-}
-
-PresetInfoEnumerator* ControllerManager::getPresetInfoManager() {
-    return m_pPresetInfoManager;
+PresetInfoEnumerator* ControllerManager::getMainThreadPresetEnumerator() {
+    return m_pMainThreadPresetEnumerator;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {
@@ -411,10 +371,119 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
     }
 }
 
-QList<QString> ControllerManager::getScriptPaths() {
+// static
+QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
     QList<QString> scriptPaths;
-    scriptPaths.append(userPresetsPath(m_pConfig));
-    scriptPaths.append(localPresetsPath(m_pConfig));
-    scriptPaths.append(resourcePresetsPath(m_pConfig));
+    scriptPaths.append(userPresetsPath(pConfig));
+    scriptPaths.append(localPresetsPath(pConfig));
+    scriptPaths.append(resourcePresetsPath(pConfig));
     return scriptPaths;
+}
+
+// static
+bool ControllerManager::checksumFile(const QString& filename,
+                                     quint16* pChecksum) {
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+
+    qint64 fileSize = file.size();
+    const char* pFile = reinterpret_cast<char*>(file.map(0, fileSize));
+
+    if (pFile == NULL) {
+        file.close();
+        return false;
+    }
+
+    *pChecksum = qChecksum(pFile, fileSize);
+    file.close();
+    return true;
+}
+
+// static
+QString ControllerManager::getAbsolutePath(const QString& pathOrFilename,
+                                           const QStringList& paths) {
+    QFileInfo fileInfo(pathOrFilename);
+    if (fileInfo.isAbsolute()) {
+        return pathOrFilename;
+    }
+
+    foreach (const QString& path, paths) {
+        QDir pathDir(path);
+
+        if (pathDir.exists(pathOrFilename)) {
+            return pathDir.absoluteFilePath(pathOrFilename);
+        }
+    }
+
+    return QString();
+}
+
+bool ControllerManager::importScript(const QString& scriptPath,
+                                     QString* newScriptFileName) {
+    QDir userPresets(userPresetsPath(m_pConfig));
+
+    qDebug() << "ControllerManager::importScript importing script" << scriptPath
+             << "to" << userPresets.absolutePath();
+
+    QFile scriptFile(scriptPath);
+    QFileInfo script(scriptFile);
+
+    if (!script.exists() || !script.isReadable()) {
+        qWarning() << "ControllerManager::importScript script does not exist"
+                   << "or is unreadable:" << scriptPath;
+        return false;
+    }
+
+    // Not fatal if we can't checksum but still warn about it.
+    quint16 scriptChecksum = 0;
+    bool scriptChecksumGood = checksumFile(scriptPath, &scriptChecksum);
+    if (!scriptChecksumGood) {
+        qWarning() << "ControllerManager::importScript could not checksum file:"
+                   << scriptPath;
+    }
+
+    // The name we will save this file as in our local script repository. The
+    // conflict resolution logic below will mutate this variable if the name is
+    // already taken.
+    QString scriptFileName = script.fileName();
+
+    // For a file like "myfile.foo.bar.js", scriptBaseName is "myfile.foo.bar"
+    // and scriptSuffix is "js".
+    QString scriptBaseName = script.completeBaseName();
+    QString scriptSuffix = script.suffix();
+    int conflictNumber = 1;
+
+    // This script exists.
+    while (userPresets.exists(scriptFileName)) {
+        // If the two files are identical. We're done.
+        quint16 localScriptChecksum = 0;
+        if (checksumFile(userPresets.filePath(scriptFileName), &localScriptChecksum) &&
+            scriptChecksumGood && scriptChecksum == localScriptChecksum) {
+            *newScriptFileName = scriptFileName;
+            qDebug() << "ControllerManager::importScript" << scriptFileName
+                     << "had identical checksum to a file of the same name."
+                     << "Skipping import.";
+            return true;
+        }
+
+        // Otherwise, we need to rename the file to a non-conflicting
+        // name. Insert a .X where X is a counter that we count up until we find
+        // a filename that does not exist.
+        scriptFileName = QString("%1.%2.%3").arg(
+            scriptBaseName,
+            QString::number(conflictNumber++),
+            scriptSuffix);
+    }
+
+    QString destinationPath = userPresets.filePath(scriptFileName);
+    if (!scriptFile.copy(destinationPath)) {
+        qDebug() << "ControllerManager::importScript could not copy script to"
+                 << "local preset path:" << destinationPath;
+        return false;
+    }
+
+    *newScriptFileName = scriptFileName;
+    return true;
 }

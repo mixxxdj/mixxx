@@ -21,12 +21,13 @@ class DlgPrefModplug : public DlgPreferencePage {
 
   public slots:
     /** Apply changes to widget */
-   void slotApply();
-   void slotUpdate();
+    void slotApply();
+    void slotUpdate();
+    void slotResetToDefaults();
 
-   void loadSettings();
-   void saveSettings();
-   void applySettings();
+    void loadSettings();
+    void saveSettings();
+    void applySettings();
 
   private:
     Ui::DlgPrefModplug* m_pUi;

@@ -21,7 +21,7 @@
 // this also includes vorbis/codec.h
 #include <vorbis/vorbisenc.h>
 
-#include "defs.h"
+#include "util/types.h"
 #include "encoder/encoder.h"
 #include "trackinfoobject.h"
 

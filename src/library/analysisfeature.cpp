@@ -22,7 +22,9 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         LibraryFeature(parent),
         m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),
-        m_pAnalyserQueue(NULL) {
+        m_pAnalyserQueue(NULL),
+        m_iOldBpmEnabled(0),
+        m_pAnalysisView(NULL) {
 }
 
 AnalysisFeature::~AnalysisFeature() {

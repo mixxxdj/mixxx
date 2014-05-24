@@ -24,35 +24,27 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QMutex>
-#include <QVector>
 #include <QSharedPointer>
 #include <QWeakPointer>
+#include <QString>
+#include <QDomNode>
 
-#include "defs.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "proto/keys.pb.h"
 #include "library/dao/cue.h"
 #include "util/sandbox.h"
 
-class QString;
-class QDomElement;
-class QDomDocument;
-class QDomNode;
-class ControlObject;
-class TrackPlaylist;
 class Cue;
 class Waveform;
 
 class TrackInfoObject;
-
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
-class TrackInfoObject : public QObject
-{
+class TrackInfoObject : public QObject {
     Q_OBJECT
-public:
+  public:
     // Initialize a new track with the filename.
     TrackInfoObject(const QString& file="",
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
@@ -293,9 +285,11 @@ public:
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);
 
-    // Method for parsing information from knowing only the file name.  It
+    // Methods for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
     void parseFilename();
+    void parseArtist();
+    void parseTitle();
 
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.

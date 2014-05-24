@@ -4,6 +4,7 @@
 #include "waveform/waveform.h"
 
 #include "waveform/waveformwidgetfactory.h"
+#include "util/math.h"
 
 #include <qgl.h>
 
@@ -62,8 +63,8 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
+    float allGain(1.0);
+    getGains(&allGain, NULL, NULL, NULL);
 
     float maxAll[2];
 
@@ -77,7 +78,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+        glScalef(1.f, allGain, 1.f);
 
         glLineWidth(1.0);
         glDisable(GL_LINE_SMOOTH);
@@ -126,7 +127,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+        glScalef(1.f, allGain, 1.f);
 
         glLineWidth(1.1);
         glEnable(GL_LINE_SMOOTH);

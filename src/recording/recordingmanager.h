@@ -52,10 +52,12 @@ class RecordingManager : public QObject
     // Emits the cumulative number of bytes currently recorded.
     void bytesRecorded(long);
     void isRecording(bool);
+    void durationRecorded(QString);
 
   public slots:
     void slotIsRecording(bool);
     void slotBytesRecorded(int);
+    void slotDurationRecorded(QString);
 
   private slots:
     void slotSetRecording(bool recording);
@@ -80,9 +82,10 @@ class RecordingManager : public QObject
 
     bool m_bRecording;
     // will be a very large number
-    quint64 m_iNumberOfBytesRecored;
+    quint64 m_iNumberOfBytesRecorded;
     quint64 m_split_size;
     int m_iNumberSplits;
+    QString m_durationRecorded;
 };
 
 #endif // RECORDINGMANAGER_H

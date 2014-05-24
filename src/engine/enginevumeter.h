@@ -37,22 +37,22 @@ class EngineVuMeter : public EngineObject {
     EngineVuMeter(const char*);
     virtual ~EngineVuMeter();
 
-    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    virtual void process(CSAMPLE* pInOut, const int iBufferSize);
 
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
     void reset();
 
   private:
-    void doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume);
+    void doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume);
 
     ControlPotmeter* m_ctrlVuMeter;
     ControlPotmeter* m_ctrlVuMeterL;
     ControlPotmeter* m_ctrlVuMeterR;
-    FLOAT_TYPE m_fRMSvolumeL;
-    FLOAT_TYPE m_fRMSvolumeSumL;
-    FLOAT_TYPE m_fRMSvolumeR;
-    FLOAT_TYPE m_fRMSvolumeSumR;
+    CSAMPLE m_fRMSvolumeL;
+    CSAMPLE m_fRMSvolumeSumL;
+    CSAMPLE m_fRMSvolumeR;
+    CSAMPLE m_fRMSvolumeSumR;
     int m_iSamplesCalculated;
 
     ControlPotmeter* m_ctrlPeakIndicator;

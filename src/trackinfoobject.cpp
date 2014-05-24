@@ -35,6 +35,7 @@
 #include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 #include "util/time.h"
+#include "util/math.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,
@@ -88,6 +89,8 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
     m_bHeaderParsed = false;
+    m_bBpmLock = false;
+    m_Rating = 0;
 
     // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
     // ignore those. Tracks will get a new ID from the database.
@@ -167,10 +170,14 @@ void TrackInfoObject::parse() {
         // TODO(rryan): Should we re-visit this decision?
         if (!(pProxiedSoundSource->getArtist().isEmpty())) {
             setArtist(pProxiedSoundSource->getArtist());
+        } else {
+            parseArtist();
         }
 
         if (!(pProxiedSoundSource->getTitle().isEmpty())) {
             setTitle(pProxiedSoundSource->getTitle());
+        } else {
+            parseTitle();
         }
 
         if (!(pProxiedSoundSource->getType().isEmpty())) {
@@ -204,31 +211,41 @@ void TrackInfoObject::parse() {
     }
 }
 
-
-void TrackInfoObject::parseFilename() {
+void TrackInfoObject::parseArtist() {
     QMutexLocker lock(&m_qMutex);
     QString filename = m_fileInfo.fileName();
+    filename = filename.replace("_", " ");
+    if (filename.count('-') == 1) {
+        m_sArtist = filename.section('-', 0, 0).trimmed();
+    }
+    setDirty(true);
+}
+
+void TrackInfoObject::parseTitle() {
+    QMutexLocker lock(&m_qMutex);
+    QString filename = m_fileInfo.fileName();
+    filename = filename.replace("_", " ");
+    if (filename.count('-') == 1) {
+        m_sTitle = filename.section('-', 1, 1).trimmed();
+        // Remove the file type from m_sTitle
+        m_sTitle = m_sTitle.section('.', 0, -2).trimmed();
+    } else {
+        m_sTitle = filename.section('.', 0, -2).trimmed();
+    }
+    setDirty(true);
+}
+
+void TrackInfoObject::parseFilename() {
     // If the file name has the following form: "Artist - Title.type", extract
     // Artist, Title and type fields
-    if (filename.count('-') == 1) {
-        m_sArtist = filename.section('-', 0, 0).trimmed(); // Get the first part
-        m_sTitle = filename.section('-', 1, 1); // Get the second part
-        m_sTitle = m_sTitle.section('.', 0, -2).trimmed(); // Remove the ending
-        if (m_sTitle.isEmpty()) {
-            m_sTitle = filename.section('.', 0, -2).trimmed();
-        }
-    } else {
-        m_sTitle = filename.section('.', 0, -2).trimmed(); // Remove the ending
-    }
-
-    // Replace underscores with spaces for Artist and Title
-    m_sArtist = m_sArtist.replace("_", " ");
-    m_sTitle = m_sTitle.replace("_", " ");
+    parseArtist();
+    parseTitle();
 
     // Add no comment
     m_sComment.clear();
 
     // Find the type
+    QString filename = m_fileInfo.fileName();
     m_sType = filename.section(".",-1).toLower().trimmed();
     setDirty(true);
 }

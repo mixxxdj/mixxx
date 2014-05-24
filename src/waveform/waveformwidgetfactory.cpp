@@ -9,10 +9,11 @@
 #include "waveform/waveformwidgetfactory.h"
 
 #include "controlpotmeter.h"
-#include "defs.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
+#include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
@@ -26,6 +27,7 @@
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
+#include "util/math.h"
 
 ///////////////////////////////////////////
 
@@ -65,7 +67,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLShaderAvailable(false),
         m_vsyncThread(NULL),
         m_frameCnt(0),
-        m_actualFrameRate(0) {
+        m_actualFrameRate(0),
+        m_vSyncType(0) {
 
     m_visualGain[All] = 1.5;
     m_visualGain[Low] = 1.0;
@@ -263,7 +266,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 }
 
 void WaveformWidgetFactory::setFrameRate(int frameRate) {
-    m_frameRate = math_min(120, math_max(1, frameRate));
+    m_frameRate = math_clamp(frameRate, 1, 120);
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
@@ -310,7 +313,7 @@ bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
-    if (handleIndex < 0 && handleIndex > (int)m_waveformWidgetHandles.size()) {
+    if (handleIndex < 0 || handleIndex >= (int)m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);
@@ -358,8 +361,8 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
 }
 
 void WaveformWidgetFactory::setDefaultZoom(int zoom) {
-    m_defaultZoom = math_max(WaveformWidgetRenderer::s_waveformMinZoom,
-                             math_min(zoom, WaveformWidgetRenderer::s_waveformMaxZoom));
+    m_defaultZoom = math_clamp(zoom, WaveformWidgetRenderer::s_waveformMinZoom,
+                               WaveformWidgetRenderer::s_waveformMaxZoom);
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
@@ -532,6 +535,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
             developerOnly = HSVWaveformWidget::developerOnly();
             break;
+        case WaveformWidgetType::RGBWaveform:
+            widgetName = RGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = RGBWaveformWidget::useOpenGl();
+            useOpenGLShaders = RGBWaveformWidget::useOpenGLShaders();
+            developerOnly = RGBWaveformWidget::developerOnly();
+            break;
         case WaveformWidgetType::QtSimpleWaveform:
             widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
@@ -567,6 +576,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = GLVSyncTestWidget::useOpenGl();
             useOpenGLShaders = GLVSyncTestWidget::useOpenGLShaders();
             developerOnly = GLVSyncTestWidget::developerOnly();
+            break;
+        case WaveformWidgetType::GLRGBWaveform:
+            widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLRGBWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
         default:
             continue;
@@ -604,12 +619,19 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
     WaveformWidgetAbstract* widget = NULL;
     if (viewer) {
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            type = WaveformWidgetType::EmptyWaveform;
+        }
+
         switch(type) {
         case WaveformWidgetType::SoftwareWaveform:
             widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::HSVWaveform:
             widget = new HSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::RGBWaveform:
+            widget = new RGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::QtSimpleWaveform:
             widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
@@ -622,6 +644,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::GLWaveform:
             widget = new GLWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLRGBWaveform:
+            widget = new GLRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::GLSLWaveform:
             widget = new GLSLWaveformWidget(viewer->getGroup(), viewer);

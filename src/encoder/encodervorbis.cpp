@@ -158,12 +158,15 @@ void EncoderVorbis::initStream() {
     // add comment
     vorbis_comment_init(&m_vcomment);
     vorbis_comment_add_tag(&m_vcomment, "ENCODER", "mixxx/libvorbis");
-    if (m_metaDataArtist != NULL)
+    if (m_metaDataArtist != NULL) {
         vorbis_comment_add_tag(&m_vcomment, "ARTIST", m_metaDataArtist);
-    if (m_metaDataTitle != NULL)
+    }
+    if (m_metaDataTitle != NULL) {
         vorbis_comment_add_tag(&m_vcomment, "TITLE", m_metaDataTitle);
-        if (m_metaDataAlbum != NULL)
+    }
+    if (m_metaDataAlbum != NULL) {
         vorbis_comment_add_tag(&m_vcomment, "ALBUM", m_metaDataAlbum);
+    }
 
     // set up the vorbis headers
     ogg_packet headerInit;

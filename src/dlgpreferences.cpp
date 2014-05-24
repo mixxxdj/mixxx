@@ -44,6 +44,8 @@
 #include "controllers/dlgprefcontrollers.h"
 #include "dlgpreflibrary.h"
 #include "dlgprefcontrols.h"
+#include "dlgprefwaveform.h"
+#include "dlgprefautodj.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
@@ -64,6 +66,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
 #endif
+
+    connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
+            this, SLOT(slotButtonPressed(QAbstractButton*)));
+
 
     createIcons();
 
@@ -88,6 +94,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wlibrary);
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
     addPageWidget(m_wcontrols);
+    m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig);
+    addPageWidget(m_wwaveform);
+    m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
+    addPageWidget(m_wautodj);
     m_weq = new DlgPrefEQ(this, m_pConfig);
     addPageWidget(m_weq);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
@@ -157,6 +167,18 @@ void DlgPreferences::createIcons() {
     m_pControlsButton->setText(0, tr("Interface"));
     m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pControlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pWaveformButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pWaveformButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_waveforms.png"));
+    m_pWaveformButton->setText(0, tr("Waveforms"));
+    m_pWaveformButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pWaveformButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_autodj.png"));
+    m_pAutoDJButton->setText(0, tr("Auto DJ"));
+    m_pAutoDJButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pAutoDJButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pEqButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.png"));
@@ -245,6 +267,10 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wlibrary);
     } else if (current == m_pControlsButton) {
         switchToPage(m_wcontrols);
+    } else if (current == m_pWaveformButton) {
+        switchToPage(m_wwaveform);
+    } else if (current == m_pAutoDJButton) {
+        switchToPage(m_wautodj);
     } else if (current == m_pEqButton) {
         switchToPage(m_weq);
     } else if (current == m_pCrossfaderButton) {
@@ -273,7 +299,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wmodplug);
 #endif
     } else if (m_wcontrollers->handleTreeItemClick(current)) {
-        // Do nothing. m_wcontrolles handled this click.
+        // Do nothing. m_wcontrollers handled this click.
     }
 }
 
@@ -332,10 +358,37 @@ void DlgPreferences::onShow() {
                 m_geometry[2].toInt(),  // width
                 m_geometry[3].toInt()); // heigth
 
-    //
     // Notify children that we are about to show.
-    //
     emit(showDlg());
+}
+
+void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
+    QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(pButton);
+    DlgPreferencePage* pCurrentPage = currentPage();
+    switch (role) {
+        case QDialogButtonBox::ResetRole:
+            // Only reset to defaults on the current page.
+            if (pCurrentPage != NULL) {
+                pCurrentPage->slotResetToDefaults();
+            }
+            break;
+        case QDialogButtonBox::ApplyRole:
+            // Only apply settings on the current page.
+            if (pCurrentPage != NULL) {
+                pCurrentPage->slotApply();
+            }
+            break;
+        case QDialogButtonBox::AcceptRole:
+            emit(applyPreferences());
+            accept();
+            break;
+        case QDialogButtonBox::RejectRole:
+            emit(cancelPreferences());
+            reject();
+            break;
+        default:
+            break;
+    }
 }
 
 void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
@@ -345,10 +398,13 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
             pWidget, SLOT(slotHide()));
     connect(this, SIGNAL(showDlg()),
             pWidget, SLOT(slotUpdate()));
-    connect(buttonBox, SIGNAL(accepted()),
+
+    connect(this, SIGNAL(applyPreferences()),
             pWidget, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(rejected()),
+    connect(this, SIGNAL(cancelPreferences()),
             pWidget, SLOT(slotCancel()));
+    connect(this, SIGNAL(resetToDefaults()),
+            pWidget, SLOT(slotResetToDefaults()));
 
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
@@ -362,8 +418,27 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
 
 }
 
+DlgPreferencePage* DlgPreferences::currentPage() {
+    QObject* pObject = pagesWidget->currentWidget();
+    for (int i = 0; i < 2; ++i) {
+        if (pObject == NULL) {
+            return NULL;
+        }
+        QObjectList children = pObject->children();
+        if (children.isEmpty()) {
+            return NULL;
+        }
+        pObject = children[0];
+    }
+    return dynamic_cast<DlgPreferencePage*>(pObject);
+}
+
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
     pagesWidget->removeWidget(pWidget->parentWidget()->parentWidget());
+}
+
+void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
+    contentsTreeWidget->expandItem(pItem);
 }
 
 void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {

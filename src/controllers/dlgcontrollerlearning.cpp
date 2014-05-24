@@ -33,7 +33,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     setupUi(this);
     labelMappedTo->setText("");
 
-    QString helpTitle(tr("Click anywhere in Mixxx or Choose a control to Learn"));
+    QString helpTitle(tr("Click anywhere in Mixxx or choose a control to learn"));
     QString helpBody(tr("You can click on any button, slider, or knob in Mixxx "
                         "to teach it that control.  You can also type in the "
                         "box to search for a control by name, or click the "
@@ -169,6 +169,10 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
 }
 
 void DlgControllerLearning::slotChooseControlPressed() {
+    // If we learned messages, commit them.
+    if (m_messagesLearned) {
+        commitMapping();
+    }
     resetWizard();
     stackedWidget->setCurrentWidget(page1Choose);
     startListening();
