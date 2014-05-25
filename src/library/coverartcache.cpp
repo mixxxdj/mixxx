@@ -38,7 +38,7 @@ void CoverArtCache::requestPixmap(QString location) {
     if (m_keys.contains(location)) {
         QPixmap pixmap;
         if (QPixmapCache::find(location, &pixmap)) {
-            emit(responsePixmap(location, pixmap));
+            emit(pixmapFound(location, pixmap));
             return;
         } else {
             m_keys.removeOne(location);
@@ -64,10 +64,12 @@ void CoverArtCache::imageLoaded() {
         pixmap = QPixmap::fromImage(image);
         if (QPixmapCache::insert(location, pixmap)) {
             m_keys.append(location);
+            emit(pixmapFound(location, pixmap));
+            return;
         }
     }
 
-    emit(responsePixmap(location, pixmap));
+    emit(pixmapNotFound(location));
 }
 
 // This method is executed in a separate thread
