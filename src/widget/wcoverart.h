@@ -49,7 +49,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_iconShow;
     QCursor m_zoomCursor;
 
-    QStringList m_requestedLocations;
+    QString m_lastRequestedLocation;
 };
 
 #endif // WCOVERART_H

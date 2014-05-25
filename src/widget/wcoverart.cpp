@@ -76,15 +76,12 @@ void WCoverArt::slotHideCoverArt() {
 }
 
 void WCoverArt::slotResponsePixmap(QString location, QPixmap pixmap) {
-    if (m_requestedLocations.contains(location)) {
-        if (!location.isEmpty() && !pixmap.isNull()) {
-            m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
-            m_currentCover = pixmap;
-            m_currentScaledCover = scaledCoverArt(m_currentCover);
-            m_bDefaultCover = false;
-            update();
-        }
-        m_requestedLocations.removeOne(location);
+    if (m_lastRequestedLocation == location && !pixmap.isNull()) {
+        m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
+        m_currentCover = pixmap;
+        m_currentScaledCover = scaledCoverArt(m_currentCover);
+        m_bDefaultCover = false;
+        update();
     }
 }
 
@@ -95,9 +92,9 @@ void WCoverArt::slotLoadCoverArt(const QString& location) {
     m_bDefaultCover = true;
     update();
 
-    if (!m_requestedLocations.contains(location) && !location.isEmpty()) {
-        m_requestedLocations.append(location);
+    if (!location.isEmpty()) {
         CoverArtCache::getInstance()->requestPixmap(location);
+        m_lastRequestedLocation = location;
     }
 }
 
