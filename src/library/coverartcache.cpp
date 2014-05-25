@@ -52,13 +52,17 @@ void CoverArtCache::requestPixmap(QString location) {
                                                   &CoverArtCache::loadImage,
                                                   location);
     m_runningLocations.append(location);
-    connect(&m_future_watcher, SIGNAL(finished()),
-            this, SLOT(imageLoaded()));
-    m_future_watcher.setFuture(future);
+
+    QFutureWatcher<coverPair>* watcher = new QFutureWatcher<coverPair>(this);
+    connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
+    watcher->setFuture(future);
 }
 
 void CoverArtCache::imageLoaded() {
-    coverPair p = m_future_watcher.result();
+    QFutureWatcher<coverPair>* watcher;
+    watcher = reinterpret_cast<QFutureWatcher<coverPair>*>(sender());
+
+    coverPair p = watcher->result();
     QString location = p.first;
     QImage image = p.second;
     QPixmap pixmap;
