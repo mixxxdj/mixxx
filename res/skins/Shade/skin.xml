@@ -65,7 +65,7 @@
 			<attribute config_key="[Spinny1],show_spinny">1</attribute>
 			<attribute config_key="[Spinny2],show_spinny">1</attribute>
 			<attribute config_key="[Samplers],show_samplers">0</attribute>
-			<attribute config_key="[VinylControl],show_vinylcontrol">0</attribute>
+			<attribute config_key="[EffectRack1],show">0</attribute>
 			<attribute config_key="[Microphone],show_microphone">0</attribute>
 			<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 		</attributes>
@@ -161,7 +161,27 @@
 						<BindProperty>visible</BindProperty>
 					</Connection>
 				</WidgetGroup>
-	
+				
+				
+				<!-- EffectRack1 sub-widget -->
+				<WidgetGroup>
+					<Size>i,m</Size>
+					<Layout>horizontal</Layout>
+					<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
+					<Children>
+  						<Template src="skin:effectunit.xml">
+							<SetVariable name="effectunitnum">1</SetVariable>
+						</Template>	
+						<Template src="skin:effectunit.xml">
+							<SetVariable name="effectunitnum">2</SetVariable>
+						</Template>
+					</Children>
+					<Connection>
+						<ConfigKey>[EffectRack1],show</ConfigKey>
+						<BindProperty>visible</BindProperty>
+					</Connection>
+				</WidgetGroup>
+
 				<!--
 				**********************************************
 				Library / Preview Deck / Search / Tree view

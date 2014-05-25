@@ -72,22 +72,22 @@
 						Comment out this tabs that no broken widget are displayed to the user
 						-->
 						<PushButton>
-							<TooltipId>show_vinylcontrol</TooltipId>
+							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>tab_vinylcontrol.png</Pressed>
-								<Unpressed>tab_vinylcontrol.png</Unpressed>
+								<Pressed>tab_effectrack.png</Pressed>
+								<Unpressed>tab_effectrack.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>tab_vinylcontrol_over.png</Pressed>
-								<Unpressed>tab_vinylcontrol_over.png</Unpressed>
+								<Pressed>tab_effectrack_over.png</Pressed>
+								<Unpressed>tab_effectrack_over.png</Unpressed>
 							</State>
 							<Pos>160,77</Pos>
 							<Connection>
-								<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+								<ConfigKey>[EffectRack1],show</ConfigKey>
 							</Connection>
 						</PushButton>
 	

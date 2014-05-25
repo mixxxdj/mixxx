@@ -280,7 +280,7 @@
 												</PushButton>
 											</Children>
 											<Connection>
-												<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+												<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_enabled</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
