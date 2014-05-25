@@ -57,23 +57,20 @@ void CoverArtCache::requestPixmap(QString location) {
 void CoverArtCache::imageLoaded() {
     coverPair p = m_future_watcher.result();
     QString location = p.first;
+    QImage image = p.second;
+    QPixmap pixmap;
 
-    if (location.isEmpty()) {
-        return; // QImage not loaded
+    if (!image.isNull()) {
+        pixmap = QPixmap::fromImage(image);
+        QPixmapCache::Key key = QPixmapCache::insert(pixmap);
+        m_keyHash.insert(location, key);
     }
 
-    QPixmap pixmap = QPixmap::fromImage(p.second);
-    QPixmapCache::Key key = QPixmapCache::insert(pixmap);
-    m_keyHash.insert(location, key);
     emit(pixmapFound(location, pixmap));
 }
 
 // This method is executed in a separate thread
 // via QtConcurrent::run
 CoverArtCache::coverPair CoverArtCache::loadImage(QString location) {
-    QFile file(location);
-    if (!file.exists()) {
-        location = "";
-    }
     return coverPair(location, QImage(location));
 }
