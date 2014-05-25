@@ -35,20 +35,23 @@ void CoverArtCache::destroyInstance() {
 }
 
 void CoverArtCache::requestPixmap(QString location) {
-    if (m_keys.contains(location)) {
-        QPixmap pixmap;
-        if (QPixmapCache::find(location, &pixmap)) {
-            emit(pixmapFound(location, pixmap));
-            return;
-        } else {
-            m_keys.removeOne(location);
-        }
+    // keep a list of locations for which a future is currently running
+    // to avoid loading the same picture again while we are loading it
+    if (m_runningLocations.contains(location)) {
+        return;
+    }
+
+    QPixmap pixmap;
+    if (QPixmapCache::find(location, &pixmap)) {
+        emit(pixmapFound(location, pixmap));
+        return;
     }
 
     // load image from disk cache in a worker thread
     QFuture<coverPair> future = QtConcurrent::run(this,
                                                   &CoverArtCache::loadImage,
                                                   location);
+    m_runningLocations.append(location);
     connect(&m_future_watcher, SIGNAL(finished()),
             this, SLOT(imageLoaded()));
     m_future_watcher.setFuture(future);
@@ -60,16 +63,21 @@ void CoverArtCache::imageLoaded() {
     QImage image = p.second;
     QPixmap pixmap;
 
+    bool loaded = false;
     if (!image.isNull()) {
         pixmap = QPixmap::fromImage(image);
         if (QPixmapCache::insert(location, pixmap)) {
-            m_keys.append(location);
-            emit(pixmapFound(location, pixmap));
-            return;
+            loaded = true;
         }
     }
 
-    emit(pixmapNotFound(location));
+    if (loaded) {
+        emit(pixmapFound(location, pixmap));
+    } else {
+        emit(pixmapNotFound(location));
+    }
+
+    m_runningLocations.removeOne(location);
 }
 
 // This method is executed in a separate thread

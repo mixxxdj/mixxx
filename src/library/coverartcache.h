@@ -28,7 +28,7 @@ class CoverArtCache : public QObject
 
     static CoverArtCache* m_instance;
     typedef QPair<QString, QImage> coverPair;
-    QStringList m_keys;
+    QStringList m_runningLocations;
 
     QFutureWatcher<coverPair> m_future_watcher;
     coverPair loadImage(QString location);
