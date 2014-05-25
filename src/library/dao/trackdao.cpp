@@ -529,6 +529,8 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         //- Albert :)
         Q_ASSERT(trackLocationId >= 0);
 
+        m_coverArtDao.coverArtScan(pTrack);
+
         bindTrackToLibraryInsert(pTrack, trackLocationId);
 
         if (!m_pQueryLibraryInsert->exec()) {
@@ -543,7 +545,6 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        m_coverArtDao.saveCoverArt(pTrack);
         pTrack->setDirty(false);
     }
     m_tracksAddedSet.insert(trackId);
@@ -1097,6 +1098,10 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     int trackId = pTrack->getId();
     Q_ASSERT(trackId >= 0);
 
+    // mainly if it's a new cover,
+    // it have to be stored before updating the library table
+    int coverArtID = m_coverArtDao.saveCoverLocation(pTrack->getCoverArtLocation());
+
     QSqlQuery query(m_database);
 
     //Update everything but "location", since that's what we identify the track by.
@@ -1121,7 +1126,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
     query.bindValue(":album_artist", pTrack->getAlbumArtist());
-    query.bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArtLocation()));
+    query.bindValue(":cover_art", coverArtID);
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":composer", pTrack->getComposer());
@@ -1201,7 +1206,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
-    m_coverArtDao.saveCoverArt(pTrack);
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
