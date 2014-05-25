@@ -35,13 +35,13 @@ void CoverArtCache::destroyInstance() {
 }
 
 void CoverArtCache::requestPixmap(QString location) {
-    if (m_keyHash.contains(location)) {
+    if (m_keys.contains(location)) {
         QPixmap pixmap;
-        if (QPixmapCache::find(m_keyHash.value(location), &pixmap)) {
+        if (QPixmapCache::find(location, &pixmap)) {
             emit(responsePixmap(location, pixmap));
             return;
         } else {
-            m_keyHash.remove(location);
+            m_keys.removeOne(location);
         }
     }
 
@@ -62,8 +62,9 @@ void CoverArtCache::imageLoaded() {
 
     if (!image.isNull()) {
         pixmap = QPixmap::fromImage(image);
-        QPixmapCache::Key key = QPixmapCache::insert(pixmap);
-        m_keyHash.insert(location, key);
+        if (QPixmapCache::insert(location, pixmap)) {
+            m_keys.append(location);
+        }
     }
 
     emit(responsePixmap(location, pixmap));
