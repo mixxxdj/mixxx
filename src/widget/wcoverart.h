@@ -22,7 +22,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
   public slots:
     void slotHideCoverArt();
     void slotLoadCoverArt(const QString &location);
-    void slotPixmapFound(QString location, QPixmap pixmap);
+    void slotResponsePixmap(QString location, QPixmap pixmap);
 
   protected:
     void paintEvent(QPaintEvent*);

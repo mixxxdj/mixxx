@@ -39,8 +39,8 @@ WCoverArt::WCoverArt(QWidget* parent,
     zoomImg = zoomImg.scaled(24, 24);
     m_zoomCursor = QCursor(zoomImg);
 
-    connect(CoverArtCache::getInstance(), SIGNAL(pixmapFound(QString, QPixmap)),
-            this, SLOT(slotPixmapFound(QString, QPixmap)));
+    connect(CoverArtCache::getInstance(), SIGNAL(responsePixmap(QString, QPixmap)),
+            this, SLOT(slotResponsePixmap(QString, QPixmap)));
 }
 
 WCoverArt::~WCoverArt() {
@@ -75,7 +75,7 @@ void WCoverArt::slotHideCoverArt() {
     setMinimumSize(0, 20);
 }
 
-void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
+void WCoverArt::slotResponsePixmap(QString location, QPixmap pixmap) {
     if (m_requestedLocations.contains(location)) {
         if (!location.isEmpty() && !pixmap.isNull()) {
             m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);

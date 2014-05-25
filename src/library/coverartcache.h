@@ -19,7 +19,7 @@ class CoverArtCache : public QObject
     void imageLoaded();
 
   signals:
-    void pixmapFound(QString location, QPixmap pixmap);
+    void responsePixmap(QString location, QPixmap pixmap);
 
   private:
     CoverArtCache();
