@@ -202,21 +202,10 @@ void TrackInfoObject::parse() {
         setKeyText(pProxiedSoundSource->getKey(),
                    mixxx::track::io::key::FILE_METADATA);
 
-        // store cover art in disk-cache
         QImage image = pProxiedSoundSource->getCoverArt();
-        if (!image.isNull()) {
-            CoverArt* pCoverArt = CoverArt::instance();
-
-            QString coverName = pCoverArt->getDefaultCoverName(
-                                    m_sArtist,
-                                    m_sAlbum,
-                                    m_fileInfo.fileName()
-                                );
-
-            QString coverLocation = pCoverArt->getDefaultCoverLocation(coverName);
-
-            CoverArt::instance()->saveFile(image, coverLocation);
-        }
+        QString coverLocation = CoverArt::instance()->saveEmbeddedCover(
+                                image, getArtist(), getAlbum(), getFilename());
+        setCoverArtLocation(coverLocation);
 
         setHeaderParsed(true);
     } else {
@@ -227,6 +216,22 @@ void TrackInfoObject::parse() {
         // Add basic information derived from the filename:
         parseFilename();
     }
+}
+
+QString TrackInfoObject::parseCoverArt() {
+    const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
+    SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
+
+    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
+
+        QImage image = pProxiedSoundSource->getCoverArt();
+        QString coverLocation = CoverArt::instance()->saveEmbeddedCover(
+                                image, getArtist(), getAlbum(), getFilename());
+        setCoverArtLocation(coverLocation);
+        return coverLocation;
+    }
+    return QString();
 }
 
 void TrackInfoObject::parseArtist() {

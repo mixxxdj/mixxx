@@ -13,13 +13,14 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
 
     QString getStoragePath() const;
     QString getDefaultCoverLocation(QString coverArtName);
-    QString getDefaultCoverName(QString artist,
-                                    QString album,
-                                    QString filename);
+    QString getDefaultCoverLocation(TrackPointer pTrack);
+    QString getDefaultCoverName(QString artist, QString album, QString filename);
 
     bool deleteFile(const QString& location);
     bool saveFile(QImage cover, QString location);
-    QString searchCoverArtFile(TrackInfoObject* pTrack);
+    QString saveEmbeddedCover(QImage cover, QString artist,
+                           QString album, QString filename);
+    QString searchCoverArtFile(TrackPointer pTrack);
 
   protected:
     CoverArt();

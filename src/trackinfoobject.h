@@ -62,6 +62,10 @@ class TrackInfoObject : public QObject {
     // artist and title information from the filename.
     void parse();
 
+    // this method will parse the information stored in the sound file
+    // just to extract the embedded cover art
+    QString parseCoverArt();
+
     // Returns the duration in seconds
     int getDuration() const;
     // Set duration in seconds
@@ -148,7 +152,7 @@ class TrackInfoObject : public QObject {
     QString getInfo() const;
     // Set Cover Art Location
     void setCoverArtLocation(const QString &location);
-    // Get Cover Art
+    // Get Cover Art Location
     QString getCoverArtLocation() const;
 
     QDateTime getDateAdded() const;
