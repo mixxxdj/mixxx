@@ -107,6 +107,7 @@ bool TrackCollection::checkForTables() {
     m_crateDao.initialize();
     m_cueDao.initialize();
     m_directoryDao.initialize();
+    m_coverArtDao.initialize();
 
     return true;
 }
