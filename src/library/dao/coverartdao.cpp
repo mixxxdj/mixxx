@@ -2,8 +2,9 @@
 #include <QtDebug>
 #include <QThread>
 
-#include "library/dao/coverartdao.h"
+#include "library/coverartcache.h"
 #include "library/queryutil.h"
+#include "library/dao/coverartdao.h"
 
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database)
         : m_database(database),
@@ -14,25 +15,27 @@ CoverArtDAO::~CoverArtDAO() {
 }
 
 void CoverArtDAO::initialize() {
+    connect(CoverArtCache::getInstance(), SIGNAL(pixmapNotFound(TrackPointer)),
+            this, SLOT(slotCoverArtScan(TrackPointer)), Qt::UniqueConnection);
+
     qDebug() << "CoverArtDAO::initialize"
              << QThread::currentThread()
              << m_database.connectionName();
 }
 
-int CoverArtDAO::saveCoverLocation(QString location) {
-    if (location.isEmpty()) {
+int CoverArtDAO::saveCoverLocation(QString coverLocation) {
+    if (coverLocation.isEmpty()) {
         return 0;
     }
 
-    int coverId = getCoverArtID(location);
-    // new cover
-    if (!coverId) {
+    int coverId = getCoverArtId(coverLocation);
+    if (!coverId) { // new cover
         QSqlQuery query(m_database);
 
         query.prepare(QString(
             "INSERT INTO cover_art (location) "
             "VALUES (:location)"));
-        query.bindValue(":location", location);
+        query.bindValue(":location", coverLocation);
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "couldn't save new cover art";
@@ -45,13 +48,26 @@ int CoverArtDAO::saveCoverLocation(QString location) {
     return coverId;
 }
 
-void CoverArtDAO::coverArtScan(TrackInfoObject* pTrack) {
-    // search cover art file IN DISK
-    QString coverArtLocation = m_pCoverArt->searchCoverArtFile(pTrack);
+void CoverArtDAO::slotCoverArtScan(TrackPointer pTrack) {
+    QString coverLocation = pTrack->getCoverArtLocation();
 
-    if (pTrack->getCoverArtLocation() != coverArtLocation) {
-        saveCoverLocation(coverArtLocation);
-        pTrack->setCoverArtLocation(coverArtLocation);
+    // handling cases when the file was externally removed from disk-cache
+    bool removedFromDisk = false;
+    if (!coverLocation.isEmpty()) {
+        if (!QFile::exists(coverLocation)) {
+            removedFromDisk = true;
+        }
+    }
+
+    // if we found something, it'll return an existing and valid location
+    QString newCoverLocation = m_pCoverArt->searchCoverArtFile(pTrack);
+
+    if (coverLocation != newCoverLocation) {
+        saveCoverLocation(newCoverLocation);
+        pTrack->setCoverArtLocation(newCoverLocation);
+        CoverArtCache::getInstance()->requestPixmap(pTrack);
+    } else if (removedFromDisk) {
+        CoverArtCache::getInstance()->requestPixmap(pTrack);
     }
 }
 
@@ -94,13 +110,17 @@ bool CoverArtDAO::deleteUnusedCoverArts() {
     return true;
 }
 
-int CoverArtDAO::getCoverArtID(QString location) {
+int CoverArtDAO::getCoverArtId(QString coverLocation) {
+    if (coverLocation.isEmpty()) {
+        return 0;
+    }
+
     QSqlQuery query(m_database);
 
     query.prepare(QString(
         "SELECT id FROM cover_art "
         "WHERE location = :location"));
-    query.bindValue(":location", location);
+    query.bindValue(":location", coverLocation);
 
     if (query.exec()) {
         if (query.next()) {

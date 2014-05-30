@@ -19,12 +19,14 @@ class CoverArtDAO : public QObject, public virtual DAO {
 
     bool deleteCoverArt(const int coverId);
     bool deleteUnusedCoverArts();
-    int getCoverArtID(QString location);
+    int getCoverArtId(QString coverLocation);
     QString getCoverArtLocation(int id);
-    int saveCoverLocation(QString location);
-    void coverArtScan(TrackInfoObject*);
+    int saveCoverLocation(QString coverLocation);
 
-   private:
+  private slots:
+    void slotCoverArtScan(TrackPointer pTrack);
+
+  private:
     QSqlDatabase& m_database;
     CoverArt* m_pCoverArt;
 };

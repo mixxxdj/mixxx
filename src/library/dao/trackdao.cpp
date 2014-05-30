@@ -302,7 +302,6 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":title", pTrack->getTitle());
     m_pQueryLibraryInsert->bindValue(":album", pTrack->getAlbum());
     m_pQueryLibraryInsert->bindValue(":album_artist", pTrack->getAlbumArtist());
-    m_pQueryLibraryInsert->bindValue(":cover_art", m_coverArtDao.getCoverArtID(pTrack->getCoverArtLocation()));
     m_pQueryLibraryInsert->bindValue(":year", pTrack->getYear());
     m_pQueryLibraryInsert->bindValue(":genre", pTrack->getGenre());
     m_pQueryLibraryInsert->bindValue(":composer", pTrack->getComposer());
@@ -319,6 +318,9 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
+
+    int coverArtId = m_coverArtDao.saveCoverLocation(pTrack->getCoverArtLocation());
+    m_pQueryLibraryInsert->bindValue(":cover_art", coverArtId);
 
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
@@ -528,8 +530,6 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         //location from the same table. "It shouldn't happen"... unless I screwed up
         //- Albert :)
         Q_ASSERT(trackLocationId >= 0);
-
-        m_coverArtDao.coverArtScan(pTrack);
 
         bindTrackToLibraryInsert(pTrack, trackLocationId);
 
@@ -1107,8 +1107,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
-		  "title=:title, album=:album, "
-		  "album_artist=:album_artist, cover_art=:cover_art, "
+                  "title=:title, album=:album, "
+                  "album_artist=:album_artist, cover_art=:cover_art, "
                   "year=:year, genre=:genre, composer=:composer, "
                   "grouping=:grouping, filetype=:filetype, "
                   "tracknumber=:tracknumber, comment=:comment, url=:url, "
