@@ -12,6 +12,7 @@ CoverArtDAO::CoverArtDAO(QSqlDatabase& database)
 }
 
 CoverArtDAO::~CoverArtDAO() {
+    deleteUnusedCoverArts();
 }
 
 void CoverArtDAO::initialize() {
