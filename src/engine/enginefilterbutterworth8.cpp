@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QtDebug>
 #include "sampleutil.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilter.h"
@@ -166,26 +167,26 @@ void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1) {
 void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
                                           CSAMPLE* pOutput,
                                           const int iBufferSize) {
+    static int count = 0;
+    count++;
+    qDebug() << "number of low processes: " << count << endl;
+    CSAMPLE tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
-    }
-
-
-    if (m_doRamping) {
-        CSAMPLE *pOldOutput = new CSAMPLE[iBufferSize];
-        for (int i = 0; i < iBufferSize; i += 2) {
-            pOldOutput[i] = _processLowpass(m_oldCoef, m_oldBuf1, pIn[i]);
-            pOldOutput[i+1] = _processLowpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+        if (m_doRamping) {
+            tmp1 = _processLowpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processLowpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
         }
-
-        SampleUtil::linearCrossfadeBuffers(pOutput, pOldOutput,
-                                           pOutput, iBufferSize);
-
-
-        m_doRamping = false;
-        delete[] pOldOutput;
     }
+    m_doRamping = false;
 }
 
 
@@ -212,25 +213,30 @@ void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
 void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
                                            CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    for (int i=0; i < iBufferSize; i += 2) {
+    static int count = 0;
+    count++;
+    qDebug() << "number of band processes: " << count << endl;
+    CSAMPLE tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+    for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
         if(pOutput[i] != pOutput[i])    //Check for NaN
             pOutput[i] = 0;
         if(pOutput[i+1] != pOutput[i+1])    //Check for NaN
             pOutput[i+1] = 0;
-    }
-    if (m_doRamping) {
-        CSAMPLE *pOldOutput = new CSAMPLE[iBufferSize];
-        for (int i = 0; i < iBufferSize; i += 2) {
-            pOldOutput[i] = _processBandpass(m_oldCoef, m_oldBuf1, pIn[i]);
-            pOldOutput[i+1] = _processBandpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+        if (m_doRamping) {
+            tmp1 = _processBandpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processBandpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
         }
-        SampleUtil::linearCrossfadeBuffers(pOutput, pOldOutput,
-                                           pOutput, iBufferSize);
-        m_doRamping = false;
-        delete[] pOldOutput;
     }
+    m_doRamping = false;
 }
 
 
@@ -255,19 +261,24 @@ void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
 void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
                                            CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    for (int i=0; i < iBufferSize; i += 2) {
+    static int count = 0;
+    count++;
+    qDebug() << "number of high processes: " << count << endl;
+    CSAMPLE tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+    for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
-    }
-    if (m_doRamping) {
-        CSAMPLE *pOldOutput = new CSAMPLE[iBufferSize];
-        for (int i = 0; i < iBufferSize; i += 2) {
-            pOldOutput[i] = _processHighpass(m_oldCoef, m_oldBuf1, pIn[i]);
-            pOldOutput[i+1] = _processHighpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+        if (m_doRamping) {
+            tmp1 = _processHighpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processHighpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
         }
-        SampleUtil::linearCrossfadeBuffers(pOutput, pOldOutput,
-                                           pOutput, iBufferSize);
-        m_doRamping = false;
-        delete[] pOldOutput;
     }
+    m_doRamping = false;
 }
