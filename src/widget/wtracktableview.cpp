@@ -129,16 +129,15 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
-    QString coverLocation;
+    TrackPointer pTrack;
     const QModelIndexList indices = selectionModel()->selectedRows();
     if ((indices.size() == 1) && (indices[0].isValid())) {
         TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel && (pTrack = trackModel->getTrack(indices[0]))) {
-            coverLocation = pTrack->getCoverArtLocation();
+        if (trackModel) {
+            pTrack = trackModel->getTrack(indices[0]);
         }
     }
-    emit(loadCoverArt(coverLocation));
+    emit(loadCoverArt(pTrack));
     update();
 }
 

@@ -155,8 +155,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
 
     connect(pTrackTableView, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
-    connect(pTrackTableView, SIGNAL(loadCoverArt(const QString&)),
-            this, SLOT(slotLoadCoverArt(const QString&)));
+    connect(pTrackTableView, SIGNAL(loadCoverArt(TrackPointer)),
+            this, SLOT(slotLoadCoverArt(TrackPointer)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
@@ -244,8 +244,8 @@ void Library::slotScrollValueChanged(int scrollPos) {
     emit(scrollValueChanged(scrollPos));
 }
 
-void Library::slotLoadCoverArt(const QString& location) {
-    emit(loadCoverArt(location));
+void Library::slotLoadCoverArt(TrackPointer pTrack) {
+    emit(loadCoverArt(pTrack));
 }
 
 void Library::onSkinLoadFinished() {

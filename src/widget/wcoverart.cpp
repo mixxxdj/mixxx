@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QPainter>
 
+#include "library/coverart.h"
 #include "library/coverartcache.h"
 #include "wcoverart.h"
 #include "wskincolor.h"
@@ -85,16 +86,20 @@ void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
     }
 }
 
-void WCoverArt::slotLoadCoverArt(const QString& location) {
+void WCoverArt::slotLoadCoverArt(TrackPointer pTrack) {
     m_sCoverTitle = "Cover Art";
     m_currentCover = m_defaultCover;
     m_currentScaledCover = m_defaultCover;
     m_bDefaultCover = true;
     update();
 
-    if (!location.isEmpty()) {
-        CoverArtCache::getInstance()->requestPixmap(location);
-        m_lastRequestedLocation = location;
+    if (!pTrack.isNull()) {
+        m_lastRequestedLocation = pTrack->getCoverArtLocation();
+        if (m_lastRequestedLocation.isEmpty()) {
+            m_lastRequestedLocation = CoverArt::instance()->
+                                      getDefaultCoverLocation(pTrack);
+        }
+        CoverArtCache::getInstance()->requestPixmap(pTrack);
     }
 }
 

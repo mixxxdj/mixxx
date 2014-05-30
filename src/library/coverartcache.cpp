@@ -34,24 +34,34 @@ void CoverArtCache::destroyInstance() {
     s_Mutex.unlock();
 }
 
-void CoverArtCache::requestPixmap(QString location) {
+void CoverArtCache::requestPixmap(TrackPointer pTrack) {
+    if (pTrack.isNull()) {
+        return;
+    }
+
+    QString coverLocation = pTrack->getCoverArtLocation();
+    if (coverLocation.isEmpty()) {
+        emit(pixmapNotFound(pTrack));
+        return;
+    }
+
     // keep a list of locations for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    if (m_runningLocations.contains(location)) {
+    if (m_runningLocations.contains(coverLocation)) {
         return;
     }
 
     QPixmap pixmap;
-    if (QPixmapCache::find(location, &pixmap)) {
-        emit(pixmapFound(location, pixmap));
+    if (QPixmapCache::find(coverLocation, &pixmap)) {
+        emit(pixmapFound(coverLocation, pixmap));
         return;
     }
 
     // load image from disk cache in a worker thread
     QFuture<coverPair> future = QtConcurrent::run(this,
                                                   &CoverArtCache::loadImage,
-                                                  location);
-    m_runningLocations.append(location);
+                                                  pTrack);
+    m_runningLocations.append(coverLocation);
 
     QFutureWatcher<coverPair>* watcher = new QFutureWatcher<coverPair>(this);
     connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
@@ -62,30 +72,31 @@ void CoverArtCache::imageLoaded() {
     QFutureWatcher<coverPair>* watcher;
     watcher = reinterpret_cast<QFutureWatcher<coverPair>*>(sender());
 
-    coverPair p = watcher->result();
-    QString location = p.first;
-    QImage image = p.second;
+    coverPair result = watcher->result();
+    TrackPointer pTrack = result.first;
+    QImage image = result.second;
+    QString coverLocation = pTrack->getCoverArtLocation();
     QPixmap pixmap;
 
     bool loaded = false;
     if (!image.isNull()) {
         pixmap = QPixmap::fromImage(image);
-        if (QPixmapCache::insert(location, pixmap)) {
+        if (QPixmapCache::insert(coverLocation, pixmap)) {
             loaded = true;
         }
     }
 
     if (loaded) {
-        emit(pixmapFound(location, pixmap));
+        emit(pixmapFound(coverLocation, pixmap));
     } else {
-        emit(pixmapNotFound(location));
+        emit(pixmapNotFound(pTrack));
     }
 
-    m_runningLocations.removeOne(location);
+    m_runningLocations.removeOne(coverLocation);
 }
 
 // This method is executed in a separate thread
 // via QtConcurrent::run
-CoverArtCache::coverPair CoverArtCache::loadImage(QString location) {
-    return coverPair(location, QImage(location));
+CoverArtCache::coverPair CoverArtCache::loadImage(TrackPointer pTrack) {
+    return coverPair(pTrack, QImage(pTrack->getCoverArtLocation()));
 }

@@ -75,7 +75,7 @@ public:
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
-    void slotLoadCoverArt(const QString& location);
+    void slotLoadCoverArt(TrackPointer pTrack);
     void slotScrollValueChanged(int scrollPos);
 
   signals:
@@ -87,7 +87,7 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
-    void loadCoverArt(const QString& location);
+    void loadCoverArt(TrackPointer pTrack);
     void scrollValueChanged(int);
 
   private:

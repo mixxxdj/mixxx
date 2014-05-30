@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QPixmapCache>
 
+#include "trackinfoobject.h"
+
 class CoverArtCache : public QObject
 {
     Q_OBJECT
@@ -13,24 +15,24 @@ class CoverArtCache : public QObject
     static CoverArtCache* getInstance();
     static void destroyInstance();
 
-    void requestPixmap(QString location);
+    void requestPixmap(TrackPointer pTrack);
 
   public slots:
     void imageLoaded();
 
   signals:
     void pixmapFound(QString location, QPixmap pixmap);
-    void pixmapNotFound(QString location);
+    void pixmapNotFound(TrackPointer);
 
   private:
     CoverArtCache();
     virtual ~CoverArtCache();
 
     static CoverArtCache* m_instance;
-    typedef QPair<QString, QImage> coverPair;
+    typedef QPair<TrackPointer, QImage> coverPair;
     QStringList m_runningLocations;
 
-    coverPair loadImage(QString location);
+    coverPair loadImage(TrackPointer pTrack);
 };
 
 #endif // COVERARTCACHE_H
