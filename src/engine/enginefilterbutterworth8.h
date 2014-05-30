@@ -1,5 +1,5 @@
-#ifndef ENGINE_ENGINEFILTERBUTTERWORTH8_H_
-#define ENGINE_ENGINEFILTERBUTTERWORTH8_H_
+#ifndef ENGINEFILTERBUTTERWORTH8_H_
+#define ENGINEFILTERBUTTERWORTH8_H_
 
 #define MAX_COEFS 17
 #define MAX_INTERNAL_BUF 16
@@ -20,14 +20,19 @@ class EngineFilterButterworth8 : public EngineObjectConstIn {
   protected:
     int m_sampleRate;
 
+    double m_oldCoef[MAX_COEFS];
     double m_coef[MAX_COEFS];
 
     int m_bufSize;
     //channel 1 state
     double m_buf1[MAX_INTERNAL_BUF];
+    double m_oldBuf1[MAX_INTERNAL_BUF];
 
     //channel 2 state
     double m_buf2[MAX_INTERNAL_BUF];
+    double m_oldBuf2[MAX_INTERNAL_BUF];
+
+    bool m_doRamping;
 };
 
 class EngineFilterButterworth8Low : public EngineFilterButterworth8 {
