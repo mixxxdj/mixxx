@@ -94,6 +94,9 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
+    connect(m_pAutoDJView, SIGNAL(loadCoverArt(TrackPointer)),
+            this, SIGNAL(loadCoverArt(TrackPointer)));
+
 #ifdef __AUTODJCRATES__
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),

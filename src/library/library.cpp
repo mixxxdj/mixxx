@@ -181,6 +181,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
+    connect(feature, SIGNAL(loadCoverArt(TrackPointer)),
+            this, SLOT(slotLoadCoverArt(TrackPointer)));
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
