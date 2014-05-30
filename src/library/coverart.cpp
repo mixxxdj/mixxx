@@ -60,6 +60,7 @@ QString CoverArt::searchInTrackDirectory(QString directory) {
     QLatin1String format(".(jpe?g|png|gif|bmp)");
     if (regExpList.isEmpty()) {
         regExpList << QRegExp(".*cover.*" + format, Qt::CaseInsensitive)
+                   << QRegExp(".*album.*" + format, Qt::CaseInsensitive)
                    << QRegExp(".*front.*" + format, Qt::CaseInsensitive)
                    << QRegExp(".*folder.*" + format, Qt::CaseInsensitive);
     }
