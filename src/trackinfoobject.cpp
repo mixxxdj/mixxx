@@ -202,11 +202,6 @@ void TrackInfoObject::parse() {
         setKeyText(pProxiedSoundSource->getKey(),
                    mixxx::track::io::key::FILE_METADATA);
 
-        QImage image = pProxiedSoundSource->getCoverArt();
-        QString coverLocation = CoverArt::instance()->saveEmbeddedCover(
-                                image, getArtist(), getAlbum(), getFilename());
-        setCoverArtLocation(coverLocation);
-
         setHeaderParsed(true);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
