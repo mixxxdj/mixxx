@@ -5,6 +5,7 @@
 #define MAX_INTERNAL_BUF 16
 
 #include "engine/enginefilter.h"
+#include "util/defs.h"
 
 class EngineFilterButterworth8 : public EngineObjectConstIn {
     Q_OBJECT
