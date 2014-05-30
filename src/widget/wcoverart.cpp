@@ -96,6 +96,10 @@ void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
 }
 
 void WCoverArt::slotLoadCoverArt(TrackPointer pTrack) {
+    if (!m_bCoverIsVisible) {
+        return;
+    }
+
     loadDefaultStatus();
 
     if (!pTrack.isNull()) {
