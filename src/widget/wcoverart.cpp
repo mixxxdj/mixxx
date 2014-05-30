@@ -71,9 +71,18 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     setPalette(pal);
 }
 
+void WCoverArt::loadDefaultStatus() {
+    m_sCoverTitle = "Cover Art";
+    m_currentCover = m_defaultCover;
+    m_currentScaledCover = m_defaultCover;
+    m_bDefaultCover = true;
+    update();
+}
+
 void WCoverArt::slotHideCoverArt() {
     m_bCoverIsVisible = false;
     setMinimumSize(0, 20);
+    loadDefaultStatus();
 }
 
 void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
@@ -87,11 +96,7 @@ void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
 }
 
 void WCoverArt::slotLoadCoverArt(TrackPointer pTrack) {
-    m_sCoverTitle = "Cover Art";
-    m_currentCover = m_defaultCover;
-    m_currentScaledCover = m_defaultCover;
-    m_bDefaultCover = true;
-    update();
+    loadDefaultStatus();
 
     if (!pTrack.isNull()) {
         m_lastRequestedLocation = pTrack->getCoverArtLocation();

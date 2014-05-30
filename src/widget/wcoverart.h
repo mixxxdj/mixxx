@@ -34,6 +34,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void leaveEvent(QEvent*);
 
   private:
+    void loadDefaultStatus();
     QPixmap scaledCoverArt(QPixmap normal);
 
     ConfigObject<ConfigValue>* m_pConfig;
