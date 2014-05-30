@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "sampleutil.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilter.h"
 #include "engine/engineobject.h"
@@ -26,7 +27,8 @@ inline CSAMPLE _processHighpass(CSAMPLE *coef, CSAMPLE *buf, register CSAMPLE va
 
 EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate, int bufSize)
         : m_sampleRate(sampleRate),
-          m_bufSize(bufSize) {
+          m_bufSize(bufSize),
+          m_doRamping(false) {
 }
 
 EngineFilterButterworth8::~EngineFilterButterworth8() {
@@ -34,6 +36,8 @@ EngineFilterButterworth8::~EngineFilterButterworth8() {
 
 void EngineFilterButterworth8::initBuffers() {
     for (int i=0; i < m_bufSize; i++) {
+        m_oldBuf1[i] = m_buf1[i];
+        m_oldBuf2[i] = m_buf2[i];
         m_buf1[i] = 0;
         m_buf2[i] = 0;
     }
@@ -152,17 +156,35 @@ void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1) {
     coef[0] = fid_design_coef(coef + 1, 8, "LpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
     for (int i = 0; i < MAX_COEFS; ++i) {
+        m_oldCoef[i] = m_coef[i];
         m_coef[i] = coef[i];
     }
     initBuffers();
+    m_doRamping = true;
 }
 
 void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
                                           CSAMPLE* pOutput,
                                           const int iBufferSize) {
-    for (int i=0; i < iBufferSize; i += 2) {
+    for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
+    }
+
+
+    if (m_doRamping) {
+        CSAMPLE *pOldOutput = new CSAMPLE[iBufferSize];
+        for (int i = 0; i < iBufferSize; i += 2) {
+            pOldOutput[i] = _processLowpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            pOldOutput[i+1] = _processLowpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+        }
+
+        SampleUtil::linearCrossfadeBuffers(pOutput, pOldOutput,
+                                           pOutput, iBufferSize);
+
+
+        m_doRamping = false;
+        delete[] pOldOutput;
     }
 }
 
@@ -180,9 +202,11 @@ void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
     coef[0] = fid_design_coef(coef + 1, 16, "BpBu8", m_sampleRate,
                               freqCorner1, freqCorner2, 0);
     for (int i = 0; i < MAX_COEFS; ++i) {
+        m_oldCoef[i] = m_coef[i];
         m_coef[i] = coef[i];
     }
     initBuffers();
+    m_doRamping = true;
 }
 
 void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
@@ -195,6 +219,17 @@ void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
             pOutput[i] = 0;
         if(pOutput[i+1] != pOutput[i+1])    //Check for NaN
             pOutput[i+1] = 0;
+    }
+    if (m_doRamping) {
+        CSAMPLE *pOldOutput = new CSAMPLE[iBufferSize];
+        for (int i = 0; i < iBufferSize; i += 2) {
+            pOldOutput[i] = _processBandpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            pOldOutput[i+1] = _processBandpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+        }
+        SampleUtil::linearCrossfadeBuffers(pOutput, pOldOutput,
+                                           pOutput, iBufferSize);
+        m_doRamping = false;
+        delete[] pOldOutput;
     }
 }
 
@@ -210,9 +245,11 @@ void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
     coef[0] = fid_design_coef(coef + 1, 8, "HpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
     for (int i = 0; i < MAX_COEFS; ++i) {
+        m_oldCoef[i] = m_coef[i];
         m_coef[i] = coef[i];
     }
     initBuffers();
+    m_doRamping = true;
 }
 
 void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
@@ -221,5 +258,16 @@ void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
+    }
+    if (m_doRamping) {
+        CSAMPLE *pOldOutput = new CSAMPLE[iBufferSize];
+        for (int i = 0; i < iBufferSize; i += 2) {
+            pOldOutput[i] = _processHighpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            pOldOutput[i+1] = _processHighpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+        }
+        SampleUtil::linearCrossfadeBuffers(pOutput, pOldOutput,
+                                           pOutput, iBufferSize);
+        m_doRamping = false;
+        delete[] pOldOutput;
     }
 }

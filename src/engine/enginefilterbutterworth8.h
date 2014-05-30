@@ -20,14 +20,19 @@ class EngineFilterButterworth8 : public EngineObjectConstIn {
   protected:
     int m_sampleRate;
 
+    CSAMPLE m_oldCoef[MAX_COEFS];
     CSAMPLE m_coef[MAX_COEFS];
 
     int m_bufSize;
     //channel 1 state
     CSAMPLE m_buf1[MAX_INTERNAL_BUF];
+    CSAMPLE m_oldBuf1[MAX_INTERNAL_BUF];
 
     //channel 2 state
     CSAMPLE m_buf2[MAX_INTERNAL_BUF];
+    CSAMPLE m_oldBuf2[MAX_INTERNAL_BUF];
+
+    bool m_doRamping;
 };
 
 class EngineFilterButterworth8Low : public EngineFilterButterworth8 {
