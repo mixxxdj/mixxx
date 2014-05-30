@@ -27,6 +27,9 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
+    connect(m_pAnalysisLibraryTableView, SIGNAL(loadCoverArt(TrackPointer)),
+            this, SIGNAL(loadCoverArt(TrackPointer)));
+
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); // Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
