@@ -33,7 +33,6 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
 
     const char* m_cDefaultImageFormat;
 
-    QString searchInDiskCache(QString coverArtName);
     QString searchInTrackDirectory(QString directory);
 };
 

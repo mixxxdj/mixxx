@@ -32,10 +32,7 @@ bool CoverArt::deleteFile(const QString& location) {
 }
 
 bool CoverArt::saveFile(QImage cover, QString location) {
-    if (cover.save(location, m_cDefaultImageFormat)) {
-        return true;
-    }
-    return false;
+    return cover.save(location, m_cDefaultImageFormat);
 }
 
 QString CoverArt::saveEmbeddedCover(QImage cover, QString artist,
@@ -52,22 +49,6 @@ QString CoverArt::saveEmbeddedCover(QImage cover, QString artist,
     }
 
     return "";
-}
-
-QString CoverArt::searchInDiskCache(QString coverArtName) {
-    // Some image extensions
-    QStringList extList;
-    extList << ".jpg" << ".jpeg" << ".png" << ".gif" << ".bmp";
-
-    // Look for cover art in disk-cache directory.
-    QString location = getStoragePath().append(coverArtName);
-    foreach (QString ext, extList) {
-        if(QFile::exists(location + ext)) {
-            return location + ext;
-        }
-    }
-
-    return QString();
 }
 
 QString CoverArt::searchInTrackDirectory(QString directory) {
@@ -120,17 +101,12 @@ QString CoverArt::getDefaultCoverLocation(TrackPointer pTrack) {
 }
 
 QString CoverArt::searchCoverArtFile(TrackPointer pTrack) {
-
-    QString coverArtName = getDefaultCoverName(pTrack->getArtist(),
-                                               pTrack->getAlbum(),
-                                               pTrack->getFilename());
-
     //
     // Step 1: Look for cover art in disk-cache directory.
     //
-    QString coverLocation = searchInDiskCache(coverArtName);
-    if (!coverLocation.isEmpty()) {
-        return coverLocation;  // FOUND!
+    QString coverLocation = getDefaultCoverLocation(pTrack);
+    if(QFile::exists(coverLocation)) {
+        return coverLocation; // FOUND!
     }
 
     //
@@ -148,7 +124,7 @@ QString CoverArt::searchCoverArtFile(TrackPointer pTrack) {
 
     if (!image.isNull()) {
         // try to store the image in our disk-cache!
-        coverLocation = getDefaultCoverLocation(coverArtName);
+        coverLocation = getDefaultCoverLocation(pTrack);
         if (saveFile(image, coverLocation)) {
             return coverLocation; // FOUND!
         }
