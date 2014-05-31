@@ -72,25 +72,14 @@ void CoverArtDAO::slotCoverArtScan(TrackPointer pTrack) {
     }
 }
 
-bool CoverArtDAO::deleteCoverArt(const int coverId) {
-    QSqlQuery query(m_database);
-
-    query.prepare("DELETE FROM cover_art WHERE id = :id");
-    query.bindValue(":id", coverId);
-
-    if (query.exec()) {
-        return true;
-    } else {
-        LOG_FAILED_QUERY(query);
+void CoverArtDAO::deleteUnusedCoverArts() {
+    if (!m_database.isOpen()) {
+        return;
     }
 
-    return false;
-}
-
-bool CoverArtDAO::deleteUnusedCoverArts() {
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT id, location FROM cover_art "
+    query.prepare("SELECT location FROM cover_art "
                   "WHERE id not in ("
                       "SELECT cover_art FROM cover_art INNER JOIN library "
                       "ON library.cover_art = cover_art.id "
@@ -99,16 +88,30 @@ bool CoverArtDAO::deleteUnusedCoverArts() {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return false;
+        return;
     }
 
+    FieldEscaper escaper(m_database);
+    QStringList coverLocationList;
+    QSqlRecord queryRecord = query.record();
+    const int locationColumn = queryRecord.indexOf("location");
     while (query.next()) {
-        if (m_pCoverArt->deleteFile(query.value(1).toString())) {
-            deleteCoverArt(query.value(0).toInt());
+        QString coverLocation = query.value(locationColumn).toString();
+        if (m_pCoverArt->deleteFile(coverLocation)) {
+            coverLocationList << escaper.escapeString(coverLocation);
         }
     }
 
-    return true;
+    if (coverLocationList.empty()) {
+        return;
+    }
+
+    query.prepare(QString("DELETE FROM cover_art WHERE location in (%1)")
+                  .arg(coverLocationList.join(",")));
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 }
 
 int CoverArtDAO::getCoverArtId(QString coverLocation) {
