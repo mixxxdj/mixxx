@@ -26,10 +26,16 @@ inline CSAMPLE _processLowpass(CSAMPLE *coef, CSAMPLE *buf, register CSAMPLE val
 inline CSAMPLE _processBandpass(CSAMPLE *coef, CSAMPLE *buf, register CSAMPLE val);
 inline CSAMPLE _processHighpass(CSAMPLE *coef, CSAMPLE *buf, register CSAMPLE val);
 
-EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate, int bufSize)
-        : m_sampleRate(sampleRate),
+// m_sampleRate is initialized with the default value
+// If it changes, it will be modified by subclasses' setFrequencyCorners method
+EngineFilterButterworth8::EngineFilterButterworth8(int bufSize)
+        : m_sampleRate(44100),
           m_bufSize(bufSize),
           m_doRamping(false) {
+    initBuffers();
+    for (int i = 0; i < MAX_COEFS; i++) {
+        m_coef[i] = 0;
+    }
 }
 
 EngineFilterButterworth8::~EngineFilterButterworth8() {
@@ -145,14 +151,13 @@ CSAMPLE inline _processHighpass(CSAMPLE *coef, CSAMPLE *buf, register CSAMPLE va
 
 EngineFilterButterworth8Low::EngineFilterButterworth8Low(int sampleRate,
         double freqCorner1)
-        : EngineFilterButterworth8(sampleRate, 8) {
-    setFrequencyCorners(freqCorner1);
+        : EngineFilterButterworth8(8) {
+    setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-// TODO(XXX) We need to do ramping in the next process() call
-// if one or both corners are changed
-// https://bugs.launchpad.net/mixxx/+bug/1209294
-void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1) {
+void EngineFilterButterworth8Low::setFrequencyCorners(int sampleRate,
+                                                      double freqCorner1) {
+    m_sampleRate = sampleRate;
     double coef[MAX_COEFS];
     coef[0] = fid_design_coef(coef + 1, 8, "LpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
@@ -167,15 +172,13 @@ void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1) {
 void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
                                           CSAMPLE* pOutput,
                                           const int iBufferSize) {
-    static int count = 0;
-    count++;
-    qDebug() << "number of low processes: " << count << endl;
     CSAMPLE tmp1, tmp2;
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
+        // Do a linear cross fade between the old samples and the new samples
         if (m_doRamping) {
             tmp1 = _processLowpass(m_oldCoef, m_oldBuf1, pIn[i]);
             tmp2 = _processLowpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
@@ -193,12 +196,14 @@ void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
 EngineFilterButterworth8Band::EngineFilterButterworth8Band(int sampleRate,
                                                            double freqCorner1,
                                                            double freqCorner2)
-        : EngineFilterButterworth8(sampleRate, 16) {
-    setFrequencyCorners(freqCorner1, freqCorner2);
+        : EngineFilterButterworth8(16) {
+    setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);
 }
 
-void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
-        double freqCorner2) {
+void EngineFilterButterworth8Band::setFrequencyCorners(int sampleRate,
+                                                       double freqCorner1,
+                                                       double freqCorner2) {
+    m_sampleRate = sampleRate;
     double coef[MAX_COEFS];
     coef[0] = fid_design_coef(coef + 1, 16, "BpBu8", m_sampleRate,
                               freqCorner1, freqCorner2, 0);
@@ -213,9 +218,6 @@ void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
 void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
                                            CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    static int count = 0;
-    count++;
-    qDebug() << "number of band processes: " << count << endl;
     CSAMPLE tmp1, tmp2;
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iBufferSize);
@@ -226,6 +228,7 @@ void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
             pOutput[i] = 0;
         if(pOutput[i+1] != pOutput[i+1])    //Check for NaN
             pOutput[i+1] = 0;
+        // Do a linear cross fade between the old samples and the new samples
         if (m_doRamping) {
             tmp1 = _processBandpass(m_oldCoef, m_oldBuf1, pIn[i]);
             tmp2 = _processBandpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
@@ -242,11 +245,13 @@ void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
 
 EngineFilterButterworth8High::EngineFilterButterworth8High(int sampleRate,
                                                            double freqCorner1)
-        : EngineFilterButterworth8(sampleRate, 8) {
-    setFrequencyCorners(freqCorner1);
+        : EngineFilterButterworth8(8) {
+    setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
+void EngineFilterButterworth8High::setFrequencyCorners(int sampleRate,
+                                                       double freqCorner1) {
+    m_sampleRate = sampleRate;
     double coef[MAX_COEFS];
     coef[0] = fid_design_coef(coef + 1, 8, "HpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
@@ -261,15 +266,13 @@ void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
 void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
                                            CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    static int count = 0;
-    count++;
-    qDebug() << "number of high processes: " << count << endl;
     CSAMPLE tmp1, tmp2;
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
+        // Do a linear cross fade between the old samples and the new samples
         if (m_doRamping) {
             tmp1 = _processHighpass(m_oldCoef, m_oldBuf1, pIn[i]);
             tmp2 = _processHighpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
