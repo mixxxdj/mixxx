@@ -1,13 +1,15 @@
 <Template>
 		<WidgetGroup>
-			<Pos>4,8</Pos>
-			<Size>370,250</Size>
+			<Pos>1,6</Pos>
+			<Size>369,255</Size>
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+			<BackPath>style/style_bg_deck.png</BackPath>
 			<Children>
 				<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
 				break the parent widgetgroup dimensions-->
 				<WidgetGroup>
-					<Size>370,250</Size>
+					<Size>369,250</Size>
+					<Pos>3,2</Pos>
 					<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
 					<Children>
 						<!--

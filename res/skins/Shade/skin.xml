@@ -71,6 +71,82 @@
 		</attributes>
 	</manifest>
 
+	
+	<!--
+	**********************************************
+	General- Skin Colour Scheme
+	**********************************************
+	-->
+	<Schemes>
+		<Scheme>
+			<Name>5pm (Classic Mixxx)</Name>
+			<Filters/>
+		</Scheme>
+		<Scheme>
+			<Name>11pm (Dark Mixxx)</Name>
+			<Filters>
+				<Invert/>
+				<HueInv/>
+				<Add>
+					<Amount>50</Amount>
+				</Add>
+				<ScaleWhite>
+					<Amount>1.5</Amount>
+				</ScaleWhite>
+				<Add>
+					<Amount>-50</Amount>
+				</Add>
+			</Filters>
+		</Scheme>
+		<Scheme>
+			<Name>Noon (Ever Darker Mixxx)</Name>
+			<Filters>
+			<Invert/>
+				<HSVTweak>
+					<HMin>30</HMin>
+					<HMax>30</HMax>
+					<HConst>-27</HConst>
+					<SConst>-59</SConst>
+					<VConst>-21</VConst>
+				</HSVTweak>
+				<HSVTweak>
+					<HConst>-170</HConst>
+				</HSVTweak>
+			</Filters>
+		</Scheme>
+		<Scheme>
+			<Name>3am (Still Awake Mixxx)</Name>
+			<Filters>
+				<Invert/>
+				<Add>
+					<Amount>50</Amount>
+				</Add>
+				<ScaleWhite>
+					<Amount>1.5</Amount>
+				</ScaleWhite>
+				<Add>
+					<Amount>-50</Amount>
+				</Add>
+			</Filters>
+		</Scheme>
+		<Scheme>
+			<Name>8pm (Summer Sunset Mixxx)</Name>
+			<Filters>
+				<HSVTweak>
+					<SMin>100</SMin>
+					<VFact>0.7</VFact>
+					<HFact>0.3</HFact>
+				</HSVTweak>
+				<HSVTweak>
+					<SMax>50</SMax>
+					<HFact>0</HFact>
+					<HConst>50</HConst>
+					<SConst>120</SConst>
+					<VConst>-10</VConst>
+				</HSVTweak>
+			</Filters>
+		</Scheme>
+	</Schemes>
 
 
 	<!--
@@ -83,7 +159,6 @@
 
 	<ObjectName>Mixxx</ObjectName>
 	<Style src="skin:style.qss"/>
-
 	<MinimumSize>1024,600</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout>

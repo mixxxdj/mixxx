@@ -6,7 +6,6 @@
 
 #Mixxx {
     background-color: #191919;
-    background-image: url(skin:background1024x600.png);
     background-repeat:no-repeat;
 	background-attachment:fixed;
 	background-position:center top;  

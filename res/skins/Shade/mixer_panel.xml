@@ -3,8 +3,8 @@
 			<Pos>2,6</Pos>
 			<Size>255,255</Size>
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+			<BackPath>style/style_bg_mixer_panel.png</BackPath>
 			<Children>
-	
 				<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
 				break the parent widgetgroup dimensions
 				-->
