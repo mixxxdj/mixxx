@@ -43,19 +43,12 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 
     loadVScrollBarPosState();
 
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(slotScrollValueChanged(int)));
-
     setTabKeyNavigation(false);
 }
 
 WLibraryTableView::~WLibraryTableView() {
     qDebug() << "~WLibraryTableView";
     saveVScrollBarPosState();
-}
-
-void WLibraryTableView::slotScrollValueChanged(int scrollPos) {
-    emit(scrollValueChanged(scrollPos));
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {

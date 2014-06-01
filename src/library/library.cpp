@@ -242,10 +242,6 @@ void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 
-void Library::slotScrollValueChanged(int scrollPos) {
-    emit(scrollValueChanged(scrollPos));
-}
-
 void Library::slotLoadCoverArt(TrackPointer pTrack) {
     emit(loadCoverArt(pTrack));
 }
