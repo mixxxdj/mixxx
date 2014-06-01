@@ -40,30 +40,23 @@ bool CoverArt::saveImage(QImage cover, QString location) {
 }
 
 QString CoverArt::searchInTrackDirectory(QString directory) {
-    // Implements regular expressions for image extensions
-    static QList<QRegExp> regExpList;
-    QLatin1String format(".(jpe?g|png|gif|bmp)");
-    if (regExpList.isEmpty()) {
-        regExpList << QRegExp(".*cover.*" + format, Qt::CaseInsensitive)
-                   << QRegExp(".*album.*" + format, Qt::CaseInsensitive)
-                   << QRegExp(".*front.*" + format, Qt::CaseInsensitive)
-                   << QRegExp(".*folder.*" + format, Qt::CaseInsensitive);
+    QDir dir(directory);
+    dir.setFilter(QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QStringList nameFilters;
+    nameFilters << "*.jpg" << "*.jpeg" << "*.png" << "*.gif" << "*.bmp";
+    dir.setNameFilters(nameFilters);
+
+    QString coverLocation;
+    QStringList imglist = dir.entryList();
+    if (imglist.size() > 0) {
+        coverLocation = directory;
+        coverLocation.append("/");
+        coverLocation.append(imglist[0]);
     }
 
-    const QFileInfoList fileList = QDir(directory)
-            .entryInfoList(QDir::NoDotAndDotDot |
-                           QDir::Files |
-                           QDir::Readable);
-    foreach (QFileInfo f, fileList) {
-        const QString filename = f.fileName();
-        foreach (QRegExp re, regExpList) {
-            if (filename.contains(re)) {
-                return f.absoluteFilePath();
-            }
-        }
-    }
-
-    return QString();
+    return coverLocation;
 }
 
 QString CoverArt::getDefaultCoverName(QString artist,
