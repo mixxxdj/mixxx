@@ -63,8 +63,9 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
                 m_fakeMouseSourcePointId = touchPoints.first().id();
                 m_fakeMouseWidget = dynamic_cast<QWidget*>(target);
                 fakeMouseWidget = m_fakeMouseWidget;
+                break;
             }
-            break;
+            return false;
         case QEvent::TouchUpdate:
             if (m_fakeMouseWidget) {
                 eventType = QEvent::MouseMove;
