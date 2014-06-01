@@ -21,9 +21,9 @@ public:
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
-    EngineObjectConstIn* low;
-    EngineObjectConstIn* band;
-    EngineObjectConstIn* high;
+    EngineFilterButterworth8Low* low;
+    EngineFilterButterworth8Band* band;
+    EngineFilterButterworth8High* high;
 
     double old_low;
     double old_mid;

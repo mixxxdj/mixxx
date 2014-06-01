@@ -55,12 +55,16 @@ EffectManifest EqEffect::getManifest() {
 }
 
 EqEffectGroupState::EqEffectGroupState()
-        : low(0), band(0), high(0),old_low(1.0),
+        : low(NULL), band(NULL), high(NULL),old_low(1.0),
           old_mid(1.0), old_high(1.0), old_dry(0) {
     m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
-    setFilters(48000, 246, 2484);
+
+    // Initialize filters with the default values
+    low = new EngineFilterButterworth8Low(44100, 246);
+    band = new EngineFilterButterworth8Band(44100, 246, 2484);
+    high = new EngineFilterButterworth8High(44100, 2484);
 }
 
 EqEffectGroupState::~EqEffectGroupState() {
@@ -73,13 +77,9 @@ EqEffectGroupState::~EqEffectGroupState() {
 }
 
 void EqEffectGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
-    delete low;
-    delete band;
-    delete high;
-
-    low = new EngineFilterButterworth8Low(sampleRate, lowFreq);
-    band = new EngineFilterButterworth8Band(sampleRate, lowFreq, highFreq);
-    high = new EngineFilterButterworth8High(sampleRate, highFreq);
+    low->setFrequencyCorners(sampleRate, lowFreq);
+    band->setFrequencyCorners(sampleRate, lowFreq, highFreq);
+    high->setFrequencyCorners(sampleRate, highFreq);
 }
 
 EqEffect::EqEffect(EngineEffect* pEffect,
