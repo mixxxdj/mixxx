@@ -17,10 +17,8 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
     QString getDefaultCoverName(QString artist, QString album, QString filename);
 
     bool deleteFile(const QString& location);
-    bool saveFile(QImage cover, QString location);
-    QString saveEmbeddedCover(QImage cover, QString artist,
-                           QString album, QString filename);
-    QString searchCoverArtFile(TrackPointer pTrack);
+    bool saveImage(QImage cover, QString location);
+    QImage searchCoverArt(TrackPointer pTrack);
 
   protected:
     CoverArt();

@@ -60,13 +60,22 @@ void CoverArtDAO::slotCoverArtScan(TrackPointer pTrack) {
         }
     }
 
-    // if we found something, it'll return an existing and valid location
-    QString newCoverLocation = m_pCoverArt->searchCoverArtFile(pTrack);
+    // looking for cover art in disk-cache directory.
+    QString newCoverLocation = m_pCoverArt->getDefaultCoverLocation(pTrack);
+    if(!QFile::exists(newCoverLocation)) {
+        // looking for embedded covers and covers into track directory.
+        QImage image = m_pCoverArt->searchCoverArt(pTrack);
+        if (!m_pCoverArt->saveImage(image, newCoverLocation)) {
+            newCoverLocation.clear();
+        }
+    }
 
     if (coverLocation != newCoverLocation) {
         saveCoverLocation(newCoverLocation);
         pTrack->setCoverArtLocation(newCoverLocation);
-        CoverArtCache::getInstance()->requestPixmap(pTrack);
+        if (!newCoverLocation.isEmpty()) {
+            CoverArtCache::getInstance()->requestPixmap(pTrack);
+        }
     } else if (removedFromDisk) {
         CoverArtCache::getInstance()->requestPixmap(pTrack);
     }

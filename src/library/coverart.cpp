@@ -31,24 +31,12 @@ bool CoverArt::deleteFile(const QString& location) {
     return true;
 }
 
-bool CoverArt::saveFile(QImage cover, QString location) {
-    return cover.save(location, m_cDefaultImageFormat);
-}
-
-QString CoverArt::saveEmbeddedCover(QImage cover, QString artist,
-                                    QString album, QString filename) {
+bool CoverArt::saveImage(QImage cover, QString location) {
     if (cover.isNull()) {
-        return "";
+        return false;
     }
 
-    QString coverName = getDefaultCoverName(artist, album, filename);
-    QString location = getDefaultCoverLocation(coverName);
-
-    if (saveFile(cover, location)) {
-        return location;
-    }
-
-    return "";
+    return cover.save(location, m_cDefaultImageFormat);
 }
 
 QString CoverArt::searchInTrackDirectory(QString directory) {
@@ -100,38 +88,22 @@ QString CoverArt::getDefaultCoverLocation(TrackPointer pTrack) {
     return getDefaultCoverLocation(coverArtName);
 }
 
-QString CoverArt::searchCoverArtFile(TrackPointer pTrack) {
+QImage CoverArt::searchCoverArt(TrackPointer pTrack) {
     //
-    // Step 1: Look for cover art in disk-cache directory.
+    // Step 1: Look for embedded cover art.
     //
-    QString coverLocation = getDefaultCoverLocation(pTrack);
-    if(QFile::exists(coverLocation)) {
-        return coverLocation; // FOUND!
-    }
-
-    //
-    // Step 2: Look for embedded cover art.
-    //
-    coverLocation = pTrack->parseCoverArt();
-    if (!coverLocation.isEmpty()) {
-        return coverLocation; // FOUND!
-    }
-
-    //
-    // Step 3: Look for cover stored in track diretory.
-    //
-    QImage image(searchInTrackDirectory(pTrack->getDirectory()));
-
+    QImage image = pTrack->parseCoverArt();
     if (!image.isNull()) {
-        // try to store the image in our disk-cache!
-        coverLocation = getDefaultCoverLocation(pTrack);
-        if (saveFile(image, coverLocation)) {
-            return coverLocation; // FOUND!
-        }
+        return image; // FOUND!
     }
 
     //
-    // Not found.
+    // Step 2: Look for cover stored in track diretory.
     //
-    return QString();
+    image.load(searchInTrackDirectory(pTrack->getDirectory()));
+    if (!image.isNull()) {
+        return image; // FOUND!
+    }
+
+    return QImage();
 }

@@ -28,7 +28,6 @@
 #include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
-#include "library/coverart.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
@@ -213,20 +212,15 @@ void TrackInfoObject::parse() {
     }
 }
 
-QString TrackInfoObject::parseCoverArt() {
+QImage TrackInfoObject::parseCoverArt() {
     const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
     SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
 
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
     if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
-
-        QImage image = pProxiedSoundSource->getCoverArt();
-        QString coverLocation = CoverArt::instance()->saveEmbeddedCover(
-                                image, getArtist(), getAlbum(), getFilename());
-        setCoverArtLocation(coverLocation);
-        return coverLocation;
+        return pProxiedSoundSource->getCoverArt();
     }
-    return QString();
+    return QImage();
 }
 
 void TrackInfoObject::parseArtist() {
