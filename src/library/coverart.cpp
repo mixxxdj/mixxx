@@ -1,3 +1,5 @@
+#include <QStringBuilder>
+
 #include "library/coverart.h"
 
 CoverArt::CoverArt()
@@ -18,9 +20,7 @@ void CoverArt::setConfig(ConfigObject<ConfigValue>* pConfig) {
 }
 
 QString CoverArt::getStoragePath() const {
-    QString settingsPath = m_pConfig->getSettingsPath();
-    QDir dir(settingsPath.append("/coverArt/"));
-    return dir.absolutePath().append("/");
+    return m_pConfig->getSettingsPath() % "/coverArt/";
 }
 
 bool CoverArt::deleteFile(const QString& location) {
@@ -51,9 +51,7 @@ QString CoverArt::searchInTrackDirectory(QString directory) {
     QString coverLocation;
     QStringList imglist = dir.entryList();
     if (imglist.size() > 0) {
-        coverLocation = directory;
-        coverLocation.append("/");
-        coverLocation.append(imglist[0]);
+        coverLocation = directory % "/" % imglist[0];
     }
 
     return coverLocation;
@@ -65,12 +63,12 @@ QString CoverArt::getDefaultCoverName(QString artist,
     if (artist.isEmpty() && album.isEmpty()) {
          return filename;
     } else {
-        return artist + " - " + album;
+        return artist % " - " % album;
     }
 }
 
 QString CoverArt::getDefaultCoverLocation(QString coverArtName) {
-    return getStoragePath() + coverArtName + "." + m_cDefaultImageFormat;
+    return getStoragePath() % coverArtName % "." % m_cDefaultImageFormat;
 }
 
 QString CoverArt::getDefaultCoverLocation(TrackPointer pTrack) {
