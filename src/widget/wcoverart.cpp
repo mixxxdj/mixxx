@@ -30,8 +30,8 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     // load icon to show cover
     m_iconShow = QPixmap(":/images/library/ic_library_cover_show.png");
-    m_iconShow = m_iconShow.scaled(19,
-                                   19,
+    m_iconShow = m_iconShow.scaled(17,
+                                   17,
                                    Qt::KeepAspectRatioByExpanding,
                                    Qt::SmoothTransformation);
 
@@ -127,7 +127,7 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     if (m_bCoverIsVisible) {
         painter.drawPixmap(width()/2-height()/2+4, 6, m_currentScaledCover);
     } else {
-        painter.drawPixmap(0, 1 ,m_iconShow);
+        painter.drawPixmap(1, 2 ,m_iconShow);
         painter.drawText(25, 15, tr("Show Cover Art"));
     }
 
