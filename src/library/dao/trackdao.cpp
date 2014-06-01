@@ -1098,10 +1098,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     int trackId = pTrack->getId();
     Q_ASSERT(trackId >= 0);
 
-    // mainly if it's a new cover,
-    // it have to be stored before updating the library table
-    int coverArtID = m_coverArtDao.saveCoverLocation(pTrack->getCoverArtLocation());
-
     QSqlQuery query(m_database);
 
     //Update everything but "location", since that's what we identify the track by.
@@ -1126,7 +1122,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
     query.bindValue(":album_artist", pTrack->getAlbumArtist());
-    query.bindValue(":cover_art", coverArtID);
+    query.bindValue(":cover_art", m_coverArtDao.getCoverArtId(pTrack->getCoverArtLocation()));
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":composer", pTrack->getComposer());
