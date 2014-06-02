@@ -10,15 +10,16 @@ QString EQDefault::getId() {
 EffectManifest EQDefault::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("EQ"));
+    manifest.setName(QObject::tr("Default EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("TODO");
+    manifest.setDescription("The default Equalizer featuring \
+3 EngineFilterButterworth which can be modified from preferences");
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
     low->setName(QObject::tr("Low"));
-    low->setDescription("TODO");
+    low->setDescription("Gain for Low Filter");
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -30,7 +31,7 @@ EffectManifest EQDefault::getManifest() {
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
     mid->setName(QObject::tr("Mid"));
-    mid->setDescription("TODO");
+    mid->setDescription("Gain for Band Filter");
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -42,7 +43,7 @@ EffectManifest EQDefault::getManifest() {
     EffectManifestParameter* high = manifest.addParameter();
     high->setId("high");
     high->setName(QObject::tr("High"));
-    high->setDescription("TODO");
+    high->setDescription("Gain for High Filter");
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);

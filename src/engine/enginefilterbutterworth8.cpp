@@ -15,8 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-#include "sampleutil.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilter.h"
 #include "engine/engineobject.h"
