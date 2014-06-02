@@ -1,5 +1,5 @@
-#ifndef EQEFFECT_H
-#define EQEFFECT_H
+#ifndef EQDEFAULT_H
+#define EQDEFAULT_H
 
 #include <QMap>
 
@@ -14,10 +14,10 @@
 #include "util/defs.h"
 #include "sampleutil.h"
 
-class EqEffectGroupState {
+class EQDefaultGroupState {
 public:
-    EqEffectGroupState();
-    ~EqEffectGroupState();
+    EQDefaultGroupState();
+    ~EQDefaultGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
@@ -35,17 +35,17 @@ public:
     CSAMPLE* m_pHighBuf;
 };
 
-class EqEffect : public GroupEffectProcessor<EqEffectGroupState> {
+class EQDefault : public GroupEffectProcessor<EQDefaultGroupState> {
   public:
-    EqEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~EqEffect();
+    EQDefault(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~EQDefault();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processGroup(const QString& group,
-                      EqEffectGroupState* pState,
+                      EQDefaultGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
                       const GroupFeatureState& groupFeatureState);
@@ -66,7 +66,7 @@ class EqEffect : public GroupEffectProcessor<EqEffectGroupState> {
     int m_loFreq;
     int m_hiFreq;
 
-    DISALLOW_COPY_AND_ASSIGN(EqEffect);
+    DISALLOW_COPY_AND_ASSIGN(EQDefault);
 };
 
-#endif /* EQEFFECT_H */
+#endif /* EQDEFAULT_H */
