@@ -1,7 +1,6 @@
 #ifndef LOFIEQ_H
 #define LOFIEQ_H
 
-#include "controlobjectslave.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/enginefilteriir.h"
@@ -16,7 +15,6 @@ class LoFiEQGroupState {
 public:
     LoFiEQGroupState();
     ~LoFiEQGroupState();
-
 
     EngineFilterIIR* low;
     EngineFilterIIR* band;
