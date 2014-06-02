@@ -17,7 +17,7 @@ EffectManifest EQDefault::getManifest() {
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
-    low->setName(QObject::tr("Filter Low"));
+    low->setName(QObject::tr("Low"));
     low->setDescription("TODO");
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
@@ -29,7 +29,7 @@ EffectManifest EQDefault::getManifest() {
 
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
-    mid->setName(QObject::tr("Filter Mid"));
+    mid->setName(QObject::tr("Mid"));
     mid->setDescription("TODO");
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
@@ -41,7 +41,7 @@ EffectManifest EQDefault::getManifest() {
 
     EffectManifestParameter* high = manifest.addParameter();
     high->setId("high");
-    high->setName(QObject::tr("Filter High"));
+    high->setName(QObject::tr("High"));
     high->setDescription("TODO");
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
