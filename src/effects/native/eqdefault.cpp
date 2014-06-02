@@ -1,13 +1,13 @@
-#include "effects/native/eqeffect.h"
+#include "effects/native/eqdefault.h"
 #include "util/math.h"
 
 // static
-QString EqEffect::getId() {
-    return "org.mixxx.effects.eqeffect";
+QString EQDefault::getId() {
+    return "org.mixxx.effects.eqdefault";
 }
 
 // static
-EffectManifest EqEffect::getManifest() {
+EffectManifest EQDefault::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("EQ"));
@@ -54,7 +54,7 @@ EffectManifest EqEffect::getManifest() {
     return manifest;
 }
 
-EqEffectGroupState::EqEffectGroupState()
+EQDefaultGroupState::EQDefaultGroupState()
         : low(NULL), band(NULL), high(NULL),old_low(1.0),
           old_mid(1.0), old_high(1.0), old_dry(0) {
     m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
@@ -67,7 +67,7 @@ EqEffectGroupState::EqEffectGroupState()
     high = new EngineFilterButterworth8High(44100, 2484);
 }
 
-EqEffectGroupState::~EqEffectGroupState() {
+EQDefaultGroupState::~EQDefaultGroupState() {
     delete low;
     delete band;
     delete high;
@@ -76,13 +76,13 @@ EqEffectGroupState::~EqEffectGroupState() {
     delete m_pHighBuf;
 }
 
-void EqEffectGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
+void EQDefaultGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
     low->setFrequencyCorners(sampleRate, lowFreq);
     band->setFrequencyCorners(sampleRate, lowFreq, highFreq);
     high->setFrequencyCorners(sampleRate, highFreq);
 }
 
-EqEffect::EqEffect(EngineEffect* pEffect,
+EQDefault::EQDefault(EngineEffect* pEffect,
                    const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
@@ -93,14 +93,14 @@ EqEffect::EqEffect(EngineEffect* pEffect,
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
 }
 
-EqEffect::~EqEffect() {
+EQDefault::~EQDefault() {
     //qDebug() << debugString() << "destroyed";
     delete m_pLoFreqCorner;
     delete m_pHiFreqCorner;
 }
 
-void EqEffect::processGroup(const QString& group,
-        EqEffectGroupState* pState,
+void EQDefault::processGroup(const QString& group,
+        EQDefaultGroupState* pState,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const unsigned int numSamples,
         const GroupFeatureState& groupFeatures) {
