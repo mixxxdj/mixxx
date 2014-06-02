@@ -33,21 +33,19 @@ EngineFilterButterworth8::EngineFilterButterworth8(int bufSize)
           m_bufSize(bufSize),
           m_doRamping(false) {
     initBuffers();
-    for (int i = 0; i < MAX_COEFS; i++) {
-        m_coef[i] = 0;
-    }
+    memset(m_coef, 0, MAX_COEFS * sizeof(CSAMPLE));
 }
 
 EngineFilterButterworth8::~EngineFilterButterworth8() {
 }
 
 void EngineFilterButterworth8::initBuffers() {
-    for (int i=0; i < m_bufSize; i++) {
-        m_oldBuf1[i] = m_buf1[i];
-        m_oldBuf2[i] = m_buf2[i];
-        m_buf1[i] = 0;
-        m_buf2[i] = 0;
-    }
+    // Copy the current buffers into the old buffers
+    memcpy(m_oldBuf1, m_buf1, m_bufSize * sizeof(CSAMPLE));
+    memcpy(m_oldBuf2, m_buf2, m_bufSize * sizeof(CSAMPLE));
+    // Set the current buffers to 0
+    memset(m_buf1, 0, m_bufSize * sizeof(CSAMPLE));
+    memset(m_buf2, 0, m_bufSize * sizeof(CSAMPLE));
 }
 
 inline CSAMPLE _processLowpass(CSAMPLE *coef, CSAMPLE *buf, register CSAMPLE val) {
@@ -161,8 +159,9 @@ void EngineFilterButterworth8Low::setFrequencyCorners(int sampleRate,
     double coef[MAX_COEFS];
     coef[0] = fid_design_coef(coef + 1, 8, "LpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(CSAMPLE));
     for (int i = 0; i < MAX_COEFS; ++i) {
-        m_oldCoef[i] = m_coef[i];
         m_coef[i] = coef[i];
     }
     initBuffers();
@@ -207,8 +206,9 @@ void EngineFilterButterworth8Band::setFrequencyCorners(int sampleRate,
     double coef[MAX_COEFS];
     coef[0] = fid_design_coef(coef + 1, 16, "BpBu8", m_sampleRate,
                               freqCorner1, freqCorner2, 0);
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(CSAMPLE));
     for (int i = 0; i < MAX_COEFS; ++i) {
-        m_oldCoef[i] = m_coef[i];
         m_coef[i] = coef[i];
     }
     initBuffers();
@@ -255,8 +255,9 @@ void EngineFilterButterworth8High::setFrequencyCorners(int sampleRate,
     double coef[MAX_COEFS];
     coef[0] = fid_design_coef(coef + 1, 8, "HpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(CSAMPLE));
     for (int i = 0; i < MAX_COEFS; ++i) {
-        m_oldCoef[i] = m_coef[i];
         m_coef[i] = coef[i];
     }
     initBuffers();
