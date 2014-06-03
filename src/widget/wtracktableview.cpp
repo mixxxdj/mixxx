@@ -1140,14 +1140,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     foreach (QModelIndex index, indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            int iTrackId = pTrack->getId();
-            if (iTrackId == -1) {
-                continue;
-            }
-            trackIds.append(iTrackId);
-        }
+        trackIds.append(trackModel->getTrackId(index));
     }
 
     if (bTop) {
