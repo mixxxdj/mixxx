@@ -1,23 +1,23 @@
-#include "effects/native/lofieq.h"
+#include "effects/native/lightweighteq.h"
 #include "util/math.h"
 
 // static
-QString LoFiEQ::getId() {
-    return "org.mixxx.effects.lofieq";
+QString LightweightEQ::getId() {
+    return "org.mixxx.effects.lightweighteq";
 }
 
 // static
-EffectManifest LoFiEQ::getManifest() {
+EffectManifest LightweightEQ::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Lo Fi EQ"));
+    manifest.setName(QObject::tr("Lightweight EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("Lo Fi Static Equalizer which can be used on \
+    manifest.setDescription("Lightweight Static Equalizer which can be used on \
 machines with lower CPU performances");
 
     EffectManifestParameter* low = manifest.addParameter();
-    low->setId("lofi_low");
+    low->setId("lightweight_low");
     low->setName(QObject::tr("Low"));
     low->setDescription("Gain for Low Filter");
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
@@ -29,7 +29,7 @@ machines with lower CPU performances");
     low->setMaximum(4.);
 
     EffectManifestParameter* mid = manifest.addParameter();
-    mid->setId("lofi_mid");
+    mid->setId("lightweight_mid");
     mid->setName(QObject::tr("Mid"));
     mid->setDescription("Gain for Band Filter");
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
@@ -41,7 +41,7 @@ machines with lower CPU performances");
     mid->setMaximum(4.);
 
     EffectManifestParameter* high = manifest.addParameter();
-    high->setId("lofi_high");
+    high->setId("lightweight_high");
     high->setName(QObject::tr("High"));
     high->setDescription("Gain for High Filter");
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
@@ -55,7 +55,7 @@ machines with lower CPU performances");
     return manifest;
 }
 
-LoFiEQGroupState::LoFiEQGroupState()
+LightweightEQGroupState::LightweightEQGroupState()
         : low(NULL), band(NULL), high(NULL),old_low(1.0),
           old_mid(1.0), old_high(1.0), old_dry(0) {
     m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
@@ -68,7 +68,7 @@ LoFiEQGroupState::LoFiEQGroupState()
     high = new EngineFilterIIR(bessel_highpass4, 4);
 }
 
-LoFiEQGroupState::~LoFiEQGroupState() {
+LightweightEQGroupState::~LightweightEQGroupState() {
     delete low;
     delete band;
     delete high;
@@ -77,7 +77,7 @@ LoFiEQGroupState::~LoFiEQGroupState() {
     delete m_pHighBuf;
 }
 
-LoFiEQ::LoFiEQ(EngineEffect* pEffect,
+LightweightEQ::LightweightEQ(EngineEffect* pEffect,
                    const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
@@ -85,12 +85,12 @@ LoFiEQ::LoFiEQ(EngineEffect* pEffect,
     Q_UNUSED(manifest);
 }
 
-LoFiEQ::~LoFiEQ() {
+LightweightEQ::~LightweightEQ() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void LoFiEQ::processGroup(const QString& group,
-        LoFiEQGroupState* pState,
+void LightweightEQ::processGroup(const QString& group,
+        LightweightEQGroupState* pState,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const unsigned int numSamples,
         const GroupFeatureState& groupFeatures) {

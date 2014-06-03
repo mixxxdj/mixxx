@@ -4,7 +4,7 @@
 #include "effects/native/echoeffect.h"
 #include "effects/native/filtereffect.h"
 #include "effects/native/flangereffect.h"
-#include "effects/native/lofieq.h"
+#include "effects/native/lightweighteq.h"
 #include "effects/native/nativebackend.h"
 #include "effects/native/reverbeffect.h"
 
@@ -15,7 +15,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<FilterEffect>();
     registerEffect<ReverbEffect>();
     registerEffect<EchoEffect>();
-    registerEffect<LoFiEQ>();
+    registerEffect<LightweightEQ>();
 }
 
 NativeBackend::~NativeBackend() {

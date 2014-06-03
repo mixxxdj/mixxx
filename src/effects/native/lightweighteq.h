@@ -1,5 +1,5 @@
-#ifndef LOFIEQ_H
-#define LOFIEQ_H
+#ifndef LIGHTWEIGHT_H
+#define LIGHTWEIGHT_H
 
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
@@ -11,10 +11,10 @@
 #include "util/defs.h"
 #include "sampleutil.h"
 
-class LoFiEQGroupState {
+class LightweightEQGroupState {
 public:
-    LoFiEQGroupState();
-    ~LoFiEQGroupState();
+    LightweightEQGroupState();
+    ~LightweightEQGroupState();
 
     EngineFilterIIR* low;
     EngineFilterIIR* band;
@@ -30,17 +30,17 @@ public:
     CSAMPLE* m_pHighBuf;
 };
 
-class LoFiEQ : public GroupEffectProcessor<LoFiEQGroupState> {
+class LightweightEQ : public GroupEffectProcessor<LightweightEQGroupState> {
   public:
-    LoFiEQ(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~LoFiEQ();
+    LightweightEQ(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~LightweightEQ();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processGroup(const QString& group,
-                      LoFiEQGroupState* pState,
+                      LightweightEQGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
                       const GroupFeatureState& groupFeatureState);
@@ -54,7 +54,7 @@ class LoFiEQ : public GroupEffectProcessor<LoFiEQGroupState> {
     EngineEffectParameter* m_pPotMid;
     EngineEffectParameter* m_pPotHigh;
 
-    DISALLOW_COPY_AND_ASSIGN(LoFiEQ);
+    DISALLOW_COPY_AND_ASSIGN(LightweightEQ);
 };
 
-#endif // LOFIEQ_H
+#endif // LIGHTWEIGHT_H
