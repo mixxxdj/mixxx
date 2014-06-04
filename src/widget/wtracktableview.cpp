@@ -134,7 +134,10 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
     if ((indices.size() == 1) && (indices[0].isValid())) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
-            pTrack = trackModel->getTrack(indices[0]);
+            QString location = trackModel->getTrackLocation(indices[0]);
+            pTrack = TrackPointer(new TrackInfoObject(location,
+                                                      SecurityTokenPointer(),
+                                                      true));
         }
     }
     emit(loadCoverArt(pTrack));
