@@ -40,7 +40,7 @@ WCoverArt::WCoverArt(QWidget* parent,
     zoomImg = zoomImg.scaled(24, 24);
     m_zoomCursor = QCursor(zoomImg);
 
-    connect(CoverArtCache::getInstance(), SIGNAL(pixmapFound(QString, QPixmap)),
+    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(QString, QPixmap)),
             this, SLOT(slotPixmapFound(QString, QPixmap)));
 }
 
@@ -108,7 +108,7 @@ void WCoverArt::slotLoadCoverArt(TrackPointer pTrack) {
             m_lastRequestedLocation = CoverArt::instance()->
                                       getDefaultCoverLocation(pTrack);
         }
-        CoverArtCache::getInstance()->requestPixmap(pTrack);
+        CoverArtCache::instance()->requestPixmap(pTrack);
     }
 }
 

@@ -16,7 +16,7 @@ CoverArtDAO::~CoverArtDAO() {
 }
 
 void CoverArtDAO::initialize() {
-    connect(CoverArtCache::getInstance(), SIGNAL(pixmapNotFound(TrackPointer)),
+    connect(CoverArtCache::instance(), SIGNAL(pixmapNotFound(TrackPointer)),
             this, SLOT(slotCoverArtScan(TrackPointer)), Qt::UniqueConnection);
 
     qDebug() << "CoverArtDAO::initialize"
@@ -74,10 +74,10 @@ void CoverArtDAO::slotCoverArtScan(TrackPointer pTrack) {
         saveCoverLocation(newCoverLocation);
         pTrack->setCoverArtLocation(newCoverLocation);
         if (!newCoverLocation.isEmpty()) {
-            CoverArtCache::getInstance()->requestPixmap(pTrack);
+            CoverArtCache::instance()->requestPixmap(pTrack);
         }
     } else if (removedFromDisk) {
-        CoverArtCache::getInstance()->requestPixmap(pTrack);
+        CoverArtCache::instance()->requestPixmap(pTrack);
     }
 }
 

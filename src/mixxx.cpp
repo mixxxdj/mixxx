@@ -39,6 +39,7 @@
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
 #include "engine/engineaux.h"
+#include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryscanner.h"
@@ -281,6 +282,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     CoverArt::create();
     CoverArt::instance()->setConfig(m_pConfig);
+    CoverArtCache::create();
 
     m_pLibrary = new Library(this, m_pConfig,
                              m_pRecordingManager);
@@ -531,6 +533,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
     CoverArt::destroy();
+    CoverArtCache::destroy();
 
     // RecordingManager depends on config, engine
     qDebug() << "delete RecordingManager " << qTime.elapsed();

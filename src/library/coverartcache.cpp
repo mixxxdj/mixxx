@@ -1,37 +1,12 @@
-#include <QFile>
-#include <QMutex>
 #include <QPixmap>
 #include <QtConcurrentRun>
 
 #include "coverartcache.h"
 
-CoverArtCache* CoverArtCache::m_instance = NULL;
-static QMutex s_Mutex;
-
 CoverArtCache::CoverArtCache() {
 }
 
 CoverArtCache::~CoverArtCache() {
-}
-
-CoverArtCache* CoverArtCache::getInstance() {
-    if (!m_instance) {
-        s_Mutex.lock();
-        if (!m_instance) {
-            m_instance = new CoverArtCache();
-        }
-        s_Mutex.unlock();
-    }
-    return m_instance;
-}
-
-void CoverArtCache::destroyInstance() {
-    s_Mutex.lock();
-    if (m_instance) {
-        delete m_instance;
-        m_instance = 0;
-    }
-    s_Mutex.unlock();
 }
 
 void CoverArtCache::requestPixmap(TrackPointer pTrack) {

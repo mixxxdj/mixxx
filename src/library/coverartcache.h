@@ -7,14 +7,12 @@
 #include <QPixmapCache>
 
 #include "trackinfoobject.h"
+#include "util/singleton.h"
 
-class CoverArtCache : public QObject
+class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
   public:
-    static CoverArtCache* getInstance();
-    static void destroyInstance();
-
     void requestPixmap(TrackPointer pTrack);
 
   public slots:
@@ -24,10 +22,12 @@ class CoverArtCache : public QObject
     void pixmapFound(QString location, QPixmap pixmap);
     void pixmapNotFound(TrackPointer);
 
-  private:
+  protected:
     CoverArtCache();
     virtual ~CoverArtCache();
+    friend class Singleton<CoverArtCache>;
 
+  private:
     static CoverArtCache* m_instance;
     typedef QPair<TrackPointer, QImage> coverPair;
     QStringList m_runningLocations;
