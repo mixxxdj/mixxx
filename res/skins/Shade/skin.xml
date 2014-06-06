@@ -217,7 +217,6 @@
 			<Children>
 				<!-- Sampler Bank sub-widget -->
 				<WidgetGroup>
-					<Size>i,m</Size>
 					<Layout>horizontal</Layout>
 					<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
 					<Children>

@@ -1,8 +1,21 @@
 <Template>
+	<WidgetGroup>
+		<Pos>0,0</Pos>
+		<MinimumSize>254,104</MinimumSize>
+	    <MaximumSize>254,104</MaximumSize>
+  		<SizePolicy>f,f</SizePolicy>
+		<Children>
 						<WidgetGroup>
-							<Pos>0,0</Pos>
-							<Size>254,105</Size>
-							<Style>QGroupBox { border: 0px solid green;  margin: 0px 2px 4px 1px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+							<Pos>1,0</Pos>
+							<MaximumSize>251,100</MaximumSize>
+							<MinimumSize>251,100</MinimumSize>
+  			                <SizePolicy>f,f</SizePolicy>
+							<Style>QGroupBox { 
+								border: 0px solid green;  
+								margin: 0px 0px 0px 0px;  
+							} 
+							</Style>
+							<BackPath>style/style_bg_sampler.png</BackPath>
 							<Children>
 								<!--
 								**********************************************
@@ -513,5 +526,6 @@
 								</PushButton>
 							</Children>
 						</WidgetGroup>
-	
+		</Children>
+	</WidgetGroup>
 </Template>
