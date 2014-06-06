@@ -1,5 +1,5 @@
-#ifndef EFFECTPARAMETERSLOT_H
-#define EFFECTPARAMETERSLOT_H
+#ifndef EFFECTBUTTONPARAMETERSLOT_H
+#define EFFECTBUTTONPARAMETERSLOT_H
 
 #include <QObject>
 #include <QVariant>
@@ -13,17 +13,17 @@ class ControlObject;
 class ControlPushButton;
 class ControlEffectKnob;
 
-class EffectParameterSlot;
-typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
+class EffectButtonParameterSlot;
+typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;
 
-class EffectParameterSlot : public QObject {
+class EffectButtonParameterSlot : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlot(const unsigned int iRackNumber,
+    EffectButtonParameterSlot(const unsigned int iRackNumber,
                         const unsigned int iChainNumber,
                         const unsigned int iSlotNumber,
                         const unsigned int iParameterNumber);
-    virtual ~EffectParameterSlot();
+    virtual ~EffectButtonParameterSlot();
 
     static QString formatGroupString(const unsigned int iRackNumber,
                                      const unsigned int iChainNumber,
@@ -35,10 +35,10 @@ class EffectParameterSlot : public QObject {
     }
 
     static QString formatItemPrefix(const unsigned int iParameterNumber) {
-        return QString("parameter%1").arg(iParameterNumber + 1);
+        return QString("button_parameter%1").arg(iParameterNumber + 1);
     }
 
-    // Load the parameter of the given effect into this EffectParameterSlot
+    // Load the parameter of the given effect into this EffectButtonParameterSlot
     void loadEffect(EffectPointer pEffect);
 
     QString name() const;
@@ -47,7 +47,7 @@ class EffectParameterSlot : public QObject {
     void onChainParameterChanged(double parameter);
 
   signals:
-    // Signal that indicates that the EffectParameterSlot has been updated.
+    // Signal that indicates that the EffectButtonParameterSlot has been updated.
     void updated();
 
   private slots:
@@ -61,7 +61,7 @@ class EffectParameterSlot : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
+        return QString("EffectButtonParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
     }
 
     // Clear the currently loaded effect
@@ -81,11 +81,11 @@ class EffectParameterSlot : public QObject {
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlLinkType;
-    ControlEffectKnob* m_pControlValue;
+    ControlPushButton* m_pControlValue;
     ControlObject* m_pControlType;
     double m_dChainParameter;
 
-    DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
+    DISALLOW_COPY_AND_ASSIGN(EffectButtonParameterSlot);
 };
 
-#endif // EFFECTPARAMETERSLOT_H
+#endif // EFFECTBUTTONPARAMETERSLOT_H

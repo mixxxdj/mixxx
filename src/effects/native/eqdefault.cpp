@@ -28,6 +28,18 @@ EffectManifest EQDefault::getManifest() {
     low->setMinimum(0);
     low->setMaximum(4.);
 
+    EffectManifestParameter* killLow = manifest.addButtonParameter();
+    killLow->setId("killLow");
+    killLow->setName(QObject::tr("Kill Low"));
+    killLow->setDescription("Kill for Low Filter");
+    killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killLow->setValueHint(EffectManifestParameter::VALUE_BOOLEAN);
+    killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killLow->setDefault(0);
+    killLow->setMinimum(0);
+    killLow->setMaximum(1);
+
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
     mid->setName(QObject::tr("Mid"));
@@ -40,6 +52,18 @@ EffectManifest EQDefault::getManifest() {
     mid->setMinimum(0);
     mid->setMaximum(4.);
 
+    EffectManifestParameter* killMid = manifest.addButtonParameter();
+    killMid->setId("killMid");
+    killMid->setName(QObject::tr("Kill Mid"));
+    killMid->setDescription("Kill for Mid Filter");
+    killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killMid->setValueHint(EffectManifestParameter::VALUE_BOOLEAN);
+    killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killMid->setDefault(0);
+    killMid->setMinimum(0);
+    killMid->setMaximum(1);
+
     EffectManifestParameter* high = manifest.addParameter();
     high->setId("high");
     high->setName(QObject::tr("High"));
@@ -51,6 +75,18 @@ EffectManifest EQDefault::getManifest() {
     high->setDefault(1.);
     high->setMinimum(0);
     high->setMaximum(4.);
+
+    EffectManifestParameter* killHigh = manifest.addButtonParameter();
+    killHigh->setId("killHigh");
+    killHigh->setName(QObject::tr("Kill High"));
+    killHigh->setDescription("Kill for High Filter");
+    killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killHigh->setValueHint(EffectManifestParameter::VALUE_BOOLEAN);
+    killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killHigh->setDefault(0);
+    killHigh->setMinimum(0);
+    killHigh->setMaximum(1);
 
     return manifest;
 }
@@ -88,6 +124,9 @@ EQDefault::EQDefault(EngineEffect* pEffect,
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
+          m_pKillLow(pEffect->getButtonParameterById("killLow")),
+          m_pKillMid(pEffect->getButtonParameterById("killMid")),
+          m_pKillHigh(pEffect->getButtonParameterById("killHigh")),
           m_oldSampleRate(0), m_loFreq(0), m_hiFreq(0) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
@@ -109,9 +148,15 @@ void EQDefault::processGroup(const QString& group,
     Q_UNUSED(groupFeatures);
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
-    fLow = m_pPotLow->value().toDouble();
-    fMid = m_pPotMid->value().toDouble();
-    fHigh = m_pPotHigh->value().toDouble();
+    if (m_pKillLow->value().toDouble() == 0.) {
+        fLow = m_pPotLow->value().toDouble();
+    }
+    if (m_pKillMid->value().toDouble() == 0.) {
+        fMid = m_pPotMid->value().toDouble();
+    }
+    if (m_pKillHigh->value().toDouble() == 0.) {
+        fHigh = m_pPotHigh->value().toDouble();
+    }
 
     // tweak gains for RGBW
     float fDry = qMin(qMin(fLow, fMid), fHigh);
