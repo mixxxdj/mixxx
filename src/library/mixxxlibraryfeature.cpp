@@ -53,14 +53,16 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+            << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "cover_art.location AS cover";
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
+        "INNER JOIN track_locations ON library.location = track_locations.id "
+        "LEFT JOIN cover_art ON library.cover_art = cover_art.id")
             .arg(tableName, columns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
@@ -74,6 +76,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
+        } else if (it->startsWith("cover_art.")) {
+            *it = "cover";
         }
     }
 
