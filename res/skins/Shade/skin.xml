@@ -159,7 +159,7 @@
 
 	<ObjectName>Mixxx</ObjectName>
 	<Style src="skin:style.qss"/>
-	<MinimumSize>1024,600</MinimumSize>
+	<MinimumSize>1024,500</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout>
 	
