@@ -172,12 +172,8 @@ EngineFilterButterworth8Band::EngineFilterButterworth8Band(int sampleRate,
 
 void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
         double freqCorner2) {
-    double coef[MAX_COEFS];
-    coef[0] = fid_design_coef(coef + 1, 16, "BpBu8", m_sampleRate,
+    m_coef[0] = fid_design_coef(m_coef + 1, 16, "BpBu8", m_sampleRate,
                               freqCorner1, freqCorner2, 0);
-    for (int i = 0; i < MAX_COEFS; ++i) {
-        m_coef[i] = coef[i];
-    }
     initBuffers();
 }
 
@@ -198,12 +194,8 @@ EngineFilterButterworth8High::EngineFilterButterworth8High(int sampleRate,
 }
 
 void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
-    double coef[MAX_COEFS];
-    coef[0] = fid_design_coef(coef + 1, 8, "HpBu8", m_sampleRate,
+    m_coef[0] = fid_design_coef(m_coef + 1, 8, "HpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
-    for (int i = 0; i < MAX_COEFS; ++i) {
-        m_coef[i] = coef[i];
-    }
     initBuffers();
 }
 
