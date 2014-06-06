@@ -166,10 +166,13 @@
 	<Children>
 		<WidgetGroup>
     		<ObjectName>DecksAndMixer</ObjectName>
+    		<MinimumSize>1024,265</MinimumSize>
+  			<SizePolicy>f,f</SizePolicy>
         	<Layout>horizontal</Layout>
   			<Children>
   				<WidgetGroup>
   					<Size>378,265</Size>
+  					<SizePolicy>f,f</SizePolicy>
 					<Children>
   						<Template src="skin:deck.xml">
 							<SetVariable name="channum">1</SetVariable>
@@ -204,7 +207,7 @@
 		############################################################################################
 		-->
 		<WidgetGroup>
-			<MinimumSize>1014,285</MinimumSize>
+			<MinimumSize>1024,105</MinimumSize>
 			<SizePolicy>me,me</SizePolicy>
 			<Layout>vertical</Layout>
 			<!--deactivate the standard
@@ -340,7 +343,7 @@
 						<Splitter>
 							<Size>me,me</Size>
 							<Style></Style>
-							<SplitSizes>1,10</SplitSizes>
+							<SplitSizes>1,e</SplitSizes>
 							<Children>
 								<WidgetGroup>
 									<Style>QGroupBox {}</Style>
@@ -363,17 +366,15 @@
 												<Layout>vertical</Layout>
 												<Children>
 												<WidgetGroup>
-													<Style>
-														QGroupBox
-														{
-                                                                                                                margin: 0px;
+													<Style> QGroupBox {
+                                                        margin: 0px;
 														padding: 0px 0px 0px 0px;
 														border-left: 0px solid #656565;
 														border-right: 0px solid #2B2B2B;
 														border-top: 0px solid #656565;
 														border-bottom: 1px solid #2B2B2B;
 														background: transparent;
-														}
+													}
 													</Style>
 													<Layout>horizontal</Layout>
 													<Children>
@@ -384,7 +385,7 @@
 														-->
 														<Text>
 															<TooltipId>text</TooltipId>
-															<Style>QLabel {
+															<Style> QLabel {
 																font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 																background-color: transparent;
 																color: #ACACAC;
