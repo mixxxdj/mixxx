@@ -167,7 +167,7 @@
 		<WidgetGroup>
     		<ObjectName>DecksAndMixer</ObjectName>
     		<MinimumSize>1024,265</MinimumSize>
-  			<SizePolicy>f,f</SizePolicy>
+  			<SizePolicy>e,f</SizePolicy>
         	<Layout>horizontal</Layout>
   			<Children>
   				<WidgetGroup>
