@@ -6,21 +6,23 @@
 #include <QObject>
 #include <QPixmapCache>
 
-#include "trackinfoobject.h"
+#include "library/dao/coverartdao.h"
 #include "util/singleton.h"
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
   public:
-    void requestPixmap(TrackPointer pTrack);
+    void requestPixmap(QString coverLocation, int trackId);
+    void setCoverArtDao(CoverArtDAO* coverdao);
+    QString getDefaultCoverLocation(int trackId);
 
   public slots:
     void imageLoaded();
 
   signals:
     void pixmapFound(QString location, QPixmap pixmap);
-    void pixmapNotFound(TrackPointer);
+    void pixmapNotFound(int trackId);
 
   protected:
     CoverArtCache();
@@ -28,11 +30,17 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     friend class Singleton<CoverArtCache>;
 
   private:
+    struct coverTuple {
+        int trackId;
+        QString coverLocation;
+        QImage img;
+    };
+
     static CoverArtCache* m_instance;
-    typedef QPair<TrackPointer, QImage> coverPair;
+    CoverArtDAO* m_pCoverArtDAO;
     QStringList m_runningLocations;
 
-    coverPair loadImage(TrackPointer pTrack);
+    coverTuple loadImage(QString coverLocation, int trackId);
 };
 
 #endif // COVERARTCACHE_H

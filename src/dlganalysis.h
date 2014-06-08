@@ -46,7 +46,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
     void analyzeTracks(QList<int> trackIds);
     void stopAnalysis();
-    void loadCoverArt(TrackPointer pTrack);
+    void loadCoverArt(QString coverLocation, int trackId);
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file

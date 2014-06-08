@@ -54,6 +54,7 @@ class TrackCollection : public QObject
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
 
+    CoverArtDAO& getCoverArtDAO();
     CrateDAO& getCrateDAO();
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();

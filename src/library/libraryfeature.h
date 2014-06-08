@@ -91,7 +91,7 @@ class LibraryFeature : public QObject {
     void featureLoadingFinished(LibraryFeature*s);
     // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
-    void loadCoverArt(TrackPointer pTrack);
+    void loadCoverArt(QString coverLocation, int trackId);
 
 };
 

@@ -3,20 +3,28 @@
 
 #include "coverartcache.h"
 
-CoverArtCache::CoverArtCache() {
+CoverArtCache::CoverArtCache()
+        : m_pCoverArtDAO(NULL) {
 }
 
 CoverArtCache::~CoverArtCache() {
 }
 
-void CoverArtCache::requestPixmap(TrackPointer pTrack) {
-    if (pTrack.isNull()) {
+void CoverArtCache::setCoverArtDao(CoverArtDAO* coverdao) {
+    m_pCoverArtDAO = coverdao;
+}
+
+void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
+    if (trackId < 1) {
         return;
     }
 
-    QString coverLocation = pTrack->getCoverArtLocation();
     if (coverLocation.isEmpty()) {
-        emit(pixmapNotFound(pTrack));
+        coverLocation = m_pCoverArtDAO->getCoverArtLocation(trackId, true);
+    }
+
+    if (coverLocation.isEmpty()) {
+        emit(pixmapNotFound(trackId));
         return;
     }
 
@@ -33,24 +41,25 @@ void CoverArtCache::requestPixmap(TrackPointer pTrack) {
     }
 
     // load image from disk cache in a worker thread
-    QFuture<coverPair> future = QtConcurrent::run(this,
+    QFuture<coverTuple> future = QtConcurrent::run(this,
                                                   &CoverArtCache::loadImage,
-                                                  pTrack);
+                                                  coverLocation, trackId);
     m_runningLocations.append(coverLocation);
 
-    QFutureWatcher<coverPair>* watcher = new QFutureWatcher<coverPair>(this);
+    QFutureWatcher<coverTuple>* watcher = new QFutureWatcher<coverTuple>(this);
     connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     watcher->setFuture(future);
 }
 
 void CoverArtCache::imageLoaded() {
-    QFutureWatcher<coverPair>* watcher;
-    watcher = reinterpret_cast<QFutureWatcher<coverPair>*>(sender());
+    QFutureWatcher<coverTuple>* watcher;
+    watcher = reinterpret_cast<QFutureWatcher<coverTuple>*>(sender());
 
-    coverPair result = watcher->result();
-    TrackPointer pTrack = result.first;
-    QImage image = result.second;
-    QString coverLocation = pTrack->getCoverArtLocation();
+    coverTuple result = watcher->result();
+    int trackId = result.trackId;
+    QString coverLocation = result.coverLocation;
+    QImage image = result.img;
+
     QPixmap pixmap;
 
     bool loaded = false;
@@ -64,7 +73,7 @@ void CoverArtCache::imageLoaded() {
     if (loaded) {
         emit(pixmapFound(coverLocation, pixmap));
     } else {
-        emit(pixmapNotFound(pTrack));
+        emit(pixmapNotFound(trackId));
     }
 
     m_runningLocations.removeOne(coverLocation);
@@ -72,6 +81,15 @@ void CoverArtCache::imageLoaded() {
 
 // This method is executed in a separate thread
 // via QtConcurrent::run
-CoverArtCache::coverPair CoverArtCache::loadImage(TrackPointer pTrack) {
-    return coverPair(pTrack, QImage(pTrack->getCoverArtLocation()));
+CoverArtCache::coverTuple CoverArtCache::loadImage(QString coverLocation,
+                                                   int trackId) {
+    coverTuple r;
+    r.trackId = trackId;
+    r.coverLocation = coverLocation;
+    r.img = QImage(coverLocation);
+    return r;
+}
+
+QString CoverArtCache::getDefaultCoverLocation(int trackId) {
+    return m_pCoverArtDAO->getDefaultCoverLocation(trackId);
 }

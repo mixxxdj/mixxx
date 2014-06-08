@@ -21,7 +21,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   public slots:
     void slotHideCoverArt();
-    void slotLoadCoverArt(TrackPointer pTrack);
+    void slotLoadCoverArt(QString coverLocation, int trackId);
 
   private slots:
     void slotPixmapFound(QString location, QPixmap pixmap);

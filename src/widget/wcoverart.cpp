@@ -95,20 +95,20 @@ void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
     }
 }
 
-void WCoverArt::slotLoadCoverArt(TrackPointer pTrack) {
+void WCoverArt::slotLoadCoverArt(QString coverLocation, int trackId) {
     if (!m_bCoverIsVisible) {
         return;
     }
 
     loadDefaultStatus();
 
-    if (!pTrack.isNull()) {
-        m_lastRequestedLocation = pTrack->getCoverArtLocation();
+    if (trackId > 0) {
+        m_lastRequestedLocation = coverLocation;
         if (m_lastRequestedLocation.isEmpty()) {
-            m_lastRequestedLocation = CoverArt::instance()->
-                                      getDefaultCoverLocation(pTrack);
+            m_lastRequestedLocation = CoverArtCache::instance()->
+                                      getDefaultCoverLocation(trackId);
         }
-        CoverArtCache::instance()->requestPixmap(pTrack);
+        CoverArtCache::instance()->requestPixmap(coverLocation, trackId);
     }
 }
 

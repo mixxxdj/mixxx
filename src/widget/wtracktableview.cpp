@@ -129,18 +129,20 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
-    TrackPointer pTrack;
+    QString coverLocation;
+    int trackId = 0;
     const QModelIndexList indices = selectionModel()->selectedRows();
     if ((indices.size() == 1) && (indices[0].isValid())) {
+        QModelIndex idx = indices[0];
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
-            QString location = trackModel->getTrackLocation(indices[0]);
-            pTrack = TrackPointer(new TrackInfoObject(location,
-                                                      SecurityTokenPointer(),
-                                                      true));
+            coverLocation = idx.sibling(idx.row(),
+                                        trackModel->fieldIndex("cover")
+                                        ).data().toString();
+            trackId = trackModel->getTrackId(idx);
         }
     }
-    emit(loadCoverArt(pTrack));
+    emit(loadCoverArt(coverLocation, trackId));
     update();
 }
 

@@ -116,6 +116,10 @@ QSqlDatabase& TrackCollection::getDatabase() {
     return m_db;
 }
 
+CoverArtDAO& TrackCollection::getCoverArtDAO() {
+    return m_coverArtDao;
+}
+
 CrateDAO& TrackCollection::getCrateDAO() {
     return m_crateDao;
 }

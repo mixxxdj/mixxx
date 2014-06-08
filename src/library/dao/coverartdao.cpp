@@ -16,8 +16,8 @@ CoverArtDAO::~CoverArtDAO() {
 }
 
 void CoverArtDAO::initialize() {
-    connect(CoverArtCache::instance(), SIGNAL(pixmapNotFound(TrackPointer)),
-            this, SLOT(slotCoverArtScan(TrackPointer)), Qt::UniqueConnection);
+    connect(CoverArtCache::instance(), SIGNAL(pixmapNotFound(int)),
+            this, SLOT(slotCoverArtScan(int)), Qt::UniqueConnection);
 
     qDebug() << "CoverArtDAO::initialize"
              << QThread::currentThread()
@@ -49,7 +49,13 @@ int CoverArtDAO::saveCoverLocation(QString coverLocation) {
     return coverId;
 }
 
-void CoverArtDAO::slotCoverArtScan(TrackPointer pTrack) {
+void CoverArtDAO::slotCoverArtScan(int trackId) {
+    TrackPointer pTrack = getTrackFromDB(trackId);
+
+    if (pTrack.isNull()) {
+        return;
+    }
+
     QString coverLocation = pTrack->getCoverArtLocation();
 
     // handling cases when the file was externally removed from disk-cache
@@ -71,13 +77,13 @@ void CoverArtDAO::slotCoverArtScan(TrackPointer pTrack) {
     }
 
     if (coverLocation != newCoverLocation) {
-        saveCoverLocation(newCoverLocation);
-        pTrack->setCoverArtLocation(newCoverLocation);
+        int coverId = saveCoverLocation(newCoverLocation);
+        updateLibrary(trackId, coverId);
         if (!newCoverLocation.isEmpty()) {
-            CoverArtCache::instance()->requestPixmap(pTrack);
+            CoverArtCache::instance()->requestPixmap(newCoverLocation, trackId);
         }
     } else if (removedFromDisk) {
-        CoverArtCache::instance()->requestPixmap(pTrack);
+        CoverArtCache::instance()->requestPixmap(newCoverLocation, trackId);
     }
 }
 
@@ -146,12 +152,23 @@ int CoverArtDAO::getCoverArtId(QString coverLocation) {
     return 0;
 }
 
-QString CoverArtDAO::getCoverArtLocation(int id) {
+QString CoverArtDAO::getCoverArtLocation(int id, bool fromTrackId) {
+    if (id < 1) {
+        return QString();
+    }
+
     QSqlQuery query(m_database);
 
-    query.prepare(QString(
-        "SELECT location FROM cover_art "
-        "WHERE id = :id"));
+    if (fromTrackId) {
+        query.prepare(QString("SELECT cover_art.location FROM cover_art "
+                              "INNER JOIN library "
+                              "ON library.cover_art=cover_art.id "
+                              "WHERE library.id=:id "));
+    } else {
+        query.prepare(QString("SELECT location FROM cover_art "
+                              "WHERE id=:id"));
+    }
+
     query.bindValue(":id", id);
 
     if (query.exec()) {
@@ -162,5 +179,103 @@ QString CoverArtDAO::getCoverArtLocation(int id) {
         LOG_FAILED_QUERY(query);
     }
 
-    return "";
+    return QString();
+}
+
+// it'll get just the fields which are required for scanCover stuff
+TrackPointer CoverArtDAO::getTrackFromDB(int trackId) {
+    if (trackId < 1) {
+        return TrackPointer();
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(
+        "SELECT artist, album, track_locations.location as location, "
+        "cover_art.location AS cover "
+        "FROM Library INNER JOIN track_locations "
+        "ON library.location = track_locations.id "
+        "LEFT JOIN cover_art ON cover_art.id = library.cover_art "
+        "WHERE library.id=:id "
+    );
+    query.bindValue(":id", trackId);
+
+    if (query.exec()) {
+        QSqlRecord queryRecord = query.record();
+        const int artistColumn = queryRecord.indexOf("artist");
+        const int albumColumn = queryRecord.indexOf("album");
+        const int locationColumn = queryRecord.indexOf("location");
+        const int coverColumn = queryRecord.indexOf("cover");
+
+        if (query.next()) {
+            QString artist = query.value(artistColumn).toString();
+            QString album = query.value(albumColumn).toString();
+            QString location = query.value(locationColumn).toString();
+            QString cover = query.value(coverColumn).toString();
+
+            TrackPointer pTrack = TrackPointer(new TrackInfoObject(
+                                                   location,
+                                                   SecurityTokenPointer(),
+                                                   false));
+            pTrack->setArtist(artist);
+            pTrack->setAlbum(album);
+            pTrack->setCoverArtLocation(cover);
+
+            return pTrack;
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+
+    return TrackPointer();
+}
+
+QString CoverArtDAO::getDefaultCoverLocation(int trackId) {
+    if (trackId < 1) {
+        return QString();
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(
+        "SELECT artist, album, filename "
+        "FROM Library INNER JOIN track_locations "
+        "ON library.location = track_locations.id "
+        "WHERE library.id=:id "
+    );
+    query.bindValue(":id", trackId);
+
+    if (query.exec()) {
+        QSqlRecord queryRecord = query.record();
+        const int artistColumn = queryRecord.indexOf("artist");
+        const int albumColumn = queryRecord.indexOf("album");
+        const int filenameColumn = queryRecord.indexOf("filename");
+
+        if (query.next()) {
+            QString artist = query.value(artistColumn).toString();
+            QString album = query.value(albumColumn).toString();
+            QString filename = query.value(filenameColumn).toString();
+
+            QString coverName = m_pCoverArt->getDefaultCoverName(artist, album, filename);
+            return m_pCoverArt->getDefaultCoverLocation(coverName);
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+
+    return QString();
+}
+
+bool CoverArtDAO::updateLibrary(int trackId, int coverId) {
+    if (trackId < 1 || coverId < 1) {
+        return false;
+    }
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE library SET cover_art=:coverId WHERE id=:trackId");
+    query.bindValue(":coverId", coverId);
+    query.bindValue(":trackId", trackId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
+        return false;
+    }
+    return true;
 }

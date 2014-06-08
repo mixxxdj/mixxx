@@ -310,6 +310,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         }
     }
 
+    CoverArtCache::instance()->setCoverArtDao(
+                &m_pLibrary->getTrackCollection()->getCoverArtDAO());
+
     // Call inits to invoke all other construction parts
 
     // Intialize default BPM system values

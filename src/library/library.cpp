@@ -155,8 +155,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
 
     connect(pTrackTableView, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
-    connect(pTrackTableView, SIGNAL(loadCoverArt(TrackPointer)),
-            this, SLOT(slotLoadCoverArt(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadCoverArt(QString, int)),
+            this, SLOT(slotLoadCoverArt(QString, int)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
@@ -181,8 +181,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
-    connect(feature, SIGNAL(loadCoverArt(TrackPointer)),
-            this, SLOT(slotLoadCoverArt(TrackPointer)));
+    connect(feature, SIGNAL(loadCoverArt(QString, int)),
+            this, SLOT(slotLoadCoverArt(QString, int)));
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
@@ -242,8 +242,8 @@ void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 
-void Library::slotLoadCoverArt(TrackPointer pTrack) {
-    emit(loadCoverArt(pTrack));
+void Library::slotLoadCoverArt(QString coverLocation, int trackId) {
+    emit(loadCoverArt(coverLocation, trackId));
 }
 
 void Library::onSkinLoadFinished() {
