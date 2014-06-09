@@ -48,17 +48,24 @@ class AnalysisFeature : public LibraryFeature {
     void analyzeTracks(QList<int> trackIds);
 
   private slots:
+    void slotProgressUpdate(int num_left);
     void stopAnalysis();
     void cleanupAnalyser();
 
   private:
+    void setTitleDefault();		// Set title to tr("Analyze")
+    void setTitleProgress(int trackNum, int totalNum);	// Set title to "Analyze (x out of y)"
+
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     AnalyserQueue* m_pAnalyserQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse
     int m_iOldBpmEnabled;
+    // The title returned by title()
+    QVariant m_Title;
     TreeItemModel m_childModel;
     const static QString m_sAnalysisViewName;
+    const char * m_sAnalysisTitleName = "Analyze";
     DlgAnalysis* m_pAnalysisView;
 };
 
