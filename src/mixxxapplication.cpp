@@ -35,6 +35,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         QEvent::Type eventType = QEvent::None;
         Qt::MouseButtons buttons = Qt::NoButton;
         QWidget* fakeMouseWidget = NULL;
+        bool baseReturn;
 
         //qDebug() << "&" << touchEvent->type() << target;
 
@@ -45,7 +46,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         switch (event->type()) {
         case QEvent::TouchBegin:
             // try to deliver as touch event
-            (void)QApplication::notify(target, event);
+            baseReturn = QApplication::notify(target, event);
             if (dynamic_cast<MixxxMainWindow*>(touchEvent->widget())) {
                 // the touchEvent has fallen trough to the MixxxMainWindow, because there
                 // was no touch enabled widget found.
@@ -63,8 +64,9 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
                 m_fakeMouseSourcePointId = touchPoints.first().id();
                 m_fakeMouseWidget = dynamic_cast<QWidget*>(target);
                 fakeMouseWidget = m_fakeMouseWidget;
+                break;
             }
-            break;
+            return baseReturn;
         case QEvent::TouchUpdate:
             if (m_fakeMouseWidget) {
                 eventType = QEvent::MouseMove;

@@ -442,11 +442,21 @@ void DlgPrefControls::slotSetRateDir(int index) {
     float dir = 1.;
     if (index == 1)
         dir = -1.;
+    float oldDir = m_rateDirControls[0]->get();
 
     // Set rate direction for every group
     foreach (ControlObjectThread* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
+    
+    // If the setting was changed, ie the old direction is not equal to the new one,
+    // multiply the rate by -1 so the current sound does not change.
+    if(fabs(dir - oldDir) > 0.1) {
+        foreach (ControlObjectThread* pControl, m_rateControls) {
+            pControl->slotSet(-1 * pControl->get());
+        }
+    }
+    
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
