@@ -79,58 +79,24 @@
 	-->
 	<Schemes>
 		<Scheme>
-			<Name>5pm (Classic Mixxx)</Name>
+			<Name>Classic</Name>
 			<Filters/>
 		</Scheme>
 		<Scheme>
-			<Name>11pm (Dark Mixxx)</Name>
+			<Name>Dark</Name>
 			<Filters>
-				<Invert/>
-				<HueInv/>
-				<Add>
-					<Amount>50</Amount>
-				</Add>
-				<ScaleWhite>
-					<Amount>1.5</Amount>
-				</ScaleWhite>
-				<Add>
-					<Amount>-50</Amount>
-				</Add>
-			</Filters>
-		</Scheme>
-		<Scheme>
-			<Name>Noon (Ever Darker Mixxx)</Name>
-			<Filters>
-			<Invert/>
 				<HSVTweak>
-					<HMin>30</HMin>
-					<HMax>30</HMax>
-					<HConst>-27</HConst>
-					<SConst>-59</SConst>
-					<VConst>-21</VConst>
+					<HConst>90</HConst>
+					<SConst>-30</SConst>
+					<VConst>-30</VConst>
 				</HSVTweak>
-				<HSVTweak>
-					<HConst>-170</HConst>
-				</HSVTweak>
-			</Filters>
-		</Scheme>
-		<Scheme>
-			<Name>3am (Still Awake Mixxx)</Name>
-			<Filters>
-				<Invert/>
 				<Add>
-					<Amount>50</Amount>
-				</Add>
-				<ScaleWhite>
-					<Amount>1.5</Amount>
-				</ScaleWhite>
-				<Add>
-					<Amount>-50</Amount>
+					<Amount>-40</Amount>
 				</Add>
 			</Filters>
 		</Scheme>
 		<Scheme>
-			<Name>8pm (Summer Sunset Mixxx)</Name>
+			<Name>Summer Sunset</Name>
 			<Filters>
 				<HSVTweak>
 					<SMin>100</SMin>
