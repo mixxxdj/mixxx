@@ -24,7 +24,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void slotLoadCoverArt(QString coverLocation, int trackId);
 
   private slots:
-    void slotPixmapFound(QString location, QPixmap pixmap);
+    void slotPixmapFound(int trackId, QPixmap pixmap);
 
   protected:
     void paintEvent(QPaintEvent*);
@@ -52,7 +52,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_iconShow;
     QCursor m_zoomCursor;
 
-    QString m_lastRequestedLocation;
+    int m_lastRequestedTrackId;
 };
 
 #endif // WCOVERART_H

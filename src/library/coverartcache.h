@@ -21,7 +21,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     void imageLoaded();
 
   signals:
-    void pixmapFound(QString location, QPixmap pixmap);
+    void pixmapFound(int trackId, QPixmap pixmap);
     void pixmapNotFound(int trackId);
 
   protected:

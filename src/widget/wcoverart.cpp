@@ -40,8 +40,8 @@ WCoverArt::WCoverArt(QWidget* parent,
     zoomImg = zoomImg.scaled(24, 24);
     m_zoomCursor = QCursor(zoomImg);
 
-    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(QString, QPixmap)),
-            this, SLOT(slotPixmapFound(QString, QPixmap)));
+    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
+            this, SLOT(slotPixmapFound(int, QPixmap)));
 }
 
 WCoverArt::~WCoverArt() {
@@ -85,9 +85,9 @@ void WCoverArt::slotHideCoverArt() {
     loadDefaultStatus();
 }
 
-void WCoverArt::slotPixmapFound(QString location, QPixmap pixmap) {
-    if (m_lastRequestedLocation == location) {
-        m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
+void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
+    if (m_lastRequestedTrackId == trackId) {
+        //m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
         m_currentCover = pixmap;
         m_currentScaledCover = scaledCoverArt(m_currentCover);
         m_bDefaultCover = false;
@@ -102,14 +102,8 @@ void WCoverArt::slotLoadCoverArt(QString coverLocation, int trackId) {
 
     loadDefaultStatus();
 
-    if (trackId > 0) {
-        m_lastRequestedLocation = coverLocation;
-        if (m_lastRequestedLocation.isEmpty()) {
-            m_lastRequestedLocation = CoverArtCache::instance()->
-                                      getDefaultCoverLocation(trackId);
-        }
-        CoverArtCache::instance()->requestPixmap(coverLocation, trackId);
-    }
+    m_lastRequestedTrackId = trackId;
+    CoverArtCache::instance()->requestPixmap(coverLocation, trackId);
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {

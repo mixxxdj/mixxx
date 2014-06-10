@@ -36,7 +36,7 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
 
     QPixmap pixmap;
     if (QPixmapCache::find(coverLocation, &pixmap)) {
-        emit(pixmapFound(coverLocation, pixmap));
+        emit(pixmapFound(trackId, pixmap));
         return;
     }
 
@@ -71,7 +71,7 @@ void CoverArtCache::imageLoaded() {
     }
 
     if (loaded) {
-        emit(pixmapFound(coverLocation, pixmap));
+        emit(pixmapFound(trackId, pixmap));
     } else {
         emit(pixmapNotFound(trackId));
     }
