@@ -564,7 +564,7 @@
 							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
-							<Path>knobs_no_center/knob_rotary_s%1.png</Path>
+							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>32,51</Pos>
 							<Connection>
 								<ConfigKey>[EffectRack1_EffectUnit1],mix</ConfigKey>
@@ -594,7 +594,7 @@
 							<TooltipId></TooltipId>
 							<Style></Style>
 							<NumberStates>63</NumberStates>
-							<Path>knobs_no_center/knob_rotary_s%1.png</Path>
+							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>196,51</Pos>
 							<Connection>
 								<ConfigKey>[EffectRack1_EffectUnit2],mix</ConfigKey>
