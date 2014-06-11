@@ -20,162 +20,174 @@
 					<script-binding/>
 				</options>
 			</control>
+			<!-- left filter efx (deck 1+3) -->
 			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x16</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFilterButtonLeft</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>enabled</key>
 			</control>
 			<control>
-				<midino>0x1E</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFilterButtonRight</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x66</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFilterKnobLeft</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>parameter</key>
+			</control>
+			<!-- right filter efx (deck 2+4) -->
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<midino>0x1E</midino>
+				<status>0x90</status>
+				<key>enabled</key>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
 				<midino>0x67</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFilterKnobRight</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>parameter</key>
 			</control>
+			<!-- left efx unit -->
 			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x15</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1Efx1Button</key>
+				<key>DenonMC6000MK2.onEfx1Button</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<midino>0x55</midino>
+				<status>0xB0</status>
+				<key>DenonMC6000MK2.onEfx1Knob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x12</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1Efx2Button</key>
+				<key>DenonMC6000MK2.onEfx2Button</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
-				<midino>0x13</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1Efx3Button</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x55</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2Efx1Button</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x52</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2Efx2Button</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x53</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2Efx3Button</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x46</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1TapButton</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x47</midino>
-				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2TapButton</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
-				<midino>0x55</midino>
-				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx1Efx1Knob</key>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
-			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x56</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx1Efx2Knob</key>
+				<key>DenonMC6000MK2.onEfx2Knob</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<midino>0x13</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onEfx3Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x57</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx1Efx3Knob</key>
+				<key>DenonMC6000MK2.onEfx3Knob</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x58</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx1BeatsKnob</key>
+				<key>DenonMC6000MK2.onEfxBeatsKnob</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<midino>0x46</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onEfxTapButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<!-- right efx unit -->
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<midino>0x55</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onEfx1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x59</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx2Efx1Knob</key>
+				<key>DenonMC6000MK2.onEfx1Knob</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<midino>0x52</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onEfx2Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5A</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx2Efx2Knob</key>
+				<key>DenonMC6000MK2.onEfx2Knob</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<midino>0x53</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onEfx3Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5B</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx2Efx3Knob</key>
+				<key>DenonMC6000MK2.onEfx3Knob</key>
 				<options>
 					<script-binding/>
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<midino>0x47</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.onEfxTapButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5C</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onFx2BeatsKnob</key>
+				<key>DenonMC6000MK2.onEfxBeatsKnob</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -445,22 +457,18 @@
 				<options/>
 			</control>
 			<control>
-				<group>[Channel1]</group>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x58</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel1]_enable</key>
+				<options/>
 			</control>
 			<control>
-				<group>[Channel1]</group>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5C</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel1]_enable</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -868,22 +876,18 @@
 				<options/>
 			</control>
 			<control>
-				<group>[Channel2]</group>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x59</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel2]_enable</key>
+				<options/>
 			</control>
 			<control>
-				<group>[Channel2]</group>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5D</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel2]_enable</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -1291,22 +1295,18 @@
 				<options/>
 			</control>
 			<control>
-				<group>[Channel3]</group>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x5A</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel3]_enable</key>
+				<options/>
 			</control>
 			<control>
-				<group>[Channel3]</group>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5E</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel3]_enable</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1714,22 +1714,18 @@
 				<options/>
 			</control>
 			<control>
-				<group>[Channel4]</group>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x5B</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx1AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel4]_enable</key>
+				<options/>
 			</control>
 			<control>
-				<group>[Channel4]</group>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5F</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onFx2AssignButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>group_[Channel4]_enable</key>
+				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
@@ -2212,7 +2208,7 @@
 				<midino>0x56</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.8</minimum>
+				<minimum>0.75</minimum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -2221,7 +2217,7 @@
 				<midino>0x56</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.8</minimum>
+				<minimum>0.75</minimum>
 			</output>
 			<output>
 				<group>[Channel3]</group>
@@ -2230,7 +2226,7 @@
 				<midino>0x56</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.8</minimum>
+				<minimum>0.75</minimum>
 			</output>
 			<output>
 				<group>[Channel4]</group>
@@ -2239,7 +2235,7 @@
 				<midino>0x56</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.8</minimum>
+				<minimum>0.75</minimum>
 			</output>
 			<!-- VU meter: 2nd yellow -->
 			<output>
@@ -2249,7 +2245,7 @@
 				<midino>0x57</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.87</minimum>
+				<minimum>0.85</minimum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -2258,7 +2254,7 @@
 				<midino>0x57</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.87</minimum>
+				<minimum>0.85</minimum>
 			</output>
 			<output>
 				<group>[Channel3]</group>
@@ -2267,7 +2263,7 @@
 				<midino>0x57</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.87</minimum>
+				<minimum>0.85</minimum>
 			</output>
 			<output>
 				<group>[Channel4]</group>
@@ -2276,7 +2272,7 @@
 				<midino>0x57</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.87</minimum>
+				<minimum>0.85</minimum>
 			</output>
 			<!-- VU meter: 3rd yellow -->
 			<output>
@@ -2286,7 +2282,7 @@
 				<midino>0x58</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.94</minimum>
+				<minimum>0.92</minimum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -2295,7 +2291,7 @@
 				<midino>0x58</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.94</minimum>
+				<minimum>0.92</minimum>
 			</output>
 			<output>
 				<group>[Channel3]</group>
@@ -2304,7 +2300,7 @@
 				<midino>0x58</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.94</minimum>
+				<minimum>0.92</minimum>
 			</output>
 			<output>
 				<group>[Channel4]</group>
@@ -2313,7 +2309,7 @@
 				<midino>0x58</midino>
 				<on>0x01</on>
 				<off>0x00</off>
-				<minimum>0.94</minimum>
+				<minimum>0.92</minimum>
 			</output>
 			<!-- VU meter: red (peak) -->
 			<output>
