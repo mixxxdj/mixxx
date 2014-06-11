@@ -212,17 +212,6 @@ void TrackInfoObject::parse() {
     }
 }
 
-QImage TrackInfoObject::parseCoverArt() {
-    const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
-    SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
-
-    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
-        return pProxiedSoundSource->getCoverArt();
-    }
-    return QImage();
-}
-
 void TrackInfoObject::parseArtist() {
     QMutexLocker lock(&m_qMutex);
     QString filename = m_fileInfo.fileName();

@@ -1,6 +1,7 @@
 #include <QStringBuilder>
 
 #include "library/coverart.h"
+#include "soundsourceproxy.h"
 
 CoverArt::CoverArt()
         : m_pConfig(NULL),
@@ -79,11 +80,24 @@ QString CoverArt::getDefaultCoverLocation(TrackPointer pTrack) {
     return getDefaultCoverLocation(coverArtName);
 }
 
+// this method will parse the information stored in the sound file
+// just to extract the embedded cover art
+QImage CoverArt::searchEmbeddedCover(TrackPointer pTrack) {
+    QString canonicalLocation = pTrack->getCanonicalLocation();
+    SecurityTokenPointer securityToken = pTrack->getSecurityToken();
+    SoundSourceProxy proxy(canonicalLocation, securityToken);
+    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
+        return pProxiedSoundSource->getCoverArt();
+    }
+    return QImage();
+}
+
 QImage CoverArt::searchCoverArt(TrackPointer pTrack) {
     //
     // Step 1: Look for embedded cover art.
     //
-    QImage image = pTrack->parseCoverArt();
+    QImage image = searchEmbeddedCover(pTrack);
     if (!image.isNull()) {
         return image; // FOUND!
     }

@@ -31,6 +31,7 @@ class CoverArt : public QObject, public Singleton<CoverArt> {
 
     const char* m_cDefaultImageFormat;
 
+    QImage searchEmbeddedCover(TrackPointer pTrack);
     QString searchInTrackDirectory(QString directory);
 };
 
