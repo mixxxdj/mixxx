@@ -355,6 +355,52 @@
 							</Connection>
 						</PushButton>
 						
+												<!--
+						**********************************************
+						PLF FX Button
+						**********************************************
+						-->
+						<PushButton>
+							<TooltipId></TooltipId>
+							<Style></Style>
+							<NumberStates>2</NumberStates>
+							<State>
+								<Number>0</Number>
+								<Pressed>btn_pfl_fx_down.png</Pressed>
+								<Unpressed>btn_pfl_fx.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_pfl_fx_overdown.png</Pressed>
+								<Unpressed>btn_pfl_fx_over.png</Unpressed>
+							</State>
+							<Pos>95,57</Pos>
+							<Connection>
+								<ConfigKey>[EffectRack1_EffectUnit1],group_[Headphone]_enable</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+						</PushButton>
+					    
+						<PushButton>
+							<TooltipId></TooltipId>
+							<Style></Style>
+							<NumberStates>2</NumberStates>
+							<State>
+								<Number>0</Number>
+								<Pressed>btn_pfl_fx_down.png</Pressed>
+								<Unpressed>btn_pfl_fx.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_pfl_fx_overdown.png</Pressed>
+								<Unpressed>btn_pfl_fx_over.png</Unpressed>
+							</State>
+							<Pos>145,57</Pos>
+							<Connection>
+								<ConfigKey>[EffectRack1_EffectUnit2],group_[Headphone]_enable</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+						</PushButton>
 
 	
 						<!--
