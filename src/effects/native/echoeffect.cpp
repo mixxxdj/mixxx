@@ -158,10 +158,12 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
         gs.delay_buf[gs.write_position + 1] *= feedback_amount;
         gs.delay_buf[gs.write_position] += pInput[i] * send_amount * write_ramper;
         gs.delay_buf[gs.write_position + 1] += pInput[i + 1] * send_amount * write_ramper;
+        gs.delay_buf[gs.write_position] =
+                SampleUtil::clampSample(gs.delay_buf[gs.write_position]);
+        gs.delay_buf[gs.write_position + 1] =
+                SampleUtil::clampSample(gs.delay_buf[gs.write_position + 1]);
         INCREMENT_RING(gs.write_position, 2, delay_samples);
     }
-
-    // TODO(owilliams): delay buffer clipping goes here.
 
     // Pingpong the output.  If the pingpong value is zero, all of the
     // math below should result in a simple copy of delay buf to pOutput.
@@ -169,20 +171,20 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
         if (gs.ping_pong_left) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] =
+            pOutput[i] = pInput[i] +
                     (gs.delay_buf[read_position] +
                             gs.delay_buf[read_position + 1] * pingpong_frac) /
                     (1 + pingpong_frac);
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] =
+            pOutput[i + 1] = pInput[i + 1] +
                     gs.delay_buf[read_position + 1] * (1 - pingpong_frac);
         } else {
             // Left sample reduced by (1 - fraction)
-            pOutput[i] =
+            pOutput[i] = pInput[i] +
                     gs.delay_buf[read_position] * (1 - pingpong_frac);
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] =
+            pOutput[i + 1] = pInput[i + 1] +
                     (gs.delay_buf[read_position + 1] +
                             gs.delay_buf[read_position] * pingpong_frac) /
                     (1 + pingpong_frac);
