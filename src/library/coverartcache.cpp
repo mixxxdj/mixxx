@@ -89,7 +89,3 @@ CoverArtCache::coverTuple CoverArtCache::loadImage(QString coverLocation,
     r.img = QImage(coverLocation);
     return r;
 }
-
-QString CoverArtCache::getDefaultCoverLocation(int trackId) {
-    return m_pCoverArtDAO->getDefaultCoverLocation(trackId);
-}

@@ -319,9 +319,6 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
 
-    int coverArtId = m_coverArtDao.saveCoverLocation(pTrack->getCoverArtLocation());
-    m_pQueryLibraryInsert->bindValue(":cover_art", coverArtId);
-
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
 
@@ -938,7 +935,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
             pTrack->setAlbumArtist(albumArtist);
-            pTrack->setCoverArtLocation(m_coverArtDao.getCoverArtLocation(coverArtId));
             pTrack->setYear(year);
             pTrack->setGenre(genre);
             pTrack->setComposer(composer);
@@ -1104,7 +1100,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
                   "title=:title, album=:album, "
-                  "album_artist=:album_artist, cover_art=:cover_art, "
+                  "album_artist=:album_artist, "
                   "year=:year, genre=:genre, composer=:composer, "
                   "grouping=:grouping, filetype=:filetype, "
                   "tracknumber=:tracknumber, comment=:comment, url=:url, "
@@ -1122,7 +1118,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
     query.bindValue(":album_artist", pTrack->getAlbumArtist());
-    query.bindValue(":cover_art", m_coverArtDao.getCoverArtId(pTrack->getCoverArtLocation()));
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":composer", pTrack->getComposer());

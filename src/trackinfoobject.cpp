@@ -685,19 +685,6 @@ int TrackInfoObject::getChannels() const {
     return m_iChannels;
 }
 
-void TrackInfoObject::setCoverArtLocation(const QString& location) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_sCoverArtLocation != location) {
-        m_sCoverArtLocation = location;
-        setDirty(true);
-    }
-}
-
-QString TrackInfoObject::getCoverArtLocation() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_sCoverArtLocation;
-}
-
 int TrackInfoObject::getLength() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.size();

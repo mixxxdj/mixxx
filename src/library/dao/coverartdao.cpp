@@ -56,7 +56,7 @@ void CoverArtDAO::slotCoverArtScan(int trackId) {
         return;
     }
 
-    QString coverLocation = pTrack->getCoverArtLocation();
+    QString coverLocation = getCoverArtLocation(trackId, true);
 
     // handling cases when the file was externally removed from disk-cache
     bool removedFromDisk = false;
@@ -218,7 +218,6 @@ TrackPointer CoverArtDAO::getTrackFromDB(int trackId) {
                                                    false));
             pTrack->setArtist(artist);
             pTrack->setAlbum(album);
-            pTrack->setCoverArtLocation(cover);
 
             return pTrack;
         }
