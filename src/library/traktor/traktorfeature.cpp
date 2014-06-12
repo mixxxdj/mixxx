@@ -146,7 +146,7 @@ void TraktorFeature::activate() {
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit (featureIsLoading(this));
+        emit (featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pTraktorTableModel));
