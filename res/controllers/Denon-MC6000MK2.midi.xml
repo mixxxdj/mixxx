@@ -78,28 +78,19 @@
 				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x56</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onEfx2Knob</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>parameter</key>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x13</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onEfx3Button</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>enabled</key>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x57</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onEfx3Knob</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>mix</key>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
@@ -151,28 +142,19 @@
 				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5A</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onEfx2Knob</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>parameter</key>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x53</midino>
 				<status>0x90</status>
-				<key>DenonMC6000MK2.onEfx3Button</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>enabled</key>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5B</midino>
 				<status>0xB0</status>
-				<key>DenonMC6000MK2.onEfx3Knob</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>mix</key>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
@@ -207,21 +189,18 @@
 				<midino>0x28</midino>
 				<status>0x90</status>
 				<key>ToggleSelectedSidebarItem</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Playlist]</group>
 				<midino>0x29</midino>
 				<status>0x90</status>
 				<key>SelectNextPlaylist</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Playlist]</group>
 				<midino>0x30</midino>
 				<status>0x90</status>
 				<key>SelectPrevPlaylist</key>
-				<options/>
 			</control>
 
 			<!-- [Master] Controls -->
@@ -231,7 +210,6 @@
 				<midino>0x16</midino>
 				<status>0xB0</status>
 				<key>crossfader</key>
-				<options/>
 			</control>
 			<control>
 				<!-- Xfader Video -->
@@ -239,28 +217,24 @@
 				<midino>0x17</midino>
 				<status>0xB0</status>
 				<key>crossfader</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Master]</group>
 				<midino>0x19</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Master]</group>
 				<midino>0x43</midino>
 				<status>0xB0</status>
 				<key>headMix</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Master]</group>
 				<midino>0x44</midino>
 				<status>0xB0</status>
 				<key>headVolume</key>
-				<options/>
 			</control>
 
 			<!-- Left-side [Sampler1/2/3/4] Controls (MIDI Ch0) -->
@@ -426,49 +400,42 @@
 				<midino>0x01</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x02</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x03</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x04</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x05</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x58</midino>
 				<status>0x90</status>
 				<key>group_[Channel1]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5C</midino>
 				<status>0x90</status>
 				<key>group_[Channel1]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -593,7 +560,6 @@
 				<group>[Channel1]</group>
 				<status>0xE0</status>
 				<key>rate</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -845,49 +811,42 @@
 				<midino>0x07</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x08</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x09</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x0A</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x0B</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x59</midino>
 				<status>0x90</status>
 				<key>group_[Channel2]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5D</midino>
 				<status>0x90</status>
 				<key>group_[Channel2]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -1012,7 +971,6 @@
 				<group>[Channel2]</group>
 				<status>0xE2</status>
 				<key>rate</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -1264,49 +1222,42 @@
 				<midino>0x0C</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x0D</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x0E</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x0F</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
 				<midino>0x10</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x5A</midino>
 				<status>0x90</status>
 				<key>group_[Channel3]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5E</midino>
 				<status>0x90</status>
 				<key>group_[Channel3]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1431,7 +1382,6 @@
 				<group>[Channel3]</group>
 				<status>0xE1</status>
 				<key>rate</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1683,49 +1633,42 @@
 				<midino>0x11</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x12</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x13</midino>
 				<status>0xB0</status>
 				<key>filterMid</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x14</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
 				<midino>0x15</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<midino>0x5B</midino>
 				<status>0x90</status>
 				<key>group_[Channel4]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<midino>0x5F</midino>
 				<status>0x90</status>
 				<key>group_[Channel4]_enable</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
@@ -1850,7 +1793,6 @@
 				<group>[Channel4]</group>
 				<status>0xE3</status>
 				<key>rate</key>
-				<options/>
 			</control>
 			<control>
 				<group>[Channel4]</group>
