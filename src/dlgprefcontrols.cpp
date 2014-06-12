@@ -600,7 +600,7 @@ bool DlgPrefControls::checkSkinResolution(QString skin)
     int screenWidth = QApplication::desktop()->width();
     int screenHeight = QApplication::desktop()->height();
 
-    const QRegExp min_size_regex("<MinimumSize>(\\d+),(\\d+)<");
+    const QRegExp min_size_regex("<MinimumSize>(\\d+), *(\\d+)<");
     QFile skinfile(skin + "/skin.xml");
     if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream in(&skinfile);
