@@ -24,19 +24,6 @@ EffectManifest EchoEffect::getManifest() {
             "frequencies"));
 
     EffectManifestParameter* time = manifest.addParameter();
-    time->setId("delay_time");
-    time->setName(QObject::tr("Delay"));
-    time->setDescription(QObject::tr("Delay time (seconds)"));
-    time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
-    time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
-    time->setLinkHint(EffectManifestParameter::LINK_LINKED);
-    time->setMinimum(0.1);
-    time->setDefault(0.25);
-    time->setMaximum(2.0);
-
-    time = manifest.addParameter();
     time->setId("send_amount");
     time->setName(QObject::tr("Send"));
     time->setDescription(
@@ -48,6 +35,19 @@ EffectManifest EchoEffect::getManifest() {
     time->setMinimum(0.0);
     time->setDefault(1.0);
     time->setMaximum(1.0);
+
+    time = manifest.addParameter();
+    time->setId("delay_time");
+    time->setName(QObject::tr("Delay"));
+    time->setDescription(QObject::tr("Delay time (seconds)"));
+    time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
+    time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
+    time->setLinkHint(EffectManifestParameter::LINK_LINKED);
+    time->setMinimum(0.1);
+    time->setDefault(0.25);
+    time->setMaximum(2.0);
 
     time = manifest.addParameter();
     time->setId("feedback_amount");
@@ -158,6 +158,7 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
         gs.delay_buf[gs.write_position + 1] *= feedback_amount;
         gs.delay_buf[gs.write_position] += pInput[i] * send_amount * write_ramper;
         gs.delay_buf[gs.write_position + 1] += pInput[i + 1] * send_amount * write_ramper;
+        // Actual delays distort and saturate, so clamp the buffer here.
         gs.delay_buf[gs.write_position] =
                 SampleUtil::clampSample(gs.delay_buf[gs.write_position]);
         gs.delay_buf[gs.write_position + 1] =
@@ -171,23 +172,23 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
         if (gs.ping_pong_left) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] = pInput[i] +
+            pOutput[i] = (pInput[i] +
                     (gs.delay_buf[read_position] +
                             gs.delay_buf[read_position + 1] * pingpong_frac) /
-                    (1 + pingpong_frac);
+                    (1 + pingpong_frac)) / 2.0;
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] = pInput[i + 1] +
-                    gs.delay_buf[read_position + 1] * (1 - pingpong_frac);
+            pOutput[i + 1] = (pInput[i + 1] +
+                    gs.delay_buf[read_position + 1] * (1 - pingpong_frac)) / 2.0;
         } else {
             // Left sample reduced by (1 - fraction)
-            pOutput[i] = pInput[i] +
-                    gs.delay_buf[read_position] * (1 - pingpong_frac);
+            pOutput[i] = (pInput[i] +
+                    gs.delay_buf[read_position] * (1 - pingpong_frac)) / 2.0;
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = pInput[i + 1] +
+            pOutput[i + 1] = (pInput[i + 1] +
                     (gs.delay_buf[read_position + 1] +
                             gs.delay_buf[read_position] * pingpong_frac) /
-                    (1 + pingpong_frac);
+                    (1 + pingpong_frac)) / 2.0;
         }
 
         INCREMENT_RING(read_position, 2, delay_samples);
