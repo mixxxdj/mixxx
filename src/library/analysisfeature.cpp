@@ -145,7 +145,10 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
 
 void AnalysisFeature::slotProgressUpdate(int num_left) {
 	int num_tracks = m_pAnalysisView->getNumTracks();
-	setTitleProgress(num_tracks - num_left, num_tracks);
+    if (num_left > 0) {
+        int currentTrack = num_tracks - num_left + 1;
+        setTitleProgress(currentTrack, num_tracks);
+    }
 }
 
 void AnalysisFeature::stopAnalysis() {
