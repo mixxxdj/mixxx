@@ -3,7 +3,6 @@
 #include <QLabel>
 #include <QPainter>
 
-#include "library/coverart.h"
 #include "library/coverartcache.h"
 #include "wcoverart.h"
 #include "wskincolor.h"

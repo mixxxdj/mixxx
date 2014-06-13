@@ -4,13 +4,13 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-#include "library/coverart.h"
+#include "configobject.h"
 #include "library/dao/dao.h"
 
 class CoverArtDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
-    CoverArtDAO(QSqlDatabase& database);
+    CoverArtDAO(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig);
     virtual ~CoverArtDAO();
     void setDatabase(QSqlDatabase& database) { m_database = database; }
 
@@ -27,10 +27,22 @@ class CoverArtDAO : public QObject, public virtual DAO {
 
   private:
     QSqlDatabase& m_database;
-    CoverArt* m_pCoverArt;
+    const char* m_cDefaultImageFormat;
 
-    TrackPointer getTrackFromDB(int trackId);
+    struct coverArtInfo {
+        QString currentCoverLocation;
+        QString defaultCoverLocation;
+        QString trackDirectory;
+        QString trackLocation;
+    };
+
     bool updateLibrary(int trackId, int coverId);
+    coverArtInfo getCoverArtInfo(int trackId);
+
+    bool deleteFile(const QString& location);
+    bool saveImage(QImage cover, QString location);
+    QImage searchEmbeddedCover(QString trackLocation);
+    QString searchInTrackDirectory(QString directory);
 };
 
 #endif // COVERARTDAO_H
