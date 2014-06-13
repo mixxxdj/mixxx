@@ -25,7 +25,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pVisualPlayPos(NULL),
           m_pTrackSamples(NULL),
           m_pTrackSampleRate(NULL),
-          m_pScratch(NULL),
           m_pScratchToggle(NULL),
           m_pScratchPos(NULL),
           m_pVinylControlSpeedType(NULL),
@@ -76,7 +75,6 @@ WSpinny::~WSpinny() {
         delete m_pPlayPos;
         delete m_pTrackSamples;
         delete m_pTrackSampleRate;
-        delete m_pScratch;
         delete m_pScratchToggle;
         delete m_pScratchPos;
         delete m_pSlipEnabled;
@@ -156,8 +154,6 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_pTrackSampleRate = new ControlObjectThread(
             group, "track_samplerate");
 
-    m_pScratch = new ControlObjectThread(
-            group, "scratch2");
     m_pScratchToggle = new ControlObjectThread(
             group, "scratch_position_enable");
     m_pScratchPos = new ControlObjectThread(

@@ -1,8 +1,8 @@
 // Based on Numark Mixtrack Mapping Script Functions
 // 1/11/2010 - v0.1 - Matteo <matteo@magm3.com>
 //
-// 5/18/2011 - Changed by James Ralston 
-//  
+// 5/18/2011 - Changed by James Ralston
+//
 // Known Bugs:
 //	Mixxx complains about an undefined variable on 1st load of the mapping (ignore it, then restart Mixxx)
 //	Each slide/knob needs to be moved on Mixxx startup to match levels with the Mixxx UI
@@ -23,8 +23,6 @@
 //
 // 	Load track: 	Only if the track is paused. Put the pitch in 0 at load.
 //
-//	Keylock: disabled on wheel touch when in scratch mode (make noise anyway at exit scratch).
-//
 //  	Gain: 	The 3rd knob of the "effect" section is "Gain" (up to clip).
 //
 //	Effect:	Flanger. 1st and 2nd knob modify Depth and Delay.
@@ -41,13 +39,13 @@
 //
 // 	Pitch: 	Up, Up; Down, Down. Pitch slide are inverted, to match with the screen (otherwise is very confusing).
 //		Soft-takeover to prevent sudden wide parameter changes when the on-screen control diverges from a hardware control.
-//		The control will have no effect until the position is close to that of the software, 
+//		The control will have no effect until the position is close to that of the software,
 //		at which point it will take over and operate as usual.
 //
 // 	Auto Loop (LED ON): 	Active at program Start.
 //				"1 Bar" button: Active an Instant 4 beat Loop. Press again to exit loop.
 //
-//	Scratch: 
+//	Scratch:
 //	In Stop mode, with Scratch OFF or ON: 	Scratch at touch, and Stop moving when the wheel stop moving.
 //	In Play mode, with Scratch OFF: 	Only Pitch bend.
 // 	In Play mode, with Scratch ON: 		Scratch at touch and, in Backwards Stop Scratch when the wheel stop moving for 20ms -> BACKSPIN EFFECT!!!!.
@@ -60,7 +58,7 @@ function NumarkMixTrackPro() {}
 
 NumarkMixTrackPro.init = function(id) {	// called when the MIDI device is opened & set up
 	NumarkMixTrackPro.id = id;	// Store the ID of this device for later use
-	
+
 	NumarkMixTrackPro.directoryMode = false;
 	NumarkMixTrackPro.scratchMode = [false, false];
 	NumarkMixTrackPro.manualLoop = [true, true];
@@ -73,19 +71,19 @@ NumarkMixTrackPro.init = function(id) {	// called when the MIDI device is opened
 		// Common
 		{ "directory": 0x73, "file": 0x72 },
 		// Deck 1
-		{ "rate": 0x70, "scratchMode": 0x48, "manualLoop": 0x61, 
+		{ "rate": 0x70, "scratchMode": 0x48, "manualLoop": 0x61,
 		"loop_start_position": 0x53, "loop_end_position": 0x54, "reloop_exit": 0x55,
 		"deleteKey" : 0x59, "hotCue1" : 0x5a,"hotCue2" : 0x5b,"hotCue3" :  0x5c,
-		"stutter" : 0x4a, "Cue" : 0x33, "sync" : 0x40 
+		"stutter" : 0x4a, "Cue" : 0x33, "sync" : 0x40
 		},
 		// Deck 2
-		{ "rate": 0x71, "scratchMode": 0x50, "manualLoop": 0x62, 
+		{ "rate": 0x71, "scratchMode": 0x50, "manualLoop": 0x62,
 		"loop_start_position": 0x56, "loop_end_position": 0x57, "reloop_exit": 0x58,
 		"deleteKey" : 0x5d, "hotCue1" : 0x5e, "hotCue2" : 0x5f, "hotCue3" :  0x60,
-		"stutter" : 0x4c, "Cue" : 0x3c, "sync" : 0x47 
+		"stutter" : 0x4c, "Cue" : 0x3c, "sync" : 0x47
 		 }
 	];
-	
+
 	NumarkMixTrackPro.ledTimers = {};
 
 	NumarkMixTrackPro.LedTimer = function(id, led, count, state){
@@ -98,7 +96,7 @@ NumarkMixTrackPro.init = function(id) {	// called when the MIDI device is opened
 	for (i=0x30; i<=0x73; i++) midi.sendShortMsg(0x90, i, 0x00); 	// Turn off all the lights
 
 	NumarkMixTrackPro.hotCue = {
-			//Deck 1 
+			//Deck 1
 			0x5a:"1", 0x5b:"2", 0x5c:"3",
 			//Deck 2
 			0x5e: "1", 0x5f:"2", 0x60:"3"
@@ -147,7 +145,7 @@ NumarkMixTrackPro.Stutter1Beat = function (value) {
 
 	var secondsBlink = 30;
     	var secondsToEnd = engine.getValue("[Channel1]", "duration") * (1-engine.getValue("[Channel1]", "playposition"));
-	
+
 	if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel1]", "play")) { // The song is going to end
 
 		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[1]["Cue"], value);
@@ -160,11 +158,11 @@ NumarkMixTrackPro.Stutter2Beat = function (value) {
 
 	var secondsBlink = 30;
     	var secondsToEnd = engine.getValue("[Channel2]", "duration") * (1-engine.getValue("[Channel2]", "playposition"));
-	
+
 	if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel2]", "play")) { // The song is going to end
 
 		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[2]["Cue"], value);
-	}	
+	}
 
 	NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[2]["stutter"], value);
 
@@ -172,7 +170,7 @@ NumarkMixTrackPro.Stutter2Beat = function (value) {
 
 NumarkMixTrackPro.clipLED = function (value, note) {
 
-	if (value>0) NumarkMixTrackPro.flashLED(note, 1); 
+	if (value>0) NumarkMixTrackPro.flashLED(note, 1);
 
 }
 
@@ -182,7 +180,7 @@ NumarkMixTrackPro.shutdown = function(id) {	// called when the MIDI device is cl
 	for (var i=1; i<2; i++){
 		for (var x=1; x<4; x++){
 			engine.connectControl("[Channel" + i +"]", "hotcue_"+ x +"_enabled", "NumarkMixTrackPro.onHotCueChange", true);
-		}	
+		}
 		NumarkMixTrackPro.setLoopMode(i, false);
 	}
 
@@ -220,7 +218,7 @@ NumarkMixTrackPro.setLED = function(value, status) {
 	midi.sendShortMsg(0x90, value, status);
 }
 
-NumarkMixTrackPro.flashLED = function (led, veces){	
+NumarkMixTrackPro.flashLED = function (led, veces){
 	var ndx = Math.random();
 	var func = "NumarkMixTrackPro.doFlash(" + ndx + ", " + veces + ")";
 	var id = engine.beginTimer(120, func);
@@ -229,9 +227,9 @@ NumarkMixTrackPro.flashLED = function (led, veces){
 
 NumarkMixTrackPro.doFlash = function(ndx, veces){
 	var ledTimer = NumarkMixTrackPro.ledTimers[ndx];
-	
+
 	if (!ledTimer) return;
-	
+
 	if (ledTimer.count > veces){ // how many times blink the button
 		engine.stopTimer(ledTimer.id);
 		delete NumarkMixTrackPro.ledTimers[ndx];
@@ -266,7 +264,7 @@ NumarkMixTrackPro.LoadTrack = function(channel, control, value, status, group) {
 
 	// Load the selected track in the corresponding deck only if the track is paused
 
-	if(value && engine.getValue(group, "play") != 1) 
+	if(value && engine.getValue(group, "play") != 1)
 	{
 		engine.setValue(group, "LoadSelectedTrack", 1);
 
@@ -284,7 +282,7 @@ NumarkMixTrackPro.flanger = function(channel, control, value, status, group) {
 // 	if (!value) return;
 
 	var deck = NumarkMixTrackPro.groupToDeck(group);
-	
+
 	var speed = 1;
 
 	if(NumarkMixTrackPro.deleteKey[deck-1]){
@@ -389,14 +387,14 @@ NumarkMixTrackPro.playbutton = function(channel, control, value, status, group) 
 
 NumarkMixTrackPro.loopIn = function(channel, control, value, status, group) {
 	var deck = NumarkMixTrackPro.groupToDeck(group);
-	
+
 	if (NumarkMixTrackPro.manualLoop[deck-1]){
 		if (!value) return;
 		// Act like the Mixxx UI
 		engine.setValue(group, "loop_in", status?1:0);
 		return;
-	} 
-	
+	}
+
 	// Auto Loop: 1/2 loop size
 	var start = engine.getValue(group, "loop_start_position");
 	var end = engine.getValue(group, "loop_end_position");
@@ -410,7 +408,7 @@ NumarkMixTrackPro.loopIn = function(channel, control, value, status, group) {
 		var end = engine.getValue(group, "loop_end_position");
 		var len = (end - start) / 2;
 		engine.setValue(group, "loop_end_position", start + len);
-		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["loop_start_position"], true);  
+		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["loop_start_position"], true);
 	} else {
 		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["loop_start_position"], false);
 	}
@@ -418,9 +416,9 @@ NumarkMixTrackPro.loopIn = function(channel, control, value, status, group) {
 
 NumarkMixTrackPro.loopOut = function(channel, control, value, status, group) {
 	var deck = NumarkMixTrackPro.groupToDeck(group);
-	
+
 	if (!value) return;
-	
+
 	if (NumarkMixTrackPro.manualLoop[deck-1]){
 		// Act like the Mixxx UI
 		engine.setValue(group, "loop_out", status?1:0);
@@ -428,7 +426,7 @@ NumarkMixTrackPro.loopOut = function(channel, control, value, status, group) {
 	}
 
 	var isLoopActive = engine.getValue(group, "loop_enabled");
-		
+
 	// Set a 4 beat auto loop or exit the loop
 
 	if(!isLoopActive){
@@ -444,7 +442,7 @@ NumarkMixTrackPro.repositionHack = function(group, oldPosition){
 	if (engine.getValue(group, "loop_start_position")==oldPosition){
 		if (NumarkMixTrackPro.hackCount[group]++ < 9){
 			engine.beginTimer(20, "NumarkMixTrackPro.repositionHack('" + group + "', " + oldPosition + ")", true);
-		} else {			
+		} else {
 			var deck = NumarkMixTrackPro.groupToDeck(group);
 			NumarkMixTrackPro.flashLED(NumarkMixTrackPro.leds[deck]["loop_start_position"], 4);
 		}
@@ -457,7 +455,7 @@ NumarkMixTrackPro.repositionHack = function(group, oldPosition){
 
 NumarkMixTrackPro.reLoop = function(channel, control, value, status, group) {
 	var deck = NumarkMixTrackPro.groupToDeck(group);
-	
+
 	if (NumarkMixTrackPro.manualLoop[deck-1]){
 		// Act like the Mixxx UI (except for working delete)
 		if (!value) return;
@@ -471,7 +469,7 @@ NumarkMixTrackPro.reLoop = function(channel, control, value, status, group) {
 		}
 		return;
 	}
-	
+
 	// Auto Loop: Double Loop Size
 	var start = engine.getValue(group, "loop_start_position");
 	var end = engine.getValue(group, "loop_end_position");
@@ -497,7 +495,7 @@ NumarkMixTrackPro.setLoopMode = function(deck, manual) {
 	engine.connectControl("[Channel" + deck + "]", "loop_end_position", "NumarkMixTrackPro.onLoopChange", !manual);
 	engine.connectControl("[Channel" + deck + "]", "loop_enabled", "NumarkMixTrackPro.onReloopExitChange", !manual);
 	engine.connectControl("[Channel" + deck + "]", "loop_enabled", "NumarkMixTrackPro.onReloopExitChangeAuto", manual);
-	
+
 	var group = "[Channel" + deck + "]"
 	if (manual){
 		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["loop_start_position"], engine.getValue(group, "loop_start_position")>-1);
@@ -506,13 +504,13 @@ NumarkMixTrackPro.setLoopMode = function(deck, manual) {
 	}else{
 		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["loop_start_position"], false);
 		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["loop_end_position"], engine.getValue(group, "loop_enabled"));
-		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["reloop_exit"], false);		
+		NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["reloop_exit"], false);
 	}
 }
 
 NumarkMixTrackPro.toggleManualLooping = function(channel, control, value, status, group) {
 	if (!value) return;
-	
+
 	var deck = NumarkMixTrackPro.groupToDeck(group);
 
 	if(NumarkMixTrackPro.deleteKey[deck-1]){
@@ -526,7 +524,7 @@ NumarkMixTrackPro.toggleManualLooping = function(channel, control, value, status
 
 		NumarkMixTrackPro.toggleDeleteKey(channel, control, value, status, group);
 	} else {
-	
+
 		NumarkMixTrackPro.setLoopMode(deck, !NumarkMixTrackPro.manualLoop[deck-1]);
 	}
 }
@@ -592,10 +590,10 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 
 			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
-		} 
+		}
 
 	} else { // en stop hace scratch siempre
-	
+
 		if (!NumarkMixTrackPro.touch[deck-1]){
 
 			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
@@ -613,7 +611,7 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 		var gammaOutputRange = 2;	// Max rate change
 
 		adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction), sensitivity);
-		engine.setValue(group, "jog", adjustedJog);	
+		engine.setValue(group, "jog", adjustedJog);
 	}
 
 }
@@ -622,14 +620,6 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 NumarkMixTrackPro.jogWheelStopScratch = function(deck) {
 	NumarkMixTrackPro.scratchTimer[deck-1] = -1;
 	engine.scratchDisable(deck);
-
-		if (NumarkMixTrackPro.isKeyLocked[deck-1] == 1) {
-			// print ("restaurando keylock");
-			// Restore the previous state of the Keylock
-			engine.setValue("[Channel"+deck+"]", "keylock", NumarkMixTrackPro.isKeyLocked[deck-1]);
-			NumarkMixTrackPro.isKeyLocked[deck-1] = 0;
-		}
-		
 }
 
 NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
@@ -640,7 +630,7 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 
 		NumarkMixTrackPro.touch[deck-1]= false;
 
-// 	paro el timer (si no existe da error mmmm) y arranco un nuevo timer. 
+// 	paro el timer (si no existe da error mmmm) y arranco un nuevo timer.
 // 	Si en 20 milisegundos no se mueve el plato, desactiva el scratch
 
 		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
@@ -651,14 +641,6 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 
 		// si esta en play y el modo scratch desactivado, al presionar el touch no hace nada
 		if (!NumarkMixTrackPro.scratchMode[deck-1] && engine.getValue(group, "play")) return;
-
-		// Save the current state of the keylock
-		NumarkMixTrackPro.isKeyLocked[deck-1] = engine.getValue(group, "keylock");
-		// Turn the Keylock off for scratching
-		if (NumarkMixTrackPro.isKeyLocked[deck-1]){
-			engine.setValue(group, "keylock", 0);
-		}
-
 
 		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 
@@ -681,7 +663,7 @@ NumarkMixTrackPro.toggleDirectoryMode = function(channel, control, value, status
 
 NumarkMixTrackPro.toggleScratchMode = function(channel, control, value, status, group) {
 	if (!value) return;
-	
+
 	var deck = NumarkMixTrackPro.groupToDeck(group);
 	// Toggle setting and light
 	NumarkMixTrackPro.scratchMode[deck-1] = !NumarkMixTrackPro.scratchMode[deck-1];
@@ -709,7 +691,7 @@ NumarkMixTrackPro.changeHotCue = function(channel, control, value, status, group
 	} else {
 		if (value) {
 			engine.setValue(group, "hotcue_" + hotCue + "_activate", 1);
-			
+
 		}else{
 
 			engine.setValue(group, "hotcue_" + hotCue + "_activate", 0);
@@ -722,8 +704,6 @@ NumarkMixTrackPro.toggleDeleteKey = function(channel, control, value, status, gr
 	if (!value) return;
 
 	var deck = NumarkMixTrackPro.groupToDeck(group);
-	NumarkMixTrackPro.deleteKey[deck-1] = !NumarkMixTrackPro.deleteKey[deck-1]; 
+	NumarkMixTrackPro.deleteKey[deck-1] = !NumarkMixTrackPro.deleteKey[deck-1];
 	NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck]["deleteKey"], NumarkMixTrackPro.deleteKey[deck-1]);
 }
-
-
