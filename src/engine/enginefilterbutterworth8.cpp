@@ -31,7 +31,7 @@ EngineFilterButterworth8::EngineFilterButterworth8(int bufSize)
           m_bufSize(bufSize),
           m_doRamping(false) {
     initBuffers();
-    memset(m_coef, 0, MAX_COEFS * sizeof(CSAMPLE));
+    memset(m_coef, 0, MAX_COEFS * sizeof(double));
 }
 
 EngineFilterButterworth8::~EngineFilterButterworth8() {
@@ -39,11 +39,11 @@ EngineFilterButterworth8::~EngineFilterButterworth8() {
 
 void EngineFilterButterworth8::initBuffers() {
     // Copy the current buffers into the old buffers
-    memcpy(m_oldBuf1, m_buf1, m_bufSize * sizeof(CSAMPLE));
-    memcpy(m_oldBuf2, m_buf2, m_bufSize * sizeof(CSAMPLE));
+    memcpy(m_oldBuf1, m_buf1, m_bufSize * sizeof(double));
+    memcpy(m_oldBuf2, m_buf2, m_bufSize * sizeof(double));
     // Set the current buffers to 0
-    memset(m_buf1, 0, m_bufSize * sizeof(CSAMPLE));
-    memset(m_buf2, 0, m_bufSize * sizeof(CSAMPLE));
+    memset(m_buf1, 0, m_bufSize * sizeof(double));
+    memset(m_buf2, 0, m_bufSize * sizeof(double));
 }
 
 inline double _processLowpass(double* coef, double* buf, register double val) {
@@ -154,14 +154,8 @@ EngineFilterButterworth8Low::EngineFilterButterworth8Low(int sampleRate,
 void EngineFilterButterworth8Low::setFrequencyCorners(int sampleRate,
                                                       double freqCorner1) {
     m_sampleRate = sampleRate;
-    double coef[MAX_COEFS];
-    coef[0] = fid_design_coef(coef + 1, 8, "LpBu8", m_sampleRate,
-                              freqCorner1, 0, 0);
     // Copy the old coefficients into m_oldCoef
-    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(CSAMPLE));
-    for (int i = 0; i < MAX_COEFS; ++i) {
-        m_coef[i] = coef[i];
-    }
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
     m_coef[0] = fid_design_coef(m_coef + 1, 8, "LpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
     initBuffers();
@@ -171,7 +165,7 @@ void EngineFilterButterworth8Low::setFrequencyCorners(int sampleRate,
 void EngineFilterButterworth8Low::process(const CSAMPLE* pIn,
                                           CSAMPLE* pOutput,
                                           const int iBufferSize) {
-    CSAMPLE tmp1, tmp2;
+    double tmp1, tmp2;
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
@@ -203,14 +197,8 @@ void EngineFilterButterworth8Band::setFrequencyCorners(int sampleRate,
                                                        double freqCorner1,
                                                        double freqCorner2) {
     m_sampleRate = sampleRate;
-    double coef[MAX_COEFS];
-    coef[0] = fid_design_coef(coef + 1, 16, "BpBu8", m_sampleRate,
-                              freqCorner1, freqCorner2, 0);
     // Copy the old coefficients into m_oldCoef
-    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(CSAMPLE));
-    for (int i = 0; i < MAX_COEFS; ++i) {
-        m_coef[i] = coef[i];
-    }
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
     m_coef[0] = fid_design_coef(m_coef + 1, 16, "BpBu8", m_sampleRate,
                               freqCorner1, freqCorner2, 0);
     initBuffers();
@@ -220,16 +208,12 @@ void EngineFilterButterworth8Band::setFrequencyCorners(int sampleRate,
 void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
                                            CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    CSAMPLE tmp1, tmp2;
+    double tmp1, tmp2;
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
-        if(pOutput[i] != pOutput[i])    //Check for NaN
-            pOutput[i] = 0;
-        if(pOutput[i+1] != pOutput[i+1])    //Check for NaN
-            pOutput[i+1] = 0;
         // Do a linear cross fade between the old samples and the new samples
         if (m_doRamping) {
             tmp1 = _processBandpass(m_oldCoef, m_oldBuf1, pIn[i]);
@@ -244,7 +228,6 @@ void EngineFilterButterworth8Band::process(const CSAMPLE* pIn,
     m_doRamping = false;
 }
 
-
 EngineFilterButterworth8High::EngineFilterButterworth8High(int sampleRate,
                                                            double freqCorner1)
         : EngineFilterButterworth8(8) {
@@ -254,14 +237,8 @@ EngineFilterButterworth8High::EngineFilterButterworth8High(int sampleRate,
 void EngineFilterButterworth8High::setFrequencyCorners(int sampleRate,
                                                        double freqCorner1) {
     m_sampleRate = sampleRate;
-    double coef[MAX_COEFS];
-    coef[0] = fid_design_coef(coef + 1, 8, "HpBu8", m_sampleRate,
-                              freqCorner1, 0, 0);
     // Copy the old coefficients into m_oldCoef
-    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(CSAMPLE));
-    for (int i = 0; i < MAX_COEFS; ++i) {
-        m_coef[i] = coef[i];
-    }
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
     m_coef[0] = fid_design_coef(m_coef + 1, 8, "HpBu8", m_sampleRate,
                               freqCorner1, 0, 0);
     initBuffers();
@@ -271,7 +248,7 @@ void EngineFilterButterworth8High::setFrequencyCorners(int sampleRate,
 void EngineFilterButterworth8High::process(const CSAMPLE* pIn,
                                            CSAMPLE* pOutput,
                                            const int iBufferSize) {
-    CSAMPLE tmp1, tmp2;
+    double tmp1, tmp2;
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
