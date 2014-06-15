@@ -165,11 +165,29 @@ void EngineFilterBlock::process(CSAMPLE* pInOut, const int iBufferSize) {
         fHigh = filterpotHigh->get();
     }
 
-    // tweak gains for RGBW
-    float fDry = qMin(qMin(fLow, fMid), fHigh);
-    fLow -= fDry;
-    fMid -= fDry;
-    fHigh -= fDry;
+    // If the user has never touched the Eq controls (they are still at zero)
+    // Then pass through.  As soon as the user twiddles one, actually activate
+    // the EQ code and crossfade to it.  This will save CPU if the user never
+    // uses EQ but also doesn't know to disable it.
+    if (m_eqNeverTouched) {
+        if (fLow == 1. && fMid == 1. && fHigh == 1.) {
+            return;
+        }
+        m_eqNeverTouched = false;
+    }
+
+    float fDry = 0;
+    // This is the RGBW Mix. It is currently not working,
+    // because of the group delay, introduced by the filters.
+    // Since the dry signal has no delay, we get a frequency distorsion
+    // once it is mixed together with the filtered signal
+    // This might be fixed later by an allpass filter for the dry signal
+    // or zero-phase no-lag filters
+    // "Linear Phase EQ" "filtfilt()"
+    //fDry = qMin(qMin(fLow, fMid), fHigh);
+    //fLow -= fDry;
+    //fMid -= fDry;
+    //fHigh -= fDry;
 
     setFilters();
 

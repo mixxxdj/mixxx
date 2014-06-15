@@ -26,6 +26,7 @@ VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<Config
             this, SLOT(slotControlVinylSeek(double)),
             Qt::DirectConnection);
 
+    m_pControlVinylRate = new ControlObject(ConfigKey(pGroup, "vinylcontrol_rate"));
     m_pControlVinylScratching = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_scratching"));
     m_pControlVinylScratching->set(0);
     m_pControlVinylScratching->setButtonMode(ControlPushButton::TOGGLE);
@@ -49,6 +50,7 @@ VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<Config
 }
 
 VinylControlControl::~VinylControlControl() {
+    delete m_pControlVinylRate;
     delete m_pControlVinylSignalEnabled;
     delete m_pControlVinylCueing;
     delete m_pControlVinylMode;

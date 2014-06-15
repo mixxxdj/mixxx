@@ -59,6 +59,7 @@ class EchoEffect : public GroupEffectProcessor<EchoGroupState> {
     }
 
     EngineEffectParameter* m_pDelayParameter;
+    EngineEffectParameter* m_pSendParameter;
     EngineEffectParameter* m_pFeedbackParameter;
     EngineEffectParameter* m_pPingPongParameter;
 
