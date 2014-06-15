@@ -4,6 +4,7 @@
 #include "effects/effectparameterslot.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "controllers/softtakeover.h"
 
 EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
@@ -40,6 +41,9 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)), Qt::AutoConnection);
 
+
+    m_pSoftTakover = new SoftTakeover();
+
     clear();
 }
 
@@ -51,6 +55,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pControlLinkType;
     delete m_pControlValue;
     delete m_pControlType;
+    delete m_pSoftTakover;
 }
 
 QString EffectParameterSlot::name() const {
@@ -177,7 +182,9 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
-                m_pControlValue->setParameterFrom(parameter, NULL);
+                if (!m_pSoftTakover->ignore(m_pControlValue, parameter * 128, true)) {
+                    m_pControlValue->setParameterFrom(parameter, NULL);
+                }
                 break;
             case EffectManifestParameter::LINK_NONE:
             default:

@@ -12,9 +12,11 @@
 class ControlObject;
 class ControlPushButton;
 class ControlEffectKnob;
+class SoftTakeover;
 
 class EffectParameterSlot;
 typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
+
 
 class EffectParameterSlot : public QObject {
     Q_OBJECT
@@ -82,6 +84,7 @@ class EffectParameterSlot : public QObject {
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlLinkType;
     ControlEffectKnob* m_pControlValue;
+    SoftTakeover* m_pSoftTakover;
     ControlObject* m_pControlType;
     double m_dChainParameter;
 
