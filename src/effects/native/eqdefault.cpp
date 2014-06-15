@@ -113,11 +113,18 @@ void EQDefault::processGroup(const QString& group,
     fMid = m_pPotMid->value().toDouble();
     fHigh = m_pPotHigh->value().toDouble();
 
-    // tweak gains for RGBW
-    float fDry = qMin(qMin(fLow, fMid), fHigh);
-    fLow -= fDry;
-    fMid -= fDry;
-    fHigh -= fDry;
+    float fDry = 0;
+    // This is the RGBW Mix. It is currently not working,
+    // because of the group delay, introduced by the filters.
+    // Since the dry signal has no delay, we get a frequency distorsion
+    // once it is mixed together with the filtered signal
+    // This might be fixed later by an allpass filter for the dry signal
+    // or zero-phase no-lag filters
+    // "Linear Phase EQ" "filtfilt()"
+    //fDry = qMin(qMin(fLow, fMid), fHigh);
+    //fLow -= fDry;
+    //fMid -= fDry;
+    //fHigh -= fDry;
 
     int sampleRate = getSampleRate();
     if (m_oldSampleRate != sampleRate ||
