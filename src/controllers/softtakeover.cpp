@@ -61,49 +61,45 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
         float threshold = 3.0f;
 
         if (!midiVal) {
-            // These defaults will effectively disable soft-takeover for this pass
-            //  (causing the control to jump to the new value regardless)
-            //  if there's a problem with the below CO being NULL
-            double maxValue=10000000;   // Anything, just higher than any CO can go
-            double minValue=0;
-
             // HACK until we have Control 2.0. It can't come soon enough...
             ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(control);
             if (cpo != NULL) {
-                maxValue = cpo->getMax();
-                minValue = cpo->getMin();
+                double maxValue = cpo->getMax();
+                double minValue = cpo->getMin();
+                double scaleFactor = maxValue - minValue;
+                threshold = scaleFactor * (threshold / 128.0f);
+            } else {
+                // These defaults will effectively disable soft-takeover for this pass
+                //  (causing the control to jump to the new value regardless)
+                //  if there's a problem with the CO being NULL
+                threshold =  10000000;  // Anything, just higher than any CO can go
             }
             // End hack
-
-            double scaleFactor = maxValue-minValue;
-            threshold = scaleFactor*(threshold/128.0f);
-        }
-
-        double currentValue = midiVal ? control->getMidiParameter() : control->get();
-        double difference = currentValue - newValue;
-        double prevDiff = 0;
-        bool sameSide = false;
-        if (m_prevValues.contains(control)) {
-            double prevValue = m_prevValues.value(control);
-            prevDiff = currentValue - prevValue;
-            if ((prevDiff < 0 && difference < 0) ||
-                (prevDiff > 0 && difference > 0)) {
-                sameSide = true;
-            }
         }
 
         uint currentTime = currentTimeMsecs();
+        uint time = m_times.value(control);
         // We will get a sudden jump if we don't ignore the first value.
-        if (m_times.value(control) == 0) {
+        if (time == 0) {
             ignore = true;
             // Change the stored time (but keep it far away from the current time)
             //  so this block doesn't run again.
             m_times.insert(control, 1);
-        }
-        else if (fabs(difference)>threshold &&
-            fabs(prevDiff)>threshold && sameSide &&
-            (currentTime - m_times.value(control)) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
-            ignore = true;
+        } else if ((currentTime - time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
+            // don't ignore value if a previous one was not ignored in time
+            double currentCoValue = midiVal ? control->getMidiParameter() : control->get();
+            double difference = currentCoValue - newValue;
+            double prevValue = m_prevValues.value(control, currentCoValue);
+            double prevDiff = currentCoValue - prevValue;
+            if ((prevDiff < 0 && difference < 0) ||
+                    (prevDiff > 0 && difference > 0)) {
+                // On same site (still on ignore site)
+                if (fabs(difference) > threshold &&
+                        fabs(prevDiff) > threshold) {
+                    // difference is above threshold
+                    ignore = true;
+                }
+            }
         }
         if (!ignore) {
             // Update the time only if the value is not ignored. Replaces any
