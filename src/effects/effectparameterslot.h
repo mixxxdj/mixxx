@@ -45,6 +45,8 @@ class EffectParameterSlot : public QObject {
 
     QString name() const;
     QString description() const;
+    EffectManifestParameter::LinkType getLinkType() const;
+    double getValueParameter() const;
 
     void onChainParameterChanged(double parameter);
 

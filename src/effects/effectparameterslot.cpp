@@ -152,6 +152,14 @@ void EffectParameterSlot::slotLinkType(double v) {
     }
 }
 
+EffectManifestParameter::LinkType EffectParameterSlot::getLinkType() const{
+    //qDebug() << debugString() << "slotLinkType" << v;
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->getLinkType();
+    }
+    return EffectManifestParameter::LINK_NONE;
+}
+
 void EffectParameterSlot::slotValueChanged(double v) {
     //qDebug() << debugString() << "slotValueChanged" << v;
     if (m_pEffectParameter) {
@@ -191,4 +199,8 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 break;
         }
     }
+}
+
+double EffectParameterSlot::getValueParameter() const {
+    return m_pControlValue->getParameter();
 }
