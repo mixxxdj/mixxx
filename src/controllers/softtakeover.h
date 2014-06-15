@@ -23,8 +23,6 @@ class SoftTakeover {
     // Check to see if the new value for the Control should be ignored
     bool ignore(ControlObject* control, float newValue, bool midiVal = false);
 
-    static uint currentTimeMsecs();
-
   private:
     // If a new value is received within this amount of time, jump to it
     // regardless. This allows quickly whipping controls to work while retaining

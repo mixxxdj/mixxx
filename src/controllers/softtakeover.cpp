@@ -11,18 +11,7 @@
 #include "controllers/softtakeover.h"
 #include "controlpotmeter.h"
 #include "util/math.h"
-
-// static
-uint SoftTakeover::currentTimeMsecs() {
-    QDateTime currDT = QDateTime::currentDateTime();
-
-    // toMSecsSinceEpoch() is preferred since it's only one QDateTime call but
-    //  it requires Qt 4.7. Use it instead when something more substantial
-    //  elsewhere in Mixxx also requires Qt 4.7.
-    //qint64 t = dt.toMSecsSinceEpoch();  // Requires Qt 4.7
-    uint t = currDT.toTime_t()*1000+currDT.toString("zzz").toUInt();
-    return t;
-}
+#include "util/time.h"
 
 void SoftTakeover::enable(ControlObject* control) {
     if (control == NULL) {

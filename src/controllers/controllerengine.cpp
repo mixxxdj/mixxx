@@ -15,6 +15,7 @@
 #include "playermanager.h"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
+#include "util/time.h"
 
 // #include <QScriptSyntaxCheckResult>
 
@@ -1289,7 +1290,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
-    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
+    m_lastMovement[deck] = Time::elapsedMsecs();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1316,7 +1317,7 @@ void ControllerEngine::scratchProcess(int timerId) {
     //  and the wheel hasn't been turned very recently (spinback after lift-off,)
     //  feed fixed data
     if (m_ramp[deck] &&
-        ((SoftTakeover::currentTimeMsecs() - m_lastMovement[deck]) > 0)) {
+        ((Time::elapsedMsecs() - m_lastMovement[deck]) > 0)) {
         filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
 //         m_lastMovement[deck] += 1000;
@@ -1426,7 +1427,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         }
     }
 
-    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
+    m_lastMovement[deck] = Time::elapsedMsecs();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 
