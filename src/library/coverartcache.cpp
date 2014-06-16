@@ -28,9 +28,9 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
         return;
     }
 
-    // keep a list of locations for which a future is currently running
+    // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    if (m_runningLocations.contains(coverLocation)) {
+    if (m_runningIds.contains(trackId)) {
         return;
     }
 
@@ -44,7 +44,7 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
     QFuture<coverTuple> future = QtConcurrent::run(this,
                                                   &CoverArtCache::loadImage,
                                                   coverLocation, trackId);
-    m_runningLocations.append(coverLocation);
+    m_runningIds.insert(trackId);
 
     QFutureWatcher<coverTuple>* watcher = new QFutureWatcher<coverTuple>(this);
     connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
@@ -76,7 +76,7 @@ void CoverArtCache::imageLoaded() {
         emit(pixmapNotFound(trackId));
     }
 
-    m_runningLocations.removeOne(coverLocation);
+    m_runningIds.remove(trackId);
 }
 
 // This method is executed in a separate thread

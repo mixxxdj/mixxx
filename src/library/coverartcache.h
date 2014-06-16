@@ -38,7 +38,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
     static CoverArtCache* m_instance;
     CoverArtDAO* m_pCoverArtDAO;
-    QStringList m_runningLocations;
+    QSet<int> m_runningIds;
 
     coverTuple loadImage(QString coverLocation, int trackId);
 };
