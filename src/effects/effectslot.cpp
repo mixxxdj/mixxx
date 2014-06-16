@@ -62,6 +62,7 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
         addEffectParameterSlot();
+        addEffectButtonParameterSlot();
     }
 
     clear();
@@ -98,8 +99,8 @@ EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
         new EffectButtonParameterSlot(m_iRackNumber, m_iChainNumber, m_iEffectNumber,
                                 m_buttonParameters.size()));
     m_buttonParameters.append(pParameter);
-    m_pControlNumParameterSlots->setAndConfirm(
-            m_pControlNumParameterSlots->get() + 1);
+    m_pControlNumButtonParameterSlots->setAndConfirm(
+            m_pControlNumButtonParameterSlots->get() + 1);
     return pParameter;
 }
 

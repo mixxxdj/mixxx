@@ -148,15 +148,24 @@ void EQDefault::processGroup(const QString& group,
     Q_UNUSED(groupFeatures);
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
-    if (m_pKillLow->value().toDouble() == 0.) {
+    if (m_pKillLow->value().toInt() == 0) {
         fLow = m_pPotLow->value().toDouble();
     }
-    if (m_pKillMid->value().toDouble() == 0.) {
+    if (m_pKillMid->value().toInt() == 0) {
         fMid = m_pPotMid->value().toDouble();
     }
-    if (m_pKillHigh->value().toDouble() == 0.) {
+    if (m_pKillHigh->value().toInt() == 0) {
         fHigh = m_pPotHigh->value().toDouble();
     }
+
+    qDebug() << "fLow:" << fLow << " ";
+    qDebug() << "fMid:" << fMid << " ";
+    qDebug() << "fHigh:" << fHigh << " ";
+    qDebug() << endl;
+    qDebug() << "killLow" << m_pKillLow->value().toInt() << " ";
+    qDebug() << "killMid" << m_pKillMid->value().toInt() << " ";
+    qDebug() << "killHigh" << m_pKillHigh->value().toInt() << " ";
+    qDebug() << endl;
 
     // tweak gains for RGBW
     float fDry = qMin(qMin(fLow, fMid), fHigh);

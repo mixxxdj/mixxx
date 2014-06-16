@@ -89,6 +89,29 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
             }
             pResponsePipe->writeMessages(&response, 1);
             return true;
+        case EffectsRequest::SET_PARAMETER_BUTTON_PARAMETERS:
+            if (kEffectDebugOutput) {
+                qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
+                         << "parameter" << message.SetParameterParameters.iParameter
+                         << "minimum" << message.minimum
+                         << "maximum" << message.maximum
+                         << "default_value" << message.default_value
+                         << "value" << message.value;
+            }
+            pParameter = m_buttonParameters.value(
+                message.SetParameterParameters.iParameter, NULL);
+            if (pParameter) {
+                pParameter->setMinimum(message.minimum);
+                pParameter->setMaximum(message.maximum);
+                pParameter->setDefaultValue(message.default_value);
+                pParameter->setValue(message.value);
+                response.success = true;
+            } else {
+                response.success = false;
+                response.status = EffectsResponse::NO_SUCH_PARAMETER;
+            }
+            pResponsePipe->writeMessages(&response, 1);
+            return true;
         default:
             break;
     }

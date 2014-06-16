@@ -149,7 +149,7 @@ void EffectButtonParameterSlot::slotLinkType(double v) {
 void EffectButtonParameterSlot::slotValueChanged(double v) {
     //qDebug() << debugString() << "slotValueChanged" << v;
     if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(v);
+        m_pEffectParameter->setValue(v, 11);
     }
 }
 
