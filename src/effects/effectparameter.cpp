@@ -31,7 +31,7 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
         case EffectManifestParameter::VALUE_INTEGRAL:
             m_minimum = m_parameter.hasMinimum() && m_parameter.getMinimum().canConvert<int>() ?
                     m_parameter.getMinimum() : QVariant(0);
-            m_maximum = m_parameter.hasMaximum() && m_parameter.getMinimum().canConvert<int>() ?
+            m_maximum = m_parameter.hasMaximum() && m_parameter.getMaximum().canConvert<int>() ?
                     m_parameter.getMaximum() : QVariant(1);
 
             // Sanity check the maximum and minimum
