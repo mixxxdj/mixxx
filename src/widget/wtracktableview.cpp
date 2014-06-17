@@ -212,6 +212,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
+    header->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
