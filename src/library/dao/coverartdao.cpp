@@ -149,12 +149,13 @@ int CoverArtDAO::getCoverArtId(QString coverLocation) {
         "WHERE location = :location"));
     query.bindValue(":location", coverLocation);
 
-    if (query.exec()) {
-        if (query.next()) {
-            return query.value(0).toInt();
-        }
-    } else {
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        return 0;
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt();
     }
 
     return 0;
@@ -179,12 +180,13 @@ QString CoverArtDAO::getCoverArtLocation(int id, bool fromTrackId) {
 
     query.bindValue(":id", id);
 
-    if (query.exec()) {
-        if (query.next()) {
-            return query.value(0).toString();
-        }
-    } else {
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        return QString();
+    }
+
+    if (query.next()) {
+        return query.value(0).toString();
     }
 
     return QString();
@@ -209,34 +211,34 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     );
     query.bindValue(":id", trackId);
 
-    if (query.exec()) {
-        QSqlRecord queryRecord = query.record();
-        const int artistColumn = queryRecord.indexOf("artist");
-        const int albumColumn = queryRecord.indexOf("album");
-        const int coverColumn = queryRecord.indexOf("cover");
-        const int directoryColumn = queryRecord.indexOf("directory");
-        const int filenameColumn = queryRecord.indexOf("filename");
-        const int locationColumn = queryRecord.indexOf("location");
+    if (!query.exec()) {
+      LOG_FAILED_QUERY(query);
+      return coverArtInfo();
+    }
 
-        if (query.next()) {
-            coverArtInfo coverInfo;
-            coverInfo.currentCoverLocation = query.value(coverColumn).toString();
-            coverInfo.trackDirectory = query.value(directoryColumn).toString();
-            coverInfo.trackLocation = query.value(locationColumn).toString();
+    QSqlRecord queryRecord = query.record();
+    const int artistColumn = queryRecord.indexOf("artist");
+    const int albumColumn = queryRecord.indexOf("album");
+    const int coverColumn = queryRecord.indexOf("cover");
+    const int directoryColumn = queryRecord.indexOf("directory");
+    const int filenameColumn = queryRecord.indexOf("filename");
+    const int locationColumn = queryRecord.indexOf("location");
 
-            // building default cover art location
-            QString artist = query.value(artistColumn).toString();
-            QString album = query.value(albumColumn).toString();
-            if (artist.isEmpty() && album.isEmpty()) {
-                 coverInfo.defaultCoverLocation = query.value(filenameColumn).toString();
-            } else {
-                coverInfo.defaultCoverLocation = artist % " - " % album;
-            }
+    if (query.next()) {
+        coverArtInfo coverInfo;
+        coverInfo.currentCoverLocation = query.value(coverColumn).toString();
+        coverInfo.trackDirectory = query.value(directoryColumn).toString();
+        coverInfo.trackLocation = query.value(locationColumn).toString();
 
-            return coverInfo;
+        // building default cover art location
+        QString artist = query.value(artistColumn).toString();
+        QString album = query.value(albumColumn).toString();
+        if (artist.isEmpty() && album.isEmpty()) {
+            coverInfo.defaultCoverLocation = query.value(filenameColumn).toString();
+        } else {
+            coverInfo.defaultCoverLocation = artist % " - " % album;
         }
-    } else {
-        LOG_FAILED_QUERY(query);
+        return coverInfo;
     }
 
     return coverArtInfo();
