@@ -17,7 +17,7 @@ class ControlObject;
 class SoftTakeover {
   public:
     SoftTakeover();
-    bool ignore(ControlObject* control, float newValue, bool midiVal = false);
+    bool ignore(ControlObject* control, double newMidiParameter);
 
   private:
     // If a new value is received within this amount of time, jump to it
@@ -27,7 +27,7 @@ class SoftTakeover {
     static const uint SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS = 50;
 
     uint m_time;
-    double m_prevValue;
+    double m_prevMidiParameter;
 };
 
 class SoftTakeoverCtrl {
@@ -41,7 +41,7 @@ class SoftTakeoverCtrl {
     // Disable soft-takeover for the given Control
     void disable(ControlObject* control);
     // Check to see if the new value for the Control should be ignored
-    bool ignore(ControlObject* control, float newValue, bool midiVal = false);
+    bool ignore(ControlObject* control, double newMidiParameter);
 
   private:
     QHash<ControlObject*, SoftTakeover*> m_softTakeoverHash;

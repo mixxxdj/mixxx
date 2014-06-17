@@ -26,7 +26,9 @@ SoftTakeoverCtrl::~SoftTakeoverCtrl() {
 }
 
 void SoftTakeoverCtrl::enable(ControlObject* control) {
-    if (control == NULL) {
+    ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(control);
+    if (cpo == NULL) {
+        // softtakecover works only for continuous ControlPotmeter based COs
         return;
     }
 
@@ -46,24 +48,24 @@ void SoftTakeoverCtrl::disable(ControlObject* control) {
     }
 }
 
-bool SoftTakeoverCtrl::ignore(ControlObject* control, float newValue, bool midiVal) {
+bool SoftTakeoverCtrl::ignore(ControlObject* control, double newMidiParameter) {
     if (control == NULL) {
         return false;
     }
     bool ignore = false;
     SoftTakeover* pSt = m_softTakeoverHash.value(control);
     if (pSt) {
-        ignore = pSt->ignore(control, newValue, midiVal);
+        ignore = pSt->ignore(control, newMidiParameter);
     }
     return ignore;
 }
 
 SoftTakeover::SoftTakeover()
     : m_time(0),
-      m_prevValue(0) {
+      m_prevMidiParameter(0) {
 }
 
-bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) {
+bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
     bool ignore = false;
     // We only want to ignore the controller when all of the following are true:
     //  - its previous and new values are far away from and on the same side
@@ -72,24 +74,7 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
 
     // 3/128 units away from the current is enough to catch fast non-sequential moves
     //  but not cause an audibly noticeable jump.
-    float threshold = 3.0f;
-
-    if (!midiVal) {
-        // HACK until we have Control 2.0. It can't come soon enough...
-        ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(control);
-        if (cpo != NULL) {
-            double maxValue = cpo->getMax();
-            double minValue = cpo->getMin();
-            double scaleFactor = maxValue - minValue;
-            threshold = scaleFactor * (threshold / 128.0f);
-        } else {
-            // These defaults will effectively disable soft-takeover for this pass
-            //  (causing the control to jump to the new value regardless)
-            //  if there's a problem with the CO being NULL
-            threshold =  10000000;  // Anything, just higher than any CO can go
-        }
-        // End hack
-    }
+    double threshold = 3.0f;
 
     uint currentTime = Time::elapsedMsecs();
     // We will get a sudden jump if we don't ignore the first value.
@@ -98,11 +83,12 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
         m_time = 1;
+        qDebug() <<  "m_time == 0";
     } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
         // don't ignore value if a previous one was not ignored in time
-        double currentCoValue = midiVal ? control->getMidiParameter() : control->get();
-        double difference = currentCoValue - newValue;
-        double prevDiff = currentCoValue - m_prevValue;
+        double currentMidiParameter = control->getMidiParameter();
+        double difference = currentMidiParameter - newMidiParameter;
+        double prevDiff = currentMidiParameter - m_prevMidiParameter;
         if ((prevDiff < 0 && difference < 0) ||
                 (prevDiff > 0 && difference > 0)) {
             // On same site (still on ignore site)
@@ -110,6 +96,7 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
                     fabs(prevDiff) > threshold) {
                 // difference is above threshold
                 ignore = true;
+                qDebug() << currentMidiParameter << difference << prevDiff;
             }
         }
     }
@@ -118,8 +105,9 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
         // previous value for this control
         m_time = currentTime;
     }
+    qDebug() <<  m_prevMidiParameter << newMidiParameter << ignore << control->getKey().group << control->getKey().item;
     // Update the previous value every time
-    m_prevValue = newValue;
+    m_prevMidiParameter = newMidiParameter;
 
     return ignore;
 }

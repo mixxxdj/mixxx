@@ -388,7 +388,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     if (mapping.options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(pCO);
-        if (m_st.ignore(pCO, newValue, true)) {
+        if (m_st.ignore(pCO, newValue)) {
             return;
         }
     }
