@@ -279,6 +279,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
 #endif
+    CoverArtCache::create();
+
     m_pLibrary = new Library(this, m_pConfig,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
@@ -305,7 +307,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         }
     }
 
-    CoverArtCache::create();
     CoverArtCache::instance()->setCoverArtDao(
                 &m_pLibrary->getTrackCollection()->getCoverArtDAO());
 
