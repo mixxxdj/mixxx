@@ -79,9 +79,9 @@ LightweightEQGroupState::~LightweightEQGroupState() {
 
 LightweightEQ::LightweightEQ(EngineEffect* pEffect,
                    const EffectManifest& manifest)
-        : m_pPotLow(pEffect->getParameterById("low")),
-          m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")) {
+        : m_pPotLow(pEffect->getParameterById("lightweight_low")),
+          m_pPotMid(pEffect->getParameterById("lightweight_mid")),
+          m_pPotHigh(pEffect->getParameterById("lightweight_high")) {
     Q_UNUSED(manifest);
 }
 
