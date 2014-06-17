@@ -10,9 +10,9 @@
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database,
                          ConfigObject<ConfigValue>* pConfig)
         : m_database(database),
+          m_pConfig(pConfig),
           m_cDefaultImageFormat("jpg") {
-    QString storagePath = pConfig->getSettingsPath() % "/coverArt/";
-    if (!QDir().mkpath(storagePath)) {
+    if (!QDir().mkpath(getStoragePath())) {
         qDebug() << "WARNING: Could not create cover arts storage path. "
                  << "Mixxx will be unable to store covers.";
     }
@@ -29,6 +29,11 @@ void CoverArtDAO::initialize() {
     qDebug() << "CoverArtDAO::initialize"
              << QThread::currentThread()
              << m_database.connectionName();
+}
+
+// cover art disk-cache
+QString CoverArtDAO::getStoragePath() {
+    return m_pConfig->getSettingsPath() % "/coverArt/";
 }
 
 int CoverArtDAO::saveCoverLocation(QString coverLocation) {
@@ -233,11 +238,15 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         // building default cover art location
         QString artist = query.value(artistColumn).toString();
         QString album = query.value(albumColumn).toString();
+        QString defaultCoverLoc = getStoragePath();
         if (artist.isEmpty() && album.isEmpty()) {
-            coverInfo.defaultCoverLocation = query.value(filenameColumn).toString();
+            defaultCoverLoc.append(query.value(filenameColumn).toString());
         } else {
-            coverInfo.defaultCoverLocation = artist % " - " % album;
+            defaultCoverLoc.append(artist % " - " % album);
         }
+        defaultCoverLoc.append(".");
+        defaultCoverLoc.append(m_cDefaultImageFormat);
+        coverInfo.defaultCoverLocation = defaultCoverLoc;
         return coverInfo;
     }
 

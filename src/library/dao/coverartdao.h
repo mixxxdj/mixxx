@@ -27,6 +27,7 @@ class CoverArtDAO : public QObject, public virtual DAO {
 
   private:
     QSqlDatabase& m_database;
+    ConfigObject<ConfigValue>* m_pConfig;
     const char* m_cDefaultImageFormat;
 
     struct coverArtInfo {
@@ -39,6 +40,7 @@ class CoverArtDAO : public QObject, public virtual DAO {
     bool updateLibrary(int trackId, int coverId);
     coverArtInfo getCoverArtInfo(int trackId);
 
+    QString getStoragePath();
     bool deleteFile(const QString& location);
     bool saveImage(QImage cover, QString location);
     QImage searchEmbeddedCover(QString trackLocation);
