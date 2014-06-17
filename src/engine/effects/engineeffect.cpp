@@ -91,7 +91,7 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
             return true;
         case EffectsRequest::SET_PARAMETER_BUTTON_PARAMETERS:
             if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
+                qDebug() << debugString() << "SET_BUTTON_PARAMETER_PARAMETERS"
                          << "parameter" << message.SetParameterParameters.iParameter
                          << "minimum" << message.minimum
                          << "maximum" << message.maximum

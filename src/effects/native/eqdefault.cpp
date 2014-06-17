@@ -33,7 +33,7 @@ EffectManifest EQDefault::getManifest() {
     killLow->setName(QObject::tr("Kill Low"));
     killLow->setDescription("Kill for Low Filter");
     killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
-    killLow->setValueHint(EffectManifestParameter::VALUE_BOOLEAN);
+    killLow->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
     killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killLow->setDefault(0);
@@ -57,7 +57,7 @@ EffectManifest EQDefault::getManifest() {
     killMid->setName(QObject::tr("Kill Mid"));
     killMid->setDescription("Kill for Mid Filter");
     killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
-    killMid->setValueHint(EffectManifestParameter::VALUE_BOOLEAN);
+    killMid->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
     killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killMid->setDefault(0);
@@ -81,7 +81,7 @@ EffectManifest EQDefault::getManifest() {
     killHigh->setName(QObject::tr("Kill High"));
     killHigh->setDescription("Kill for High Filter");
     killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
-    killHigh->setValueHint(EffectManifestParameter::VALUE_BOOLEAN);
+    killHigh->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
     killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killHigh->setDefault(0);

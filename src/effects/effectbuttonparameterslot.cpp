@@ -74,7 +74,7 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
+        m_pEffectParameter = pEffect->getButtonParameter(m_iParameterNumber);
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
