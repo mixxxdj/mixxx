@@ -153,8 +153,6 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    connect(pTrackTableView, SIGNAL(scrollValueChanged(int)),
-            this, SLOT(slotScrollValueChanged(int)));
     connect(pTrackTableView, SIGNAL(loadCoverArt(QString, int)),
             this, SLOT(slotLoadCoverArt(QString, int)));
 
