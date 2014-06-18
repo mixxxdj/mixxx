@@ -194,6 +194,7 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
 
     if (query.next()) {
         coverArtInfo coverInfo;
+        coverInfo.trackId = trackId;
         coverInfo.currentCoverLocation = query.value(coverColumn).toString();
         coverInfo.trackDirectory = query.value(directoryColumn).toString();
         coverInfo.trackLocation = query.value(locationColumn).toString();

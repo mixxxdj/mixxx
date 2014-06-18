@@ -22,6 +22,7 @@ class CoverArtDAO : public QObject, public virtual DAO {
     int saveCoverLocation(QString coverLocation);
 
     struct coverArtInfo {
+        int trackId;
         QString currentCoverLocation;
         QString defaultCoverLocation;
         QString trackDirectory;
