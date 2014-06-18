@@ -101,7 +101,7 @@ void CoverArtDAO::slotCoverArtScan(int trackId) {
 }
 
 void CoverArtDAO::deleteUnusedCoverArts() {
-    if (!m_database.isOpen()) {
+    if (m_database.isValid()) { // returns true if an error is set
         return;
     }
 
