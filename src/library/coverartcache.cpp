@@ -1,7 +1,10 @@
+#include <QDir>
 #include <QPixmap>
+#include <QStringBuilder>
 #include <QtConcurrentRun>
 
 #include "coverartcache.h"
+#include "soundsourceproxy.h"
 
 CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL) {
@@ -21,11 +24,6 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
 
     if (coverLocation.isEmpty()) {
         coverLocation = m_pCoverArtDAO->getCoverArtLocation(trackId, true);
-    }
-
-    if (coverLocation.isEmpty()) {
-        emit(pixmapNotFound(trackId));
-        return;
     }
 
     // keep a list of trackIds for which a future is currently running
@@ -59,23 +57,13 @@ void CoverArtCache::imageLoaded() {
     int trackId = result.trackId;
     QString coverLocation = result.coverLocation;
     QImage image = result.img;
-
     QPixmap pixmap;
-
-    bool loaded = false;
     if (!image.isNull()) {
         pixmap = QPixmap::fromImage(image);
         if (QPixmapCache::insert(coverLocation, pixmap)) {
-            loaded = true;
+            emit(pixmapFound(trackId, pixmap));
         }
     }
-
-    if (loaded) {
-        emit(pixmapFound(trackId, pixmap));
-    } else {
-        emit(pixmapNotFound(trackId));
-    }
-
     m_runningIds.remove(trackId);
 }
 
@@ -83,9 +71,74 @@ void CoverArtCache::imageLoaded() {
 // via QtConcurrent::run
 CoverArtCache::coverTuple CoverArtCache::loadImage(QString coverLocation,
                                                    int trackId) {
-    coverTuple r;
-    r.trackId = trackId;
-    r.coverLocation = coverLocation;
-    r.img = QImage(coverLocation);
-    return r;
+    coverTuple result;
+    result.trackId = trackId;
+    result.coverLocation = coverLocation;
+    result.img = QImage(coverLocation);
+    if (!result.img.isNull()) {
+        return result;
+    }
+
+    CoverArtDAO::coverArtInfo coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
+    // looking for cover art in disk-cache directory.
+    QString newCoverLocation = coverInfo.defaultCoverLocation;
+    QImage newImage = QImage(newCoverLocation);
+    if(newImage.isNull()) {
+        // Looking for embedded cover art.
+        newImage = searchEmbeddedCover(coverInfo.trackLocation);
+        if (newImage.isNull()) {
+            // Looking for cover stored in track diretory.
+            newImage.load(searchInTrackDirectory(coverInfo.trackDirectory));
+        }
+
+        if (!saveImageInDisk(newImage, newCoverLocation)) {
+            newCoverLocation.clear(); // not found
+        }
+    }
+    result.img = newImage;
+
+    if (coverLocation != newCoverLocation) {
+        result.coverLocation = newCoverLocation;
+        int coverId = m_pCoverArtDAO->saveCoverLocation(newCoverLocation);
+        m_pCoverArtDAO->updateLibrary(trackId, coverId);
+    }
+
+    return result;
+}
+
+QString CoverArtCache::searchInTrackDirectory(QString directory) {
+    QDir dir(directory);
+    dir.setFilter(QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
+    dir.setSorting(QDir::Size | QDir::Reversed);
+
+    QStringList nameFilters;
+    nameFilters << "*.jpg" << "*.jpeg" << "*.png" << "*.gif" << "*.bmp";
+    dir.setNameFilters(nameFilters);
+
+    QString coverLocation;
+    QStringList imglist = dir.entryList();
+    if (imglist.size() > 0) {
+        coverLocation = directory % "/" % imglist[0];
+    }
+    return coverLocation;
+}
+
+// this method will parse the information stored in the sound file
+// just to extract the embedded cover art
+QImage CoverArtCache::searchEmbeddedCover(QString trackLocation) {
+    SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
+                                             QDir(trackLocation), true);
+    SoundSourceProxy proxy(trackLocation, securityToken);
+    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
+        return pProxiedSoundSource->getCoverArt();
+    }
+    return QImage();
+}
+
+bool CoverArtCache::saveImageInDisk(QImage cover, QString location) {
+    if (cover.isNull()) {
+        return false;
+    }
+    return cover.save(location, m_pCoverArtDAO->getDefaultImageFormat());
 }

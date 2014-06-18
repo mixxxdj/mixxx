@@ -1,11 +1,8 @@
-#include <QImage>
 #include <QtDebug>
 #include <QThread>
 
-#include "library/coverartcache.h"
 #include "library/queryutil.h"
 #include "library/dao/coverartdao.h"
-#include "soundsourceproxy.h"
 
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database,
                          ConfigObject<ConfigValue>* pConfig)
@@ -23,9 +20,6 @@ CoverArtDAO::~CoverArtDAO() {
 }
 
 void CoverArtDAO::initialize() {
-    connect(CoverArtCache::instance(), SIGNAL(pixmapNotFound(int)),
-            this, SLOT(slotCoverArtScan(int)), Qt::UniqueConnection);
-
     qDebug() << "CoverArtDAO::initialize"
              << QThread::currentThread()
              << m_database.connectionName();
@@ -59,45 +53,6 @@ int CoverArtDAO::saveCoverLocation(QString coverLocation) {
     }
 
     return coverId;
-}
-
-void CoverArtDAO::slotCoverArtScan(int trackId) {
-    coverArtInfo coverInfo = getCoverArtInfo(trackId);
-
-    QString coverLocation = coverInfo.currentCoverLocation;
-
-    // handling cases when the file was externally removed from disk-cache
-    bool removedFromDisk = false;
-    if (!coverLocation.isEmpty()) {
-        if (!QFile::exists(coverLocation)) {
-            removedFromDisk = true;
-        }
-    }
-
-    // looking for cover art in disk-cache directory.
-    QString newCoverLocation = coverInfo.defaultCoverLocation;
-    if(!QFile::exists(newCoverLocation)) {
-        // Looking for embedded cover art.
-        QImage image = searchEmbeddedCover(coverInfo.trackLocation);
-        if (image.isNull()) {
-            // Looking for cover stored in track diretory.
-            image.load(searchInTrackDirectory(coverInfo.trackDirectory));
-        }
-
-        if (!saveImage(image, newCoverLocation)) {
-            newCoverLocation.clear(); // not found
-        }
-    }
-
-    if (coverLocation != newCoverLocation) {
-        int coverId = saveCoverLocation(newCoverLocation);
-        updateLibrary(trackId, coverId);
-        if (!newCoverLocation.isEmpty()) {
-            CoverArtCache::instance()->requestPixmap(newCoverLocation, trackId);
-        }
-    } else if (removedFromDisk) {
-        CoverArtCache::instance()->requestPixmap(newCoverLocation, trackId);
-    }
 }
 
 void CoverArtDAO::deleteUnusedCoverArts() {
@@ -140,6 +95,14 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+}
+
+bool CoverArtDAO::deleteFile(const QString& location) {
+    QFile file(location);
+    if (file.exists()) {
+        return file.remove();
+    }
+    return true;
 }
 
 int CoverArtDAO::getCoverArtId(QString coverLocation) {
@@ -267,50 +230,4 @@ bool CoverArtDAO::updateLibrary(int trackId, int coverId) {
         return false;
     }
     return true;
-}
-
-bool CoverArtDAO::deleteFile(const QString& location) {
-    QFile file(location);
-    if (file.exists()) {
-        return file.remove();
-    }
-    return true;
-}
-
-bool CoverArtDAO::saveImage(QImage cover, QString location) {
-    if (cover.isNull()) {
-        return false;
-    }
-    return cover.save(location, m_cDefaultImageFormat);
-}
-
-QString CoverArtDAO::searchInTrackDirectory(QString directory) {
-    QDir dir(directory);
-    dir.setFilter(QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
-    dir.setSorting(QDir::Size | QDir::Reversed);
-
-    QStringList nameFilters;
-    nameFilters << "*.jpg" << "*.jpeg" << "*.png" << "*.gif" << "*.bmp";
-    dir.setNameFilters(nameFilters);
-
-    QString coverLocation;
-    QStringList imglist = dir.entryList();
-    if (imglist.size() > 0) {
-        coverLocation = directory % "/" % imglist[0];
-    }
-
-    return coverLocation;
-}
-
-// this method will parse the information stored in the sound file
-// just to extract the embedded cover art
-QImage CoverArtDAO::searchEmbeddedCover(QString trackLocation) {
-    SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-                                             QDir(trackLocation), true);
-    SoundSourceProxy proxy(trackLocation, securityToken);
-    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
-        return pProxiedSoundSource->getCoverArt();
-    }
-    return QImage();
 }

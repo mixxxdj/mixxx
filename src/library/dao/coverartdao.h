@@ -19,16 +19,7 @@ class CoverArtDAO : public QObject, public virtual DAO {
     void deleteUnusedCoverArts();
     int getCoverArtId(QString coverLocation);
     QString getCoverArtLocation(int id, bool fromTrackId=false);
-    QString getDefaultCoverLocation(int trackId);
     int saveCoverLocation(QString coverLocation);
-
-  private slots:
-    void slotCoverArtScan(int trackId);
-
-  private:
-    QSqlDatabase& m_database;
-    ConfigObject<ConfigValue>* m_pConfig;
-    const char* m_cDefaultImageFormat;
 
     struct coverArtInfo {
         QString currentCoverLocation;
@@ -39,12 +30,15 @@ class CoverArtDAO : public QObject, public virtual DAO {
 
     bool updateLibrary(int trackId, int coverId);
     coverArtInfo getCoverArtInfo(int trackId);
+    const char* getDefaultImageFormat() { return m_cDefaultImageFormat; }
+
+  private:
+    QSqlDatabase& m_database;
+    ConfigObject<ConfigValue>* m_pConfig;
+    const char* m_cDefaultImageFormat;
 
     QString getStoragePath();
     bool deleteFile(const QString& location);
-    bool saveImage(QImage cover, QString location);
-    QImage searchEmbeddedCover(QString trackLocation);
-    QString searchInTrackDirectory(QString directory);
 };
 
 #endif // COVERARTDAO_H

@@ -22,7 +22,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
   signals:
     void pixmapFound(int trackId, QPixmap pixmap);
-    void pixmapNotFound(int trackId);
 
   protected:
     CoverArtCache();
@@ -41,6 +40,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QSet<int> m_runningIds;
 
     coverTuple loadImage(QString coverLocation, int trackId);
+    bool saveImageInDisk(QImage cover, QString location);
+    QImage searchEmbeddedCover(QString trackLocation);
+    QString searchInTrackDirectory(QString directory);
 };
 
 #endif // COVERARTCACHE_H
