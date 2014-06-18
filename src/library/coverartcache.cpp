@@ -22,6 +22,12 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
         return;
     }
 
+    // keep a list of trackIds for which a future is currently running
+    // to avoid loading the same picture again while we are loading it
+    if (m_runningIds.contains(trackId)) {
+        return;
+    }
+
     CoverArtDAO::coverArtInfo coverInfo;
     if (QFile::exists(coverLocation)) {
         // it avoids doing db query to all pixmap requests.
@@ -32,12 +38,6 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
     } else {
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
         coverLocation = coverInfo.currentCoverLocation;
-    }
-
-    // keep a list of trackIds for which a future is currently running
-    // to avoid loading the same picture again while we are loading it
-    if (m_runningIds.contains(trackId)) {
-        return;
     }
 
     QPixmap pixmap;
