@@ -26,6 +26,9 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
+  signals:
+    void loadCoverArt(QString coverLocation, int trackId);
+
   private:
     void activateButtons(bool enable);
     WTrackTableView* m_pTrackTableView;

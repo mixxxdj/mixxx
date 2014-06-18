@@ -25,6 +25,9 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
+  signals:
+    void loadCoverArt(QString coverLocation, int trackId);
+
   private:
     void activateButtons(bool enable);
     WTrackTableView* m_pTrackTableView;

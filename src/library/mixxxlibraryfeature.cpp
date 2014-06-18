@@ -123,10 +123,15 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kHiddenTitle, m_pHiddenView);
+    connect(m_pHiddenView, SIGNAL(loadCoverArt(QString, int)),
+            this, SIGNAL(loadCoverArt(QString, int)));
+
     m_pMissingView = new DlgMissing(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kMissingTitle, m_pMissingView);
+    connect(m_pMissingView, SIGNAL(loadCoverArt(QString, int)),
+            this, SIGNAL(loadCoverArt(QString, int)));
 }
 
 QVariant MixxxLibraryFeature::title() {
