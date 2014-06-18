@@ -70,7 +70,7 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     setPalette(pal);
 }
 
-void WCoverArt::loadDefaultStatus() {
+void WCoverArt::setToDefault() {
     m_sCoverTitle = "Cover Art";
     m_currentCover = m_defaultCover;
     m_currentScaledCover = m_defaultCover;
@@ -81,7 +81,7 @@ void WCoverArt::loadDefaultStatus() {
 void WCoverArt::slotHideCoverArt() {
     m_bCoverIsVisible = false;
     setMinimumSize(0, 20);
-    loadDefaultStatus();
+    setToDefault();
 }
 
 void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -99,7 +99,7 @@ void WCoverArt::slotLoadCoverArt(QString coverLocation, int trackId) {
         return;
     }
 
-    loadDefaultStatus();
+    setToDefault();
 
     m_lastRequestedTrackId = trackId;
     CoverArtCache::instance()->requestPixmap(coverLocation, trackId);
@@ -146,6 +146,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
             m_bCoverIsVisible = false;
             resize(sizeHint());
         } else {
+            // When the current cover is not a default one,
+            // it'll show the cover in a full size
+            // (in a new window - by left click)
             if (!m_bDefaultCover) {
                 QLabel *lb = new QLabel(this, Qt::Popup |
                                               Qt::Tool |
