@@ -249,6 +249,25 @@ void PlayerManager::addDeckInner() {
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
         AudioInput(AudioInput::VINYLCONTROL, 0, 0, number-1), pEngineDeck);
+
+
+    // Setup EQ for this deck
+    int rackNum = m_pEffectsManager->getEffectChainManager()->getEffectRacksSize();
+    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNum - 1);
+    pRack->addEffectChainSlotForEQ();
+
+    ControlObjectThread cot(QString("[EffectRack%1_EffectUnit%2]").
+        arg(rackNum).arg(number),
+        QString("group_[Channel%1]_enable").arg(number));
+    cot.set(1.0);
+    qDebug() << "IN ADDECKINNER "<< cot.getKey();
+
+    // Set the EQ to be fully wet
+    ControlObjectThread cotMix(QString("[EffectRack%1_EffectUnit%2]").
+        arg(rackNum).arg(number),
+        QString("mix"));
+    cotMix.set(1.0);
+
 }
 
 void PlayerManager::addSampler() {

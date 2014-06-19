@@ -144,7 +144,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    // Sets up the default EffectChains and EffectRack.
+    // Sets up the default EffectChains and EffectRacks
     m_pEffectsManager->setupDefaults();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
@@ -256,9 +256,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     for (int i = 0; i < deck_count; ++i) {
         m_pPlayerManager->addDeck();
     }
-
-    // Set up a separate EffectRack for Equalizers
-    m_pEffectsManager->setupEQs();
 
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
