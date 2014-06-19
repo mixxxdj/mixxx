@@ -34,7 +34,11 @@ class EffectRack : public QObject {
     void registerGroup(const QString& group);
     int numEffectChainSlots() const;
     EffectChainSlotPointer addEffectChainSlot();
+    EffectChainSlotPointer addEffectChainSlotForEQ();
     EffectChainSlotPointer getEffectChainSlot(int i);
+
+    // Getter for rack number
+    int getRackNumber();
 
   public slots:
     void slotClearRack(double v);

@@ -89,6 +89,41 @@ int EffectRack::numEffectChainSlots() const {
     return m_effectChainSlots.size();
 }
 
+
+EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
+    int iChainSlotNumber = m_effectChainSlots.size();
+    EffectChainSlot* pChainSlot =
+            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
+
+    // Add a single EffectSlot for EQDefault
+    pChainSlot->addEffectSlot();
+
+    const QSet<QString>& registeredGroups =
+            m_pEffectChainManager->registeredGroups();
+    foreach (const QString& group, registeredGroups) {
+        pChainSlot->registerGroup(group);
+    }
+
+    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
+    m_effectChainSlots.append(pChainSlotPointer);
+    m_controlNumEffectChainSlots.setAndConfirm(
+            m_controlNumEffectChainSlots.get() + 1);
+
+    // Now load an empty effect chain into the slot so that users can edit
+    // effect slots on the fly without having to load a chain.
+    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
+                                              EffectChainPointer()));
+    pChain->setName("Empty Chain");
+    pChainSlotPointer->loadEffectChain(pChain);
+
+    // Insert EQDefault into the available EffectSlot
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(
+        "org.mixxx.effects.eqdefault");
+    pChain->replaceEffect(0, pEffect);
+
+    return pChainSlotPointer;
+}
+
 EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     int iChainSlotNumber = m_effectChainSlots.size();
     EffectChainSlot* pChainSlot =
@@ -141,6 +176,10 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
         return EffectChainSlotPointer();
     }
     return m_effectChainSlots[i];
+}
+
+int EffectRack::getRackNumber() {
+    return m_iRackNumber;
 }
 
 void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,

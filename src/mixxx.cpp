@@ -256,6 +256,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     for (int i = 0; i < deck_count; ++i) {
         m_pPlayerManager->addDeck();
     }
+
+    // Set up a separate EffectRack for Equalizers
+    m_pEffectsManager->setupEQs();
+
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
