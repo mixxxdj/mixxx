@@ -150,7 +150,7 @@ void EffectsManager::setupEQs() {
     pRack->addEffectChainSlotForEQ();
 
     for (int i = 1; i <= 4; ++i) {
-        // Internally, the rack are indexed from 0. Thus we need to increment the
+        // Internally, racks are indexed from 0. Thus we need to increment the
         // rack number by one
 
         // Set each Equalizer to be enabled for one channel
