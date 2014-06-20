@@ -184,6 +184,9 @@
  *            - Shift + Censor button enables/disables the filter effect
  *            - Mid EQ controls the filter parameter while the filter is
  *              enabled
+ * 2014-06-21 Smart switching between mid EQ and filter effect
+ *            - Track the knob's value and restore it when switching
+ *              between mid EQ and filter effect
  * ...to be continued...
  *****************************************************************************/
 
@@ -347,6 +350,10 @@ VestaxVCI300.Deck = function (number) {
 	this.group = "[Channel" + this.number + "]";
 	this.filterGroup = "[EffectRack1_EffectUnit" + this.number + "]";
 	VestaxVCI300.decksByGroup[this.group] = this;
+	this.shiftState = false;
+	this.scratchState = true;
+	this.jogTouchState = false;
+	this.filterMidValue = VestaxVCI300.FILTER_PARAMETER_DEFAULT;
 };
 
 VestaxVCI300.leftDeck = new VestaxVCI300.Deck(1);
@@ -460,9 +467,6 @@ VestaxVCI300.Deck.prototype.updateBeatSyncState = function () {
 };
 
 VestaxVCI300.Deck.prototype.initValues = function () {
-	this.shiftState = false;
-	this.scratchState = true;
-	this.jogTouchState = false;
 	this.rateDirBackup = engine.getValue(this.group, "rate_dir");
 	engine.setValue(this.group, "rate_dir", -1);
 	engine.setValue(this.group, "keylock", true);
@@ -595,6 +599,16 @@ VestaxVCI300.Deck.prototype.triggerCensorFilter = function () {
 	this.censorLED.trigger(
 		engine.getValue(this.group, "reverseroll") ||
 		engine.getValue(this.filterGroup, "enabled"));
+};
+
+
+VestaxVCI300.Deck.prototype.setFilterMidValue = function (value) {
+	this.filterMidValue = value;
+	if (engine.getValue(this.filterGroup, "enabled")) {
+		engine.setValue(this.filterGroup, "parameter", script.absoluteLin(value, 0.0, 1.0));
+	} else {
+		engine.setValue(this.group, "filterMid", script.absoluteNonLin(value, 0.0, 1.0, 4.0));
+	}
 };
 
 
@@ -796,8 +810,8 @@ VestaxVCI300.onCensorFilterButton = function (channel, control, value, status, g
 		if (VestaxVCI300.getButtonPressed(value)) {
 			// enable/disable filter
 			VestaxVCI300.toggleBinaryValue(deck.filterGroup, "enabled");
-			// reset filter parameter
-			engine.setValue(deck.filterGroup, "parameter", VestaxVCI300.FILTER_PARAMETER_DEFAULT);
+			// restore value
+			deck.setFilterMidValue(deck.filterMidValue);
 		}
 	} else {
 		// censor
@@ -1050,11 +1064,7 @@ VestaxVCI300.onAutoLoopButton = function (channel, control, value, status, group
 
 VestaxVCI300.onFilterMidKnob = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	if (engine.getValue(deck.filterGroup, "enabled")) {
-		engine.setValue(deck.filterGroup, "parameter", script.absoluteLin(value, 0.0, 1.0));
-	} else {
-		engine.setValue(deck.group, "filterMid", script.absoluteNonLin(value, 0.0, 1.0, 4.0));
-	}
+	deck.setFilterMidValue(value);
 };
 
 VestaxVCI300.onCrossfaderCurve = function (channel, control, value, status, group) {
