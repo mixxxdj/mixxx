@@ -51,9 +51,11 @@ class EffectsManager : public QObject {
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
-    // Temporary, but for setting up all the default EffectChains and EffectRack
+    // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setupDefaults();
-    void setupEQs();
+
+    // Add an Equalizer for the specified channel
+    void addEqualizer(int channelNumber);
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.

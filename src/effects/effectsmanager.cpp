@@ -140,33 +140,24 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
     return m_pEffectChainManager->getEffectRack(i);
 }
 
-//void EffectsManager::setupEQs() {
-    //EffectRackPointer pRack = addEffectRack();
-    // Add 4 EffectChainSlots, each with its own Equalizer
-    //    pRack->addEffectChainSlotForEQ();
-    //    pRack->addEffectChainSlotForEQ();
-    //    pRack->addEffectChainSlotForEQ();
-    //    pRack->addEffectChainSlotForEQ();
+void EffectsManager::addEqualizer(int channelNumber) {
+    int rackNum = getEffectChainManager()->getEffectRacksSize();
+    EffectRackPointer pRack = getEffectRack(rackNum - 1);
+    pRack->addEffectChainSlotForEQ();
 
-    //for (int i = 1; i <= 4; ++i) {
-    //    // Internally, racks are indexed from 0. Thus we need to increment the
-    //    // rack number by one
+    ControlObjectThread cot(QString("[EffectRack%1_EffectUnit%2]").
+        arg(rackNum).arg(channelNumber),
+        QString("group_[Channel%1]_enable").arg(channelNumber));
+    cot.set(1.0);
+    qDebug() << "IN ADDECKINNER "<< cot.getKey();
 
-    //    // Set each Equalizer to be enabled for one channel
-    //    ControlObjectThread cot(QString("[EffectRack%1_EffectUnit%2]").
-    //        arg(pRack->getRackNumber() + 1).arg(i),
-    //        QString("group_[Channel%1]_enable").arg(i));
-    //    cot.set(1.0);
+    // Set the EQ to be fully wet
+    ControlObjectThread cotMix(QString("[EffectRack%1_EffectUnit%2]").
+        arg(rackNum).arg(channelNumber),
+        QString("mix"));
+    cotMix.set(1.0);
 
-    //    qDebug() << "TEST EQ'S CONFIGKEY"<< cot.getKey();
-
-    //    // Set each Equalizer to be fully wet
-    //    ControlObjectThread cotMix(QString("[EffectRack%1_EffectUnit%2]").
-    //        arg(pRack->getRackNumber() + 1).arg(i),
-    //        QString("mix"));
-    //    cotMix.set(1.0);
-    //}
-//}
+}
 
 void EffectsManager::setupDefaults() {
     //m_pEffectChainManager->loadEffectChains();
