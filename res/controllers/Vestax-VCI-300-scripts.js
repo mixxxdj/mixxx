@@ -25,9 +25,14 @@
  * ---------------
  * -          Cue          = cue_default
  * - Shift  + Cue          = set the cue point (while playing)
- * -   "       "           = clear the cue point (while not playing)
+ * -   "       "           = clear the cue point (while not playing) or
+ *                           jump back to beginning of track if not cue
+ *                           point has been set or load the currently
+ *                           selected track if no track is loaded
+ *                           Auto DJ: Skip next track
  * -          Play         = play
  * - Shift  + Play         = stutter play
+ *                           Auto DJ: Fade now
  * -          Cue [1-3]/In = hotcue
  * -          Out 1/Loop   = loop in (Shift = clear)
  * -          Out 2/Loop   = loop out (Shift = clear)
@@ -49,8 +54,10 @@
  * -          Keylock      = toggle keylock
  * - Shift  + Keylock      = reset pitch to 0.00% (quartz)
  * -          Censor       = play backwards while button is pressed
+ *                           (song continues playing muted in the
+ *                           background)
  * - Shift  + Censor       = toggle filter effect that is controlled
- *                           by the Mid EQ poti
+ *                           by the Mid EQ knob
  * -          Scratch      = toggle scratching
  * -          Jog          = jog movement or scratching
  * - Shift  + Jog          = fast track search (while not playing)
@@ -171,6 +178,12 @@
  *              possible
  *            - Use new cue/play controls
  *            - Rework looping
+ * 2014-06-20.1 Replace reverse play with filter effect
+ *            - Assign 1st/2nd effect unit with preselected Filter
+ *              chain to left/right deck respectively
+ *            - Shift + Censor button enables/disables the filter effect
+ *            - Mid EQ controls the filter parameter while the filter is
+ *              enabled
  * ...to be continued...
  *****************************************************************************/
 
@@ -207,6 +220,8 @@ VestaxVCI300.jogScrollDeltaStepsPerTrack = 8; // 1600 / 8 = 200 tracks per revol
 VestaxVCI300.pitchFineTuneStepPercent100 = 1; // = 1/100 %
 
 VestaxVCI300.MIXXX_LOOP_POSITION_UNDEFINED = -1;
+
+VestaxVCI300.FILTER_PARAMETER_DEFAULT = 0.5; // centered
 
 VestaxVCI300.autoLoopBeatsArray = [
 	"0.0625",
@@ -330,6 +345,7 @@ VestaxVCI300.turnOffAllLEDs = function () {
 VestaxVCI300.Deck = function (number) {
 	this.number = number;
 	this.group = "[Channel" + this.number + "]";
+	this.filterGroup = "[EffectRack1_EffectUnit" + this.number + "]";
 	VestaxVCI300.decksByGroup[this.group] = this;
 };
 
@@ -476,11 +492,13 @@ VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "loop_halve", this.onLoopHalveValueCB);
 	VestaxVCI300.connectControl(this.group, "loop_double", this.onLoopDoubleValueCB);
 	VestaxVCI300.connectControl(this.group, "beatsync", this.onBeatSyncValueCB);
-	VestaxVCI300.connectControl(this.group, "reverse", this.onReverseValueCB);
-	VestaxVCI300.connectControl(this.group, "reverseroll", this.onReverseValueCB);
+	VestaxVCI300.connectControl(this.group, "reverseroll", this.onCensorFilterValueCB);
+	VestaxVCI300.connectControl(this.filterGroup, "enabled", this.onCensorFilterValueCB);
 	for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
 		VestaxVCI300.connectControl(this.group, "beatloop_" + VestaxVCI300.autoLoopBeatsArray[beatsIndex] + "_enabled", this.onAutoLoopValueCB);
 	}
+	this.loadFilterPreset();
+	this.initFilterParameters();
 };
 
 VestaxVCI300.Deck.prototype.disconnectControls = function () {
@@ -494,6 +512,21 @@ VestaxVCI300.Deck.prototype.disconnectControls = function () {
 		var autoLoopBeats = VestaxVCI300.autoLoopBeatsArray[beatsIndex];
 		VestaxVCI300.disconnectControl(this.group, "beatloop_" + autoLoopBeats + "_enabled");
 	}
+};
+
+VestaxVCI300.Deck.prototype.loadFilterPreset = function () {
+	// This is a hack! Only works as long as "Filter" is
+	// the 3rd of the preset effect chains.
+	engine.setValue(this.filterGroup, "next_chain", 1);
+	engine.setValue(this.filterGroup, "next_chain", 1);
+	engine.setValue(this.filterGroup, "next_chain", 1);
+};
+
+VestaxVCI300.Deck.prototype.initFilterParameters = function () {
+	engine.setValue(this.filterGroup, "mix", 1.0); // wet
+	engine.setValue(this.filterGroup, "parameter", VestaxVCI300.FILTER_PARAMETER_DEFAULT);
+	engine.setValue(this.filterGroup, "group_" + this.group + "_enable", true);
+	engine.setValue(this.filterGroup, "enabled", false);
 };
 
 VestaxVCI300.Deck.prototype.isAutoLoopEnabled = function () {
@@ -558,6 +591,12 @@ VestaxVCI300.Deck.prototype.onAutoLoopButtonPressed = function () {
 	this.updateAutoLoopState();
 };
 
+VestaxVCI300.Deck.prototype.triggerCensorFilter = function () {
+	this.censorLED.trigger(
+		engine.getValue(this.group, "reverseroll") ||
+		engine.getValue(this.filterGroup, "enabled"));
+};
+
 
 ////////////////////////////////////////////////////////////////////////
 // Mixxx callback functions                                           //
@@ -584,7 +623,7 @@ VestaxVCI300.init = function (id, debug) {
 		new VestaxVCI300.LED(0x75);
 	VestaxVCI300.leftDeck.jogTouchLED =
 		new VestaxVCI300.LED(0x76);
-	VestaxVCI300.leftDeck.reverseLED =
+	VestaxVCI300.leftDeck.censorLED =
 		new VestaxVCI300.LED(0x28);
 	VestaxVCI300.leftDeck.autoLoopLED =
 		new VestaxVCI300.LED(0x29);
@@ -606,7 +645,7 @@ VestaxVCI300.init = function (id, debug) {
 		new VestaxVCI300.LED(0x77);
 	VestaxVCI300.rightDeck.jogTouchLED =
 		new VestaxVCI300.LED(0x78);
-	VestaxVCI300.rightDeck.reverseLED =
+	VestaxVCI300.rightDeck.censorLED =
 		new VestaxVCI300.LED(0x34);
 	VestaxVCI300.rightDeck.autoLoopLED =
 		new VestaxVCI300.LED(0x35);
@@ -750,17 +789,18 @@ VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 	}
 };
 
-VestaxVCI300.onCensorReverseButton = function (channel, control, value, status, group) {
+VestaxVCI300.onCensorFilterButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (deck.shiftState) {
-		// Reverse
+		// filter
 		if (VestaxVCI300.getButtonPressed(value)) {
-			engine.setValue(group, "reverseroll", false);
-			engine.setValue(group, "reverse", true);
+			// enable/disable filter
+			VestaxVCI300.toggleBinaryValue(deck.filterGroup, "enabled");
+			// reset filter parameter
+			engine.setValue(deck.filterGroup, "parameter", VestaxVCI300.FILTER_PARAMETER_DEFAULT);
 		}
 	} else {
-		// Censor
-		engine.setValue(group, "reverse", false);
+		// censor
 		engine.setValue(group, "reverseroll", VestaxVCI300.getButtonPressed(value));
 	}
 };
@@ -1008,8 +1048,17 @@ VestaxVCI300.onAutoLoopButton = function (channel, control, value, status, group
 	}
 };
 
+VestaxVCI300.onFilterMidKnob = function (channel, control, value, status, group) {
+	var deck = VestaxVCI300.decksByGroup[group];
+	if (engine.getValue(deck.filterGroup, "enabled")) {
+		engine.setValue(deck.filterGroup, "parameter", script.absoluteLin(value, 0.0, 1.0));
+	} else {
+		engine.setValue(deck.group, "filterMid", script.absoluteNonLin(value, 0.0, 1.0, 4.0));
+	}
+};
+
 VestaxVCI300.onCrossfaderCurve = function (channel, control, value, status, group) {
-	script.crossfaderCurve(value, /*min=*/0x00, /*max=*/0x7F);
+	script.crossfaderCurve(value);
 };
 
 VestaxVCI300.onLinefaderCurve = function (channel, control, value, status, group) {
@@ -1088,12 +1137,12 @@ VestaxVCI300.rightDeck.onBeatSyncValueCB = function (value, group, control) {
 	VestaxVCI300.rightDeck.updateBeatSyncState(value);
 };
 
-VestaxVCI300.leftDeck.onReverseValueCB = function (value, group, control) {
-	VestaxVCI300.leftDeck.reverseLED.trigger(value);
+VestaxVCI300.leftDeck.onCensorFilterValueCB = function (value, group, control) {
+	VestaxVCI300.leftDeck.triggerCensorFilter();
 };
 
-VestaxVCI300.rightDeck.onReverseValueCB = function (value, group, control) {
-	VestaxVCI300.rightDeck.reverseLED.trigger(value);
+VestaxVCI300.rightDeck.onCensorFilterValueCB = function (value, group, control) {
+	VestaxVCI300.rightDeck.triggerCensorFilter();
 };
 
 VestaxVCI300.leftDeck.onAutoLoopValueCB = function (value, group, control) {

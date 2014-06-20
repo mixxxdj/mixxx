@@ -206,7 +206,7 @@
 				<group>[Channel1]</group>
 				<midino>0x32</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onCensorReverseButton</key>
+				<key>VestaxVCI300.onCensorFilterButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -215,7 +215,7 @@
 				<group>[Channel2]</group>
 				<midino>0x45</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onCensorReverseButton</key>
+				<key>VestaxVCI300.onCensorFilterButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -256,7 +256,10 @@
 				<group>[Channel1]</group>
 				<midino>0x10</midino>
 				<status>0xB0</status>
-				<key>filterMid</key>
+				<key>VestaxVCI300.onFilterMidKnob</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -274,7 +277,10 @@
 				<group>[Channel2]</group>
 				<midino>0x16</midino>
 				<status>0xB0</status>
-				<key>filterMid</key>
+				<key>VestaxVCI300.onFilterMidKnob</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
