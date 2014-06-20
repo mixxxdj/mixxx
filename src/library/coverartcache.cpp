@@ -13,8 +13,12 @@ CoverArtCache::CoverArtCache()
 CoverArtCache::~CoverArtCache() {
 }
 
-void CoverArtCache::setCoverArtDao(CoverArtDAO* coverdao) {
+void CoverArtCache::setCoverArtDAO(CoverArtDAO* coverdao) {
     m_pCoverArtDAO = coverdao;
+}
+
+void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
+    m_pTrackDAO = trackdao;
 }
 
 void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
@@ -72,7 +76,7 @@ void CoverArtCache::imageFound() {
     // checks if we have to update DB
     if (res.coverLocationFound != res.currentCoverLocation) {
         int coverId = m_pCoverArtDAO->saveCoverLocation(res.coverLocationFound);
-        m_pCoverArtDAO->updateLibrary(res.trackId, coverId);
+        m_pTrackDAO->updateCoverArt(res.trackId, coverId);
     }
 
     m_runningIds.remove(res.trackId);

@@ -216,19 +216,3 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
 
     return coverArtInfo();
 }
-
-bool CoverArtDAO::updateLibrary(int trackId, int coverId) {
-    if (trackId < 1 || coverId < 1) {
-        return false;
-    }
-    QSqlQuery query(m_database);
-    query.prepare("UPDATE library SET cover_art=:coverId WHERE id=:trackId");
-    query.bindValue(":coverId", coverId);
-    query.bindValue(":trackId", trackId);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
-        return false;
-    }
-    return true;
-}

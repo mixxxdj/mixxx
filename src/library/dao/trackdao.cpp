@@ -1205,6 +1205,24 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 
+// we load and handle covers in CoverArtCache class and
+// it needs update this column for future cover loadings
+bool TrackDAO::updateCoverArt(int trackId, int coverId) {
+    if (trackId < 1 || coverId < 1) {
+        return false;
+    }
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE library SET cover_art=:coverId WHERE id=:trackId");
+    query.bindValue(":coverId", coverId);
+    query.bindValue(":trackId", trackId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
+        return false;
+    }
+    return true;
+}
+
 // Mark all the tracks in the library as invalid.
 // That means we'll need to later check that those tracks actually
 // (still) exist as part of the library scanning procedure.

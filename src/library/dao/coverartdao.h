@@ -29,7 +29,6 @@ class CoverArtDAO : public QObject, public virtual DAO {
         QString trackLocation;
     };
 
-    bool updateLibrary(int trackId, int coverId);
     coverArtInfo getCoverArtInfo(int trackId);
     const char* getDefaultImageFormat() { return m_cDefaultImageFormat; }
 

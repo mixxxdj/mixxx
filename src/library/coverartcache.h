@@ -7,6 +7,7 @@
 #include <QPixmapCache>
 
 #include "library/dao/coverartdao.h"
+#include "library/dao/trackdao.h"
 #include "util/singleton.h"
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache>
@@ -14,7 +15,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     Q_OBJECT
   public:
     void requestPixmap(QString coverLocation, int trackId);
-    void setCoverArtDao(CoverArtDAO* coverdao);
+    void setCoverArtDAO(CoverArtDAO* coverdao);
+    void setTrackDAO(TrackDAO* trackdao);
     QString getDefaultCoverLocation(int trackId);
 
   public slots:
@@ -38,6 +40,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
     static CoverArtCache* m_instance;
     CoverArtDAO* m_pCoverArtDAO;
+    TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
 
     threadRes searchImage(CoverArtDAO::coverArtInfo coverInfo);

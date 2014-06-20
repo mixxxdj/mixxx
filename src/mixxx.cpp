@@ -307,8 +307,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         }
     }
 
-    CoverArtCache::instance()->setCoverArtDao(
+    CoverArtCache::instance()->setCoverArtDAO(
                 &m_pLibrary->getTrackCollection()->getCoverArtDAO());
+    CoverArtCache::instance()->setTrackDAO(
+                &m_pLibrary->getTrackCollection()->getTrackDAO());
 
     // Call inits to invoke all other construction parts
 

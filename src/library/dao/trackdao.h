@@ -112,6 +112,9 @@ class TrackDAO : public QObject, public virtual DAO {
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
     bool verifyRemainingTracks(volatile bool* pCancel);
 
+    // it will update the Library.cover_art column in DB
+    bool updateCoverArt(int trackId, int coverId);
+
   signals:
     void trackDirty(int trackId);
     void trackClean(int trackId);
