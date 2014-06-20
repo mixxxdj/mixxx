@@ -11,9 +11,10 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2014-06-12
+// Revision: 2014-06-20
 //
 // Changelog:
+// 2014-06-20 Minor cleanup
 // 2014-06-12 Basic effect chain control
 //    - Effect chain selector (need to press shift as labeled)
 //    - Efx3 button enables/disables the effect chain
@@ -451,7 +452,7 @@ DenonMC6000MK2.Sampler = function (side, midiChannel, midiLedValue, midiDimmerLe
 };
 
 DenonMC6000MK2.Sampler.prototype.isTrackLoaded = function () {
-	return 0 < engine.getValue(this.group, "track_samples");
+	return DenonMC6000MK2.isTrackLoaded(engine.getValue(this.group, "track_samples"));
 };
 
 DenonMC6000MK2.Sampler.prototype.loadSelectedTrack = function () {
@@ -767,32 +768,32 @@ DenonMC6000MK2.onTrackSamplesValue = function (value, group, control) {
 
 DenonMC6000MK2.Deck.prototype.onCueButton = function (isButtonPressed) {
 	if (this.isTrackLoaded()) {
-		if (DenonMC6000MK2.shiftState && engine.getValue("[AutoDJ]", "enabled")) {
+		if (DenonMC6000MK2.shiftState) {
 			if (isButtonPressed) {
-				engine.setValue("[AutoDJ]", "skip_next", true);
-			}
-		} else {
-			if (DenonMC6000MK2.shiftState) {
-				if (isButtonPressed) {
+				if (engine.getValue("[AutoDJ]", "enabled")) {
+					engine.setValue("[AutoDJ]", "skip_next", true);
+				} else {
 					if (this.isPlaying()) {
 						// move cue point
 						this.setValue("cue_set", true);
 					} else {
-						// clear cue point
 						if (0.0 < this.getValue("cue_point")) {
+							// clear cue point
 							this.setValue("cue_point", 0.0);
 						} else {
-							// jump to beginning of track
+							// no cue point -> jump to beginning of track
 							this.setValue("playposition", 0.0);
 						}
 					}
 				}
-			} else {
-				this.setValue("cue_default", isButtonPressed);
 			}
+		} else {
+			this.setValue("cue_default", isButtonPressed);
 		}
 	} else {
-		this.loadSelectedTrack();
+		if (isButtonPressed) {
+			this.loadSelectedTrack();
+		}
 	}
 };
 
@@ -807,14 +808,14 @@ DenonMC6000MK2.onCueIndicatorValue = function (value, group, control) {
 
 DenonMC6000MK2.Deck.prototype.onPlayButtonPressed = function () {
 	if (this.isTrackLoaded()) {
-		if (DenonMC6000MK2.shiftState && engine.getValue("[AutoDJ]", "enabled")) {
-			engine.setValue("[AutoDJ]", "fade_now", true);
-		} else {
-			if (DenonMC6000MK2.shiftState) {
-				this.setValue("play_stutter", true);
+		if (DenonMC6000MK2.shiftState) {
+			if (engine.getValue("[AutoDJ]", "enabled")) {
+				engine.setValue("[AutoDJ]", "fade_now", true);
 			} else {
-				this.toggleValue("play");
+				this.setValue("play_stutter", true);
 			}
+		} else {
+			this.toggleValue("play");
 		}
 	} else {
 		this.loadSelectedTrack();
@@ -1037,8 +1038,9 @@ DenonMC6000MK2.Deck.prototype.deleteLoopEnd = function () {
 };
 
 DenonMC6000MK2.Deck.prototype.deleteLoop = function () {
-	this.deleteLoopStart();
+	// loop end has to be deleted before loop start
 	this.deleteLoopEnd();
+	this.deleteLoopStart();
 };
 
 DenonMC6000MK2.Deck.prototype.toggleLoop = function () {
@@ -1293,6 +1295,7 @@ DenonMC6000MK2.Side.prototype.connectControls = function () {
 	for (var samplerIndex in this.samplers) {
 		this.samplers[samplerIndex].connectControls();
 	}
+	engine.setValue(this.efxGroup, "enabled", false);
 	this.loadFilterPreset();
 	this.initFilterParameters();
 };
@@ -1311,6 +1314,7 @@ DenonMC6000MK2.Side.prototype.initFilterParameters = function () {
 	for (var deckGroup in this.decksByGroup) {
 		engine.setValue(this.filterGroup, "group_" + deckGroup + "_enable", true);
 	}
+	engine.setValue(this.filterGroup, "enabled", true);
 };
 
 /* Shutdown */
@@ -1462,7 +1466,7 @@ DenonMC6000MK2.onTrackSelectKnob = function (channel, control, value, status, gr
 };
 
 DenonMC6000MK2.onXfaderContour = function (channel, control, value, status, group) {
-	script.crossfaderCurve(value, /*min=*/0x00, /*max=*/0x7F);
+	script.crossfaderCurve(value);
 };
 
 
