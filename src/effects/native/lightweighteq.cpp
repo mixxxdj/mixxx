@@ -14,43 +14,43 @@ EffectManifest LightweightEQ::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription("Lightweight Static Equalizer which can be used on \
-machines with lower CPU performances");
+low-performance hardware");
 
     EffectManifestParameter* low = manifest.addParameter();
-    low->setId("lightweight_low");
+    low->setId("eq_low");
     low->setName(QObject::tr("Low"));
     low->setDescription("Gain for Low Filter");
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    low->setDefault(1.);
+    low->setDefault(1.0);
     low->setMinimum(0);
-    low->setMaximum(4.);
+    low->setMaximum(4.0);
 
     EffectManifestParameter* mid = manifest.addParameter();
-    mid->setId("lightweight_mid");
+    mid->setId("eq_mid");
     mid->setName(QObject::tr("Mid"));
     mid->setDescription("Gain for Band Filter");
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    mid->setDefault(1.);
+    mid->setDefault(1.0);
     mid->setMinimum(0);
-    mid->setMaximum(4.);
+    mid->setMaximum(4.0);
 
     EffectManifestParameter* high = manifest.addParameter();
-    high->setId("lightweight_high");
+    high->setId("eq_high");
     high->setName(QObject::tr("High"));
     high->setDescription("Gain for High Filter");
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    high->setDefault(1.);
+    high->setDefault(1.0);
     high->setMinimum(0);
-    high->setMaximum(4.);
+    high->setMaximum(4.0);
 
     return manifest;
 }
@@ -79,14 +79,13 @@ LightweightEQGroupState::~LightweightEQGroupState() {
 
 LightweightEQ::LightweightEQ(EngineEffect* pEffect,
                    const EffectManifest& manifest)
-        : m_pPotLow(pEffect->getParameterById("lightweight_low")),
-          m_pPotMid(pEffect->getParameterById("lightweight_mid")),
-          m_pPotHigh(pEffect->getParameterById("lightweight_high")) {
+        : m_pPotLow(pEffect->getParameterById("eq_low")),
+          m_pPotMid(pEffect->getParameterById("eq_mid")),
+          m_pPotHigh(pEffect->getParameterById("eq_high")) {
     Q_UNUSED(manifest);
 }
 
 LightweightEQ::~LightweightEQ() {
-    //qDebug() << debugString() << "destroyed";
 }
 
 void LightweightEQ::processGroup(const QString& group,
