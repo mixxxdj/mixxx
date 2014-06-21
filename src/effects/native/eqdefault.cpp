@@ -24,9 +24,9 @@ EffectManifest EQDefault::getManifest() {
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    low->setDefault(1.);
+    low->setDefault(1.0);
     low->setMinimum(0);
-    low->setMaximum(4.);
+    low->setMaximum(4.0);
 
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
@@ -36,9 +36,9 @@ EffectManifest EQDefault::getManifest() {
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    mid->setDefault(1.);
+    mid->setDefault(1.0);
     mid->setMinimum(0);
-    mid->setMaximum(4.);
+    mid->setMaximum(4.0);
 
     EffectManifestParameter* high = manifest.addParameter();
     high->setId("high");
@@ -48,16 +48,16 @@ EffectManifest EQDefault::getManifest() {
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    high->setDefault(1.);
+    high->setDefault(1.0);
     high->setMinimum(0);
-    high->setMaximum(4.);
+    high->setMaximum(4.0);
 
     return manifest;
 }
 
 EQDefaultGroupState::EQDefaultGroupState()
         : low(NULL), band(NULL), high(NULL),old_low(1.0),
-          old_mid(1.0), old_high(1.0), old_dry(0) {
+          old_mid(1.0), old_high(1.0) {
     m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
@@ -95,7 +95,6 @@ EQDefault::EQDefault(EngineEffect* pEffect,
 }
 
 EQDefault::~EQDefault() {
-    //qDebug() << debugString() << "destroyed";
     delete m_pLoFreqCorner;
     delete m_pHiFreqCorner;
 }
@@ -112,19 +111,6 @@ void EQDefault::processGroup(const QString& group,
     fLow = m_pPotLow->value().toDouble();
     fMid = m_pPotMid->value().toDouble();
     fHigh = m_pPotHigh->value().toDouble();
-
-    float fDry = 0;
-    // This is the RGBW Mix. It is currently not working,
-    // because of the group delay, introduced by the filters.
-    // Since the dry signal has no delay, we get a frequency distorsion
-    // once it is mixed together with the filtered signal
-    // This might be fixed later by an allpass filter for the dry signal
-    // or zero-phase no-lag filters
-    // "Linear Phase EQ" "filtfilt()"
-    //fDry = qMin(qMin(fLow, fMid), fHigh);
-    //fLow -= fDry;
-    //fMid -= fDry;
-    //fHigh -= fDry;
 
     int sampleRate = getSampleRate();
     if (m_oldSampleRate != sampleRate ||
@@ -161,32 +147,27 @@ void EQDefault::processGroup(const QString& group,
 
     if (ramp_delay) {
         // first use old gains
-        SampleUtil::copy4WithGain(pOutput,
-                pInput, pState->old_dry,
+        SampleUtil::copy3WithGain(pOutput,
                 pState->m_pLowBuf, pState->old_low,
                 pState->m_pBandBuf, pState->old_mid,
                 pState->m_pHighBuf, pState->old_high,
                 ramp_delay);
         // Now ramp the remaining frames
-        SampleUtil::copy4WithRampingGain(&pOutput[ramp_delay],
-                &pInput[ramp_delay], pState->old_dry, fDry,
+        SampleUtil::copy3WithRampingGain(&pOutput[ramp_delay],
                 &pState->m_pLowBuf[ramp_delay], pState->old_low, fLow,
                 &pState->m_pBandBuf[ramp_delay], pState->old_mid, fMid,
                 &pState->m_pHighBuf[ramp_delay], pState->old_high, fHigh,
                 numSamples - ramp_delay);
     } else if (fLow != pState->old_low ||
             fMid != pState->old_mid ||
-            fHigh != pState->old_high ||
-            fDry != pState->old_dry) {
-        SampleUtil::copy4WithRampingGain(pOutput,
-                pInput, pState->old_dry, fDry,
+            fHigh != pState->old_high) {
+        SampleUtil::copy3WithRampingGain(pOutput,
                 pState->m_pLowBuf, pState->old_low, fLow,
                 pState->m_pBandBuf, pState->old_mid, fMid,
                 pState->m_pHighBuf, pState->old_high, fHigh,
                 numSamples);
     } else {
-        SampleUtil::copy4WithGain(pOutput,
-                pInput, fDry,
+        SampleUtil::copy3WithGain(pOutput,
                 pState->m_pLowBuf, fLow,
                 pState->m_pBandBuf, fMid,
                 pState->m_pHighBuf, fHigh,
@@ -196,5 +177,4 @@ void EQDefault::processGroup(const QString& group,
     pState->old_low = fLow;
     pState->old_mid = fMid;
     pState->old_high = fHigh;
-    pState->old_dry = fDry;
 }

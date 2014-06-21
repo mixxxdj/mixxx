@@ -28,7 +28,6 @@ public:
     double old_low;
     double old_mid;
     double old_high;
-    double old_dry;
 
     CSAMPLE* m_pLowBuf;
     CSAMPLE* m_pBandBuf;
