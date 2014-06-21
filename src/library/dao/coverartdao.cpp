@@ -1,8 +1,9 @@
 #include <QtDebug>
 #include <QThread>
 
-#include "library/queryutil.h"
 #include "library/dao/coverartdao.h"
+#include "library/dao/trackdao.h"
+#include "library/queryutil.h"
 
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database,
                          ConfigObject<ConfigValue>* pConfig)
@@ -39,13 +40,12 @@ int CoverArtDAO::saveCoverLocation(QString coverLocation) {
     if (!coverId) { // new cover
         QSqlQuery query(m_database);
 
-        query.prepare(QString(
-            "INSERT INTO cover_art (location) "
-            "VALUES (:location)"));
+        query.prepare("INSERT INTO " % COVERART_TABLE %
+                      " (" % COVERARTTABLE_LOCATION % ") VALUES (:location)");
         query.bindValue(":location", coverLocation);
 
         if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << "couldn't save new cover art";
+            LOG_FAILED_QUERY(query) << "Saving new cover (" % coverLocation % ") failed.";
             return 0;
         }
 
@@ -62,13 +62,14 @@ void CoverArtDAO::deleteUnusedCoverArts() {
 
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT location FROM cover_art "
-                  "WHERE id not in ("
-                      "SELECT cover_art FROM cover_art INNER JOIN library "
-                      "ON library.cover_art = cover_art.id "
-                      "GROUP BY cover_art"
-                  ")");
-
+    query.prepare("SELECT " % COVERARTTABLE_LOCATION %
+                  " FROM " % COVERART_TABLE %
+                  " WHERE " % COVERARTTABLE_ID % " not in "
+                      "(SELECT " % LIBRARYTABLE_COVERART %
+                      " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
+                      " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART %
+                      " = " % COVERART_TABLE % "." % COVERARTTABLE_ID %
+                      " GROUP BY " % LIBRARYTABLE_COVERART % ")");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
@@ -89,9 +90,9 @@ void CoverArtDAO::deleteUnusedCoverArts() {
         return;
     }
 
-    query.prepare(QString("DELETE FROM cover_art WHERE location in (%1)")
+    query.prepare(QString("DELETE FROM " % COVERART_TABLE %
+                          " WHERE " % COVERARTTABLE_LOCATION % " in (%1)")
                   .arg(coverLocationList.join(",")));
-
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -113,10 +114,9 @@ int CoverArtDAO::getCoverArtId(QString coverLocation) {
     QSqlQuery query(m_database);
 
     query.prepare(QString(
-        "SELECT id FROM cover_art "
-        "WHERE location = :location"));
+        "SELECT " % COVERARTTABLE_ID % " FROM " % COVERART_TABLE %
+        " WHERE " % COVERARTTABLE_LOCATION % "=:location"));
     query.bindValue(":location", coverLocation);
-
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return 0;
