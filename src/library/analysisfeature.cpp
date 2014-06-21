@@ -14,6 +14,7 @@
 #include "soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/debug.h"
+#include "skin/skinloader.h"
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
@@ -60,7 +61,15 @@ QVariant AnalysisFeature::title() {
 }
 
 QIcon AnalysisFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_prepare.png");
+    SkinLoader sl(m_pConfig);
+    QString actual_skin = sl.getConfiguredSkinPath();
+    actual_skin.append("/ic_library_prepare.png");
+    QFile Fout(actual_skin);
+    if(Fout.exists()){
+        return QIcon(actual_skin);
+    }else{
+        return QIcon(":/images/library/ic_library_prepare.png");
+    }
 }
 
 void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
