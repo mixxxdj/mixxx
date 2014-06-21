@@ -54,7 +54,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
-            << "cover_art.location AS cover";
+            << COVERART_TABLE + "." + COVERARTTABLE_LOCATION
+               + " AS " + LIBRARYTABLE_COVERART;
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
@@ -76,8 +77,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
-        } else if (it->startsWith("cover_art.")) {
-            *it = "cover";
+        } else if (it->startsWith(COVERART_TABLE + ".")) {
+            *it = LIBRARYTABLE_COVERART;
         }
     }
 

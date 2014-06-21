@@ -137,7 +137,7 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             coverLocation = idx.sibling(idx.row(),
-                                        trackModel->fieldIndex("cover")
+                                        trackModel->fieldIndex(LIBRARYTABLE_COVERART)
                                         ).data().toString();
             trackId = trackModel->getTrackId(idx);
         }

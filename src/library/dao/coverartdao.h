@@ -7,6 +7,10 @@
 #include "configobject.h"
 #include "library/dao/dao.h"
 
+const QString COVERART_TABLE = "cover_art";
+const QString COVERARTTABLE_ID = "id";
+const QString COVERARTTABLE_LOCATION = "location";
+
 class CoverArtDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
