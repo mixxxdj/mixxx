@@ -57,7 +57,7 @@ low-performance hardware");
 
 LightweightEQGroupState::LightweightEQGroupState()
         : low(NULL), band(NULL), high(NULL),old_low(1.0),
-          old_mid(1.0), old_high(1.0), old_dry(0) {
+          old_mid(1.0), old_high(1.0) {
     m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
     m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
@@ -101,19 +101,6 @@ void LightweightEQ::processGroup(const QString& group,
     fMid = m_pPotMid->value().toDouble();
     fHigh = m_pPotHigh->value().toDouble();
 
-    float fDry = 0;
-    // This is the RGBW Mix. It is currently not working,
-    // because of the group delay, introduced by the filters.
-    // Since the dry signal has no delay, we get a frequency distorsion
-    // once it is mixed together with the filtered signal
-    // This might be fixed later by an allpass filter for the dry signal
-    // or zero-phase no-lag filters
-    // "Linear Phase EQ" "filtfilt()"
-    //fDry = qMin(qMin(fLow, fMid), fHigh);
-    //fLow -= fDry;
-    //fMid -= fDry;
-    //fHigh -= fDry;
-
     // Process the new EQ'd signals.
     // They use up to 16 frames history so in case we are just starting,
     // 16 frames are junk, this is handled by ramp_delay
@@ -139,32 +126,27 @@ void LightweightEQ::processGroup(const QString& group,
 
     if (ramp_delay) {
         // first use old gains
-        SampleUtil::copy4WithGain(pOutput,
-                pInput, pState->old_dry,
+        SampleUtil::copy3WithGain(pOutput,
                 pState->m_pLowBuf, pState->old_low,
                 pState->m_pBandBuf, pState->old_mid,
                 pState->m_pHighBuf, pState->old_high,
                 ramp_delay);
         // Now ramp the remaining frames
-        SampleUtil::copy4WithRampingGain(&pOutput[ramp_delay],
-                &pInput[ramp_delay], pState->old_dry, fDry,
+        SampleUtil::copy3WithRampingGain(&pOutput[ramp_delay],
                 &pState->m_pLowBuf[ramp_delay], pState->old_low, fLow,
                 &pState->m_pBandBuf[ramp_delay], pState->old_mid, fMid,
                 &pState->m_pHighBuf[ramp_delay], pState->old_high, fHigh,
                 numSamples - ramp_delay);
     } else if (fLow != pState->old_low ||
             fMid != pState->old_mid ||
-            fHigh != pState->old_high ||
-            fDry != pState->old_dry) {
-        SampleUtil::copy4WithRampingGain(pOutput,
-                pInput, pState->old_dry, fDry,
+            fHigh != pState->old_high) {
+        SampleUtil::copy3WithRampingGain(pOutput,
                 pState->m_pLowBuf, pState->old_low, fLow,
                 pState->m_pBandBuf, pState->old_mid, fMid,
                 pState->m_pHighBuf, pState->old_high, fHigh,
                 numSamples);
     } else {
-        SampleUtil::copy4WithGain(pOutput,
-                pInput, fDry,
+        SampleUtil::copy3WithGain(pOutput,
                 pState->m_pLowBuf, fLow,
                 pState->m_pBandBuf, fMid,
                 pState->m_pHighBuf, fHigh,
@@ -174,5 +156,4 @@ void LightweightEQ::processGroup(const QString& group,
     pState->old_low = fLow;
     pState->old_mid = fMid;
     pState->old_high = fHigh;
-    pState->old_dry = fDry;
 }
