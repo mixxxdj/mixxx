@@ -51,20 +51,21 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
     }
 
     // search and load image in a worker thread
-    QFuture<threadRes> future = QtConcurrent::run(this,
+    QFuture<SearchImageResult> future = QtConcurrent::run(this,
                                                   &CoverArtCache::searchImage,
                                                   coverInfo);
     m_runningIds.insert(trackId);
 
-    QFutureWatcher<threadRes>* watcher = new QFutureWatcher<threadRes>(this);
+    QFutureWatcher<SearchImageResult>* watcher
+            = new QFutureWatcher<SearchImageResult>(this);
     connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     watcher->setFuture(future);
 }
 
 void CoverArtCache::imageFound() {
-    QFutureWatcher<threadRes>* watcher;
-    watcher = reinterpret_cast<QFutureWatcher<threadRes>*>(sender());
-    threadRes res = watcher->result();
+    QFutureWatcher<SearchImageResult>* watcher;
+    watcher = reinterpret_cast<QFutureWatcher<SearchImageResult>*>(sender());
+    SearchImageResult res = watcher->result();
 
     if (!res.img.isNull()) {
         QPixmap pixmap = QPixmap::fromImage(res.img);
@@ -85,9 +86,9 @@ void CoverArtCache::imageFound() {
 // Searching and loading QImages is a very slow process
 // that could block the main thread. Therefore, this method
 // is executed in a separate thread via QtConcurrent::run
-CoverArtCache::threadRes CoverArtCache::searchImage(CoverArtDAO::coverArtInfo
-                                                    coverInfo) {
-    threadRes res;
+CoverArtCache::SearchImageResult CoverArtCache::searchImage(
+        CoverArtDAO::coverArtInfo coverInfo) {
+    SearchImageResult res;
     res.trackId = coverInfo.trackId;
     res.currentCoverLocation = coverInfo.currentCoverLocation;
     res.coverLocationFound = QString();
@@ -114,10 +115,9 @@ CoverArtCache::threadRes CoverArtCache::searchImage(CoverArtDAO::coverArtInfo
     if (newImage.isNull()) {
         newImage = searchInTrackDirectory(coverInfo.trackDirectory);
     }
-    if (saveImageInDisk(newImage, coverInfo.defaultCoverLocation)) {
+    if (saveImageOnDisk(newImage, coverInfo.defaultCoverLocation)) {
         res.coverLocationFound = coverInfo.defaultCoverLocation;
         res.img = image;
-        return res;
     }
 
     return res;
@@ -161,7 +161,7 @@ QImage CoverArtCache::searchEmbeddedCover(QString trackLocation) {
     return QImage();
 }
 
-bool CoverArtCache::saveImageInDisk(QImage cover, QString location) {
+bool CoverArtCache::saveImageOnDisk(QImage cover, QString location) {
     if (cover.isNull()) {
         return false;
     }
