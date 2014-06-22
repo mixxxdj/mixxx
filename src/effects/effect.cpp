@@ -190,7 +190,7 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
     }
     element.appendChild(parameters);
 
-    QDomElement buttonParameters = doc->createElement("Parameters");
+    QDomElement buttonParameters = doc->createElement("ButtonParameters");
     foreach (EffectParameter* pParameter, m_buttonParameters) {
         const EffectManifestParameter& parameterManifest =
                 pParameter->manifest();
