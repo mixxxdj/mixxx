@@ -29,6 +29,7 @@ class CoverArtDAO : public QObject, public virtual DAO {
         int trackId;
         QString currentCoverLocation;
         QString defaultCoverLocation;
+        QString album;
         QString trackDirectory;
         QString trackLocation;
     };

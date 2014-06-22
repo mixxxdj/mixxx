@@ -113,7 +113,8 @@ CoverArtCache::SearchImageResult CoverArtCache::searchImage(
     //
     QImage newImage = searchEmbeddedCover(coverInfo.trackLocation);
     if (newImage.isNull()) {
-        newImage = searchInTrackDirectory(coverInfo.trackDirectory);
+        newImage = searchInTrackDirectory(coverInfo.trackDirectory,
+                                          coverInfo.album);
     }
     if (saveImageOnDisk(newImage, coverInfo.defaultCoverLocation)) {
         res.coverLocationFound = coverInfo.defaultCoverLocation;
@@ -123,7 +124,7 @@ CoverArtCache::SearchImageResult CoverArtCache::searchImage(
     return res;
 }
 
-QImage CoverArtCache::searchInTrackDirectory(QString directory) {
+QImage CoverArtCache::searchInTrackDirectory(QString directory, QString album) {
     if (directory.isEmpty()) {
         return QImage();
     }
@@ -142,6 +143,12 @@ QImage CoverArtCache::searchInTrackDirectory(QString directory) {
     }
 
     int idx;
+    if (!album.isEmpty()) {
+        idx  = imglist.indexOf(QRegExp("*." % album % ".*"));
+        if (idx  != -1 ) {
+        return QImage(directory % "/" % imglist[idx]);
+        }
+    }
     idx  = imglist.indexOf(QRegExp("*.cover.*"));
     if (idx  != -1 ) {
       return QImage(directory % "/" % imglist[idx]);

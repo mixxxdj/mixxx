@@ -46,7 +46,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     SearchImageResult searchImage(CoverArtDAO::coverArtInfo coverInfo);
     bool saveImageOnDisk(QImage cover, QString location);
     QImage searchEmbeddedCover(QString trackLocation);
-    QImage searchInTrackDirectory(QString directory);
+    QImage searchInTrackDirectory(QString directory, QString album);
 };
 
 #endif // COVERARTCACHE_H

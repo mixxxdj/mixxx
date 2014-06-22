@@ -196,17 +196,17 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         coverArtInfo coverInfo;
         coverInfo.trackId = trackId;
         coverInfo.currentCoverLocation = query.value(coverColumn).toString();
+        coverInfo.album = query.value(albumColumn).toString();
         coverInfo.trackDirectory = query.value(directoryColumn).toString();
         coverInfo.trackLocation = query.value(locationColumn).toString();
 
         // building default cover art location
         QString artist = query.value(artistColumn).toString();
-        QString album = query.value(albumColumn).toString();
         QString defaultCoverLoc = getStoragePath();
-        if (artist.isEmpty() && album.isEmpty()) {
+        if (artist.isEmpty() && coverInfo.album.isEmpty()) {
             defaultCoverLoc.append(query.value(filenameColumn).toString());
         } else {
-            defaultCoverLoc.append(artist % " - " % album);
+            defaultCoverLoc.append(artist % " - " % coverInfo.album);
         }
         defaultCoverLoc.append(".");
         defaultCoverLoc.append(m_cDefaultImageFormat);
