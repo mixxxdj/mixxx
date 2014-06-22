@@ -650,7 +650,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -660,7 +659,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<!-- Keylock -->
 			<output>
@@ -671,7 +669,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -681,7 +678,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<!-- Cue -->
 			<output>
@@ -692,7 +688,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -702,7 +697,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<!-- Play -->
 			<output>
@@ -713,7 +707,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
@@ -723,7 +716,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<!-- Hotcues [Channel1] -->
 			<output>
@@ -734,7 +726,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -743,7 +734,7 @@
 				<midino>0x47</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- always off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
@@ -755,7 +746,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -764,7 +754,7 @@
 				<midino>0x49</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- always off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
@@ -776,7 +766,6 @@
 				<on>0x7F</on>
 				<off>0x00</off>
 				<minimum>0.5</minimum>
-				<maximum>1.0</maximum>
 			</output>
 			<output>
 				<group>[Channel1]</group>
@@ -785,7 +774,7 @@
 				<midino>0x4B</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- always off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
@@ -806,7 +795,7 @@
 				<midino>0x53</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
@@ -826,7 +815,7 @@
 				<midino>0x55</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
@@ -846,7 +835,7 @@
 				<midino>0x57</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
@@ -868,7 +857,8 @@
 				<midino>0x42</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
+				<minimum>-2</minimum>
 				<maximum>-2</maximum>
 			</output>
 			<output>
@@ -888,7 +878,8 @@
 				<midino>0x44</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
+				<minimum>-2</minimum>
 				<maximum>-2</maximum>
 			</output>
 			<output>
@@ -907,7 +898,7 @@
 				<midino>0x46</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
@@ -929,7 +920,8 @@
 				<midino>0x4E</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
+				<minimum>-2</minimum>
 				<maximum>-2</maximum>
 			</output>
 			<output>
@@ -949,7 +941,8 @@
 				<midino>0x50</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
+				<minimum>-2</minimum>
 				<maximum>-2</maximum>
 			</output>
 			<output>
@@ -968,7 +961,7 @@
 				<midino>0x52</midino>
 				<on>0x7F</on>
 				<off>0x00</off>
-				<!-- permanently off -->
+				<!-- disabled -->
 				<minimum>0.5</minimum>
 				<maximum>0.5</maximum>
 			</output>
