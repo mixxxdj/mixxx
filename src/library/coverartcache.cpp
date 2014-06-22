@@ -136,12 +136,26 @@ QImage CoverArtCache::searchInTrackDirectory(QString directory) {
     nameFilters << "*.jpg" << "*.jpeg" << "*.png" << "*.gif" << "*.bmp";
     dir.setNameFilters(nameFilters);
 
-    QString coverLocation;
     QStringList imglist = dir.entryList();
-    if (imglist.size() > 0) {
-        coverLocation = directory % "/" % imglist[0];
+    if (imglist.size() < 1) {
+        return QImage();
     }
-    return QImage(coverLocation);
+
+    int idx;
+    idx  = imglist.indexOf(QRegExp("*.cover.*"));
+    if (idx  != -1 ) {
+      return QImage(directory % "/" % imglist[idx]);
+    }
+    idx  = imglist.indexOf(QRegExp("*.front.*"));
+    if (idx  != -1 ) {
+      return QImage(directory % "/" % imglist[idx]);
+    }
+    idx  = imglist.indexOf(QRegExp("*.folder.*"));
+    if (idx  != -1 ) {
+      return QImage(directory % "/" % imglist[idx]);
+    }
+
+    return QImage(directory % "/" % imglist[0]); // lighter
 }
 
 // this method will parse the information stored in the sound file
