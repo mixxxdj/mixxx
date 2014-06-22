@@ -76,7 +76,6 @@ class EffectParameterSlot : public QObject {
     const unsigned int m_iSlotNumber;
     const unsigned int m_iParameterNumber;
     const QString m_group;
-    EffectPointer m_pEffect;
     EffectParameter* m_pEffectParameter;
 
     ////////////////////////////////////////////////////////////////////////////////
