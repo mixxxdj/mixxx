@@ -83,7 +83,6 @@ bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
         m_time = 1;
-        qDebug() <<  "m_time == 0";
     } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
         // don't ignore value if a previous one was not ignored in time
         double currentMidiParameter = control->getMidiParameter();
@@ -96,7 +95,6 @@ bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
                     fabs(prevDiff) > threshold) {
                 // difference is above threshold
                 ignore = true;
-                qDebug() << currentMidiParameter << difference << prevDiff;
             }
         }
     }
@@ -105,7 +103,6 @@ bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
         // previous value for this control
         m_time = currentTime;
     }
-    qDebug() <<  m_prevMidiParameter << newMidiParameter << ignore << control->getKey().group << control->getKey().item;
     // Update the previous value every time
     m_prevMidiParameter = newMidiParameter;
 
