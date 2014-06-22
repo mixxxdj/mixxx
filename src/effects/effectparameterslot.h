@@ -86,7 +86,7 @@ class EffectParameterSlot : public QObject {
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlLinkType;
     ControlEffectKnob* m_pControlValue;
-    SoftTakeover* m_pSoftTakover;
+    SoftTakeover* m_pSoftTakeover;
     ControlObject* m_pControlType;
     double m_dChainParameter;
 

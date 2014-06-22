@@ -42,7 +42,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
         this, SLOT(slotLoaded(double)), Qt::AutoConnection);
 
 
-    m_pSoftTakover = new SoftTakeover();
+    m_pSoftTakeover = new SoftTakeover();
 
     clear();
 }
@@ -55,7 +55,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pControlLinkType;
     delete m_pControlValue;
     delete m_pControlType;
-    delete m_pSoftTakover;
+    delete m_pSoftTakeover;
 }
 
 QString EffectParameterSlot::name() const {
@@ -190,7 +190,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
-                if (!m_pSoftTakover->ignore(m_pControlValue, parameter * 127)) {
+                if (!m_pSoftTakeover->ignore(m_pControlValue, parameter * 127)) {
                     m_pControlValue->setParameterFrom(parameter, NULL);
                 }
                 break;
