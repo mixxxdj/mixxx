@@ -113,10 +113,6 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
                     this, SLOT(slotParameterValueChanged(QVariant)));
         }
-
-        // Update the newly loaded parameter to match the current chain
-        // superknob if it is linked.
-        onChainParameterChanged(m_dChainParameter);
     }
     emit(updated());
 }
