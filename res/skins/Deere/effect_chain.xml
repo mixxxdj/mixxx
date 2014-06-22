@@ -114,13 +114,25 @@
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
               </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">1</SetVariable>
+              </Template>
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">2</SetVariable>
               </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">2</SetVariable>
+              </Template>
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">3</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
