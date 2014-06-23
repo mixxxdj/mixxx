@@ -149,17 +149,16 @@ QImage CoverArtCache::searchInTrackDirectory(QString directory, QString album) {
         return QImage(directory % "/" % imglist[idx]);
         }
     }
-    idx  = imglist.indexOf(QRegExp("*.cover.*", Qt::CaseInsensitive));
-    if (idx  != -1 ) {
-      return QImage(directory % "/" % imglist[idx]);
-    }
-    idx  = imglist.indexOf(QRegExp("*.front.*", Qt::CaseInsensitive));
-    if (idx  != -1 ) {
-      return QImage(directory % "/" % imglist[idx]);
-    }
-    idx  = imglist.indexOf(QRegExp("*.folder.*", Qt::CaseInsensitive));
-    if (idx  != -1 ) {
-      return QImage(directory % "/" % imglist[idx]);
+
+    QList<QRegExp> regExpList;
+    regExpList << QRegExp("*.cover.*", Qt::CaseInsensitive)
+               << QRegExp("*.front.*", Qt::CaseInsensitive)
+               << QRegExp("*.folder.*", Qt::CaseInsensitive);
+    foreach (QRegExp regExp, regExpList) {
+        idx  = imglist.indexOf(regExp);
+        if (idx  != -1 ) {
+            return QImage(directory % "/" % imglist[idx]);
+        }
     }
 
     return QImage(directory % "/" % imglist[0]); // lighter
