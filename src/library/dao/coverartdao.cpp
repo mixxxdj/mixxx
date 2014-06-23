@@ -5,10 +5,8 @@
 #include "library/dao/trackdao.h"
 #include "library/queryutil.h"
 
-CoverArtDAO::CoverArtDAO(QSqlDatabase& database,
-                         ConfigObject<ConfigValue>* pConfig)
-        : m_database(database),
-          m_pConfig(pConfig) {
+CoverArtDAO::CoverArtDAO(QSqlDatabase& database)
+        : m_database(database) {
 }
 
 CoverArtDAO::~CoverArtDAO() {
