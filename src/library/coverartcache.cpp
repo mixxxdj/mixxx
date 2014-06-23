@@ -32,13 +32,20 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
         return;
     }
 
+    QPixmap pixmap;
+    QString embedded = QString("embedded/%1").arg(trackId);
+    if (QPixmapCache::find(embedded, &pixmap)) {
+        emit(pixmapFound(trackId, pixmap));
+        return;
+    }
+
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     if (coverLocation.isEmpty() || !QFile::exists(coverLocation)) {
         CoverArtDAO::coverArtInfo coverInfo;
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
-        if (!coverInfo.currentCoverLocation.isEmpty()) {
-            QPixmap pixmap;
+        coverLocation = coverInfo.currentCoverLocation;
+        if (!coverLocation.isEmpty()) {
             if (QPixmapCache::find(coverLocation, &pixmap)) {
                 emit(pixmapFound(trackId, pixmap));
                 return;
@@ -93,8 +100,6 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     //
     res.img = searchEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
-        // we need a coverLocation to make the cache works (key)
-        res.coverLocation = "embedded/" % coverInfo.trackFilename;
         return res;
     }
 
@@ -170,13 +175,22 @@ void CoverArtCache::imageFound() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
+    QString coverLocation;
+    if (res.coverLocation.isEmpty()) {
+        // we need a coverLocation to make the cache works (key)
+        coverLocation = QString("embedded/%1").arg(res.trackId);
+    } else {
+        coverLocation = res.coverLocation;
+        // update DB
+        int coverId = m_pCoverArtDAO->saveCoverLocation(coverLocation);
+        m_pTrackDAO->updateCoverArt(res.trackId, coverId);
+    }
+
     if (!res.img.isNull()) {
         QPixmap pixmap = QPixmap::fromImage(res.img);
-        if (QPixmapCache::insert(res.coverLocation, pixmap)) {
+        if (QPixmapCache::insert(coverLocation, pixmap)) {
             emit(pixmapFound(res.trackId, pixmap));
         }
     }
     m_runningIds.remove(res.trackId);
-    int coverId = m_pCoverArtDAO->saveCoverLocation(res.coverLocation);
-    m_pTrackDAO->updateCoverArt(res.trackId, coverId);
 }
