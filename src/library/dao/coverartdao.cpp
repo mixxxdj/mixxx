@@ -8,12 +8,7 @@
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database,
                          ConfigObject<ConfigValue>* pConfig)
         : m_database(database),
-          m_pConfig(pConfig),
-          m_cDefaultImageFormat("jpg") {
-    if (!QDir().mkpath(getStoragePath())) {
-        qDebug() << "WARNING: Could not create cover arts storage path. "
-                 << "Mixxx will be unable to store covers.";
-    }
+          m_pConfig(pConfig) {
 }
 
 CoverArtDAO::~CoverArtDAO() {
@@ -24,11 +19,6 @@ void CoverArtDAO::initialize() {
     qDebug() << "CoverArtDAO::initialize"
              << QThread::currentThread()
              << m_database.connectionName();
-}
-
-// cover art disk-cache
-QString CoverArtDAO::getStoragePath() {
-    return m_pConfig->getSettingsPath() % "/coverArt/";
 }
 
 int CoverArtDAO::saveCoverLocation(QString coverLocation) {
@@ -81,9 +71,7 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     const int locationColumn = queryRecord.indexOf("location");
     while (query.next()) {
         QString coverLocation = query.value(locationColumn).toString();
-        if (deleteFile(coverLocation)) {
-            coverLocationList << escaper.escapeString(coverLocation);
-        }
+        coverLocationList << escaper.escapeString(coverLocation);
     }
 
     if (coverLocationList.empty()) {
@@ -96,14 +84,6 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
-}
-
-bool CoverArtDAO::deleteFile(const QString& location) {
-    QFile file(location);
-    if (file.exists()) {
-        return file.remove();
-    }
-    return true;
 }
 
 int CoverArtDAO::getCoverArtId(QString coverLocation) {
@@ -168,7 +148,7 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
 
     QSqlQuery query(m_database);
     query.prepare(
-        "SELECT artist, album, cover_art.location AS cover, "
+        "SELECT album, cover_art.location AS cover, "
         "track_locations.directory as directory, "
         "track_locations.filename as filename, "
         "track_locations.location as location "
@@ -185,7 +165,6 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     }
 
     QSqlRecord queryRecord = query.record();
-    const int artistColumn = queryRecord.indexOf("artist");
     const int albumColumn = queryRecord.indexOf("album");
     const int coverColumn = queryRecord.indexOf("cover");
     const int directoryColumn = queryRecord.indexOf("directory");
@@ -195,22 +174,11 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     if (query.next()) {
         coverArtInfo coverInfo;
         coverInfo.trackId = trackId;
-        coverInfo.currentCoverLocation = query.value(coverColumn).toString();
         coverInfo.album = query.value(albumColumn).toString();
+        coverInfo.currentCoverLocation = query.value(coverColumn).toString();
+        coverInfo.trackFilename = query.value(filenameColumn).toString();
         coverInfo.trackDirectory = query.value(directoryColumn).toString();
         coverInfo.trackLocation = query.value(locationColumn).toString();
-
-        // building default cover art location
-        QString artist = query.value(artistColumn).toString();
-        QString defaultCoverLoc = getStoragePath();
-        if (artist.isEmpty() && coverInfo.album.isEmpty()) {
-            defaultCoverLoc.append(query.value(filenameColumn).toString());
-        } else {
-            defaultCoverLoc.append(artist % " - " % coverInfo.album);
-        }
-        defaultCoverLoc.append(".");
-        defaultCoverLoc.append(m_cDefaultImageFormat);
-        coverInfo.defaultCoverLocation = defaultCoverLoc;
         return coverInfo;
     }
 

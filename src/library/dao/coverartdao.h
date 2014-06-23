@@ -28,22 +28,17 @@ class CoverArtDAO : public QObject, public virtual DAO {
     struct coverArtInfo {
         int trackId;
         QString currentCoverLocation;
-        QString defaultCoverLocation;
         QString album;
+        QString trackFilename;
         QString trackDirectory;
         QString trackLocation;
     };
 
     coverArtInfo getCoverArtInfo(int trackId);
-    const char* getDefaultImageFormat() { return m_cDefaultImageFormat; }
 
   private:
     QSqlDatabase& m_database;
     ConfigObject<ConfigValue>* m_pConfig;
-    const char* m_cDefaultImageFormat;
-
-    QString getStoragePath();
-    bool deleteFile(const QString& location);
 };
 
 #endif // COVERARTDAO_H

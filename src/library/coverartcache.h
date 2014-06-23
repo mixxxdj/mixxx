@@ -21,6 +21,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
   public slots:
     void imageFound();
+    void imageLoaded();
 
   signals:
     void pixmapFound(int trackId, QPixmap pixmap);
@@ -31,10 +32,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     friend class Singleton<CoverArtCache>;
 
   private:
-    struct SearchImageResult {
+    struct FutureResult {
         int trackId;
-        QString currentCoverLocation;
-        QString coverLocationFound;
+        QString coverLocation;
         QImage img;
     };
 
@@ -43,10 +43,10 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
 
-    SearchImageResult searchImage(CoverArtDAO::coverArtInfo coverInfo);
-    bool saveImageOnDisk(QImage cover, QString location);
+    FutureResult loadImage(QString coverLocation, int trackId);
+    FutureResult searchImage(CoverArtDAO::coverArtInfo coverInfo);
     QImage searchEmbeddedCover(QString trackLocation);
-    QImage searchInTrackDirectory(QString directory, QString album);
+    QString searchInTrackDirectory(QString directory, QString album);
 };
 
 #endif // COVERARTCACHE_H
