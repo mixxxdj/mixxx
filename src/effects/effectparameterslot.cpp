@@ -9,14 +9,8 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
                                          const unsigned int iParameterNumber)
-        : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
-          m_iSlotNumber(iSlotNumber),
-          m_iParameterNumber(iParameterNumber),
-          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iSlotNumber)),
-          m_pEffectParameter(NULL),
-          m_dChainParameter(0.0) {
+        : EffectParameterSlotBase(iRackNumber, iChainNumber, iSlotNumber,
+                                  iParameterNumber) {
     QString itemPrefix = formatItemPrefix(iParameterNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
@@ -45,26 +39,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
 
 EffectParameterSlot::~EffectParameterSlot() {
     //qDebug() << debugString() << "destroyed";
-    m_pEffectParameter = NULL;
-    m_pEffect.clear();
-    delete m_pControlLoaded;
-    delete m_pControlLinkType;
     delete m_pControlValue;
-    delete m_pControlType;
-}
-
-QString EffectParameterSlot::name() const {
-    if (m_pEffectParameter) {
-        return m_pEffectParameter->name();
-    }
-    return QString();
-}
-
-QString EffectParameterSlot::description() const {
-    if (m_pEffectParameter) {
-        return m_pEffectParameter->description();
-    }
-    return tr("No effect loaded.");
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
@@ -131,35 +106,6 @@ void EffectParameterSlot::clear() {
     m_pControlLinkType->set(EffectManifestParameter::LINK_NONE);
     emit(updated());
 }
-
-void EffectParameterSlot::slotLoaded(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotLoaded" << v;
-    qWarning() << "WARNING: loaded is a read-only control.";
-}
-
-void EffectParameterSlot::slotLinkType(double v) {
-    //qDebug() << debugString() << "slotLinkType" << v;
-    if (m_pEffectParameter) {
-        // Intermediate cast to integer is needed for VC++.
-        m_pEffectParameter->setLinkType(
-            static_cast<EffectManifestParameter::LinkType>(int(v)));
-    }
-}
-
-void EffectParameterSlot::slotValueChanged(double v) {
-    //qDebug() << debugString() << "slotValueChanged" << v;
-    if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(v);
-    }
-}
-
-void EffectParameterSlot::slotValueType(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotValueType" << v;
-    qWarning() << "WARNING: value_type is a read-only control.";
-}
-
 
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
