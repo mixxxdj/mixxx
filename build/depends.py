@@ -711,6 +711,8 @@ class MixxxCore(Feature):
                    "widget/weffectchain.cpp",
                    "widget/weffect.cpp",
                    "widget/weffectparameter.cpp",
+                   "widget/weffectbuttonparameter.cpp",
+                   "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
