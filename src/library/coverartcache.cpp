@@ -101,6 +101,25 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     FutureResult res;
     res.trackId = coverInfo.trackId;
 
+    // Looking for image with the same track name in the track dir.
+    // (it allows that users have a cover per file)
+    //
+    // removing file extension
+    coverInfo.trackFilename.remove(coverInfo.trackFilename.lastIndexOf("."),
+                                   coverInfo.trackFilename.size() - 1);
+    QStringList extList;
+    extList << ".jpg" << ".jpeg" << ".png" << ".gif" << ".bmp";
+    QString loc = coverInfo.trackDirectory + coverInfo.trackFilename;
+    foreach (QString ext, extList) {
+        if(QFile::exists(loc + ext)) {
+            res.img = QImage(loc + ext);
+            if (!res.img.isNull()) {
+                res.coverLocation = loc + ext;
+                return res;
+            }
+        }
+    }
+
     // Looking for embedded cover art.
     //
     res.img = searchEmbeddedCover(coverInfo.trackLocation);
