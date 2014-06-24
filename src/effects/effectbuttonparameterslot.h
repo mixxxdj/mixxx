@@ -34,10 +34,6 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
     void onChainParameterChanged(double parameter);
 
-  signals:
-    // Signal that indicates that the EffectButtonParameterSlot has been updated.
-    void updated();
-
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);

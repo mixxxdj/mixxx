@@ -12,6 +12,9 @@
 class ControlObject;
 class ControlPushButton;
 
+class EffectParameterSlotBase;
+typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
+
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
@@ -32,6 +35,10 @@ class EffectParameterSlotBase : public QObject {
 
     QString name() const;
     QString description() const;
+
+  signals:
+    // Signal that indicates that the EffectParameterSlotBase has been updated.
+    void updated();
 
   protected slots:
     // Solely for handling control changes
