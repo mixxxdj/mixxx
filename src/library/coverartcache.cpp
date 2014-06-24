@@ -109,14 +109,12 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
                                    coverInfo.trackFilename.size() - 1);
     QStringList extList;
     extList << ".jpg" << ".jpeg" << ".png" << ".gif" << ".bmp";
-    QString loc = coverInfo.trackDirectory + coverInfo.trackFilename;
+    QString loc = coverInfo.trackDirectory % "/" % coverInfo.trackFilename;
     foreach (QString ext, extList) {
-        if(QFile::exists(loc + ext)) {
-            res.img = QImage(loc + ext);
-            if (!res.img.isNull()) {
-                res.coverLocation = loc + ext;
-                return res;
-            }
+        res.img = QImage(loc + ext);
+        if (!res.img.isNull()) {
+            res.coverLocation = loc + ext;
+            return res;
         }
     }
 
