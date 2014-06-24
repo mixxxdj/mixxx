@@ -109,7 +109,11 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     coverInfo.trackFilename.remove(coverInfo.trackFilename.lastIndexOf("."),
                                    coverInfo.trackFilename.size() - 1);
     QStringList extList;
-    extList << ".jpg" << ".jpeg" << ".png" << ".gif" << ".bmp";
+    extList << ".jpg" << ".JPG"
+            << ".jpeg" << ".JPEG"
+            << ".png" << ".PNG"
+            << ".gif" << ".GIF"
+            << ".bmp" << ".BMP";
     QString loc = coverInfo.trackDirectory % "/" % coverInfo.trackFilename;
     foreach (QString ext, extList) {
         res.img = QImage(loc + ext);
