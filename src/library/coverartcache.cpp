@@ -151,6 +151,8 @@ QString CoverArtCache::searchInTrackDirectory(QString directory, QString album) 
     QStringList imglist = dir.entryList();
     if (imglist.size() < 1) {
         return QString();
+    } else if (imglist.size() == 1) {
+        return directory % "/" % imglist[0];
     }
 
     int idx;
