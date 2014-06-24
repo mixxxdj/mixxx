@@ -132,7 +132,6 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
                                                coverInfo.album);
     res.img = QImage(res.coverLocation);
-
     return res;
 }
 
@@ -158,14 +157,14 @@ QString CoverArtCache::searchInTrackDirectory(QString directory, QString album) 
     if (!album.isEmpty()) {
         idx  = imglist.indexOf(QRegExp("*." % album % ".*", Qt::CaseInsensitive));
         if (idx  != -1 ) {
-        return directory % "/" % imglist[idx];
+            return directory % "/" % imglist[idx];
         }
     }
 
     QList<QRegExp> regExpList;
-    regExpList << QRegExp("*.cover.*", Qt::CaseInsensitive)
-               << QRegExp("*.front.*", Qt::CaseInsensitive)
-               << QRegExp("*.folder.*", Qt::CaseInsensitive);
+    regExpList << QRegExp(".*cover.*", Qt::CaseInsensitive)
+               << QRegExp(".*front.*", Qt::CaseInsensitive)
+               << QRegExp(".*folder.*", Qt::CaseInsensitive);
     foreach (QRegExp regExp, regExpList) {
         idx  = imglist.indexOf(regExp);
         if (idx  != -1 ) {
