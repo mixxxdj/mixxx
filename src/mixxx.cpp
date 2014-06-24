@@ -99,6 +99,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     Time::start();
     initializeWindow();
 
+    ControlDoublePrivate::createAlias(ConfigKey("[Channel1]", "filterLow"),
+            ConfigKey("[Channel2]", "filterLow"));
+
     //Reset pointer to players
     m_pSoundManager = NULL;
     m_pPrefDlg = NULL;

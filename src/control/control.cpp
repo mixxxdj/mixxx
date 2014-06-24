@@ -9,6 +9,7 @@
 // Static member variable definition
 ConfigObject<ConfigValue>* ControlDoublePrivate::s_pUserConfig = NULL;
 QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash;
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOAliasHash;
 QMutex ControlDoublePrivate::s_qCOHashMutex;
 
 /*
@@ -77,12 +78,19 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 }
 
 // static
+void ControlDoublePrivate::createAlias(const ConfigKey& alias, const ConfigKey& key) {
+    QSharedPointer<ControlDoublePrivate> pControl = getControl(key);
+    s_qCOAliasHash.insert(alias, pControl);
+}
+
+// static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key, bool warn, ControlObject* pCreatorCO,
         bool bIgnoreNops, bool bTrack, bool bPersist) {
     QMutexLocker locker(&s_qCOHashMutex);
     QSharedPointer<ControlDoublePrivate> pControl;
     QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);
+
     if (it != s_qCOHash.end()) {
         if (pCreatorCO) {
             if (warn) {
@@ -91,7 +99,19 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         } else {
             pControl = it.value();
         }
+    } else {
+        QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOAliasHash.find(key);
+        if (it != s_qCOAliasHash.end()) {
+            if (pCreatorCO) {
+                if (warn) {
+                    qDebug() << "ControlObject" << key.group << key.item << "already created";
+                }
+            } else {
+                pControl = it.value();
+            }
+        }
     }
+
     locker.unlock();
 
     if (pControl == NULL) {
