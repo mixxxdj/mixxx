@@ -4,7 +4,7 @@
 #include <QDomNode>
 
 #include "widget/wlabel.h"
-#include "effects/effectparameterslot.h"
+#include "effects/effectparameterslotbase.h"
 #include "skin/skincontext.h"
 
 class EffectsManager;
@@ -23,10 +23,10 @@ class WEffectParameter : public WLabel {
   private:
     // Set the EffectParameterSlot that should be monitored by this
     // WEffectParameter.
-    void setEffectParameterSlot(EffectParameterSlotPointer pEffectParameterSlot);
+    void setEffectParameterSlot(EffectParameterSlotBasePointer pEffectParameterSlot);
 
     EffectsManager* m_pEffectsManager;
-    EffectParameterSlotPointer m_pEffectParameterSlot;
+    EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };
 
 

@@ -35,7 +35,6 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     void onChainParameterChanged(double parameter);
 
-
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);

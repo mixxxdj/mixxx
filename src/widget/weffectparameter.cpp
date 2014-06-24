@@ -45,7 +45,7 @@ void WEffectParameter::setup(QDomNode node, const SkinContext& context) {
         if (pChainSlot) {
             EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
             if (pEffectSlot) {
-                EffectParameterSlotPointer pParameterSlot =
+                EffectParameterSlotBasePointer pParameterSlot =
                         pEffectSlot->getEffectParameterSlot(parameterNumber);
                 if (pParameterSlot) {
                     setEffectParameterSlot(pParameterSlot);
@@ -63,7 +63,7 @@ void WEffectParameter::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WEffectParameter::setEffectParameterSlot(EffectParameterSlotPointer pEffectParameterSlot) {
+void WEffectParameter::setEffectParameterSlot(EffectParameterSlotBasePointer pEffectParameterSlot) {
     if (pEffectParameterSlot) {
         m_pEffectParameterSlot = pEffectParameterSlot;
         connect(pEffectParameterSlot.data(), SIGNAL(updated()),
