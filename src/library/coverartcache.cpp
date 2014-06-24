@@ -7,7 +7,8 @@
 #include "soundsourceproxy.h"
 
 CoverArtCache::CoverArtCache()
-        : m_pCoverArtDAO(NULL) {
+        : m_pCoverArtDAO(NULL),
+          m_pTrackDAO(NULL) {
 }
 
 CoverArtCache::~CoverArtCache() {
