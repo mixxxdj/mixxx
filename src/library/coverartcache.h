@@ -44,7 +44,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QSet<int> m_runningIds;
 
     FutureResult loadImage(QString coverLocation, int trackId);
-    FutureResult searchImage(CoverArtDAO::coverArtInfo coverInfo);
+    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo);
     QImage searchEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory, QString album);
 };

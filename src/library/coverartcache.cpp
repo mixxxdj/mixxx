@@ -48,12 +48,11 @@ void CoverArtCache::requestPixmap(QString coverLocation, int trackId) {
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     if (coverLocation.isEmpty() || !QFile::exists(coverLocation)) {
-        CoverArtDAO::coverArtInfo coverInfo;
+        CoverArtDAO::CoverArtInfo coverInfo;
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
         // the coverLocation from tableview is updated just during the Mixxx loading,
         // it means that we could use the coverLocation from DB to try finding a pixmap.
-        coverLocation = coverInfo.currentCoverLocation;
-        if (QPixmapCache::find(coverLocation, &pixmap)) {
+        if (QPixmapCache::find(coverInfo.coverLocation, &pixmap)) {
             emit(pixmapFound(trackId, pixmap));
             return;
         }
@@ -98,7 +97,7 @@ void CoverArtCache::imageLoaded() {
 // that could block the main thread. Therefore, this method
 // is executed in a separate thread via QtConcurrent::run
 CoverArtCache::FutureResult CoverArtCache::searchImage(
-        CoverArtDAO::coverArtInfo coverInfo) {
+        CoverArtDAO::CoverArtInfo coverInfo) {
     FutureResult res;
     res.trackId = coverInfo.trackId;
 

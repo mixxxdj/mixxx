@@ -106,32 +106,32 @@ void WCoverArt::slotLoadCoverArt(QString coverLocation, int trackId) {
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
-    int height = parentWidget()->height()/3;
-    return normal.scaled(QSize(height-10, height-10),
+    int height = parentWidget()->height() / 3;
+    return normal.scaled(QSize(height - 10, height - 10),
                          Qt::KeepAspectRatioByExpanding,
                          Qt::SmoothTransformation);
 }
 
 void WCoverArt::paintEvent(QPaintEvent*) {
     QPainter painter(this);
-
-    painter.drawLine(0,0,width(),0);
+    painter.drawLine(0, 0, width(), 0);
 
     if (m_bCoverIsVisible) {
-        painter.drawPixmap(width()/2-height()/2+4, 6, m_currentScaledCover);
+        painter.drawPixmap(width() / 2 - height() / 2 + 4, 6,
+                           m_currentScaledCover);
     } else {
         painter.drawPixmap(1, 2 ,m_iconShow);
         painter.drawText(25, 15, tr("Show Cover Art"));
     }
 
     if (m_bCoverIsVisible && m_bCoverIsHovered) {
-        painter.drawPixmap(width()-21, 6, m_iconHide);
+        painter.drawPixmap(width() - 21, 6, m_iconHide);
     }
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
     if (m_bCoverIsVisible) {
-        setMinimumSize(0, parentWidget()->height()/3);
+        setMinimumSize(0, parentWidget()->height() / 3);
      } else {
         slotHideCoverArt();
     }

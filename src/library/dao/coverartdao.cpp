@@ -139,9 +139,9 @@ QString CoverArtDAO::getCoverArtLocation(int id, bool fromTrackId) {
 }
 
 // it'll get just the fields which are required for scanCover stuff
-CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
+CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     if (trackId < 1) {
-        return coverArtInfo();
+        return CoverArtInfo();
     }
 
     QSqlQuery query(m_database);
@@ -159,7 +159,7 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
 
     if (!query.exec()) {
       LOG_FAILED_QUERY(query);
-      return coverArtInfo();
+      return CoverArtInfo();
     }
 
     QSqlRecord queryRecord = query.record();
@@ -170,15 +170,15 @@ CoverArtDAO::coverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     const int locationColumn = queryRecord.indexOf("location");
 
     if (query.next()) {
-        coverArtInfo coverInfo;
+        CoverArtInfo coverInfo;
         coverInfo.trackId = trackId;
         coverInfo.album = query.value(albumColumn).toString();
-        coverInfo.currentCoverLocation = query.value(coverColumn).toString();
+        coverInfo.coverLocation = query.value(coverColumn).toString();
         coverInfo.trackFilename = query.value(filenameColumn).toString();
         coverInfo.trackDirectory = query.value(directoryColumn).toString();
         coverInfo.trackLocation = query.value(locationColumn).toString();
         return coverInfo;
     }
 
-    return coverArtInfo();
+    return CoverArtInfo();
 }

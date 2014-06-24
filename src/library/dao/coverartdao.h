@@ -25,16 +25,16 @@ class CoverArtDAO : public QObject, public virtual DAO {
     QString getCoverArtLocation(int id, bool fromTrackId=false);
     int saveCoverLocation(QString coverLocation);
 
-    struct coverArtInfo {
+    struct CoverArtInfo {
         int trackId;
-        QString currentCoverLocation;
+        QString coverLocation;
         QString album;
         QString trackFilename;
         QString trackDirectory;
         QString trackLocation;
     };
 
-    coverArtInfo getCoverArtInfo(int trackId);
+    CoverArtInfo getCoverArtInfo(int trackId);
 
   private:
     QSqlDatabase& m_database;
