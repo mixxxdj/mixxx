@@ -46,7 +46,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     FutureResult loadImage(QString coverLocation, int trackId);
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo);
     QImage searchEmbeddedCover(QString trackLocation);
-    QString searchInTrackDirectory(QString directory, QString album);
+    QString searchInTrackDirectory(QString directory,
+                                   QString trackFilename,
+                                   QString album);
 };
 
 #endif // COVERARTCACHE_H

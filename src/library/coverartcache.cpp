@@ -102,27 +102,6 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     FutureResult res;
     res.trackId = coverInfo.trackId;
 
-    // Looking for image with the same track name in the track dir.
-    // (it allows that users have a cover per file)
-    //
-    // removing file extension
-    coverInfo.trackFilename.remove(coverInfo.trackFilename.lastIndexOf("."),
-                                   coverInfo.trackFilename.size() - 1);
-    QStringList extList;
-    extList << ".jpg" << ".JPG"
-            << ".jpeg" << ".JPEG"
-            << ".png" << ".PNG"
-            << ".gif" << ".GIF"
-            << ".bmp" << ".BMP";
-    QString loc = coverInfo.trackDirectory % "/" % coverInfo.trackFilename;
-    foreach (QString ext, extList) {
-        res.img = QImage(loc + ext);
-        if (!res.img.isNull()) {
-            res.coverLocation = loc + ext;
-            return res;
-        }
-    }
-
     // Looking for embedded cover art.
     //
     res.img = searchEmbeddedCover(coverInfo.trackLocation);
@@ -133,12 +112,15 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     // Looking for cover stored in track diretory.
     //
     res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
+                                               coverInfo.trackFilename,
                                                coverInfo.album);
     res.img = QImage(res.coverLocation);
     return res;
 }
 
-QString CoverArtCache::searchInTrackDirectory(QString directory, QString album) {
+QString CoverArtCache::searchInTrackDirectory(QString directory,
+                                              QString trackFilename,
+                                              QString album) {
     if (directory.isEmpty()) {
         return QString();
     }
@@ -158,7 +140,15 @@ QString CoverArtCache::searchInTrackDirectory(QString directory, QString album) 
         return directory % "/" % imglist[0];
     }
 
-    int idx;
+    // removing the file extension
+    trackFilename.remove(trackFilename.lastIndexOf("."),
+                         trackFilename.size() - 1);
+    int idx  = imglist.indexOf(QRegExp(".*" % trackFilename % ".*",
+                                       Qt::CaseInsensitive));
+    if (idx  != -1 ) {
+        return directory % "/" % imglist[idx];
+    }
+
     if (!album.isEmpty()) {
         idx  = imglist.indexOf(QRegExp(".*" % album % ".*", Qt::CaseInsensitive));
         if (idx  != -1 ) {
@@ -177,7 +167,8 @@ QString CoverArtCache::searchInTrackDirectory(QString directory, QString album) 
         }
     }
 
-    return directory % "/" % imglist[0]; // lighter
+    // Return the lighter image file.
+    return directory % "/" % imglist[0];
 }
 
 // this method will parse the information stored in the sound file
