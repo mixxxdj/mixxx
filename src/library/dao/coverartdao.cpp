@@ -44,10 +44,6 @@ int CoverArtDAO::saveCoverLocation(QString coverLocation) {
 }
 
 void CoverArtDAO::deleteUnusedCoverArts() {
-    if (m_database.isValid()) { // returns true if an error is set
-        return;
-    }
-
     QSqlQuery query(m_database);
 
     query.prepare("SELECT " % COVERARTTABLE_LOCATION %

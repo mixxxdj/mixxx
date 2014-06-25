@@ -69,3 +69,62 @@ TEST_F(CoverArtDAOTest, getCoverArtId) {
 
     ASSERT_EQ(coverIdSaved, coverId);
 }
+
+TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
+    // starting with a clean cover_art table
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    query.prepare("DELETE FROM " % COVERART_TABLE);
+    query.exec();
+
+    // creating some tracks
+    QString trackLocation_1 = "/a";
+    QString trackLocation_2 = "/b";
+    QString trackLocation_3 = "/c";
+    TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
+    trackDAO.addTracksPrepare();
+    trackDAO.addTracksAdd(new TrackInfoObject(
+                    trackLocation_1, SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+                    trackLocation_2, SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+                    trackLocation_3, SecurityTokenPointer(), false), false);
+    trackDAO.addTracksFinish(false);
+
+    // getting some track ids
+    int trackId_1 = trackDAO.getTrackId(trackLocation_1);
+    int trackId_2 = trackDAO.getTrackId(trackLocation_2);
+    ASSERT_TRUE(trackId_1 != -1);
+    ASSERT_TRUE(trackId_2 != -1);
+
+    // adding some covers
+    CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
+    QString coverLocation_1 = "foo/cover.jpg";
+    QString coverLocation_2 = "foo/folder.jpg";
+    QString coverLocation_3 = "foo/album.jpg";
+    QString coverLocation_4 = "foo/front.jpg";
+    int coverId_1 = m_CoverArtDAO.saveCoverLocation(coverLocation_1);
+    int coverId_2 = m_CoverArtDAO.saveCoverLocation(coverLocation_2);
+    int coverId_3 = m_CoverArtDAO.saveCoverLocation(coverLocation_3);
+    int coverId_4 = m_CoverArtDAO.saveCoverLocation(coverLocation_4);
+    ASSERT_TRUE(coverId_1 > 0);
+    ASSERT_TRUE(coverId_2 > 0);
+    ASSERT_TRUE(coverId_3 > 0);
+    ASSERT_TRUE(coverId_4 > 0);
+
+    //associating some covers to some tracks
+    trackDAO.updateCoverArt(trackId_1, coverId_1);
+    trackDAO.updateCoverArt(trackId_2, coverId_2);
+
+    // removing all unused covers (3 and 4)
+    m_CoverArtDAO.deleteUnusedCoverArts();
+
+    // checking current id of each cover
+    int coverId_1t = m_CoverArtDAO.getCoverArtId(coverLocation_1);
+    int coverId_2t = m_CoverArtDAO.getCoverArtId(coverLocation_2);
+    int coverId_3t = m_CoverArtDAO.getCoverArtId(coverLocation_3);
+    int coverId_4t = m_CoverArtDAO.getCoverArtId(coverLocation_4);
+    ASSERT_EQ(coverId_1, coverId_1t);
+    ASSERT_EQ(coverId_2, coverId_2t);
+    ASSERT_EQ(0, coverId_3t);
+    ASSERT_EQ(0, coverId_4t);
+}
