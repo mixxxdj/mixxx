@@ -22,7 +22,6 @@ class CoverArtDAO : public QObject, public virtual DAO {
 
     void deleteUnusedCoverArts();
     int getCoverArtId(QString coverLocation);
-    QString getCoverArtLocation(int id, bool fromTrackId=false);
     int saveCoverLocation(QString coverLocation);
 
     struct CoverArtInfo {

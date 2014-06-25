@@ -107,37 +107,6 @@ int CoverArtDAO::getCoverArtId(QString coverLocation) {
     return 0;
 }
 
-QString CoverArtDAO::getCoverArtLocation(int id, bool fromTrackId) {
-    if (id < 1) {
-        return QString();
-    }
-
-    QSqlQuery query(m_database);
-
-    if (fromTrackId) {
-        query.prepare(QString("SELECT cover_art.location FROM cover_art "
-                              "INNER JOIN library "
-                              "ON library.cover_art=cover_art.id "
-                              "WHERE library.id=:id "));
-    } else {
-        query.prepare(QString("SELECT location FROM cover_art "
-                              "WHERE id=:id"));
-    }
-
-    query.bindValue(":id", id);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return QString();
-    }
-
-    if (query.next()) {
-        return query.value(0).toString();
-    }
-
-    return QString();
-}
-
 // it'll get just the fields which are required for scanCover stuff
 CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     if (trackId < 1) {
