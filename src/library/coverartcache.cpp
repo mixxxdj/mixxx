@@ -137,6 +137,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
     if (imglist.size() < 1) {
         return QString();
     } else if (imglist.size() == 1) {
+        // only a single picture in folder.
         return directory % "/" % imglist[0];
     }
 
@@ -146,12 +147,15 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
     int idx  = imglist.indexOf(QRegExp(".*" % trackFilename % ".*",
                                        Qt::CaseInsensitive));
     if (idx  != -1 ) {
+        // cover with the same name of the trackFilename.
         return directory % "/" % imglist[idx];
     }
 
     if (!album.isEmpty()) {
-        idx  = imglist.indexOf(QRegExp(".*" % album % ".*", Qt::CaseInsensitive));
+        idx  = imglist.indexOf(QRegExp(".*" % album % ".*",
+                                       Qt::CaseInsensitive));
         if (idx  != -1 ) {
+            // cover with the same name of the album.
             return directory % "/" % imglist[idx];
         }
     }
@@ -163,6 +167,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
     foreach (QRegExp regExp, regExpList) {
         idx  = imglist.indexOf(regExp);
         if (idx  != -1 ) {
+            // cover named as cover|front|folder.
             return directory % "/" % imglist[idx];
         }
     }
