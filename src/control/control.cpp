@@ -102,13 +102,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     } else {
         QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOAliasHash.find(key);
         if (it != s_qCOAliasHash.end()) {
-            if (pCreatorCO) {
-                if (warn) {
-                    qDebug() << "ControlObject" << key.group << key.item << "already created";
-                }
-            } else {
-                pControl = it.value();
-            }
+            pControl = it.value();
         }
     }
 
