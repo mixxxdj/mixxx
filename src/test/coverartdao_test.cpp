@@ -128,3 +128,41 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
     ASSERT_EQ(0, coverId_3t);
     ASSERT_EQ(0, coverId_4t);
 }
+
+TEST_F(CoverArtDAOTest, getCoverArtInfo) {
+    // creating a track
+    QString trackLocation = "/getCoverArtInfo/track.mp3";
+    QFileInfo file = QFileInfo(trackLocation);
+    TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
+    trackDAO.addTracksPrepare();
+    trackDAO.addTracksAdd(new TrackInfoObject(
+                    trackLocation, SecurityTokenPointer(), false), false);
+    trackDAO.addTracksFinish(false);
+    int trackId = trackDAO.getTrackId(trackLocation);
+
+    // setting album name
+    QString album = "album_name";
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    query.prepare(QString(
+        "UPDATE " LIBRARY_TABLE " SET " % LIBRARYTABLE_ALBUM % "=:album "
+        "WHERE " % LIBRARYTABLE_ID % "=:trackId"));
+    query.bindValue(":album", album);
+    query.bindValue(":trackId", trackId);
+    query.exec();
+
+    // adding cover art
+    CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
+    QString coverLocation = "/getCoverArtInfo/cover.jpg";
+    int coverId = m_CoverArtDAO.saveCoverLocation(coverLocation);
+    trackDAO.updateCoverArt(trackId, coverId);
+
+    // getting cover art info from coverartdao
+    CoverArtDAO::CoverArtInfo coverInfo;
+    coverInfo = m_CoverArtDAO.getCoverArtInfo(trackId);
+    ASSERT_EQ(trackId, coverInfo.trackId);
+    EXPECT_QSTRING_EQ(coverLocation, coverInfo.coverLocation);
+    EXPECT_QSTRING_EQ(album, coverInfo.album);
+    EXPECT_QSTRING_EQ(file.fileName(), coverInfo.trackFilename);
+    EXPECT_QSTRING_EQ(file.absolutePath(), coverInfo.trackDirectory);
+    EXPECT_QSTRING_EQ(trackLocation, coverInfo.trackLocation);
+}
