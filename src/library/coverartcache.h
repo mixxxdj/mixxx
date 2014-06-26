@@ -31,17 +31,11 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     virtual ~CoverArtCache();
     friend class Singleton<CoverArtCache>;
 
-  private:
     struct FutureResult {
         int trackId;
         QString coverLocation;
         QImage img;
     };
-
-    static CoverArtCache* m_instance;
-    CoverArtDAO* m_pCoverArtDAO;
-    TrackDAO* m_pTrackDAO;
-    QSet<int> m_runningIds;
 
     QImage parseImage(QImage img);
     FutureResult loadImage(QString coverLocation, int trackId);
@@ -50,6 +44,12 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QString searchInTrackDirectory(QString directory,
                                    QString trackFilename,
                                    QString album);
+
+  private:
+    static CoverArtCache* m_instance;
+    CoverArtDAO* m_pCoverArtDAO;
+    TrackDAO* m_pTrackDAO;
+    QSet<int> m_runningIds;
 };
 
 #endif // COVERARTCACHE_H
