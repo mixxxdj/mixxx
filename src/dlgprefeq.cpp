@@ -29,15 +29,24 @@
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
+DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
+                     ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
+          m_COTLoFiDeck1(CONFIG_KEY, "LoFiEQDeck1"),
+          m_COTLoFiDeck2(CONFIG_KEY, "LoFiEQDeck2"),
+          m_COTLoFiDeck3(CONFIG_KEY, "LoFiEQDeck3"),
+          m_COTLoFiDeck4(CONFIG_KEY, "LoFiEQDeck4"),
           m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
-          m_highEqFreq(0.0) {
+          m_highEqFreq(0.0),
+          m_pEffectsManager(pEffectsManager),
+          m_pEQDefaultEffect(pEffectsManager->instantiateEffect("org.mixxx.effects.eqdefault")),
+          m_pFlangerEffect(pEffectsManager->instantiateEffect("org.mixxx.effects.flanger")) {
+
     setupUi(this);
 
     // Connection
@@ -51,6 +60,11 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
     connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
+
+    connect(CheckBoxLoFiDeck1, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck1()));
+    connect(CheckBoxLoFiDeck2, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck2()));
+    connect(CheckBoxLoFiDeck3, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck3()));
+    connect(CheckBoxLoFiDeck4, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck4()));
 
     loadSettings();
     slotUpdate();
@@ -134,6 +148,57 @@ void DlgPrefEQ::slotLoFiChanged()
     slotApply();
 }
 
+void DlgPrefEQ::slotLoFiChangedDeck1() {
+    if(CheckBoxLoFiDeck1->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck1"), ConfigValue(QString("yes")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(0)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck1"), ConfigValue(QString("no")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(0)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+    }
+    slotApply();
+}
+
+void DlgPrefEQ::slotLoFiChangedDeck2() {
+    if(CheckBoxLoFiDeck2->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck2"), ConfigValue(QString("yes")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(1)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck2"), ConfigValue(QString("no")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(1)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+    }
+    slotApply();
+}
+
+void DlgPrefEQ::slotLoFiChangedDeck3() {
+    if(CheckBoxLoFiDeck3->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck3"), ConfigValue(QString("yes")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(2)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck3"), ConfigValue(QString("no")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(2)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+    }
+    slotApply();
+}
+void DlgPrefEQ::slotLoFiChangedDeck4() {
+    if(CheckBoxLoFiDeck4->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck4"), ConfigValue(QString("yes")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(3)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck4"), ConfigValue(QString("no")));
+        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
+                getEffectChainSlot(3)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+    }
+    slotApply();
+}
+
 void DlgPrefEQ::slotUpdateHiEQ()
 {
     if (SliderHiEQ->value() < SliderLoEQ->value())
@@ -198,6 +263,10 @@ void DlgPrefEQ::slotApply()
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
     m_COTLoFi.slotSet(CheckBoxLoFi->isChecked());
+    m_COTLoFiDeck1.slotSet(CheckBoxLoFiDeck1->isChecked());
+    m_COTLoFiDeck2.slotSet(CheckBoxLoFiDeck2->isChecked());
+    m_COTLoFiDeck3.slotSet(CheckBoxLoFiDeck3->isChecked());
+    m_COTLoFiDeck4.slotSet(CheckBoxLoFiDeck4->isChecked());
     m_COTEnableEq.slotSet(CheckBoxEnbEQ->isChecked());
 }
 
