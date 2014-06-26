@@ -19,9 +19,7 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setName(QObject::tr("Echo"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Simple Echo.  Applies "
-            "feedback and runs a simple low-pass filter to reduce high "
-            "frequencies"));
+    manifest.setDescription(QObject::tr("Simple Echo with pingpong"));
 
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("send_amount");
@@ -140,9 +138,6 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
     int read_position = gs.write_position;
     gs.prev_delay_time = delay_time;
     gs.prev_delay_samples = delay_samples;
-
-    // Lowpass the delay buffer to deaden it a bit.
-    gs.feedback_lowpass->process(gs.delay_buf, gs.delay_buf, numSamples);
 
     // Feedback the delay buffer and then add the new input.
     for (unsigned int i = 0; i < numSamples; i += 2) {
