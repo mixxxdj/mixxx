@@ -35,7 +35,35 @@
         <string>Use this option if you prefer lower CPU utilization over better sound.</string>
        </property>
        <property name="text">
-        <string>Use Static Equalizers</string>
+        <string>Use Static Equalizer</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="CheckBoxLoFiDeck1">
+       <property name="text">
+        <string>Use Static Equalizer (Deck 1)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="CheckBoxLoFiDeck2">
+       <property name="text">
+        <string>Use Static Equalizer (Deck 2)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="CheckBoxLoFiDeck3">
+       <property name="text">
+        <string>Use Static Equalizer (Deck 3)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="CheckBoxLoFiDeck4">
+       <property name="text">
+        <string>Use Static Equalizer (Deck 4)</string>
        </property>
       </widget>
      </item>
