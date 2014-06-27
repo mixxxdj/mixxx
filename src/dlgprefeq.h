@@ -67,18 +67,14 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     ControlObjectThread m_COTLoFreq;
     ControlObjectThread m_COTHiFreq;
     ControlObjectThread m_COTLoFi;
-    ControlObjectThread m_COTLoFiDeck1;
-    ControlObjectThread m_COTLoFiDeck2;
-    ControlObjectThread m_COTLoFiDeck3;
-    ControlObjectThread m_COTLoFiDeck4;
     ControlObjectThread m_COTEnableEq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
-    // Pointers needed for changing the effects loaded on the EQ Effect Rack
+    // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
     EffectRack* m_pEQEffectRack;
-    QList<QComboBox*> m_deckEffectSelector;
+    QList<QComboBox*> m_deckEffectSelectors;
 };
 
 #endif

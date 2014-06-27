@@ -59,8 +59,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(this, SIGNAL(effectOnChainSlot(const unsigned int,
                                            const unsigned int, QString)),
             m_pEQEffectRack, SLOT(slotLoadEffectOnChainSlot(const unsigned int,
-                                                            const unsigned int,
-                                                            QString)));
+                                           const unsigned int, QString)));
 
     loadSettings();
     slotUpdate();
@@ -71,26 +70,13 @@ DlgPrefEQ::~DlgPrefEQ() {
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
-        qDebug() << "SUNT IN SLOTADDCOMBOBOX";
-    while (m_deckEffectSelector.size() < static_cast<int>(numDecks)) {
+    while (m_deckEffectSelectors.size() < static_cast<int>(numDecks)) {
         QComboBox* box = new QComboBox(this);
         QStringList availableEffects(m_pEffectsManager->getAvailableEffects().toList());
         box->addItems(availableEffects);
-        m_deckEffectSelector.append(box);
-        if (m_deckEffectSelector.size() == 1) {
-            connect(box, SIGNAL(currentIndexChanged(QString)),
-                    this, SLOT(slotLoFiChangedDeck1(QString)));
-        } else if (m_deckEffectSelector.size() == 2) {
-            connect(box, SIGNAL(currentIndexChanged(QString)),
-                    this, SLOT(slotLoFiChangedDeck2(QString)));
-        } else if (m_deckEffectSelector.size() == 3) {
-            connect(box, SIGNAL(currentIndexChanged(QString)),
-                    this, SLOT(slotLoFiChangedDeck3(QString)));
-        } else if (m_deckEffectSelector.size() == 4) {
-            connect(box, SIGNAL(currentIndexChanged(QString)),
-                    this, SLOT(slotLoFiChangedDeck4(QString)));
-        }
-
+        m_deckEffectSelectors.append(box);
+        connect(box, SIGNAL(currentIndexChanged(QString)),
+                this, SLOT(slotEffectChangedOnDeck(QString)));
         verticalLayout_2->addWidget(box);
     }
 }
@@ -169,51 +155,10 @@ void DlgPrefEQ::slotLoFiChanged()
     slotApply();
 }
 
-void DlgPrefEQ::slotLoFiChangedDeck1(QString effectId) {
-    emit(effectOnChainSlot(0, 0, effectId));
-//    if(CheckBoxLoFiDeck1->isChecked()) {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck1"), ConfigValue(QString("yes")));
-//        emit(effectOnChainSlot(0, 0, QString("org.mixxx.effects.flanger")));
-//    } else {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck1"), ConfigValue(QString("no")));
-//        emit(effectOnChainSlot(0, 0, QString("org.mixxx.effects.eqdefault")));
-//    }
-    slotApply();
-}
-
-void DlgPrefEQ::slotLoFiChangedDeck2(QString effectId) {
-    emit(effectOnChainSlot(1, 0, effectId));
-//    if(CheckBoxLoFiDeck2->isChecked()) {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck2"), ConfigValue(QString("yes")));
-//        emit(effectOnChainSlot(1, 0, QString("org.mixxx.effects.flanger")));
-//    } else {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck2"), ConfigValue(QString("no")));
-//        emit(effectOnChainSlot(1, 0, QString("org.mixxx.effects.eqdefault")));
-//    }
-    slotApply();
-}
-
-void DlgPrefEQ::slotLoFiChangedDeck3(QString effectId) {
-    emit(effectOnChainSlot(2, 0, effectId));
-//    if(CheckBoxLoFiDeck3->isChecked()) {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck3"), ConfigValue(QString("yes")));
-//        emit(effectOnChainSlot(2, 0, QString("org.mixxx.effects.flanger")));
-//    } else {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck3"), ConfigValue(QString("no")));
-//        emit(effectOnChainSlot(2, 0, QString("org.mixxx.effects.eqdefault")));
-//    }
-    slotApply();
-}
-void DlgPrefEQ::slotLoFiChangedDeck4(QString effectId) {
-    emit(effectOnChainSlot(3, 0, effectId));
-//    if(CheckBoxLoFiDeck4->isChecked()) {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck4"), ConfigValue(QString("yes")));
-//        emit(effectOnChainSlot(3, 0, QString("org.mixxx.effects.flanger")));
-//    } else {
-//        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck4"), ConfigValue(QString("no")));
-//        emit(effectOnChainSlot(3, 0, QString("org.mixxx.effects.eqdefault")));
-//    }
-    slotApply();
+void DlgPrefEQ::slotEffectChangedOnDeck(QString effectId) {
+    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    int deckNumber = m_deckEffectSelectors.indexOf(c);
+    emit(effectOnChainSlot(deckNumber, 0, effectId));
 }
 
 void DlgPrefEQ::slotUpdateHiEQ()
