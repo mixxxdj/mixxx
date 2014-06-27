@@ -12,11 +12,6 @@ class CoverArtCacheTest : public CoverArtCache, public MixxxTest {
         config()->set(ConfigKey("[Config]","Path"),
                       QDir::currentPath().append("/res"));
         m_pTrackCollection = new TrackCollection(config());
-
-        CoverArtCache::create();
-        CoverArtCache::instance()->setCoverArtDAO(&m_pTrackCollection->getCoverArtDAO());
-        CoverArtCache::instance()->setTrackDAO(&m_pTrackCollection->getTrackDAO());
-        m_pCoverArtCache = CoverArtCache::instance();
     }
 
     virtual void TearDown() {
@@ -29,11 +24,9 @@ class CoverArtCacheTest : public CoverArtCache, public MixxxTest {
         query.prepare("DELETE FROM track_locations");
         query.exec();
 
-        m_pCoverArtCache->destroy();
         delete m_pTrackCollection;
     }
 
-    CoverArtCache* m_pCoverArtCache;
     TrackCollection* m_pTrackCollection;
 };
 
