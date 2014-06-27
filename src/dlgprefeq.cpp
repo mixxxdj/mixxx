@@ -65,6 +65,12 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(CheckBoxLoFiDeck3, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck3()));
     connect(CheckBoxLoFiDeck4, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck4()));
 
+    connect(this, SIGNAL(effectOnChainSlot(const unsigned int,
+                                           const unsigned int, QString)),
+            m_pEQEffectRack, SLOT(slotLoadEffectOnChainSlot(const unsigned int,
+                                                            const unsigned int,
+                                                            QString)));
+
     loadSettings();
     slotUpdate();
     slotApply();
@@ -150,12 +156,10 @@ void DlgPrefEQ::slotLoFiChanged()
 void DlgPrefEQ::slotLoFiChangedDeck1() {
     if(CheckBoxLoFiDeck1->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck1"), ConfigValue(QString("yes")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(0)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+        emit(effectOnChainSlot(0, 0, QString("org.mixxx.effects.flanger")));
     } else {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck1"), ConfigValue(QString("no")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(0)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+        emit(effectOnChainSlot(0, 0, QString("org.mixxx.effects.eqdefault")));
     }
     slotApply();
 }
@@ -163,12 +167,10 @@ void DlgPrefEQ::slotLoFiChangedDeck1() {
 void DlgPrefEQ::slotLoFiChangedDeck2() {
     if(CheckBoxLoFiDeck2->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck2"), ConfigValue(QString("yes")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(1)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+        emit(effectOnChainSlot(1, 0, QString("org.mixxx.effects.flanger")));
     } else {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck2"), ConfigValue(QString("no")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(1)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+        emit(effectOnChainSlot(1, 0, QString("org.mixxx.effects.eqdefault")));
     }
     slotApply();
 }
@@ -176,24 +178,20 @@ void DlgPrefEQ::slotLoFiChangedDeck2() {
 void DlgPrefEQ::slotLoFiChangedDeck3() {
     if(CheckBoxLoFiDeck3->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck3"), ConfigValue(QString("yes")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(2)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+        emit(effectOnChainSlot(2, 0, QString("org.mixxx.effects.flanger")));
     } else {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck3"), ConfigValue(QString("no")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(2)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+        emit(effectOnChainSlot(2, 0, QString("org.mixxx.effects.eqdefault")));
     }
     slotApply();
 }
 void DlgPrefEQ::slotLoFiChangedDeck4() {
     if(CheckBoxLoFiDeck4->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck4"), ConfigValue(QString("yes")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(3)->getEffectChain()->replaceEffect(0, m_pFlangerEffect);
+        emit(effectOnChainSlot(3, 0, QString("org.mixxx.effects.flanger")));
     } else {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQDeck4"), ConfigValue(QString("no")));
-        m_pEffectsManager->getEffectChainManager()->getEffectRack(1)->
-                getEffectChainSlot(3)->getEffectChain()->replaceEffect(0, m_pEQDefaultEffect);
+        emit(effectOnChainSlot(3, 0, QString("org.mixxx.effects.eqdefault")));
     }
     slotApply();
 }

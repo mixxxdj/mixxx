@@ -56,6 +56,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   signals:
     void apply(const QString &);
+    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:
     void loadSettings();
