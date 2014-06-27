@@ -44,8 +44,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
-          m_pEQDefaultEffect(pEffectsManager->instantiateEffect("org.mixxx.effects.eqdefault")),
-          m_pFlangerEffect(pEffectsManager->instantiateEffect("org.mixxx.effects.flanger")) {
+          m_pEQEffectRack(m_pEffectsManager->getEffectRack(1).data()) {
 
     setupUi(this);
 

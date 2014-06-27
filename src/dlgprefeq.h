@@ -74,9 +74,10 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     ControlObjectThread m_COTEnableEq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
+
+    // Pointers needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
-    EffectPointer m_pEQDefaultEffect;
-    EffectPointer m_pFlangerEffect;
+    EffectRack* m_pEQEffectRack;
 };
 
 #endif
