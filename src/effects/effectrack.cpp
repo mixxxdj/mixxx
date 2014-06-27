@@ -77,6 +77,25 @@ void EffectRack::slotNumEffectChainSlots(double v) {
     qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }
 
+void EffectRack::slotLoadEffectOnChainSlot(const unsigned int iChainSlotNumber,
+                                           const unsigned int iEffectSlotNumber,
+                                           QString effectId) {
+    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
+        return;
+    }
+    EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(effectId);
+
+    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    EffectChainPointer pChain = pChainSlot->getEffectChain();
+    if (!pChain) {
+        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
+                                                    EffectChainPointer()));
+        pChain->setName("Empty Chain");
+        pChainSlot->loadEffectChain(pChain);
+    }
+    pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
+}
+
 void EffectRack::slotClearRack(double v) {
     if (v > 0) {
         foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
