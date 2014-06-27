@@ -19,6 +19,7 @@
 #define DLGPREFEQ_H
 
 #include <QWidget>
+#include <QComboBox>
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
@@ -40,10 +41,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   public slots:
     void slotLoFiChanged();
-    void slotLoFiChangedDeck1();
-    void slotLoFiChangedDeck2();
-    void slotLoFiChangedDeck3();
-    void slotLoFiChangedDeck4();
+    void slotLoFiChangedDeck1(QString effectId);
+    void slotLoFiChangedDeck2(QString effectId);
+    void slotLoFiChangedDeck3(QString effectId);
+    void slotLoFiChangedDeck4(QString effectId);
+    void slotAddComboBox(double numDecks);
     void slotEnaEQChanged();
     /** Update Hi EQ **/
     void slotUpdateHiEQ();
@@ -79,6 +81,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Pointers needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
     EffectRack* m_pEQEffectRack;
+    QList<QComboBox*> m_deckEffectSelector;
 };
 
 #endif
