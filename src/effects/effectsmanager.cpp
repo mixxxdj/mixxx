@@ -145,14 +145,14 @@ void EffectsManager::addEqualizer(int channelNumber) {
     EffectRackPointer pRack = getEffectRack(rackNum - 1);
     pRack->addEffectChainSlotForEQ();
 
-    ControlObjectThread cot(QString("[EffectRack%1_EffectUnit%2]").
+    ControlObjectSlave cot(QString("[EffectRack%1_EffectUnit%2]").
         arg(rackNum).arg(channelNumber),
         QString("group_[Channel%1]_enable").arg(channelNumber));
     cot.set(1.0);
     qDebug() << "IN ADDECKINNER "<< cot.getKey();
 
     // Set the EQ to be fully wet
-    ControlObjectThread cotMix(QString("[EffectRack%1_EffectUnit%2]").
+    ControlObjectSlave cotMix(QString("[EffectRack%1_EffectUnit%2]").
         arg(rackNum).arg(channelNumber),
         QString("mix"));
     cotMix.set(1.0);
