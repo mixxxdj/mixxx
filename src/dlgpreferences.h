@@ -105,7 +105,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefControls* m_wcontrols;
     DlgPrefWaveform* m_wwaveform;
     DlgPrefAutoDJ* m_wautodj;
+  public:
     DlgPrefEQ* m_weq;
+  private:
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
     DlgPrefKey* m_wkey;
