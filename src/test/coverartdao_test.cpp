@@ -71,11 +71,6 @@ TEST_F(CoverArtDAOTest, getCoverArtId) {
 }
 
 TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
-    // starting with a clean cover_art table
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    query.prepare("DELETE FROM " % COVERART_TABLE);
-    query.exec();
-
     // creating some tracks
     QString trackLocation_1 = "/a";
     QString trackLocation_2 = "/b";
