@@ -37,19 +37,20 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QImage img;
     };
 
-    QImage parseImage(QImage img);
     FutureResult loadImage(QString coverLocation, int trackId);
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo);
-    QImage searchEmbeddedCover(QString trackLocation);
-    QString searchInTrackDirectory(QString directory,
-                                   QString trackFilename,
-                                   QString album);
 
   private:
     static CoverArtCache* m_instance;
     CoverArtDAO* m_pCoverArtDAO;
     TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
+
+    QImage parseImage(QImage img);
+    QImage searchEmbeddedCover(QString trackLocation);
+    QString searchInTrackDirectory(QString directory,
+                                   QString trackFilename,
+                                   QString album);
 };
 
 #endif // COVERARTCACHE_H
