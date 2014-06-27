@@ -60,11 +60,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
     connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
 
-    connect(CheckBoxLoFiDeck1, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck1()));
-    connect(CheckBoxLoFiDeck2, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck2()));
-    connect(CheckBoxLoFiDeck3, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck3()));
-    connect(CheckBoxLoFiDeck4, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChangedDeck4()));
-
     connect(this, SIGNAL(effectOnChainSlot(const unsigned int,
                                            const unsigned int, QString)),
             m_pEQEffectRack, SLOT(slotLoadEffectOnChainSlot(const unsigned int,
