@@ -35,10 +35,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
-          m_COTLoFiDeck1(CONFIG_KEY, "LoFiEQDeck1"),
-          m_COTLoFiDeck2(CONFIG_KEY, "LoFiEQDeck2"),
-          m_COTLoFiDeck3(CONFIG_KEY, "LoFiEQDeck3"),
-          m_COTLoFiDeck4(CONFIG_KEY, "LoFiEQDeck4"),
           m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
@@ -284,10 +280,6 @@ void DlgPrefEQ::slotApply()
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
     m_COTLoFi.slotSet(CheckBoxLoFi->isChecked());
-    m_COTLoFiDeck1.slotSet(CheckBoxLoFiDeck1->isChecked());
-    m_COTLoFiDeck2.slotSet(CheckBoxLoFiDeck2->isChecked());
-    m_COTLoFiDeck3.slotSet(CheckBoxLoFiDeck3->isChecked());
-    m_COTLoFiDeck4.slotSet(CheckBoxLoFiDeck4->isChecked());
     m_COTEnableEq.slotSet(CheckBoxEnbEQ->isChecked());
 }
 

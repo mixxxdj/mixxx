@@ -41,10 +41,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   public slots:
     void slotLoFiChanged();
-    void slotLoFiChangedDeck1(QString effectId);
-    void slotLoFiChangedDeck2(QString effectId);
-    void slotLoFiChangedDeck3(QString effectId);
-    void slotLoFiChangedDeck4(QString effectId);
+    void slotEffectChangedOnDeck(QString effectId);
     void slotAddComboBox(double numDecks);
     void slotEnaEQChanged();
     /** Update Hi EQ **/
