@@ -33,6 +33,7 @@
 #include "defs_urls.h"
 #include "dlgabout.h"
 #include "dlgpreferences.h"
+#include "dlgprefeq.h"
 #include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
@@ -1666,6 +1667,7 @@ void MixxxMainWindow::slotNumDecksChanged(double dNumDecks) {
     }
 #endif
     m_iNumConfiguredDecks = num_decks;
+    m_pPrefDlg->m_weq->slotAddComboBox(dNumDecks);
 }
 
 void MixxxMainWindow::slotTalkoverChanged(int mic_num) {
