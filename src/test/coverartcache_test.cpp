@@ -39,7 +39,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
     res = CoverArtCache::searchImage(cInfo);
-    EXPECT_QSTRING_EQ("", res.coverLocation);
+    ASSERT_TRUE(res.coverLocation.isEmpty());
 
     // setting image and format
     QImage img(coverLocationTest);
