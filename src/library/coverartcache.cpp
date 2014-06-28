@@ -64,8 +64,8 @@ void CoverArtCache::requestPixmap(int trackId, const QString& coverLocation) {
                                    trackId, coverLocation);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
-    watcher->setFuture(future);
     m_runningIds.insert(trackId);
+    watcher->setFuture(future);
 }
 
 // Load cover from path stored in DB.
