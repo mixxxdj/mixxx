@@ -39,8 +39,11 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
-          m_pEffectsManager(pEffectsManager),
-          m_pEQEffectRack(m_pEffectsManager->getEffectRack(1).data()) {
+          m_pEffectsManager(pEffectsManager) {
+
+    int iEqRackNumber = m_pEffectsManager->getEffectChainManager()
+                                                   ->getEffectRacksSize();
+    m_pEQEffectRack = m_pEffectsManager->getEffectRack(iEqRackNumber - 1).data();
 
     setupUi(this);
 
@@ -75,6 +78,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 DlgPrefEQ::~DlgPrefEQ() {
     qDeleteAll(m_deckEffectSelectors);
     m_deckEffectSelectors.clear();
+    delete m_pConfig;
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
