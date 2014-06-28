@@ -49,7 +49,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QImage rescaleBigImage(QImage img);
     QImage searchEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,
-                                   QString trackFilename,
+                                   QString trackBaseName,
                                    QString album);
 };
 

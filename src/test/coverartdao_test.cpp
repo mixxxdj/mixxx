@@ -157,7 +157,7 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
     ASSERT_EQ(trackId, coverInfo.trackId);
     EXPECT_QSTRING_EQ(coverLocation, coverInfo.coverLocation);
     EXPECT_QSTRING_EQ(album, coverInfo.album);
-    EXPECT_QSTRING_EQ(file.fileName(), coverInfo.trackFilename);
+    EXPECT_QSTRING_EQ(file.baseName(), coverInfo.trackBaseName);
     EXPECT_QSTRING_EQ(file.absolutePath(), coverInfo.trackDirectory);
     EXPECT_QSTRING_EQ(trackLocation, coverInfo.trackLocation);
 }

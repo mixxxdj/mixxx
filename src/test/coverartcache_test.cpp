@@ -32,9 +32,9 @@ TEST_F(CoverArtCacheTest, searchImage) {
     CoverArtDAO::CoverArtInfo cInfo;
     cInfo.trackId = 1;
     cInfo.album = "album_name";
-    cInfo.trackFilename = "track.mp3";
+    cInfo.trackBaseName = "track";
     cInfo.trackDirectory = trackdir;
-    cInfo.trackLocation = trackdir % "/" % cInfo.trackFilename;
+    cInfo.trackLocation = trackdir % "/" % cInfo.trackBaseName % ".mp3";
 
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
@@ -56,9 +56,8 @@ TEST_F(CoverArtCacheTest, searchImage) {
 
     // saving more covers
     // track_filename.jpg
-    QString trackFilename = cInfo.trackFilename;
-    trackFilename.remove(trackFilename.lastIndexOf("."), trackFilename.size() - 1);
-    QString cLoc_filename = QString(trackdir % "/" % trackFilename % ".").append(format);
+    QString cLoc_filename = QString(trackdir % "/" % cInfo.trackBaseName % ".")
+                                                               .append(format);
     EXPECT_TRUE(img.scaled(500,500).save(cLoc_filename, format));
     files << cLoc_filename;
     // album_name.jpg

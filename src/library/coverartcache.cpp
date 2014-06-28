@@ -114,7 +114,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     // Looking for cover stored in track diretory.
     //
     res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
-                                               coverInfo.trackFilename,
+                                               coverInfo.trackBaseName,
                                                coverInfo.album);
     res.img = QImage(res.coverLocation);
     res.img = rescaleBigImage(res.img);
@@ -122,7 +122,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 }
 
 QString CoverArtCache::searchInTrackDirectory(QString directory,
-                                              QString trackFilename,
+                                              QString trackBaseName,
                                               QString album) {
     if (directory.isEmpty()) {
         return QString();
@@ -144,10 +144,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         return directory % "/" % imglist[0];
     }
 
-    // removing the file extension
-    trackFilename.remove(trackFilename.lastIndexOf("."),
-                         trackFilename.size() - 1);
-    int idx  = imglist.indexOf(QRegExp(".*" % trackFilename % ".*",
+    int idx  = imglist.indexOf(QRegExp(".*" % trackBaseName % ".*",
                                        Qt::CaseInsensitive));
     if (idx  != -1 ) {
         // cover with the same name of the trackFilename.

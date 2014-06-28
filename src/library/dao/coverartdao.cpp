@@ -139,9 +139,10 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         coverInfo.trackId = trackId;
         coverInfo.album = query.value(albumColumn).toString();
         coverInfo.coverLocation = query.value(coverColumn).toString();
-        coverInfo.trackFilename = query.value(filenameColumn).toString();
         coverInfo.trackDirectory = query.value(directoryColumn).toString();
         coverInfo.trackLocation = query.value(locationColumn).toString();
+        coverInfo.trackBaseName = QFileInfo(query.value(filenameColumn)
+                                            .toString()).baseName();
         return coverInfo;
     }
 
