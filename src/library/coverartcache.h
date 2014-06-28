@@ -46,7 +46,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
 
-    QImage parseImage(QImage img);
+    QImage rescaleBigImage(QImage img);
     QImage searchEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,
                                    QString trackFilename,

@@ -76,7 +76,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(
     res.trackId = trackId;
     res.coverLocation = coverLocation;
     res.img = QImage(coverLocation);
-    res.img = parseImage(res.img);
+    res.img = rescaleBigImage(res.img);
     return res;
 }
 
@@ -107,7 +107,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     //
     res.img = searchEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
-        res.img = parseImage(res.img);
+        res.img = rescaleBigImage(res.img);
         return res;
     }
 
@@ -117,7 +117,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
                                                coverInfo.trackFilename,
                                                coverInfo.album);
     res.img = QImage(res.coverLocation);
-    res.img = parseImage(res.img);
+    res.img = rescaleBigImage(res.img);
     return res;
 }
 
@@ -224,7 +224,7 @@ void CoverArtCache::imageFound() {
 
 // if it's too big, we have to scale it.
 // big images would be quickly removed from cover cache.
-QImage CoverArtCache::parseImage(QImage img) {
+QImage CoverArtCache::rescaleBigImage(QImage img) {
     const int MAXSIZE = 400;
     QSize size = img.size();
     if (size.height() > MAXSIZE || size.width() > MAXSIZE) {
