@@ -159,8 +159,11 @@ void DlgPrefEQ::slotLoFiChanged()
 
 void DlgPrefEQ::slotEffectChangedOnDeck(QString effectId) {
     QComboBox* c = qobject_cast<QComboBox*>(sender());
-    int deckNumber = m_deckEffectSelectors.indexOf(c);
-    emit(effectOnChainSlot(deckNumber, 0, effectId));
+    // Check if qobject_cast was successful
+    if (c) {
+        int deckNumber = m_deckEffectSelectors.indexOf(c);
+        emit(effectOnChainSlot(deckNumber, 0, effectId));
+    }
 }
 
 void DlgPrefEQ::slotUpdateHiEQ()
