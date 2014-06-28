@@ -130,6 +130,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     QList<int> trackIds;
     if (pSource) {
         trackIds = trackDao.getTrackIds(files);
+        trackDao.unhideTracks(trackIds);
     } else {
         trackIds = trackDao.addTracks(files, true);
     }
