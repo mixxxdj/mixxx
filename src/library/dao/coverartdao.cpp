@@ -46,7 +46,7 @@ int CoverArtDAO::saveCoverLocation(QString coverLocation) {
 void CoverArtDAO::deleteUnusedCoverArts() {
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT " % COVERARTTABLE_LOCATION %
+    query.prepare("SELECT " % COVERARTTABLE_ID %
                   " FROM " % COVERART_TABLE %
                   " WHERE " % COVERARTTABLE_ID % " not in "
                       "(SELECT " % LIBRARYTABLE_COVERART %
@@ -59,22 +59,20 @@ void CoverArtDAO::deleteUnusedCoverArts() {
         return;
     }
 
-    FieldEscaper escaper(m_database);
-    QStringList coverLocationList;
+    QStringList coverIdList;
     QSqlRecord queryRecord = query.record();
-    const int locationColumn = queryRecord.indexOf("location");
+    const int coverIdColumn = queryRecord.indexOf("id");
     while (query.next()) {
-        QString coverLocation = query.value(locationColumn).toString();
-        coverLocationList << escaper.escapeString(coverLocation);
+        coverIdList << query.value(coverIdColumn).toString();
     }
 
-    if (coverLocationList.empty()) {
+    if (coverIdList.empty()) {
         return;
     }
 
     query.prepare(QString("DELETE FROM " % COVERART_TABLE %
-                          " WHERE " % COVERARTTABLE_LOCATION % " in (%1)")
-                  .arg(coverLocationList.join(",")));
+                          " WHERE " % COVERARTTABLE_ID % " in (%1)")
+                  .arg(coverIdList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
