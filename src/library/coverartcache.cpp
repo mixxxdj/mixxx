@@ -22,7 +22,7 @@ void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
     m_pTrackDAO = trackdao;
 }
 
-void CoverArtCache::requestPixmap(const QString& coverLocation, int trackId) {
+void CoverArtCache::requestPixmap(int trackId, const QString& coverLocation) {
     if (trackId < 1) {
         return;
     }
@@ -61,7 +61,7 @@ void CoverArtCache::requestPixmap(const QString& coverLocation, int trackId) {
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
-                                   coverLocation, trackId);
+                                   trackId, coverLocation);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
     watcher->setFuture(future);
@@ -71,7 +71,7 @@ void CoverArtCache::requestPixmap(const QString& coverLocation, int trackId) {
 // Load cover from path stored in DB.
 // It is executed in a separate thread via QtConcurrent::run
 CoverArtCache::FutureResult CoverArtCache::loadImage(
-        const QString &coverLocation, int trackId) {
+        int trackId, const QString &coverLocation) {
     FutureResult res;
     res.trackId = trackId;
     res.coverLocation = coverLocation;

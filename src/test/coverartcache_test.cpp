@@ -15,7 +15,7 @@ TEST_F(CoverArtCacheTest, loadImage) {
     QImage img = QImage(coverLocationTest);
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadImage(coverLocationTest, trackId);
+    res = CoverArtCache::loadImage(trackId, coverLocationTest);
     ASSERT_EQ(trackId, res.trackId);
     EXPECT_QSTRING_EQ(coverLocationTest, res.coverLocation);
     ASSERT_TRUE(img.operator==(res.img));

@@ -14,7 +14,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
   public:
-    void requestPixmap(const QString& coverLocation, int trackId);
+    void requestPixmap(int trackId, const QString& coverLocation = QString());
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QString getDefaultCoverLocation(int trackId);
@@ -37,7 +37,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QImage img;
     };
 
-    FutureResult loadImage(const QString& coverLocation, int trackId);
+    FutureResult loadImage(int trackId, const QString& coverLocation);
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo);
 
   private:

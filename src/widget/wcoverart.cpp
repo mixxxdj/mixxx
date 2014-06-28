@@ -102,7 +102,7 @@ void WCoverArt::slotLoadCoverArt(QString coverLocation, int trackId) {
     setToDefault();
 
     m_lastRequestedTrackId = trackId;
-    CoverArtCache::instance()->requestPixmap(coverLocation, trackId);
+    CoverArtCache::instance()->requestPixmap(trackId, coverLocation);
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
