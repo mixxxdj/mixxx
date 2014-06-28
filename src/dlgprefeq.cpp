@@ -61,6 +61,12 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
             m_pEQEffectRack, SLOT(slotLoadEffectOnChainSlot(const unsigned int,
                                            const unsigned int, QString)));
 
+    // Add drop down lists for current decks and connect num_decks control
+    // to slotAddComboBox
+    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks->connectValueChanged(SLOT(slotAddComboBox(double)));
+    slotAddComboBox(m_pNumDecks->get());
+
     loadSettings();
     slotUpdate();
     slotApply();
