@@ -83,7 +83,6 @@ class ConfigValue {
     friend bool operator==(const ConfigValue & s1, const ConfigValue & s2);
 };
 
-
 class ConfigValueKbd : public ConfigValue {
   public:
     ConfigValueKbd();
