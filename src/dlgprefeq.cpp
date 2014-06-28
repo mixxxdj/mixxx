@@ -67,6 +67,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 }
 
 DlgPrefEQ::~DlgPrefEQ() {
+    qDeleteAll(m_deckEffectSelectors);
+    m_deckEffectSelectors.clear();
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
