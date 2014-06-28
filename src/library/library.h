@@ -85,7 +85,7 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
-    void loadCoverArt(QString coverLocation, int trackId);
+    void loadCoverArt(const QString& coverLocation, int trackId);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

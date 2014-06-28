@@ -94,7 +94,7 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     }
 }
 
-void WCoverArt::slotLoadCoverArt(QString coverLocation, int trackId) {
+void WCoverArt::slotLoadCoverArt(const QString& coverLocation, int trackId) {
     if (!m_bCoverIsVisible) {
         return;
     }

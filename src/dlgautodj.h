@@ -50,7 +50,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void addRandomButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group, bool);
-    void loadCoverArt(QString coverLocation, int trackId);
+    void loadCoverArt(const QString& coverLocation, int trackId);
 
   private:
     enum ADJstates {

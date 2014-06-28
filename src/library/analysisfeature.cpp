@@ -77,8 +77,8 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
 
-    connect(m_pAnalysisView, SIGNAL(loadCoverArt(QString, int)),
-            this, SIGNAL(loadCoverArt(QString, int)));
+    connect(m_pAnalysisView, SIGNAL(loadCoverArt(const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, int)));
 
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));

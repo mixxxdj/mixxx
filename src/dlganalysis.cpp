@@ -27,8 +27,8 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadCoverArt(QString, int)),
-            this, SIGNAL(loadCoverArt(QString, int)));
+    connect(m_pAnalysisLibraryTableView, SIGNAL(loadCoverArt(const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, int)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); // Assumes the form layout is a QVBox/QHBoxLayout!

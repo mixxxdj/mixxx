@@ -153,8 +153,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    connect(pTrackTableView, SIGNAL(loadCoverArt(QString, int)),
-            this, SIGNAL(loadCoverArt(QString, int)));
+    connect(pTrackTableView, SIGNAL(loadCoverArt(const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, int)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
