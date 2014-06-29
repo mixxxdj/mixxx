@@ -51,7 +51,7 @@
 		                                    <Unpressed>btn_play_sampler_over.png</Unpressed>
 		                                </State>
 		                                <Connection>
-		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],play</ConfigKey>
+		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],start_play</ConfigKey>
 		                                    <EmitOnDownPress>true</EmitOnDownPress>
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>

@@ -423,8 +423,15 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     m_filepos_play = newpos;
 
-    // Before seeking, read extra buffer for crossfading
-    clearScale();
+    if (m_playButton->get() > 0.0) {
+        // Before seeking, read extra buffer for crossfading, but only if
+        // we are playing.
+        clearScale();
+    } else {
+        if (m_pScale) {
+            m_pScale->clear();
+        }
+    }
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -497,7 +504,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
-    m_playButton->set(0.0);
+    slotControlStop(1);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -521,7 +528,7 @@ void EngineBuffer::ejectTrack() {
     m_pCurrentTrack.clear();
     m_file_srate_old = 0;
     m_file_length_old = 0;
-    m_playButton->set(0.0);
+    slotControlStop(1);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
     doSeek(0., SEEK_EXACT);
@@ -588,7 +595,7 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // asynchrony.
     bool playPossible = true;
     if ((!m_pCurrentTrack && deref(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && m_filepos_play >= m_file_length_old )) {
+            (m_pCurrentTrack && m_filepos_play >= m_file_length_old && !m_iSeekQueued)) {
         // play not possible
         playPossible = false;
     }
@@ -636,7 +643,7 @@ void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
         doSeek(0., SEEK_EXACT);
-        m_playButton->set(0);
+        slotControlStop(1);
     }
 }
 
@@ -644,6 +651,7 @@ void EngineBuffer::slotControlStop(double v)
 {
     if (v > 0.0) {
         m_playButton->set(0);
+        m_playStartButton->set(0);
     }
 }
 
@@ -892,7 +900,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
                 double seekPosition = at_start ? m_file_length_old : 0;
                 doSeek(seekPosition, SEEK_STANDARD);
             } else {
-                m_playButton->set(0.);
+                slotControlStop(1);
             }
         }
 
