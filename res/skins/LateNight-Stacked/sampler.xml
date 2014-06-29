@@ -56,7 +56,7 @@
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>
 		                                <Connection>
-		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],start</ConfigKey>
+		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
 		                                    <EmitOnDownPress>true</EmitOnDownPress>
 		                                    <ButtonState>RightButton</ButtonState>
 		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
