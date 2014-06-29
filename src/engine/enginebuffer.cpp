@@ -428,11 +428,9 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     m_filepos_play = newpos;
 
-    if (m_playButton->get() > 0.0) {
-        // Before seeking, read extra buffer for crossfading, but only if
-        // we are playing.
-        clearScale(false);
-    }
+    // Before seeking, read extra buffer for crossfading, but only if
+    // we are playing.
+    clearScale(m_playButton->get() > 0.0);
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
