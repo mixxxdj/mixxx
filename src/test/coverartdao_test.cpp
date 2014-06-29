@@ -35,7 +35,7 @@ TEST_F(CoverArtDAOTest, saveCoverLocation) {
 
     // adding a empty cover location
     int coverId = m_CoverArtDAO.saveCoverLocation(testCoverLoc);
-    EXPECT_EQ(0, coverId);
+    EXPECT_EQ(-1, coverId);
 
     // adding a new cover
     testCoverLoc = "/a/b/cover1.jpg";
@@ -53,7 +53,7 @@ TEST_F(CoverArtDAOTest, saveCoverLocation) {
         " WHERE " % COVERARTTABLE_LOCATION % "=:location"));
     query.bindValue(":location", testCoverLoc);
     query.exec();
-    int testCoverId = 0;
+    int testCoverId = -1;
     if (query.next()) {
         testCoverId = query.value(0).toInt();
     }
@@ -120,8 +120,8 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
     int coverId_4t = m_CoverArtDAO.getCoverArtId(coverLocation_4);
     ASSERT_EQ(coverId_1, coverId_1t);
     ASSERT_EQ(coverId_2, coverId_2t);
-    ASSERT_EQ(0, coverId_3t);
-    ASSERT_EQ(0, coverId_4t);
+    ASSERT_EQ(-1, coverId_3t);
+    ASSERT_EQ(-1, coverId_4t);
 }
 
 TEST_F(CoverArtDAOTest, getCoverArtInfo) {

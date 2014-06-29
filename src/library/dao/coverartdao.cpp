@@ -21,11 +21,11 @@ void CoverArtDAO::initialize() {
 
 int CoverArtDAO::saveCoverLocation(QString coverLocation) {
     if (coverLocation.isEmpty()) {
-        return 0;
+        return -1;
     }
 
     int coverId = getCoverArtId(coverLocation);
-    if (!coverId) { // new cover
+    if (coverId == -1) { // new cover
         QSqlQuery query(m_database);
 
         query.prepare("INSERT INTO " % COVERART_TABLE %
@@ -34,7 +34,7 @@ int CoverArtDAO::saveCoverLocation(QString coverLocation) {
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "Saving new cover (" % coverLocation % ") failed.";
-            return 0;
+            return -1;
         }
 
         coverId = query.lastInsertId().toInt();
@@ -80,7 +80,7 @@ void CoverArtDAO::deleteUnusedCoverArts() {
 
 int CoverArtDAO::getCoverArtId(QString coverLocation) {
     if (coverLocation.isEmpty()) {
-        return 0;
+        return -1;
     }
 
     QSqlQuery query(m_database);
@@ -91,14 +91,14 @@ int CoverArtDAO::getCoverArtId(QString coverLocation) {
     query.bindValue(":location", coverLocation);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return 0;
+        return -1;
     }
 
     if (query.next()) {
         return query.value(0).toInt();
     }
 
-    return 0;
+    return -1;
 }
 
 // it'll get just the fields which are required for scanCover stuff
