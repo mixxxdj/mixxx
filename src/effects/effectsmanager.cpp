@@ -145,11 +145,11 @@ void EffectsManager::addEqualizer(int channelNumber) {
     EffectRackPointer pRack = getEffectRack(rackNum - 1);
     pRack->addEffectChainSlotForEQ();
 
+    // Set the EQ to be active on Deck 'channelNumber'
     ControlObjectSlave cot(QString("[EffectRack%1_EffectUnit%2]").
         arg(rackNum).arg(channelNumber),
         QString("group_[Channel%1]_enable").arg(channelNumber));
     cot.set(1.0);
-    qDebug() << "IN ADDECKINNER "<< cot.getKey();
 
     // Set the EQ to be fully wet
     ControlObjectSlave cotMix(QString("[EffectRack%1_EffectUnit%2]").

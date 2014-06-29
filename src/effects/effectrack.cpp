@@ -135,11 +135,6 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
     pChain->setName("Empty Chain");
     pChainSlotPointer->loadEffectChain(pChain);
 
-    // Insert EQDefault into the available EffectSlot
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(
-        "org.mixxx.effects.eqdefault");
-    pChain->replaceEffect(0, pEffect);
-
     return pChainSlotPointer;
 }
 
