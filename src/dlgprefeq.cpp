@@ -17,6 +17,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QHBoxLayout>
 
 #include "dlgprefeq.h"
 #include "engine/enginefilteriir.h"
@@ -41,6 +42,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager) {
 
+    // Initialize the EQ Effect Rack
     int iEqRackNumber = m_pEffectsManager->getEffectChainManager()
                                                    ->getEffectRacksSize();
     m_pEQEffectRack = m_pEffectsManager->getEffectRack(iEqRackNumber - 1).data();
@@ -83,13 +85,23 @@ DlgPrefEQ::~DlgPrefEQ() {
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
     while (m_deckEffectSelectors.size() < static_cast<int>(numDecks)) {
+        QHBoxLayout* innerHLayout = new QHBoxLayout();
+        QLabel* label = new QLabel(QString("Deck %1").
+                            arg(m_deckEffectSelectors.size() + 1), this);
+
+        // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
         QStringList availableEffects(m_pEffectsManager->getAvailableEffects().toList());
         box->addItems(availableEffects);
         m_deckEffectSelectors.append(box);
         connect(box, SIGNAL(currentIndexChanged(QString)),
                 this, SLOT(slotEffectChangedOnDeck(QString)));
-        verticalLayout_2->addWidget(box);
+
+        // Setup the GUI
+        innerHLayout->addWidget(label);
+        innerHLayout->addWidget(box);
+        innerHLayout->addStretch();
+        verticalLayout_2->addLayout(innerHLayout);
     }
 }
 
