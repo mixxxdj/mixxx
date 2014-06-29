@@ -39,6 +39,19 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Effect Rack Configuration</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
