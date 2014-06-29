@@ -172,6 +172,8 @@ class ControlDoublePrivate : public QObject {
 
     // Mutex guarding access to the ControlDoublePrivate hash.
     static QMutex s_qCOHashMutex;
+    // Mutex guarding access to the ControlDoublePrivate aliases hash.
+    static QMutex s_qCOAliasHashMutex;
 };
 
 
