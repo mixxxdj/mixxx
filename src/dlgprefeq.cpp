@@ -89,6 +89,11 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         QLabel* label = new QLabel(QString("Deck %1").
                             arg(m_deckEffectSelectors.size() + 1), this);
 
+        // Get the configured effect or eqdefault if none is configured
+        QString configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
+                QString("EffectForDeck%1").arg(m_deckEffectSelectors.size() + 1)),
+                QString("org.mixxx.effects.eqdefault"));
+
         // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
         QStringList availableEffects(m_pEffectsManager->getAvailableEffects().toList());
@@ -96,6 +101,9 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         m_deckEffectSelectors.append(box);
         connect(box, SIGNAL(currentIndexChanged(QString)),
                 this, SLOT(slotEffectChangedOnDeck(QString)));
+
+        int selectedEffectIndex = box->findText(configuredEffect);
+        box->setCurrentIndex(selectedEffectIndex);
 
         // Setup the GUI
         innerHLayout->addWidget(label);
@@ -185,6 +193,10 @@ void DlgPrefEQ::slotEffectChangedOnDeck(QString effectId) {
     if (c) {
         int deckNumber = m_deckEffectSelectors.indexOf(c);
         emit(effectOnChainSlot(deckNumber, 0, effectId));
+
+        // Update the configured effect for the current QComboBox
+        m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
+                       arg(deckNumber + 1)), ConfigValue(effectId));
     }
 }
 
