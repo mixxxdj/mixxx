@@ -48,7 +48,7 @@ void CoverArtDAO::deleteUnusedCoverArts() {
 
     query.prepare("SELECT " % COVERARTTABLE_ID %
                   " FROM " % COVERART_TABLE %
-                  " WHERE " % COVERARTTABLE_ID % " not in "
+                  " WHERE " % COVERARTTABLE_ID % " NOT IN "
                       "(SELECT " % LIBRARYTABLE_COVERART %
                       " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
                       " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART %
@@ -71,7 +71,7 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     }
 
     query.prepare(QString("DELETE FROM " % COVERART_TABLE %
-                          " WHERE " % COVERARTTABLE_ID % " in (%1)")
+                          " WHERE " % COVERARTTABLE_ID % " IN (%1)")
                   .arg(coverIdList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -110,9 +110,9 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     QSqlQuery query(m_database);
     query.prepare(
         "SELECT album, cover_art.location AS cover, "
-        "track_locations.directory as directory, "
-        "track_locations.filename as filename, "
-        "track_locations.location as location "
+        "track_locations.directory AS directory, "
+        "track_locations.filename AS filename, "
+        "track_locations.location AS location "
         "FROM Library INNER JOIN track_locations "
         "ON library.location = track_locations.id "
         "LEFT JOIN cover_art ON cover_art.id = library.cover_art "
