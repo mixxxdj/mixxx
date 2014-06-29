@@ -111,6 +111,13 @@ void BaseTrackCache::slotTrackClean(int trackId) {
     updateTrackInIndex(trackId);
 }
 
+void BaseTrackCache::slotUpdateTrack(int trackId) {
+    if (sDebug) {
+        qDebug() << this << "slotUpdateTrack" << trackId;
+    }
+    updateTrackInIndex(trackId);
+}
+
 bool BaseTrackCache::isCached(int trackId) const {
     return m_trackInfo.contains(trackId);
 }

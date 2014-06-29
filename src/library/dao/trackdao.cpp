@@ -1220,6 +1220,8 @@ bool TrackDAO::updateCoverArt(int trackId, int coverId) {
         LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
         return false;
     }
+    // we also need to update the cover_art column in the tablemodel.
+    emit(updateTrackInBTC(trackId));
     return true;
 }
 
