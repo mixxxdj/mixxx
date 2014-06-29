@@ -18,7 +18,7 @@
 #include "util/counter.h"
 #include "util/math.h"
 
-EngineFilterIIR::EngineFilterIIR(const double * pCoefs, int iOrder)
+EngineFilterIIR::EngineFilterIIR(const double* pCoefs, int iOrder)
 {
     order = iOrder;
     coefs = pCoefs;
@@ -35,13 +35,14 @@ EngineFilterIIR::~EngineFilterIIR()
 {
 }
 
-void EngineFilterIIR::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize)
+void EngineFilterIIR::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                              const int iBufferSize)
 {
-    double GAIN =  coefs[0];
+    double GAIN = coefs[0];
     int i;
-    for (i=0; i<iBufferSize; i+=2)
+    for (i = 0; i < iBufferSize; i += 2)
     {
-        if (order==8)
+        if (order == 8)
         {
             //8th order:
             // Channel 1
@@ -118,7 +119,7 @@ void EngineFilterIIR::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iB
             yv2[4] =   (xv2[0] + xv2[4]) + coefs[1]*(xv2[1]+xv2[3]) + coefs[2] * xv2[2]
                      + ( coefs[3] * yv2[0]) + (  coefs[4] * yv2[1])
                      + ( coefs[5] * yv2[2]) + (  coefs[6] * yv2[3]);
-            pOutput[i+1] = yv2[4];
+            pOutput[i + 1] = yv2[4];
         }
     }
 }
