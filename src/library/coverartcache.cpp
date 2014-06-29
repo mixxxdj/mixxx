@@ -51,12 +51,6 @@ void CoverArtCache::requestPixmap(int trackId, const QString& coverLocation) {
     if (coverLocation.isEmpty() || !QFile::exists(coverLocation)) {
         CoverArtDAO::CoverArtInfo coverInfo;
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
-        // the coverLocation from tableview is updated just during the Mixxx loading,
-        // it means that we could use the coverLocation from DB to try finding a pixmap.
-        if (QPixmapCache::find(coverInfo.coverLocation, &pixmap)) {
-            emit(pixmapFound(trackId, pixmap));
-            return;
-        }
         future = QtConcurrent::run(this, &CoverArtCache::searchImage, coverInfo);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
