@@ -60,11 +60,16 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 
     connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
     connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
+    connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)), this, SLOT(slotShowAllEffects()));
 
     connect(this, SIGNAL(effectOnChainSlot(const unsigned int,
                                            const unsigned int, QString)),
             m_pEQEffectRack, SLOT(slotLoadEffectOnChainSlot(const unsigned int,
                                            const unsigned int, QString)));
+
+    // Set to basic view if a previous configuration is missing
+    CheckBoxShowAllEffects->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, "AdvancedView"), QString("no")) == QString("yes"));
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotAddComboBox
@@ -88,11 +93,6 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         QLabel* label = new QLabel(QString("Deck %1").
                             arg(m_deckEffectSelectors.size() + 1), this);
 
-        // Get the configured effect or eqdefault if none is configured
-        QString configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
-                QString("EffectForDeck%1").arg(m_deckEffectSelectors.size() + 1)),
-                QString("org.mixxx.effects.eqdefault"));
-
         // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
         QStringList availableEffects(m_pEffectsManager->getAvailableEffects().toList());
@@ -101,14 +101,72 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         connect(box, SIGNAL(currentIndexChanged(QString)),
                 this, SLOT(slotEffectChangedOnDeck(QString)));
 
-        int selectedEffectIndex = box->findText(configuredEffect);
+        // Create the drop down list for basic view
+        // Add EQ Effects only
+        QComboBox* simpleBox = new QComboBox(this);
+        simpleBox->addItem(QString("org.mixxx.effects.eqdefault"));
+        m_deckBasicEffectSelectors.append(simpleBox);
+        connect(simpleBox, SIGNAL(currentIndexChanged(QString)),
+                this, SLOT(slotBasicEffectChangedOnDeck(QString)));
+
+        // Set the configured effect for box and simpleBox or eqdefault
+        // if none is configured
+        QString configuredEffect;
+        int selectedEffectIndex;
+        configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
+                QString("EffectForDeck%1").arg(m_deckEffectSelectors.size())),
+                QString("org.mixxx.effects.eqdefault"));
+        selectedEffectIndex = box->findText(configuredEffect);
         box->setCurrentIndex(selectedEffectIndex);
+
+        configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
+                QString("BasicEffectForDeck%1").arg(m_deckBasicEffectSelectors.size())),
+                QString("org.mixxx.effects.eqdefault"));
+        selectedEffectIndex = simpleBox->findText(configuredEffect);
+        simpleBox->setCurrentIndex(selectedEffectIndex);
+
+        // Force the selected effect on the Effect Rack based on user's preference
+        bool advancedView = CheckBoxShowAllEffects->isChecked();
+        if (advancedView) {
+            simpleBox->setVisible(false);
+            emit(effectOnChainSlot(m_deckEffectSelectors.size() - 1, 0,
+                                   box->currentText()));
+        } else {
+            box->setVisible(false);
+            emit(effectOnChainSlot(m_deckBasicEffectSelectors.size() - 1, 0,
+                                   simpleBox->currentText()));
+        }
 
         // Setup the GUI
         innerHLayout->addWidget(label);
         innerHLayout->addWidget(box);
+        innerHLayout->addWidget(simpleBox);
         innerHLayout->addStretch();
         verticalLayout_2->addLayout(innerHLayout);
+    }
+}
+
+void DlgPrefEQ::slotShowAllEffects() {
+    if (!CheckBoxShowAllEffects->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("no"));
+        foreach (QComboBox* box, m_deckEffectSelectors) {
+            box->setVisible(false);
+        }
+        foreach (QComboBox* basicBox, m_deckBasicEffectSelectors) {
+            basicBox->setVisible(true);
+            emit(effectOnChainSlot(m_deckBasicEffectSelectors.indexOf(basicBox),
+                                   0, basicBox->currentText()));
+        }
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("yes"));
+        foreach (QComboBox* box, m_deckEffectSelectors) {
+            box->setVisible(true);
+            emit(effectOnChainSlot(m_deckEffectSelectors.indexOf(box),
+                                   0, box->currentText()));
+        }
+        foreach (QComboBox* basicBox, m_deckBasicEffectSelectors) {
+            basicBox->setVisible(false);
+        }
     }
 }
 
@@ -195,6 +253,19 @@ void DlgPrefEQ::slotEffectChangedOnDeck(QString effectId) {
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
+                       arg(deckNumber + 1)), ConfigValue(effectId));
+    }
+}
+
+void DlgPrefEQ::slotBasicEffectChangedOnDeck(QString effectId) {
+    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    // Check if qobject_cast was successful
+    if (c) {
+        int deckNumber = m_deckBasicEffectSelectors.indexOf(c);
+        emit(effectOnChainSlot(deckNumber, 0, effectId));
+
+        // Update the configured effect for the current QComboBox
+        m_pConfig->set(ConfigKey(CONFIG_KEY, QString("BasicEffectForDeck%1").
                        arg(deckNumber + 1)), ConfigValue(effectId));
     }
 }

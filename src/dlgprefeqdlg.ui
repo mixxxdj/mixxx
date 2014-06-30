@@ -40,6 +40,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QCheckBox" name="CheckBoxShowAllEffects">
+       <property name="text">
+        <string>Show All Effects</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="label">
        <property name="font">
         <font>

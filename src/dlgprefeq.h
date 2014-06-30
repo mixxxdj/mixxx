@@ -42,7 +42,10 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
   public slots:
     void slotLoFiChanged();
     void slotEffectChangedOnDeck(QString effectId);
+    void slotBasicEffectChangedOnDeck(QString effectId);
     void slotAddComboBox(double numDecks);
+    // Slot for toggling between advanced and basic views
+    void slotShowAllEffects();
     void slotEnaEQChanged();
     /** Update Hi EQ **/
     void slotUpdateHiEQ();
@@ -75,6 +78,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     EffectsManager* m_pEffectsManager;
     EffectRack* m_pEQEffectRack;
     QList<QComboBox*> m_deckEffectSelectors;
+    QList<QComboBox*> m_deckBasicEffectSelectors;
     ControlObjectSlave* m_pNumDecks;
 };
 
