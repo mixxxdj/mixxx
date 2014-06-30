@@ -66,17 +66,35 @@ const QSet<QString> EffectsManager::getAvailableEffects() const {
     return availableEffects;
 }
 
+const QSet<QString> EffectsManager::getAvailableEffectsNames() const {
+    QSet<QString> availableEffectsNames;
+    QString currentEffectName;
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        QSet<QString> backendEffects = pBackend->getEffectIds();
+        foreach (QString effectId, backendEffects) {
+            currentEffectName = pBackend->getManifest(effectId).name();
+            if (availableEffectsNames.contains(currentEffectName)) {
+                qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
+                continue;
+            }
+            availableEffectsNames.insert(currentEffectName);
+        }
+    }
+
+    return availableEffectsNames;
+}
+
 const QSet<QString> EffectsManager::getAvailableEQEffects() const {
     QSet<QString> availableEffects;
 
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         QSet<QString> backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
-            if (availableEffects.contains(effectId)) {
-                qWarning() << "WARNING: Duplicate effect ID" << effectId;
-                continue;
-            }
             if (pBackend->getManifest(effectId).isEQ()) {
+                if (availableEffects.contains(effectId)) {
+                    qWarning() << "WARNING: Duplicate effect ID" << effectId;
+                    continue;
+                }
                 availableEffects.insert(effectId);
             }
         }
