@@ -104,7 +104,8 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         // Create the drop down list for basic view
         // Add EQ Effects only
         QComboBox* simpleBox = new QComboBox(this);
-        simpleBox->addItem(QString("org.mixxx.effects.eqdefault"));
+        QStringList availableEQEffects(m_pEffectsManager->getAvailableEQEffects().toList());
+        simpleBox->addItems(availableEQEffects);
         m_deckBasicEffectSelectors.append(simpleBox);
         connect(simpleBox, SIGNAL(currentIndexChanged(QString)),
                 this, SLOT(slotBasicEffectChangedOnDeck(QString)));
