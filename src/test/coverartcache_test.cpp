@@ -81,8 +81,8 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // saving more covers using the preferred names in the right order
     QStringList prefCovers;
     // 1. track_filename.jpg
-    QString cLoc_filename = QString(trackdir % "/" % cInfo.trackBaseName % ".")
-                                                               .append(format);
+    QString cLoc_filename = QString(trackdir % "/" % cInfo.trackBaseName % ".");
+    cLoc_filename.append(format);
     EXPECT_TRUE(img.scaled(500,500).save(cLoc_filename, format));
     prefCovers << cLoc_filename;
     // 2. album_name.jpg
@@ -131,6 +131,31 @@ TEST_F(CoverArtCacheTest, searchImage) {
     extraCovers << cLoc_coverJPG << cLoc_coverjpg;
     res = CoverArtCache::searchImage(cInfo);
     EXPECT_QSTRING_EQ(cLoc_coverJPG, res.coverLocation);
+
+    // As we are looking for %album%.jpg and %base_track.jpg%,
+    // we need to check if everything works with UTF8 chars.
+    const CoverArtDAO::CoverArtInfo cInfoUtf8 = {
+        2,                                             // cInfo.trackId
+        "",                                            // cInfo.coverLocation
+        QString::fromUtf8("öæäîðÑ_album"),             // cInfo.album
+        QString::fromUtf8("track_ðÑöæäî"),             // cInfo.trackBaseName
+        trackdir,                                      // cInfo.trackDirectory
+        trackdir % "/" % cInfo.trackBaseName % ".mp3"  // cInfo.trackLocation
+    };
+    // 1. track_filename.jpg
+    cLoc_filename = QString(trackdir % "/" % cInfoUtf8.trackBaseName % ".");
+    cLoc_filename.append(format);
+    EXPECT_TRUE(img.save(cLoc_filename, format));
+    res = CoverArtCache::searchImage(cInfoUtf8);
+    EXPECT_QSTRING_EQ(cLoc_filename, res.coverLocation);
+    QFile::remove(cLoc_filename);
+    // 2. album_name.jpg
+    cLoc_albumName = QString(trackdir % "/" % cInfoUtf8.album % ".");
+    cLoc_albumName.append(format);
+    EXPECT_TRUE(img.save(cLoc_albumName, format));
+    res = CoverArtCache::searchImage(cInfoUtf8);
+    EXPECT_QSTRING_EQ(cLoc_albumName, res.coverLocation);
+    QFile::remove(cLoc_albumName);
 
     // cleaning temp dir
     foreach (QString loc, extraCovers) {
