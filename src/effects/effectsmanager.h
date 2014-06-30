@@ -48,6 +48,7 @@ class EffectsManager : public QObject {
     QString getPrevEffectId(const QString& effectId);
 
     const QSet<QString> getAvailableEffects() const;
+    const QSet<QString> getAvailableEQEffects() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
