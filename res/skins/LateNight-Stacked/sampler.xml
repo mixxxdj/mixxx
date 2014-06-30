@@ -58,6 +58,9 @@
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
 		                                    <ButtonState>RightButton</ButtonState>
 		                                </Connection>
+                                        <Connection>
+                                            <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+                                        </Connection>
 		                            </PushButton>
 	                            </Children>
                             </WidgetGroup>

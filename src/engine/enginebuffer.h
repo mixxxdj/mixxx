@@ -212,10 +212,7 @@ class EngineBuffer : public EngineObject {
 
     void doSeek(double change, enum SeekRequest seekType);
 
-    // Clears out the scaler's position and buffers.  If crossfade is true,
-    // an extra buffer is saved so that the seek can be crossfaded with the new
-    // audio.
-    void clearScale(bool crossfade);
+    void clearScale();
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos);

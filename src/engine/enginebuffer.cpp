@@ -401,22 +401,15 @@ void EngineBuffer::requestSyncPhase() {
     }
 }
 
-void EngineBuffer::clearScale(bool crossfade) {
+void EngineBuffer::clearScale() {
     // This is called when seeking, after scaler change and direction change
     // Read extra buffer with the original scale for crossfading with new one
-    if (crossfade) {
-        CSAMPLE* fadeout = m_pScale->getScaled(m_iLastBufferSize);
-        m_iCrossFadeSamples = m_iLastBufferSize;
-        SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
-    }
+    CSAMPLE* fadeout = m_pScale->getScaled(m_iLastBufferSize);
+    m_iCrossFadeSamples = m_iLastBufferSize;
+    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
 
     if (m_pScale) {
         m_pScale->clear();
-    }
-
-    if (crossfade) {
-        // restore the original position that was lost due to getScaled() above
-        m_pReadAheadManager->notifySeek(m_filepos_play);
     }
 }
 
@@ -428,9 +421,9 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     m_filepos_play = newpos;
 
-    // Before seeking, read extra buffer for crossfading, but only if
-    // we are playing.
-    clearScale(m_playButton->get() > 0.0);
+    // Before seeking, read extra buffer for crossfading
+    clearScale();
+    m_pReadAheadManager->notifySeek(newpos);
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -503,7 +496,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
-    slotControlStop(1);
+    m_playButton->set(0.0);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -527,7 +520,7 @@ void EngineBuffer::ejectTrack() {
     m_pCurrentTrack.clear();
     m_file_srate_old = 0;
     m_file_length_old = 0;
-    slotControlStop(1);
+    m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
     doSeek(0., SEEK_EXACT);
@@ -642,7 +635,7 @@ void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
         doSeek(0., SEEK_EXACT);
-        slotControlStop(1);
+        m_playButton->set(0);
     }
 }
 
@@ -650,7 +643,6 @@ void EngineBuffer::slotControlStop(double v)
 {
     if (v > 0.0) {
         m_playButton->set(0);
-        m_playStartButton->set(0);
     }
 }
 
@@ -739,13 +731,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
             if (m_bScalerChanged) {
-                clearScale(true);
+                clearScale();
             } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if ((m_speed_old <= 0 && speed > 0) ||
                     (m_speed_old >= 0 && speed < 0)) {
-                    clearScale(true);
+                    clearScale();
                 }
             }
 
@@ -899,7 +891,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
                 double seekPosition = at_start ? m_file_length_old : 0;
                 doSeek(seekPosition, SEEK_STANDARD);
             } else {
-                slotControlStop(1);
+                m_playButton->set(0.);
             }
         }
 
@@ -1014,7 +1006,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
 void EngineBuffer::processSeek() {
     // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
-    // the later case is ok, because we will pocess the new seek in the next call anyway.
+    // the later case is ok, because we will process the new seek in the next call anyway.
     SeekRequest seekType =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     double position = m_queuedPosition.getValue();

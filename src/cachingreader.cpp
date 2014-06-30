@@ -404,6 +404,9 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // file, then this can happen. We should tolerate it.
         int samples_to_read = math_clamp(samples_remaining, 0,
                                          chunk_remaining_samples);
+        if (chunk_remaining_samples < 0) {
+            samples_to_read = 0;
+        }
 
         // If we did not decide to read any samples from this chunk then that
         // means we have exhausted all the samples in the song.
