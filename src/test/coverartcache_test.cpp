@@ -61,9 +61,9 @@ TEST_F(CoverArtCacheTest, searchImage) {
     EXPECT_TRUE(img.scaled(500,500).save(cLoc_filename, format));
     files << cLoc_filename;
     // album_name.jpg
-    QString cLoc_album = QString(trackdir % "/" % cInfo.album % ".").append(format);
-    EXPECT_TRUE(img.scaled(500,500).save(cLoc_album, format));
-    files << cLoc_album;
+    QString cLoc_albumName = QString(trackdir % "/" % cInfo.album % ".").append(format);
+    EXPECT_TRUE(img.scaled(500,500).save(cLoc_albumName, format));
+    files << cLoc_albumName;
     // cover.jpg
     QString cLoc_cover = QString(trackdir % "/" % "cover.").append(format);
     EXPECT_TRUE(img.scaled(400,400).save(cLoc_cover, format));
@@ -72,6 +72,10 @@ TEST_F(CoverArtCacheTest, searchImage) {
     QString cLoc_front = QString(trackdir % "/" % "front.").append(format);
     EXPECT_TRUE(img.scaled(300,300).save(cLoc_front, format));
     files << cLoc_front;
+    // album.jpg
+    QString cLoc_album = QString(trackdir % "/" % "album.").append(format);
+    EXPECT_TRUE(img.scaled(100,100).save(cLoc_album, format));
+    files << cLoc_album;
     // folder.jpg
     QString cLoc_folder = QString(trackdir % "/" % "folder.").append(format);
     EXPECT_TRUE(img.scaled(100,100).save(cLoc_folder, format));
@@ -86,16 +90,17 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // 2. %album%.jpg
     // 3. cover.jpg
     // 4. front.jpg
-    // 5. folder.jpg
-    // 6. anything else found in the folder
+    // 5. album.jpg
+    // 6. folder.jpg
+    // 7. anything else found in the folder
     // (if we have more than one file,get the lighter one)
     res = CoverArtCache::searchImage(cInfo);
     EXPECT_QSTRING_EQ(cLoc_filename, res.coverLocation);
     QFile::remove(cLoc_filename);
 
     res = CoverArtCache::searchImage(cInfo);
-    EXPECT_QSTRING_EQ(cLoc_album, res.coverLocation);
-    QFile::remove(cLoc_album);
+    EXPECT_QSTRING_EQ(cLoc_albumName, res.coverLocation);
+    QFile::remove(cLoc_albumName);
 
     res = CoverArtCache::searchImage(cInfo);
     EXPECT_QSTRING_EQ(cLoc_cover, res.coverLocation);
@@ -104,6 +109,10 @@ TEST_F(CoverArtCacheTest, searchImage) {
     res = CoverArtCache::searchImage(cInfo);
     EXPECT_QSTRING_EQ(cLoc_front, res.coverLocation);
     QFile::remove(cLoc_front);
+
+    res = CoverArtCache::searchImage(cInfo);
+    EXPECT_QSTRING_EQ(cLoc_album, res.coverLocation);
+    QFile::remove(cLoc_album);
 
     res = CoverArtCache::searchImage(cInfo);
     EXPECT_QSTRING_EQ(cLoc_folder, res.coverLocation);

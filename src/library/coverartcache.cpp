@@ -157,6 +157,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
     QList<QRegExp> regExpList;
     regExpList << QRegExp(".*cover.*", Qt::CaseInsensitive)
                << QRegExp(".*front.*", Qt::CaseInsensitive)
+               << QRegExp(".*album.*", Qt::CaseInsensitive)
                << QRegExp(".*folder.*", Qt::CaseInsensitive);
     foreach (QRegExp regExp, regExpList) {
         idx  = imglist.indexOf(regExp);
