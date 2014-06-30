@@ -85,6 +85,26 @@ const QSet<QString> EffectsManager::getAvailableEQEffects() const {
     return availableEffects;
 }
 
+const QSet<QString> EffectsManager::getAvailableEQEffectsNames() const {
+    QSet<QString> availableEQEffectsNames;
+    QString currentEffectName;
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        QSet<QString> backendEffects = pBackend->getEffectIds();
+        foreach (QString effectId, backendEffects) {
+            if (pBackend->getManifest(effectId).isEQ()) {
+                currentEffectName = pBackend->getManifest(effectId).name();
+                if (availableEQEffectsNames.contains(currentEffectName)) {
+                    qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
+                    continue;
+                }
+                availableEQEffectsNames.insert(currentEffectName);
+            }
+        }
+    }
+
+    return availableEQEffectsNames;
+}
+
 QString EffectsManager::getNextEffectId(const QString& effectId) {
     // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
     // STUPID
