@@ -28,12 +28,14 @@ TEST_F(CoverArtCacheTest, searchImage) {
     ASSERT_TRUE(QDir().mkpath(trackdir));
 
     // creating CoverArtInfo with empty coverLocation
-    CoverArtDAO::CoverArtInfo cInfo;
-    cInfo.trackId = 1;
-    cInfo.album = "album_name";
-    cInfo.trackBaseName = "track";
-    cInfo.trackDirectory = trackdir;
-    cInfo.trackLocation = trackdir % "/" % cInfo.trackBaseName % ".mp3";
+    const CoverArtDAO::CoverArtInfo cInfo = {
+        1,                                             // cInfo.trackId
+        "",                                            // cInfo.coverLocation
+        "album_name",                                  // cInfo.album
+        "track",                                       // cInfo.trackBaseName
+        trackdir,                                      // cInfo.trackDirectory
+        trackdir % "/" % cInfo.trackBaseName % ".mp3"  // cInfo.trackLocation
+    };
 
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
