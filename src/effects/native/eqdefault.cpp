@@ -15,6 +15,7 @@ EffectManifest EQDefault::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription("The default Equalizer featuring \
 3 EngineFilterButterworth which can be modified from preferences");
+    manifest.setIsEQ(true);
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
