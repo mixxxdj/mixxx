@@ -52,14 +52,11 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],start_play</ConfigKey>
-		                                    <EmitOnDownPress>true</EmitOnDownPress>
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
-		                                    <EmitOnDownPress>true</EmitOnDownPress>
 		                                    <ButtonState>RightButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                            </PushButton>
 	                            </Children>
@@ -82,7 +79,6 @@
                                 </DefaultMark>
                                 <Connection>
                                     <ConfigKey>[Sampler<Variable name="samplernum"/>],playposition</ConfigKey>
-                                    <EmitOnDownPress>false</EmitOnDownPress>
                                 </Connection>
                             </Overview>
                             <!-- Button Grid -->
@@ -122,9 +118,7 @@
 				                                </State>
 				                                <Connection>
 				                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],eject</ConfigKey>
-				                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 				                                    <ButtonState>LeftButton</ButtonState>
-				                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 				                                </Connection>
 				                            </PushButton>
                                         </Children>
@@ -153,7 +147,6 @@
 				                                </State>
 				                                <Connection>
 				                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],orientation</ConfigKey>
-				                                    <EmitOnDownPress>true</EmitOnDownPress>
 				                                    <ButtonState>LeftButton</ButtonState>
 				                                </Connection>
 				                            </PushButton>
@@ -217,12 +210,10 @@
 			                           </State>
 			                           <Connection>
 			                               <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
-			                               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			                               <ButtonState>LeftButton</ButtonState>
 			                           </Connection>
 			                           <Connection>
 			                               <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync_tempo</ConfigKey>
-			                               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			                               <ButtonState>RightButton</ButtonState>
 			                           </Connection>
 			                       </PushButton>
@@ -250,19 +241,14 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_activate</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_clear</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_enabled</ConfigKey>
-		                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
 		                                </Connection>
 		                            </PushButton>
 		                            <PushButton>
@@ -282,19 +268,14 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_activate</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_clear</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_enabled</ConfigKey>
-		                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
 		                                </Connection>
 		                            </PushButton>
 		                            <PushButton>
@@ -314,19 +295,14 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_activate</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_clear</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_enabled</ConfigKey>
-		                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
 		                                </Connection>
 		                            </PushButton>
 		                            <PushButton>
@@ -346,19 +322,14 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_activate</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_clear</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
-		                                    <ConnectValueToWidget>false</ConnectValueToWidget>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_enabled</ConfigKey>
-		                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
 		                                </Connection>
 		                            </PushButton>
 	                           </Children>
@@ -435,7 +406,6 @@
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</SliderComposed>
 				</Children>

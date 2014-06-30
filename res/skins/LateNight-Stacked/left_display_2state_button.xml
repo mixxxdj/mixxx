@@ -32,13 +32,10 @@
     </State>
     <Connection>
       <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
       <ButtonState>LeftButton</ButtonState>
-      <ConnectValueToWidget>false</ConnectValueToWidget>
     </Connection>
     <Connection>
       <ConfigKey><Variable name="display_connection_control"/></ConfigKey>
-      <ConnectValueFromWidget>false</ConnectValueFromWidget>
     </Connection>
   </PushButton>
 </Template>
