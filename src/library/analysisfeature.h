@@ -65,7 +65,7 @@ class AnalysisFeature : public LibraryFeature {
     QVariant m_Title;
     TreeItemModel m_childModel;
     const static QString m_sAnalysisViewName;
-    const char * m_sAnalysisTitleName = "Analyze";
+    QString m_analysisTitleName;
     DlgAnalysis* m_pAnalysisView;
 };
 

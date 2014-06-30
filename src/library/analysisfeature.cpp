@@ -25,6 +25,7 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         m_pTrackCollection(pTrackCollection),
         m_pAnalyserQueue(NULL),
         m_iOldBpmEnabled(0),
+        m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(NULL) {
 	setTitleDefault();
 }
@@ -37,14 +38,14 @@ AnalysisFeature::~AnalysisFeature() {
 
 // Sets the title of this feature to the default name, given by m_sAnalysisTitleName
 void AnalysisFeature::setTitleDefault() {
-	m_Title = tr(m_sAnalysisTitleName);
+	m_Title = m_analysisTitleName;
 	emit(featureIsLoading(this, false));	// Signals a change in title
 }
 
 // Sets the title of this feature to the default name followed by (x / y)
 // where x is the current track being analyzed and y is the total number of tracks in the job
 void AnalysisFeature::setTitleProgress(int trackNum, int totalNum) {
-	QString title = tr(m_sAnalysisTitleName);
+	QString title = m_analysisTitleName;
 	title.append(" (");
 	title.append(QString::number(trackNum));
 	title.append(" / ");
@@ -144,7 +145,10 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
 
 void AnalysisFeature::slotProgressUpdate(int num_left) {
 	int num_tracks = m_pAnalysisView->getNumTracks();
-	setTitleProgress(num_tracks - num_left, num_tracks);
+    if (num_left > 0) {
+        int currentTrack = num_tracks - num_left + 1;
+        setTitleProgress(currentTrack, num_tracks);
+    }
 }
 
 void AnalysisFeature::stopAnalysis() {
