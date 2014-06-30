@@ -21,7 +21,7 @@
 // example, a database-backed manifest)
 class EffectManifest {
   public:
-    EffectManifest() { }
+    EffectManifest() : m_isEQ(false) { }
     virtual ~EffectManifest() {
         //qDebug() << debugString() << "deleted";
     }
@@ -57,6 +57,15 @@ class EffectManifest {
     virtual const QString& description() const {
         return m_description;
     }
+
+    virtual const bool& isEQ() const {
+        return m_isEQ;
+    }
+
+    virtual void setIsEQ(const bool value) {
+        m_isEQ = value;
+    }
+
     virtual void setDescription(const QString& description) {
         m_description = description;
     }
@@ -64,7 +73,6 @@ class EffectManifest {
     virtual const QList<EffectManifestParameter>& parameters() const {
         return m_parameters;
     }
-
 
     virtual EffectManifestParameter* addParameter() {
         m_parameters.append(EffectManifestParameter());
@@ -90,6 +98,8 @@ class EffectManifest {
     QString m_author;
     QString m_version;
     QString m_description;
+    // This helps us at DlgPrefEQ's basic selection of Equalizers
+    bool m_isEQ;
     QList<EffectManifestParameter> m_parameters;
     QList<EffectManifestParameter> m_buttonParameters;
 };
