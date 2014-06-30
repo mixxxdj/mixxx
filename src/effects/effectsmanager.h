@@ -48,9 +48,9 @@ class EffectsManager : public QObject {
     QString getPrevEffectId(const QString& effectId);
 
     const QSet<QString> getAvailableEffects() const;
-    const QSet<QString> getAvailableEffectsNames() const;
+    const QSet<QString> getAvailableEffectNames() const;
     const QSet<QString> getAvailableEQEffects() const;
-    const QSet<QString> getAvailableEQEffectsNames() const;
+    const QSet<QString> getAvailableEQEffectNames() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 

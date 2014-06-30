@@ -96,7 +96,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
         QStringList availableEffects(m_pEffectsManager->getAvailableEffects().toList());
-        QStringList availableEffectsNames(m_pEffectsManager->getAvailableEffectsNames().toList());
+        QStringList availableEffectsNames(m_pEffectsManager->getAvailableEffectNames().toList());
         box->addItems(availableEffectsNames);
         for (int i = 0; i < availableEffects.size(); ++i) {
             box->setItemData(i, QVariant(availableEffects[i]));
@@ -109,7 +109,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         // Add EQ Effects only
         QComboBox* simpleBox = new QComboBox(this);
         QStringList availableEQEffects(m_pEffectsManager->getAvailableEQEffects().toList());
-        QStringList availableEQEffectsNames(m_pEffectsManager->getAvailableEQEffectsNames().toList());
+        QStringList availableEQEffectsNames(m_pEffectsManager->getAvailableEQEffectNames().toList());
         simpleBox->addItems(availableEQEffectsNames);
         for (int i = 0; i < availableEQEffects.size(); ++i) {
             simpleBox->setItemData(i, QVariant(availableEQEffects[i]));
