@@ -26,6 +26,7 @@ class RecordingFeature : public LibraryFeature {
     virtual ~RecordingFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
 
     void bindWidget(WLibrary* libraryWidget,

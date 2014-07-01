@@ -129,6 +129,10 @@ QVariant MixxxLibraryFeature::title() {
     return tr("Library");
 }
 
+QString MixxxLibraryFeature::getIconName(){
+    return "1";
+}
+
 QIcon MixxxLibraryFeature::getIcon() {
     return QIcon(":/images/library/ic_library_library.png");
 }

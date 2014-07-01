@@ -38,6 +38,10 @@ QVariant PlaylistFeature::title() {
     return tr("Playlists");
 }
 
+QString PlaylistFeature::getIconName() {
+    return "1";
+}
+
 QIcon PlaylistFeature::getIcon() {
     return QIcon(":/images/library/ic_library_playlist.png");
 }

@@ -42,6 +42,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     virtual ~TraktorFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
     static bool isSupported();
 

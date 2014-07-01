@@ -27,6 +27,7 @@ class CrateFeature : public LibraryFeature {
     virtual ~CrateFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
 
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,

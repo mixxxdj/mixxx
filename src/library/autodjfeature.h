@@ -36,6 +36,7 @@ class AutoDJFeature : public LibraryFeature {
     virtual ~AutoDJFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);

@@ -112,8 +112,22 @@ QVariant CrateFeature::title() {
     return tr("Crates");
 }
 
+QString CrateFeature::getIconName(){
+    //SkinLoader sl(m_pConfig);
+    //QString current_skin = sl.getConfiguredSkinPath();
+    //current_skin.append("/ic_library_prepare.png");
+    //return current_skin;
+    return "1";
+}
+
 QIcon CrateFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_crates.png");
+    QString skin_icon = getIconName();
+    QFile Fout(skin_icon);
+    if(Fout.exists()){
+        return QIcon(skin_icon);
+    }else{
+        return QIcon(":/images/library/ic_library_crates.png");
+    }
 }
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {

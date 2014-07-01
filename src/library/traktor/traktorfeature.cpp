@@ -111,6 +111,10 @@ QVariant TraktorFeature::title() {
     return m_title;
 }
 
+QString TraktorFeature::getIconName() {
+    return "1";
+}
+
 QIcon TraktorFeature::getIcon() {
     return QIcon(":/images/library/ic_library_traktor.png");
 }

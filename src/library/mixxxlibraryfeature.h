@@ -36,6 +36,7 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
+    QString getIconName();
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();

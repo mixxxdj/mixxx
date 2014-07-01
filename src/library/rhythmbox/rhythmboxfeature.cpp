@@ -91,6 +91,10 @@ QVariant RhythmboxFeature::title() {
     return m_title;
 }
 
+QString RhythmboxFeature::getIconName(){
+    return "1";
+}
+
 QIcon RhythmboxFeature::getIcon() {
     return QIcon(":/images/library/ic_library_rhythmbox.png");
 }

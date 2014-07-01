@@ -78,6 +78,10 @@ QVariant AutoDJFeature::title() {
     return tr("Auto DJ");
 }
 
+QString AutoDJFeature::getIconName() {
+    return "1";
+}
+
 QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }

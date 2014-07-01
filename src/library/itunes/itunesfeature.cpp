@@ -108,6 +108,10 @@ QVariant ITunesFeature::title() {
     return m_title;
 }
 
+QString ITunesFeature::getIconName() {
+    return "1";
+}
+
 QIcon ITunesFeature::getIcon() {
     return QIcon(":/images/library/ic_library_itunes.png");
 }

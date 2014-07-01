@@ -25,6 +25,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     virtual ~PlaylistFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
 
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);

@@ -21,8 +21,9 @@ public:
     virtual ~SetlogFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
-
+    
     virtual void bindWidget(WLibrary* libraryWidget,
                             MixxxKeyboard* keyboard);
 

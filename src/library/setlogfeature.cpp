@@ -49,6 +49,10 @@ QVariant SetlogFeature::title() {
     return tr("History");
 }
 
+QString SetlogFeature::getIconName() {
+    return "1";
+}
+
 QIcon SetlogFeature::getIcon() {
     return QIcon(":/images/library/ic_library_history.png");
 }

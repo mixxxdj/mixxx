@@ -15,6 +15,7 @@
 
 #include "trackinfoobject.h"
 #include "treeitemmodel.h"
+#include "skin/skinloader.h"
 
 class TrackModel;
 class WLibrarySidebar;
@@ -25,12 +26,12 @@ class MixxxKeyboard;
 class LibraryFeature : public QObject {
   Q_OBJECT
   public:
-    LibraryFeature(QObject* parent = NULL);
+    LibraryFeature(QObject* parent = NULL, ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~LibraryFeature();
 
     virtual QVariant title() = 0;
-    virtual QIcon getIcon() = 0;
-
+    QIcon getIcon();
+    virtual QString getIconName() = 0;
     virtual bool dropAccept(QList<QUrl> urls, QObject* pSource) {
         Q_UNUSED(urls);
         Q_UNUSED(pSource);
@@ -93,6 +94,8 @@ class LibraryFeature : public QObject {
     // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
 
+  private:
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* LIBRARYFEATURE_H */

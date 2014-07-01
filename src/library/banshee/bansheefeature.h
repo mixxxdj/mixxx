@@ -26,6 +26,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static void prepareDbPath(ConfigObject<ConfigValue>* pConfig);
 
     virtual QVariant title();
+    virtual QString getIconName();
     virtual QIcon getIcon();
 
     virtual TreeItemModel* getChildModel();

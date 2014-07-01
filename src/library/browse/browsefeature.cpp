@@ -155,6 +155,10 @@ void BrowseFeature::slotRemoveQuickLink() {
     saveQuickLinks();
 }
 
+QString BrowseFeature::getIconName(){
+    return "1";
+}
+
 QIcon BrowseFeature::getIcon() {
     return QIcon(":/images/library/ic_library_browse.png");
 }

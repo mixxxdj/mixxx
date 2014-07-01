@@ -29,6 +29,10 @@ QVariant RecordingFeature::title() {
     return QVariant(tr("Recordings"));
 }
 
+QString RecordingFeature::getIconName() {
+    return "1";
+}
+
 QIcon RecordingFeature::getIcon() {
     return QIcon(":/images/library/ic_library_recordings.png");
 }

@@ -34,6 +34,7 @@ class BrowseFeature : public LibraryFeature {
     virtual ~BrowseFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
 
     void bindWidget(WLibrary* libraryWidget,

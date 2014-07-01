@@ -60,15 +60,20 @@ QVariant AnalysisFeature::title() {
     return m_Title;
 }
 
+QString AnalysisFeature::getIconName(){
+    return "ic_library_prepare.png";
+}
+
 QIcon AnalysisFeature::getIcon() {
+    QString current_icon = getIconName();
     SkinLoader sl(m_pConfig);
-    QString actual_skin = sl.getConfiguredSkinPath();
-    actual_skin.append("/ic_library_prepare.png");
-    QFile Fout(actual_skin);
+    QString current_skin = sl.getConfiguredSkinPath();
+    current_skin.append("/ic_library_prepare.png");
+    QFile Fout(current_skin);
     if(Fout.exists()){
-        return QIcon(actual_skin);
+        return QIcon(current_skin);
     }else{
-        return QIcon(":/images/library/ic_library_prepare.png");
+        return QIcon(":/images/library/"+current_icon);
     }
 }
 

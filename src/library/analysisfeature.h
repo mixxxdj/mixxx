@@ -29,8 +29,9 @@ class AnalysisFeature : public LibraryFeature {
     virtual ~AnalysisFeature();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
-
+    
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     void bindWidget(WLibrary* libraryWidget,

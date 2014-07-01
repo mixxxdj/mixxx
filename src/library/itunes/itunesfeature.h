@@ -26,6 +26,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     QVariant title();
+    QString getIconName();
     QIcon getIcon();
 
     TreeItemModel* getChildModel();
