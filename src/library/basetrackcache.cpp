@@ -166,9 +166,8 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 
 bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
     QTime timer;
-    timer.start();
-
     if (sDebug) {
+        timer.start();
         qDebug() << "updateIndexWithQuery issuing query:" << queryString;
     }
 
@@ -199,7 +198,9 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         }
     }
 
-    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
+    if (sDebug) {
+        qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
+    }
     return true;
 }
 
