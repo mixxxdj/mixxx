@@ -47,10 +47,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // Clear the currently loaded effect
     void clear();
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Controls exposed to the rest of Mixxx
-    ////////////////////////////////////////////////////////////////////////////////
-
+    // Control exposed to the rest of Mixxx
     ControlEffectKnob* m_pControlValue;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);

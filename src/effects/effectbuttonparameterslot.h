@@ -46,10 +46,7 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     // Clear the currently loaded effect
     void clear();
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Controls exposed to the rest of Mixxx
-    ////////////////////////////////////////////////////////////////////////////////
-
+    // Control exposed to the rest of Mixxx
     ControlPushButton* m_pControlValue;
 
     DISALLOW_COPY_AND_ASSIGN(EffectButtonParameterSlot);

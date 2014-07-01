@@ -56,10 +56,7 @@ class EffectParameterSlotBase : public QObject {
     EffectPointer m_pEffect;
     EffectParameter* m_pEffectParameter;
 
-    ////////////////////////////////////////////////////////////////////////////////
     // Controls exposed to the rest of Mixxx
-    ////////////////////////////////////////////////////////////////////////////////
-
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlLinkType;
     ControlObject* m_pControlType;
