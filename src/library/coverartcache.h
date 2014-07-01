@@ -34,6 +34,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     struct FutureResult {
         int trackId;
         QString coverLocation;
+        QString md5Hash;
         QImage img;
     };
 
@@ -46,6 +47,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
 
+    QString calculateMD5(QImage img);
     QImage rescaleBigImage(QImage img);
     QImage searchEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,

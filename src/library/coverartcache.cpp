@@ -1,3 +1,4 @@
+#include <QCryptographicHash>
 #include <QDir>
 #include <QPixmap>
 #include <QStringBuilder>
@@ -71,6 +72,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(
     res.coverLocation = coverLocation;
     res.img = QImage(coverLocation);
     res.img = rescaleBigImage(res.img);
+    res.md5Hash = calculateMD5(res.img);
     return res;
 }
 
@@ -102,6 +104,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.img = searchEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.img = rescaleBigImage(res.img);
+        res.md5Hash = calculateMD5(res.img);
         return res;
     }
 
@@ -112,6 +115,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
                                                coverInfo.album);
     res.img = QImage(res.coverLocation);
     res.img = rescaleBigImage(res.img);
+    res.md5Hash = calculateMD5(res.img);
     return res;
 }
 
@@ -226,4 +230,11 @@ QImage CoverArtCache::rescaleBigImage(QImage img) {
     } else {
         return img;
     }
+}
+
+QString CoverArtCache::calculateMD5(QImage img) {
+    QByteArray arr((char*)img.bits(), img.byteCount());
+    QCryptographicHash md5(QCryptographicHash::Md5);
+    md5.addData(arr);
+    return md5.result().toHex();
 }
