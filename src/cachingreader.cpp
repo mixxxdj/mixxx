@@ -402,11 +402,11 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // It is completely possible that chunk_remaining_samples is less than
         // zero. If the caller is trying to read from beyond the end of the
         // file, then this can happen. We should tolerate it.
+        if (chunk_remaining_samples < 0) {
+            chunk_remaining_samples = 0;
+        }
         int samples_to_read = math_clamp(samples_remaining, 0,
                                          chunk_remaining_samples);
-        if (chunk_remaining_samples < 0) {
-            samples_to_read = 0;
-        }
 
         // If we did not decide to read any samples from this chunk then that
         // means we have exhausted all the samples in the song.

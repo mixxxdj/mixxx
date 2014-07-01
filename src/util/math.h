@@ -17,7 +17,9 @@ using std::fabs;
 
 template <typename T>
 inline T math_clamp(const T& value, const T& min, const T& max) {
-    // XXX: If max < min, behavior is undefined.
+    // XXX: If max < min, behavior is undefined, and has been causing problems.
+    // if debugging is on, assert when this happens.
+    Q_ASSERT(max >= min);
     if (value > max) {
         return max;
     }
