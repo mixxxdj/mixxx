@@ -6,6 +6,7 @@
 #include <QDomNode>
 #include <QDomElement>
 #include <QScriptEngine>
+#include <QDir>
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -20,8 +21,9 @@ class SkinContext {
 
     // Gets a path relative to the skin path.
     QString getSkinPath(const QString& relativePath) const {
-        QString l(relativePath);
-        return l.prepend(m_skinBasePath);
+        // QString l(relativePath);
+        // return l.prepend(m_skinBasePath);
+        return QDir(m_skinBasePath).filePath(relativePath);
     }
 
     // Sets the base path used by getSkinPath.
