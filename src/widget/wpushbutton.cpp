@@ -73,32 +73,43 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
                 QString pixmapName;
-                QDomNode pressedNode = context.selectNode(state, "Unpressed");
-                if (!pressedNode.isNull()) {
-					
-					// inline svg
-					QDomNode svgNode = context.selectNode(pressedNode, "svg");
-					if (!svgNode.isNull()) {
-						// qWarning()
-								// << "SVG : SVG node present";
-						
-						QString svgTempFilename = context.setVariablesInSvg(svgNode);
-						// setPixmap(iState, false, context.getSkinPath(svgTempFilename));
-						setPixmap(iState, false, svgTempFilename);
-						
-					} else {
-						// filename
-						pixmapName = context.nodeToString(pressedNode);
-						if (!pixmapName.isEmpty()) {
-							setPixmap(iState, false, context.getSkinPath(pixmapName));
-						}
-					}
-					
-				}
                 
-                if (context.hasNodeSelectString(state, "Pressed", &pixmapName) &&
-                        !pixmapName.isEmpty()) {
-                    setPixmap(iState, true, context.getSkinPath(pixmapName));
+                QDomNode unpressedNode = context.selectNode(state, "Unpressed");
+                if (!unpressedNode.isNull()) {
+                    
+                    QDomNode svgNode = context.selectNode(unpressedNode, "svg");
+                    if (!svgNode.isNull()) {
+                        // inline svg
+                        QString svgTempFilename = context.setVariablesInSvg(svgNode);
+                        setPixmap(iState, false, svgTempFilename);
+                        
+                    } else {
+                        // filename
+                        pixmapName = context.nodeToString(unpressedNode);
+                        if (!pixmapName.isEmpty()) {
+                            setPixmap(iState, false, context.getSkinPath(pixmapName));
+                        }
+                    }
+                    
+                }
+                
+                QDomNode pressedNode = context.selectNode(state, "Pressed");
+                if (!pressedNode.isNull()) {
+                    
+                    QDomNode svgNode = context.selectNode(pressedNode, "svg");
+                    if (!svgNode.isNull()) {
+                        // inline svg
+                        QString svgTempFilename = context.setVariablesInSvg(svgNode);
+                        setPixmap(iState, true, svgTempFilename);
+                        
+                    } else {
+                        // filename
+                        pixmapName = context.nodeToString(pressedNode);
+                        if (!pixmapName.isEmpty()) {
+                            setPixmap(iState, true, context.getSkinPath(pixmapName));
+                        }
+                    }
+                    
                 }
                 
                 m_text.replace(iState, context.selectString(state, "Text"));
