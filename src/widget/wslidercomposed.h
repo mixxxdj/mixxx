@@ -71,6 +71,8 @@ class WSliderComposed : public WWidget  {
     int m_iHandleLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
+    // True to get the opposit value
+    bool m_bReverse;
     // Is true if events is emitted while the slider is dragged
     bool m_bEventWhileDrag;
     // True if slider is dragged. Only used when m_bEventWhileDrag is false

@@ -35,6 +35,7 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_iStartMousePos(0),
       m_iHandleLength(0),
       m_bHorizontal(false),
+      m_bReverse(false),
       m_bEventWhileDrag(true),
       m_bDrag(false),
       m_pSlider(NULL),
@@ -57,6 +58,8 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     QString pathHandle = context.getSkinPath(context.selectString(node, "Handle"));
     bool h = context.selectBool(node, "Horizontal", false);
     setHandlePixmap(h, pathHandle);
+    
+    m_bReverse = context.selectBool(node, "Reverse", false);
 
     if (context.hasNode(node, "EventWhileDrag")) {
         if (context.selectString(node, "EventWhileDrag").contains("no")) {
@@ -116,11 +119,12 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
             m_iPos = e->y() - m_iHandleLength / 2;
         }
 
-        //qDebug() << "start " << m_iStartPos << ", pos " << m_iPos;
         m_iPos = m_iStartHandlePos + (m_iPos - m_iStartMousePos);
 
-        int sliderLength = m_bHorizontal ? width() : height();
+        // qDebug() << "mouseMoveEvent pos " << m_iPos;
 
+        int sliderLength = m_bHorizontal ? width() : height();
+        
         // Clamp to the range [0, sliderLength - m_iHandleLength].
         if (m_iPos > (sliderLength - m_iHandleLength)) {
             m_iPos = sliderLength - m_iHandleLength;
@@ -133,6 +137,10 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         double newValue = static_cast<double>(m_iPos) /
                 static_cast<double>(sliderLength - m_iHandleLength);
         if (!m_bHorizontal) {
+            newValue = 1.0 - newValue;
+        }
+
+        if (m_bReverse) {
             newValue = 1.0 - newValue;
         }
 
@@ -153,11 +161,15 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
     // For legacy (MIDI) reasons this is tuned to 127.
     double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
+    if (m_bReverse) {
+        wheelDirection = - wheelDirection;
+    }
     double newValue = m_dOldValue + wheelDirection;
 
     // Clamp to [0.0, 1.0]
     newValue = math_clamp(newValue, 0.0, 1.0);
-
+    // qDebug() << "wheelEvent value " << newValue;
+    
     setControlParameter(newValue);
     // Value is unused in WSliderComposed.
     onConnectedControlChanged(newValue, 0);
@@ -227,6 +239,7 @@ void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
 }
 
 void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
+    qDebug() << "onConnectedControlChanged dParameter " << dParameter;
     // WARNING: The second parameter to this method is unused and called with
     // invalid values in parts of WSliderComposed. Do not use it unless you fix
     // this.
@@ -259,6 +272,11 @@ void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
         // really sure we need to since this involves painting ALL of its
         // parents.
         if (newPos != m_iPos) {
+            
+            if (m_bReverse) {
+                newPos = sliderLength - newPos - m_iHandleLength;
+            }
+            
             m_iPos = newPos;
             update();
         }
