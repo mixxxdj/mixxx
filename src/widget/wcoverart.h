@@ -43,7 +43,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bCoverIsVisible;
     bool m_bDefaultCover;
 
-    QPixmap m_defaultCover;
+    const QPixmap m_defaultCover;
     QString m_sCoverTitle;
     QPixmap m_currentCover;
     QPixmap m_currentScaledCover;
@@ -53,7 +53,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QCursor m_zoomCursor;
 
     int m_lastRequestedTrackId;
-    QPixmap m_lastRequestedPixmap;
 };
 
 #endif // WCOVERART_H

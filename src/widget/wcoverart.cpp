@@ -14,12 +14,8 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_pConfig(pConfig),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
-          m_bDefaultCover(true) {
-    // initialize cover art images
-    m_defaultCover = QPixmap(":/images/library/vinyl-record.png");
-    m_currentCover = m_defaultCover;
-    m_currentScaledCover = m_defaultCover;
-
+          m_bDefaultCover(true),
+          m_defaultCover(":/images/library/vinyl-record.png") {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
     m_iconHide = m_iconHide.scaled(20,
@@ -72,8 +68,6 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
 
 void WCoverArt::setToDefault() {
     m_sCoverTitle = "Cover Art";
-    m_currentCover = m_defaultCover;
-    m_currentScaledCover = m_defaultCover;
     m_bDefaultCover = true;
     update();
 }
@@ -87,7 +81,6 @@ void WCoverArt::slotHideCoverArt() {
 void WCoverArt::slotPixmapFound(int trackId) {
     if (m_lastRequestedTrackId == trackId) {
         //m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
-        m_currentCover = m_lastRequestedPixmap;;
         m_currentScaledCover = scaledCoverArt(m_currentCover);
         m_bDefaultCover = false;
         update();
@@ -98,13 +91,11 @@ void WCoverArt::slotLoadCoverArt(const QString& coverLocation, int trackId) {
     if (!m_bCoverIsVisible) {
         return;
     }
-
     setToDefault();
-
     m_lastRequestedTrackId = trackId;
-    m_lastRequestedPixmap = QPixmap();
+    m_currentCover = QPixmap();
     CoverArtCache::instance()->requestPixmap(trackId,
-                                             m_lastRequestedPixmap,
+                                             m_currentCover,
                                              coverLocation);
 }
 
@@ -120,8 +111,13 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     painter.drawLine(0, 0, width(), 0);
 
     if (m_bCoverIsVisible) {
-        painter.drawPixmap(width() / 2 - height() / 2 + 4, 6,
-                           m_currentScaledCover);
+        int x = width() / 2 - height() / 2 + 4;
+        int y = 6;
+        if (m_bDefaultCover) {
+            painter.drawPixmap(x, y, m_defaultCover);
+        } else {
+            painter.drawPixmap(x, y, m_currentScaledCover);
+        }
     } else {
         painter.drawPixmap(1, 2 ,m_iconShow);
         painter.drawText(25, 15, tr("Show Cover Art"));
@@ -160,19 +156,18 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
                 lb->setWindowModality(Qt::ApplicationModal);
                 lb->setWindowTitle(m_sCoverTitle);
 
-                QPixmap px = m_currentCover;
                 QSize sz = QApplication::activeWindow()->size();
-
-                if (px.height() > sz.height() / 1.2) {
-                    px = px.scaledToHeight(sz.height() / 1.2,
-                                           Qt::SmoothTransformation);
+                if (m_currentCover.height() > sz.height() / 1.2) {
+                    m_currentCover = m_currentCover.scaledToHeight(
+                                                     sz.height() / 1.2,
+                                                     Qt::SmoothTransformation);
                 }
 
-                lb->setPixmap(px);
-                lb->setGeometry(sz.width() / 2 - px.width() / 2,
-                                sz.height() / 2 - px.height() / 2.2,
-                                px.width(),
-                                px.height());
+                lb->setPixmap(m_currentCover);
+                lb->setGeometry(sz.width() / 2 - m_currentCover.width() / 2,
+                                sz.height() / 2 - m_currentCover.height() / 2.2,
+                                m_currentCover.width(),
+                                m_currentCover.height());
                 lb->show();
             }
         }
