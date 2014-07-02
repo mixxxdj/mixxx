@@ -31,6 +31,7 @@ class WTrackTableView : public WLibraryTableView {
     void onSearch(const QString& text);
     void onShow();
     virtual void keyPressEvent(QKeyEvent* event);
+    virtual void keyReleaseEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
 
@@ -144,6 +145,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
+
+    // Indicates if the user is holding up or down an arrow key.
+    bool m_bHoldingArrowKey;
 
     bool m_sorting;
 };

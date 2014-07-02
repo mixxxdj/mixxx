@@ -129,6 +129,13 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
+
+    if (m_bHoldingArrowKey) {
+        emit(loadCoverArt("", 0)); // default cover art
+        update();
+        return;
+    }
+
     QString coverLocation;
     int trackId = 0;
     const QModelIndexList indices = selectionModel()->selectedRows();
@@ -1119,6 +1126,18 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         return;
     } else {
         QTableView::keyPressEvent(event);
+    }
+
+    if (!event->isAutoRepeat() &&
+            (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)) {
+        m_bHoldingArrowKey = true;
+    }
+}
+
+void WTrackTableView::keyReleaseEvent(QKeyEvent *event) {
+    if (!event->isAutoRepeat() &&
+            (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)) {
+        m_bHoldingArrowKey = false;
     }
 }
 
