@@ -62,6 +62,8 @@ class SkinContext {
                                   const QString& attributeName,
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
+    QDomDocument getDocument(const QDomNode& node) const;
+    QString setVariablesInSvg(const QDomNode& svgNode) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
@@ -69,6 +71,7 @@ class SkinContext {
     mutable QScriptEngine m_scriptEngine;
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
+    
 };
 
 #endif /* SKINCONTEXT_H */

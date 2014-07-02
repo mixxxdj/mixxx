@@ -25,7 +25,6 @@
 #include <QTouchEvent>
 #include <QPaintEvent>
 #include <QApplication>
-#include <QTemporaryFile>
 
 #include "widget/wpixmapstore.h"
 #include "controlobject.h"
@@ -78,116 +77,14 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 if (!pressedNode.isNull()) {
 					
 					// inline svg
-					QDomNode svgNode,
-						svgNodeTemp = context.selectNode(pressedNode, "svg");
-					
-					if (!svgNodeTemp.isNull()) {
+					QDomNode svgNode = context.selectNode(pressedNode, "svg");
+					if (!svgNode.isNull()) {
+						// qWarning()
+								// << "SVG : SVG node present";
 						
-						svgNode = svgNodeTemp.cloneNode( true );
-						
-						QDomDocument document;
-						QDomNode parentNode = svgNode;
-						// QString parentTagName = varValueNode.parentNode().toElement().tagName();
-						while( !parentNode.isNull() ){
-							if( parentNode.isDocument() )
-								document = parentNode.toDocument();
-							parentNode = parentNode.parentNode();
-						}
-						
-						
-						QDomElement svgElement = svgNode.toElement();
-						
-						qWarning()
-								<< "SVG : SVG node present";
-						
-						QDomNodeList variablesElements = svgElement.elementsByTagName( "Variable" );
-						
-						qWarning()
-								<< "SVG : " << variablesElements.count() << "\n";
-						
-						// replace variables
-						uint variableIndex;
-						QDomElement varElement;
-						QString varName, varValue;
-						QDomNode varNode;
-						// QDomText *varValueNode;
-						QDomText varValueNode;
-						QDomNode varParentNode;
-						QDomNode oldChild;
-						
-						for (variableIndex=0; variableIndex < variablesElements.length(); variableIndex++){
-							
-							varNode = variablesElements.item(variableIndex);
-							
-							// retrieve value
-							varElement = varNode.toElement();
-							varName = varElement.attribute("name");
-							varValue = context.variable(varName);
-							
-							qWarning()
-									<< "SVG : " << varName << " => " << varValue << "\n";
-							
-							// replace node by its value
-							varParentNode = varNode.parentNode();
-							
-							if( varParentNode.isNull() ){
-								
-								qWarning()
-										<< "SVG : no parent for dom node \n";
-							}
-							
-							varValueNode = document.createTextNode(varValue);
-							
-							// newChild = varParentNode.insertAfter( varValueNode, varNode );
-							
-							oldChild = varParentNode.replaceChild( varValueNode, varNode );
-							if( oldChild.isNull() ){
-								
-								qWarning()
-										<< "SVG : unable to replace dom node changed. \n";
-							} else {
-								
-								// varParentNode.removeChild( varNode );
-								qWarning()
-										<< "SVG : " << varName << " => " << varValue << " changed. \n";
-							}
-							
-							
-							
-							
-						}
-						
-						// QDomNode parentNode = varParentNode;
-						parentNode = varParentNode;
-						// QString parentTagName = varValueNode.parentNode().toElement().tagName();
-						while( !parentNode.isNull() && parentNode.toElement().tagName() != "svg" ){
-							parentNode = parentNode.parentNode();
-						}
-						
-						
-						
-						// svgContent = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><rect x=\"0\" y=\"0\" width=\"12\" height=\"25\" style=\"fill:#ff0000; stroke-width:1; stroke:#ff0000; stroke-linecap:sqare;\" /></svg>";
-						
-						QTemporaryFile svgFile;
-						svgFile.setAutoRemove( false );
-						svgFile.setFileTemplate("qt_temp.XXXXXX.svg");
-						
-						
-						if( svgFile.open() ){
-							QTextStream out(&svgFile);
-							
-							parentNode.save( out, -1 );
-							
-							// qWarning()
-									// << "SVG : Temp filename" << svgFile.fileName() << " \n";
-							
-							svgFile.close();
-							
-							setPixmap(iState, false, context.getSkinPath(svgFile.fileName()));
-						} else {
-							qWarning()
-									<< "SVG : unable to open svg buffer. Enough space? \n";
-						}
+						QString svgTempFilename = context.setVariablesInSvg(svgNode);
+						// setPixmap(iState, false, context.getSkinPath(svgTempFilename));
+						setPixmap(iState, false, svgTempFilename);
 						
 					} else {
 						// filename
