@@ -32,6 +32,11 @@ EffectsManager::~EffectsManager() {
         delete it.value();
         it = m_activeRequests.erase(it);
     }
+
+    delete m_pEnableEq;
+    delete m_pHiEqFreq;
+    delete m_pLoEqFreq;
+    delete m_pLofiEq;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -246,6 +251,12 @@ void EffectsManager::setupDefaults() {
 
     // Add a new EffectRack for Equalizers
     addEffectRack();
+
+    // These controls are used inside EQ Effects
+    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
+    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
+    m_pLofiEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "LoFiEQs"));
+    m_pEnableEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "EnableEQs"));
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {

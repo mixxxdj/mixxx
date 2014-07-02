@@ -8,6 +8,8 @@
 #include <QScopedPointer>
 
 #include "configobject.h"
+#include "controlpotmeter.h"
+#include "controlpushbutton.h"
 #include "util.h"
 #include "util/fifo.h"
 #include "effects/effect.h"
@@ -83,6 +85,12 @@ class EffectsManager : public QObject {
     QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
     qint64 m_nextRequestId;
     QHash<qint64, EffectsRequest*> m_activeRequests;
+
+    // We need to create Control Objects for Equalizers' frequencies
+    ControlPotmeter* m_pLoEqFreq;
+    ControlPotmeter* m_pHiEqFreq;
+    ControlPushButton* m_pLofiEq;
+    ControlPushButton* m_pEnableEq;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
