@@ -27,8 +27,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_DlgTagFetcher(NULL) ,
-          m_sorting(sorting) {
+          m_DlgTagFetcher(NULL),
+          m_sorting(sorting),
+          m_bHoldingArrowKey(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
     m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
