@@ -19,6 +19,32 @@ void CoverArtDAO::initialize() {
              << m_database.connectionName();
 }
 
+int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
+    if (coverLocation.isEmpty() || md5Hash.isEmpty()) {
+        return -1;
+    }
+
+    int coverId = getCoverArtIdFromMd5(md5Hash);
+    if (coverId == -1) { // new cover
+        QSqlQuery query(m_database);
+
+        query.prepare("INSERT INTO " % COVERART_TABLE % " ("
+                      % COVERARTTABLE_LOCATION % "," % COVERARTTABLE_MD5 % ") "
+                      "VALUES (:location, :md5)");
+        query.bindValue(":location", coverLocation);
+        query.bindValue(":md5", md5Hash);
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query) << "Saving new cover (" % coverLocation % ") failed.";
+            return -1;
+        }
+
+        coverId = query.lastInsertId().toInt();
+    }
+
+    return coverId;
+}
+
 int CoverArtDAO::saveCoverLocation(QString coverLocation) {
     if (coverLocation.isEmpty()) {
         return -1;
@@ -76,6 +102,29 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+}
+
+int CoverArtDAO::getCoverArtIdFromMd5(QString md5Hash) {
+    if (md5Hash.isEmpty()) {
+        return -1;
+    }
+
+    QSqlQuery query(m_database);
+
+    query.prepare(QString(
+        "SELECT " % COVERARTTABLE_ID % " FROM " % COVERART_TABLE %
+        " WHERE " % COVERARTTABLE_MD5 % "=:md5"));
+    query.bindValue(":md5", md5Hash);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return -1;
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt();
+    }
+
+    return -1;
 }
 
 int CoverArtDAO::getCoverArtId(QString coverLocation) {
