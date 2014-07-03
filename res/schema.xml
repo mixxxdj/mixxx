@@ -390,7 +390,7 @@ METADATA
     <sql>
       CREATE TABLE IF NOT EXISTS cover_art (
 	id INTEGER primary key AUTOINCREMENT,
-	location TEXT UNIQUE
+	location TEXT UNIQUE,
 	md5 TEXT UNIQUE
       );
       ALTER TABLE library ADD COLUMN cover_art INTEGER;
