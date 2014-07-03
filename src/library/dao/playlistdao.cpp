@@ -783,10 +783,58 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
 
-    // This is a simple Fisher-Yates shuffling algorithm
+    // This is a modified Fisher-Yates shuffling algorithm.
+    // Before swapping two tracks, it checks the IDs of the tracks before and
+    // after each position to make sure we don't end up with doubled tracks.
+    // If there's a duplicate, it simply tries again with a new position.
+    // It shouldn't take more than 5 tries normally, but there's a limit of 10
+    // to be safe.
     foreach (int oldPosition, positions) {
-        int random = (int)(qrand() / (RAND_MAX + 1.0) * (positions.count()));
-        int newPosition = positions.at(random);
+        int random;
+        int newPosition;
+        bool positionOk = false;
+        // Check if either track will be next to a copy of itself
+        for (int i=0; i<10 && !positionOk; i++) {
+            random = (int)(qrand() / (RAND_MAX + 1.0) * (positions.count()));
+            newPosition = positions.at(random);
+            QString checkQuery = "SELECT track_id FROM PlaylistTracks "
+                    "WHERE position=%1 AND playlist_id=%2";
+            query.exec(checkQuery.arg(QString::number(oldPosition),
+                                      QString::number(playlistId)));
+            int oldTrackId = -1;
+            if (query.first()) {
+                oldTrackId = query.value(0).toInt();
+            }
+            query.clear();
+            query.exec(checkQuery.arg(QString::number(newPosition),
+                                      QString::number(playlistId)));
+            int newTrackId = -1;
+            if (query.first()) {
+                newTrackId = query.value(0).toInt();
+            }
+            query.clear();
+            checkQuery = "SELECT track_id FROM PlaylistTracks "
+                    "WHERE (position=%1-1 OR position=%1+1) AND track_id=%2 "
+                    "AND playlist_id=%3";
+            query.exec(checkQuery.arg(QString::number(oldPosition),
+                                      QString::number(newTrackId),
+                                      QString::number(playlistId)));
+            if (!query.first()) {
+                query.exec(checkQuery.arg(QString::number(newPosition),
+                                          QString::number(oldTrackId),
+                                          QString::number(playlistId)));
+                if (!query.first()) {
+                    positionOk = true;
+                }
+            }
+
+            query.clear();
+        }
+        if (!positionOk) {
+            qDebug() << "Tried to re-sort too many times; had to double up songs.";
+        }
+
+        // Swap the tracks
         qDebug() << "Swapping tracks " << oldPosition << " and " << newPosition;
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
                 "WHERE position=%2 AND playlist_id=%3";
