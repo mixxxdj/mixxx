@@ -9,6 +9,7 @@
 const QString COVERART_TABLE = "cover_art";
 const QString COVERARTTABLE_ID = "id";
 const QString COVERARTTABLE_LOCATION = "location";
+const QString COVERARTTABLE_MD5 = "md5";
 
 class CoverArtDAO : public DAO {
   public:
