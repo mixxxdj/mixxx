@@ -111,7 +111,7 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
 
     QSqlQuery query(m_database);
     query.prepare(
-        "SELECT album, cover_art.location AS cover, "
+        "SELECT album, cover_art.location AS cover, cover_art.md5 AS md5, "
         "track_locations.directory AS directory, "
         "track_locations.filename AS filename, "
         "track_locations.location AS location "
@@ -130,6 +130,7 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     QSqlRecord queryRecord = query.record();
     const int albumColumn = queryRecord.indexOf("album");
     const int coverColumn = queryRecord.indexOf("cover");
+    const int md5Column = queryRecord.indexOf("md5");
     const int directoryColumn = queryRecord.indexOf("directory");
     const int filenameColumn = queryRecord.indexOf("filename");
     const int locationColumn = queryRecord.indexOf("location");
@@ -139,6 +140,7 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         coverInfo.trackId = trackId;
         coverInfo.album = query.value(albumColumn).toString();
         coverInfo.coverLocation = query.value(coverColumn).toString();
+        coverInfo.md5Hash = query.value(md5Column).toString();
         coverInfo.trackDirectory = query.value(directoryColumn).toString();
         coverInfo.trackLocation = query.value(locationColumn).toString();
         coverInfo.trackBaseName = QFileInfo(query.value(filenameColumn)
