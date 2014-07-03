@@ -84,7 +84,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         } else if (it->startsWith(COVERART_TABLE + ".")) {
             *it = it->replace(COVERART_TABLE + ".", "");
         }
-        qDebug() << *it;
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
