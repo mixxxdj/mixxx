@@ -98,7 +98,8 @@ void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
     m_currentCover = QPixmap();
     CoverArtCache::instance()->requestPixmap(trackId,
                                              m_currentCover,
-                                             coverLocation);
+                                             coverLocation,
+                                             md5Hash);
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {

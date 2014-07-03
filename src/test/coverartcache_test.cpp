@@ -13,11 +13,13 @@ const QString& coverLocationTest = ":/images/library/vinyl-record.png";
 TEST_F(CoverArtCacheTest, loadImage) {
     int trackId = 1;
     QImage img = QImage(coverLocationTest);
+    QString md5hash = "md5hash"; // fake md5 hash
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadImage(trackId, coverLocationTest);
+    res = CoverArtCache::loadImage(trackId, coverLocationTest, md5hash);
     ASSERT_EQ(trackId, res.trackId);
     EXPECT_QSTRING_EQ(coverLocationTest, res.coverLocation);
+    EXPECT_QSTRING_EQ(md5hash, res.md5Hash);
     ASSERT_TRUE(img.operator==(res.img));
 }
 

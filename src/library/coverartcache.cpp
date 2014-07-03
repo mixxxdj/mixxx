@@ -25,7 +25,8 @@ void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
 
 void CoverArtCache::requestPixmap(int trackId,
                                   QPixmap& pixmap,
-                                  const QString& coverLocation) {
+                                  const QString& coverLocation,
+                                  const QString& md5Hash) {
     if (trackId < 1) {
         return;
     }
@@ -36,7 +37,7 @@ void CoverArtCache::requestPixmap(int trackId,
         return;
     }
 
-    if (QPixmapCache::find(coverLocation, pixmap)) {
+    if (QPixmapCache::find(md5Hash, pixmap)) {
         emit(pixmapFound(trackId));
         return;
     }
@@ -51,7 +52,7 @@ void CoverArtCache::requestPixmap(int trackId,
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
-                                   trackId, coverLocation);
+                                   trackId, coverLocation, md5Hash);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
     m_runningIds.insert(trackId);
@@ -61,13 +62,13 @@ void CoverArtCache::requestPixmap(int trackId,
 // Load cover from path stored in DB.
 // It is executed in a separate thread via QtConcurrent::run
 CoverArtCache::FutureResult CoverArtCache::loadImage(
-        int trackId, const QString& coverLocation) {
+        int trackId, const QString& coverLocation, const QString& md5Hash) {
     FutureResult res;
     res.trackId = trackId;
     res.coverLocation = coverLocation;
     res.img = QImage(coverLocation);
     res.img = rescaleBigImage(res.img);
-    res.md5Hash = calculateMD5(res.img);
+    res.md5Hash = md5Hash;
     return res;
 }
 
@@ -77,29 +78,10 @@ void CoverArtCache::imageLoaded() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    QString coverLocation = res.coverLocation;
-    bool existsInCache = false;
-    if (m_md5Hashes.contains(res.md5Hash)) {
-        coverLocation = m_md5Hashes.value(res.md5Hash);
-        if (QPixmapCache::find(coverLocation, m_pixmap)) {
-            emit(pixmapFound(res.trackId));
-            existsInCache = true;
-        } else {
-            m_md5Hashes.remove(res.md5Hash);
-        }
-    }
-
-    if (coverLocation != res.coverLocation) {
-        // update DB
-        int coverId = m_pCoverArtDAO->saveCoverArt(coverLocation, res.md5Hash);
-        m_pTrackDAO->updateCoverArt(res.trackId, coverId);
-    }
-
-    if (!existsInCache && !res.img.isNull()) {
+    if (!res.img.isNull()) {
         m_pixmap->convertFromImage(res.img);
-        if (QPixmapCache::insert(res.coverLocation, *m_pixmap)) {
+        if (QPixmapCache::insert(res.md5Hash, *m_pixmap)) {
             emit(pixmapFound(res.trackId));
-            m_md5Hashes.insert(res.md5Hash, res.coverLocation);
         }
     }
     m_runningIds.remove(res.trackId);
@@ -118,7 +100,11 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.img = searchEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.img = rescaleBigImage(res.img);
-        res.md5Hash = calculateMD5(res.img);
+        if (res.md5Hash.isEmpty()) {
+            // it is the first time that we are loading the embedded cover,
+            // so we need to recalculate the md5 hash.
+            res.md5Hash = calculateMD5(res.img);
+        }
         return res;
     }
 
@@ -212,32 +198,14 @@ void CoverArtCache::imageFound() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    QString coverLocation;
-    if (m_md5Hashes.contains(res.md5Hash)) {
-        coverLocation = m_md5Hashes.value(res.md5Hash);
-        if (QPixmapCache::find(coverLocation, m_pixmap)) {
+    if (!res.img.isNull()) {
+        m_pixmap->convertFromImage(res.img);
+        if (QPixmapCache::insert(res.md5Hash, *m_pixmap)) {
             emit(pixmapFound(res.trackId));
-        } else {
-            m_md5Hashes.remove(res.md5Hash);
-        }
-    } else {
-        if (res.coverLocation.isEmpty()) {
-            // we need a coverLocation to make the cache works (key)
-            coverLocation = QString("embedded//%1").arg(res.md5Hash);
-        } else {
-            coverLocation = res.coverLocation;
-        }
-
-        if (!res.img.isNull()) {
-            m_pixmap->convertFromImage(res.img);
-            if (QPixmapCache::insert(coverLocation, *m_pixmap)) {
-                emit(pixmapFound(res.trackId));
-                m_md5Hashes.insert(res.md5Hash, res.coverLocation);
-            }
         }
     }
     // update DB
-    int coverId = m_pCoverArtDAO->saveCoverArt(coverLocation, res.md5Hash);
+    int coverId = m_pCoverArtDAO->saveCoverArt(res.coverLocation, res.md5Hash);
     m_pTrackDAO->updateCoverArt(res.trackId, coverId);
 
     m_runningIds.remove(res.trackId);

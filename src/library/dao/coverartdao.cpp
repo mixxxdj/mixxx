@@ -20,7 +20,7 @@ void CoverArtDAO::initialize() {
 }
 
 int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
-    if (coverLocation.isEmpty() || md5Hash.isEmpty()) {
+    if (md5Hash.isEmpty()) {
         return -1;
     }
 
