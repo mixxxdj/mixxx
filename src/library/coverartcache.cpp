@@ -91,7 +91,7 @@ void CoverArtCache::imageLoaded() {
 
     if (coverLocation != res.coverLocation) {
         // update DB
-        int coverId = m_pCoverArtDAO->saveCoverLocation(coverLocation);
+        int coverId = m_pCoverArtDAO->saveCoverArt(coverLocation, res.md5Hash);
         m_pTrackDAO->updateCoverArt(res.trackId, coverId);
     }
 
@@ -237,7 +237,7 @@ void CoverArtCache::imageFound() {
         }
     }
     // update DB
-    int coverId = m_pCoverArtDAO->saveCoverLocation(coverLocation);
+    int coverId = m_pCoverArtDAO->saveCoverArt(coverLocation, res.md5Hash);
     m_pTrackDAO->updateCoverArt(res.trackId, coverId);
 
     m_runningIds.remove(res.trackId);
