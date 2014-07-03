@@ -29,29 +29,32 @@ class CoverArtDAOTest : public MixxxTest {
     TrackCollection* m_pTrackCollection;
 };
 
-TEST_F(CoverArtDAOTest, saveCoverLocation) {
+TEST_F(CoverArtDAOTest, saveCoverArt) {
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
-    QString testCoverLoc;
+    QString testCoverLoc, testMd5Hash;
 
     // adding a empty cover location
-    int coverId = m_CoverArtDAO.saveCoverLocation(testCoverLoc);
+    int coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
     EXPECT_EQ(-1, coverId);
 
     // adding a new cover
     testCoverLoc = "/a/b/cover1.jpg";
-    coverId = m_CoverArtDAO.saveCoverLocation(testCoverLoc);
+    testMd5Hash = "abc123xxxCOVER1";
+    coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
     EXPECT_TRUE(coverId > 0);
 
     // adding an existing cover
-    int e_coverId = m_CoverArtDAO.saveCoverLocation(testCoverLoc);
+    int e_coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
     EXPECT_EQ(coverId, e_coverId);
 
     // we do not trust what coverartdao thinks and better check up on it
     QSqlQuery query(m_pTrackCollection->getDatabase());
     query.prepare(QString(
         "SELECT " % COVERARTTABLE_ID % " FROM " % COVERART_TABLE %
-        " WHERE " % COVERARTTABLE_LOCATION % "=:location"));
+        " WHERE " % COVERARTTABLE_LOCATION % "=:location"
+        " AND " % COVERARTTABLE_MD5 % "=:md5"));
     query.bindValue(":location", testCoverLoc);
+    query.bindValue(":md5", testMd5Hash);
     query.exec();
     int testCoverId = -1;
     if (query.next()) {
@@ -63,8 +66,9 @@ TEST_F(CoverArtDAOTest, saveCoverLocation) {
 TEST_F(CoverArtDAOTest, getCoverArtId) {
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
     QString testCoverLoc = "a/b/cover2.jpg";
+    QString testCoverMd5 = "abc123xxxCOVER2";
 
-    int coverIdSaved = m_CoverArtDAO.saveCoverLocation(testCoverLoc);
+    int coverIdSaved = m_CoverArtDAO.saveCoverArt(testCoverLoc, testCoverMd5);
     int coverId = m_CoverArtDAO.getCoverArtId(testCoverLoc);
 
     ASSERT_EQ(coverIdSaved, coverId);
@@ -94,13 +98,17 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
     // adding some covers
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
     QString coverLocation_1 = "foo/cover.jpg";
+    QString coverMd5_1 = "abc123xxxCOVER";
     QString coverLocation_2 = "foo/folder.jpg";
+    QString coverMd5_2 = "abc123xxxFOLDER";
     QString coverLocation_3 = "foo/album.jpg";
+    QString coverMd5_3 = "abc123xxxALBUM";
     QString coverLocation_4 = "foo/front.jpg";
-    int coverId_1 = m_CoverArtDAO.saveCoverLocation(coverLocation_1);
-    int coverId_2 = m_CoverArtDAO.saveCoverLocation(coverLocation_2);
-    int coverId_3 = m_CoverArtDAO.saveCoverLocation(coverLocation_3);
-    int coverId_4 = m_CoverArtDAO.saveCoverLocation(coverLocation_4);
+    QString coverMd5_4 = "abc123xxxFRONT";
+    int coverId_1 = m_CoverArtDAO.saveCoverArt(coverLocation_1, coverMd5_1);
+    int coverId_2 = m_CoverArtDAO.saveCoverArt(coverLocation_2, coverMd5_2);
+    int coverId_3 = m_CoverArtDAO.saveCoverArt(coverLocation_3, coverMd5_3);
+    int coverId_4 = m_CoverArtDAO.saveCoverArt(coverLocation_4, coverMd5_4);
     ASSERT_TRUE(coverId_1 > 0);
     ASSERT_TRUE(coverId_2 > 0);
     ASSERT_TRUE(coverId_3 > 0);
@@ -148,7 +156,8 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
     // adding cover art
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
     QString coverLocation = "/getCoverArtInfo/cover.jpg";
-    int coverId = m_CoverArtDAO.saveCoverLocation(coverLocation);
+    QString coverMd5 = "abc12345xxxCOVER";
+    int coverId = m_CoverArtDAO.saveCoverArt(coverLocation, coverMd5);
     trackDAO.updateCoverArt(trackId, coverId);
 
     // getting cover art info from coverartdao
