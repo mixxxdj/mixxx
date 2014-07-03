@@ -92,7 +92,9 @@ class LibraryFeature : public QObject {
     void featureLoadingFinished(LibraryFeature*s);
     // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
-    void loadCoverArt(const QString& coverLocation, int trackId);
+    void loadCoverArt(const QString& coverLocation,
+                      const QString& md5Hash,
+                      int trackId);
 
 };
 

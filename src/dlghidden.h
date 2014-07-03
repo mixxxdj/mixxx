@@ -27,7 +27,9 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
   signals:
-    void loadCoverArt(const QString& coverLocation, int trackId);
+    void loadCoverArt(const QString& coverLocation,
+                      const QString& md5Hash,
+                      int trackId);
 
   private:
     void activateButtons(bool enable);

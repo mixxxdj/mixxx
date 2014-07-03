@@ -26,7 +26,9 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
   signals:
-    void loadCoverArt(const QString& coverLocation, int trackId);
+    void loadCoverArt(const QString& coverLocation,
+                      const QString& md5Hash,
+                      int trackId);
 
   private:
     void activateButtons(bool enable);

@@ -131,12 +131,13 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
     Q_UNUSED(deselected);
 
     if (m_bHoldingArrowKey) {
-        emit(loadCoverArt("", 0)); // default cover art
+        emit(loadCoverArt("", "", 0)); // default cover art
         update();
         return;
     }
 
     QString coverLocation;
+    QString md5Hash;
     int trackId = 0;
     const QModelIndexList indices = selectionModel()->selectedRows();
     if ((indices.size() == 1) && (indices[0].isValid())) {
@@ -146,10 +147,13 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
             coverLocation = idx.sibling(idx.row(),
                                         trackModel->fieldIndex(LIBRARYTABLE_COVERART)
                                         ).data().toString();
+            md5Hash = idx.sibling(idx.row(),
+                                  trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5)
+                                  ).data().toString();
             trackId = trackModel->getTrackId(idx);
         }
     }
-    emit(loadCoverArt(coverLocation, trackId));
+    emit(loadCoverArt(coverLocation, md5Hash, trackId));
     update();
 }
 
