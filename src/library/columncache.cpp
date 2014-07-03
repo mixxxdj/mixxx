@@ -47,6 +47,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_BPM_LOCK] = fieldIndex(LIBRARYTABLE_BPM_LOCK);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_PREVIEW] = fieldIndex(LIBRARYTABLE_PREVIEW);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COVERART] = fieldIndex(LIBRARYTABLE_COVERART);
+    m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COVERART_MD5] = fieldIndex(LIBRARYTABLE_COVERART_MD5);
 
     m_columnIndexByEnum[COLUMN_TRACKLOCATIONSTABLE_FSDELETED] = fieldIndex(TRACKLOCATIONSTABLE_FSDELETED);
 

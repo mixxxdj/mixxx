@@ -27,6 +27,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
+    QString COVERART_LOCATION = COVERART_TABLE + "." + COVERARTTABLE_LOCATION
+                                + " AS " + LIBRARYTABLE_COVERART;
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -54,8 +56,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
-            << COVERART_TABLE + "." + COVERARTTABLE_LOCATION
-               + " AS " + LIBRARYTABLE_COVERART;
+            << COVERART_LOCATION
+            << COVERART_TABLE + "." + COVERARTTABLE_MD5;
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
@@ -77,9 +79,12 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
-        } else if (it->startsWith(COVERART_TABLE + ".")) {
+        } else if (it->operator==(COVERART_LOCATION)) {
             *it = LIBRARYTABLE_COVERART;
+        } else if (it->startsWith(COVERART_TABLE + ".")) {
+            *it = it->replace(COVERART_TABLE + ".", "");
         }
+        qDebug() << *it;
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(

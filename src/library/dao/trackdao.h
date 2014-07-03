@@ -51,6 +51,7 @@ const QString LIBRARYTABLE_KEY_ID = "key_id";
 const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 const QString LIBRARYTABLE_PREVIEW = "preview";
 const QString LIBRARYTABLE_COVERART = "cover_art";
+const QString LIBRARYTABLE_COVERART_MD5 = "md5";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";

@@ -78,7 +78,8 @@ bool HiddenTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_MD5)) {
         return true;
     }
     return false;
