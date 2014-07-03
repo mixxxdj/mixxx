@@ -24,7 +24,7 @@ int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
         return -1;
     }
 
-    int coverId = getCoverArtIdFromMd5(md5Hash);
+    int coverId = getCoverArtId(md5Hash);
     if (coverId == -1) { // new cover
         QSqlQuery query(m_database);
 
@@ -33,30 +33,6 @@ int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
                       "VALUES (:location, :md5)");
         query.bindValue(":location", coverLocation);
         query.bindValue(":md5", md5Hash);
-
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << "Saving new cover (" % coverLocation % ") failed.";
-            return -1;
-        }
-
-        coverId = query.lastInsertId().toInt();
-    }
-
-    return coverId;
-}
-
-int CoverArtDAO::saveCoverLocation(QString coverLocation) {
-    if (coverLocation.isEmpty()) {
-        return -1;
-    }
-
-    int coverId = getCoverArtId(coverLocation);
-    if (coverId == -1) { // new cover
-        QSqlQuery query(m_database);
-
-        query.prepare("INSERT INTO " % COVERART_TABLE %
-                      " (" % COVERARTTABLE_LOCATION % ") VALUES (:location)");
-        query.bindValue(":location", coverLocation);
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "Saving new cover (" % coverLocation % ") failed.";
@@ -104,7 +80,7 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     }
 }
 
-int CoverArtDAO::getCoverArtIdFromMd5(QString md5Hash) {
+int CoverArtDAO::getCoverArtId(QString md5Hash) {
     if (md5Hash.isEmpty()) {
         return -1;
     }
@@ -115,29 +91,6 @@ int CoverArtDAO::getCoverArtIdFromMd5(QString md5Hash) {
         "SELECT " % COVERARTTABLE_ID % " FROM " % COVERART_TABLE %
         " WHERE " % COVERARTTABLE_MD5 % "=:md5"));
     query.bindValue(":md5", md5Hash);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return -1;
-    }
-
-    if (query.next()) {
-        return query.value(0).toInt();
-    }
-
-    return -1;
-}
-
-int CoverArtDAO::getCoverArtId(QString coverLocation) {
-    if (coverLocation.isEmpty()) {
-        return -1;
-    }
-
-    QSqlQuery query(m_database);
-
-    query.prepare(QString(
-        "SELECT " % COVERARTTABLE_ID % " FROM " % COVERART_TABLE %
-        " WHERE " % COVERARTTABLE_LOCATION % "=:location"));
-    query.bindValue(":location", coverLocation);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return -1;

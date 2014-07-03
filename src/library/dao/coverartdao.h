@@ -20,10 +20,8 @@ class CoverArtDAO : public DAO {
     void initialize();
 
     void deleteUnusedCoverArts();
-    int getCoverArtIdFromMd5(QString md5Hash);
+    int getCoverArtId(QString md5Hash);
     int saveCoverArt(QString coverLocation, QString md5Hash);
-    int getCoverArtId(QString coverLocation);
-    int saveCoverLocation(QString coverLocation);
 
     struct CoverArtInfo {
         int trackId;

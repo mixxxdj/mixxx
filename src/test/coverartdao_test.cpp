@@ -69,7 +69,7 @@ TEST_F(CoverArtDAOTest, getCoverArtId) {
     QString testCoverMd5 = "abc123xxxCOVER2";
 
     int coverIdSaved = m_CoverArtDAO.saveCoverArt(testCoverLoc, testCoverMd5);
-    int coverId = m_CoverArtDAO.getCoverArtId(testCoverLoc);
+    int coverId = m_CoverArtDAO.getCoverArtId(testCoverMd5);
 
     ASSERT_EQ(coverIdSaved, coverId);
 }
@@ -122,10 +122,10 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
     m_CoverArtDAO.deleteUnusedCoverArts();
 
     // checking current id of each cover
-    int coverId_1t = m_CoverArtDAO.getCoverArtId(coverLocation_1);
-    int coverId_2t = m_CoverArtDAO.getCoverArtId(coverLocation_2);
-    int coverId_3t = m_CoverArtDAO.getCoverArtId(coverLocation_3);
-    int coverId_4t = m_CoverArtDAO.getCoverArtId(coverLocation_4);
+    int coverId_1t = m_CoverArtDAO.getCoverArtId(coverMd5_1);
+    int coverId_2t = m_CoverArtDAO.getCoverArtId(coverMd5_2);
+    int coverId_3t = m_CoverArtDAO.getCoverArtId(coverMd5_3);
+    int coverId_4t = m_CoverArtDAO.getCoverArtId(coverMd5_4);
     ASSERT_EQ(coverId_1, coverId_1t);
     ASSERT_EQ(coverId_2, coverId_2t);
     ASSERT_EQ(-1, coverId_3t);
