@@ -224,6 +224,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         row += 1;
     }
     cueTable->setSortingEnabled(true);
+    cueTable->horizontalHeader()->setStretchLastSection(true);
 }
 
 void DlgTrackInfo::saveTrack() {
