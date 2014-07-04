@@ -152,6 +152,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void addTrack(TrackInfoObject* pTrack, bool unremove);
     TrackPointer getTrackFromDB(const int id) const;
     QString absoluteFilePath(QString location);
+    int getCoverArtId(int trackId);
 
     void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
     void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);
