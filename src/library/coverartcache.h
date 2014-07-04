@@ -51,7 +51,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     CoverArtDAO* m_pCoverArtDAO;
     TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
-    QHash<QString, QString> m_md5Hashes;
     QPixmap* m_pixmap;
 
     QString calculateMD5(QImage img);
