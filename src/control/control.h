@@ -66,7 +66,7 @@ class ControlDoublePrivate : public QObject {
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
-    // The caller must nut delete the behavior at any time. The memory is managed
+    // The caller must not delete the behavior at any time. The memory is managed
     // by this function.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
