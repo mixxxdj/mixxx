@@ -22,7 +22,7 @@ const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 AutoDJFeature::AutoDJFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
-        : LibraryFeature(parent),
+        : LibraryFeature(parent, pConfig),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
