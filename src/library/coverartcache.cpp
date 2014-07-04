@@ -78,7 +78,9 @@ void CoverArtCache::imageLoaded() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    if (!res.img.isNull()) {
+    if (QPixmapCache::find(res.md5Hash, m_pixmap)) {
+        emit(pixmapFound(res.trackId));
+    } else if (!res.img.isNull()) {
         m_pixmap->convertFromImage(res.img);
         if (QPixmapCache::insert(res.md5Hash, *m_pixmap)) {
             emit(pixmapFound(res.trackId));
@@ -200,10 +202,7 @@ void CoverArtCache::imageFound() {
 
     if (QPixmapCache::find(res.md5Hash, m_pixmap)) {
         emit(pixmapFound(res.trackId));
-        return;
-    }
-
-    if (!res.img.isNull()) {
+    } else if (!res.img.isNull()) {
         m_pixmap->convertFromImage(res.img);
         if (QPixmapCache::insert(res.md5Hash, *m_pixmap)) {
             emit(pixmapFound(res.trackId));
