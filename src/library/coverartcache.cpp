@@ -198,6 +198,11 @@ void CoverArtCache::imageFound() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
+    if (QPixmapCache::find(res.md5Hash, m_pixmap)) {
+        emit(pixmapFound(res.trackId));
+        return;
+    }
+
     if (!res.img.isNull()) {
         m_pixmap->convertFromImage(res.img);
         if (QPixmapCache::insert(res.md5Hash, *m_pixmap)) {
