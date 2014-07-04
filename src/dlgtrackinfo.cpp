@@ -239,7 +239,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setGrouping(txtGrouping->text());
     m_pLoadedTrack->setYear(txtYear->text());
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
-    m_pLoadedTrack->setComment(txtComment->toPlainText());
+    m_pLoadedTrack->setComment(txtComment->text());
 
     if (!m_pLoadedTrack->hasBpmLock()) {
         m_pLoadedTrack->setBpm(spinBpm->value());
