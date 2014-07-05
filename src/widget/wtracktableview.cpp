@@ -87,8 +87,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToCrate(int)));
 
     // control the delay to load the next cover art
-    m_lastCoverLoaded = -1.0;
+    m_lastSelection = 0.0;
+    m_bLastCoverLoaded = true;
     m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTickTime");
+    connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
+            this, SLOT(slotGuiTickTime(double)));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -134,20 +137,29 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
-    slotLoadCoverArt();
+
+    if (m_bLastCoverLoaded) {
+        // load default cover art
+        emit(loadCoverArt("", "", 0));
+    }
+    m_bLastCoverLoaded = false;
+    m_lastSelection = m_pCOTGuiTickTime->get();
+    update();
+}
+
+void WTrackTableView::slotGuiTickTime(double cpuTime) {
+    // if the user is stoped in the same row for more than 0.1s,
+    // we load the cover art once.
+    if (cpuTime >= m_lastSelection + 0.1 && !m_bLastCoverLoaded) {
+        slotLoadCoverArt();
+        m_bLastCoverLoaded = true;
+    }
 }
 
 void WTrackTableView::slotLoadCoverArt() {
     QString coverLocation;
     QString md5Hash;
     int trackId = 0;
-
-    if (m_pCOTGuiTickTime->get() <= m_lastCoverLoaded + 0.5) {
-        emit(loadCoverArt(coverLocation, md5Hash, trackId)); // default cover art
-        update();
-        return;
-    }
-
     const QModelIndexList indices = selectionModel()->selectedRows();
     if ((indices.size() == 1) && (indices[0].isValid())) {
         QModelIndex idx = indices[0];
@@ -162,7 +174,6 @@ void WTrackTableView::slotLoadCoverArt() {
             trackId = trackModel->getTrackId(idx);
         }
     }
-    m_lastCoverLoaded = m_pCOTGuiTickTime->get();
     emit(loadCoverArt(coverLocation, md5Hash, trackId));
     update();
 }

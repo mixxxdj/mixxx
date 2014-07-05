@@ -69,6 +69,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int); 
     void slotClearBeats();
+    void slotGuiTickTime(double);
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -149,7 +150,8 @@ class WTrackTableView : public WLibraryTableView {
     bool m_sorting;
 
     // Control the delay to load a cover art.
-    double m_lastCoverLoaded;
+    double m_lastSelection;
+    bool m_bLastCoverLoaded;
     ControlObjectThread* m_pCOTGuiTickTime;
 };
 
