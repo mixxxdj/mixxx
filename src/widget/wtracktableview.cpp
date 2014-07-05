@@ -134,16 +134,20 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
+    slotLoadCoverArt();
+}
+
+void WTrackTableView::slotLoadCoverArt() {
+    QString coverLocation;
+    QString md5Hash;
+    int trackId = 0;
 
     if (m_pCOTGuiTickTime->get() <= m_lastCoverLoaded + 0.5) {
-        emit(loadCoverArt("", "", 0)); // default cover art
+        emit(loadCoverArt(coverLocation, md5Hash, trackId)); // default cover art
         update();
         return;
     }
 
-    QString coverLocation;
-    QString md5Hash;
-    int trackId = 0;
     const QModelIndexList indices = selectionModel()->selectedRows();
     if ((indices.size() == 1) && (indices[0].isValid())) {
         QModelIndex idx = indices[0];

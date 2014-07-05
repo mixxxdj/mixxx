@@ -80,6 +80,7 @@ class WTrackTableView : public WLibraryTableView {
     void dropEvent(QDropEvent * event);
     void lockBpm(bool lock);
 
+    void slotLoadCoverArt();
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected);
 
