@@ -28,8 +28,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_DlgTagFetcher(NULL),
-          m_sorting(sorting),
-          m_bHoldingArrowKey(false) {
+          m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
     m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
@@ -86,6 +85,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
+
+    // control the delay to load the next cover art
+    m_lastCoverLoaded = -1.0;
+    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTickTime");
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -124,6 +127,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
     delete m_pSamplerMenu;
+    delete m_pCOTGuiTickTime;
 }
 
 void WTrackTableView::selectionChanged(const QItemSelection &selected,
@@ -131,7 +135,7 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
 
-    if (m_bHoldingArrowKey) {
+    if (m_pCOTGuiTickTime->get() <= m_lastCoverLoaded + 0.5) {
         emit(loadCoverArt("", "", 0)); // default cover art
         update();
         return;
@@ -154,6 +158,7 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
             trackId = trackModel->getTrackId(idx);
         }
     }
+    m_lastCoverLoaded = m_pCOTGuiTickTime->get();
     emit(loadCoverArt(coverLocation, md5Hash, trackId));
     update();
 }
@@ -1131,18 +1136,6 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         return;
     } else {
         QTableView::keyPressEvent(event);
-    }
-
-    if (!event->isAutoRepeat() &&
-            (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)) {
-        m_bHoldingArrowKey = true;
-    }
-}
-
-void WTrackTableView::keyReleaseEvent(QKeyEvent *event) {
-    if (!event->isAutoRepeat() &&
-            (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)) {
-        m_bHoldingArrowKey = false;
     }
 }
 
