@@ -179,6 +179,8 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         if (role == Qt::DisplayRole) {
             return m_sFeatures[index.row()]->title();
         } else if (role == Qt::DecorationRole) {
+            qDebug() << "+++++++++ Getting icon";
+            qDebug() << m_sFeatures[index.row()];
             return m_sFeatures[index.row()]->getIcon();
         }
     }

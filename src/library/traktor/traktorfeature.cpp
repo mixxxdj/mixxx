@@ -112,12 +112,12 @@ QVariant TraktorFeature::title() {
 }
 
 QString TraktorFeature::getIconName() {
-    return "1";
+    return "ic_library_traktor.png";
 }
 
-QIcon TraktorFeature::getIcon() {
+/*QIcon TraktorFeature::getIcon() {
     return QIcon(":/images/library/ic_library_traktor.png");
-}
+}*/
 
 bool TraktorFeature::isSupported() {
     return (QFile::exists(getTraktorMusicDatabase()));

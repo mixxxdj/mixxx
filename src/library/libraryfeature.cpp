@@ -18,9 +18,11 @@ LibraryFeature::~LibraryFeature() {
 
 QIcon LibraryFeature::getIcon() {
     QString current_icon = getIconName();
+    qDebug() << current_icon;
     SkinLoader sl(m_pConfig);
     qDebug() << "++++++++++ getIcon()";
-    QString current_skin = sl.getConfiguredSkinPath();
+    //QString current_skin = sl.getConfiguredSkinPath();
+    QString current_skin = "bob";
     current_skin.append(current_icon);
     QFile Fout(current_skin);
     if(Fout.exists()){

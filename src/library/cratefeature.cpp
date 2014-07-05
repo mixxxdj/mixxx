@@ -117,7 +117,7 @@ QString CrateFeature::getIconName(){
     //QString current_skin = sl.getConfiguredSkinPath();
     //current_skin.append("/ic_library_prepare.png");
     //return current_skin;
-    return "1";
+    return "ic_library_crates.png";
 }
 
 QIcon CrateFeature::getIcon() {
