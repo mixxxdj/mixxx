@@ -776,75 +776,111 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
     emit(changed(playlistId));
 }
 
-void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions) {
+void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
 
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
+    QHash<int,int> trackPositionIds = allIds;
+    QList<int> shuffleSet = positions;
 
     // This is a modified Fisher-Yates shuffling algorithm.
-    // Before swapping two tracks, it checks the IDs of the tracks before and
-    // after each position to make sure we don't end up with doubled tracks.
-    // If there's a duplicate, it simply tries again with a new position.
-    // It shouldn't take more than 5 tries normally, but there's a limit of 10
-    // to be safe.
-    foreach (int oldPosition, positions) {
-        int random;
-        int newPosition;
-        bool positionOk = false;
-        // Check if either track will be next to a copy of itself
-        for (int i=0; i<10 && !positionOk; i++) {
-            random = (int)(qrand() / (RAND_MAX + 1.0) * (positions.count()));
-            newPosition = positions.at(random);
-            QString checkQuery = "SELECT track_id FROM PlaylistTracks "
-                    "WHERE position=%1 AND playlist_id=%2";
-            query.exec(checkQuery.arg(QString::number(oldPosition),
-                                      QString::number(playlistId)));
-            int oldTrackId = -1;
-            if (query.first()) {
-                oldTrackId = query.value(0).toInt();
-            }
-            query.clear();
-            query.exec(checkQuery.arg(QString::number(newPosition),
-                                      QString::number(playlistId)));
-            int newTrackId = -1;
-            if (query.first()) {
-                newTrackId = query.value(0).toInt();
-            }
-            query.clear();
-            checkQuery = "SELECT track_id FROM PlaylistTracks "
-                    "WHERE (position=%1-1 OR position=%1+1) AND track_id=%2 "
-                    "AND playlist_id=%3";
-            query.exec(checkQuery.arg(QString::number(oldPosition),
-                                      QString::number(newTrackId),
-                                      QString::number(playlistId)));
-            if (!query.first()) {
-                query.exec(checkQuery.arg(QString::number(newPosition),
-                                          QString::number(oldTrackId),
-                                          QString::number(playlistId)));
-                if (!query.first()) {
-                    positionOk = true;
+    //
+    // Description of the algorithm below:
+    //
+    // Loop through the set of tracks to be shuffled:
+    //     1) Set Track A as the current point in the shuffle set
+    //     2) Repeat a maximum of 10 times or until a good place (1/4 of the
+    //        playlist away from a conflict) is reached:
+    //         a) Pick a random track within the shuffle set (Track B)
+    //         b) Check 1/4 of the playlist up and down (clamped at the
+    //            beginning and end) from Track B's position for Track A
+    //         c) Check 1/4 of the playlist up and down (clamped at the
+    //            beginning and end) from Track A's position for Track B
+    //         d) If there was a conflict, store the position if it was better
+    //            than the already stored best position. The position is deemed
+    //            "better" if the distance (square of the difference) of
+    //            the closest conflict (Track B near Track A's position and vv)
+    //            is larger than previous iterations.
+    //     3) If no good place was found, use the stored best position
+    //     4) Swap Track A and Track B
+
+    for (int i=0; i<shuffleSet.count(); i++) {
+        bool conflictFound = true;
+        int trackAPosition = shuffleSet.at(i);
+        int trackAId = trackPositionIds.value(trackAPosition);
+        int trackBPosition = -1;
+        int trackBId = -1;
+        int bestTrackDistance = -1;
+        int bestTrackBPosition = -1;
+
+        for (int limit=10; limit>0 && conflictFound; limit--) {
+            int randomShuffleSetIndex =
+                (int)(qrand() / (RAND_MAX + 1.0) * (shuffleSet.count()));
+            trackBPosition = shuffleSet.at(randomShuffleSetIndex);
+            trackBId = trackPositionIds.value(trackBPosition);
+            conflictFound = false;
+            int trackDistance = -1;
+
+            int startPosition = trackBPosition - trackPositionIds.count() / 4;
+            int endPosition = trackBPosition + trackPositionIds.count() / 4;
+            if (startPosition < 0)
+                startPosition = 0;
+            if (endPosition > trackPositionIds.count() - 1)
+                endPosition = trackPositionIds.count() - 1;
+            for (int count=startPosition; count < endPosition; count++) {
+                if (trackPositionIds.value(count) == trackAId && count != trackAPosition) {
+                    conflictFound = true;
+                    int tempTrackDistance =
+                        (trackBPosition - count) * (trackBPosition - count);
+                    if (tempTrackDistance < trackDistance || trackDistance == -1)
+                        trackDistance = tempTrackDistance;
                 }
             }
 
-            query.clear();
-        }
-        if (!positionOk) {
-            qDebug() << "Tried to re-sort too many times; had to double up songs.";
+            startPosition = trackAPosition - trackPositionIds.count() / 4;
+            endPosition = trackAPosition + trackPositionIds.count() / 4;
+            if (startPosition < 0)
+                startPosition = 0;
+            if (endPosition > trackPositionIds.count() - 1)
+                endPosition = trackPositionIds.count() - 1;
+            for (int count=startPosition; count < endPosition; count++) {
+                if (trackPositionIds.value(count) == trackBId && count != trackBPosition) {
+                    conflictFound = true;
+                    int tempTrackDistance =
+                        (trackAPosition - count) * (trackAPosition - count);
+                    if (tempTrackDistance < trackDistance || trackDistance == -1)
+                        trackDistance = tempTrackDistance;
+                }
+            }
+
+            if (bestTrackDistance < trackDistance) {
+                bestTrackDistance = trackDistance;
+                bestTrackBPosition = trackBPosition;
+            }
         }
 
-        // Swap the tracks
-        qDebug() << "Swapping tracks " << oldPosition << " and " << newPosition;
+        if (conflictFound) {
+            if (bestTrackBPosition > -1) {
+                trackBPosition = bestTrackBPosition;
+                trackBId = trackPositionIds.value(trackBPosition);
+            }
+        }
+
+        qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
+        trackPositionIds.insert(trackAPosition, trackBId);
+        trackPositionIds.insert(trackBPosition, trackAId);
+        shuffleSet.swap(shuffleSet.indexOf(trackAPosition), shuffleSet.indexOf(trackBPosition));
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
                 "WHERE position=%2 AND playlist_id=%3";
         query.exec(swapQuery.arg(QString::number(-1),
-                                 QString::number(oldPosition),
+                                 QString::number(trackAPosition),
                                  QString::number(playlistId)));
-        query.exec(swapQuery.arg(QString::number(oldPosition),
-                                 QString::number(newPosition),
+        query.exec(swapQuery.arg(QString::number(trackAPosition),
+                                 QString::number(trackBPosition),
                                  QString::number(playlistId)));
-        query.exec(swapQuery.arg(QString::number(newPosition),
+        query.exec(swapQuery.arg(QString::number(trackBPosition),
                                  QString::number(-1),
                                  QString::number(playlistId)));
 

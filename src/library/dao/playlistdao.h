@@ -1,6 +1,7 @@
 #ifndef PLAYLISTDAO_H
 #define PLAYLISTDAO_H
 
+#include <QHash>
 #include <QObject>
 #include <QSqlDatabase>
 
@@ -97,7 +98,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void moveTrack(const int playlistId,
             const int oldPosition, const int newPosition);
     // shuffles all tracks in the position List
-    void shuffleTracks(const int playlistId, const QList<int>& positions);
+    void shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds);
 
   signals:
     void added(int playlistId);
