@@ -31,7 +31,6 @@ class WTrackTableView : public WLibraryTableView {
     void onSearch(const QString& text);
     void onShow();
     virtual void keyPressEvent(QKeyEvent* event);
-    virtual void keyReleaseEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
 
@@ -70,6 +69,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int); 
     void slotClearBeats();
+    void slotGuiTickTime(double);
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -81,6 +81,7 @@ class WTrackTableView : public WLibraryTableView {
     void dropEvent(QDropEvent * event);
     void lockBpm(bool lock);
 
+    void slotLoadCoverArt();
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected);
 
@@ -146,10 +147,12 @@ class WTrackTableView : public WLibraryTableView {
     // Clear track beats
     QAction* m_pClearBeatsAction;
 
-    // Indicates if the user is holding up or down an arrow key.
-    bool m_bHoldingArrowKey;
-
     bool m_sorting;
+
+    // Control the delay to load a cover art.
+    double m_lastSelection;
+    bool m_bLastCoverLoaded;
+    ControlObjectThread* m_pCOTGuiTickTime;
 };
 
 #endif

@@ -28,8 +28,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_DlgTagFetcher(NULL),
-          m_sorting(sorting),
-          m_bHoldingArrowKey(false) {
+          m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
     m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
@@ -86,6 +85,13 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
+
+    // control the delay to load the next cover art
+    m_lastSelection = 0.0;
+    m_bLastCoverLoaded = true;
+    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTickTime");
+    connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
+            this, SLOT(slotGuiTickTime(double)));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -124,6 +130,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
     delete m_pSamplerMenu;
+    delete m_pCOTGuiTickTime;
 }
 
 void WTrackTableView::selectionChanged(const QItemSelection &selected,
@@ -131,12 +138,25 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
 
-    if (m_bHoldingArrowKey) {
-        emit(loadCoverArt("", "", 0)); // default cover art
-        update();
-        return;
+    if (m_bLastCoverLoaded) {
+        // load default cover art
+        emit(loadCoverArt("", "", 0));
     }
+    m_bLastCoverLoaded = false;
+    m_lastSelection = m_pCOTGuiTickTime->get();
+    update();
+}
 
+void WTrackTableView::slotGuiTickTime(double cpuTime) {
+    // if the user is stoped in the same row for more than 0.1s,
+    // we load the cover art once.
+    if (cpuTime >= m_lastSelection + 0.1 && !m_bLastCoverLoaded) {
+        slotLoadCoverArt();
+        m_bLastCoverLoaded = true;
+    }
+}
+
+void WTrackTableView::slotLoadCoverArt() {
     QString coverLocation;
     QString md5Hash;
     int trackId = 0;
@@ -1131,18 +1151,6 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         return;
     } else {
         QTableView::keyPressEvent(event);
-    }
-
-    if (!event->isAutoRepeat() &&
-            (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)) {
-        m_bHoldingArrowKey = true;
-    }
-}
-
-void WTrackTableView::keyReleaseEvent(QKeyEvent *event) {
-    if (!event->isAutoRepeat() &&
-            (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)) {
-        m_bHoldingArrowKey = false;
     }
 }
 
