@@ -4,6 +4,7 @@
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
+#include "library/coverartcache.h"
 #include "library/dao/cue.h"
 #include "trackinfoobject.h"
 
@@ -66,6 +67,9 @@ void DlgTrackInfo::init(){
     for (int i = 0; i < kFilterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
     }
+
+    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int)),
+            this, SLOT(slotPixmapFound(int)));
 }
 
 void DlgTrackInfo::OK() {
@@ -150,6 +154,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmHalve->setEnabled(enableBpmEditing);
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
+    coverArt->setPixmap(QPixmap(":/images/library/vinyl-record.png"));
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -161,6 +166,25 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+}
+
+void DlgTrackInfo::slotPixmapFound(int trackId) {
+    if (m_pLoadedTrack == NULL)
+        return;
+
+    if (m_pLoadedTrack->getId() == trackId) {
+        coverArt->setPixmap(m_coverPixmap);
+        update();
+    }
+}
+
+void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
+                                    const QString& md5Hash,
+                                    int trackId) {
+    CoverArtCache::instance()->requestPixmap(trackId,
+                                             m_coverPixmap,
+                                             coverLocation,
+                                             md5Hash);
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {

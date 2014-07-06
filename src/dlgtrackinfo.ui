@@ -109,7 +109,7 @@
           <widget class="QLineEdit" name="txtAlbumArtist"/>
          </item>
          <item row="0" column="0" rowspan="2">
-          <widget class="QLabel" name="cover">
+          <widget class="QLabel" name="coverArt">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -126,7 +126,7 @@
             <string notr="true">background-color: rgb(170, 255, 255);</string>
            </property>
            <property name="text">
-            <string> </string>
+            <string/>
            </property>
           </widget>
          </item>

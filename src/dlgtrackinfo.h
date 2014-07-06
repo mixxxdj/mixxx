@@ -26,6 +26,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack);
+    void slotLoadCoverArt(const QString& coverLocation,
+                          const QString& md5Hash,
+                          int trackId);
 
   signals:
     void next();
@@ -51,6 +54,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void reloadTrackMetadata();
 
+    void slotPixmapFound(int trackId);
+
   private:
     void populateFields(TrackPointer pTrack);
     void populateCues(TrackPointer pTrack);
@@ -61,6 +66,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
+    QPixmap m_coverPixmap;
 
     CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
