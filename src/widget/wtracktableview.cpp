@@ -89,7 +89,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     // control the delay to load the next cover art
     m_lastSelection = 0.0;
     m_bLastCoverLoaded = true;
-    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTickTime");
+    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTickTime(double)));
 }
