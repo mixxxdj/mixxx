@@ -18,6 +18,8 @@ class CoverArtDAOTest : public MixxxTest {
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("DELETE FROM " % COVERART_TABLE);
         query.exec();
+        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
+        query.exec();
         query.prepare("DELETE FROM library");
         query.exec();
         query.prepare("DELETE FROM track_locations");
@@ -75,10 +77,14 @@ TEST_F(CoverArtDAOTest, getCoverArtId) {
 }
 
 TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
+    DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
+    // creating a temp dir
+    QString testdir(QDir::tempPath() + "/CoverDir");
+    directoryDao.addDirectory(testdir);
     // creating some tracks
-    QString trackLocation_1 = "/a";
-    QString trackLocation_2 = "/b";
-    QString trackLocation_3 = "/c";
+    QString trackLocation_1 = testdir % "/a";
+    QString trackLocation_2 = testdir % "/b";
+    QString trackLocation_3 = testdir % "/c";
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     trackDAO.addTracksPrepare();
     trackDAO.addTracksAdd(new TrackInfoObject(
@@ -133,8 +139,12 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
 }
 
 TEST_F(CoverArtDAOTest, getCoverArtInfo) {
+    DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
+    // creating a temp dir
+    QString testdir(QDir::tempPath() + "/CoverDir");
+    directoryDao.addDirectory(testdir);
     // creating a track
-    QString trackLocation = "/getCoverArtInfo/track.mp3";
+    QString trackLocation = testdir % "/getCoverArtInfo/track.mp3";
     QFileInfo file = QFileInfo(trackLocation);
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     trackDAO.addTracksPrepare();

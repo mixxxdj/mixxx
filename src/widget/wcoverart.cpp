@@ -80,7 +80,7 @@ void WCoverArt::slotHideCoverArt() {
 
 void WCoverArt::slotPixmapFound(int trackId) {
     if (m_lastRequestedTrackId == trackId) {
-        //m_sCoverTitle = location.mid(location.lastIndexOf("/") + 1);
+        m_sCoverTitle = QFileInfo(m_lastRequestedCoverLocation).baseName();
         m_currentScaledCover = scaledCoverArt(m_currentCover);
         m_bDefaultCover = false;
         update();
@@ -90,11 +90,13 @@ void WCoverArt::slotPixmapFound(int trackId) {
 void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
                                  const QString& md5Hash,
                                  int trackId) {
+    m_lastRequestedTrackId = trackId;
+    m_lastRequestedCoverLocation = coverLocation;
+    m_lastRequestedMd5Hash = md5Hash;
     if (!m_bCoverIsVisible) {
         return;
     }
     setToDefault();
-    m_lastRequestedTrackId = trackId;
     m_currentCover = QPixmap();
     CoverArtCache::instance()->requestPixmap(trackId,
                                              m_currentCover,
@@ -134,6 +136,9 @@ void WCoverArt::paintEvent(QPaintEvent*) {
 void WCoverArt::resizeEvent(QResizeEvent*) {
     if (m_bCoverIsVisible) {
         setMinimumSize(0, parentWidget()->height() / 3);
+        slotLoadCoverArt(m_lastRequestedCoverLocation,
+                         m_lastRequestedMd5Hash,
+                         m_lastRequestedTrackId);
      } else {
         slotHideCoverArt();
     }

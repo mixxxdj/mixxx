@@ -55,6 +55,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QCursor m_zoomCursor;
 
     int m_lastRequestedTrackId;
+    QString m_lastRequestedCoverLocation;
+    QString m_lastRequestedMd5Hash;
 };
 
 #endif // WCOVERART_H
