@@ -15,9 +15,9 @@
 #include "sampleutil.h"
 
 class EQDefaultGroupState {
-public:
+  public:
     EQDefaultGroupState();
-    ~EQDefaultGroupState();
+    virtual ~EQDefaultGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 

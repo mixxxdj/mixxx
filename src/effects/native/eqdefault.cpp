@@ -3,23 +3,25 @@
 
 // static
 QString EQDefault::getId() {
-    return "org.mixxx.effects.eqdefault";
+    return "org.mixxx.effects.butterwortheq";
 }
 
 // static
 EffectManifest EQDefault::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Default EQ"));
+    manifest.setName(QObject::tr("Butterworth EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("The default Equalizer featuring \
-3 EngineFilterButterworth which can be modified from preferences");
+    manifest.setDescription(QObject::tr(
+        "A Butterworth filter equalizer (the default high-quality filter "
+        "included with Mixxx). To adjust frequency shelves see the "
+        "Equalizer preferences."));
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
     low->setName(QObject::tr("Low"));
-    low->setDescription("Gain for Low Filter");
+    low->setDescription(QObject::tr("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -31,7 +33,7 @@ EffectManifest EQDefault::getManifest() {
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
     mid->setName(QObject::tr("Mid"));
-    mid->setDescription("Gain for Band Filter");
+    mid->setDescription(QObject::tr("Gain for Band Filter"));
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -43,7 +45,7 @@ EffectManifest EQDefault::getManifest() {
     EffectManifestParameter* high = manifest.addParameter();
     high->setId("high");
     high->setName(QObject::tr("High"));
-    high->setDescription("Gain for High Filter");
+    high->setDescription(QObject::tr("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -56,13 +58,14 @@ EffectManifest EQDefault::getManifest() {
 }
 
 EQDefaultGroupState::EQDefaultGroupState()
-        : low(NULL), band(NULL), high(NULL),old_low(1.0),
+        : low(NULL), band(NULL), high(NULL), old_low(1.0),
           old_mid(1.0), old_high(1.0) {
-    m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     // Initialize filters with the default values
+    // TODO(rryan): use the real samplerate
     low = new EngineFilterButterworth8Low(44100, 246);
     band = new EngineFilterButterworth8Band(44100, 246, 2484);
     high = new EngineFilterButterworth8High(44100, 2484);
@@ -72,9 +75,9 @@ EQDefaultGroupState::~EQDefaultGroupState() {
     delete low;
     delete band;
     delete high;
-    delete m_pLowBuf;
-    delete m_pBandBuf;
-    delete m_pHighBuf;
+    SampleUtil::free(m_pLowBuf);
+    SampleUtil::free(m_pBandBuf);
+    SampleUtil::free(m_pHighBuf);
 }
 
 void EQDefaultGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
@@ -100,10 +103,10 @@ EQDefault::~EQDefault() {
 }
 
 void EQDefault::processGroup(const QString& group,
-        EQDefaultGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
-        const unsigned int numSamples,
-        const GroupFeatureState& groupFeatures) {
+                             EQDefaultGroupState* pState,
+                             const CSAMPLE* pInput, CSAMPLE* pOutput,
+                             const unsigned int numSamples,
+                             const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
