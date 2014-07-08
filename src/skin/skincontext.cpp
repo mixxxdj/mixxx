@@ -271,7 +271,7 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
     
     // Save the new svg in a temp file to use it with setPixmap
     QTemporaryFile svgFile;
-    svgFile.setFileTemplate("/tmp/qt_temp.XXXXXX.svg");
+    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
     
     // the file will be removed before being parsed in skin if set to true
     svgFile.setAutoRemove( false );
