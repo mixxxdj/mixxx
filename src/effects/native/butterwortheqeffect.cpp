@@ -1,13 +1,13 @@
-#include "effects/native/eqdefault.h"
+#include "effects/native/butterwortheqeffect.h"
 #include "util/math.h"
 
 // static
-QString EQDefault::getId() {
+QString ButterworthEQEffect::getId() {
     return "org.mixxx.effects.butterwortheq";
 }
 
 // static
-EffectManifest EQDefault::getManifest() {
+EffectManifest ButterworthEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Butterworth EQ"));
@@ -57,7 +57,7 @@ EffectManifest EQDefault::getManifest() {
     return manifest;
 }
 
-EQDefaultGroupState::EQDefaultGroupState()
+ButterworthEQEffectGroupState::ButterworthEQEffectGroupState()
         : low(NULL), band(NULL), high(NULL), old_low(1.0),
           old_mid(1.0), old_high(1.0) {
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -71,7 +71,7 @@ EQDefaultGroupState::EQDefaultGroupState()
     high = new EngineFilterButterworth8High(44100, 2484);
 }
 
-EQDefaultGroupState::~EQDefaultGroupState() {
+ButterworthEQEffectGroupState::~ButterworthEQEffectGroupState() {
     delete low;
     delete band;
     delete high;
@@ -80,14 +80,15 @@ EQDefaultGroupState::~EQDefaultGroupState() {
     SampleUtil::free(m_pHighBuf);
 }
 
-void EQDefaultGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
+void ButterworthEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
+                                               int highFreq) {
     low->setFrequencyCorners(sampleRate, lowFreq);
     band->setFrequencyCorners(sampleRate, lowFreq, highFreq);
     high->setFrequencyCorners(sampleRate, highFreq);
 }
 
-EQDefault::EQDefault(EngineEffect* pEffect,
-                   const EffectManifest& manifest)
+ButterworthEQEffect::ButterworthEQEffect(EngineEffect* pEffect,
+                                         const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
@@ -97,16 +98,16 @@ EQDefault::EQDefault(EngineEffect* pEffect,
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
 }
 
-EQDefault::~EQDefault() {
+ButterworthEQEffect::~ButterworthEQEffect() {
     delete m_pLoFreqCorner;
     delete m_pHiFreqCorner;
 }
 
-void EQDefault::processGroup(const QString& group,
-                             EQDefaultGroupState* pState,
-                             const CSAMPLE* pInput, CSAMPLE* pOutput,
-                             const unsigned int numSamples,
-                             const GroupFeatureState& groupFeatures) {
+void ButterworthEQEffect::processGroup(const QString& group,
+                                       ButterworthEQEffectGroupState* pState,
+                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                       const unsigned int numSamples,
+                                       const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
