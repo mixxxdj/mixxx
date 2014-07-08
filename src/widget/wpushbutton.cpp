@@ -74,14 +74,12 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             if (iState < m_iNoStates) {
                 QString pixmapPath;
                 
-                QDomNode unpressedNode = context.selectNode(state, "Unpressed");
-                pixmapPath = context.getPixmapPath(unpressedNode);
+                pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
                 if (!pixmapPath.isEmpty()) {
                     setPixmap(iState, false, pixmapPath);
                 }
                 
-                QDomNode pressedNode = context.selectNode(state, "Pressed");
-                pixmapPath = context.getPixmapPath(pressedNode);
+                pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
                 if (!pixmapPath.isEmpty()) {
                     setPixmap(iState, true, pixmapPath);
                 }
