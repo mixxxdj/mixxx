@@ -349,7 +349,7 @@
      <item row="10" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
-        <string>Mixxx mode: 
+        <string>Mixxx mode:
 - Cue button while pause at cue point = preview
 - Cue button while pause not at cue point = set cue point
 - Cue button while playing = pause at cue point
@@ -461,16 +461,6 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
-       <property name="text">
-        <string>Track load behavior</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
-       </property>
-      </widget>
-     </item>
      <item row="10" column="0">
       <widget class="QLabel" name="labelCueMode">
        <property name="text">
@@ -500,7 +490,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="textLabelLocale">
        <property name="text">
         <string>Locale</string>
@@ -510,7 +500,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="2">
+     <item row="11" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxLocale">
        <property name="toolTip">
         <string>Locales determine country and language specific settings.</string>
@@ -577,9 +567,6 @@ Numark mode:
         <cstring>ComboBoxCueRecall</cstring>
        </property>
       </widget>
-     </item>
-     <item row="11" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
      </item>
      <item row="9" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueRecall"/>
@@ -651,7 +638,6 @@ Numark mode:
   <tabstop>ComboBoxRateDir</tabstop>
   <tabstop>ComboBoxCueRecall</tabstop>
   <tabstop>ComboBoxCueDefault</tabstop>
-  <tabstop>ComboBoxAllowTrackLoadToPlayingDeck</tabstop>
   <tabstop>ComboBoxLocale</tabstop>
   <tabstop>spinBoxPermRateLeft</tabstop>
   <tabstop>spinBoxPermRateRight</tabstop>

@@ -142,17 +142,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     SliderRateRampSensitivity->setEnabled(true);
     SpinBoxRateRampSensitivity->setEnabled(true);
 
-
-    //
-    // Override Playing Track on Track Load
-    //
-    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Don't load tracks into a playing deck"));
-    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Load tracks into a playing deck"));
-    ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(
-        m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt());
-    connect(ComboBoxAllowTrackLoadToPlayingDeck, SIGNAL(activated(int)),
-            this, SLOT(slotSetAllowTrackLoadToPlayingDeck(int)));
-
     //
     // Locale setting
     //
@@ -381,9 +370,6 @@ void DlgPrefControls::slotResetToDefaults() {
     // 10% Rate Range
     ComboBoxRateRange->setCurrentIndex(2);
 
-    // Don't load tracks into playing decks.
-    ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(0);
-
     // Use System locale
     ComboBoxLocale->setCurrentIndex(0);
 
@@ -448,7 +434,7 @@ void DlgPrefControls::slotSetRateDir(int index) {
     foreach (ControlObjectThread* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
-    
+
     // If the setting was changed, ie the old direction is not equal to the new one,
     // multiply the rate by -1 so the current sound does not change.
     if(fabs(dir - oldDir) > 0.1) {
@@ -456,12 +442,7 @@ void DlgPrefControls::slotSetRateDir(int index) {
             pControl->slotSet(-1 * pControl->get());
         }
     }
-    
-}
 
-void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
-    m_pConfig->set(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck"),
-                   ConfigValue(ComboBoxAllowTrackLoadToPlayingDeck->currentIndex()));
 }
 
 void DlgPrefControls::slotSetCueDefault(int)
