@@ -213,7 +213,6 @@ QDomDocument SkinContext::getDocument(const QDomNode& node) const {
     
     QDomDocument document;
     QDomNode parentNode = node;
-    // QString parentTagName = varValueNode.parentNode().toElement().tagName();
     while( !parentNode.isNull() ){
         if( parentNode.isDocument() )
             document = parentNode.toDocument();
@@ -229,20 +228,15 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
-    
     QDomDocument document = getDocument(svgNode);
-    
     QDomElement svgElement = svgNode.toElement();
     
-    QDomNodeList variablesElements = svgElement.elementsByTagName("Variable");
-    
     // replace variables
+    QDomNodeList variablesElements = svgElement.elementsByTagName("Variable");
     uint variableIndex;
     QDomElement varElement;
     QString varName, varValue;
-    QDomNode varNode;
-    QDomNode varParentNode;
-    QDomNode oldChild;
+    QDomNode varNode, varParentNode, oldChild;
     QDomText varValueNode;
     
     for (variableIndex=0; variableIndex < variablesElements.length(); variableIndex++){
@@ -253,19 +247,14 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
         varName = varElement.attribute("name");
         varValue = variable(varName);
         
-        // qWarning()
-                // << "SVG : " << varName << " => " << varValue << "\n";
-        
         // replace node by its value
         varParentNode = varNode.parentNode();
-        
         varValueNode = document.createTextNode(varValue);
-        
         oldChild = varParentNode.replaceChild( varValueNode, varNode );
+        
         if( oldChild.isNull() ){
             // replaceChild has a really weird behaviour so I add this check
-            qDebug()
-                    << "SVG : unable to replace dom node changed. \n";
+            qDebug() << "SVG : unable to replace dom node changed. \n";
         }
     }
     
@@ -278,15 +267,10 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
     
     QString svgTempFileName;
     if( svgFile.open() ){
+        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
         QTextStream out(&svgFile);
-        
         svgNode.save( out, -1 );
-        
-        // qWarning()
-                // << "SVG : Temp filename" << svgFile.fileName() << " \n";
-        
         svgFile.close();
-        
         svgTempFileName = svgFile.fileName();
     } else {
         qDebug() << "Unable to open temp file for inline svg \n";
