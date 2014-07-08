@@ -63,6 +63,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void unloadTrack(bool save);
     void clear();
     void init();
+    QPixmap scaledCoverArt(QPixmap original);
 
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
