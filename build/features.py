@@ -363,6 +363,10 @@ class VinylControl(Feature):
     def enabled(self, build):
         build.flags['vinylcontrol'] = util.get_flags(build.env,
                                                      'vinylcontrol', 0)
+        # Existence of the appstore option forces vinylcontrol off due to
+        # licensing issues.
+        if build.flags.has_key('appstore') and int(build.flags['appstore']):
+            return False
         if int(build.flags['vinylcontrol']):
             return True
         return False
@@ -1285,3 +1289,25 @@ class AutoDjCrates(Feature):
 
     def sources(self, build):
         return ['library/dao/autodjcratesdao.cpp']
+
+class AppStoreException(Feature):
+    def description(self):
+        return "Build for Mac App Store"
+
+    def enabled(self, build):
+        build.flags['appstore'] = util.get_flags(build.env,
+                                                 'appstore', 0)
+        if int(build.flags['appstore']):
+            # Existence of the appstore option forces vinylcontrol off due to
+            # licensing issues.
+            build.flags['vinylcontrol'] = 0
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('appstore', 'Set to 1 to indicate the build is for the Mac App Store', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES='__MACAPPSTORE__')
