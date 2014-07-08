@@ -156,7 +156,7 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 QString BrowseFeature::getIconName(){
-    return "1";
+    return "ic_library_browse.png";
 }
 
 QIcon BrowseFeature::getIcon() {

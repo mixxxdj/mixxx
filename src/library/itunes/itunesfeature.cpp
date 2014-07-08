@@ -109,7 +109,7 @@ QVariant ITunesFeature::title() {
 }
 
 QString ITunesFeature::getIconName() {
-    return "1";
+    return "ic_library_itunes.png";
 }
 
 QIcon ITunesFeature::getIcon() {

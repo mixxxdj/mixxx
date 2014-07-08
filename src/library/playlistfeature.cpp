@@ -39,7 +39,7 @@ QVariant PlaylistFeature::title() {
 }
 
 QString PlaylistFeature::getIconName() {
-    return "1";
+    return "ic_library_playlist.png";
 }
 
 QIcon PlaylistFeature::getIcon() {

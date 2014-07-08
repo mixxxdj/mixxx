@@ -79,7 +79,7 @@ QVariant AutoDJFeature::title() {
 }
 
 QString AutoDJFeature::getIconName() {
-    return "1";
+    return "ic_library_crates.png";
 }
 
 QIcon AutoDJFeature::getIcon() {

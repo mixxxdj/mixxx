@@ -130,7 +130,7 @@ QVariant MixxxLibraryFeature::title() {
 }
 
 QString MixxxLibraryFeature::getIconName(){
-    return "1";
+    return "ic_library_library.png";
 }
 
 QIcon MixxxLibraryFeature::getIcon() {

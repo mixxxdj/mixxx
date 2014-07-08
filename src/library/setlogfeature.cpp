@@ -50,7 +50,7 @@ QVariant SetlogFeature::title() {
 }
 
 QString SetlogFeature::getIconName() {
-    return "1";
+    return "ic_library_history.png";
 }
 
 QIcon SetlogFeature::getIcon() {

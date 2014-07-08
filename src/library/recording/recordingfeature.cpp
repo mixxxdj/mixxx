@@ -30,7 +30,7 @@ QVariant RecordingFeature::title() {
 }
 
 QString RecordingFeature::getIconName() {
-    return "1";
+    return "ic_library_recordings.png";
 }
 
 QIcon RecordingFeature::getIcon() {
