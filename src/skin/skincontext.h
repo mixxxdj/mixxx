@@ -62,7 +62,7 @@ class SkinContext {
     QString nodeToString(const QDomNode& node) const;
     QDomDocument getDocument(const QDomNode& node) const;
     QString setVariablesInSvg(const QDomNode& svgNode) const;
-    QString getPixmapPath(const QDomNode& oneStateNode) const;
+    QString getPixmapPath(const QDomNode& pixmapNode) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
