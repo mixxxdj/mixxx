@@ -45,7 +45,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bCoverIsVisible;
     bool m_bDefaultCover;
 
-    const QPixmap m_defaultCover;
     QString m_sCoverTitle;
     QPixmap m_currentCover;
     QPixmap m_currentScaledCover;

@@ -21,6 +21,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QString getDefaultCoverLocation(int trackId);
+    QPixmap getDefaultCoverArt() { return m_defaultCover; }
 
   public slots:
     void imageFound();
@@ -52,6 +53,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
     QPixmap* m_pixmap;
+    const QPixmap m_defaultCover;
 
     QString calculateMD5(QImage img);
     QImage rescaleBigImage(QImage img);
