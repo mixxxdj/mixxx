@@ -154,7 +154,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmHalve->setEnabled(enableBpmEditing);
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
-    coverArt->setPixmap(QPixmap(":/images/library/vinyl-record.png"));
+    coverArt->setPixmap(CoverArtCache::instance()->getDefaultCoverArt());
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
