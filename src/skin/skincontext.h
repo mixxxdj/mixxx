@@ -21,8 +21,6 @@ class SkinContext {
 
     // Gets a path relative to the skin path.
     QString getSkinPath(const QString& relativePath) const {
-        // QString l(relativePath);
-        // return l.prepend(m_skinBasePath);
         return QDir(m_skinBasePath).filePath(relativePath);
     }
 
@@ -64,6 +62,7 @@ class SkinContext {
     QString nodeToString(const QDomNode& node) const;
     QDomDocument getDocument(const QDomNode& node) const;
     QString setVariablesInSvg(const QDomNode& svgNode) const;
+    QString getPixmapPath(const QDomNode& oneStateNode) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;

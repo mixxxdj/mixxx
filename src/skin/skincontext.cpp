@@ -278,3 +278,23 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
     
     return svgTempFileName;
 }
+
+QString SkinContext::getPixmapPath(const QDomNode& oneStateNode) const {
+    QString pixmapPath, pixmapName;
+    
+    if (!oneStateNode.isNull()) {
+        QDomNode svgNode = selectNode(oneStateNode, "svg");
+        if (!svgNode.isNull()) {
+            // inline svg
+            pixmapPath = setVariablesInSvg(svgNode);
+        } else {
+            // filename
+            pixmapName = nodeToString(oneStateNode);
+            if (!pixmapName.isEmpty()) {
+                pixmapPath = getSkinPath(pixmapName);
+            }
+        }
+    }
+    
+    return pixmapPath;
+}

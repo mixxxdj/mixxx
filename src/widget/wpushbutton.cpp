@@ -72,44 +72,18 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         if (state.isElement() && state.nodeName() == "State") {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                QString pixmapName;
+                QString pixmapPath;
                 
                 QDomNode unpressedNode = context.selectNode(state, "Unpressed");
-                if (!unpressedNode.isNull()) {
-                    
-                    QDomNode svgNode = context.selectNode(unpressedNode, "svg");
-                    if (!svgNode.isNull()) {
-                        // inline svg
-                        QString svgTempFilename = context.setVariablesInSvg(svgNode);
-                        setPixmap(iState, false, svgTempFilename);
-                        
-                    } else {
-                        // filename
-                        pixmapName = context.nodeToString(unpressedNode);
-                        if (!pixmapName.isEmpty()) {
-                            setPixmap(iState, false, context.getSkinPath(pixmapName));
-                        }
-                    }
-                    
+                pixmapPath = context.getPixmapPath(unpressedNode);
+                if (!pixmapPath.isEmpty()) {
+                    setPixmap(iState, false, pixmapPath);
                 }
                 
                 QDomNode pressedNode = context.selectNode(state, "Pressed");
-                if (!pressedNode.isNull()) {
-                    
-                    QDomNode svgNode = context.selectNode(pressedNode, "svg");
-                    if (!svgNode.isNull()) {
-                        // inline svg
-                        QString svgTempFilename = context.setVariablesInSvg(svgNode);
-                        setPixmap(iState, true, svgTempFilename);
-                        
-                    } else {
-                        // filename
-                        pixmapName = context.nodeToString(pressedNode);
-                        if (!pixmapName.isEmpty()) {
-                            setPixmap(iState, true, context.getSkinPath(pixmapName));
-                        }
-                    }
-                    
+                pixmapPath = context.getPixmapPath(pressedNode);
+                if (!pixmapPath.isEmpty()) {
+                    setPixmap(iState, true, pixmapPath);
                 }
                 
                 m_text.replace(iState, context.selectString(state, "Text"));
