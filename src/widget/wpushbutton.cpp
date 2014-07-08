@@ -59,10 +59,9 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        QString backPath = context.selectString(node, "BackPath");
+        QString backPath = context.getPixmapPath(context.selectNode(node, "BackPath"));
         if (!backPath.isEmpty()) {
-            setPixmapBackground(context.getSkinPath(backPath),
-                                Paintable::DrawModeFromString(mode_str));
+            setPixmapBackground(backPath, Paintable::DrawModeFromString(mode_str));
         }
     }
 
