@@ -56,36 +56,16 @@
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="1" column="2">
-          <widget class="QLineEdit" name="txtAlbum"/>
-         </item>
          <item row="0" column="2">
           <widget class="QLineEdit" name="txtTrackName"/>
          </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="lblTrackName">
-           <property name="text">
-            <string>Title:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
+         <item row="1" column="2">
+          <widget class="QLineEdit" name="txtAlbum"/>
          </item>
          <item row="1" column="3">
           <widget class="QLabel" name="lblAlbumArtist">
            <property name="text">
             <string>Album Artist:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QLabel" name="lblArtist">
-           <property name="text">
-            <string>Artist:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -102,29 +82,97 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="4">
-          <widget class="QLineEdit" name="txtArtist"/>
+         <item row="0" column="3">
+          <widget class="QLabel" name="lblArtist">
+           <property name="text">
+            <string>Artist:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
          </item>
          <item row="1" column="4">
           <widget class="QLineEdit" name="txtAlbumArtist"/>
          </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="lblTrackName">
+           <property name="text">
+            <string>Title:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLineEdit" name="txtArtist"/>
+         </item>
          <item row="0" column="0" rowspan="2">
-          <widget class="QLabel" name="coverArt">
+          <widget class="QGroupBox" name="groupBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
+             <horstretch>80</horstretch>
+             <verstretch>80</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
-             <width>70</width>
-             <height>70</height>
+             <width>80</width>
+             <height>80</height>
             </size>
            </property>
-           <property name="text">
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="title">
             <string/>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="coverArt">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
