@@ -2,6 +2,7 @@
 // Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
+#include <QFileDialog>
 
 #include "dlgtrackinfo.h"
 #include "library/coverartcache.h"
@@ -70,6 +71,8 @@ void DlgTrackInfo::init(){
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int)),
             this, SLOT(slotPixmapFound(int)));
+    connect(coverArt, SIGNAL(clicked()),
+            this, SLOT(slotEditCoverArt()));
 }
 
 void DlgTrackInfo::OK() {
@@ -185,6 +188,21 @@ void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                              m_coverPixmap,
                                              coverLocation,
                                              md5Hash);
+}
+
+void DlgTrackInfo::slotEditCoverArt() {
+    if (m_pLoadedTrack == NULL) {
+        return;
+    }
+
+    QString newCoverLocation = QFileDialog::getOpenFileName(
+                this, tr("Edit Cover Art"),
+                m_pLoadedTrack->getDirectory(),
+                tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
+
+    if (newCoverLocation.isNull()) {
+        return;
+    }
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
