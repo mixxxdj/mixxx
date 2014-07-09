@@ -154,7 +154,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmHalve->setEnabled(enableBpmEditing);
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
-    coverArt->setPixmap(scaledCoverArt(CoverArtCache::instance()
+    coverArt->setIcon(scaledCoverArt(CoverArtCache::instance()
                                        ->getDefaultCoverArt()));
 }
 
@@ -180,7 +180,7 @@ void DlgTrackInfo::slotPixmapFound(int trackId) {
         return;
 
     if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setPixmap(scaledCoverArt(m_coverPixmap));
+        coverArt->setIcon(scaledCoverArt(m_coverPixmap));
         update();
     }
 }
