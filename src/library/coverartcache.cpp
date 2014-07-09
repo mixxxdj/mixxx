@@ -24,6 +24,35 @@ void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
     m_pTrackDAO = trackdao;
 }
 
+bool CoverArtCache::changeCoverArt(int trackId,
+                                   QPixmap& pixmap,
+                                   const QString& newCoverLocation) {
+    if (trackId < 1 || newCoverLocation.isEmpty()) {
+        return false;
+    }
+
+    QImage img(newCoverLocation);
+    QString md5Hash = calculateMD5(img);
+    if (md5Hash.isEmpty()) {
+        return false;
+    }
+
+    // Update DB
+    int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, md5Hash);
+    m_pTrackDAO->updateCoverArt(trackId, coverId);
+
+    if (QPixmapCache::find(md5Hash, pixmap)) {
+        emit(pixmapFound(trackId));
+    } else {
+        pixmap.convertFromImage(img);
+        if (QPixmapCache::insert(md5Hash, pixmap)) {
+            emit(pixmapFound(trackId));
+        }
+    }
+
+    return true;
+}
+
 void CoverArtCache::requestPixmap(int trackId,
                                   QPixmap& pixmap,
                                   const QString& coverLocation,
@@ -231,6 +260,9 @@ QImage CoverArtCache::rescaleBigImage(QImage img) {
 }
 
 QString CoverArtCache::calculateMD5(QImage img) {
+    if (img.isNull()) {
+        return QString();
+    }
     QByteArray arr((char*)img.bits(), img.byteCount());
     QCryptographicHash md5(QCryptographicHash::Md5);
     md5.addData(arr);

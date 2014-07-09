@@ -203,6 +203,14 @@ void DlgTrackInfo::slotEditCoverArt() {
     if (newCoverLocation.isNull()) {
         return;
     }
+
+    m_coverPixmap = QPixmap();
+    bool res = CoverArtCache::instance()->changeCoverArt(
+                m_pLoadedTrack->getId(), m_coverPixmap, newCoverLocation);
+    if (!res) {
+        QMessageBox::warning(this, tr("Edit Cover Art"),
+                             tr("Could not change the cover art: '%s'"));
+    }
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
