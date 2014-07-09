@@ -154,8 +154,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmHalve->setEnabled(enableBpmEditing);
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
-    coverArt->setIcon(scaledCoverArt(CoverArtCache::instance()
-                                       ->getDefaultCoverArt()));
+    coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -169,18 +168,12 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     populateCues(m_pLoadedTrack);
 }
 
-QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
-    return original.scaled(70, 70,
-                           Qt::KeepAspectRatioByExpanding,
-                           Qt::SmoothTransformation);
-}
-
 void DlgTrackInfo::slotPixmapFound(int trackId) {
     if (m_pLoadedTrack == NULL)
         return;
 
     if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setIcon(scaledCoverArt(m_coverPixmap));
+        coverArt->setIcon(m_coverPixmap);
         update();
     }
 }
