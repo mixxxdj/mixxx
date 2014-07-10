@@ -124,8 +124,6 @@ void DlgPrefEQ::slotEnaEQChanged() {
 
 void DlgPrefEQ::slotLoFiChanged()
 {
-    GroupBoxHiEQ->setEnabled(!CheckBoxLoFi->isChecked());
-    GroupBoxLoEQ->setEnabled(!CheckBoxLoFi->isChecked());
     if(CheckBoxLoFi->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("yes")));
     } else {
