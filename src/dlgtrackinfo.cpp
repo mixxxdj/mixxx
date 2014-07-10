@@ -166,6 +166,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
     coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
+    m_sLoadedCoverLocation.clear();
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -192,9 +193,10 @@ void DlgTrackInfo::slotPixmapFound(int trackId) {
 void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                     const QString& md5Hash,
                                     int trackId) {
+    m_sLoadedCoverLocation = coverLocation;
     CoverArtCache::instance()->requestPixmap(trackId,
                                              m_coverPixmap,
-                                             coverLocation,
+                                             m_sLoadedCoverLocation,
                                              md5Hash);
 }
 
@@ -208,6 +210,7 @@ void DlgTrackInfo::slotRemoveCoverArt() {
     if (res) {
         // load default cover art
         coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
+        m_sLoadedCoverLocation.clear();
         update();
     } else {
         QMessageBox::warning(this, tr("Remove Cover Art"),
@@ -220,9 +223,14 @@ void DlgTrackInfo::slotEditCoverArt() {
         return;
     }
 
+    QString dir;
+    if (m_sLoadedCoverLocation.isEmpty()) {
+        dir = m_pLoadedTrack->getDirectory();
+    } else {
+        dir = m_sLoadedCoverLocation;
+    }
     QString newCoverLocation = QFileDialog::getOpenFileName(
-                this, tr("Edit Cover Art"),
-                m_pLoadedTrack->getDirectory(),
+                this, tr("Edit Cover Art"), dir,
                 tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
 
     if (newCoverLocation.isNull()) {

@@ -69,6 +69,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
     QPixmap m_coverPixmap;
+    QString m_sLoadedCoverLocation;
 
     CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
