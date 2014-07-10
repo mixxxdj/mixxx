@@ -52,7 +52,12 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
         s_EnableEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "EnableEQs"));
     }
 
-    high = band = low = NULL;
+    lowLight = 0;
+    bandLight = 0;
+    highLight = 0;
+    lowDef = 0;
+    bandDef = 0;
+    highDef = 0;
 
     // Load Defaults
     setFilters(true);
@@ -92,9 +97,12 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
 
 EngineFilterBlock::~EngineFilterBlock()
 {
-    delete high;
-    delete band;
-    delete low;
+    delete lowLight;
+    delete bandLight;
+    delete highLight;
+    delete lowDef;
+    delete bandDef;
+    delete highDef;
     delete [] m_pHighBuf;
     delete [] m_pBandBuf;
     delete [] m_pLowBuf;
@@ -125,23 +133,41 @@ void EngineFilterBlock::setFilters(bool forceSetting) {
             (ihighFreq != (int)s_hiEqFreq->get()) ||
             (blofi != (int)s_lofiEq->get()) ||
             forceSetting) {
-        delete low;
-        delete band;
-        delete high;
         ilowFreq = (int)s_loEqFreq->get();
         ihighFreq = (int)s_hiEqFreq->get();
         blofi = (int)s_lofiEq->get();
         m_iOldSampleRate = iSampleRate;
+
+        // Create new filters
+        if (forceSetting) {
+            delete lowLight;
+            delete bandLight;
+            delete highLight;
+            delete lowDef;
+            delete bandDef;
+            delete highDef;
+            lowLight = new EngineFilterIIRLow(iSampleRate, ilowFreq);
+            bandLight = new EngineFilterIIRBand(iSampleRate, ilowFreq, ihighFreq);
+            highLight = new EngineFilterIIRHigh(iSampleRate, ihighFreq);
+            lowDef = new EngineFilterButterworth8Low(iSampleRate, ilowFreq);
+            bandDef = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
+            highDef = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
+        }
+
         if (blofi) {
-            // why is this DJM800 at line ~34 (LOFI ifdef) and just
-            // bessel_lowpass# here? bkgood
-            low = new EngineFilterIIR(bessel_lowpass4,4);
-            band = new EngineFilterIIR(bessel_bandpass,8);
-            high = new EngineFilterIIR(bessel_highpass4,4);
+            lowLight->setFrequencyCorners(iSampleRate, ilowFreq);
+            bandLight->setFrequencyCorners(iSampleRate, ilowFreq, ihighFreq);
+            highLight->setFrequencyCorners(iSampleRate, ihighFreq);
+            low = lowLight;
+            band = bandLight;
+            high = highLight;
         } else {
-            low = new EngineFilterButterworth8Low(iSampleRate, ilowFreq);
-            band = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
-            high = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
+            lowDef->setFrequencyCorners(iSampleRate, ilowFreq);
+            bandDef->setFrequencyCorners(iSampleRate, ilowFreq, ihighFreq);
+            highDef->setFrequencyCorners(iSampleRate, ihighFreq);
+            low = lowDef;
+            band = bandDef;
+            high = highDef;
         }
     }
 }

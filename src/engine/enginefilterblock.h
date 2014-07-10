@@ -19,6 +19,8 @@
 #define ENGINEFILTERBLOCK_H
 
 #include "engine/engineobject.h"
+#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbutterworth8.h"
 
 class ControlObjectSlave;
 class ControlLogpotmeter;
@@ -48,6 +50,12 @@ class EngineFilterBlock : public EngineObject {
     void setFilters(bool forceSetting = false);
 
     CSAMPLE *m_pLowBuf, *m_pBandBuf, *m_pHighBuf;
+    EngineFilterIIRLow* lowLight;
+    EngineFilterIIRBand* bandLight;
+    EngineFilterIIRHigh* highLight;
+    EngineFilterButterworth8Low* lowDef;
+    EngineFilterButterworth8Band* bandDef;
+    EngineFilterButterworth8High* highDef;
     EngineObjectConstIn *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
