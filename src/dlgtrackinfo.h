@@ -57,6 +57,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotPixmapFound(int trackId);
     void slotEditCoverArt();
     void slotRemoveCoverArt();
+    void reloadEmbeddedCover();
 
   private:
     void populateFields(TrackPointer pTrack);
@@ -65,7 +66,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void unloadTrack(bool save);
     void clear();
     void init();
-    void reloadEmbeddedCover();
 
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
