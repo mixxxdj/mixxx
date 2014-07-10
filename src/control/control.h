@@ -25,7 +25,7 @@ class ControlDoublePrivate : public QObject {
         s_pUserConfig = pConfig;
     }
 
-    static void createAlias(const ConfigKey& alias, const ConfigKey& key);
+    static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
 
     // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
     // is true, allocates a new ControlDoublePrivate for the ConfigKey if one

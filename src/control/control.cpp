@@ -79,7 +79,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 }
 
 // static
-void ControlDoublePrivate::createAlias(const ConfigKey& alias, const ConfigKey& key) {
+void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
     QSharedPointer<ControlDoublePrivate> pControl = getControl(key);
     QMutexLocker locker(&s_qCOAliasHashMutex);
     s_qCOAliasHash.insert(alias, pControl);

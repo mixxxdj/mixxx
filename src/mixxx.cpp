@@ -635,11 +635,11 @@ bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString user
 }
 
 void MixxxMainWindow::createCOAliases() {
-    // Create aliases using
-    // ControlDoublePrivate::createAlias(aliasConfigKey, originalConfigKey)
+    // Add aliases using
+    // ControlDoublePrivate::insertAlias(aliasConfigKey, originalConfigKey)
 
     // Example:
-    // ControlDoublePrivate::createAlias(ConfigKey("[Microphone]", "volume"),
+    // ControlDoublePrivate::insertAlias(ConfigKey("[Microphone]", "volume"),
     //                                   ConfigKey("[Microphone1]", "volume"));
 }
 
