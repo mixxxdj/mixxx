@@ -17,23 +17,58 @@
 #ifndef ENGINEFILTERIIR_H
 #define ENGINEFILTERIIR_H
 
+#define MAX_COEFS 17
+#define MAX_INTERNAL_BUF 16
+
 #include "engine/engineobject.h"
 #include "util/types.h"
 
 class EngineFilterIIR : public EngineObjectConstIn {
     Q_OBJECT
   public:
-    EngineFilterIIR(const double* pCoefs, int iOrder);
+    EngineFilterIIR(int bufSize);
     virtual ~EngineFilterIIR();
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+    void initBuffers();
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut,
+                         const int iBufferSize) = 0;
 
   protected:
-    int order;
-    const double *coefs;
-    #define MAXNZEROS 8
-    #define MAXNPOLES 8
-    double xv1[MAXNZEROS+1], yv1[MAXNPOLES+1];
-    double xv2[MAXNZEROS+1], yv2[MAXNPOLES+1];
+    int m_sampleRate;
+    double m_coef[MAX_COEFS];
+
+    int m_bufSize;
+    // Channel 1 state
+    double m_buf1[MAX_INTERNAL_BUF];
+
+    // Channel 2 state
+    double m_buf2[MAX_INTERNAL_BUF];
+};
+
+class EngineFilterIIRLow : public EngineFilterIIR {
+    Q_OBJECT
+  public:
+    EngineFilterIIRLow(int sampleRate, double freqCorner1);
+    void setFrequencyCorners(int sampleRate, double freqCorner1);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+};
+
+class EngineFilterIIRBand : public EngineFilterIIR {
+    Q_OBJECT
+  public:
+    EngineFilterIIRBand(int sampleRate, double freqCorner1,
+                        double freqCorner2);
+    void setFrequencyCorners(int sampleRate, double freqCorner1,
+                             double freqCorner2);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+};
+
+class EngineFilterIIRHigh : public EngineFilterIIR {
+    Q_OBJECT
+  public:
+    EngineFilterIIRHigh(int sampleRate, double freqCorner1);
+    void setFrequencyCorners(int sampleRate, double freqCorner1);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
 
 //
@@ -109,4 +144,4 @@ static const double bessel_highpass4D2[7] = {1.807553687e+00, -4, 6,
 
 
 
-#endif
+#endif // ENGINEFILTERIIR_H
