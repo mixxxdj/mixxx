@@ -136,7 +136,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 
     // Looking for embedded cover art.
     //
-    res.img = searchEmbeddedCover(coverInfo.trackLocation);
+    res.img = extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.img = rescaleBigImage(res.img);
         if (res.md5Hash.isEmpty()) {
@@ -216,7 +216,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
 
 // this method will parse the information stored in the sound file
 // just to extract the embedded cover art
-QImage CoverArtCache::searchEmbeddedCover(QString trackLocation) {
+QImage CoverArtCache::extractEmbeddedCover(QString trackLocation) {
     if (trackLocation.isEmpty()) {
         return QImage();
     }

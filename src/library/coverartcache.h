@@ -59,7 +59,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
     QString calculateMD5(QImage img);
     QImage rescaleBigImage(QImage img);
-    QImage searchEmbeddedCover(QString trackLocation);
+    QImage extractEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,
                                    QString trackBaseName,
                                    QString album);
