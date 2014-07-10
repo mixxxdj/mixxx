@@ -24,6 +24,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
+    QString getHashOfEmbeddedCover(QString trackLocation);
 
   public slots:
     void imageFound();

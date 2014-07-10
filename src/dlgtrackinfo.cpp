@@ -164,8 +164,6 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmHalve->setEnabled(enableBpmEditing);
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
-    coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
-    m_sLoadedCoverLocation.clear();
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -177,6 +175,11 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+
+    // Load Default Cover Art
+    coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
+    m_sLoadedCoverLocation.clear();
+    m_sLoadedMd5Hash.clear();
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId) {
@@ -192,11 +195,13 @@ void DlgTrackInfo::slotPixmapFound(int trackId) {
 void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                     const QString& md5Hash,
                                     int trackId) {
+    m_coverPixmap = QPixmap();
     m_sLoadedCoverLocation = coverLocation;
+    m_sLoadedMd5Hash = md5Hash;
     CoverArtCache::instance()->requestPixmap(trackId,
                                              m_coverPixmap,
                                              m_sLoadedCoverLocation,
-                                             md5Hash);
+                                             m_sLoadedMd5Hash);
 }
 
 void DlgTrackInfo::slotRemoveCoverArt() {
@@ -210,6 +215,7 @@ void DlgTrackInfo::slotRemoveCoverArt() {
         // load default cover art
         coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
         m_sLoadedCoverLocation.clear();
+        m_sLoadedMd5Hash.clear();
         update();
     } else {
         QMessageBox::warning(this, tr("Remove Cover Art"),
@@ -458,6 +464,49 @@ void DlgTrackInfo::reloadTrackMetadata() {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
         populateFields(pTrack);
+        reloadEmbeddedCover();
+    }
+}
+
+void DlgTrackInfo::reloadEmbeddedCover() {
+    CoverArtCache* covercache = CoverArtCache::instance();
+    QString md5Hash = covercache->getHashOfEmbeddedCover(
+                            m_pLoadedTrack->getLocation());
+
+    QString msg;
+    reloadCoverCases reloadCase = LOAD;
+    if (md5Hash.isEmpty() && !m_sLoadedMd5Hash.isEmpty()) {
+        reloadCase = REMOVE;
+        msg = tr("The current track does not have an embedded cover art.\n"
+                 "Do you want to remove the current cover art?");
+    } else if (md5Hash != m_sLoadedMd5Hash) {
+        reloadCase = CHANGE;
+        msg = tr("The current cover art is different from the embedded cover art.\n"
+                 "Do you want to load the embedded cover art?");
+    }
+
+    if (reloadCase == LOAD) {
+        if (!md5Hash.isEmpty()) {
+            m_coverPixmap = QPixmap();
+            m_sLoadedCoverLocation.clear();
+            m_sLoadedMd5Hash = md5Hash;
+            covercache->requestPixmap(m_pLoadedTrack->getId(), m_coverPixmap);
+        }
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, tr("Reload Embedded Cover Art"), msg,
+                                  QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        if (reloadCase == REMOVE) {
+            slotRemoveCoverArt();
+        } else if (reloadCase == CHANGE) {
+            m_coverPixmap = QPixmap();
+            m_sLoadedCoverLocation.clear();
+            m_sLoadedMd5Hash = md5Hash;
+            covercache->requestPixmap(m_pLoadedTrack->getId(), m_coverPixmap);
+        }
     }
 }
 

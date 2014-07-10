@@ -65,11 +65,13 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void unloadTrack(bool save);
     void clear();
     void init();
+    void reloadEmbeddedCover();
 
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
     QPixmap m_coverPixmap;
     QString m_sLoadedCoverLocation;
+    QString m_sLoadedMd5Hash;
 
     CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
@@ -77,6 +79,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QMutex m_mutex;
     DlgTagFetcher& m_DlgTagFetcher;
 
+    enum reloadCoverCases {
+        LOAD,
+        CHANGE,
+        REMOVE
+    };
 };
 
 #endif /* DLGTRACKINFO_H */
