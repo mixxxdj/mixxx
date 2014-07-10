@@ -199,7 +199,20 @@ void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
 }
 
 void DlgTrackInfo::slotRemoveCoverArt() {
-    // TODO
+    if (m_pLoadedTrack == NULL) {
+        return;
+    }
+
+    bool res = CoverArtCache::instance()->removeCoverArt(
+                m_pLoadedTrack->getId());
+    if (res) {
+        // load default cover art
+        coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
+        update();
+    } else {
+        QMessageBox::warning(this, tr("Remove Cover Art"),
+                             tr("Could not remove the cover art: '%s'"));
+    }
 }
 
 void DlgTrackInfo::slotEditCoverArt() {

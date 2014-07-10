@@ -1224,12 +1224,12 @@ int TrackDAO::getCoverArtId(int trackId) {
 // we load and handle covers in CoverArtCache class and
 // it needs update this column for future cover loadings
 bool TrackDAO::updateCoverArt(int trackId, int coverId) {
-    if (trackId < 1 || coverId < 1) {
+    if (trackId < 1) {
         return false;
     }
 
     if (coverId == getCoverArtId(trackId)) {
-        return false;
+        return true;
     }
 
     QSqlQuery query(m_database);

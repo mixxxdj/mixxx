@@ -53,6 +53,13 @@ bool CoverArtCache::changeCoverArt(int trackId,
     return true;
 }
 
+bool CoverArtCache::removeCoverArt(int trackId) {
+    if (trackId < 1) {
+        return false;
+    }
+    return m_pTrackDAO->updateCoverArt(trackId, -1);
+}
+
 void CoverArtCache::requestPixmap(int trackId,
                                   QPixmap& pixmap,
                                   const QString& coverLocation,
