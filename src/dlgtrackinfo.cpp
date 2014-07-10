@@ -150,7 +150,6 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
-    txtFilepath->setText(pTrack->getFilename());
     txtLocation->setText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
@@ -405,7 +404,6 @@ void DlgTrackInfo::clear() {
     spinBpm->setValue(0.0);
 
     txtDuration->setText("");
-    txtFilepath->setText("");
     txtType->setText("");
     txtLocation->setText("");
     txtBitrate->setText("");
