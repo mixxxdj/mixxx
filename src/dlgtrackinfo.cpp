@@ -3,6 +3,7 @@
 
 #include <QtDebug>
 #include <QFileDialog>
+#include <QMenu>
 
 #include "dlgtrackinfo.h"
 #include "library/coverartcache.h"
@@ -71,8 +72,15 @@ void DlgTrackInfo::init(){
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int)),
             this, SLOT(slotPixmapFound(int)));
-    connect(coverArt, SIGNAL(clicked()),
-            this, SLOT(slotEditCoverArt()));
+
+    QAction* editCover = new QAction(tr("&Edit"), this);
+    connect(editCover, SIGNAL(triggered()), this, SLOT(slotEditCoverArt()));
+    QAction* removeCover = new QAction(tr("&Remove"), this);
+    connect(removeCover, SIGNAL(triggered()), this, SLOT(slotRemoveCoverArt()));
+    QMenu* coverMenu = new QMenu(this);
+    coverMenu->addAction(editCover);
+    coverMenu->addAction(removeCover);
+    coverArt->setMenu(coverMenu);
 }
 
 void DlgTrackInfo::OK() {
@@ -188,6 +196,10 @@ void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                              m_coverPixmap,
                                              coverLocation,
                                              md5Hash);
+}
+
+void DlgTrackInfo::slotRemoveCoverArt() {
+    // TODO
 }
 
 void DlgTrackInfo::slotEditCoverArt() {
