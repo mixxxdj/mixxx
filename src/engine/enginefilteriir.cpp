@@ -22,12 +22,16 @@
 
 EngineFilterIIR::EngineFilterIIR(int bufSize)
         : m_sampleRate(44100),
-          m_bufSize(bufSize) {
-    initBuffers();
+          m_bufSize(bufSize),
+          m_doRamping(false){
     memset(m_coef, 0, MAX_COEFS * sizeof(double));
+    initBuffers();
 }
 
 void EngineFilterIIR::initBuffers() {
+    // Copy the current buffers into the old buffers
+    memcpy(m_oldBuf1, m_buf1, m_bufSize * sizeof(double));
+    memcpy(m_oldBuf2, m_buf2, m_bufSize * sizeof(double));
     // Set the current buffers to 0
     memset(m_buf1, 0, m_bufSize * sizeof(double));
     memset(m_buf2, 0, m_bufSize * sizeof(double));
@@ -122,17 +126,34 @@ EngineFilterIIRLow::EngineFilterIIRLow(int sampleRate, double freqCorner1)
 void EngineFilterIIRLow::setFrequencyCorners(int sampleRate,
                                              double freqCorner1) {
     m_sampleRate = sampleRate;
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
     m_coef[0] = fid_design_coef(m_coef + 1, 4, "LpBe4", m_sampleRate,
                                freqCorner1, 0, 0);
     initBuffers();
+    m_doRamping = true;
 }
 
 void EngineFilterIIRLow::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                  const int iBufferSize) {
+    double tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
-        pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
+        pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i + 1]);
+        // Do a linear cross fade between the old samples and the new samples
+        if (m_doRamping) {
+            tmp1 = _processLowpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processLowpass(m_oldCoef, m_oldBuf2, pIn[i + 1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
+        }
     }
+    m_doRamping = false;
 }
 
 EngineFilterIIRBand::EngineFilterIIRBand(int sampleRate, double freqCorner1,
@@ -145,17 +166,34 @@ void EngineFilterIIRBand::setFrequencyCorners(int sampleRate,
                                              double freqCorner1,
                                              double freqCorner2) {
     m_sampleRate = sampleRate;
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
     m_coef[0] = fid_design_coef(m_coef + 1, 16, "BpBe8", m_sampleRate,
                                freqCorner1, freqCorner2, 0);
     initBuffers();
+    m_doRamping = true;
 }
 
 void EngineFilterIIRBand::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                  const int iBufferSize) {
+    double tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
+        // Do a linear cross fade between the old samples and the new samples
+        if (m_doRamping) {
+            tmp1 = _processBandpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processBandpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
+        }
     }
+    m_doRamping = false;
 }
 
 EngineFilterIIRHigh::EngineFilterIIRHigh(int sampleRate, double freqCorner1)
@@ -166,6 +204,8 @@ EngineFilterIIRHigh::EngineFilterIIRHigh(int sampleRate, double freqCorner1)
 void EngineFilterIIRHigh::setFrequencyCorners(int sampleRate,
                                              double freqCorner1) {
     m_sampleRate = sampleRate;
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
     m_coef[0] = fid_design_coef(m_coef + 1, 4, "HpBe4", m_sampleRate,
                                freqCorner1, 0, 0);
     initBuffers();
@@ -173,8 +213,22 @@ void EngineFilterIIRHigh::setFrequencyCorners(int sampleRate,
 
 void EngineFilterIIRHigh::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                  const int iBufferSize) {
+    double tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
     for (int i = 0; i < iBufferSize; i += 2) {
         pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
+        // Do a linear cross fade between the old samples and the new samples
+        if (m_doRamping) {
+            tmp1 = _processHighpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processHighpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
+        }
     }
+    m_doRamping = false;
 }

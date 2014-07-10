@@ -35,14 +35,24 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
   protected:
     int m_sampleRate;
+
     double m_coef[MAX_COEFS];
+    // Old coefficients needed for ramping
+    double m_oldCoef[MAX_COEFS];
 
     int m_bufSize;
     // Channel 1 state
     double m_buf1[MAX_INTERNAL_BUF];
+    // Old channel 1 buffer needed for ramping
+    double m_oldBuf1[MAX_INTERNAL_BUF];
 
     // Channel 2 state
     double m_buf2[MAX_INTERNAL_BUF];
+    // Old channel 2 buffer needed for ramping
+    double m_oldBuf2[MAX_INTERNAL_BUF];
+
+    // Flag set to true if ramping needs to be done
+    bool m_doRamping;
 };
 
 class EngineFilterIIRLow : public EngineFilterIIR {
