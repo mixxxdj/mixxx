@@ -209,6 +209,7 @@ void EngineFilterIIRHigh::setFrequencyCorners(int sampleRate,
     m_coef[0] = fid_design_coef(m_coef + 1, 4, "HpBe4", m_sampleRate,
                                freqCorner1, 0, 0);
     initBuffers();
+    m_doRamping = true;
 }
 
 void EngineFilterIIRHigh::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
