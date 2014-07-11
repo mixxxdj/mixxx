@@ -47,7 +47,7 @@ class EngineFilterBlock : public EngineObject {
     void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
-    void setFilters(bool forceSetting = false);
+    void setFilters();
 
     CSAMPLE *m_pLowBuf, *m_pBandBuf, *m_pHighBuf;
     EngineFilterIIRLow* lowLight;

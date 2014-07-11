@@ -41,7 +41,7 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     m_eqNeverTouched = true;
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-    m_iOldSampleRate = 0;
+    m_iOldSampleRate = static_cast<int>(m_pSampleRate->get());
 
     // Setup Filter Controls
 
@@ -52,15 +52,17 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
         s_EnableEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "EnableEQs"));
     }
 
-    lowLight = 0;
-    bandLight = 0;
-    highLight = 0;
-    lowDef = 0;
-    bandDef = 0;
-    highDef = 0;
-
     // Load Defaults
-    setFilters(true);
+    lowLight = new EngineFilterIIRLow(m_iOldSampleRate, 246);
+    bandLight = new EngineFilterIIRBand(m_iOldSampleRate, 246, 2484);
+    highLight = new EngineFilterIIRHigh(m_iOldSampleRate, 2484);
+    lowDef = new EngineFilterButterworth8Low(m_iOldSampleRate, 246);
+    bandDef = new EngineFilterButterworth8Band(m_iOldSampleRate, 246, 2484);
+    highDef = new EngineFilterButterworth8High(m_iOldSampleRate, 2484);
+
+    low = lowDef;
+    band = bandDef;
+    high = highDef;
 
     /*
        lowrbj = new EngineFilterRBJ();
@@ -126,34 +128,16 @@ EngineFilterBlock::~EngineFilterBlock()
     s_EnableEq = NULL;
 }
 
-void EngineFilterBlock::setFilters(bool forceSetting) {
+void EngineFilterBlock::setFilters() {
     int iSampleRate = static_cast<int>(m_pSampleRate->get());
     if (m_iOldSampleRate != iSampleRate ||
             (ilowFreq != (int)s_loEqFreq->get()) ||
             (ihighFreq != (int)s_hiEqFreq->get()) ||
-            (blofi != (int)s_lofiEq->get()) ||
-            forceSetting) {
+            (blofi != (int)s_lofiEq->get())) {
         ilowFreq = (int)s_loEqFreq->get();
         ihighFreq = (int)s_hiEqFreq->get();
         blofi = (int)s_lofiEq->get();
         m_iOldSampleRate = iSampleRate;
-
-        // Create new filters
-        if (forceSetting) {
-            delete lowLight;
-            delete bandLight;
-            delete highLight;
-            delete lowDef;
-            delete bandDef;
-            delete highDef;
-            lowLight = new EngineFilterIIRLow(iSampleRate, ilowFreq);
-            bandLight = new EngineFilterIIRBand(iSampleRate, ilowFreq, ihighFreq);
-            highLight = new EngineFilterIIRHigh(iSampleRate, ihighFreq);
-            lowDef = new EngineFilterButterworth8Low(iSampleRate, ilowFreq);
-            bandDef = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
-            highDef = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
-        }
-
         if (blofi) {
             lowLight->setFrequencyCorners(iSampleRate, ilowFreq);
             bandLight->setFrequencyCorners(iSampleRate, ilowFreq, ihighFreq);
