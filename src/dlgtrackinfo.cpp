@@ -77,7 +77,7 @@ void DlgTrackInfo::init(){
     connect(editCover, SIGNAL(triggered()), this, SLOT(slotEditCoverArt()));
     QAction* removeCover = new QAction(tr("&Remove"), this);
     connect(removeCover, SIGNAL(triggered()), this, SLOT(slotRemoveCoverArt()));
-    QAction* reloadCover = new QAction(tr("&Reload from Metadata"), this);
+    QAction* reloadCover = new QAction(tr("Reload from &Metadata"), this);
     connect(reloadCover, SIGNAL(triggered()), this, SLOT(reloadEmbeddedCover()));
     QMenu* coverMenu = new QMenu(this);
     coverMenu->addAction(editCover);
