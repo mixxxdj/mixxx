@@ -237,97 +237,112 @@
         </layout>
        </item>
        <item>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="3">
-          <widget class="QLineEdit" name="txtComposer"/>
+        <layout class="QGridLayout" name="gridLayout_6" columnstretch="80,20,0,0,0,0">
+         <item row="0" column="0" rowspan="3">
+          <layout class="QFormLayout" name="formLayout_2">
+           <property name="fieldGrowthPolicy">
+            <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+           </property>
+           <item row="1" column="0">
+            <widget class="QLabel" name="lblComposer">
+             <property name="text">
+              <string>Composer:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="txtComposer"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="lblGenre">
+             <property name="text">
+              <string>Genre:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="txtGenre"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="lblGrouping">
+             <property name="text">
+              <string>Grouping:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="txtGrouping"/>
+           </item>
+          </layout>
          </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="lblComposer">
-           <property name="text">
-            <string>Composer:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
+         <item row="0" column="1" rowspan="3" colspan="5">
+          <layout class="QFormLayout" name="formLayout_3">
+           <item row="0" column="0">
+            <widget class="QLabel" name="lblYear">
+             <property name="text">
+              <string>Year:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="txtYear"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="lblKey">
+             <property name="text">
+              <string>Key:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="txtKey"/>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="txtTrackNumber"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="lblTrackNumber">
+             <property name="text">
+              <string>Track #:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="txtGrouping"/>
-         </item>
-         <item row="1" column="4">
-          <widget class="QLabel" name="lblTrackNumber">
-           <property name="text">
-            <string>Track #:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="lblGenre">
-           <property name="text">
-            <string>Genre:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="lblGrouping">
-           <property name="text">
-            <string>Grouping:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="5">
-          <widget class="QLineEdit" name="txtTrackNumber"/>
-         </item>
-         <item row="1" column="3">
-          <widget class="QLineEdit" name="txtKey"/>
-         </item>
-         <item row="0" column="4">
-          <widget class="QLabel" name="lblYear">
-           <property name="text">
-            <string>Year:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QLabel" name="lblKey">
-           <property name="text">
-            <string>Key:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="txtGenre"/>
-         </item>
-         <item row="0" column="5">
-          <widget class="QLineEdit" name="txtYear"/>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="lblComment">
-           <property name="text">
-            <string>Comments:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1" colspan="5">
-          <widget class="QLineEdit" name="txtComment"/>
+         <item row="3" column="0" colspan="6">
+          <layout class="QFormLayout" name="formLayout_4">
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="txtComment"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="lblComment">
+             <property name="text">
+              <string>Comments:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
