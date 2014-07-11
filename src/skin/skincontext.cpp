@@ -291,7 +291,21 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
             // filename
             pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
-                pixmapPath = getSkinPath(pixmapName);
+                pixmapName = getSkinPath(pixmapName);
+                if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
+                    
+                    QFile* file = new QFile(pixmapName);
+                    if(file->open(QIODevice::ReadWrite | QIODevice::Text)){
+                        QDomDocument document;
+                        document.setContent(file);
+                        QDomNode svgNode = document.elementsByTagName("svg").item(0);
+                        
+                        pixmapPath = setVariablesInSvg(svgNode);
+                        file->close();
+                    }
+                } else {
+                    pixmapPath = pixmapName;
+                }
             }
         }
     }
