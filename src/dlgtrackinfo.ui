@@ -125,9 +125,6 @@
          </item>
          <item row="0" column="1" rowspan="3" colspan="2">
           <layout class="QFormLayout" name="formLayout">
-           <property name="labelAlignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
            <item row="0" column="0">
             <widget class="QLabel" name="lblTrackName">
              <property name="sizePolicy">
