@@ -149,7 +149,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtGrouping->setText(pTrack->getGrouping());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
-    txtComment->setText(pTrack->getComment());
+    txtComment->setPlainText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
@@ -331,7 +331,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setGrouping(txtGrouping->text());
     m_pLoadedTrack->setYear(txtYear->text());
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
-    m_pLoadedTrack->setComment(txtComment->text());
+    m_pLoadedTrack->setComment(txtComment->toPlainText());
 
     if (!m_pLoadedTrack->hasBpmLock()) {
         m_pLoadedTrack->setBpm(spinBpm->value());
@@ -409,7 +409,7 @@ void DlgTrackInfo::clear() {
     txtGrouping->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
-    txtComment->setText("");
+    txtComment->setPlainText("");
     spinBpm->setValue(0.0);
 
     txtDuration->setText("");

@@ -234,7 +234,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QGridLayout" name="gridLayout_6" columnstretch="80,20,0,0,0,0">
+        <layout class="QGridLayout" name="gridLayout_6" columnstretch="80,0,0">
          <item row="0" column="0" rowspan="3">
           <layout class="QFormLayout" name="formLayout_2">
            <property name="fieldGrowthPolicy">
@@ -281,7 +281,7 @@
            </item>
           </layout>
          </item>
-         <item row="0" column="1" rowspan="3" colspan="5">
+         <item row="0" column="1" rowspan="3" colspan="2">
           <layout class="QFormLayout" name="formLayout_3">
            <item row="0" column="0">
             <widget class="QLabel" name="lblYear">
@@ -316,23 +316,6 @@
             <widget class="QLabel" name="lblTrackNumber">
              <property name="text">
               <string>Track #:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="3" column="0" colspan="6">
-          <layout class="QFormLayout" name="formLayout_4">
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="txtComment"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="lblComment">
-             <property name="text">
-              <string>Comments:</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -480,6 +463,16 @@
           </size>
          </property>
         </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Comments</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QPlainTextEdit" name="txtComment"/>
        </item>
       </layout>
      </widget>
