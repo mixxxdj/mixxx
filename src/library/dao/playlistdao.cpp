@@ -783,7 +783,8 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
     QHash<int,int> trackPositionIds = allIds;
-    QList<int> shuffleSet = positions;
+    QList<int> newPositions = positions;
+    const int searchDistance = trackPositionIds.count() / 4;
 
     // This is a modified Fisher-Yates shuffling algorithm.
     //
@@ -806,50 +807,52 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     //     3) If no good place was found, use the stored best position
     //     4) Swap Track A and Track B
 
-    for (int i=0; i<shuffleSet.count(); i++) {
+    for (int i = 0; i < newPositions.count(); i++) {
         bool conflictFound = true;
-        int trackAPosition = shuffleSet.at(i);
+        int trackAPosition = newPositions.at(i);
         int trackAId = trackPositionIds.value(trackAPosition);
         int trackBPosition = -1;
         int trackBId = -1;
         int bestTrackDistance = -1;
         int bestTrackBPosition = -1;
 
-        for (int limit=10; limit>0 && conflictFound; limit--) {
+        for (int limit = 10; limit > 0 && conflictFound; limit--) {
             int randomShuffleSetIndex =
-                (int)(qrand() / (RAND_MAX + 1.0) * (shuffleSet.count()));
-            trackBPosition = shuffleSet.at(randomShuffleSetIndex);
+                (int)(qrand() / (RAND_MAX + 1.0) * (newPositions.count()));
+            trackBPosition = positions.at(randomShuffleSetIndex);
             trackBId = trackPositionIds.value(trackBPosition);
             conflictFound = false;
             int trackDistance = -1;
 
-            int startPosition = trackBPosition - trackPositionIds.count() / 4;
-            int endPosition = trackBPosition + trackPositionIds.count() / 4;
+            int startPosition = trackBPosition - searchDistance;
+            int endPosition = trackBPosition + searchDistance;
             if (startPosition < 0)
                 startPosition = 0;
             if (endPosition > trackPositionIds.count() - 1)
                 endPosition = trackPositionIds.count() - 1;
             for (int count=startPosition; count < endPosition; count++) {
-                if (trackPositionIds.value(count) == trackAId && count != trackAPosition) {
+                if (trackPositionIds.value(count) == trackAId &&
+                        count != trackAPosition) {
                     conflictFound = true;
                     int tempTrackDistance =
-                        (trackBPosition - count) * (trackBPosition - count);
+                            (trackBPosition - count) * (trackBPosition - count);
                     if (tempTrackDistance < trackDistance || trackDistance == -1)
                         trackDistance = tempTrackDistance;
                 }
             }
 
-            startPosition = trackAPosition - trackPositionIds.count() / 4;
-            endPosition = trackAPosition + trackPositionIds.count() / 4;
+            startPosition = trackAPosition - searchDistance;
+            endPosition = trackAPosition + searchDistance;
             if (startPosition < 0)
                 startPosition = 0;
             if (endPosition > trackPositionIds.count() - 1)
                 endPosition = trackPositionIds.count() - 1;
             for (int count=startPosition; count < endPosition; count++) {
-                if (trackPositionIds.value(count) == trackBId && count != trackBPosition) {
+                if (trackPositionIds.value(count) == trackBId &&
+                        count != trackBPosition) {
                     conflictFound = true;
                     int tempTrackDistance =
-                        (trackAPosition - count) * (trackAPosition - count);
+                            (trackAPosition - count) * (trackAPosition - count);
                     if (tempTrackDistance < trackDistance || trackDistance == -1)
                         trackDistance = tempTrackDistance;
                 }
@@ -871,7 +874,8 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
         trackPositionIds.insert(trackAPosition, trackBId);
         trackPositionIds.insert(trackBPosition, trackAId);
-        shuffleSet.swap(shuffleSet.indexOf(trackAPosition), shuffleSet.indexOf(trackBPosition));
+        newPositions.swap(newPositions.indexOf(trackAPosition),
+                          newPositions.indexOf(trackBPosition));
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
                 "WHERE position=%2 AND playlist_id=%3";
         query.exec(swapQuery.arg(QString::number(-1),

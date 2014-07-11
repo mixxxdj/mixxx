@@ -189,7 +189,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     }
     // Set up list of all IDs
     int numOfTracks = rowCount();
-    for (int i=0; i < numOfTracks; i++) {
+    for (int i = 0; i < numOfTracks; i++) {
         int position = index(i, positionColumn).data().toInt();
         int id = index(i, idColumn).data().toInt();
         allIds.insert(position, id);
