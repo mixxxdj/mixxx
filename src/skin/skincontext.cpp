@@ -258,6 +258,9 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
         }
     }
     
+    
+    parseTree(svgNode, &SkinContext::setVariablesInAttributes);
+    
     // Save the new svg in a temp file to use it with setPixmap
     QTemporaryFile svgFile;
     svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
@@ -312,3 +315,62 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     
     return pixmapPath;
 }
+
+
+void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
+	QDomNamedNodeMap attributes = node.attributes();
+    uint i;
+    int pos;
+    QString varName, varValue, attributeValue, propName, match, replacement;
+    QStringList captured;
+    QDomAttr attribute;
+    QRegExp rx("var\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");	// var( part1 [, part2] )
+    
+    for (i=0; i < attributes.length(); i++){
+        
+        attribute = attributes.item(i).toAttr();
+        attributeValue = attribute.value();
+		pos = 0;
+		
+        while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
+			captured = rx.capturedTexts();
+			qWarning() << "AAAAA " << captured.length() << " '" << captured.join("', '") << "'\n";
+			match = rx.cap(0);
+			
+			varName = rx.cap(3);
+			if (varName.length()){ // var( prop, name )
+				propName = rx.cap(1);
+				varName = rx.cap(3);
+				varValue = variable(varName);
+				replacement = varValue.length() ? propName + ":" + varValue : "";
+			} else{ // var( name )
+				
+				varName = rx.cap(1);
+				replacement = variable(varName);
+			}
+			
+			qDebug() << "setting " << replacement << " as " << match << "in "<< attributeValue << "\n";
+			
+			attributeValue.replace(pos, match.length(), replacement);
+			pos += replacement.length();
+		}
+		
+        attribute.setValue(attributeValue);
+    }
+	
+}
+
+void SkinContext::parseTree(const QDomNode& node, void (SkinContext::*callback)(const QDomNode& node)const) const {
+    
+    (this->*callback)( node );
+    QDomNodeList children = node.childNodes();
+    QDomNode child;
+    uint i;
+    
+    for (i=0; i<children.length(); i++){
+		child = children.at(i);
+		if( child.isElement() )
+			parseTree( child, callback );
+	}
+}
+

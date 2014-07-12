@@ -68,23 +68,27 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     // Load pixmaps for associated states
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {
-        if (state.isElement() && state.nodeName() == "State") {
-            int iState = context.selectInt(state, "Number");
+        if (state.isElement()) {
+            // support for variables in State elements
+            SkinContext* stateContext = new SkinContext(context);
+            stateContext->updateVariables(state);
+            
+            int iState = stateContext->selectInt(state, "Number");
             if (iState < m_iNoStates) {
                 QString pixmapPath;
                 
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
+                pixmapPath = stateContext->getPixmapPath(stateContext->selectNode(state, "Unpressed"));
                 if (!pixmapPath.isEmpty()) {
                     setPixmap(iState, false, pixmapPath);
                 }
                 
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
+                pixmapPath = stateContext->getPixmapPath(stateContext->selectNode(state, "Pressed"));
                 if (!pixmapPath.isEmpty()) {
                     setPixmap(iState, true, pixmapPath);
                 }
                 
-                m_text.replace(iState, context.selectString(state, "Text"));
-                QString alignment = context.selectString(state, "Alignment");
+                m_text.replace(iState, stateContext->selectString(state, "Text"));
+                QString alignment = stateContext->selectString(state, "Alignment");
                 if (alignment == "left") {
                     m_align.replace(iState, Qt::AlignLeft);
                 } else if (alignment == "right") {
