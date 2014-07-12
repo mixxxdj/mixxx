@@ -79,9 +79,9 @@ void DlgTrackInfo::init(){
     connect(changeCover, SIGNAL(triggered()),
             this, SLOT(slotChangeCoverArt()));
     // unset cover art - load default
-    QAction* removeCover = new QAction(tr("&Remove"), this);
-    connect(removeCover, SIGNAL(triggered()),
-            this, SLOT(slotRemoveCoverArt()));
+    QAction* unsetCover = new QAction(tr("&Unset"), this);
+    connect(unsetCover, SIGNAL(triggered()),
+            this, SLOT(slotUnsetCoverArt()));
     // reload just cover art from metadata
     QAction* reloadCover = new QAction(tr("Reload from &Metadata"), this);
     connect(reloadCover, SIGNAL(triggered()),
@@ -89,7 +89,7 @@ void DlgTrackInfo::init(){
     // Cover art popup menu
     QMenu* coverMenu = new QMenu(this);
     coverMenu->addAction(changeCover);
-    coverMenu->addAction(removeCover);
+    coverMenu->addAction(unsetCover);
     coverMenu->addAction(reloadCover);
     coverArt->setMenu(coverMenu);
 }
@@ -215,7 +215,7 @@ void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                              m_sLoadedMd5Hash);
 }
 
-void DlgTrackInfo::slotRemoveCoverArt() {
+void DlgTrackInfo::slotUnsetCoverArt() {
     if (m_pLoadedTrack == NULL) {
         return;
     }
@@ -487,9 +487,9 @@ void DlgTrackInfo::reloadEmbeddedCover() {
     QString msg;
     reloadCoverCases reloadCase = LOAD;
     if (md5Hash.isEmpty() && !m_sLoadedMd5Hash.isEmpty()) {
-        reloadCase = REMOVE;
+        reloadCase = UNSET;
         msg = tr("The current track does not have an embedded cover art.\n"
-                 "Do you want to remove the current cover art?");
+                 "Do you want to unset the current cover art?");
     } else if (md5Hash != m_sLoadedMd5Hash) {
         reloadCase = CHANGE;
         msg = tr("The current cover art is different from the embedded cover art.\n"
@@ -510,8 +510,8 @@ void DlgTrackInfo::reloadEmbeddedCover() {
     reply = QMessageBox::question(this, tr("Reload Embedded Cover Art"), msg,
                                   QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
-        if (reloadCase == REMOVE) {
-            slotRemoveCoverArt();
+        if (reloadCase == UNSET) {
+            slotUnsetCoverArt();
         } else if (reloadCase == CHANGE) {
             m_coverPixmap = QPixmap();
             m_sLoadedCoverLocation.clear();

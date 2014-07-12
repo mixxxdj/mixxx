@@ -56,7 +56,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotPixmapFound(int trackId);
     void slotChangeCoverArt();
-    void slotRemoveCoverArt();
+    void slotUnsetCoverArt();
     void reloadEmbeddedCover();
 
   private:
@@ -82,7 +82,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     enum reloadCoverCases {
         LOAD,
         CHANGE,
-        REMOVE
+        UNSET
     };
 };
 
