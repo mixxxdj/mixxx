@@ -55,7 +55,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,100,0,0,0,0">
+        <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,100,0">
          <item row="0" column="0" rowspan="3">
           <widget class="QGroupBox" name="groupBox">
            <property name="sizePolicy">
@@ -330,6 +330,12 @@
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="4">
           <widget class="QLabel" name="lblBitrate">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>Bitrate:</string>
            </property>
@@ -340,6 +346,12 @@
          </item>
          <item row="0" column="6">
           <widget class="QLabel" name="lblType">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>Filetype:</string>
            </property>
@@ -360,11 +372,17 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="lblLocation">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>Location:</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -400,16 +418,28 @@
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="lblDuration">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>Duration:</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
          <item row="0" column="2">
           <widget class="QLabel" name="lblBpm">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
             <string>BPM:</string>
            </property>
