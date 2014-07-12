@@ -55,7 +55,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void reloadTrackMetadata();
 
     void slotPixmapFound(int trackId);
-    void slotEditCoverArt();
+    void slotChangeCoverArt();
     void slotRemoveCoverArt();
     void reloadEmbeddedCover();
 

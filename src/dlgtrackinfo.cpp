@@ -73,14 +73,22 @@ void DlgTrackInfo::init(){
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int)),
             this, SLOT(slotPixmapFound(int)));
 
-    QAction* editCover = new QAction(tr("&Edit"), this);
-    connect(editCover, SIGNAL(triggered()), this, SLOT(slotEditCoverArt()));
+    // Cover art actions
+    // change cover art location
+    QAction* changeCover = new QAction(tr("&Change"), this);
+    connect(changeCover, SIGNAL(triggered()),
+            this, SLOT(slotChangeCoverArt()));
+    // unset cover art - load default
     QAction* removeCover = new QAction(tr("&Remove"), this);
-    connect(removeCover, SIGNAL(triggered()), this, SLOT(slotRemoveCoverArt()));
+    connect(removeCover, SIGNAL(triggered()),
+            this, SLOT(slotRemoveCoverArt()));
+    // reload just cover art from metadata
     QAction* reloadCover = new QAction(tr("Reload from &Metadata"), this);
-    connect(reloadCover, SIGNAL(triggered()), this, SLOT(reloadEmbeddedCover()));
+    connect(reloadCover, SIGNAL(triggered()),
+            this, SLOT(reloadEmbeddedCover()));
+    // Cover art popup menu
     QMenu* coverMenu = new QMenu(this);
-    coverMenu->addAction(editCover);
+    coverMenu->addAction(changeCover);
     coverMenu->addAction(removeCover);
     coverMenu->addAction(reloadCover);
     coverArt->setMenu(coverMenu);
@@ -226,7 +234,7 @@ void DlgTrackInfo::slotRemoveCoverArt() {
     }
 }
 
-void DlgTrackInfo::slotEditCoverArt() {
+void DlgTrackInfo::slotChangeCoverArt() {
     if (m_pLoadedTrack == NULL) {
         return;
     }
@@ -238,7 +246,7 @@ void DlgTrackInfo::slotEditCoverArt() {
         dir = m_sLoadedCoverLocation;
     }
     QString newCoverLocation = QFileDialog::getOpenFileName(
-                this, tr("Edit Cover Art"), dir,
+                this, tr("Change Cover Art"), dir,
                 tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
 
     if (newCoverLocation.isNull()) {
@@ -249,7 +257,7 @@ void DlgTrackInfo::slotEditCoverArt() {
     bool res = CoverArtCache::instance()->changeCoverArt(
                 m_pLoadedTrack->getId(), m_coverPixmap, newCoverLocation);
     if (!res) {
-        QMessageBox::warning(this, tr("Edit Cover Art"),
+        QMessageBox::warning(this, tr("Change Cover Art"),
                              tr("Could not change the cover art: '%s'"));
     }
 }
