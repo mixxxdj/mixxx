@@ -145,7 +145,7 @@ void DlgTrackInfo::cueDelete() {
 }
 
 void DlgTrackInfo::populateFields(TrackPointer pTrack) {
-    setWindowTitle(pTrack->getTitle());
+    setWindowTitle(pTrack->getArtist() % " - " % pTrack->getTitle());
 
     // Editable fields
     txtTrackName->setText(pTrack->getTitle());
