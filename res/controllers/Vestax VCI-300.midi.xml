@@ -4,7 +4,7 @@
 		<name>Vestax VCI-300</name>
 		<author>Uwe Klotz</author>
 		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4021</forums>
-                <wiki>http://mixxx.org/wiki/doku.php/vestax_vci-300</wiki>
+		<wiki>http://mixxx.org/wiki/doku.php/vestax_vci-300</wiki>
 	</info>
 	<controller id="Vestax VCI-300">
 		<scriptfiles>
@@ -351,7 +351,7 @@
 				<group>[Channel1]</group>
 				<midino>0x29</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onAutoTempoButton</key>
+				<key>VestaxVCI300.onSyncButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -360,7 +360,7 @@
 				<group>[Channel2]</group>
 				<midino>0x3C</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onAutoTempoButton</key>
+				<key>VestaxVCI300.onSyncButton</key>
 				<options>
 					<script-binding/>
 				</options>

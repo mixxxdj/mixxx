@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 
-/******************************************************************************
+/***********************************************************************
  * Vestax VCI-300 controller script
  * Author: Uwe Klotz
  *
@@ -187,8 +187,12 @@
  * 2014-06-21 Smart switching between mid EQ and filter effect
  *            - Track the knob's value and restore it when switching
  *              between mid EQ and filter effect
+ * 2014-07-13 Use new 1.12 sync controls
+ *            - The "Auto Tempo" button now triggers the new "sync_enabled"
+ *              control. Tapping the BPM manually by holding "Scroll" is
+ *              still possible.
  * ...to be continued...
- *****************************************************************************/
+ **********************************************************************/
 
 
 function VestaxVCI300() {}
@@ -459,11 +463,11 @@ VestaxVCI300.Deck.prototype.updateRateRange = function () {
 	engine.setValue(this.group, "rate", rateValue);
 };
 
-VestaxVCI300.Deck.prototype.updateBeatSyncState = function () {
-	var beatSyncValue =
-		engine.getValue(this.group, "beatsync") ||
-		engine.getValue(this.group, "quantize");
-	this.beatSyncLED.trigger(beatSyncValue);
+VestaxVCI300.Deck.prototype.updateSyncState = function () {
+	var syncValue =
+		engine.getValue(this.group, "sync_enabled") ||
+		engine.getValue(this.group, "bpm_tap");
+	this.syncLED.trigger(syncValue);
 };
 
 VestaxVCI300.Deck.prototype.initValues = function () {
@@ -495,7 +499,8 @@ VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "rateRange", this.onRateRangeValueCB);
 	VestaxVCI300.connectControl(this.group, "loop_halve", this.onLoopHalveValueCB);
 	VestaxVCI300.connectControl(this.group, "loop_double", this.onLoopDoubleValueCB);
-	VestaxVCI300.connectControl(this.group, "beatsync", this.onBeatSyncValueCB);
+	VestaxVCI300.connectControl(this.group, "sync_enabled", this.onSyncValueCB);
+	VestaxVCI300.connectControl(this.group, "bpm_tap", this.onSyncValueCB);
 	VestaxVCI300.connectControl(this.group, "reverseroll", this.onCensorFilterValueCB);
 	VestaxVCI300.connectControl(this.filterGroup, "enabled", this.onCensorFilterValueCB);
 	for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
@@ -509,9 +514,10 @@ VestaxVCI300.Deck.prototype.disconnectControls = function () {
 	VestaxVCI300.disconnectControl(this.group, "rateRange");
 	VestaxVCI300.disconnectControl(this.group, "loop_halve");
 	VestaxVCI300.disconnectControl(this.group, "loop_double");
-	VestaxVCI300.disconnectControl(this.group, "beatsync");
-	VestaxVCI300.disconnectControl(this.group, "reverse");
+	VestaxVCI300.disconnectControl(this.group, "sync_enabled");
+	VestaxVCI300.disconnectControl(this.group, "bpm_tap");
 	VestaxVCI300.disconnectControl(this.group, "reverseroll");
+	VestaxVCI300.disconnectControl(this.filterGroup, "enabled");
 	for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
 		var autoLoopBeats = VestaxVCI300.autoLoopBeatsArray[beatsIndex];
 		VestaxVCI300.disconnectControl(this.group, "beatloop_" + autoLoopBeats + "_enabled");
@@ -631,7 +637,7 @@ VestaxVCI300.init = function (id, debug) {
 		new VestaxVCI300.LED(0x27);
 	VestaxVCI300.leftDeck.scratchLED =
 		new VestaxVCI300.LED(0x26);
-	VestaxVCI300.leftDeck.beatSyncLED =
+	VestaxVCI300.leftDeck.syncLED =
 		new VestaxVCI300.LED(0x25);
 	VestaxVCI300.leftDeck.jogMoveLED =
 		new VestaxVCI300.LED(0x75);
@@ -653,7 +659,7 @@ VestaxVCI300.init = function (id, debug) {
 		new VestaxVCI300.LED(0x37);
 	VestaxVCI300.rightDeck.scratchLED =
 		new VestaxVCI300.LED(0x38);
-	VestaxVCI300.rightDeck.beatSyncLED =
+	VestaxVCI300.rightDeck.syncLED =
 		new VestaxVCI300.LED(0x39);
 	VestaxVCI300.rightDeck.jogMoveLED =
 		new VestaxVCI300.LED(0x77);
@@ -831,24 +837,17 @@ VestaxVCI300.onKeyLockButton = function (channel, control, value, status, group)
 	}
 };
 
-VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, group) {
+VestaxVCI300.onSyncButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (VestaxVCI300.scrollState) {
 		// tap bpm
+		engine.setValue(group, "sync_enabled", false);
 		engine.setValue(group, "bpm_tap", VestaxVCI300.getButtonPressed(value));
 	} else {
 		engine.setValue(group, "bpm_tap", false);
-		if (deck.shiftState) {
-			// beatsync
-			engine.setValue(group, "beatsync", VestaxVCI300.getButtonPressed(value));
-		} else {
-			// quantize
-			if (VestaxVCI300.getButtonPressed(value)) {
-				VestaxVCI300.toggleBinaryValue(group, "quantize");
-			}
-		}
+		engine.setValue(group, "sync_enabled", VestaxVCI300.getButtonPressed(value));
 	}
-	deck.updateBeatSyncState();
+	deck.updateSyncState();
 };
 
 VestaxVCI300.onPFLButton = function (channel, control, value, status, group) {
@@ -1139,12 +1138,12 @@ VestaxVCI300.rightDeck.onLoopDoubleValueCB = function (value, group, control) {
 	VestaxVCI300.rightDeck.autoLoopDoubleLED.trigger(value);
 };
 
-VestaxVCI300.leftDeck.onBeatSyncValueCB = function (value, group, control) {
-	VestaxVCI300.leftDeck.updateBeatSyncState(value);
+VestaxVCI300.leftDeck.onSyncValueCB = function (value, group, control) {
+	VestaxVCI300.leftDeck.updateSyncState(value);
 };
 
-VestaxVCI300.rightDeck.onBeatSyncValueCB = function (value, group, control) {
-	VestaxVCI300.rightDeck.updateBeatSyncState(value);
+VestaxVCI300.rightDeck.onSyncValueCB = function (value, group, control) {
+	VestaxVCI300.rightDeck.updateSyncState(value);
 };
 
 VestaxVCI300.leftDeck.onCensorFilterValueCB = function (value, group, control) {
