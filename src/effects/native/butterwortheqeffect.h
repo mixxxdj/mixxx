@@ -1,5 +1,5 @@
-#ifndef EQDEFAULT_H
-#define EQDEFAULT_H
+#ifndef BUTTERWORTHEQEFFECT_H
+#define BUTTERWORTHEQEFFECT_H
 
 #include <QMap>
 
@@ -14,10 +14,10 @@
 #include "util/defs.h"
 #include "sampleutil.h"
 
-class EQDefaultGroupState {
-public:
-    EQDefaultGroupState();
-    ~EQDefaultGroupState();
+class ButterworthEQEffectGroupState {
+  public:
+    ButterworthEQEffectGroupState();
+    virtual ~ButterworthEQEffectGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
@@ -34,17 +34,17 @@ public:
     CSAMPLE* m_pHighBuf;
 };
 
-class EQDefault : public GroupEffectProcessor<EQDefaultGroupState> {
+class ButterworthEQEffect : public GroupEffectProcessor<ButterworthEQEffectGroupState> {
   public:
-    EQDefault(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~EQDefault();
+    ButterworthEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~ButterworthEQEffect();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processGroup(const QString& group,
-                      EQDefaultGroupState* pState,
+                      ButterworthEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
                       const GroupFeatureState& groupFeatureState);
@@ -65,7 +65,7 @@ class EQDefault : public GroupEffectProcessor<EQDefaultGroupState> {
     int m_loFreq;
     int m_hiFreq;
 
-    DISALLOW_COPY_AND_ASSIGN(EQDefault);
+    DISALLOW_COPY_AND_ASSIGN(ButterworthEQEffect);
 };
 
-#endif /* EQDEFAULT_H */
+#endif /* BUTTERWORTHEQEFFECT_H */
