@@ -20,7 +20,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                        QPixmap& pixmap,
                        const QString& coverLocation = QString(),
                        const QString& md5Hash = QString());
-    bool removeCoverArt(int trackId);
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QPixmap getDefaultCoverArt() { return m_defaultCover; }

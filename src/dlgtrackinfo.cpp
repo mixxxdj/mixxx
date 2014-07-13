@@ -219,18 +219,16 @@ void DlgTrackInfo::slotUnsetCoverArt() {
     if (m_pLoadedTrack == NULL) {
         return;
     }
+    // TODO: get default cover location from CoverArtCache
+    m_coverPixmap = QPixmap();
+    bool res = CoverArtCache::instance()->changeCoverArt(
+                            m_pLoadedTrack->getId(),
+                            m_coverPixmap,
+                            ":/images/library/vinyl-record.png");
 
-    bool res = CoverArtCache::instance()->removeCoverArt(
-                m_pLoadedTrack->getId());
-    if (res) {
-        // load default cover art
-        coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
-        m_sLoadedCoverLocation.clear();
-        m_sLoadedMd5Hash.clear();
-        update();
-    } else {
-        QMessageBox::warning(this, tr("Remove Cover Art"),
-                             tr("Could not remove the cover art: '%s'"));
+    if (!res) {
+        QMessageBox::warning(this, tr("Unset Cover Art"),
+                             tr("Could not unset the cover art: '%s'"));
     }
 }
 
