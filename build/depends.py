@@ -552,6 +552,7 @@ class MixxxCore(Feature):
                    "effects/effectsbackend.cpp",
 
                    "effects/native/nativebackend.cpp",
+                   "effects/lv2/lv2backend.cpp",
                    "effects/native/bitcrushereffect.cpp",
                    "effects/native/linkwitzriley8eqeffect.cpp",
                    "effects/native/bessel4lvmixeqeffect.cpp",
