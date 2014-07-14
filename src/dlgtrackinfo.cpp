@@ -232,7 +232,9 @@ void DlgTrackInfo::slotChangeCoverArt() {
     }
 
     QString dir;
-    if (m_sLoadedCoverLocation.isEmpty()) {
+    if (m_sLoadedCoverLocation.isEmpty() ||
+        m_sLoadedCoverLocation == CoverArtCache::instance()
+                                  ->getDefaultCoverLocation()) {
         dir = m_pLoadedTrack->getDirectory();
     } else {
         dir = m_sLoadedCoverLocation;
