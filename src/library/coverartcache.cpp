@@ -64,7 +64,6 @@ QString CoverArtCache::getHashOfEmbeddedCover(QString trackLocation) {
 }
 
 void CoverArtCache::requestPixmap(int trackId,
-                                  QPixmap& pixmap,
                                   const QString& coverLocation,
                                   const QString& md5Hash) {
     if (trackId < 1) {
@@ -77,12 +76,12 @@ void CoverArtCache::requestPixmap(int trackId,
         return;
     }
 
-    if (QPixmapCache::find(md5Hash, pixmap)) {
-        emit(pixmapFound(trackId));
+    QPixmap pixmap;
+    if (QPixmapCache::find(md5Hash, &pixmap)) {
+        emit(pixmapFound(trackId, pixmap));
         return;
     }
 
-    m_pixmap = &pixmap;
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     if (coverLocation.isEmpty() || !QFile::exists(coverLocation)) {
@@ -118,12 +117,13 @@ void CoverArtCache::imageLoaded() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    if (QPixmapCache::find(res.md5Hash, m_pixmap)) {
-        emit(pixmapFound(res.trackId));
+    QPixmap pixmap;
+    if (QPixmapCache::find(res.md5Hash, &pixmap)) {
+        emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
-        m_pixmap->convertFromImage(res.img);
-        if (QPixmapCache::insert(res.md5Hash, *m_pixmap)) {
-            emit(pixmapFound(res.trackId));
+        pixmap.convertFromImage(res.img);
+        if (QPixmapCache::insert(res.md5Hash, pixmap)) {
+            emit(pixmapFound(res.trackId, pixmap));
         }
     }
     m_runningIds.remove(res.trackId);
@@ -240,12 +240,13 @@ void CoverArtCache::imageFound() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    if (QPixmapCache::find(res.md5Hash, m_pixmap)) {
-        emit(pixmapFound(res.trackId));
+    QPixmap pixmap;
+    if (QPixmapCache::find(res.md5Hash, &pixmap)) {
+        emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
-        m_pixmap->convertFromImage(res.img);
-        if (QPixmapCache::insert(res.md5Hash, *m_pixmap)) {
-            emit(pixmapFound(res.trackId));
+        pixmap.convertFromImage(res.img);
+        if (QPixmapCache::insert(res.md5Hash, pixmap)) {
+            emit(pixmapFound(res.trackId, pixmap));
         }
     }
     // update DB

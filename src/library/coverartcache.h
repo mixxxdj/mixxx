@@ -17,7 +17,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     bool changeCoverArt(int trackId, QPixmap& pixmap,
                         const QString& newCoverLocation);
     void requestPixmap(int trackId,
-                       QPixmap& pixmap,
                        const QString& coverLocation = QString(),
                        const QString& md5Hash = QString());
     void setCoverArtDAO(CoverArtDAO* coverdao);
@@ -30,7 +29,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     void imageLoaded();
 
   signals:
-    void pixmapFound(int trackId);
+    void pixmapFound(int trackId, QPixmap pixmap);
 
   protected:
     CoverArtCache();
@@ -55,7 +54,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     TrackDAO* m_pTrackDAO;
     const QPixmap m_defaultCover;
     QSet<int> m_runningIds;
-    QPixmap* m_pixmap;
 
     QString calculateMD5(QImage img);
     QImage rescaleBigImage(QImage img);
