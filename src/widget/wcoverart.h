@@ -26,7 +26,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
                           int trackId);
 
   private slots:
-    void slotPixmapFound(int trackId);
+    void slotPixmapFound(int trackId, QPixmap pixmap);
 
   protected:
     void paintEvent(QPaintEvent*);
