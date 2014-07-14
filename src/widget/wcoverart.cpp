@@ -36,7 +36,7 @@ WCoverArt::WCoverArt(QWidget* parent,
     m_zoomCursor = QCursor(zoomImg);
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
-            this, SLOT(slotPixmapFound(int, QPixmap)));
+            this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 }
 
 WCoverArt::~WCoverArt() {
