@@ -20,6 +20,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                        const QString& md5Hash = QString());
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
+    QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
     QString getHashOfEmbeddedCover(QString trackLocation);
 
@@ -51,6 +52,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     static CoverArtCache* m_instance;
     CoverArtDAO* m_pCoverArtDAO;
     TrackDAO* m_pTrackDAO;
+    const QString m_sDefaultCoverLocation;
     const QPixmap m_defaultCover;
     QSet<int> m_runningIds;
 

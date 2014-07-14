@@ -217,14 +217,12 @@ void DlgTrackInfo::slotUnsetCoverArt() {
     if (m_pLoadedTrack == NULL) {
         return;
     }
-    // TODO: get default cover location from CoverArtCache
     bool res = CoverArtCache::instance()->changeCoverArt(
-                            m_pLoadedTrack->getId(),
-                            ":/images/library/default_cover.png");
-
+                    m_pLoadedTrack->getId(),
+                    CoverArtCache::instance()->getDefaultCoverLocation());
     if (!res) {
         QMessageBox::warning(this, tr("Unset Cover Art"),
-                             tr("Could not unset the cover art: '%s'"));
+                             tr("Could not unset the cover art!"));
     }
 }
 
@@ -251,7 +249,7 @@ void DlgTrackInfo::slotChangeCoverArt() {
                 m_pLoadedTrack->getId(), newCoverLocation);
     if (!res) {
         QMessageBox::warning(this, tr("Change Cover Art"),
-                             tr("Could not change the cover art: '%s'"));
+                             tr("Could not change the cover art!"));
     }
 }
 
