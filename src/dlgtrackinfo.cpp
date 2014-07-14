@@ -70,8 +70,8 @@ void DlgTrackInfo::init(){
         m_bpmTapFilter[i] = 0.0f;
     }
 
-    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int)),
-            this, SLOT(slotPixmapFound(int)));
+    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
+            this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 
     // Cover art actions
     // change cover art location
@@ -193,12 +193,12 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     m_sLoadedMd5Hash.clear();
 }
 
-void DlgTrackInfo::slotPixmapFound(int trackId) {
+void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
     if (m_pLoadedTrack == NULL)
         return;
 
     if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setIcon(m_coverPixmap);
+        coverArt->setIcon(pixmap);
         update();
     }
 }
@@ -206,11 +206,9 @@ void DlgTrackInfo::slotPixmapFound(int trackId) {
 void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                     const QString& md5Hash,
                                     int trackId) {
-    m_coverPixmap = QPixmap();
     m_sLoadedCoverLocation = coverLocation;
     m_sLoadedMd5Hash = md5Hash;
     CoverArtCache::instance()->requestPixmap(trackId,
-                                             m_coverPixmap,
                                              m_sLoadedCoverLocation,
                                              m_sLoadedMd5Hash);
 }
@@ -223,7 +221,6 @@ void DlgTrackInfo::slotUnsetCoverArt() {
     m_coverPixmap = QPixmap();
     bool res = CoverArtCache::instance()->changeCoverArt(
                             m_pLoadedTrack->getId(),
-                            m_coverPixmap,
                             ":/images/library/vinyl-record.png");
 
     if (!res) {
@@ -253,7 +250,7 @@ void DlgTrackInfo::slotChangeCoverArt() {
 
     m_coverPixmap = QPixmap();
     bool res = CoverArtCache::instance()->changeCoverArt(
-                m_pLoadedTrack->getId(), m_coverPixmap, newCoverLocation);
+                m_pLoadedTrack->getId(), newCoverLocation);
     if (!res) {
         QMessageBox::warning(this, tr("Change Cover Art"),
                              tr("Could not change the cover art: '%s'"));
@@ -499,7 +496,7 @@ void DlgTrackInfo::reloadEmbeddedCover() {
             m_coverPixmap = QPixmap();
             m_sLoadedCoverLocation.clear();
             m_sLoadedMd5Hash = md5Hash;
-            covercache->requestPixmap(m_pLoadedTrack->getId(), m_coverPixmap);
+            covercache->requestPixmap(m_pLoadedTrack->getId());
         }
         return;
     }
@@ -514,7 +511,7 @@ void DlgTrackInfo::reloadEmbeddedCover() {
             m_coverPixmap = QPixmap();
             m_sLoadedCoverLocation.clear();
             m_sLoadedMd5Hash = md5Hash;
-            covercache->requestPixmap(m_pLoadedTrack->getId(), m_coverPixmap);
+            covercache->requestPixmap(m_pLoadedTrack->getId());
         }
     }
 }

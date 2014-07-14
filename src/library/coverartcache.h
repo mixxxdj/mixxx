@@ -14,8 +14,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
   public:
-    bool changeCoverArt(int trackId, QPixmap& pixmap,
-                        const QString& newCoverLocation);
+    bool changeCoverArt(int trackId, const QString& newCoverLocation);
     void requestPixmap(int trackId,
                        const QString& coverLocation = QString(),
                        const QString& md5Hash = QString());

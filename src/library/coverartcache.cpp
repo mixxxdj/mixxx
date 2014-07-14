@@ -25,7 +25,6 @@ void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
 }
 
 bool CoverArtCache::changeCoverArt(int trackId,
-                                   QPixmap& pixmap,
                                    const QString& newCoverLocation) {
     if (trackId < 1 || newCoverLocation.isEmpty()) {
         return false;
@@ -41,12 +40,13 @@ bool CoverArtCache::changeCoverArt(int trackId,
     int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, md5Hash);
     m_pTrackDAO->updateCoverArt(trackId, coverId);
 
-    if (QPixmapCache::find(md5Hash, pixmap)) {
-        emit(pixmapFound(trackId));
+    QPixmap pixmap;
+    if (QPixmapCache::find(md5Hash, &pixmap)) {
+        emit(pixmapFound(trackId, pixmap));
     } else {
         pixmap.convertFromImage(img);
         if (QPixmapCache::insert(md5Hash, pixmap)) {
-            emit(pixmapFound(trackId));
+            emit(pixmapFound(trackId, pixmap));
         }
     }
 
