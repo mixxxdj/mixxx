@@ -120,6 +120,7 @@ void DlgPrefEQ::slotResetToDefaults() {
 void DlgPrefEQ::slotEnaEQChanged() {
     m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ),
                    CheckBoxEnbEQ->isChecked() ? QString("yes") : QString("no"));
+    slotApply();
 }
 
 void DlgPrefEQ::slotLoFiChanged()
