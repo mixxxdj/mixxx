@@ -106,6 +106,6 @@
         <file>images/library/ic_library_cover_hide.png</file>
         <file>images/library/ic_library_cover_show.png</file>
         <file>images/library/ic_library_zoom_in.png</file>
-        <file>images/library/vinyl-record.png</file>
+        <file>images/library/default_cover.png</file>
     </qresource>
 </RCC>

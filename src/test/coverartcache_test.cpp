@@ -8,7 +8,7 @@
 class CoverArtCacheTest : public CoverArtCache, public MixxxTest {
 };
 
-const QString& coverLocationTest = ":/images/library/vinyl-record.png";
+const QString& coverLocationTest = ":/images/library/default_cover.png";
 
 TEST_F(CoverArtCacheTest, loadImage) {
     int trackId = 1;

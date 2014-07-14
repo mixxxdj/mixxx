@@ -220,7 +220,7 @@ void DlgTrackInfo::slotUnsetCoverArt() {
     // TODO: get default cover location from CoverArtCache
     bool res = CoverArtCache::instance()->changeCoverArt(
                             m_pLoadedTrack->getId(),
-                            ":/images/library/vinyl-record.png");
+                            ":/images/library/default_cover.png");
 
     if (!res) {
         QMessageBox::warning(this, tr("Unset Cover Art"),

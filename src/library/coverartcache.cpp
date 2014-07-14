@@ -10,7 +10,7 @@
 CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
           m_pTrackDAO(NULL),
-          m_defaultCover(":/images/library/vinyl-record.png") {
+          m_defaultCover(":/images/library/default_cover.png") {
 }
 
 CoverArtCache::~CoverArtCache() {
