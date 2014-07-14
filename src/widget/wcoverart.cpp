@@ -79,6 +79,11 @@ void WCoverArt::slotHideCoverArt() {
 
 void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     if (m_lastRequestedTrackId == trackId) {
+        if (m_lastRequestedCoverLocation == CoverArtCache::instance()
+                                            ->getDefaultCoverLocation()) {
+            setToDefault();
+            return;
+        }
         m_sCoverTitle = QFileInfo(m_lastRequestedCoverLocation).baseName();
         m_currentCover = pixmap;
         m_currentScaledCover = scaledCoverArt(pixmap);
