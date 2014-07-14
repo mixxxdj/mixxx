@@ -218,7 +218,6 @@ void DlgTrackInfo::slotUnsetCoverArt() {
         return;
     }
     // TODO: get default cover location from CoverArtCache
-    m_coverPixmap = QPixmap();
     bool res = CoverArtCache::instance()->changeCoverArt(
                             m_pLoadedTrack->getId(),
                             ":/images/library/vinyl-record.png");
@@ -248,7 +247,6 @@ void DlgTrackInfo::slotChangeCoverArt() {
         return;
     }
 
-    m_coverPixmap = QPixmap();
     bool res = CoverArtCache::instance()->changeCoverArt(
                 m_pLoadedTrack->getId(), newCoverLocation);
     if (!res) {
@@ -493,7 +491,6 @@ void DlgTrackInfo::reloadEmbeddedCover() {
 
     if (reloadCase == LOAD) {
         if (!md5Hash.isEmpty()) {
-            m_coverPixmap = QPixmap();
             m_sLoadedCoverLocation.clear();
             m_sLoadedMd5Hash = md5Hash;
             covercache->requestPixmap(m_pLoadedTrack->getId());
@@ -508,7 +505,6 @@ void DlgTrackInfo::reloadEmbeddedCover() {
         if (reloadCase == UNSET) {
             slotUnsetCoverArt();
         } else if (reloadCase == CHANGE) {
-            m_coverPixmap = QPixmap();
             m_sLoadedCoverLocation.clear();
             m_sLoadedMd5Hash = md5Hash;
             covercache->requestPixmap(m_pLoadedTrack->getId());
