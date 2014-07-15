@@ -19,7 +19,8 @@ LibraryTableModel::~LibraryTableModel() {
 void LibraryTableModel::setTableModel(int id) {
     Q_UNUSED(id);
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID << "'' as preview";
+    columns << "library." + LIBRARYTABLE_ID << "'' AS preview";
+    columns << "library." + LIBRARYTABLE_ID << "'' AS cover";
 
     const QString tableName = "library_view";
 
@@ -37,6 +38,7 @@ void LibraryTableModel::setTableModel(int id) {
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
+    tableColumns << LIBRARYTABLE_COVERART;
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource());
     setSearch("");

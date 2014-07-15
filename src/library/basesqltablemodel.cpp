@@ -91,6 +91,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("BPM Lock"));
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW),
                   Qt::Horizontal, tr("Preview"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART),
+                  Qt::Horizontal, tr("Cover Art"));
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
