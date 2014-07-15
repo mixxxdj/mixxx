@@ -805,6 +805,7 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/bpmeditor.cpp",
                    "library/previewbuttondelegate.cpp",
+		   "library/coverartdelegate.cpp",
                    "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
