@@ -51,11 +51,11 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     query.prepare("SELECT " % COVERARTTABLE_ID %
                   " FROM " % COVERART_TABLE %
                   " WHERE " % COVERARTTABLE_ID % " NOT IN "
-                      "(SELECT " % LIBRARYTABLE_COVERART %
+                      "(SELECT " % LIBRARYTABLE_COVERART_LOCATION %
                       " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
-                      " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART %
+                      " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART_LOCATION %
                       " = " % COVERART_TABLE % "." % COVERARTTABLE_ID %
-                      " GROUP BY " % LIBRARYTABLE_COVERART % ")");
+                      " GROUP BY " % LIBRARYTABLE_COVERART_LOCATION % ")");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;

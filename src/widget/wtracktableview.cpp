@@ -167,12 +167,10 @@ void WTrackTableView::slotLoadCoverArt() {
         QModelIndex idx = indices[0];
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
-            coverLocation = idx.sibling(idx.row(),
-                                        trackModel->fieldIndex(LIBRARYTABLE_COVERART)
-                                        ).data().toString();
-            md5Hash = idx.sibling(idx.row(),
-                                  trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5)
-                                  ).data().toString();
+            coverLocation = idx.sibling(idx.row(), trackModel->fieldIndex(
+                            LIBRARYTABLE_COVERART_LOCATION)).data().toString();
+            md5Hash = idx.sibling(idx.row(), trackModel->fieldIndex(
+                            LIBRARYTABLE_COVERART_MD5)).data().toString();
             trackId = trackModel->getTrackId(idx);
         }
     }

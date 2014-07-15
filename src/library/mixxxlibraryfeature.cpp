@@ -28,7 +28,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
     QString COVERART_LOCATION = COVERART_TABLE + "." + COVERARTTABLE_LOCATION
-                                + " AS " + LIBRARYTABLE_COVERART;
+                                + " AS " + LIBRARYTABLE_COVERART_LOCATION;
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -80,7 +80,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
         } else if (it->operator==(COVERART_LOCATION)) {
-            *it = LIBRARYTABLE_COVERART;
+            *it = LIBRARYTABLE_COVERART_LOCATION;
         } else if (it->startsWith(COVERART_TABLE + ".")) {
             *it = it->replace(COVERART_TABLE + ".", "");
         }
