@@ -43,7 +43,7 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
     m_iOldSampleRate = 0;
 
-    //Setup Filter Controls
+    // Setup Filter Controls
 
     if (s_loEqFreq == NULL) {
         s_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
@@ -54,7 +54,7 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
 
     high = band = low = NULL;
 
-    //Load Defaults
+    // Load Defaults
     setFilters(true);
 
     /*

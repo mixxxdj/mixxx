@@ -1569,6 +1569,7 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
 }
 
 void MixxxMainWindow::slotControlPassthrough(int index) {
+#ifdef __VINYLCONTROL__
     if (index >= kMaximumVinylControlInputs || index >= m_iNumConfiguredDecks) {
         qWarning() << "Tried to activate passthrough on a deck that we "
                       "haven't configured -- ignoring request.";
@@ -1593,6 +1594,7 @@ void MixxxMainWindow::slotControlPassthrough(int index) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
+#endif
 }
 
 void MixxxMainWindow::slotControlAuxiliary(int index) {
