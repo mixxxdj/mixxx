@@ -53,7 +53,7 @@ void CoverArtDelegate::paint(QPainter *painter,
         painter->fillRect(newOption.rect, newOption.palette.base());
     }
 
-    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
     if (!pixmap.isNull()) {
         painter->drawPixmap(option.rect, pixmap);
     }
