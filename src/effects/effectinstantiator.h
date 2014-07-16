@@ -5,6 +5,7 @@
 
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
+#include "effects/lv2/lv2effectprocessor.h"
 
 class EngineEffect;
 
@@ -22,6 +23,16 @@ class EffectProcessorInstantiator : public EffectInstantiator {
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
                                  const EffectManifest& manifest) {
         return new T(pEngineEffect, manifest);
+    }
+};
+
+class LV2EffectProcessorInstantiator : public EffectInstantiator {
+  public:
+    EffectProcessor* instantiate(EngineEffect* pEngineEffect,
+                                 const EffectManifest& manifest) {
+        Q_UNUSED(pEngineEffect);
+        Q_UNUSED(manifest);
+        return new LV2EffectProcessor();
     }
 };
 
