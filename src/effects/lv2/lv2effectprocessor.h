@@ -19,6 +19,12 @@ class LV2EffectProcessor : public EffectProcessor {
                          const GroupFeatureState& groupFeatures);
   private:
     QList<EngineEffectParameter*> m_parameters;
+    float* inputL;
+    float* inputR;
+    float* outputL;
+    float* outputR;
+    float* params;
+    LilvInstance* handle;
 };
 
 
