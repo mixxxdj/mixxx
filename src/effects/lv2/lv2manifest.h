@@ -10,6 +10,7 @@ class LV2Manifest {
     ~LV2Manifest();
 
     EffectManifest getEffectManifest();
+    bool isValid();
   private:
     const LilvPlugin* m_pLV2plugin;
     EffectManifest m_effectManifest;
@@ -18,6 +19,7 @@ class LV2Manifest {
     float* m_minimum;
     float* m_maximum;
     float* m_default;
+    bool m_isValid;
 };
 
 
