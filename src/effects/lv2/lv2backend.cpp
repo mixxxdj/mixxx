@@ -11,27 +11,29 @@ LV2Backend::LV2Backend(QObject* pParent)
     LILV_FOREACH(plugins, i, plugs) {
         const LilvPlugin *plug = lilv_plugins_get(plugs, i);
         LilvNode* name = lilv_plugin_get_name(plug);
-        qDebug() << lilv_node_as_string(name) << endl;
-//        if (QString(lilv_node_as_string(name)).contains(QString("Flanger"))) {
-            LV2Manifest* flanger = new LV2Manifest(plug, m_properties);
+        qDebug() << lilv_node_as_string(name) << "-----------------------------";
+        LV2Manifest* flanger = new LV2Manifest(plug, m_properties);
+        if (flanger->isValid()) {
             m_registeredEffects.insert(flanger);
-//            break;
-//        }
+        }
     }
 }
 
 LV2Backend::~LV2Backend() {
-    lilv_world_free(m_pWorld);
     foreach(LilvNode* node, m_properties) {
         lilv_node_free(node);
     }
+    lilv_world_free(m_pWorld);
 }
 
 void LV2Backend::initializeProperties() {
-   m_properties["control_port"] = lilv_new_uri(m_pWorld, LV2_CORE__ControlPort);
-   m_properties["button_port"] = lilv_new_uri(m_pWorld, LV2_CORE__toggled);
-   m_properties["integer_port"] = lilv_new_uri(m_pWorld, LV2_CORE__integer);
-   m_properties["enumeration_port"] = lilv_new_uri(m_pWorld, LV2_CORE__enumeration);
+    m_properties["audio_port"] = lilv_new_uri(m_pWorld, LV2_CORE__AudioPort);
+    m_properties["input_port"] = lilv_new_uri(m_pWorld, LV2_CORE__InputPort);
+    m_properties["output_port"] = lilv_new_uri(m_pWorld, LV2_CORE__OutputPort);
+    m_properties["control_port"] = lilv_new_uri(m_pWorld, LV2_CORE__ControlPort);
+    m_properties["button_port"] = lilv_new_uri(m_pWorld, LV2_CORE__toggled);
+    m_properties["integer_port"] = lilv_new_uri(m_pWorld, LV2_CORE__integer);
+    m_properties["enumeration_port"] = lilv_new_uri(m_pWorld, LV2_CORE__enumeration);
 }
 
 const QSet<QString> LV2Backend::getEffectIds() const {
