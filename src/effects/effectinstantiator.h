@@ -30,9 +30,7 @@ class LV2EffectProcessorInstantiator : public EffectInstantiator {
   public:
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
                                  const EffectManifest& manifest) {
-        Q_UNUSED(pEngineEffect);
-        Q_UNUSED(manifest);
-        return new LV2EffectProcessor();
+        return new LV2EffectProcessor(pEngineEffect, manifest);
     }
 };
 
