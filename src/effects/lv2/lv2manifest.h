@@ -10,6 +10,7 @@ class LV2Manifest {
     ~LV2Manifest();
 
     EffectManifest getEffectManifest();
+    const LilvPlugin* getPlugin();
     bool isValid();
   private:
     const LilvPlugin* m_pLV2plugin;

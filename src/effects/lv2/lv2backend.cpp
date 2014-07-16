@@ -69,13 +69,15 @@ EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
         return EffectPointer();
     }
     EffectManifest manifest;
+    const LilvPlugin* plugin;
     foreach (LV2Manifest* effect, m_registeredEffects) {
         if (effect->getEffectManifest().id() == effectId) {
             manifest = effect->getEffectManifest();
+            plugin = effect->getPlugin();
             break;
         }
     }
 
     return EffectPointer(new Effect(this, pEffectsManager,
-                         manifest, EffectInstantiatorPointer(new LV2EffectProcessorInstantiator())));
+                         manifest, EffectInstantiatorPointer(new LV2EffectProcessorInstantiator(plugin))));
 }
