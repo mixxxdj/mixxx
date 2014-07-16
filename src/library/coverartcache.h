@@ -17,7 +17,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     bool changeCoverArt(int trackId, const QString& newCoverLocation);
     QPixmap requestPixmap(int trackId,
                           const QString& coverLocation = QString(),
-                          const QString& md5Hash = QString());
+                          const QString& md5Hash = QString(),
+                          const bool emitSignals = true);
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
@@ -41,12 +42,15 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QString coverLocation;
         QString md5Hash;
         QImage img;
+        bool emitSignals;
     };
 
-    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo);
+    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
+                             const bool emitSignals = true);
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
-                           const QString& md5Hash);
+                           const QString& md5Hash,
+                           const bool emitSignals = true);
 
   private:
     static CoverArtCache* m_instance;

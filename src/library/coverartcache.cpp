@@ -66,7 +66,8 @@ QString CoverArtCache::getHashOfEmbeddedCover(QString trackLocation) {
 
 QPixmap CoverArtCache::requestPixmap(int trackId,
                                      const QString& coverLocation,
-                                     const QString& md5Hash) {
+                                     const QString& md5Hash,
+                                     const bool emitSignals) {
     if (trackId < 1) {
         return m_defaultCover;
     }
@@ -79,7 +80,9 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
 
     QPixmap pixmap;
     if (QPixmapCache::find(md5Hash, &pixmap)) {
-        emit(pixmapFound(trackId, pixmap));
+        if (emitSignals) {
+            emit(pixmapFound(trackId, pixmap));
+        }
         return pixmap;
     }
 
@@ -88,11 +91,12 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
     if (coverLocation.isEmpty() || !QFile::exists(coverLocation)) {
         CoverArtDAO::CoverArtInfo coverInfo;
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
-        future = QtConcurrent::run(this, &CoverArtCache::searchImage, coverInfo);
+        future = QtConcurrent::run(this, &CoverArtCache::searchImage,
+                                   coverInfo, emitSignals);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
-                                   trackId, coverLocation, md5Hash);
+                                   trackId, coverLocation, md5Hash, emitSignals);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
     m_runningIds.insert(trackId);
@@ -103,14 +107,17 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
 
 // Load cover from path stored in DB.
 // It is executed in a separate thread via QtConcurrent::run
-CoverArtCache::FutureResult CoverArtCache::loadImage(
-        int trackId, const QString& coverLocation, const QString& md5Hash) {
+CoverArtCache::FutureResult CoverArtCache::loadImage(int trackId,
+                                                     const QString& coverLocation,
+                                                     const QString& md5Hash,
+                                                     const bool emitSignals) {
     FutureResult res;
     res.trackId = trackId;
     res.coverLocation = coverLocation;
     res.img = QImage(coverLocation);
     res.img = rescaleBigImage(res.img);
     res.md5Hash = md5Hash;
+    res.emitSignals = emitSignals;
     return res;
 }
 
@@ -121,12 +128,14 @@ void CoverArtCache::imageLoaded() {
     FutureResult res = watcher->result();
 
     QPixmap pixmap;
-    if (QPixmapCache::find(res.md5Hash, &pixmap)) {
+    if (QPixmapCache::find(res.md5Hash, &pixmap) && res.emitSignals) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
         pixmap.convertFromImage(res.img);
         if (QPixmapCache::insert(res.md5Hash, pixmap)) {
-            emit(pixmapFound(res.trackId, pixmap));
+            if (res.emitSignals) {
+                emit(pixmapFound(res.trackId, pixmap));
+            }
         }
     }
     m_runningIds.remove(res.trackId);
@@ -136,9 +145,10 @@ void CoverArtCache::imageLoaded() {
 // that could block the main thread. Therefore, this method
 // is executed in a separate thread via QtConcurrent::run
 CoverArtCache::FutureResult CoverArtCache::searchImage(
-        CoverArtDAO::CoverArtInfo coverInfo) {
+        CoverArtDAO::CoverArtInfo coverInfo, const bool emitSignals) {
     FutureResult res;
     res.trackId = coverInfo.trackId;
+    res.emitSignals = emitSignals;
 
     // Looking for embedded cover art.
     //
@@ -244,12 +254,14 @@ void CoverArtCache::imageFound() {
     FutureResult res = watcher->result();
 
     QPixmap pixmap;
-    if (QPixmapCache::find(res.md5Hash, &pixmap)) {
+    if (QPixmapCache::find(res.md5Hash, &pixmap) && res.emitSignals) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
         pixmap.convertFromImage(res.img);
         if (QPixmapCache::insert(res.md5Hash, pixmap)) {
-            emit(pixmapFound(res.trackId, pixmap));
+            if (res.emitSignals) {
+                emit(pixmapFound(res.trackId, pixmap));
+            }
         }
     }
     // update DB
