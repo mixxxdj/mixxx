@@ -29,8 +29,31 @@ void CoverArtDelegate::paint(QPainter *painter,
     QString md5Hash = index.sibling(index.row(), trackModel->fieldIndex(
                         LIBRARYTABLE_COVERART_MD5)).data().toString();
     int trackId = trackModel->getTrackId(index);
-
     QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
                                 trackId, coverLocation, md5Hash, false);
+
+    painter->save();
+
+    // Populate the correct colors based on the styling
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
+
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    if (newOption.state & QStyle::State_Selected) {
+        QPalette::ColorGroup colorGroup =
+                newOption.state & QStyle::State_Active ?
+                QPalette::Active : QPalette::Inactive;
+        painter->fillRect(newOption.rect,
+            newOption.palette.color(colorGroup, QPalette::Highlight));
+        painter->setBrush(newOption.palette.color(
+            colorGroup, QPalette::HighlightedText));
+    } else {
+        painter->fillRect(newOption.rect, newOption.palette.base());
+    }
+
+    painter->setRenderHint(QPainter::Antialiasing, true);
     painter->drawPixmap(option.rect, pixmap);
+    painter->restore();
 }
