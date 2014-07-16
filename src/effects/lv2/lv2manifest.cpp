@@ -41,12 +41,11 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setId(paramName.trimmed().toLower().replace(' ', '_'));
             qDebug() << "Parameter id: " << paramName.trimmed().toLower().replace(' ', '_');
 
-            param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 qDebug() << "asta a fost un integer port";
-                param->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+                param->setControlHint(EffectManifestParameter::CONTROL_KNOB_STEPPING);
             } else {
-                param->setValueHint(EffectManifestParameter::VALUE_FLOAT);
+                param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
             }
 
             param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);

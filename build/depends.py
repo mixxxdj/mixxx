@@ -547,13 +547,11 @@ class MixxxCore(Feature):
                    "effects/effectparameterslotbase.cpp",
                    "effects/effectparameterslot.cpp",
                    "effects/effectbuttonparameterslot.cpp",
-
                    "effects/effectsmanager.cpp",
                    "effects/effectchainmanager.cpp",
                    "effects/effectsbackend.cpp",
 
                    "effects/native/nativebackend.cpp",
-                   "effects/lv2/lv2backend.cpp",
                    "effects/native/bitcrushereffect.cpp",
                    "effects/native/linkwitzriley8eqeffect.cpp",
                    "effects/native/bessel4lvmixeqeffect.cpp",
@@ -564,6 +562,10 @@ class MixxxCore(Feature):
                    "effects/native/reverbeffect.cpp",
                    "effects/native/echoeffect.cpp",
                    "effects/native/reverb/Reverb.cc",
+
+                   "effects/lv2/lv2manifest.cpp",
+                   "effects/lv2/lv2backend.cpp",
+                   "effects/lv2/lv2effectprocessor.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QMap>
+#include <QDebug>
 
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
