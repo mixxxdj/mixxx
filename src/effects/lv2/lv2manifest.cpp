@@ -104,6 +104,10 @@ EffectManifest LV2Manifest::getEffectManifest() {
     return m_effectManifest;
 }
 
+const LilvPlugin* LV2Manifest::getPlugin() {
+    return m_pLV2plugin;
+}
+
 bool LV2Manifest::isValid() {
     return m_isValid;
 }

@@ -4,11 +4,13 @@
 #include "effects/effectprocessor.h"
 #include "effects/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
+#include <lilv-0/lilv/lilv.h>
 
 class LV2EffectProcessor : public EffectProcessor {
   public:
     LV2EffectProcessor(EngineEffect* pEngineEffect,
-                       const EffectManifest& manifest);
+                       const EffectManifest& manifest,
+                       const LilvPlugin* plugin);
 
     void initialize(const QSet<QString>& registeredGroups);
     virtual void process(const QString& group,
@@ -18,6 +20,12 @@ class LV2EffectProcessor : public EffectProcessor {
                          const GroupFeatureState& groupFeatures);
   private:
     QList<EngineEffectParameter*> m_parameters;
+    float* inputL;
+    float* inputR;
+    float* outputL;
+    float* outputR;
+    float* params;
+    LilvInstance* handle;
 };
 
 
