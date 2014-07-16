@@ -1,5 +1,6 @@
 #include <QPainter>
 
+#include "library/coverartcache.h"
 #include "library/coverartdelegate.h"
 #include "library/trackmodel.h"
 #include "library/dao/trackdao.h"
@@ -29,4 +30,7 @@ void CoverArtDelegate::paint(QPainter *painter,
                         LIBRARYTABLE_COVERART_MD5)).data().toString();
     int trackId = trackModel->getTrackId(index);
 
+    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
+                                trackId, coverLocation, md5Hash, false);
+    painter->drawPixmap(option.rect, pixmap);
 }
