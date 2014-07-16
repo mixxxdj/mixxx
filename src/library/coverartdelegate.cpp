@@ -54,7 +54,8 @@ void CoverArtDelegate::paint(QPainter *painter,
     }
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
-    if (!pixmap.isNull()) {
+    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
+    if (!pixmap.isNull() && coverLocation != defaultLoc) {
         painter->drawPixmap(option.rect, pixmap);
     }
 
