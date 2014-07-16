@@ -15,9 +15,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     Q_OBJECT
   public:
     bool changeCoverArt(int trackId, const QString& newCoverLocation);
-    void requestPixmap(int trackId,
-                       const QString& coverLocation = QString(),
-                       const QString& md5Hash = QString());
+    QPixmap requestPixmap(int trackId,
+                          const QString& coverLocation = QString(),
+                          const QString& md5Hash = QString());
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }

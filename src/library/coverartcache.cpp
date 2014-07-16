@@ -64,23 +64,23 @@ QString CoverArtCache::getHashOfEmbeddedCover(QString trackLocation) {
     return md5Hash;
 }
 
-void CoverArtCache::requestPixmap(int trackId,
-                                  const QString& coverLocation,
-                                  const QString& md5Hash) {
+QPixmap CoverArtCache::requestPixmap(int trackId,
+                                     const QString& coverLocation,
+                                     const QString& md5Hash) {
     if (trackId < 1) {
-        return;
+        return m_defaultCover;
     }
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
     if (m_runningIds.contains(trackId)) {
-        return;
+        return m_defaultCover;
     }
 
     QPixmap pixmap;
     if (QPixmapCache::find(md5Hash, &pixmap)) {
         emit(pixmapFound(trackId, pixmap));
-        return;
+        return pixmap;
     }
 
     QFuture<FutureResult> future;
@@ -97,6 +97,8 @@ void CoverArtCache::requestPixmap(int trackId,
     }
     m_runningIds.insert(trackId);
     watcher->setFuture(future);
+
+    return m_defaultCover;
 }
 
 // Load cover from path stored in DB.
