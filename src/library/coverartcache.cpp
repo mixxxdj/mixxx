@@ -10,8 +10,8 @@
 CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
           m_pTrackDAO(NULL),
-          m_defaultCover(":/images/library/default_cover.png"),
-          m_sDefaultCoverLocation(":/images/library/default_cover.png") {
+          m_sDefaultCoverLocation(":/images/library/default_cover.png"),
+          m_defaultCover(m_sDefaultCoverLocation) {
 }
 
 CoverArtCache::~CoverArtCache() {
