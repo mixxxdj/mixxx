@@ -24,13 +24,19 @@ void CoverArtDelegate::paint(QPainter *painter,
         return;
     }
 
+    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
     QString coverLocation = index.sibling(index.row(), trackModel->fieldIndex(
                             LIBRARYTABLE_COVERART_LOCATION)).data().toString();
     QString md5Hash = index.sibling(index.row(), trackModel->fieldIndex(
                         LIBRARYTABLE_COVERART_MD5)).data().toString();
     int trackId = trackModel->getTrackId(index);
-    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
+    bool drawPixmap = coverLocation != defaultLoc;
+    QPixmap pixmap;
+    if (drawPixmap) {
+        pixmap = CoverArtCache::instance()->requestPixmap(
                                 trackId, coverLocation, md5Hash, false);
+    }
+    drawPixmap = !pixmap.isNull();
 
     painter->save();
 
@@ -54,8 +60,7 @@ void CoverArtDelegate::paint(QPainter *painter,
     }
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
-    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
-    if (!pixmap.isNull() && coverLocation != defaultLoc) {
+    if (drawPixmap) {
         painter->drawPixmap(option.rect, pixmap);
     }
 
