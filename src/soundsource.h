@@ -112,8 +112,8 @@ public:
     virtual void setSampleRate(unsigned int);
     virtual void setChannels(int);
     virtual void setCoverArt(QImage);
-protected:
 
+protected:
     // Automatically collects generic data from a TagLib File: title, artist,
     // album, comment, genre, year, tracknumber, duration, bitrate, samplerate,
     // and channels.
@@ -124,6 +124,8 @@ protected:
     bool processMP4Tag(TagLib::MP4::Tag* mp4);
     void processBpmString(QString tagName, QString sBpm);
     void parseReplayGainString(QString sReplayGain);
+
+    QString getQString(TagLib::String TString);
 
     /** File name */
     QString m_qFilename;
