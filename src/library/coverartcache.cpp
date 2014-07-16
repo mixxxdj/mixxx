@@ -69,13 +69,13 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
                                      const QString& md5Hash,
                                      const bool emitSignals) {
     if (trackId < 1) {
-        return m_defaultCover;
+        return QPixmap();
     }
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
     if (m_runningIds.contains(trackId)) {
-        return m_defaultCover;
+        return QPixmap();
     }
 
     QPixmap pixmap;
@@ -102,7 +102,7 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
     m_runningIds.insert(trackId);
     watcher->setFuture(future);
 
-    return m_defaultCover;
+    return QPixmap();
 }
 
 // Load cover from path stored in DB.
