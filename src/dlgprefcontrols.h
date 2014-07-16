@@ -61,7 +61,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotUpdateSchemes();
     void slotSetPositionDisplay(int);
     void slotSetPositionDisplay(double);
-    void slotSetAllowTrackLoadToPlayingDeck(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
     void slotSetRateRamp(bool);

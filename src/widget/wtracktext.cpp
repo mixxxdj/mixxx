@@ -49,9 +49,8 @@ void WTrackText::mouseMoveEvent(QMouseEvent *event) {
 void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
     if (event->mimeData()->hasUrls() &&
             event->mimeData()->urls().size() > 0) {
-        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
-        if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
-             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
+        // Accept if the Deck isn't playing
+        if (!ControlObject::get(ConfigKey(m_pGroup, "play"))) {
             event->acceptProposedAction();
         } else {
             event->ignore();
