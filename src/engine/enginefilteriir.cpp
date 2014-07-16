@@ -58,47 +58,27 @@ inline double _processLowpass(double* coef, double* buf, register double val) {
 
 inline double _processBandpass(double* coef, double* buf, register double val) {
     register double tmp, fir, iir;
-    tmp = buf[0]; memmove(buf, buf + 1, 15 * sizeof(double));
+    tmp = buf[0]; memmove(buf, buf + 1, 7 * sizeof(double));
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
     iir -= coef[2] * buf[0]; fir += -buf[0] - buf[0];
     fir += iir;
-    tmp = buf[1]; buf[1] = iir; val = fir;
+    tmp = buf[1]; buf[1] = iir; val= fir;
     iir = val;
     iir -= coef[3] * tmp; fir = tmp;
     iir -= coef[4] * buf[2]; fir += -buf[2] - buf[2];
     fir += iir;
-    tmp = buf[3]; buf[3] = iir; val = fir;
+    tmp = buf[3]; buf[3] = iir; val= fir;
     iir = val;
     iir -= coef[5] * tmp; fir = tmp;
-    iir -= coef[6] * buf[4]; fir += -buf[4] - buf[4];
+    iir -= coef[6] * buf[4]; fir += buf[4] + buf[4];
     fir += iir;
-    tmp = buf[5]; buf[5] = iir; val = fir;
+    tmp = buf[5]; buf[5] = iir; val= fir;
     iir = val;
     iir -= coef[7] * tmp; fir = tmp;
-    iir -= coef[8] * buf[6]; fir += -buf[6] - buf[6];
+    iir -= coef[8] * buf[6]; fir += buf[6] + buf[6];
     fir += iir;
-    tmp = buf[7]; buf[7] = iir; val = fir;
-    iir = val;
-    iir -= coef[9] * tmp; fir = tmp;
-    iir -= coef[10] * buf[8]; fir += buf[8] + buf[8];
-    fir += iir;
-    tmp = buf[9]; buf[9] = iir; val = fir;
-    iir = val;
-    iir -= coef[11] * tmp; fir = tmp;
-    iir -= coef[12] * buf[10]; fir += buf[10] + buf[10];
-    fir += iir;
-    tmp = buf[11]; buf[11] = iir; val = fir;
-    iir = val;
-    iir -= coef[13] * tmp; fir = tmp;
-    iir -= coef[14] * buf[12]; fir += buf[12] + buf[12];
-    fir += iir;
-    tmp = buf[13]; buf[13] = iir; val = fir;
-    iir = val;
-    iir -= coef[15] * tmp; fir = tmp;
-    iir -= coef[16] * buf[14]; fir += buf[14] + buf[14];
-    fir += iir;
-    buf[15] = iir; val = fir;
+    buf[7] = iir; val = fir;
     return val;
 }
 
@@ -168,7 +148,7 @@ void EngineFilterIIRBand::setFrequencyCorners(int sampleRate,
     m_sampleRate = sampleRate;
     // Copy the old coefficients into m_oldCoef
     memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
-    m_coef[0] = fid_design_coef(m_coef + 1, 16, "BpBe8", m_sampleRate,
+    m_coef[0] = fid_design_coef(m_coef + 1, 8, "BpBe4", m_sampleRate,
                                freqCorner1, freqCorner2, 0);
     initBuffers();
     m_doRamping = true;
