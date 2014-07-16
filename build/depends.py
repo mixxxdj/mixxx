@@ -575,13 +575,11 @@ class MixxxCore(Feature):
                    "effects/effectchainslot.cpp",
                    "effects/effectslot.cpp",
                    "effects/effectparameterslot.cpp",
-
                    "effects/effectsmanager.cpp",
                    "effects/effectchainmanager.cpp",
                    "effects/effectsbackend.cpp",
 
                    "effects/native/nativebackend.cpp",
-                   "effects/lv2/lv2backend.cpp",
                    "effects/native/bitcrushereffect.cpp",
                    "effects/native/butterwortheqeffect.cpp",
                    "effects/native/flangereffect.cpp",
@@ -589,6 +587,10 @@ class MixxxCore(Feature):
                    "effects/native/reverbeffect.cpp",
                    "effects/native/echoeffect.cpp",
                    "effects/native/reverb/Reverb.cc",
+
+                   "effects/lv2/lv2manifest.cpp",
+                   "effects/lv2/lv2backend.cpp",
+                   "effects/lv2/lv2effectprocessor.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
