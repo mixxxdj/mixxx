@@ -220,6 +220,7 @@ class Qt(Dependence):
 
         # Enable Qt include paths
         if build.platform_is_linux:
+            build.env.Append(LIBS='lilv-0')
             if qt5 and not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
             elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
