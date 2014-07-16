@@ -23,7 +23,7 @@ void LV2EffectProcessor::process(const QString& group,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     foreach (EngineEffectParameter* param, m_parameters) {
-        qDebug() <<"EngineEffectParameter: " << param->value().toFloat();
+        qDebug() <<"EngineEffectParameter: " << param->value();
     }
     for (unsigned int i = 0; i < numSamples; i++) {
         pOutput[i] = 0;
