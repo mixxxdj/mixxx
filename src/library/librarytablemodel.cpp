@@ -19,8 +19,9 @@ LibraryTableModel::~LibraryTableModel() {
 void LibraryTableModel::setTableModel(int id) {
     Q_UNUSED(id);
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID << "'' AS preview";
-    columns << "library." + LIBRARYTABLE_ID << "'' AS cover";
+    columns << "library." + LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            << "'' AS " + LIBRARYTABLE_COVERART;
 
     const QString tableName = "library_view";
 
