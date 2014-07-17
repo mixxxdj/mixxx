@@ -560,7 +560,7 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     currentTrackInfoIndex = index;
 
     QString coverLocation = index.sibling(index.row(),
-        trackModel->fieldIndex(LIBRARYTABLE_COVERART)).data().toString();
+        trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION)).data().toString();
     QString md5Hash = index.sibling(index.row(),
         trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5)).data().toString();
     int trackId = trackModel->getTrackId(index);
