@@ -20,7 +20,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void slotHideCoverArt();
+    void slotResetWidget();
     void slotLoadCoverArt(const QString& coverLocation,
                           const QString& md5Hash,
                           int trackId);
