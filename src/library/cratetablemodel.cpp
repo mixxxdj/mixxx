@@ -34,7 +34,8 @@ void CrateTableModel::setTableModel(int crateId) {
     QString filter = "library.mixxx_deleted = 0";
     QStringList columns;
     columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
-            << "'' as preview";
+            << "'' as preview"
+            << "'' AS " + LIBRARYTABLE_COVERART;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -58,6 +59,7 @@ void CrateTableModel::setTableModel(int crateId) {
 
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
+    columns[2] = LIBRARYTABLE_COVERART;
     setTable(tableName, columns[0], columns,
              m_pTrackCollection->getTrackSource());
     setSearch("");
