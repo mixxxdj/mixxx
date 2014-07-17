@@ -31,7 +31,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
             << PLAYLISTTRACKSTABLE_POSITION
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
-            << "'' as preview";
+            << "'' as preview"
+            << "'' AS " + LIBRARYTABLE_COVERART;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -54,6 +55,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = LIBRARYTABLE_PREVIEW;
+    columns[4] = LIBRARYTABLE_COVERART;
     setTable(playlistTableName, columns[0], columns,
             m_pTrackCollection->getTrackSource());
     setSearch("");
