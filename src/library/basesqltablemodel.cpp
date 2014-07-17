@@ -640,7 +640,8 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         return defaultFlags;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
