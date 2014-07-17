@@ -72,8 +72,12 @@ void WCoverArt::setToDefault() {
     update();
 }
 
-void WCoverArt::slotHideCoverArt() {
+void WCoverArt::slotResetWidget() {
+    m_lastRequestedTrackId = 0;
+    m_lastRequestedCoverLocation.clear();
+    m_lastRequestedMd5Hash.clear();
     m_bCoverIsVisible = false;
+    m_bCoverIsHovered = false;
     setMinimumSize(0, 20);
     setToDefault();
 }
@@ -139,7 +143,8 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
                          m_lastRequestedMd5Hash,
                          m_lastRequestedTrackId);
      } else {
-        slotHideCoverArt();
+        setMinimumSize(0, 20);
+        setToDefault();
     }
 }
 
