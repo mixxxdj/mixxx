@@ -42,7 +42,7 @@ EngineFilterIIR::~EngineFilterIIR() {
 
 inline double _processLowpass(double* coef, double* buf, register double val) {
     register double tmp, fir, iir;
-    tmp = buf[0]; memmove(buf, buf + 1, 3 * sizeof(double));
+    tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
     iir -= coef[2] * buf[0]; fir += buf[0] + buf[0];
@@ -58,7 +58,8 @@ inline double _processLowpass(double* coef, double* buf, register double val) {
 
 inline double _processBandpass(double* coef, double* buf, register double val) {
     register double tmp, fir, iir;
-    tmp = buf[0]; memmove(buf, buf + 1, 7 * sizeof(double));
+    tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
+    buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
     iir -= coef[2] * buf[0]; fir += -buf[0] - buf[0];
@@ -84,7 +85,7 @@ inline double _processBandpass(double* coef, double* buf, register double val) {
 
 inline double _processHighpass(double* coef, double* buf, register double val) {
     register double tmp, fir, iir;
-    tmp = buf[0]; memmove(buf, buf + 1, 3 * sizeof(double));
+    tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     iir= val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
     iir -= coef[2] * buf[0]; fir += -buf[0] - buf[0];
