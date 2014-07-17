@@ -33,8 +33,8 @@ void CrateTableModel::setTableModel(int crateId) {
     FieldEscaper escaper(m_database);
     QString filter = "library.mixxx_deleted = 0";
     QStringList columns;
-    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
-            << "'' as preview"
+    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
             << "'' AS " + LIBRARYTABLE_COVERART;
 
     // We drop files that have been explicitly deleted from mixxx
