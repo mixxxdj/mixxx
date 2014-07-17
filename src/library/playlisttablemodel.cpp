@@ -28,10 +28,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     FieldEscaper escaper(m_database);
 
     QStringList columns;
-    columns << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+    columns << PLAYLISTTRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
             << PLAYLISTTRACKSTABLE_POSITION
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
-            << "'' as preview"
+            << "'' AS " + LIBRARYTABLE_PREVIEW
             << "'' AS " + LIBRARYTABLE_COVERART;
 
     // We drop files that have been explicitly deleted from mixxx
