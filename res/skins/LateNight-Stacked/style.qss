@@ -380,7 +380,6 @@ qproperty-layoutAlignment: 'AlignCenter';
 
 #AlignLeftTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  background-color: #fff;
 }
 
 #AlignRightTop {
