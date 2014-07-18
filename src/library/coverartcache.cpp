@@ -54,16 +54,6 @@ bool CoverArtCache::changeCoverArt(int trackId,
     return true;
 }
 
-QString CoverArtCache::getHashOfEmbeddedCover(QString trackLocation) {
-    QImage img = extractEmbeddedCover(trackLocation);
-    QString md5Hash;
-    if (!img.isNull()) {
-        img = rescaleBigImage(img);
-        md5Hash = calculateMD5(img);
-    }
-    return md5Hash;
-}
-
 void CoverArtCache::requestPixmap(int trackId,
                                   const QString& coverLocation,
                                   const QString& md5Hash) {
