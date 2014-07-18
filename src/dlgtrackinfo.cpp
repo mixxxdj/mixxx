@@ -468,7 +468,6 @@ void DlgTrackInfo::reloadTrackMetadata() {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
         populateFields(pTrack);
-        reloadEmbeddedCover();
     }
 }
 
