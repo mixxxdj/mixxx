@@ -472,42 +472,10 @@ void DlgTrackInfo::reloadTrackMetadata() {
 }
 
 void DlgTrackInfo::reloadEmbeddedCover() {
-    CoverArtCache* covercache = CoverArtCache::instance();
-    QString md5Hash = covercache->getHashOfEmbeddedCover(
-                            m_pLoadedTrack->getLocation());
-
-    QString msg;
-    reloadCoverCases reloadCase = LOAD;
-    if (md5Hash.isEmpty() && !m_sLoadedMd5Hash.isEmpty()) {
-        reloadCase = UNSET;
-        msg = tr("The current track does not have an embedded cover art.\n"
-                 "Do you want to unset the current cover art?");
-    } else if (md5Hash != m_sLoadedMd5Hash) {
-        reloadCase = CHANGE;
-        msg = tr("The current cover art is different from the embedded cover art.\n"
-                 "Do you want to load the embedded cover art?");
-    }
-
-    if (reloadCase == LOAD) {
-        if (!md5Hash.isEmpty()) {
-            m_sLoadedCoverLocation.clear();
-            m_sLoadedMd5Hash = md5Hash;
-            covercache->requestPixmap(m_pLoadedTrack->getId());
-        }
-        return;
-    }
-
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, tr("Reload Embedded Cover Art"), msg,
-                                  QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes) {
-        if (reloadCase == UNSET) {
-            slotUnsetCoverArt();
-        } else if (reloadCase == CHANGE) {
-            m_sLoadedCoverLocation.clear();
-            m_sLoadedMd5Hash = md5Hash;
-            covercache->requestPixmap(m_pLoadedTrack->getId());
-        }
+    if (m_pLoadedTrack) {
+        m_sLoadedCoverLocation.clear();
+        m_sLoadedMd5Hash.clear();
+        CoverArtCache::instance()->requestPixmap(m_pLoadedTrack->getId());
     }
 }
 
