@@ -82,8 +82,8 @@ void DlgTrackInfo::init(){
     QAction* unsetCover = new QAction(tr("&Unset"), this);
     connect(unsetCover, SIGNAL(triggered()),
             this, SLOT(slotUnsetCoverArt()));
-    // reload just cover art from metadata
-    QAction* reloadCover = new QAction(tr("Reload from &Metadata"), this);
+    // reload just cover art using the search algorithm (in CoverArtCache)
+    QAction* reloadCover = new QAction(tr("&Reload"), this);
     connect(reloadCover, SIGNAL(triggered()),
             this, SLOT(reloadEmbeddedCover()));
     // Cover art popup menu
