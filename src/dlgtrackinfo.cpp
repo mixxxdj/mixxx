@@ -190,7 +190,6 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     // Load Default Cover Art
     coverArt->setIcon(CoverArtCache::instance()->getDefaultCoverArt());
     m_sLoadedCoverLocation.clear();
-    m_sLoadedMd5Hash.clear();
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -207,10 +206,9 @@ void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                     const QString& md5Hash,
                                     int trackId) {
     m_sLoadedCoverLocation = coverLocation;
-    m_sLoadedMd5Hash = md5Hash;
     CoverArtCache::instance()->requestPixmap(trackId,
                                              m_sLoadedCoverLocation,
-                                             m_sLoadedMd5Hash);
+                                             md5Hash);
 }
 
 void DlgTrackInfo::slotUnsetCoverArt() {
@@ -474,7 +472,6 @@ void DlgTrackInfo::reloadTrackMetadata() {
 void DlgTrackInfo::slotReloadCover() {
     if (m_pLoadedTrack) {
         m_sLoadedCoverLocation.clear();
-        m_sLoadedMd5Hash.clear();
         CoverArtCache::instance()->requestPixmap(m_pLoadedTrack->getId());
     }
 }
