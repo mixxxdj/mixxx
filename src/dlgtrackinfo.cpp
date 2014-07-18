@@ -85,7 +85,7 @@ void DlgTrackInfo::init(){
     // reload just cover art using the search algorithm (in CoverArtCache)
     QAction* reloadCover = new QAction(tr("&Reload"), this);
     connect(reloadCover, SIGNAL(triggered()),
-            this, SLOT(reloadEmbeddedCover()));
+            this, SLOT(slotReloadCover()));
     // Cover art popup menu
     QMenu* coverMenu = new QMenu(this);
     coverMenu->addAction(changeCover);
@@ -471,7 +471,7 @@ void DlgTrackInfo::reloadTrackMetadata() {
     }
 }
 
-void DlgTrackInfo::reloadEmbeddedCover() {
+void DlgTrackInfo::slotReloadCover() {
     if (m_pLoadedTrack) {
         m_sLoadedCoverLocation.clear();
         m_sLoadedMd5Hash.clear();
