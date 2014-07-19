@@ -100,7 +100,7 @@ qint64 PerformanceTimer::difference(PerformanceTimer* timer)
 ////////////////////////////// Symbian //////////////////////////////
 #elif defined(Q_OS_SYMBIAN)
 
-static qint64 getTimeFromTick(quint64 elapsed)
+static qint64 getTimeFromTick(qint64 elapsed)
 {
     static TInt freq = 0;
     if (!freq)
@@ -228,7 +228,7 @@ qint64 PerformanceTimer::difference(PerformanceTimer* timer)
 ////////////////////////////// Windows //////////////////////////////
 #elif defined(Q_OS_WIN)
 
-static qint64 getTimeFromTick(quint64 elapsed)
+static qint64 getTimeFromTick(qint64 elapsed)
 {
     static LARGE_INTEGER freq = {{ 0, 0 }};
     if (!freq.QuadPart)
