@@ -59,10 +59,9 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        QString backPath = context.selectString(node, "BackPath");
+        QString backPath = context.getPixmapPath(context.selectNode(node, "BackPath"));
         if (!backPath.isEmpty()) {
-            setPixmapBackground(context.getSkinPath(backPath),
-                                Paintable::DrawModeFromString(mode_str));
+            setPixmapBackground(backPath, Paintable::DrawModeFromString(mode_str));
         }
     }
 
@@ -72,15 +71,18 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         if (state.isElement() && state.nodeName() == "State") {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                QString pixmapName;
-                if (context.hasNodeSelectString(state, "Pressed", &pixmapName) &&
-                        !pixmapName.isEmpty()) {
-                    setPixmap(iState, true, context.getSkinPath(pixmapName));
+                QString pixmapPath;
+                
+                pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
+                if (!pixmapPath.isEmpty()) {
+                    setPixmap(iState, false, pixmapPath);
                 }
-                if (context.hasNodeSelectString(state, "Unpressed", &pixmapName) &&
-                        !pixmapName.isEmpty()) {
-                    setPixmap(iState, false, context.getSkinPath(pixmapName));
+                
+                pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
+                if (!pixmapPath.isEmpty()) {
+                    setPixmap(iState, true, pixmapPath);
                 }
+                
                 m_text.replace(iState, context.selectString(state, "Text"));
                 QString alignment = context.selectString(state, "Alignment");
                 if (alignment == "left") {

@@ -390,6 +390,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pContextWidget->hide();
     SharedGLContext::setWidget(pContextWidget);
 
+    // Create Control aliases before loading the default skin and
+    // initializing controllers
+    createCOAliases();
+
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
@@ -472,6 +476,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         m_pLibraryScanner->scan(this);
     }
     slotNumDecksChanged(m_pNumDecks->get());
+
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -627,6 +632,15 @@ bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString user
 #endif  // QT_VERSION
     }
     return pTranslator->load(translation + prefix + userLocale, translationPath);
+}
+
+void MixxxMainWindow::createCOAliases() {
+    // Add aliases using
+    // ControlDoublePrivate::insertAlias(aliasConfigKey, originalConfigKey)
+
+    // Example:
+    // ControlDoublePrivate::insertAlias(ConfigKey("[Microphone]", "volume"),
+    //                                   ConfigKey("[Microphone1]", "volume"));
 }
 
 void MixxxMainWindow::logBuildDetails() {

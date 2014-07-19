@@ -66,7 +66,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     // right side. (prevents AutoDJ logic from having to check for hamster mode
     // every time)
     double getCrossfader() const;
-    void setCrossfader(double value);
+    void setCrossfader(double value, bool right);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
