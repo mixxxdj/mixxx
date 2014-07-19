@@ -53,6 +53,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmTap();
 
     void reloadTrackMetadata();
+    void slotOpenInFileBrowser();
 
     void slotPixmapFound(int trackId, QPixmap pixmap);
     void slotChangeCoverArt();

@@ -1,9 +1,10 @@
 // dlgtrackinfo.cpp
 // Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QMenu>
+#include <QtDebug>
 
 #include "dlgtrackinfo.h"
 #include "library/coverartcache.h"
@@ -65,6 +66,8 @@ void DlgTrackInfo::init(){
             this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
+    connect(btnOpenFileBrowser, SIGNAL(clicked()),
+            this, SLOT(slotOpenInFileBrowser()));
     m_bpmTapTimer.start();
     for (int i = 0; i < kFilterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
@@ -259,6 +262,17 @@ void DlgTrackInfo::slotChangeCoverArt() {
         QMessageBox::warning(this, tr("Change Cover Art"),
                              tr("Could not change the cover art!"));
     }
+}
+
+void DlgTrackInfo::slotOpenInFileBrowser() {
+    if (m_pLoadedTrack == NULL) {
+        return;
+    }
+    QDir directory(m_pLoadedTrack->getDirectory());
+    if (!directory.exists()) {
+        directory = QDir::home();
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
