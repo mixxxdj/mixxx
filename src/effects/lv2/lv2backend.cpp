@@ -14,7 +14,8 @@ LV2Backend::LV2Backend(QObject* pParent)
         qDebug() << lilv_node_as_string(name) << "-----------------------------";
         LV2Manifest* flanger = new LV2Manifest(plug, m_properties);
         if (flanger->isValid()) {
-            m_registeredEffects.insert(flanger);
+            m_registeredEffects.insert(flanger->getEffectManifest().id(),
+                                       flanger);
         }
     }
 }
@@ -24,6 +25,9 @@ LV2Backend::~LV2Backend() {
         lilv_node_free(node);
     }
     lilv_world_free(m_pWorld);
+    foreach(LV2Manifest* lv2Manifest, m_registeredEffects) {
+        delete lv2Manifest;
+    }
 }
 
 void LV2Backend::initializeProperties() {
@@ -38,26 +42,19 @@ void LV2Backend::initializeProperties() {
 
 const QSet<QString> LV2Backend::getEffectIds() const {
     QSet<QString> result;
-    foreach (LV2Manifest* effect, m_registeredEffects) {
-        result.insert(effect->getEffectManifest().id());
-    }
-    return result;
+    return m_registeredEffects.keys().toSet();
 }
 
 bool LV2Backend::canInstantiateEffect(const QString& effectId) const {
-    foreach (LV2Manifest* effect, m_registeredEffects) {
-        if (effect->getEffectManifest().id() == effectId) {
-            return true;
-        }
+    if (m_registeredEffects.contains(effectId)) {
+        return true;
     }
     return false;
 }
 
 EffectManifest LV2Backend::getManifest(const QString& effectId) const {
-    foreach (LV2Manifest* effect, m_registeredEffects) {
-        if (effect->getEffectManifest().id() == effectId) {
-            return effect->getEffectManifest();
-        }
+    if (m_registeredEffects.contains(effectId)) {
+        return m_registeredEffects[effectId]->getEffectManifest();
     }
     return EffectManifest();
 }
@@ -68,16 +65,10 @@ EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
         qWarning() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
-    EffectManifest manifest;
-    const LilvPlugin* plugin;
-    foreach (LV2Manifest* effect, m_registeredEffects) {
-        if (effect->getEffectManifest().id() == effectId) {
-            manifest = effect->getEffectManifest();
-            plugin = effect->getPlugin();
-            break;
-        }
-    }
+    LV2Manifest* lv2manifest = m_registeredEffects[effectId];
 
     return EffectPointer(new Effect(this, pEffectsManager,
-                         manifest, EffectInstantiatorPointer(new LV2EffectProcessorInstantiator(plugin))));
+                         lv2manifest->getEffectManifest(),
+                         EffectInstantiatorPointer(new
+                         LV2EffectProcessorInstantiator(lv2manifest->getPlugin()))));
 }
