@@ -253,7 +253,9 @@ void DlgTrackInfo::slotChangeCoverArt() {
 
     bool res = CoverArtCache::instance()->changeCoverArt(
                 m_pLoadedTrack->getId(), newCoverLocation);
-    if (!res) {
+    if (res) {
+        m_sLoadedCoverLocation = newCoverLocation;
+    } else {
         QMessageBox::warning(this, tr("Change Cover Art"),
                              tr("Could not change the cover art!"));
     }
