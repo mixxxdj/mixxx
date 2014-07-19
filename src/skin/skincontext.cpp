@@ -321,20 +321,31 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
 	QDomNamedNodeMap attributes = node.attributes();
     uint i;
     int pos;
-    QString varName, varValue, attributeValue, propName, match, replacement;
+    QString varName, varValue, attributeValue, attributeName,
+			propName, match, replacement;
     QStringList captured;
     QDomAttr attribute;
     QRegExp rx("var\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");	// var( part1 [, part2] )
+    QRegExp nameRx("^var-([a-zA-Z0-9_-]+)$");											// var-attribute-name;
     
     for (i=0; i < attributes.length(); i++){
         
         attribute = attributes.item(i).toAttr();
         attributeValue = attribute.value();
+        attributeName = attribute.name();
+        
+        // searching variable attributes
+        if ((pos = rx.indexIn(attributeValue, pos)) != -1) {
+			captured = rx.capturedTexts();
+			
+		}
+         
+        
+        // searching vars in the attribute value
 		pos = 0;
-		
         while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
 			captured = rx.capturedTexts();
-			qWarning() << "AAAAA " << captured.length() << " '" << captured.join("', '") << "'\n";
+			// qWarning() << "AAAAA " << captured.length() << " '" << captured.join("', '") << "'\n";
 			match = rx.cap(0);
 			
 			varName = rx.cap(3);
@@ -354,6 +365,8 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
 			attributeValue.replace(pos, match.length(), replacement);
 			pos += replacement.length();
 		}
+		
+		
 		
         attribute.setValue(attributeValue);
     }
