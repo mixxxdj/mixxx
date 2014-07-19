@@ -31,6 +31,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
     int inputPorts = 0;
     int outputPorts = 0;
 
+
     for (int i = 0; i < numPorts; i++) {
         const LilvPort *port = lilv_plugin_get_port_by_index(plug, i);
 
@@ -90,9 +91,27 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
         }
     }
 
+    // TODO: test if the plug in has additional features (not working as it should
+    // (check how audacity is handling this case);
+    // set m_isValid to false if that is the case
+    // Also, we only support the case when the input and output samples are stereo
     if (inputPorts == 2 && outputPorts == 2) {
         m_isValid = true;
     }
+
+    LilvNodes* features = lilv_plugin_get_required_features(m_pLV2plugin);
+    // Calf has some required feature for GUI, I think it can be ignored for
+    // the moment
+    if (lilv_nodes_size(features) > 1) {
+        m_isValid = false;
+    }
+    lilv_nodes_free(features);
+
+    features = lilv_plugin_get_optional_features(m_pLV2plugin);
+    if (lilv_nodes_size(features) > 0) {
+        m_isValid = false;
+    }
+    lilv_nodes_free(features);
 }
 
 LV2Manifest::~LV2Manifest() {
