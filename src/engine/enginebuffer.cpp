@@ -411,6 +411,8 @@ void EngineBuffer::clearScale() {
     if (m_pScale) {
         m_pScale->clear();
     }
+    // restore the original position that was lost due to getScaled() above
+    m_pReadAheadManager->notifySeek(m_filepos_play);
 }
 
 
@@ -423,7 +425,6 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     // Before seeking, read extra buffer for crossfading
     clearScale();
-    m_pReadAheadManager->notifySeek(newpos);
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
