@@ -9,6 +9,10 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     outputL = new float[10000];
     outputR = new float[10000];
     params = new float[100];
+
+    // TODO: use the real sample rate; see effectprocessor.h and move
+    // getSampleRate() method into the base class to be accessible inside this
+    // class.
     handle = lilv_plugin_instantiate(plugin, 44100, NULL);
     const QList<EffectManifestParameter> effectManifestParameterList = manifest.parameters();
     // Initialize EngineEffectParameters
@@ -22,6 +26,8 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     }
 
     // Only for Calf Flanger, we are hard coding the indexes
+    // TODO: somehow remove the hard coding; maybe get a vector of indexes
+    // example: index_vector = [iL, iR, oL, oR];
     lilv_instance_connect_port(handle, 0, inputL);
     lilv_instance_connect_port(handle, 1, inputR);
     lilv_instance_connect_port(handle, 2, outputL);
