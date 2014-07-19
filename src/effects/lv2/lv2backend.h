@@ -21,7 +21,7 @@ class LV2Backend : public EffectsBackend {
     void initializeProperties();
     LilvWorld* m_pWorld;
     QHash<QString, LilvNode*> m_properties;
-    QSet<LV2Manifest*> m_registeredEffects;
+    QHash<QString, LV2Manifest*> m_registeredEffects;
 
     QString debugString() const {
         return "LV2Backend";
