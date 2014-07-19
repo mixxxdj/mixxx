@@ -12,6 +12,9 @@ class EngineEffect;
 
 class EffectProcessor {
   public:
+    EffectProcessor() {
+        m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    }
     virtual ~EffectProcessor() { }
 
     virtual void initialize(const QSet<QString>& registeredGroups) = 0;
@@ -29,6 +32,12 @@ class EffectProcessor {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const GroupFeatureState& groupFeatures) = 0;
+
+    int getSampleRate() {
+        return static_cast<int>(m_pSampleRate->get());
+    }
+  protected:
+    ControlObjectSlave* m_pSampleRate;
 };
 
 // Helper class for automatically fetching group state parameters upon receipt
@@ -36,9 +45,7 @@ class EffectProcessor {
 template <typename T>
 class GroupEffectProcessor : public EffectProcessor {
   public:
-    GroupEffectProcessor() {
-        m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-    }
+    GroupEffectProcessor() { }
     virtual ~GroupEffectProcessor() {
         for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
              it != m_groupState.end();) {
@@ -77,13 +84,9 @@ class GroupEffectProcessor : public EffectProcessor {
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
                               const unsigned int numSamples,
                               const GroupFeatureState& groupFeatures) = 0;
-    int getSampleRate() {
-        return static_cast<int>(m_pSampleRate->get());
-    }
 
   private:
     QMap<QString, T*> m_groupState;
-    ControlObjectSlave* m_pSampleRate;
 };
 
 #endif /* EFFECTPROCESSOR_H */
