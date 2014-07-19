@@ -25,6 +25,8 @@ class LV2EffectProcessor : public EffectProcessor {
     float* outputR;
     float* params;
     LilvInstance* handle;
+
+    int m_sampleRate;
 };
 
 

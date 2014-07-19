@@ -4,6 +4,7 @@
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        const EffectManifest& manifest,
                                        const LilvPlugin* plugin) {
+    m_sampleRate = getSampleRate();
     inputL = new float[10000];
     inputR = new float[10000];
     outputL = new float[10000];
@@ -13,7 +14,7 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     // TODO: use the real sample rate; see effectprocessor.h and move
     // getSampleRate() method into the base class to be accessible inside this
     // class.
-    handle = lilv_plugin_instantiate(plugin, 44100, NULL);
+    handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL);
     const QList<EffectManifestParameter> effectManifestParameterList = manifest.parameters();
     // Initialize EngineEffectParameters
     foreach (EffectManifestParameter param, effectManifestParameterList) {
