@@ -21,9 +21,9 @@ TEST_F(PerformanceTimerTest, DifferenceCanBeNegative) {
     qint64 difference = 0;
     
     std::time_t start = time(0);
-    while(1) {
+    while (1) {
         // use the standard clock to make sure we don't run forever
-        int seconds = difftime(time(0), start);
+        double seconds = difftime(time(0), start);
         
         PerformanceTimer late;
         late.start();
@@ -33,11 +33,11 @@ TEST_F(PerformanceTimerTest, DifferenceCanBeNegative) {
         // If it has ticked, then the difference better be negative.
         ASSERT_LE(difference, 0);
         
-        if(difference < 0) {
+        if (difference < 0) {
             break; // test passed
         }
         
-        if(seconds > 0) {
+        if (seconds > 0.9) {
             // The standard clock ticked, but difference is still zero.
             // Assume that there is no high-resolution clock on this system.
             ASSERT_EQ(difference, 0);
