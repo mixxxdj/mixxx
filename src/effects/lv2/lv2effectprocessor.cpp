@@ -1,19 +1,18 @@
 #include "effects/lv2/lv2effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 
+#define MAX_PARAMS 100
+
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        const EffectManifest& manifest,
                                        const LilvPlugin* plugin) {
     m_sampleRate = getSampleRate();
-    inputL = new float[10000];
-    inputR = new float[10000];
-    outputL = new float[10000];
-    outputR = new float[10000];
-    params = new float[100];
+    inputL = new float[MAX_BUFFER_LEN];
+    inputR = new float[MAX_BUFFER_LEN];
+    outputL = new float[MAX_BUFFER_LEN];
+    outputR = new float[MAX_BUFFER_LEN];
+    params = new float[MAX_PARAMS];
 
-    // TODO: use the real sample rate; see effectprocessor.h and move
-    // getSampleRate() method into the base class to be accessible inside this
-    // class.
     handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL);
     const QList<EffectManifestParameter> effectManifestParameterList = manifest.parameters();
     // Initialize EngineEffectParameters
