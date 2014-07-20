@@ -35,8 +35,8 @@ class SoftTakeoverCtrl {
     SoftTakeoverCtrl();
     ~SoftTakeoverCtrl();
 
-    // Enable soft-takeover for the given Control This does nothing on a Control
-    // that's already enabled.
+    // Enable soft-takeover for the given Control.
+    // This does nothing on a control that already has soft-takeover enabled.
     void enable(ControlObject* control);
     // Disable soft-takeover for the given Control
     void disable(ControlObject* control);
