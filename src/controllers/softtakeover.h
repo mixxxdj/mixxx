@@ -17,7 +17,7 @@ class ControlObject;
 class SoftTakeover {
   public:
     SoftTakeover();
-    bool ignore(ControlObject* control, double newMidiParameter);
+    bool ignore(ControlObject* control, double newParameter);
 
   private:
     // If a new value is received within this amount of time, jump to it
@@ -27,7 +27,7 @@ class SoftTakeover {
     static const uint SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS = 50;
 
     uint m_time;
-    double m_prevMidiParameter;
+    double m_prevParameter;
 };
 
 class SoftTakeoverCtrl {

@@ -183,7 +183,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
-                if (!m_pSoftTakeover->ignore(m_pControlValue, parameter * 127)) {
+                if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
                     m_pControlValue->setParameterFrom(parameter, NULL);
                 }
                 break;

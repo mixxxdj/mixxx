@@ -646,7 +646,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     if (cot != NULL) {
         ControlObject* pControl = ControlObject::getControl(cot->getKey());
-        if (pControl && !m_st.ignore(pControl, cot->getParameterForValue(newValue) * 127)) {
+        if (pControl && !m_st.ignore(pControl, cot->getParameterForValue(newValue))) {
             cot->slotSet(newValue);
         }
     }

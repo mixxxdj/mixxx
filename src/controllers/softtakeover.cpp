@@ -48,24 +48,24 @@ void SoftTakeoverCtrl::disable(ControlObject* control) {
     }
 }
 
-bool SoftTakeoverCtrl::ignore(ControlObject* control, double newMidiParameter) {
+bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
     if (control == NULL) {
         return false;
     }
     bool ignore = false;
     SoftTakeover* pSt = m_softTakeoverHash.value(control);
     if (pSt) {
-        ignore = pSt->ignore(control, newMidiParameter);
+        ignore = pSt->ignore(control, newParameter);
     }
     return ignore;
 }
 
 SoftTakeover::SoftTakeover()
     : m_time(0),
-      m_prevMidiParameter(0) {
+      m_prevParameter(0) {
 }
 
-bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
+bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     bool ignore = false;
     // We only want to ignore the controller when all of the following are true:
     //  - its previous and new values are far away from and on the same side
@@ -74,7 +74,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
 
     // 3/128 units away from the current is enough to catch fast non-sequential moves
     //  but not cause an audibly noticeable jump.
-    double threshold = 3.0f;
+    const double threshold = 3.0f / 128;
 
     uint currentTime = Time::elapsedMsecs();
     // We will get a sudden jump if we don't ignore the first value.
@@ -85,9 +85,9 @@ bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
         m_time = 1;
     } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
         // don't ignore value if a previous one was not ignored in time
-        double currentMidiParameter = control->getMidiParameter();
-        double difference = currentMidiParameter - newMidiParameter;
-        double prevDiff = currentMidiParameter - m_prevMidiParameter;
+        const double currentParameter = control->getParameter();
+        const double difference = currentParameter - newParameter;
+        const double prevDiff = currentParameter - m_prevParameter;
         if ((prevDiff < 0 && difference < 0) ||
                 (prevDiff > 0 && difference > 0)) {
             // On same site (still on ignore site)
@@ -104,7 +104,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newMidiParameter) {
         m_time = currentTime;
     }
     // Update the previous value every time
-    m_prevMidiParameter = newMidiParameter;
+    m_prevParameter = newParameter;
 
     return ignore;
 }
