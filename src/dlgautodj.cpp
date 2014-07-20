@@ -172,11 +172,23 @@ double DlgAutoDJ::getCrossfader() const {
     return m_pCOCrossfader->get();
 }
 
-void DlgAutoDJ::setCrossfader(double value) {
+void DlgAutoDJ::setCrossfader(double value, bool right) {
     if (m_pCOCrossfaderReverse->get() > 0.0) {
         value *= -1.0;
+        right = !right;
     }
-    m_pCOCrossfader->slotSet(value);
+    double current_value = m_pCOCrossfader->get();
+    if (right) {
+        // ignore if we move slider left
+        if (value > current_value) {
+            m_pCOCrossfader->set(value);
+        }
+    } else {
+        // ignore if we move slider right
+        if (value < current_value) {
+            m_pCOCrossfader->set(value);
+        }
+    }
 }
 
 void DlgAutoDJ::loadSelectedTrack() {
@@ -368,7 +380,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
     if (m_eState == ADJ_ENABLE_P1LOADED) {
         // Auto DJ Start
         if (!deck1Playing && !deck2Playing) {
-            setCrossfader(-1.0);  // Move crossfader to the left!
+            setCrossfader(-1.0, false);  // Move crossfader to the left!
             m_pCOPlay1->slotSet(1.0);  // Play the track in player 1
             removePlayingTrackFromQueue("[Channel1]");
         } else {
@@ -391,7 +403,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
     if (m_eState == ADJ_P2FADING) {
         if (deck1Playing && !deck2Playing) {
             // End State
-            setCrossfader(-1.0);  // Move crossfader to the left!
+            setCrossfader(-1.0, false);  // Move crossfader to the left!
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             loadNextTrackFromQueue();
@@ -440,7 +452,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                     2*(value-m_posThreshold1)/(posFadeEnd-m_posThreshold1);
             // crossfadeValue = -1.0f -> + 1.0f
             // Move crossfader to the right!
-            setCrossfader(crossfadeValue);
+            setCrossfader(crossfadeValue, true);
         }
     }
 }
@@ -465,7 +477,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
         if (!deck1Playing && deck2Playing) {
             // End State
             // Move crossfader to the right!
-            setCrossfader(1.0);
+            setCrossfader(1.0, true);
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             loadNextTrackFromQueue();
@@ -513,7 +525,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             float crossfadeValue = 1.0f -
                     2*(value-m_posThreshold2)/(posFadeEnd-m_posThreshold2);
             // crossfadeValue = 1.0f -> + -1.0f
-            setCrossfader(crossfadeValue); //Move crossfader to the right!
+            setCrossfader(crossfadeValue, false); // Move crossfader to the left!
         }
     }
 }
