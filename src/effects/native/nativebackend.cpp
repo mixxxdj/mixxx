@@ -19,7 +19,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<ReverbEffect>();
 #endif
     registerEffect<EchoEffect>();
-    registerEffect<ButterworthEQEffect>();
+    registerEffect<Butterworth8EQEffect>();
 }
 
 NativeBackend::~NativeBackend() {
