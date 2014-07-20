@@ -1788,6 +1788,62 @@
 				<on>0x06</on>
 				<off>0x0</off>
 			</output>
+			<output>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect4]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect4]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <minimum>0.5</minimum>
+            </output>
 		</outputs>
 	</controller>
 </MixxxControllerPreset>
