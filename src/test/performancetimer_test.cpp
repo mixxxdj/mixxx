@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <time.h>
+#include <ctime>
 
 #include "util/performancetimer.h"
 
