@@ -238,26 +238,60 @@ void DlgTrackInfo::slotChangeCoverArt() {
         return;
     }
 
-    QString dir;
+    // get initial directory (trackdir or coverdir)
+    QString initialDir;
+    QString trackPath = m_pLoadedTrack->getDirectory();
     if (m_sLoadedCoverLocation.isEmpty() ||
         m_sLoadedCoverLocation == CoverArtCache::instance()
                                   ->getDefaultCoverLocation()) {
-        dir = m_pLoadedTrack->getDirectory();
+        initialDir = trackPath;
     } else {
-        dir = m_sLoadedCoverLocation;
+        initialDir = m_sLoadedCoverLocation;
     }
-    QString newCoverLocation = QFileDialog::getOpenFileName(
-                this, tr("Change Cover Art"), dir,
+
+    // open file dialog
+    QString selectedCover = QFileDialog::getOpenFileName(
+                this, tr("Change Cover Art"), initialDir,
                 tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
 
-    if (newCoverLocation.isNull()) {
+    if (selectedCover.isEmpty()) {
         return;
     }
 
+    // if the cover comes from an external dir,
+    // we copy it to the track directory.
+    QString newCover;
+    QFileInfo coverInfo(selectedCover);
+    QString coverPath = coverInfo.absolutePath();
+    if (trackPath != coverPath) {
+        QString ext = coverInfo.suffix();
+        QStringList filepaths;
+        filepaths << trackPath % "/cover." % ext
+                  << trackPath % "/album." % ext
+                  << trackPath % "/mixxx-cover." % ext;
+
+        foreach (QString filepath, filepaths) {
+            if (QFile::copy(selectedCover, filepath)) {
+                newCover = filepath;
+                break;
+            }
+        }
+
+        if (newCover.isEmpty()) {
+            // overwrites "mixxx-cover"
+            QFile::remove(filepaths.last());
+            if (QFile::copy(selectedCover, filepaths.last())) {
+                newCover = filepaths.last();
+            }
+        }
+    } else {
+        newCover = selectedCover;
+    }
+
     bool res = CoverArtCache::instance()->changeCoverArt(
-                m_pLoadedTrack->getId(), newCoverLocation);
+                m_pLoadedTrack->getId(), newCover);
     if (res) {
-        m_sLoadedCoverLocation = newCoverLocation;
+        m_sLoadedCoverLocation = newCover;
     } else {
         QMessageBox::warning(this, tr("Change Cover Art"),
                              tr("Could not change the cover art!"));
