@@ -16,7 +16,7 @@
 
 class EngineObjectConstIn;
 class EngineFilterButterworth8;
-class EngineFilterIIR;
+class EngineFilterBessel4;
 class Waveform;
 class AnalysisDao;
 

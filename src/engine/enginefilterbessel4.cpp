@@ -20,7 +20,7 @@
 #define MIXXX
 #include "fidlib.h"
 
-EngineFilterIIR::EngineFilterIIR(int bufSize)
+EngineFilterBessel4::EngineFilterBessel4(int bufSize)
         : m_sampleRate(44100),
           m_bufSize(bufSize),
           m_doRamping(false){
@@ -28,7 +28,7 @@ EngineFilterIIR::EngineFilterIIR(int bufSize)
     initBuffers();
 }
 
-void EngineFilterIIR::initBuffers() {
+void EngineFilterBessel4::initBuffers() {
     // Copy the current buffers into the old buffers
     memcpy(m_oldBuf1, m_buf1, m_bufSize * sizeof(double));
     memcpy(m_oldBuf2, m_buf2, m_bufSize * sizeof(double));
@@ -37,7 +37,7 @@ void EngineFilterIIR::initBuffers() {
     memset(m_buf2, 0, m_bufSize * sizeof(double));
 }
 
-EngineFilterIIR::~EngineFilterIIR() {
+EngineFilterBessel4::~EngineFilterBessel4() {
 }
 
 inline double _processLowpass(double* coef, double* buf, register double val) {
@@ -100,7 +100,7 @@ inline double _processHighpass(double* coef, double* buf, register double val) {
 }
 
 EngineFilterIIRLow::EngineFilterIIRLow(int sampleRate, double freqCorner1)
-        : EngineFilterIIR(4) {
+        : EngineFilterBessel4(4) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
@@ -139,7 +139,7 @@ void EngineFilterIIRLow::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
 
 EngineFilterIIRBand::EngineFilterIIRBand(int sampleRate, double freqCorner1,
                                          double freqCorner2)
-        : EngineFilterIIR(16) {
+        : EngineFilterBessel4(16) {
     setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);
 }
 
@@ -178,7 +178,7 @@ void EngineFilterIIRBand::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
 }
 
 EngineFilterIIRHigh::EngineFilterIIRHigh(int sampleRate, double freqCorner1)
-        : EngineFilterIIR(4) {
+        : EngineFilterBessel4(4) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 

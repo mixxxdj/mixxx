@@ -23,11 +23,11 @@
 #include "engine/engineobject.h"
 #include "util/types.h"
 
-class EngineFilterIIR : public EngineObjectConstIn {
+class EngineFilterBessel4 : public EngineObjectConstIn {
     Q_OBJECT
   public:
-    EngineFilterIIR(int bufSize);
-    virtual ~EngineFilterIIR();
+    EngineFilterBessel4(int bufSize);
+    virtual ~EngineFilterBessel4();
 
     void initBuffers();
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut,
@@ -55,7 +55,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     bool m_doRamping;
 };
 
-class EngineFilterIIRLow : public EngineFilterIIR {
+class EngineFilterIIRLow : public EngineFilterBessel4 {
     Q_OBJECT
   public:
     EngineFilterIIRLow(int sampleRate, double freqCorner1);
@@ -63,7 +63,7 @@ class EngineFilterIIRLow : public EngineFilterIIR {
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
 
-class EngineFilterIIRBand : public EngineFilterIIR {
+class EngineFilterIIRBand : public EngineFilterBessel4 {
     Q_OBJECT
   public:
     EngineFilterIIRBand(int sampleRate, double freqCorner1,
@@ -73,7 +73,7 @@ class EngineFilterIIRBand : public EngineFilterIIR {
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
 
-class EngineFilterIIRHigh : public EngineFilterIIR {
+class EngineFilterIIRHigh : public EngineFilterBessel4 {
     Q_OBJECT
   public:
     EngineFilterIIRHigh(int sampleRate, double freqCorner1);
