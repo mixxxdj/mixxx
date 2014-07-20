@@ -605,7 +605,7 @@ class MixxxCore(Feature):
                    "engine/enginebufferscaledummy.cpp",
                    "engine/enginebufferscalelinear.cpp",
                     "engine/enginefilterblock.cpp",
-                   "engine/enginefilteriir.cpp",
+                   "engine/enginefilterbessel4.cpp",
                    "engine/enginefilter.cpp",
                    "engine/engineobject.cpp",
                    "engine/enginepregain.cpp",

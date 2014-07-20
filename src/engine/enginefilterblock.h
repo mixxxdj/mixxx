@@ -19,7 +19,7 @@
 #define ENGINEFILTERBLOCK_H
 
 #include "engine/engineobject.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginefilterbutterworth8.h"
 
 class ControlObjectSlave;

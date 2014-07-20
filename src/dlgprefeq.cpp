@@ -19,7 +19,7 @@
 #include <QString>
 
 #include "dlgprefeq.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "util/math.h"
 

@@ -21,7 +21,7 @@
 #include "controllogpotmeter.h"
 #include "controlobjectslave.h"
 #include "engine/enginefilterblock.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginefilter.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
