@@ -1,21 +1,6 @@
-/***************************************************************************
-                          enginefilteriir.h  -  description
-                             -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEFILTERIIR_H
-#define ENGINEFILTERIIR_H
+#ifndef ENGINEFILTERBESSEL4_H
+#define ENGINEFILTERBESSEL4_H
 
 #define MAX_COEFS 17
 #define MAX_INTERNAL_BUF 16
@@ -55,30 +40,30 @@ class EngineFilterBessel4 : public EngineObjectConstIn {
     bool m_doRamping;
 };
 
-class EngineFilterIIRLow : public EngineFilterBessel4 {
+class EngineFilterBessel4Low : public EngineFilterBessel4 {
     Q_OBJECT
   public:
-    EngineFilterIIRLow(int sampleRate, double freqCorner1);
+    EngineFilterBessel4Low(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
 
-class EngineFilterIIRBand : public EngineFilterBessel4 {
+class EngineFilterBessel4Band : public EngineFilterBessel4 {
     Q_OBJECT
   public:
-    EngineFilterIIRBand(int sampleRate, double freqCorner1,
+    EngineFilterBessel4Band(int sampleRate, double freqCorner1,
                         double freqCorner2);
     void setFrequencyCorners(int sampleRate, double freqCorner1,
                              double freqCorner2);
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
 
-class EngineFilterIIRHigh : public EngineFilterBessel4 {
+class EngineFilterBessel4High : public EngineFilterBessel4 {
     Q_OBJECT
   public:
-    EngineFilterIIRHigh(int sampleRate, double freqCorner1);
+    EngineFilterBessel4High(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
 
-#endif // ENGINEFILTERIIR_H
+#endif // ENGINEFILTERBESSEL4_H

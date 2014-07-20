@@ -53,9 +53,9 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     }
 
     // Load Defaults
-    lowLight = new EngineFilterIIRLow(m_iOldSampleRate, 246);
-    bandLight = new EngineFilterIIRBand(m_iOldSampleRate, 246, 2484);
-    highLight = new EngineFilterIIRHigh(m_iOldSampleRate, 2484);
+    lowLight = new EngineFilterBessel4Low(m_iOldSampleRate, 246);
+    bandLight = new EngineFilterBessel4Band(m_iOldSampleRate, 246, 2484);
+    highLight = new EngineFilterBessel4High(m_iOldSampleRate, 2484);
     lowDef = new EngineFilterButterworth8Low(m_iOldSampleRate, 246);
     bandDef = new EngineFilterButterworth8Band(m_iOldSampleRate, 246, 2484);
     highDef = new EngineFilterButterworth8High(m_iOldSampleRate, 2484);
