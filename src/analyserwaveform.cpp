@@ -172,9 +172,9 @@ void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
     // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
-    m_filter[Low] = new EngineFilterIIR(bessel_lowpass4, 4);
-    m_filter[Mid] = new EngineFilterIIR(bessel_bandpass, 8);
-    m_filter[High] = new EngineFilterIIR(bessel_highpass4, 4);
+    m_filter[Low] = new EngineFilterIIRLow(sampleRate, 600);
+    m_filter[Mid] = new EngineFilterIIRBand(sampleRate, 600, 4000);
+    m_filter[High] = new EngineFilterIIRHigh(sampleRate, 4000);
 }
 
 void AnalyserWaveform::destroyFilters() {
