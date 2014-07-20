@@ -60,8 +60,8 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             lilv_node_free(info);
 
             // Build and set the parameter id from its name
-            param->setId(paramName.trimmed().toLower().replace(' ', '_'));
-            qDebug() << "Parameter id: " << paramName.trimmed().toLower().replace(' ', '_');
+            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
+            qDebug() << "Parameter id: " << paramName.trimmed().toLower().replace(' ', '_').append(i + '0');
 
             param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
@@ -91,23 +91,13 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
         }
     }
 
-    // TODO: test if the plug in has additional features (not working as it should
-    // (check how audacity is handling this case);
-    // set m_isValid to false if that is the case
     // Also, we only support the case when the input and output samples are stereo
     if (inputPorts == 2 && outputPorts == 2) {
         m_isValid = true;
     }
 
+    // We don't support any features
     LilvNodes* features = lilv_plugin_get_required_features(m_pLV2plugin);
-    // Calf has some required feature for GUI, I think it can be ignored for
-    // the moment
-    if (lilv_nodes_size(features) > 1) {
-        m_isValid = false;
-    }
-    lilv_nodes_free(features);
-
-    features = lilv_plugin_get_optional_features(m_pLV2plugin);
     if (lilv_nodes_size(features) > 0) {
         m_isValid = false;
     }
