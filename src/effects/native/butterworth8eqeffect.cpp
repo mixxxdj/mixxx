@@ -1,4 +1,4 @@
-#include "effects/native/butterwortheqeffect.h"
+#include "effects/native/butterworth8eqeffect.h"
 #include "util/math.h"
 
 // static
