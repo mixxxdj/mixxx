@@ -327,8 +327,7 @@
 							</State>
 							<Pos>11,57</Pos>
 							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit1],group_[Channel1]_enable</ConfigKey>
-								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								<ConfigKey>[EffectRack1_EffectUnit1],group_[BusLeft]_enable</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
@@ -349,13 +348,12 @@
 							</State>
 							<Pos>230,57</Pos>
 							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit2],group_[Channel2]_enable</ConfigKey>
-								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								<ConfigKey>[EffectRack1_EffectUnit2],group_[BusRight]_enable</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 						</PushButton>
-						
-												<!--
+					    
+						<!--
 						**********************************************
 						PLF FX Button
 						**********************************************
