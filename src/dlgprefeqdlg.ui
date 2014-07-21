@@ -17,26 +17,33 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QCheckBox" name="CheckBoxEnbEQ">
-       <property name="toolTip">
-        <string>Disable Mixxx` internal equalizers if you prefer to use equalizers on connected hardware mixers, and to lower CPU utilization.</string>
-       </property>
+      <widget class="QRadioButton" name="radioButton_bypass">
        <property name="text">
-        <string>Enable Equalizers</string>
+        <string>Bypass </string>
        </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="CheckBoxLoFi">
-       <property name="toolTip">
-        <string>Use this option if you prefer lower CPU utilization over better sound.</string>
-       </property>
+      <widget class="QRadioButton" name="radioButton_bessel4">
        <property name="text">
-        <string>Use Static Equalizers</string>
+        <string>Bessel 4th order</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_butterworth8">
+       <property name="text">
+        <string>Butterworth 8th order</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -313,4 +320,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

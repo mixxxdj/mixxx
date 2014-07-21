@@ -581,7 +581,7 @@ class MixxxCore(Feature):
 
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
-                   "effects/native/butterwortheqeffect.cpp",
+                   "effects/native/butterworth8eqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
                    "effects/native/reverbeffect.cpp",
@@ -605,7 +605,7 @@ class MixxxCore(Feature):
                    "engine/enginebufferscaledummy.cpp",
                    "engine/enginebufferscalelinear.cpp",
                     "engine/enginefilterblock.cpp",
-                   "engine/enginefilteriir.cpp",
+                   "engine/enginefilterbessel4.cpp",
                    "engine/enginefilter.cpp",
                    "engine/engineobject.cpp",
                    "engine/enginepregain.cpp",

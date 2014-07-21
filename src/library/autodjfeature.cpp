@@ -117,6 +117,7 @@ void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     emit(switchToView(m_sAutoDJViewName));
     emit(restoreSearch(QString())); //Null String disables search box
+    emit(enableCoverArtDisplay(true));
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

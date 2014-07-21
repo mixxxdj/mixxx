@@ -57,10 +57,10 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "PathBack")));
+        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "PathBack")));
     }
 
-    setPixmaps(context.getSkinPath(context.selectString(node, "PathVu")), bHorizontal);
+    setPixmaps(context.getPixmapPath(context.selectNode(node, "PathVu")), bHorizontal);
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)

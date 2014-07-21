@@ -53,11 +53,12 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmTap();
 
     void reloadTrackMetadata();
+    void slotOpenInFileBrowser();
 
     void slotPixmapFound(int trackId, QPixmap pixmap);
     void slotChangeCoverArt();
     void slotUnsetCoverArt();
-    void reloadEmbeddedCover();
+    void slotReloadCover();
 
   private:
     void populateFields(TrackPointer pTrack);
@@ -70,7 +71,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
     QString m_sLoadedCoverLocation;
-    QString m_sLoadedMd5Hash;
 
     CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
