@@ -70,5 +70,7 @@ EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
     return EffectPointer(new Effect(this, pEffectsManager,
                          lv2manifest->getEffectManifest(),
                          EffectInstantiatorPointer(new
-                         LV2EffectProcessorInstantiator(lv2manifest->getPlugin()))));
+                         LV2EffectProcessorInstantiator(lv2manifest->getPlugin(),
+                                                        lv2manifest->getAudioPortIndices(),
+                                                        lv2manifest->getControlPortIndices()))));
 }
