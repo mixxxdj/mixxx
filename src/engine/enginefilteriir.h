@@ -44,24 +44,28 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                      const int iBufferSize) {
-        double tmp1, tmp2;
-        double cross_mix = 0.0;
-        double cross_inc = 2.0 / static_cast<double>(iBufferSize);
-        for (int i = 0; i < iBufferSize; i += 2) {
-            pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
-            pOutput[i+1] = processSample(m_coef, m_buf2, pIn[i + 1]);
-            // Do a linear cross fade between the old samples and the new samples
-            if (m_doRamping) {
-                tmp1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
-                tmp2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
-                pOutput[i] = pOutput[i] * cross_mix +
-                             tmp1 * (1.0 - cross_mix);
-                pOutput[i + 1] = pOutput[i + 1] * cross_mix +
-                             tmp2 * (1.0 - cross_mix);
+        if (!m_doRamping) {
+            for (int i = 0; i < iBufferSize; i += 2) {
+                pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
+                pOutput[i+1] = processSample(m_coef, m_buf2, pIn[i + 1]);
+            }
+        } else {
+            double cross_mix = 0.0;
+            double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+            for (int i = 0; i < iBufferSize; i += 2) {
+                // Do a linear cross fade between the old samples and the new samples
+                double new1 = processSample(m_coef, m_buf1, pIn[i]);
+                double new2 = processSample(m_coef, m_buf2, pIn[i + 1]);
+                double old1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
+                double old2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
+                pOutput[i] = new1 * cross_mix +
+                             old1 * (1.0 - cross_mix);
+                pOutput[i + 1] = new2 * cross_mix +
+                                 old2 * (1.0 - cross_mix);
                 cross_mix += cross_inc;
             }
+            m_doRamping = false;
         }
-        m_doRamping = false;
     }
 
   protected:
