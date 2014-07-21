@@ -21,6 +21,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   public slots:
     void slotResetWidget();
+    void slotEnableWidget(bool);
     void slotLoadCoverArt(const QString& coverLocation,
                           const QString& md5Hash,
                           int trackId);
@@ -41,6 +42,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
     ConfigObject<ConfigValue>* m_pConfig;
 
+    bool m_bEnableWidget;
     bool m_bCoverIsHovered;
     bool m_bCoverIsVisible;
     bool m_bDefaultCover;

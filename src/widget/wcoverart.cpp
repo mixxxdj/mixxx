@@ -12,6 +12,7 @@ WCoverArt::WCoverArt(QWidget* parent,
         : QWidget(parent),
           WBaseWidget(this),
           m_pConfig(pConfig),
+          m_bEnableWidget(true),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
           m_bDefaultCover(true),
@@ -66,6 +67,12 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     setPalette(pal);
 }
 
+void WCoverArt::slotEnableWidget(bool enable) {
+    m_bEnableWidget = enable;
+    setMinimumSize(0, 0);
+    update();
+}
+
 void WCoverArt::setToDefault() {
     m_sCoverTitle = "Cover Art";
     m_bDefaultCover = true;
@@ -83,6 +90,10 @@ void WCoverArt::slotResetWidget() {
 }
 
 void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
+    if (!m_bEnableWidget) {
+        return;
+    }
+
     if (m_lastRequestedTrackId == trackId) {
         m_sCoverTitle = QFileInfo(m_lastRequestedCoverLocation).baseName();
         m_currentCover = pixmap;
@@ -95,6 +106,10 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
 void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
                                  const QString& md5Hash,
                                  int trackId) {
+    if (!m_bEnableWidget) {
+        return;
+    }
+
     m_lastRequestedTrackId = trackId;
     m_lastRequestedCoverLocation = coverLocation;
     m_lastRequestedMd5Hash = md5Hash;
@@ -115,6 +130,10 @@ QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
 }
 
 void WCoverArt::paintEvent(QPaintEvent*) {
+    if (!m_bEnableWidget) {
+        return;
+    }
+
     QPainter painter(this);
     painter.drawLine(0, 0, width(), 0);
 
@@ -137,6 +156,11 @@ void WCoverArt::paintEvent(QPaintEvent*) {
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
+    if (!m_bEnableWidget) {
+        setMinimumSize(0, 0);
+        return;
+    }
+
     if (m_bCoverIsVisible) {
         setMinimumSize(0, parentWidget()->height() / 3);
         slotLoadCoverArt(m_lastRequestedCoverLocation,
@@ -149,6 +173,10 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
 }
 
 void WCoverArt::mousePressEvent(QMouseEvent* event) {
+    if (!m_bEnableWidget) {
+        return;
+    }
+
     QPoint lastPoint;
     lastPoint = event->pos();
     if (m_bCoverIsVisible) {
@@ -191,6 +219,10 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
+    if (!m_bEnableWidget) {
+        return;
+    }
+
     QPoint lastPoint;
     lastPoint = event->pos();
     if (event->HoverEnter) {
