@@ -10,7 +10,9 @@ class LV2EffectProcessor : public EffectProcessor {
   public:
     LV2EffectProcessor(EngineEffect* pEngineEffect,
                        const EffectManifest& manifest,
-                       const LilvPlugin* plugin);
+                       const LilvPlugin* plugin,
+                       QList<int> audioPortIndices,
+                       QList<int> controlPortIndices);
 
     void initialize(const QSet<QString>& registeredGroups);
     virtual void process(const QString& group,

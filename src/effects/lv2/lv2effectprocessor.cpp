@@ -2,10 +2,13 @@
 #include "engine/effects/engineeffect.h"
 
 #define MAX_PARAMS 100
+#define MAX_BUFFER_LEN 160000
 
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        const EffectManifest& manifest,
-                                       const LilvPlugin* plugin) {
+                                       const LilvPlugin* plugin,
+                                       QList<int> audioPortIndices,
+                                       QList<int> controlPortIndices) {
     m_sampleRate = getSampleRate();
     inputL = new float[MAX_BUFFER_LEN];
     inputR = new float[MAX_BUFFER_LEN];
@@ -22,16 +25,16 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
 
     for (int i = 0; i < m_parameters.size(); i++) {
         params[i] = m_parameters[i]->value().toFloat();
-        lilv_instance_connect_port(handle, i + 4, &params[i]);
+        lilv_instance_connect_port(handle, controlPortIndices[i], &params[i]);
     }
 
     // Only for Calf Flanger, we are hard coding the indexes
     // TODO: somehow remove the hard coding; maybe get a vector of indexes
     // example: index_vector = [iL, iR, oL, oR];
-    lilv_instance_connect_port(handle, 0, inputL);
-    lilv_instance_connect_port(handle, 1, inputR);
-    lilv_instance_connect_port(handle, 2, outputL);
-    lilv_instance_connect_port(handle, 3, outputR);
+    lilv_instance_connect_port(handle, audioPortIndices[0], inputL);
+    lilv_instance_connect_port(handle, audioPortIndices[1], inputR);
+    lilv_instance_connect_port(handle, audioPortIndices[2], outputL);
+    lilv_instance_connect_port(handle, audioPortIndices[3], outputR);
 
     lilv_instance_activate(handle);
 }
