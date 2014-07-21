@@ -10,11 +10,22 @@ class LV2Manifest {
     ~LV2Manifest();
 
     EffectManifest getEffectManifest();
+    QList<int> getAudioPortIndices();
+    QList<int> getControlPortIndices();
     const LilvPlugin* getPlugin();
     bool isValid();
   private:
     const LilvPlugin* m_pLV2plugin;
     EffectManifest m_effectManifest;
+
+    // This list contains:
+    // position 0 -> input_left port index
+    // position 1 -> input_right port index
+    // position 2 -> output_left port index
+    // position 3 -> output_right port index
+    QList<int> audioPortIndices;
+    // This list contains the control port indices
+    QList<int> controlPortIndices;
 
     // Arrays used for storing minimum, maximum and default parameter values
     float* m_minimum;

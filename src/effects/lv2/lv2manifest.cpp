@@ -31,17 +31,18 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
     int inputPorts = 0;
     int outputPorts = 0;
 
-
     for (int i = 0; i < numPorts; i++) {
         const LilvPort *port = lilv_plugin_get_port_by_index(plug, i);
 
         if (lilv_port_is_a(m_pLV2plugin, port, properties["audio_port"])) {
             if (lilv_port_is_a(m_pLV2plugin, port, properties["input_port"])) {
+                audioPortIndices.append(i);
                 inputPorts++;
                 info = lilv_port_get_name(m_pLV2plugin, port);
                 QString paramName = lilv_node_as_string(info);
                 qDebug() << "Input Port name: " << paramName;
             } else if (lilv_port_is_a(m_pLV2plugin, port, properties["output_port"])) {
+                audioPortIndices.append(i);
                 outputPorts++;
                 info = lilv_port_get_name(m_pLV2plugin, port);
                 QString paramName = lilv_node_as_string(info);
@@ -50,6 +51,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
         }
 
         if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])) {
+            controlPortIndices.append(i);
             EffectManifestParameter* param = m_effectManifest.addParameter();
 
             // Get and set the parameter name
@@ -112,6 +114,14 @@ LV2Manifest::~LV2Manifest() {
 
 EffectManifest LV2Manifest::getEffectManifest() {
     return m_effectManifest;
+}
+
+QList<int> LV2Manifest::getAudioPortIndices() {
+    return audioPortIndices;
+}
+
+QList<int> LV2Manifest::getControlPortIndices() {
+    return controlPortIndices;
 }
 
 const LilvPlugin* LV2Manifest::getPlugin() {
