@@ -1,5 +1,5 @@
-#ifndef ENGINEFILTEBUTTERWORTH4_H
-#define ENGINEFILTEBUTTERWORTH4_H
+#ifndef ENGINEFILTERBUTTERWORTH4_H
+#define ENGINEFILTERBUTTERWORTH4_H
 
 #include "engine/enginefilteriir.h"
 
@@ -26,4 +26,4 @@ class EngineFilterButterworth4High : public EngineFilterIIR<4, IIR_HP> {
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
 
-#endif // ENGINEFILTEBESSEL4_H
+#endif // ENGINEFILTERBUTTERWORTH4_H

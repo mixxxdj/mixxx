@@ -11,6 +11,7 @@ void EngineFilterButterworth4Low::setFrequencyCorners(int sampleRate,
     setCoefs("LpBu4", sampleRate, freqCorner1);
 }
 
+
 EngineFilterButterworth4Band::EngineFilterButterworth4Band(int sampleRate, double freqCorner1,
                                          double freqCorner2) {
     setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);

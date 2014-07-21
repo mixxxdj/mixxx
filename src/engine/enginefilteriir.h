@@ -17,7 +17,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
   public:
     EngineFilterIIR()
             : m_doRamping(false){
-        memset(m_coef, 0, (SIZE + 1) * sizeof(double));
+        memset(m_coef, 0, sizeof(m_coef));
         initBuffers();
     }
 
@@ -25,17 +25,17 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
     void initBuffers() {
         // Copy the current buffers into the old buffers
-        memcpy(m_oldBuf1, m_buf1, SIZE * sizeof(double));
-        memcpy(m_oldBuf2, m_buf2, SIZE * sizeof(double));
+        memcpy(m_oldBuf1, m_buf1, sizeof(m_buf1));
+        memcpy(m_oldBuf2, m_buf2, sizeof(m_buf2));
         // Set the current buffers to 0
-        memset(m_buf1, 0, SIZE * sizeof(double));
-        memset(m_buf2, 0, SIZE * sizeof(double));
+        memset(m_buf1, 0, sizeof(m_buf1));
+        memset(m_buf2, 0, sizeof(m_buf2));
     }
 
     void setCoefs(const char* spec, double sampleRate,
             double freq0, double freq1 = 0, int adj = 0) {
         // Copy the old coefficients into m_oldCoef
-        memcpy(m_oldCoef, m_coef, SIZE + 1 * sizeof(double));
+        memcpy(m_oldCoef, m_coef, sizeof(m_coef));
         m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
                 spec, sampleRate, freq0, freq1, adj);
         initBuffers();
