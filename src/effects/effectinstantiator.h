@@ -29,15 +29,23 @@ class EffectProcessorInstantiator : public EffectInstantiator {
 
 class LV2EffectProcessorInstantiator : public EffectInstantiator {
   public:
-    LV2EffectProcessorInstantiator(const LilvPlugin* plugin) {
-        m_pPlugin = plugin;
-    }
+    LV2EffectProcessorInstantiator(const LilvPlugin* plugin,
+                                   QList<int> audioPortIndices,
+                                   QList<int> controlPortIndices)
+            : m_pPlugin(plugin),
+              audioPortIndices(audioPortIndices),
+              controlPortIndices(controlPortIndices) { }
+
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
                                  const EffectManifest& manifest) {
-        return new LV2EffectProcessor(pEngineEffect, manifest, m_pPlugin);
+        return new LV2EffectProcessor(pEngineEffect, manifest, m_pPlugin,
+                                      audioPortIndices, controlPortIndices);
     }
   private:
     const LilvPlugin* m_pPlugin;
+    QList<int> audioPortIndices;
+    QList<int> controlPortIndices;
+
 };
 
 #endif /* EFFECTINSTANTIATOR_H */
