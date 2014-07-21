@@ -1,8 +1,12 @@
 #ifndef ENGINEFILTERIIR_H
 #define ENGINEFILTERIIR_H
 
+#include <string.h>
+
 #include "engine/engineobject.h"
-#include "util/types.h"
+#define MIXXX
+#include "fidlib.h"
+
 
 #define IIR_LP 0
 #define IIR_BP 1
@@ -26,6 +30,16 @@ class EngineFilterIIR : public EngineObjectConstIn {
         // Set the current buffers to 0
         memset(m_buf1, 0, SIZE * sizeof(double));
         memset(m_buf2, 0, SIZE * sizeof(double));
+    }
+
+    void setCoefs(const char* spec, double sampleRate,
+            double freq0, double freq1 = 0, int adj = 0) {
+        // Copy the old coefficients into m_oldCoef
+        memcpy(m_oldCoef, m_coef, SIZE + 1 * sizeof(double));
+        m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
+                spec, sampleRate, freq0, freq1, adj);
+        initBuffers();
+        m_doRamping = true;
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
