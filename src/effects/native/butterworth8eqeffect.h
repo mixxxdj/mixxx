@@ -34,10 +34,10 @@ class ButterworthEQEffectGroupState {
     CSAMPLE* m_pHighBuf;
 };
 
-class ButterworthEQEffect : public GroupEffectProcessor<ButterworthEQEffectGroupState> {
+class Butterworth8EQEffect : public GroupEffectProcessor<ButterworthEQEffectGroupState> {
   public:
-    ButterworthEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~ButterworthEQEffect();
+    Butterworth8EQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~Butterworth8EQEffect();
 
     static QString getId();
     static EffectManifest getManifest();
@@ -65,7 +65,7 @@ class ButterworthEQEffect : public GroupEffectProcessor<ButterworthEQEffectGroup
     int m_loFreq;
     int m_hiFreq;
 
-    DISALLOW_COPY_AND_ASSIGN(ButterworthEQEffect);
+    DISALLOW_COPY_AND_ASSIGN(Butterworth8EQEffect);
 };
 
 #endif /* BUTTERWORTHEQEFFECT_H */

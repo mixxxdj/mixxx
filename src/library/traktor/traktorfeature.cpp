@@ -150,6 +150,7 @@ void TraktorFeature::activate() {
     }
 
     emit(showTrackModel(m_pTraktorTableModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
@@ -164,6 +165,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
         emit(showTrackModel(m_pTraktorPlaylistModel));
     }
+    emit(enableCoverArtDisplay(false));
 }
 
 TreeItem* TraktorFeature::importLibrary(QString file) {
