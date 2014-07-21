@@ -10,6 +10,8 @@
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
 #include "util.h"
+#include "util/defs.h"
+#include "util/types.h"
 
 struct FilterGroupState {
     FilterGroupState()
@@ -48,7 +50,8 @@ class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
     void processGroup(const QString& group,
                       FilterGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples);
+                      const unsigned int numSamples,
+                      const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

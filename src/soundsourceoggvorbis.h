@@ -27,11 +27,11 @@ class SoundSourceOggVorbis : public Mixxx::SoundSource {
  public:
   SoundSourceOggVorbis(QString qFilename);
   ~SoundSourceOggVorbis();
-  int open();
+  Result open();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
-  int parseHeader();
+  Result parseHeader();
   static QList<QString> supportedFileExtensions();
  private:
   int channels;

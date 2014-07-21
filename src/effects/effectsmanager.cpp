@@ -56,7 +56,7 @@ const QSet<QString> EffectsManager::getAvailableEffects() const {
         QSet<QString> backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
             if (availableEffects.contains(effectId)) {
-                qDebug() << "WARNING: Duplicate effect ID" << effectId;
+                qWarning() << "WARNING: Duplicate effect ID" << effectId;
                 continue;
             }
             availableEffects.insert(effectId);
@@ -154,7 +154,6 @@ void EffectsManager::setupDefaults() {
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
-    pChain->setParameter(0.0f);
     EffectPointer pEffect = instantiateEffect(
         "org.mixxx.effects.flanger");
     pChain->addEffect(pEffect);
@@ -163,7 +162,6 @@ void EffectsManager::setupDefaults() {
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.bitcrusher"));
     pChain->setName(tr("BitCrusher"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.bitcrusher");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
@@ -171,23 +169,22 @@ void EffectsManager::setupDefaults() {
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.filter"));
     pChain->setName(tr("Filter"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.filter");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
+#ifndef __MACAPPSTORE__
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.reverb"));
     pChain->setName(tr("Reverb"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.reverb");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+#endif
 
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.echo"));
     pChain->setName(tr("Echo"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
@@ -213,9 +210,9 @@ void EffectsManager::processEffectsResponses() {
                 m_activeRequests.find(response.request_id);
 
         if (it == m_activeRequests.end()) {
-            qDebug() << debugString()
-                     << "WARNING: EffectsResponse with an inactive request_id:"
-                     << response.request_id;
+            qWarning() << debugString()
+                       << "WARNING: EffectsResponse with an inactive request_id:"
+                       << response.request_id;
         }
 
         while (it != m_activeRequests.end() &&
@@ -223,8 +220,8 @@ void EffectsManager::processEffectsResponses() {
             EffectsRequest* pRequest = it.value();
 
             if (!response.success) {
-                qDebug() << debugString() << "WARNING: Failed EffectsRequest"
-                         << "type" << pRequest->type;
+                qWarning() << debugString() << "WARNING: Failed EffectsRequest"
+                           << "type" << pRequest->type;
             }
 
             delete pRequest;

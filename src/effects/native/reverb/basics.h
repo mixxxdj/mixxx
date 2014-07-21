@@ -32,6 +32,10 @@
 #ifndef _BASICS_H_
 #define _BASICS_H_
 
+// NOTE(rryan): 3/2014 Added for MSVC support. (missing M_PI)
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,17 +45,19 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "defs.h"
+#include "util/types.h"
 typedef CSAMPLE sample_t;
 
-typedef __int8_t			int8;
-typedef __uint8_t			uint8;
-typedef __int16_t			int16;
-typedef __uint16_t		uint16;
-typedef __int32_t			int32;
-typedef __uint32_t		uint32;
-typedef __int64_t			int64;
-typedef __uint64_t		uint64;
+// NOTE(rryan): 3/2014 Added these for the MSVC build.
+#include <QtGlobal>
+typedef qint8 int8;
+typedef quint8 uint8;
+typedef qint16 int16;
+typedef quint16 uint16;
+typedef qint32 int32;
+typedef quint32 uint32;
+typedef qint64 int64;
+typedef quint64 uint64;
 
 #define MIN_GAIN .000001 /* -120 dB */
 /* smallest non-denormal 32 bit IEEE float is 1.18e-38 */
@@ -101,7 +107,7 @@ T clamp (T value, T lower, T upper)
 static inline float
 frandom()
 {
-	return (float) random() / (float) RAND_MAX;
+	return (float) rand() / (float) RAND_MAX;
 }
 
 /* NB: also true if 0  */

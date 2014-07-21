@@ -1,0 +1,224 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect unit widget.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>300,60</MinimumSize>
+    <MaximumSize>350,-1</MaximumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectUnitNameRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitNameContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,max</SizePolicy>
+            <Children>
+              <EffectChainName>
+                <EffectRack><Variable name="EffectRack"/></EffectRack>
+                <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+              </EffectChainName>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitNextPrevContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,max</SizePolicy>
+            <Children>
+              <PushButton>
+                <Size>20f,20f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>⏏</Text>
+                </State>
+                <Connection>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ConfigKey><Variable name="group"/>,clear</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <Size>20f,20f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>◀</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <Size>20f,20f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>▶</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <Size>40f,20f</Size>
+                <ObjectName>EffectToggleButton</ObjectName>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>OFF</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>ON</Text>
+                </State>
+                <Connection>
+                  <ConfigKey persist="true"><Variable name="group"/>,enabled</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+                <Connection>
+                  <ConfigKey persist="true"><Variable name="group"/>,enabled</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitControlRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <BackPath>background_tile.png</BackPath>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitParameters</ObjectName>
+            <SizePolicy>me,max</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <SizePolicy>max,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <ObjectName>EffectKnobContainer</ObjectName>
+                <Children>
+                  <Template src="skin:effect_parameter_knob.xml">
+                    <SetVariable name="Effect">1</SetVariable>
+                    <SetVariable name="EffectParameter">1</SetVariable>
+                  </Template>
+                  <Template src="skin:effect_parameter_knob.xml">
+                    <SetVariable name="Effect">1</SetVariable>
+                    <SetVariable name="EffectParameter">2</SetVariable>
+                  </Template>
+                  <Template src="skin:effect_parameter_knob.xml">
+                    <SetVariable name="Effect">1</SetVariable>
+                    <SetVariable name="EffectParameter">3</SetVariable>
+                  </Template>
+                  <Template src="skin:effect_parameter_knob.xml">
+                    <SetVariable name="Effect">1</SetVariable>
+                    <SetVariable name="EffectParameter">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <ObjectName>EffectControlsRight</ObjectName>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>EffectUnitControls</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>max,min</SizePolicy>
+                <Children>
+                  <!-- <Template src="skin:knob.xml">
+                    <SetVariable name="control">parameter</SetVariable>
+                    <SetVariable name="label">Parameter</SetVariable>
+                  </Template>-->
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="control">mix</SetVariable>
+                    <SetVariable name="label">Mix</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnitGroupControls</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">Master</SetVariable>
+                        <SetVariable name="group_group">[Master]</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">Head</SetVariable>
+                        <SetVariable name="group_group">[Headphone]</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">CH1</SetVariable>
+                        <SetVariable name="group_group">[Channel1]</SetVariable>
+                      </Template>
+
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">CH2</SetVariable>
+                        <SetVariable name="group_group">[Channel2]</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">CH3</SetVariable>
+                        <SetVariable name="group_group">[Channel3]</SetVariable>
+                      </Template>
+
+                      <Template src="skin:effect_unit_group_control_button.xml">
+                        <SetVariable name="group_name">CH4</SetVariable>
+                        <SetVariable name="group_group">[Channel4]</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

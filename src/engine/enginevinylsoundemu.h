@@ -17,8 +17,8 @@
 #ifndef ENGINEVINYLSOUNDEMU_H
 #define ENGINEVINYLSOUNDEMU_H
 
-#include "defs.h"
-#include "configobject.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "engine/engineobject.h"
 
 class ControlObject;
@@ -28,18 +28,18 @@ class ControlObject;
 class EngineVinylSoundEmu : public EngineObject {
     Q_OBJECT
   public:
-    EngineVinylSoundEmu(ConfigObject<ConfigValue>* pConfig, const char* group);
+    EngineVinylSoundEmu(const char* group);
     virtual ~EngineVinylSoundEmu();
 
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void setSpeed(double speed);
+    void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
-    ControlObject* m_pRateEngine;
     double m_dSpeed;
     double m_dOldSpeed;
     CSAMPLE m_fNoise[NOISE_BUFFER_SIZE];
     int m_iNoisePos;
+    CSAMPLE m_crossfadeBuffer[MAX_BUFFER_LEN];
 };
 
 #endif

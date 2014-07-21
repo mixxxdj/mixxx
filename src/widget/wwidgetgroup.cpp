@@ -84,7 +84,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
+        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "BackPath")),
                             Paintable::DrawModeFromString(mode_str));
     }
 

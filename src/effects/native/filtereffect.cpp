@@ -1,4 +1,5 @@
 #include "effects/native/filtereffect.h"
+#include "util/math.h"
 
 // static
 QString FilterEffect::getId() {
@@ -19,7 +20,7 @@ EffectManifest FilterEffect::getManifest() {
     depth->setName(QObject::tr("Depth"));
     depth->setDescription("TODO");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setValueHint(EffectManifestParameter::EffectManifestParameter::VALUE_FLOAT);
+    depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setLinkHint(EffectManifestParameter::LINK_LINKED);
@@ -65,7 +66,7 @@ FilterEffect::FilterEffect(EngineEffect* pEffect,
 }
 
 FilterEffect::~FilterEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 double getLowFrequencyCorner(double depth) {
@@ -79,8 +80,10 @@ double getHighFrequencyCorner(double depth, double bandpassSize) {
 void FilterEffect::processGroup(const QString& group,
                                 FilterGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples) {
+                                const unsigned int numSamples,
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(groupFeatures);
     double depth = m_pDepthParameter ?
             m_pDepthParameter->value().toDouble() : 0.0;
     double bandpass_width = m_pBandpassWidthParameter ?
@@ -110,14 +113,14 @@ void FilterEffect::processGroup(const QString& group,
             // Freq from 2^5=32Hz to 2^(5+9)=16384
             double freq = getLowFrequencyCorner(depth + 1.0);
             double freq2 = getHighFrequencyCorner(depth + 1.0, bandpass_width);
-            pState->lowFilter.setFrequencyCorners(freq2);
-            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->lowFilter.setFrequencyCorners(44100, freq2);
+            pState->bandpassFilter.setFrequencyCorners(44100, freq, freq2);
         } else if (depth > 0.0) {
             // Highpass + bandpass
             double freq = getLowFrequencyCorner(depth);
             double freq2 = getHighFrequencyCorner(depth, bandpass_width);
-            pState->highFilter.setFrequencyCorners(freq);
-            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->highFilter.setFrequencyCorners(44100, freq);
+            pState->bandpassFilter.setFrequencyCorners(44100, freq, freq2);
         }
     }
 

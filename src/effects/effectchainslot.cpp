@@ -4,6 +4,7 @@
 #include "sampleutil.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "util/math.h"
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
@@ -71,7 +72,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
 }
 
 EffectChainSlot::~EffectChainSlot() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
     clear();
     delete m_pControlClear;
     delete m_pControlNumEffects;
@@ -135,7 +136,7 @@ void EffectChainSlot::slotChainGroupStatusChanged(const QString& group,
 }
 
 void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
-    qDebug() << debugString() << "slotChainEffectsChanged";
+    //qDebug() << debugString() << "slotChainEffectsChanged";
     if (m_pEffectChain) {
         QList<EffectPointer> effects = m_pEffectChain->effects();
         while (effects.size() > m_slots.size()) {
@@ -159,7 +160,7 @@ void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
 }
 
 void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
-    qDebug() << debugString() << "loadEffectChain" << (pEffectChain ? pEffectChain->id() : "(null)");
+    //qDebug() << debugString() << "loadEffectChain" << (pEffectChain ? pEffectChain->id() : "(null)");
     clear();
 
     if (pEffectChain) {
@@ -176,8 +177,6 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                 this, SLOT(slotChainNameChanged(const QString&)));
         connect(m_pEffectChain.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotChainEnabledChanged(bool)));
-        connect(m_pEffectChain.data(), SIGNAL(parameterChanged(double)),
-                this, SLOT(slotChainParameterChanged(double)));
         connect(m_pEffectChain.data(), SIGNAL(mixChanged(double)),
                 this, SLOT(slotChainMixChanged(double)));
         connect(m_pEffectChain.data(), SIGNAL(insertionTypeChanged(EffectChain::InsertionType)),
@@ -191,7 +190,6 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         // Mix, parameter, and enabled channels are persistent properties of the
         // chain slot, not of the chain. Propagate the current settings to the
         // chain.
-        m_pEffectChain->setParameter(m_pControlChainParameter->get());
         m_pEffectChain->setMix(m_pControlChainMix->get());
         m_pEffectChain->setEnabled(m_pControlChainEnabled->get() > 0.0);
         for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
@@ -235,12 +233,12 @@ void EffectChainSlot::clear() {
 }
 
 unsigned int EffectChainSlot::numSlots() const {
-    qDebug() << debugString() << "numSlots";
+    //qDebug() << debugString() << "numSlots";
     return m_slots.size();
 }
 
 EffectSlotPointer EffectChainSlot::addEffectSlot() {
-    qDebug() << debugString() << "addEffectSlot";
+    //qDebug() << debugString() << "addEffectSlot";
 
     EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainNumber,
                                              m_slots.size());
@@ -262,9 +260,9 @@ EffectSlotPointer EffectChainSlot::addEffectSlot() {
 
 void EffectChainSlot::registerGroup(const QString& group) {
     if (m_groupEnableControls.contains(group)) {
-        qDebug() << debugString()
-                 << "WARNING: registerGroup already has group registered:"
-                 << group;
+        qWarning() << debugString()
+                   << "WARNING: registerGroup already has group registered:"
+                   << group;
         return;
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
@@ -296,9 +294,9 @@ void EffectChainSlot::slotClearEffect(unsigned int iChainSlotNumber,
 }
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
-    qDebug() << debugString() << "getEffectSlot" << slotNumber;
+    //qDebug() << debugString() << "getEffectSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_slots.size())) {
-        qDebug() << "WARNING: slotNumber out of range";
+        qWarning() << "WARNING: slotNumber out of range";
         return EffectSlotPointer();
     }
     return m_slots[slotNumber];
@@ -312,35 +310,38 @@ void EffectChainSlot::slotControlClear(double v) {
 
 void EffectChainSlot::slotControlNumEffects(double v) {
     // Ignore sets to num_effects.
-    qDebug() << debugString() << "slotControlNumEffects" << v;
-    qDebug() << "WARNING: num_effects is a read-only control.";
+    Q_UNUSED(v);
+    //qDebug() << debugString() << "slotControlNumEffects" << v;
+    qWarning() << "WARNING: num_effects is a read-only control.";
 }
 
 void EffectChainSlot::slotControlNumEffectSlots(double v) {
     // Ignore sets to num_effectslots.
-    qDebug() << debugString() << "slotControlNumEffectSlots" << v;
-    qDebug() << "WARNING: num_effectslots is a read-only control.";
+    Q_UNUSED(v);
+    //qDebug() << debugString() << "slotControlNumEffectSlots" << v;
+    qWarning() << "WARNING: num_effectslots is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainLoaded(double v) {
     // Ignore sets to loaded.
-    qDebug() << debugString() << "slotControlChainLoaded" << v;
-    qDebug() << "WARNING: loaded is a read-only control.";
+    Q_UNUSED(v);
+    //qDebug() << debugString() << "slotControlChainLoaded" << v;
+    qWarning() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectChainSlot::slotControlChainEnabled(double v) {
-    qDebug() << debugString() << "slotControlChainEnabled" << v;
+    //qDebug() << debugString() << "slotControlChainEnabled" << v;
     if (m_pEffectChain) {
         m_pEffectChain->setEnabled(v > 0);
     }
 }
 
 void EffectChainSlot::slotControlChainMix(double v) {
-    qDebug() << debugString() << "slotControlChainMix" << v;
+    //qDebug() << debugString() << "slotControlChainMix" << v;
 
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
-        qDebug() << debugString() << "value out of limits";
+        qWarning() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0, 1.0);
         m_pControlChainMix->set(v);
     }
@@ -350,21 +351,22 @@ void EffectChainSlot::slotControlChainMix(double v) {
 }
 
 void EffectChainSlot::slotControlChainParameter(double v) {
-    qDebug() << debugString() << "slotControlChainParameter" << v;
+    //qDebug() << debugString() << "slotControlChainParameter" << v;
 
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
-        qDebug() << debugString() << "value out of limits";
+        qWarning() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0, 1.0);
         m_pControlChainParameter->set(v);
     }
-    if (m_pEffectChain) {
-        m_pEffectChain->setParameter(v);
+    for (int i = 0; i < m_slots.size(); ++i) {
+        m_slots[i]->onChainParameterChanged(v);
     }
 }
 
 void EffectChainSlot::slotControlChainInsertionType(double v) {
-    EffectChain::InsertionType type = static_cast<EffectChain::InsertionType>(v);
+    // Intermediate cast to integer is needed for VC++.
+    EffectChain::InsertionType type = static_cast<EffectChain::InsertionType>(int(v));
     (void)v; // this avoids a false warning with g++ 4.8.1
     if (m_pEffectChain && type >= 0 &&
             type < EffectChain::NUM_INSERTION_TYPES) {
@@ -373,7 +375,7 @@ void EffectChainSlot::slotControlChainInsertionType(double v) {
 }
 
 void EffectChainSlot::slotControlChainSelector(double v) {
-    qDebug() << debugString() << "slotControlChainSelector" << v;
+    //qDebug() << debugString() << "slotControlChainSelector" << v;
     if (v > 0) {
         emit(nextChain(m_iChainNumber, m_pEffectChain));
     } else if (v < 0) {
@@ -382,14 +384,14 @@ void EffectChainSlot::slotControlChainSelector(double v) {
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double v) {
-    qDebug() << debugString() << "slotControlChainNextPreset" << v;
+    //qDebug() << debugString() << "slotControlChainNextPreset" << v;
     if (v > 0) {
         slotControlChainSelector(1);
     }
 }
 
 void EffectChainSlot::slotControlChainPrevPreset(double v) {
-    qDebug() << debugString() << "slotControlChainPrevPreset" << v;
+    //qDebug() << debugString() << "slotControlChainPrevPreset" << v;
     if (v > 0) {
         slotControlChainSelector(-1);
     }

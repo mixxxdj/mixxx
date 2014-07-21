@@ -16,15 +16,15 @@ class ControllerPresetFileHandler {
     ControllerPresetFileHandler() {};
     virtual ~ControllerPresetFileHandler() {};
 
+    static ControllerPresetPointer loadPreset(const QString& path,
+                                              const QStringList& presetPaths);
+
     /** load(QString,QString,bool)
      * Overloaded function for convenience
      * @param path The path to a controller preset XML file.
      * @param deviceName The name/id of the controller
-     * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
-     *        specified within matches the name of this Controller.
      */
-    ControllerPresetPointer load(const QString path, const QString deviceName,
-                                 const bool forceLoad);
+    ControllerPresetPointer load(const QString path, const QString deviceName);
 
     // Returns just the name of a given device (everything before the first
     // space)
@@ -34,8 +34,7 @@ class ControllerPresetFileHandler {
 
   protected:
     QDomElement getControllerNode(const QDomElement& root,
-                                  const QString deviceName,
-                                  const bool forceLoad);
+                                  const QString deviceName);
 
     void parsePresetInfo(const QDomElement& root,
                          ControllerPreset* preset) const;
@@ -45,8 +44,6 @@ class ControllerPresetFileHandler {
      *   ControllerPreset.
      * @param root The root node of the XML document for the preset.
      * @param deviceName The name/id of the controller
-     * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
-     *        specified within matches the name of this Controller.
      * @param preset The ControllerPreset into which the scripts should be placed.
      */
     void addScriptFilesToPreset(const QDomElement& root,
@@ -55,14 +52,13 @@ class ControllerPresetFileHandler {
     // Creates the XML document and includes what script files are currently
     // loaded. Sub-classes need to call this before adding any other items.
     QDomDocument buildRootWithScripts(const ControllerPreset& preset,
-                                              const QString deviceName) const;
+                                      const QString deviceName) const;
 
     bool writeDocument(QDomDocument root, const QString fileName) const;
 
   private:
     // Sub-classes implement this.
-    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName,
-                                         const bool forceLoad) = 0;
+    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName) = 0;
 };
 
 #endif

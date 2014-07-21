@@ -1,0 +1,32 @@
+#ifndef WEFFECTPARAMETERBASE_H
+#define WEFFECTPARAMETERBASE_H
+
+#include <QDomNode>
+
+#include "widget/wlabel.h"
+#include "effects/effectparameterslotbase.h"
+#include "skin/skincontext.h"
+
+class EffectsManager;
+
+class WEffectParameterBase : public WLabel {
+    Q_OBJECT
+  public:
+    WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager);
+    virtual ~WEffectParameterBase();
+
+    virtual void setup(QDomNode node, const SkinContext& context) = 0;
+
+  protected slots:
+    void parameterUpdated();
+
+  protected:
+    // Set the EffectParameterSlot that should be monitored by this
+    // WEffectParameterBase.
+    void setEffectParameterSlot(EffectParameterSlotBasePointer pEffectParameterSlot);
+
+    EffectsManager* m_pEffectsManager;
+    EffectParameterSlotBasePointer m_pEffectParameterSlot;
+};
+
+#endif /* WEFFECTPARAMETERBASE_H */

@@ -2,7 +2,6 @@
 
 #include "effects/native/reverbeffect.h"
 
-#include "mathstuff.h"
 #include "sampleutil.h"
 
 // static
@@ -26,7 +25,7 @@ EffectManifest ReverbEffect::getManifest() {
 
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("bandwidth");
-    time->setName(QObject::tr("bandwidth"));
+    time->setName(QObject::tr("Bandwidth"));
     time->setDescription(QObject::tr("Higher bandwidth values cause more "
             "bright (high-frequency) tones to be included"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
@@ -39,7 +38,7 @@ EffectManifest ReverbEffect::getManifest() {
 
     EffectManifestParameter* damping = manifest.addParameter();
     damping->setId("damping");
-    damping->setName(QObject::tr("damping"));
+    damping->setName(QObject::tr("Damping"));
     damping->setDescription(QObject::tr("Higher damping values cause "
             "reverberations to die out more quickly."));
     damping->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
@@ -61,14 +60,16 @@ ReverbEffect::ReverbEffect(EngineEffect* pEffect,
 }
 
 ReverbEffect::~ReverbEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void ReverbEffect::processGroup(const QString& group,
                                 ReverbGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples) {
+                                const unsigned int numSamples,
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(groupFeatures);
     CSAMPLE bandwidth = m_pBandWidthParameter ?
             m_pBandWidthParameter->value().toDouble() : 1.0f;
     CSAMPLE damping = m_pDampingParameter ?

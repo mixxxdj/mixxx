@@ -4,6 +4,7 @@
 #include "waveform/waveform.h"
 
 #include "waveform/waveformwidgetfactory.h"
+#include "util/math.h"
 
 #include <qgl.h>
 
@@ -62,10 +63,8 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const QColor& color = m_pColors->getSignalColor();
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
+    float allGain(1.0);
+    getGains(&allGain, NULL, NULL, NULL);
 
     float maxAll[2];
 
@@ -79,14 +78,15 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+        glScalef(1.f, allGain, 1.f);
 
         glLineWidth(1.0);
         glDisable(GL_LINE_SMOOTH);
 
         //draw reference line
         glBegin(GL_LINES); {
-            glColor4f(m_axesColor.redF(),m_axesColor.greenF(),m_axesColor.blueF(),m_axesColor.alphaF());
+            glColor4f(m_axesColor_r, m_axesColor_g,
+                      m_axesColor_b, m_axesColor_a);
             glVertex2f(firstVisualIndex,0);
             glVertex2f(lastVisualIndex,0);
         }
@@ -108,7 +108,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
                 maxAll[0] = (float)data[visualIndex].filtered.all;
                 maxAll[1] = (float)data[visualIndex+1].filtered.all;
-                glColor4f(color.redF(),color.greenF(),color.blueF(),0.9);
+                glColor4f(m_signalColor_r, m_signalColor_g, m_signalColor_b, 0.9);
                 glVertex2f(visualIndex,maxAll[0]);
                 glVertex2f(visualIndex,-1.f*maxAll[1]);
             }
@@ -127,7 +127,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+        glScalef(1.f, allGain, 1.f);
 
         glLineWidth(1.1);
         glEnable(GL_LINE_SMOOTH);
@@ -145,7 +145,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
                 maxAll[0] = (float)data[visualIndex].filtered.all;
                 maxAll[1] = (float)data[visualIndex+1].filtered.all;
-                glColor4f(color.redF(),color.greenF(),color.blueF(),0.8);
+                glColor4f(m_signalColor_r, m_signalColor_g, m_signalColor_b, 0.8);
                 glVertex2f(float(visualIndex),0.f);
                 glVertex2f(float(visualIndex),math_max(maxAll[0],maxAll[1]));
             }

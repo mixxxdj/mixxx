@@ -2,6 +2,7 @@
 
 #include "engine/effects/engineeffect.h"
 #include "sampleutil.h"
+#include "util/defs.h"
 
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
@@ -160,25 +161,15 @@ bool EngineEffectChain::disableForGroup(const QString& group) {
 }
 
 void EngineEffectChain::process(const QString& group,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples) {
+                                CSAMPLE* pInOut,
+                                const unsigned int numSamples,
+                                const GroupFeatureState& groupFeatures) {
     GroupStatus& group_info = m_groupStatus[group];
     bool bEnabled = m_bEnabled && group_info.enabled;
 
     // If the chain is not enabled and the group is not enabled and we are not
     // ramping out then do nothing.
     if (!bEnabled && !group_info.ramp_out) {
-        // If not in-place then copy. This is slow because every
-        // EngineEffectChain does this. We should pull the processing decision
-        // out into a predicate that EngineEffectsManager calls but that would
-        // result in two QMap lookups.
-        if (pInput != pOutput) {
-            SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-            if (kEffectDebugOutput) {
-                qDebug() << "WARNING: EngineEffectChain took the slow path!"
-                         << "If you want to do this talk to rryan.";
-            }
-        }
         return;
     }
 
@@ -190,40 +181,20 @@ void EngineEffectChain::process(const QString& group,
     // INSERT mode: output = input * (1-wet) + effect(input) * wet
     if (m_insertionType == EffectChain::INSERT) {
         if (wet_gain_old == 1.0 && wet_gain == 1.0) {
-            bool anyProcessed = false;
             // Fully wet, no ramp, insert optimization. No temporary buffer needed.
             for (int i = 0; i < m_effects.size(); ++i) {
                 EngineEffect* pEffect = m_effects[i];
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : pOutput;
-                CSAMPLE* pIntermediateOutput = pOutput;
-                pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
-                anyProcessed = true;
-            }
-            // If no effects were active then we have to copy input to output if
-            // they are not the same.
-            if (!anyProcessed && pInput != pOutput) {
-                SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-                if (kEffectDebugOutput) {
-                    qDebug() << "WARNING: EngineEffectChain took the slow path!"
-                             << "If you want to do this talk to rryan.";
-                }
+                pEffect->process(group, pInOut, pInOut,
+                                 numSamples, groupFeatures);
             }
         } else if (wet_gain_old == 0.0 && wet_gain == 0.0) {
             // Fully dry, no ramp, insert optimization. No action is needed
-            // unless we are not processing in-place.
-            if (pInput != pOutput) {
-                SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-                if (kEffectDebugOutput) {
-                    qDebug() << "WARNING: EngineEffectChain took the slow path!"
-                             << "If you want to do this talk to rryan.";
-                }
-            }
         } else {
             // Clear scratch buffer.
-            SampleUtil::applyGain(m_pBuffer, 0.0, numSamples);
+            SampleUtil::clear(m_pBuffer, numSamples);
 
             // Chain each effect
             bool anyProcessed = false;
@@ -232,9 +203,10 @@ void EngineEffectChain::process(const QString& group,
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
+                const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
-                pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
+                pEffect->process(group, pIntermediateInput, pIntermediateOutput,
+                                 numSamples, groupFeatures);
                 anyProcessed = true;
             }
 
@@ -243,16 +215,8 @@ void EngineEffectChain::process(const QString& group,
                 // TODO(rryan): benchmark applyGain followed by addWithGain versus
                 // copy2WithGain.
                 SampleUtil::copy2WithRampingGain(
-                    pOutput, pInput, 1.0 - wet_gain_old, 1.0 - wet_gain,
+                    pInOut, pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
                     m_pBuffer, wet_gain_old, wet_gain, numSamples);
-            } else if (pInput != pOutput) {
-                // If no effects processed then we have to copy input to output
-                // if they are not the same.
-                SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-                if (kEffectDebugOutput) {
-                    qDebug() << "WARNING: EngineEffectChain took the slow path!"
-                             << "If you want to do this talk to rryan.";
-                }
             }
         }
     } else { // SEND mode: output = input + effect(input) * wet
@@ -266,31 +230,17 @@ void EngineEffectChain::process(const QString& group,
             if (pEffect == NULL || !pEffect->enabled()) {
                 continue;
             }
-            const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
+            const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
             CSAMPLE* pIntermediateOutput = m_pBuffer;
             pEffect->process(group, pIntermediateInput,
-                             pIntermediateOutput, numSamples);
+                             pIntermediateOutput, numSamples, groupFeatures);
             anyProcessed = true;
         }
 
         if (anyProcessed) {
             // m_pBuffer now contains the fully wet output.
-            if (pInput == pOutput) {
-                SampleUtil::addWithRampingGain(pOutput, m_pBuffer,
-                                               wet_gain_old, wet_gain, numSamples);
-            } else {
-                SampleUtil::copy2WithRampingGain(pOutput, pInput, 1.0, 1.0,
-                                                 m_pBuffer, wet_gain_old, wet_gain,
-                                                 numSamples);
-            }
-        } else if (pInput != pOutput) {
-            // If no effects processed then we have to copy input to output
-            // if they are not the same.
-            SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-            if (kEffectDebugOutput) {
-                qDebug() << "WARNING: EngineEffectChain took the slow path!"
-                         << "If you want to do this talk to rryan.";
-            }
+            SampleUtil::addWithRampingGain(pInOut, m_pBuffer,
+                                           wet_gain_old, wet_gain, numSamples);
         }
     }
 

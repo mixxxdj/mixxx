@@ -35,6 +35,8 @@ GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent)
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
+
+    // Initialization requires activating our context.
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
@@ -80,6 +82,6 @@ void GLSLWaveformWidget::resize(int width, int height) {
 void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         makeCurrent();
-        signalRenderer_->loadShaders();
+        signalRenderer_->debugClick();
     }
 }

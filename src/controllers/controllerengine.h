@@ -16,6 +16,7 @@
 #include "configobject.h"
 #include "controllers/pitchfilter.h"
 #include "controllers/softtakeover.h"
+#include "controllers/controllerpreset.h"
 #include "qtscript-bytearray/bytearrayclass.h"
 
 // Forward declaration(s)
@@ -129,8 +130,8 @@ class ControllerEngine : public QObject {
     //TODO: redo this one
     //bool execute(QString function, const QByteArray data);
     void loadScriptFiles(QList<QString> scriptPaths,
-                         QList<QString> scriptFileNames);
-    void initializeScripts(const QList<QString> scriptFunctionPrefixes);
+                         const QList<ControllerPreset::ScriptFileInfo>& scripts);
+    void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
     void scriptHasChanged(QString);
 
@@ -178,7 +179,7 @@ class ControllerEngine : public QObject {
     ByteArrayClass *m_pBaClass;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
-    QVarLengthArray<int> m_intervalAccumulator, m_brakeKeylock;
+    QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<uint> m_lastMovement;
     QVarLengthArray<float> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;

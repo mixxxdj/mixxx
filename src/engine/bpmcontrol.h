@@ -39,6 +39,8 @@ class BpmControl : public EngineControl {
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
 
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+
     // Calculates contextual information about beats: the previous beat, the
     // next beat, the current beat length, and the beat ratio (how far dPosition
     // lies within the current beat). Returns false if a previous or next beat
@@ -115,7 +117,6 @@ class BpmControl : public EngineControl {
     // playposition.
     ControlPushButton* m_pTranslateBeats;
 
-    double m_dLoopSize; // Only used to see if we shouldn't quantize position.
     double m_dPreviousSample;
 
     // Master Sync objects and values.

@@ -23,7 +23,6 @@ class CueDAO : public DAO {
     void initialize();
     int cueCount();
     int numCuesForTrack(const int trackId);
-    Cue* getCue(const int cueId);
     QList<Cue*> getCuesForTrack(const int trackId) const;
     bool deleteCuesForTrack(const int trackId);
     bool deleteCuesForTracks(const QList<int>& ids);

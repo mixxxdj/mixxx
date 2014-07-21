@@ -5,8 +5,8 @@
 
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
-
-#include "mathstuff.h"
+#include "util/math.h"
+#include "util/defs.h"
 #include "engine/enginecontrol.h"
 #include "cachingreader.h"
 
@@ -45,9 +45,12 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         int samples_available = in_reverse ?
                 m_iCurrentPosition - loop_trigger :
                 loop_trigger - m_iCurrentPosition;
-        preloop_samples = samples_available;
-        samples_needed = math_max(0, math_min(samples_needed,
-                                              samples_available));
+        if (samples_available < 0) {
+            samples_needed = 0;
+        } else {
+            preloop_samples = samples_available;
+            samples_needed = math_clamp(samples_needed, 0, samples_available);
+        }
     }
 
     if (in_reverse) {
@@ -97,12 +100,14 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
             }
 
             // do crossfade from the current buffer into the new loop beginning
-            double mix_amount = 0.0;
-            double mix_inc = 2.0 / static_cast<double>(samples_read);
-            for (int i = 0; i < samples_read; i += 2) {
-                base_buffer[i] = base_buffer[i] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i] * mix_amount;
-                base_buffer[i+1] = base_buffer[i+1] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i+1] * mix_amount;
-                mix_amount += mix_inc;
+            if (samples_read != 0) { // avoid division by zero
+                double mix_amount = 0.0;
+                double mix_inc = 2.0 / static_cast<double>(samples_read);
+                for (int i = 0; i < samples_read; i += 2) {
+                    base_buffer[i] = base_buffer[i] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i] * mix_amount;
+                    base_buffer[i+1] = base_buffer[i+1] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i+1] * mix_amount;
+                    mix_amount += mix_inc;
+                }
             }
         }
     }

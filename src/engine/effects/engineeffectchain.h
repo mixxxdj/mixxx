@@ -5,9 +5,10 @@
 #include <QList>
 #include <QSet>
 
-#include "defs.h"
 #include "util.h"
+#include "util/types.h"
 #include "engine/effects/message.h"
+#include "engine/effects/groupfeaturestate.h"
 #include "effects/effectchain.h"
 
 class EngineEffect;
@@ -22,8 +23,9 @@ class EngineEffectChain : public EffectsRequestHandler {
         EffectsResponsePipe* pResponsePipe);
 
     void process(const QString& group,
-                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                 const unsigned int numSamples);
+                 CSAMPLE* pInOut,
+                 const unsigned int numSamples,
+                 const GroupFeatureState& groupFeatures);
 
     const QString& id() const {
         return m_id;

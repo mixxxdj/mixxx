@@ -68,17 +68,17 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
         if (context.hasNode(node, nodeName)) {
             QString mode = context.selectAttributeString(
                 context.selectElement(node, nodeName), "sizemode", "FIXED");
-            setPixmap(i, context.getSkinPath(context.selectString(node, nodeName)),
+            setPixmap(i, context.getPixmapPath(context.selectNode(node, nodeName)),
                                              SizeModeFromString(mode));
         } else if (i == 0 && context.hasNode(node, "PathBack")) {
             QString mode = context.selectAttributeString(
                 context.selectElement(node, "PathBack"), "sizemode", "FIXED");
-            setPixmap(i, context.getSkinPath(context.selectString(node, "PathBack")),
+            setPixmap(i, context.getPixmapPath(context.selectNode(node, "PathBack")),
                                              SizeModeFromString(mode));
         } else if (i == 1 && context.hasNode(node, "PathStatusLight")) {
             QString mode = context.selectAttributeString(
                 context.selectElement(node, "PathStatusLight"), "sizemode", "FIXED");
-            setPixmap(i, context.getSkinPath(context.selectString(node, "PathStatusLight")),
+            setPixmap(i, context.getPixmapPath(context.selectNode(node, "PathStatusLight")),
                                              SizeModeFromString(mode));
         } else {
             m_pixmaps[i].clear();
@@ -116,23 +116,26 @@ void WStatusLight::setPixmap(int iState, const QString& filename, SizeMode mode)
     }
 }
 
-void WStatusLight::onConnectedControlValueChanged(double v) {
-    int val = static_cast<int>(v);
-    if (m_iPos == val) {
-        return;
-    }
+void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
+    // Enums are not currently represented using parameter space so it doesn't
+    // make sense to use the parameter here yet.
+    Q_UNUSED(dParameter);
+    int newPos = static_cast<int>(dValue);
 
     if (m_pixmaps.size() == 2) {
         // original behavior for two-state lights: any non-zero value is "on"
-        m_iPos = val > 0 ? 1 : 0;
-        update();
-    } else if (val < m_pixmaps.size() && val >= 0) {
-        // multi-state behavior: values must be correct
-        m_iPos = val;
-        update();
+        newPos = newPos > 0 ? 1 : 0;
+    } else if (newPos < m_pixmaps.size() && newPos >= 0) {
+        // multi-state behavior: values lie within the correct ranges
     } else {
         qDebug() << "Warning: wstatuslight asked for invalid position:"
-                 << val << "max val:" << m_pixmaps.size()-1;
+                 << newPos << "max val:" << m_pixmaps.size()-1;
+        return;
+    }
+
+    if (newPos != m_iPos) {
+        m_iPos = newPos;
+        update();
     }
 }
 

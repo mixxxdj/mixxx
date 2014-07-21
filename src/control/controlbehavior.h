@@ -1,12 +1,9 @@
 #ifndef CONTROLBEHAVIOR_H
 #define CONTROLBEHAVIOR_H
 
-#include <math.h>
-
 #include <QTimer>
 
 #include "controllers/midi/midimessage.h"
-#include "mathstuff.h"
 
 class ControlDoublePrivate;
 
@@ -64,7 +61,8 @@ class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue);
+    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+                               bool allowOutOfBounds);
     virtual ~ControlLinPotmeterBehavior();
 
     virtual double valueToMidiParameter(double dValue);

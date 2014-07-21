@@ -46,7 +46,7 @@ class WStatusLight : public WWidget  {
     static SizeMode SizeModeFromString(QString str);
 
   public slots:
-    void onConnectedControlValueChanged(double v);
+    void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
     void paintEvent(QPaintEvent *);

@@ -1,4 +1,3 @@
-
 #include "skin/tooltips.h"
 
 Tooltips::Tooltips() {
@@ -447,4 +446,14 @@ void Tooltips::addStandardTooltips() {
     add("time")
             << tr("Clock")
             << tr("Displays the current time.");
+
+    add("audio_latency_usage")
+            << tr("Audio Latency Usage Meter")
+            << tr("Displays the fraction of latency used for audio processing.")
+            << tr("A high value indicates that audible glitches are likely.")
+            << tr("Do not enable keylock, effects or additional decks in this situation.");
+
+    add("audio_latency_overload")
+            << tr("Audio Latency Overload Indicator")
+            << tr("Indicates that the audio buffer is to small to do all audio processing.");
 }

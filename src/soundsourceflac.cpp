@@ -52,8 +52,11 @@ SoundSourceFLAC::~SoundSourceFLAC() {
 }
 
 // soundsource overrides
-int SoundSourceFLAC::open() {
-    m_file.open(QIODevice::ReadOnly);
+Result SoundSourceFLAC::open() {
+    if (!m_file.open(QIODevice::ReadOnly)) {
+        qWarning() << "SSFLAC: Could not read file!";
+        return ERR;
+    }
 
     m_decoder = FLAC__stream_decoder_new();
     if (m_decoder == NULL) {
@@ -148,7 +151,7 @@ inline unsigned long SoundSourceFLAC::length() {
     return m_samples * 2; /*m_iChannels*/
 }
 
-int SoundSourceFLAC::parseHeader() {
+Result SoundSourceFLAC::parseHeader() {
     setType("flac");
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
     TagLib::FLAC::File f(qBAFilename.constData());

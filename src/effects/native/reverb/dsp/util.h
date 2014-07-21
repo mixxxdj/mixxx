@@ -57,7 +57,8 @@ isprime (int v)
 	if (!(v & 1))
 		return false;
 
-	for (int i = 3; i < (int) sqrt (v) + 1; i += 2)
+	// NOTE(rryan): float cast added for MSVC.
+	for (int i = 3; i < (int) sqrt ((float)v) + 1; i += 2)
 		if ((v % i) == 0)
 			return false;
 

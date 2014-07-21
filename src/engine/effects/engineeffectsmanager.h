@@ -3,9 +3,10 @@
 
 #include <QScopedPointer>
 
-#include "defs.h"
+#include "util/types.h"
 #include "util/fifo.h"
 #include "engine/effects/message.h"
+#include "engine/effects/groupfeaturestate.h"
 
 class EngineEffectRack;
 class EngineEffectChain;
@@ -26,8 +27,9 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
     virtual void process(const QString& group,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples);
+                         CSAMPLE* pInOut,
+                         const unsigned int numSamples,
+                         const GroupFeatureState& groupFeatures);
 
     bool processEffectsRequest(
         const EffectsRequest& message,

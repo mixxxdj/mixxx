@@ -59,8 +59,10 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
-                            Paintable::DrawModeFromString(mode_str));
+        QString backPath = context.getPixmapPath(context.selectNode(node, "BackPath"));
+        if (!backPath.isEmpty()) {
+            setPixmapBackground(backPath, Paintable::DrawModeFromString(mode_str));
+        }
     }
 
     // Load pixmaps for associated states
@@ -69,15 +71,28 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         if (state.isElement() && state.nodeName() == "State") {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                if (context.hasNode(state, "Pressed")) {
-                    setPixmap(iState, true,
-                              context.getSkinPath(context.selectString(state, "Pressed")));
+                QString pixmapPath;
+                
+                pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
+                if (!pixmapPath.isEmpty()) {
+                    setPixmap(iState, false, pixmapPath);
                 }
-                if (context.hasNode(state, "Unpressed")) {
-                    setPixmap(iState, false,
-                              context.getSkinPath(context.selectString(state, "Unpressed")));
+                
+                pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
+                if (!pixmapPath.isEmpty()) {
+                    setPixmap(iState, true, pixmapPath);
                 }
+                
                 m_text.replace(iState, context.selectString(state, "Text"));
+                QString alignment = context.selectString(state, "Alignment");
+                if (alignment == "left") {
+                    m_align.replace(iState, Qt::AlignLeft);
+                } else if (alignment == "right") {
+                    m_align.replace(iState, Qt::AlignRight);
+                } else {
+                    // Default is center.
+                    m_align.replace(iState, Qt::AlignCenter);
+                }
             }
         }
         state = state.nextSibling();
@@ -180,10 +195,10 @@ void WPushButton::setStates(int iStates) {
     m_pressedPixmaps.resize(iStates);
     m_unpressedPixmaps.resize(iStates);
     m_text.resize(iStates);
+    m_align.resize(iStates);
 }
 
-void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) {
-
+void WPushButton::setPixmap(int iState, bool bPressed, const QString& filename) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -195,7 +210,10 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) 
                                                           Paintable::STRETCH);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
-        qDebug() << "WPushButton: Error loading pixmap:" << filename;
+        // Only log if it looks like the user tried to specify a pixmap.
+        if (!filename.isEmpty()) {
+            qDebug() << "WPushButton: Error loading pixmap:" << filename;
+        }
     } else {
         // Set size of widget equal to pixmap size
         setFixedSize(pPixmap->size());
@@ -207,16 +225,33 @@ void WPushButton::setPixmapBackground(const QString &filename,
                                       Paintable::DrawMode mode) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
-    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+    if (!filename.isEmpty() &&
+            (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
+        // Only log if it looks like the user tried to specify a pixmap.
         qDebug() << "WPushButton: Error loading background pixmap:" << filename;
     }
 }
 
-void WPushButton::onConnectedControlValueChanged(double v) {
+void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dParameter);
+    // Enums are not currently represented using parameter space so it doesn't
+    // make sense to use the parameter here yet.
     if (m_iNoStates == 1) {
-        m_bPressed = (v == 1.0);
+        m_bPressed = (dValue == 1.0);
     }
-    update();
+
+    double value = getControlParameterDisplay();
+    int idx = static_cast<int>(value) % m_iNoStates;
+    setProperty("displayValue", idx);
+    // According to http://stackoverflow.com/a/3822243 this is the least
+    // expensive way to restyle just this widget.
+    // Since we expect button connections to not change at high frequency we
+    // don't try to detect whether things have changed for WPushButton, we just
+    // re-render.
+    style()->unpolish(this);
+    style()->polish(this);
+    // These calls don't always trigger the repaint, so call it explicitly.
+    repaint();
 }
 
 void WPushButton::paintEvent(QPaintEvent* e) {
@@ -226,24 +261,30 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     QStylePainter p(this);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    double value = getControlParameterDisplay();
     if (m_iNoStates == 0) {
         return;
+    }
+
+    if (m_pPixmapBack) {
+        m_pPixmapBack->draw(0, 0, &p);
     }
 
     const QVector<PaintablePointer>& pixmaps = m_bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
-    int idx = static_cast<int>(value) % m_iNoStates;
+
+    // m_text, m_pressedPixmaps and m_unpressedPixmaps are all the same size (as
+    // per setup()) so if one is empty, all are empty.
+    if (pixmaps.isEmpty()) {
+        return;
+    }
+
+    int idx = readDisplayValue();
     // Just in case m_iNoStates is somehow different from pixmaps.size().
-    if (idx < 0){
+    if (idx < 0) {
         idx = 0;
     } else if (idx >= pixmaps.size()) {
         idx = pixmaps.size() - 1;
-    }
-
-    if (m_pPixmapBack) {
-        m_pPixmapBack->draw(0, 0, &p);
     }
 
     PaintablePointer pPixmap = pixmaps.at(idx);
@@ -253,7 +294,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 
     QString text = m_text.at(idx);
     if (!text.isEmpty()) {
-        p.drawText(rect(), Qt::AlignCenter, text);
+        p.drawText(rect(), m_align.at(idx), text);
     }
 }
 

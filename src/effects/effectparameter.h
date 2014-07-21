@@ -42,7 +42,8 @@ class EffectParameter : public QObject {
     void setLinkType(EffectManifestParameter::LinkType linkType);
 
     QVariant getValue() const;
-    void setValue(QVariant value);
+    // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
+    void setValue(QVariant value, int type = 10);
 
     QVariant getDefault() const;
     void setDefault(QVariant defaultValue);
@@ -55,9 +56,8 @@ class EffectParameter : public QObject {
 
     EffectManifestParameter::ControlHint getControlHint() const;
 
-    void updateEngineState();
-
-    void onChainParameterChanged(double chainParameter);
+    // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
+    void updateEngineState(int type = 10);
 
   signals:
     void valueChanged(QVariant value);

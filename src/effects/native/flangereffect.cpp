@@ -1,8 +1,9 @@
+// THIS HAS TO BE THE FIRST INCLUDE!!! --kain88 (April 2013)
+// http://stackoverflow.com/a/6563891
+#include "util/math.h"
 #include <QtDebug>
 
 #include "effects/native/flangereffect.h"
-
-#include "mathstuff.h"
 
 const unsigned int kMaxDelay = 5000;
 const unsigned int kLfoAmplitude = 240;
@@ -70,14 +71,16 @@ FlangerEffect::FlangerEffect(EngineEffect* pEffect,
 }
 
 FlangerEffect::~FlangerEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void FlangerEffect::processGroup(const QString& group,
                                  FlangerGroupState* pState,
                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                 const unsigned int numSamples) {
+                                 const unsigned int numSamples,
+                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(groupFeatures);
     CSAMPLE lfoPeriod = m_pPeriodParameter ?
             m_pPeriodParameter->value().toDouble() : 0.0f;
     CSAMPLE lfoDepth = m_pDepthParameter ?
@@ -107,7 +110,7 @@ void FlangerEffect::processGroup(const QString& group,
         }
 
         CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
-        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(two_pi * periodFraction);
+        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
 
         int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
         int frameNext = (pState->delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;

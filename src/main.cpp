@@ -26,7 +26,7 @@
 #include <QFile>
 
 #include <stdio.h>
-#include <math.h>
+#include <iostream>
 
 #include "mixxx.h"
 #include "mixxxapplication.h"
@@ -35,6 +35,8 @@
 #include "util/cmdlineargs.h"
 #include "util/version.h"
 
+#include <QFile>
+#include <QFileInfo>
 #ifdef __FFMPEGFILE__
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -91,6 +93,11 @@ void MessageHandler(QtMsgType type,
 #else
                     const QMessageLogContext&, const QString& input) {
 #endif
+
+    // It's possible to deadlock if any method in this function can
+    // qDebug/qWarning/etc. Writing to a closed QFile, for example, produces a
+    // qWarning which causes a deadlock. That's why every use of Logfile is
+    // wrapped with isOpen() checks.
     QMutexLocker locker(&mutexLogfile);
     QByteArray ba;
     QThread* thread = QThread::currentThread();
@@ -109,8 +116,34 @@ void MessageHandler(QtMsgType type,
     if (!Logfile.isOpen()) {
         // This Must be done in the Message Handler itself, to guarantee that the
         // QApplication is initialized
-        QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
+        QString logLocation = CmdlineArgs::Instance().getSettingsPath();
+        QString logFileName;
 
+        // Rotate old logfiles
+        //FIXME: cerr << doesn't get printed until after mixxx quits (???)
+        for (int i = 9; i >= 0; --i) {
+            if (i == 0) {
+                logFileName = QString("%1/mixxx.log").arg(logLocation);
+            } else {
+                logFileName = QString("%1/mixxx.log.%2").arg(logLocation).arg(i);
+            }
+            QFileInfo logbackup(logFileName);
+            if (logbackup.exists()) {
+                QString olderlogname =
+                        QString("%1/mixxx.log.%2").arg(logLocation).arg(i + 1);
+                // This should only happen with number 10
+                if (QFileInfo(olderlogname).exists()) {
+                    QFile::remove(olderlogname);
+                }
+                if (!QFile::rename(logFileName, olderlogname)) {
+                    std::cerr << "Error rolling over logfile " << logFileName.toStdString();
+                }
+            }
+        }
+
+        // WARNING(XXX) getSettingsPath() may not be ready yet. This causes
+        // Logfile writes below to print qWarnings which in turn recurse into
+        // MessageHandler -- potentially deadlocking.
         // XXX will there ever be a case that we can't write to our current
         // working directory?
         Logfile.setFileName(logFileName);
@@ -125,31 +158,43 @@ void MessageHandler(QtMsgType type,
         }
 #endif
         fprintf(stderr, "Debug %s", ba.constData());
-        Logfile.write("Debug ");
-        Logfile.write(ba);
+        if (Logfile.isOpen()) {
+            Logfile.write("Debug ");
+            Logfile.write(ba);
+        }
         break;
     case QtWarningMsg:
         fprintf(stderr, "Warning %s", ba.constData());
-        Logfile.write("Warning ");
-        Logfile.write(ba);
+        if (Logfile.isOpen()) {
+            Logfile.write("Warning ");
+            Logfile.write(ba);
+        }
         break;
     case QtCriticalMsg:
         fprintf(stderr, "Critical %s", ba.constData());
-        Logfile.write("Critical ");
-        Logfile.write(ba);
+        if (Logfile.isOpen()) {
+            Logfile.write("Critical ");
+            Logfile.write(ba);
+        }
         break; //NOTREACHED
     case QtFatalMsg:
         fprintf(stderr, "Fatal %s", ba.constData());
-        Logfile.write("Fatal ");
-        Logfile.write(ba);
+        if (Logfile.isOpen()) {
+            Logfile.write("Fatal ");
+            Logfile.write(ba);
+        }
         break; //NOTREACHED
     default:
         fprintf(stderr, "Unknown %s", ba.constData());
-        Logfile.write("Unknown ");
-        Logfile.write(ba);
+        if (Logfile.isOpen()) {
+            Logfile.write("Unknown ");
+            Logfile.write(ba);
+        }
         break;
     }
-    Logfile.flush();
+    if (Logfile.isOpen()) {
+        Logfile.flush();
+    }
 }
 
 int main(int argc, char * argv[])
@@ -215,6 +260,10 @@ int main(int argc, char * argv[])
 \n\
     --developer             Enables developer-mode. Includes extra log info,\n\
                             stats on performance, and a Developer tools menu.\n\
+\n\
+    --safeMode              Enables safe-mode. Disables OpenGL waveforms,\n\
+                            and spinning vinyl widgets. Try this option if\n\
+                            Mixxx is crashing on startup.\n\
 \n\
     --locale LOCALE         Use a custom locale for loading translations\n\
                             (e.g 'fr')\n\

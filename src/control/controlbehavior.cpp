@@ -1,5 +1,6 @@
 #include "control/controlbehavior.h"
 #include "control/control.h"
+#include "util/math.h"
 
 bool ControlNumericBehavior::setFilter(double* dValue) {
     Q_UNUSED(dValue);
@@ -94,7 +95,9 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 #define positionrange (maxPosition - minPosition)
 
 ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false),
+          m_dB1(0.0),
+          m_dB2(0.0) {
     if (dMaxValue == 1.0 || dMinValue != 0.0 ) {
         m_bTwoState = false;
         m_dB1 = log10((dMaxValue - dMinValue) + 1.0) / maxPosition;
@@ -142,8 +145,9 @@ double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     }
 }
 
-ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+                                                       bool allowOutOfBounds)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
 
 ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
@@ -156,13 +160,22 @@ double ControlLinPotmeterBehavior::valueToMidiParameter(double dValue) {
     // 127.0/128.0] with slope 128 and then cuts off at 127 from 127.0/128.0 to
     // 1.0.  from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
     double dNorm = valueToParameter(dValue);
-    return math_max(127.0, dNorm * 128.0);
+    if (dNorm > 0.5) {
+        return (dNorm * 126) + 1;
+    } else {
+        return dNorm * 128.0;
+    }
 }
 
 void ControlLinPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
                                                            ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    double dNorm = dParam / 128.0;
+    double dNorm;
+    if (dParam > 64) {
+        dNorm = (dParam - 1) / 126.0;
+    } else {
+        dNorm = dParam / 128.0;
+    }
     pControl->set(parameterToValue(dNorm), NULL);
 }
 

@@ -21,15 +21,17 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"
 #include "controllers/controllervisitor.h"
-#include "controllers/mixxxcontrol.h"
 #include "configobject.h"
 
 class ControllerPreset;
+
+//#define CONTROLLERLESSTESTING
 
 class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
                               public Ui::DlgControllerLearning {
     Q_OBJECT
+
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
     virtual ~DlgControllerLearning();
@@ -39,10 +41,13 @@ class DlgControllerLearning : public QDialog,
     void visit(BulkController* pController);
 
   signals:
-    void learnTemporaryInputMappings(const MixxxControl& control,
-                                     const MidiKeyAndOptionsList& mappings);
+    void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
+
+    // Used to notify DlgPrefController that we have learned some new input
+    // mappings.
+    void inputMappingsLearned(const MidiInputMappings& mappings);
 
     void startLearning();
     void stopLearning();
@@ -51,32 +56,46 @@ class DlgControllerLearning : public QDialog,
 
   public slots:
     // Triggered when the user picks a control from the menu.
-    void controlPicked(MixxxControl control);
+    void controlPicked(ConfigKey control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
+    void comboboxIndexChanged(int index);
 
     void slotMessageReceived(unsigned char status,
                              unsigned char control,
                              unsigned char value);
 
+    void slotCancelLearn();
+    void slotChooseControlPressed();
     void slotTimerExpired();
-    void slotUndo();
+    void slotFirstMessageTimeout();
+    void slotRetry();
+    void slotStartLearningPressed();
     void slotMidiOptionsChanged();
 
   private slots:
     void showControlMenu();
+#ifdef CONTROLLERLESSTESTING
+    void DEBUGFakeMidiMessage();
+    void DEBUGFakeMidiMessage2();
+#endif
 
   private:
-    void loadControl(const MixxxControl& control);
-    void resetMapping(bool commit);
+    void loadControl(const ConfigKey& key, QString title, QString description);
+    void startListening();
+    void commitMapping();
+    void resetWizard(bool keepCurrentControl = false);
+    void populateComboBox();
 
+    Controller* m_pController;
     MidiController* m_pMidiController;
     ControlPickerMenu m_controlPickerMenu;
-    MixxxControl m_currentControl;
+    ConfigKey m_currentControl;
     bool m_messagesLearned;
+    QTimer m_firstMessageTimer;
     QTimer m_lastMessageTimer;
     QList<QPair<MidiKey, unsigned char> > m_messages;
-    MidiKeyAndOptionsList m_mappings;
+    MidiInputMappings m_mappings;
 };
 
 #endif

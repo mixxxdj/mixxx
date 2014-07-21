@@ -28,6 +28,7 @@
 #include "soundsource.h"
 #include "defs_version.h"
 #include "m4a/ip.h"
+#include "util/defs.h"
 
 //As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
 #ifdef Q_OS_WIN
@@ -42,12 +43,12 @@ class SoundSourceM4A : public SoundSource {
     public:
         SoundSourceM4A(QString qFileName);
         ~SoundSourceM4A();
-        int open();
+        Result open();
         long seek(long);
         int initializeDecoder();
         unsigned read(unsigned long size, const SAMPLE*);
         unsigned long length();
-        int parseHeader();
+        Result parseHeader();
         static QList<QString> supportedFileExtensions();
     private:
         int trackId;
@@ -71,11 +72,11 @@ extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
     return new SoundSourceM4A(filename);
 }
 
-extern "C" MY_EXPORT char** supportedFileExtensions() 
+extern "C" MY_EXPORT char** supportedFileExtensions()
 {
     QList<QString> exts = SoundSourceM4A::supportedFileExtensions();
     //Convert to C string array.
-    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));  
+    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));
     for (int i = 0; i < exts.count(); i++)
     {
         QByteArray qba = exts[i].toUtf8();

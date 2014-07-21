@@ -1,7 +1,7 @@
 #ifndef ANALYSER_H
 #define ANALYSER_H
 
-#include "defs.h"
+#include "util/types.h"
 
 /*
  * An Analyser is an object which wants to process an entire song to

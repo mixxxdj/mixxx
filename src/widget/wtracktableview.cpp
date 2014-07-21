@@ -191,6 +191,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
+    header->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -1157,6 +1158,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
                                              iAutoDJPlaylistId, 2);
     } else {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(
                 trackIds, iAutoDJPlaylistId);
     }
@@ -1257,6 +1259,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
    }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }
@@ -1319,6 +1322,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         }
     }
     if (trackIds.size() > 0) {
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         crateDao.addTracksToCrate(iCrateId, &trackIds);
     }
 }

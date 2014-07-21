@@ -18,7 +18,7 @@
 #include <QtDebug>
 
 #include "dlgprefcrossfader.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "engine/enginexfader.h"
 
@@ -36,8 +36,6 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
           m_COTCalibration(CONFIG_KEY, "xFaderCalibration"),
           m_COTReverse(CONFIG_KEY, "xFaderReverse") {
     setupUi(this);
-
-    connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
 
     QButtonGroup crossfaderModes;
     crossfaderModes.addButton(radioButtonAdditive);
@@ -84,7 +82,7 @@ void DlgPrefCrossfader::loadSettings() {
 }
 
 /** Set the default values for all the widgets */
-void DlgPrefCrossfader::setDefaults() {
+void DlgPrefCrossfader::slotResetToDefaults() {
     SliderXFader->setValue(0);
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);

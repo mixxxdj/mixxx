@@ -26,7 +26,7 @@
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
 #include "trackinfoobject.h"
-#include "mathstuff.h"
+#include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
 
@@ -133,14 +133,17 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WOverview::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag)
-    {
-        // Calculate handle position
-        int iPos = valueToPosition(dValue);
+void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    if (!m_bDrag) {
+        // Calculate handle position. Clamp the value within 0-1 because that's
+        // all we represent with this widget.
+        dParameter = math_clamp(dParameter, 0.0, 1.0);
+
+        int iPos = valueToPosition(dParameter);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
             update();
         }
     }
@@ -251,8 +254,7 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    m_iPos = e->x();
-    m_iPos = math_max(0, math_min(m_iPos,width() - 1));
+    m_iPos = math_clamp(e->x(), 0, width() - 1);
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
 }
@@ -473,11 +475,10 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    // Play-position potmeters range from -0.14 to 1.14. This is to give VC and
-    // MIDI control access to the pre-roll area.
-    // TODO(rryan): get these limits from the CO itself.
-    const double kMaxPlayposRange = 1.14;
-    const double kMinPlayposRange = -0.14;
+    // Play-position potmeters range from 0 to 1 but they allow out-of-range
+    // sets. This is to give VC access to the pre-roll area.
+    const double kMaxPlayposRange = 1.0;
+    const double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
     const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);

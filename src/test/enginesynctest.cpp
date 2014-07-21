@@ -848,5 +848,26 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     assertIsFollower(m_sGroup1);
 }
 
+TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
+    // If filebpm changes, don't treat it like a rate change.
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm1->set(100.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->set(1.0);
+
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(120.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+    pButtonSyncEnabled2->set(1.0);
+
+    pFileBpm1->set(160.0);
+    EXPECT_FLOAT_EQ(100.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                        "bpm"))->get());
+}
 
 }  // namespace

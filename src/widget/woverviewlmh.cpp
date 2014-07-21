@@ -5,6 +5,7 @@
 #include <QColor>
 
 #include "util/timer.h"
+#include "util/math.h"
 #include "waveform/waveform.h"
 
 WOverviewLMH::WOverviewLMH(const char *pGroup,

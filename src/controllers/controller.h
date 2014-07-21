@@ -18,9 +18,8 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllerpresetfilehandler.h"
-#include "controllers/mixxxcontrol.h"
 
-class Controller : public QObject, ControllerPresetVisitor {
+class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     Controller();
@@ -43,7 +42,6 @@ class Controller : public QObject, ControllerPresetVisitor {
 
     // Returns a clone of the Controller's loaded preset.
     virtual ControllerPresetPointer getPreset() const = 0;
-    virtual ControllerPresetFileHandler* getFileHandler() const = 0;
 
     inline bool isOpen() const {
         return m_bIsOpen;
@@ -89,9 +87,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Puts the controller in and out of learning mode.
     void startLearning();
     void stopLearning();
-
-    virtual void clearInputMappings() {}
-    virtual void clearOutputMappings() {}
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length);

@@ -36,10 +36,6 @@ class MidiController : public Controller {
 
     virtual bool savePreset(const QString fileName) const;
 
-    virtual ControllerPresetFileHandler* getFileHandler() const {
-        return new MidiControllerPresetFileHandler();
-    }
-
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
@@ -73,19 +69,22 @@ class MidiController : public Controller {
     void receive(const QByteArray data);
     virtual int close();
 
-    void clearInputMappings();
-    void clearOutputMappings();
-
   private slots:
     // Initializes the engine and static output mappings.
     void applyPreset(QList<QString> scriptPaths);
 
-    void learnTemporaryInputMappings(const MixxxControl& control,
-                                     const MidiKeyAndOptionsList& mappings);
+    void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
 
   private:
+    void processInputMapping(const MidiInputMapping& mapping,
+                             unsigned char status,
+                             unsigned char control,
+                             unsigned char value);
+    void processInputMapping(const MidiInputMapping& mapping,
+                             const QByteArray& data);
+
     virtual void sendWord(unsigned int word) = 0;
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
@@ -98,13 +97,15 @@ class MidiController : public Controller {
         return &m_preset;
     }
 
-    QHash<uint16_t, QPair<MixxxControl, MidiOptions> > m_temporaryInputMappings;
+    QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
     MidiControllerPreset m_preset;
     SoftTakeover m_st;
+    QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;
+    friend class MidiControllerTest;
 };
 
 #endif

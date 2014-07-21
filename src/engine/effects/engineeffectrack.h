@@ -4,6 +4,7 @@
 #include <QList>
 
 #include "engine/effects/message.h"
+#include "engine/effects/groupfeaturestate.h"
 
 class EngineEffectChain;
 
@@ -17,8 +18,9 @@ class EngineEffectRack : public EffectsRequestHandler {
         EffectsResponsePipe* pResponsePipe);
 
     void process(const QString& group,
-                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                 const unsigned int numSamples);
+                 CSAMPLE* pInOut,
+                 const unsigned int numSamples,
+                 const GroupFeatureState& groupFeatures);
 
     int number() const {
         return m_iRackNumber;

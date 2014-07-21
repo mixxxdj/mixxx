@@ -22,10 +22,10 @@
 #include <QList>
 #include <QHash>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
-#include "util/fifo.h"
 
 class SoundDevice;
 class EngineMaster;
@@ -71,7 +71,7 @@ class SoundManager : public QObject {
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
-    int setupDevices();
+    Result setupDevices();
 
     SoundDevice* getErrorDevice() const;
 
@@ -84,22 +84,24 @@ class SoundManager : public QObject {
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
-    int setConfig(SoundManagerConfig config);
+    Result setConfig(SoundManagerConfig config);
     void checkConfig();
 
     void onDeviceOutputCallback(const unsigned int iFramesPerBuffer);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
-    void pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
-            const unsigned int iFramesPerBuffer, const unsigned int iFrameSize);
+    void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
+                          const unsigned int iFramesPerBuffer);
+
+
+    void writeProcess();
+    void readProcess();
 
     void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
-
-    bool isDeviceClkRef(SoundDevice* device);
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
@@ -119,11 +121,7 @@ class SoundManager : public QObject {
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
-    QList<FIFO<CSAMPLE>* > m_outputFifos;
 
-    // Clock reference, used to make sure the same device triggers buffer
-    // refresh every $latency-ms period
-    SoundDevice* m_pClkRefDevice;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;

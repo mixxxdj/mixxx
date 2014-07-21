@@ -13,6 +13,7 @@
 #include "effects/effectinstantiator.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/message.h"
+#include "engine/effects/groupfeaturestate.h"
 
 class EngineEffect : public EffectsRequestHandler {
   public:
@@ -29,13 +30,18 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
+    EngineEffectParameter* getButtonParameterById(const QString& id) {
+        return m_buttonParametersById.value(id, NULL);
+    }
+
     bool processEffectsRequest(
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
     void process(const QString& group,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
-                 const unsigned int numSamples);
+                 const unsigned int numSamples,
+                 const GroupFeatureState& groupFeatures);
 
     bool enabled() const {
         return m_bEnabled;
@@ -51,7 +57,9 @@ class EngineEffect : public EffectsRequestHandler {
     bool m_bEnabled;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
+    QVector<EngineEffectParameter*> m_buttonParameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;
+    QMap<QString, EngineEffectParameter*> m_buttonParametersById;
 };
 
 #endif /* ENGINEEFFECT_H */

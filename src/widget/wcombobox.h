@@ -16,7 +16,7 @@ class WComboBox : public QComboBox, public WBaseWidget {
 
     void setup(QDomNode node, const SkinContext& context);
 
-    void onConnectedControlValueChanged(double v);
+    void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
     bool event(QEvent* pEvent);

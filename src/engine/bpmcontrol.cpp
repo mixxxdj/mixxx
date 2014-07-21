@@ -13,6 +13,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobjectslave.h"
+#include "util/math.h"
 
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
@@ -416,11 +417,12 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
             const double adjust = 1.0 + (-error * kSyncAdjustmentProportional);
             // Cap the difference between the last adjustment and this one.
             double delta = adjust - m_dSyncAdjustment;
-            delta = math_max(-kSyncDeltaCap, math_min(kSyncDeltaCap, delta));
+            delta = math_clamp(delta, -kSyncDeltaCap, kSyncDeltaCap);
 
             // Cap the adjustment between -kSyncAdjustmentCap and +kSyncAdjustmentCap
-            m_dSyncAdjustment = 1.0 + math_max(
-                -kSyncAdjustmentCap, math_min(kSyncAdjustmentCap, m_dSyncAdjustment - 1.0 + delta));
+            m_dSyncAdjustment = 1.0 + math_clamp(
+                    m_dSyncAdjustment - 1.0 + delta,
+                    -kSyncAdjustmentCap, kSyncAdjustmentCap);
         } else {
             // We are in sync, no adjustment needed.
             m_dSyncAdjustment = 1.0;
@@ -712,4 +714,45 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
+}
+
+void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    double fileBpm = m_pFileBpm->get();
+    if (fileBpm > 0) {
+        pGroupFeatures->has_file_bpm = true;
+        pGroupFeatures->file_bpm = fileBpm;
+    }
+
+    double bpm = m_pEngineBpm->get();
+    if (bpm > 0) {
+        pGroupFeatures->has_bpm = true;
+        pGroupFeatures->bpm = bpm;
+    }
+
+    // Without a beatgrid we don't know any beat details.
+    if (!m_pBeats) {
+        return;
+    }
+
+    // Get the current position of this deck.
+    double dThisPosition = getCurrentSample();
+    double dThisPrevBeat;
+    double dThisNextBeat;
+    double dThisBeatLength;
+    double dThisBeatFraction;
+    if (getBeatContext(m_pBeats, dThisPosition,
+                       &dThisPrevBeat, &dThisNextBeat,
+                       &dThisBeatLength, &dThisBeatFraction)) {
+        pGroupFeatures->has_prev_beat = true;
+        pGroupFeatures->prev_beat = dThisPrevBeat;
+
+        pGroupFeatures->has_next_beat = true;
+        pGroupFeatures->next_beat = dThisNextBeat;
+
+        pGroupFeatures->has_beat_length = true;
+        pGroupFeatures->beat_length = dThisBeatLength;
+
+        pGroupFeatures->has_beat_fraction = true;
+        pGroupFeatures->beat_fraction = dThisBeatFraction;
+    }
 }
