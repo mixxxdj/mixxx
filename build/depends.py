@@ -573,7 +573,9 @@ class MixxxCore(Feature):
                    "effects/effectrack.cpp",
                    "effects/effectchainslot.cpp",
                    "effects/effectslot.cpp",
+                   "effects/effectparameterslotbase.cpp",
                    "effects/effectparameterslot.cpp",
+                   "effects/effectbuttonparameterslot.cpp",
 
                    "effects/effectsmanager.cpp",
                    "effects/effectchainmanager.cpp",
@@ -710,6 +712,8 @@ class MixxxCore(Feature):
                    "widget/weffectchain.cpp",
                    "widget/weffect.cpp",
                    "widget/weffectparameter.cpp",
+                   "widget/weffectbuttonparameter.cpp",
+                   "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
