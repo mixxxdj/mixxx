@@ -1,6 +1,5 @@
-
-#ifndef ENGINEFILTERBESSEL4_H
-#define ENGINEFILTERBESSEL4_H
+#ifndef ENGINEFILTEBESSEL4_H
+#define ENGINEFILTEBESSEL4_H
 
 #define MAX_COEFS 17
 #define MAX_INTERNAL_BUF 16
@@ -66,4 +65,4 @@ class EngineFilterBessel4High : public EngineFilterBessel4 {
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 };
 
-#endif // ENGINEFILTERBESSEL4_H
+#endif // ENGINEFILTEBESSEL4_H

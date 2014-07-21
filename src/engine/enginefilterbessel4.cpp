@@ -1,4 +1,3 @@
-
 #include "engine/enginefilterbessel4.h"
 #include "util/counter.h"
 #include "util/math.h"
