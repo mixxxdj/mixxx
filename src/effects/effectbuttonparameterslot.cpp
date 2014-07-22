@@ -130,3 +130,10 @@ void EffectButtonParameterSlot::onChainParameterChanged(double parameter) {
         }
     }
 }
+
+void EffectButtonParameterSlot::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        // Call setValue with type 11 (SET_PARAMETER_BUTTON_PARAMETERS)
+        m_pEffectParameter->setValue(v, 11);
+    }
+}

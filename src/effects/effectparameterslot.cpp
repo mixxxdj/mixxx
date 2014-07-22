@@ -131,3 +131,9 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
         }
     }
 }
+
+void EffectParameterSlot::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setValue(v);
+    }
+}
