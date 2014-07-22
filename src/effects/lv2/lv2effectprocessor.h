@@ -13,6 +13,7 @@ class LV2EffectProcessor : public EffectProcessor {
                        const LilvPlugin* plugin,
                        QList<int> audioPortIndices,
                        QList<int> controlPortIndices);
+    ~LV2EffectProcessor();
 
     void initialize(const QSet<QString>& registeredGroups);
     virtual void process(const QString& group,

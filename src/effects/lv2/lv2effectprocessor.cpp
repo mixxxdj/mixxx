@@ -40,6 +40,11 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     lilv_instance_activate(handle);
 }
 
+LV2EffectProcessor::~LV2EffectProcessor() {
+    lilv_instance_deactivate(handle);
+    lilv_instance_free(handle);
+}
+
 void LV2EffectProcessor::initialize(const QSet<QString>& registeredGroups) {
     Q_UNUSED(registeredGroups);
 
@@ -48,16 +53,17 @@ void LV2EffectProcessor::initialize(const QSet<QString>& registeredGroups) {
 void LV2EffectProcessor::process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
-		         const unsigned int sampleRate,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
+    Q_UNUSED(group);
     for (int i = 0; i < m_parameters.size(); i++) {
         params[i] = m_parameters[i]->value();
     }
 
     int j = 0;
-    for (int i = 0; i < numSamples; i += 2) {
+    for (unsigned int i = 0; i < numSamples; i += 2) {
         inputL[j] = pInput[i];
         inputR[j] = pInput[i + 1];
         j++;
