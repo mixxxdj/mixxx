@@ -54,12 +54,13 @@ void LV2EffectProcessor::process(const QString& group,
                          const unsigned int numSamples,
                          const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
+    Q_UNUSED(group);
     for (int i = 0; i < m_parameters.size(); i++) {
         params[i] = m_parameters[i]->value().toFloat();
     }
 
     int j = 0;
-    for (int i = 0; i < numSamples; i += 2) {
+    for (unsigned int i = 0; i < numSamples; i += 2) {
         inputL[j] = pInput[i];
         inputR[j] = pInput[i + 1];
         j++;
