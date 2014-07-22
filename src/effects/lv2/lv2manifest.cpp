@@ -50,7 +50,8 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
-        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])) {
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
+            !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
             controlPortIndices.append(i);
             EffectManifestParameter* param = m_effectManifest.addParameter();
 
@@ -92,6 +93,33 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             qDebug() << inputPorts << " " << outputPorts << endl;
         }
     }
+
+    // Temporary hack to put the button parameters at the end
+    for (int i = 0; i < numPorts; i++) {
+        const LilvPort *port = lilv_plugin_get_port_by_index(plug, i);
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
+            lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
+            controlPortIndices.append(i);
+            EffectManifestParameter* param = m_effectManifest.addButtonParameter();
+            // Get and set the parameter name
+            info = lilv_port_get_name(m_pLV2plugin, port);
+            QString paramName = lilv_node_as_string(info);
+            qDebug() << "Parameter name: " << paramName;
+            param->setName(paramName);
+            lilv_node_free(info);
+
+            // Build and set the parameter id from its name
+            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
+            qDebug() << "Parameter id: " << paramName.trimmed().toLower().replace(' ', '_').append(i + '0');
+
+            param->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+            param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+            param->setDefault(m_default[i]);
+            param->setMinimum(m_minimum[i]);
+            param->setMaximum(m_maximum[i]);
+        }
+    }
+
 
     // Also, we only support the case when the input and output samples are stereo
     if (inputPorts == 2 && outputPorts == 2) {
