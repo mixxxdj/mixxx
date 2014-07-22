@@ -17,10 +17,18 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     params = new float[MAX_PARAMS];
 
     handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL);
-    const QList<EffectManifestParameter> effectManifestParameterList = manifest.parameters();
+    const QList<EffectManifestParameter> effectManifestParameterList =
+            manifest.parameters();
+    const QList<EffectManifestParameter> effectManifestButtonParameterList =
+            manifest.buttonParameters();
+
     // Initialize EngineEffectParameters
     foreach (EffectManifestParameter param, effectManifestParameterList) {
         m_parameters.append(pEngineEffect->getParameterById(param.id()));
+    }
+
+    foreach (EffectManifestParameter param, effectManifestButtonParameterList) {
+        m_parameters.append(pEngineEffect->getButtonParameterById(param.id()));
     }
 
     for (int i = 0; i < m_parameters.size(); i++) {
@@ -28,9 +36,8 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
         lilv_instance_connect_port(handle, controlPortIndices[i], &params[i]);
     }
 
-    // Only for Calf Flanger, we are hard coding the indexes
-    // TODO: somehow remove the hard coding; maybe get a vector of indexes
-    // example: index_vector = [iL, iR, oL, oR];
+    // We assume the audio ports are in the following order:
+    // input_left, input_right, output_left, output_right
     lilv_instance_connect_port(handle, audioPortIndices[0], inputL);
     lilv_instance_connect_port(handle, audioPortIndices[1], inputR);
     lilv_instance_connect_port(handle, audioPortIndices[2], outputL);
