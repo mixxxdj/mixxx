@@ -59,9 +59,14 @@ void CoverArtDelegate::paint(QPainter *painter,
         painter->fillRect(newOption.rect, newOption.palette.base());
     }
 
-    painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
     if (drawPixmap) {
-        painter->drawPixmap(option.rect, pixmap);
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
+        int width = 100;
+        int height = (float) option.rect.height() * pixmap.width() / width;
+        QRect target(option.rect.x(), option.rect.y(),
+                     width, option.rect.height());
+        QRect source(0, 0, pixmap.width(), height);
+        painter->drawPixmap(target, pixmap, source);
     }
 
     painter->restore();
