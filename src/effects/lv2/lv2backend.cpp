@@ -12,10 +12,11 @@ LV2Backend::LV2Backend(QObject* pParent)
         const LilvPlugin *plug = lilv_plugins_get(plugs, i);
         LilvNode* name = lilv_plugin_get_name(plug);
         qDebug() << lilv_node_as_string(name) << "-----------------------------";
-        LV2Manifest* flanger = new LV2Manifest(plug, m_properties);
-        if (flanger->isValid()) {
-            m_registeredEffects.insert(flanger->getEffectManifest().id(),
-                                       flanger);
+        LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
+
+        if (lv2Manifest->isValid()) {
+            m_registeredEffects.insert(lv2Manifest->getEffectManifest().id(),
+                                       lv2Manifest);
         }
     }
 }
