@@ -1,5 +1,5 @@
-#ifndef EFFECTPARAMETERSLOT_H
-#define EFFECTPARAMETERSLOT_H
+#ifndef EFFECTBUTTONPARAMETERSLOT_H
+#define EFFECTBUTTONPARAMETERSLOT_H
 
 #include <QObject>
 #include <QVariant>
@@ -12,25 +12,24 @@
 
 class ControlObject;
 class ControlPushButton;
-class ControlEffectKnob;
 
-class EffectParameterSlot;
-typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
+class EffectButtonParameterSlot;
+typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;
 
-class EffectParameterSlot : public EffectParameterSlotBase {
+class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectParameterSlot(const unsigned int iRackNumber,
+    EffectButtonParameterSlot(const unsigned int iRackNumber,
                         const unsigned int iChainNumber,
                         const unsigned int iSlotNumber,
                         const unsigned int iParameterNumber);
-    virtual ~EffectParameterSlot();
+    virtual ~EffectButtonParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterNumber) {
-        return QString("parameter%1").arg(iParameterNumber + 1);
+        return QString("button_parameter%1").arg(iParameterNumber + 1);
     }
 
-    // Load the parameter of the given effect into this EffectParameterSlot
+    // Load the parameter of the given effect into this EffectButtonParameterSlot
     void loadEffect(EffectPointer pEffect);
 
     void onChainParameterChanged(double parameter);
@@ -41,16 +40,16 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
   private:
     QString debugString() const {
-        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
+        return QString("EffectButtonParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
     }
 
     // Clear the currently loaded effect
     void clear();
 
     // Control exposed to the rest of Mixxx
-    ControlEffectKnob* m_pControlValue;
+    ControlPushButton* m_pControlValue;
 
-    DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
+    DISALLOW_COPY_AND_ASSIGN(EffectButtonParameterSlot);
 };
 
-#endif /* EFFECTPARAMETERSLOT_H */
+#endif // EFFECTBUTTONPARAMETERSLOT_H
