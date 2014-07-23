@@ -57,6 +57,7 @@ bool CoverArtCache::changeCoverArt(int trackId,
 QPixmap CoverArtCache::requestPixmap(int trackId,
                                      const QString& coverLocation,
                                      const QString& md5Hash,
+                                     const bool tryLoadAndSearch,
                                      const bool emitSignals) {
     if (trackId < 1) {
         return QPixmap();
@@ -74,6 +75,10 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
             emit(pixmapFound(trackId, pixmap));
         }
         return pixmap;
+    }
+
+    if (!tryLoadAndSearch) {
+        return QPixmap();
     }
 
     QFuture<FutureResult> future;

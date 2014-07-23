@@ -141,6 +141,8 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
     if (m_bLastCoverLoaded) {
         // load default cover art
         emit(loadCoverArt("", "", 0));
+        // not draw covers in the tableview (cover_art column)
+        emit(lockCoverArtDelegate(true));
     }
     m_bLastCoverLoaded = false;
     m_lastSelection = m_pCOTGuiTickTime->get();
@@ -175,6 +177,7 @@ void WTrackTableView::slotLoadCoverArt() {
         }
     }
     emit(loadCoverArt(coverLocation, md5Hash, trackId));
+    emit(lockCoverArtDelegate(false));
     update();
 }
 

@@ -7,13 +7,22 @@
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
-          m_pTableView(NULL) {
+          m_pTableView(NULL),
+          m_bIsLocked(false) {
+    // This assumes that the parent is wtracktableview
+    connect(parent, SIGNAL(lockCoverArtDelegate(bool)),
+            this, SLOT(slotLock(bool)));
+
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
     }
 }
 
 CoverArtDelegate::~CoverArtDelegate() {
+}
+
+void CoverArtDelegate::slotLock(bool lock) {
+    m_bIsLocked = lock;
 }
 
 void CoverArtDelegate::paint(QPainter *painter,
@@ -54,8 +63,12 @@ void CoverArtDelegate::paint(QPainter *painter,
     bool drawPixmap = coverLocation != defaultLoc;
     QPixmap pixmap;
     if (drawPixmap) {
+        // If the CoverDelegate is locked, it must not try
+        // to load (from coverLocation) and search covers.
+        // It means that in this cases it will just draw
+        // covers which are already in the pixmapcache.
         pixmap = CoverArtCache::instance()->requestPixmap(
-                                trackId, coverLocation, md5Hash, false);
+                    trackId, coverLocation, md5Hash, !m_bIsLocked, false);
     }
     drawPixmap = !pixmap.isNull();
 

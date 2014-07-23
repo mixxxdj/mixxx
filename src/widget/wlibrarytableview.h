@@ -26,6 +26,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void loadCoverArt(const QString& coverLocation, const QString&, int trackId);
+    void lockCoverArtDelegate(bool);
 
   public slots:
     void saveVScrollBarPos();
