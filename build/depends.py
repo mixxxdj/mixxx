@@ -610,6 +610,8 @@ class MixxxCore(Feature):
                    "engine/enginefilterbessel4.cpp",
                    "engine/enginefilterbutterworth4.cpp",
                    "engine/enginefilterbutterworth8.cpp",
+                   "engine/enginefilterlinkwitzriley4.cpp",
+                   "engine/enginefilterlinkwitzriley8.cpp",
                    "engine/enginefilter.cpp",
                    "engine/engineobject.cpp",
                    "engine/enginepregain.cpp",

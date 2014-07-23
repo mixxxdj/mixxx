@@ -43,6 +43,19 @@ class EngineFilterIIR : public EngineObjectConstIn {
         m_doRamping = true;
     }
 
+    void setCoefs2(double sampleRate, int n_coef1,
+            const char* spec1, double freq01, double freq11, int adj1,
+            const char* spec2, double freq02, double freq12, int adj2) {
+        // Copy the old coefficients into m_oldCoef
+        memcpy(m_oldCoef, m_coef, sizeof(m_coef));
+        m_coef[0] = fid_design_coef(m_coef + 1, n_coef1,
+                spec1, sampleRate, freq01, freq11, adj1) *
+                    fid_design_coef(m_coef + 1 + n_coef1, SIZE - n_coef1,
+                spec2, sampleRate, freq02, freq12, adj2);
+        initBuffers();
+        m_doRamping = true;
+    }
+
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                      const int iBufferSize) {
         if (!m_doRamping) {
