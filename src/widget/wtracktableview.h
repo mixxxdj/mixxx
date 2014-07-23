@@ -70,6 +70,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScaleBpm(int); 
     void slotClearBeats();
     void slotGuiTickTime(double);
+    void slotScrollValueChanged(int);
 
   private:
     void sendToAutoDJ(bool bTop);

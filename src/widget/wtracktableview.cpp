@@ -92,6 +92,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTickTime(double)));
+    connect(this, SIGNAL(scrollValueChanged(int)),
+            this, SLOT(slotScrollValueChanged(int)));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -131,6 +133,15 @@ WTrackTableView::~WTrackTableView() {
     delete m_pResetPlayedAct;
     delete m_pSamplerMenu;
     delete m_pCOTGuiTickTime;
+}
+
+void WTrackTableView::slotScrollValueChanged(int) {
+    if (m_bLastCoverLoaded) {
+        // not draw covers in the tableview (cover_art column)
+        emit(lockCoverArtDelegate(true));
+    }
+    m_bLastCoverLoaded = false;
+    m_lastSelection = m_pCOTGuiTickTime->get();
 }
 
 void WTrackTableView::selectionChanged(const QItemSelection &selected,
