@@ -19,25 +19,6 @@ CoverArtDelegate::~CoverArtDelegate() {
 void CoverArtDelegate::paint(QPainter *painter,
                              const QStyleOptionViewItem &option,
                              const QModelIndex &index) const {
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
-    if (!trackModel) {
-        return;
-    }
-
-    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
-    QString coverLocation = index.sibling(index.row(), trackModel->fieldIndex(
-                            LIBRARYTABLE_COVERART_LOCATION)).data().toString();
-    QString md5Hash = index.sibling(index.row(), trackModel->fieldIndex(
-                        LIBRARYTABLE_COVERART_MD5)).data().toString();
-    int trackId = trackModel->getTrackId(index);
-    bool drawPixmap = coverLocation != defaultLoc;
-    QPixmap pixmap;
-    if (drawPixmap) {
-        pixmap = CoverArtCache::instance()->requestPixmap(
-                                trackId, coverLocation, md5Hash, false);
-    }
-    drawPixmap = !pixmap.isNull();
-
     painter->save();
 
     // Populate the correct colors based on the styling
@@ -58,6 +39,25 @@ void CoverArtDelegate::paint(QPainter *painter,
     } else {
         painter->fillRect(newOption.rect, newOption.palette.base());
     }
+
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+    if (!trackModel) {
+        return;
+    }
+
+    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
+    QString coverLocation = index.sibling(index.row(), trackModel->fieldIndex(
+                            LIBRARYTABLE_COVERART_LOCATION)).data().toString();
+    QString md5Hash = index.sibling(index.row(), trackModel->fieldIndex(
+                        LIBRARYTABLE_COVERART_MD5)).data().toString();
+    int trackId = trackModel->getTrackId(index);
+    bool drawPixmap = coverLocation != defaultLoc;
+    QPixmap pixmap;
+    if (drawPixmap) {
+        pixmap = CoverArtCache::instance()->requestPixmap(
+                                trackId, coverLocation, md5Hash, false);
+    }
+    drawPixmap = !pixmap.isNull();
 
     if (drawPixmap) {
         painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
