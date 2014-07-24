@@ -192,14 +192,23 @@ void TrackInfoObject::parse() {
         setGrouping(pProxiedSoundSource->getGrouping());
         setComment(pProxiedSoundSource->getComment());
         setTrackNumber(pProxiedSoundSource->getTrackNumber());
-        setReplayGain(pProxiedSoundSource->getReplayGain());
-        setBpm(pProxiedSoundSource->getBPM());
+        float replayGain = pProxiedSoundSource->getReplayGain();
+        if (replayGain != 0) {
+            setReplayGain(replayGain);
+        }
+        float bpm = pProxiedSoundSource->getBPM();
+        if (bpm > 0) {
+            // do not delete beat grid if bpm is not set in file
+            setBpm(bpm);
+        }
         setDuration(pProxiedSoundSource->getDuration());
         setBitrate(pProxiedSoundSource->getBitrate());
         setSampleRate(pProxiedSoundSource->getSampleRate());
         setChannels(pProxiedSoundSource->getChannels());
-        setKeyText(pProxiedSoundSource->getKey(),
-                   mixxx::track::io::key::FILE_METADATA);
+        QString key = pProxiedSoundSource->getKey();
+        if (!key.isEmpty()) {
+            setKeyText(key, mixxx::track::io::key::FILE_METADATA);
+        }
         setHeaderParsed(true);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"

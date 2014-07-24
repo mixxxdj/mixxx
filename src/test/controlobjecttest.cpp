@@ -54,4 +54,18 @@ TEST_F(ControlObjectTest, getControl) {
     EXPECT_EQ(ControlObject::getControl(ck2), (ControlObject*)NULL);
 }
 
+TEST_F(ControlObjectTest, aliasRetrieval) {
+    ConfigKey ck("[Microphone1]", "volume");
+    ConfigKey ckAlias("[Microphone]", "volume");
+
+    // Create the Control Object
+    ControlObject* co = new ControlObject(ck);
+
+    // Insert the alias before it is going to be used
+    ControlDoublePrivate::insertAlias(ckAlias, ck);
+
+    // Check if getControl on alias returns us the original ControlObject
+    EXPECT_EQ(ControlObject::getControl(ckAlias), co);
+}
+
 }

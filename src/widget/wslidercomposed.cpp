@@ -50,11 +50,11 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     unsetPixmaps();
 
     if (context.hasNode(node, "Slider")) {
-        QString pathSlider = context.getSkinPath(context.selectString(node, "Slider"));
+        QString pathSlider = context.getPixmapPath(context.selectNode(node, "Slider"));
         setSliderPixmap(pathSlider);
     }
 
-    QString pathHandle = context.getSkinPath(context.selectString(node, "Handle"));
+    QString pathHandle = context.getPixmapPath(context.selectNode(node, "Handle"));
     bool h = context.selectBool(node, "Horizontal", false);
     setHandlePixmap(h, pathHandle);
 
