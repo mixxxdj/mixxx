@@ -43,7 +43,6 @@
 				</Mark>
 				<Connection>
 					<ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
-					<EmitOnDownPress>false</EmitOnDownPress>
 				</Connection>
 			</Overview>
 
@@ -71,7 +70,6 @@
 	              </State>
 	              <Connection>
 		              <ConfigKey persist="true">[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
-		              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		              <ButtonState>LeftButton</ButtonState>
 	              </Connection>
               </PushButton>
@@ -104,9 +102,7 @@
 	              </State>
 	              <Connection>
 		              <ConfigKey>[Channel<Variable name="channum"/>],eject</ConfigKey>
-		              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		              <ButtonState>LeftButton</ButtonState>
-		              <ConnectValueToWidget>false</ConnectValueToWidget>
 	              </Connection>
               </PushButton>
     	      </Children>
@@ -126,7 +122,6 @@
 			          <Pos>0,23</Pos>
 			          <Connection>
 				          <ConfigKey>[Channel<Variable name="channum"/>],beats_translate_curpos</ConfigKey>
-				          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 				          <ButtonState>LeftButton</ButtonState>
 			          </Connection>
 		          </PushButton>
@@ -147,7 +142,6 @@
 			          <Pos>26,23</Pos>
 			          <Connection>
 				          <ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
-				          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 				          <ButtonState>LeftButton</ButtonState>
 			          </Connection>
 		          </PushButton>

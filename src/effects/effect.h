@@ -32,8 +32,11 @@ class Effect : public QObject {
     const EffectManifest& getManifest() const;
 
     unsigned int numParameters() const;
+    unsigned int numButtonParameters() const;
     EffectParameter* getParameter(unsigned int parameterNumber);
+    EffectParameter* getButtonParameter(unsigned int parameterNumber);
     EffectParameter* getParameterById(const QString& id) const;
+    EffectParameter* getButtonParameterById(const QString& id) const;
 
     void setEnabled(bool enabled);
     bool enabled() const;
@@ -65,6 +68,8 @@ class Effect : public QObject {
     bool m_bEnabled;
     QList<EffectParameter*> m_parameters;
     QMap<QString, EffectParameter*> m_parametersById;
+    QList<EffectParameter*> m_buttonParameters;
+    QMap<QString, EffectParameter*> m_buttonParametersById;
 
     DISALLOW_COPY_AND_ASSIGN(Effect);
 };

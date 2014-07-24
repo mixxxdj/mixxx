@@ -10,6 +10,7 @@
 #include "controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
+#include "effects/effectbuttonparameterslot.h"
 
 class EffectSlot;
 class ControlObjectSlave;
@@ -40,6 +41,11 @@ class EffectSlot : public QObject {
     unsigned int numParameterSlots() const;
     EffectParameterSlotPointer addEffectParameterSlot();
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
+
+    unsigned int numButtonParameterSlots() const;
+    EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
+    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
+
     void onChainParameterChanged(double parameter);
 
   public slots:
@@ -98,12 +104,15 @@ class EffectSlot : public QObject {
     ControlPushButton* m_pControlEnabled;
     ControlObject* m_pControlNumParameters;
     ControlObject* m_pControlNumParameterSlots;
+    ControlObject* m_pControlNumButtonParameters;
+    ControlObject* m_pControlNumButtonParameterSlots;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
     ControlObject* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     QList<EffectParameterSlotPointer> m_parameters;
     ControlObjectSlave* m_pCoSuper;
+    QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };

@@ -53,7 +53,9 @@
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
 
-  <MinimumSize>1280,768</MinimumSize>
+  <!-- MinimumSize should not be an exact monitor resolution. There needs
+  to be space for the title bar or other chrome at full screen -->
+  <MinimumSize>1280,700</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
@@ -98,13 +100,10 @@
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                           <ButtonState>LeftButton</ButtonState>
-                          <ConnectValueToWidget>false</ConnectValueToWidget>
                         </Connection>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         </Connection>
                     </PushButton>
                 </Children>
@@ -128,13 +127,10 @@
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                           <ButtonState>LeftButton</ButtonState>
-                          <ConnectValueToWidget>false</ConnectValueToWidget>
                         </Connection>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         </Connection>
                     </PushButton>
                 </Children>
@@ -158,13 +154,10 @@
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                           <ButtonState>LeftButton</ButtonState>
-                          <ConnectValueToWidget>false</ConnectValueToWidget>
                         </Connection>
                         <Connection>
                           <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         </Connection>
                     </PushButton>
                 </Children>
