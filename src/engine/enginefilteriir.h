@@ -7,12 +7,13 @@
 #define MIXXX
 #include "fidlib.h"
 
+enum IIRPass {
+    IIR_LP,
+    IIR_BP,
+    IIR_HP
+};
 
-#define IIR_LP 0
-#define IIR_BP 1
-#define IIR_HP 2
-
-template<unsigned int SIZE, unsigned int PASS>
+template<unsigned int SIZE, enum IIRPass PASS>
 class EngineFilterIIR : public EngineObjectConstIn {
   public:
     EngineFilterIIR()
