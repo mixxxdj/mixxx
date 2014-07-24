@@ -232,9 +232,9 @@ void SoundSource::setKey(QString key){
     m_sKey = key;
 }
 
-QString SoundSource::getQString(TagLib::String TString) {
-    if (TString != TagLib::String::null) {
-        return TStringToQString(TString);
+QString SoundSource::toQString(TagLib::String tstring) const {
+    if (tstring != TagLib::String::null) {
+        return TStringToQString(tstring);
     }
     return  QString();
 }
@@ -247,19 +247,19 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
         TagLib::Tag *tag = f.tag();
         if (tag) {
 
-            QString title = getQString(tag->title());
+            QString title = toQString(tag->title());
             setTitle(title);
 
-            QString artist = getQString(tag->artist());
+            QString artist = toQString(tag->artist());
             setArtist(artist);
 
-            QString album = getQString(tag->album());
+            QString album = toQString(tag->album());
             setAlbum(album);
 
-            QString comment = getQString(tag->comment());
+            QString comment = toQString(tag->comment());
             setComment(comment);
 
-            QString genre = getQString(tag->genre());
+            QString genre = toQString(tag->genre());
             setGenre(genre);
 
             int iYear = tag->year();
@@ -330,19 +330,19 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
         TagLib::ID3v2::FrameList::ConstIterator it = id3v2->frameList().begin();
         for(; it != id3v2->frameList().end(); it++) {
             qDebug() << "ID3V2" << (*it)->frameID().data() << "-"
-                    << getQString((*it)->toString());
+                    << toQString((*it)->toString());
         }
     }
 
     TagLib::ID3v2::FrameList bpmFrame = id3v2->frameListMap()["TBPM"];
     if (!bpmFrame.isEmpty()) {
-        QString sBpm = getQString(bpmFrame.front()->toString());
+        QString sBpm = toQString(bpmFrame.front()->toString());
         processBpmString("ID3v2", sBpm);
     }
 
     TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
     if (!keyFrame.isEmpty()) {
-        QString sKey = getQString(keyFrame.front()->toString());
+        QString sKey = toQString(keyFrame.front()->toString());
         setKey(sKey);
     }
     // Foobar2000-style ID3v2.3.0 tags
@@ -353,13 +353,13 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
                 dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>( *it );
         if ( ReplayGainframe && ReplayGainframe->fieldList().size() >= 2 )
         {
-            QString desc = getQString( ReplayGainframe->description() ).toLower();
+            QString desc = toQString( ReplayGainframe->description() ).toLower();
             if ( desc == "replaygain_album_gain" ){
-                QString sReplayGain = getQString( ReplayGainframe->fieldList()[1]);
+                QString sReplayGain = toQString( ReplayGainframe->fieldList()[1]);
                 parseReplayGainString(sReplayGain);
             }
             if ( desc == "replaygain_track_gain" ){
-                QString sReplayGain = getQString( ReplayGainframe->fieldList()[1]);
+                QString sReplayGain = toQString( ReplayGainframe->fieldList()[1]);
                 parseReplayGainString(sReplayGain);
             }
         }
@@ -367,17 +367,17 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 
     TagLib::ID3v2::FrameList albumArtistFrame = id3v2->frameListMap()["TPE2"];
     if (!albumArtistFrame.isEmpty()) {
-        QString sAlbumArtist = getQString(albumArtistFrame.front()->toString());
+        QString sAlbumArtist = toQString(albumArtistFrame.front()->toString());
         setAlbumArtist(sAlbumArtist);
     }
     TagLib::ID3v2::FrameList composerFrame = id3v2->frameListMap()["TCOM"];
     if (!composerFrame.isEmpty()) {
-        QString sComposer = getQString(composerFrame.front()->toString());
+        QString sComposer = toQString(composerFrame.front()->toString());
         setComposer(sComposer);
     }
     TagLib::ID3v2::FrameList groupingFrame = id3v2->frameListMap()["TIT1"];
     if (!groupingFrame.isEmpty()) {
-        QString sGrouping = getQString(groupingFrame.front()->toString());
+        QString sGrouping = toQString(groupingFrame.front()->toString());
         setGrouping(sGrouping);
     }
 
@@ -400,7 +400,7 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
     if (s_bDebugMetadata) {
         for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
                 it != ape->itemListMap().end(); ++it) {
-                qDebug() << "APE" << getQString((*it).first) << "-" << getQString((*it).second.toString());
+                qDebug() << "APE" << toQString((*it).first) << "-" << toQString((*it).second.toString());
         }
     }
 
@@ -420,31 +420,31 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
     }
 
     if (ape->itemListMap().contains("BPM")) {
-        QString sBpm = getQString(ape->itemListMap()["BPM"].toString());
+        QString sBpm = toQString(ape->itemListMap()["BPM"].toString());
         processBpmString("APE", sBpm);
     }
 
     if (ape->itemListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
-        QString sReplayGain = getQString(ape->itemListMap()["REPLAYGAIN_ALBUM_GAIN"].toString());
+        QString sReplayGain = toQString(ape->itemListMap()["REPLAYGAIN_ALBUM_GAIN"].toString());
         parseReplayGainString(sReplayGain);
     }
 
     //Prefer track gain over album gain.
     if (ape->itemListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
-        QString sReplayGain = getQString(ape->itemListMap()["REPLAYGAIN_TRACK_GAIN"].toString());
+        QString sReplayGain = toQString(ape->itemListMap()["REPLAYGAIN_TRACK_GAIN"].toString());
         parseReplayGainString(sReplayGain);
     }
 
     if (ape->itemListMap().contains("Album Artist")) {
-        m_sAlbumArtist = getQString(ape->itemListMap()["Album Artist"].toString());
+        m_sAlbumArtist = toQString(ape->itemListMap()["Album Artist"].toString());
     }
 
     if (ape->itemListMap().contains("Composer")) {
-        m_sComposer = getQString(ape->itemListMap()["Composer"].toString());
+        m_sComposer = toQString(ape->itemListMap()["Composer"].toString());
     }
 
     if (ape->itemListMap().contains("Grouping")) {
-        m_sGrouping = getQString(ape->itemListMap()["Grouping"].toString());
+        m_sGrouping = toQString(ape->itemListMap()["Grouping"].toString());
     }
 
     return true;
@@ -454,7 +454,7 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
     if (s_bDebugMetadata) {
         for (TagLib::Ogg::FieldListMap::ConstIterator it = xiph->fieldListMap().begin();
                 it != xiph->fieldListMap().end(); ++it) {
-            qDebug() << "XIPH" << getQString((*it).first) << "-" << getQString((*it).second.toString());
+            qDebug() << "XIPH" << toQString((*it).first) << "-" << toQString((*it).second.toString());
         }
     }
 
@@ -471,26 +471,26 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
     // Some tags use "BPM" so check for that.
     if (xiph->fieldListMap().contains("BPM")) {
         TagLib::StringList bpmString = xiph->fieldListMap()["BPM"];
-        QString sBpm = getQString(bpmString.toString());
+        QString sBpm = toQString(bpmString.toString());
         processBpmString("XIPH-BPM", sBpm);
     }
 
     // Give preference to the "TEMPO" tag which seems to be more standard
     if (xiph->fieldListMap().contains("TEMPO")) {
         TagLib::StringList bpmString = xiph->fieldListMap()["TEMPO"];
-        QString sBpm = getQString(bpmString.toString());
+        QString sBpm = toQString(bpmString.toString());
         processBpmString("XIPH-TEMPO", sBpm);
     }
 
     if (xiph->fieldListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
         TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_ALBUM_GAIN"];
-        QString sReplayGain = getQString(rgainString.toString());
+        QString sReplayGain = toQString(rgainString.toString());
         parseReplayGainString(sReplayGain);
     }
 
     if (xiph->fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
         TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_TRACK_GAIN"];
-        QString sReplayGain = getQString(rgainString.toString());
+        QString sReplayGain = toQString(rgainString.toString());
         parseReplayGainString(sReplayGain);
     }
 
@@ -504,34 +504,34 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
      */
     if (xiph->fieldListMap().contains("KEY")) {
         TagLib::StringList keyStr = xiph->fieldListMap()["KEY"];
-        QString key = getQString(keyStr.toString());
+        QString key = toQString(keyStr.toString());
         setKey(key);
     }
     if (getKey().isEmpty() && xiph->fieldListMap().contains("INITIALKEY")) {
         TagLib::StringList keyStr = xiph->fieldListMap()["INITIALKEY"];
-        QString key = getQString(keyStr.toString());
+        QString key = toQString(keyStr.toString());
         setKey(key);
     }
 
     if (xiph->fieldListMap().contains("ALBUMARTIST")) {
         TagLib::StringList albumArtistString = xiph->fieldListMap()["ALBUMARTIST"];
-        m_sAlbumArtist = getQString(albumArtistString.toString());
+        m_sAlbumArtist = toQString(albumArtistString.toString());
     } else {
         // try alternative field name
         if (xiph->fieldListMap().contains("ALBUM_ARTIST")) {
             TagLib::StringList albumArtistString = xiph->fieldListMap()["ALBUM_ARTIST"];
-            m_sAlbumArtist = getQString(albumArtistString.toString());
+            m_sAlbumArtist = toQString(albumArtistString.toString());
         }
     }
 
     if (xiph->fieldListMap().contains("COMPOSER")) {
         TagLib::StringList composerString = xiph->fieldListMap()["COMPOSER"];
-        m_sComposer = getQString(composerString.toString());
+        m_sComposer = toQString(composerString.toString());
     }
 
     if (xiph->fieldListMap().contains("GROUPING")) {
         TagLib::StringList groupingString = xiph->fieldListMap()["GROUPING"];
-        m_sGrouping = getQString(groupingString.toString());
+        m_sGrouping = toQString(groupingString.toString());
     }
 
     return true;
@@ -541,8 +541,8 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
     if (s_bDebugMetadata) {
         for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
             it != mp4->itemListMap().end(); ++it) {
-            qDebug() << "MP4" << getQString((*it).first) << "-"
-                     << getQString((*it).second.toStringList().toString());
+            qDebug() << "MP4" << toQString((*it).first) << "-"
+                     << toQString((*it).second.toStringList().toString());
         }
     }
 
@@ -559,12 +559,12 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
 
     // Get BPM
     if (mp4->itemListMap().contains("tmpo")) {
-        QString sBpm = getQString(
+        QString sBpm = toQString(
             mp4->itemListMap()["tmpo"].toStringList().toString());
         processBpmString("MP4", sBpm);
     } else if (mp4->itemListMap().contains("----:com.apple.iTunes:BPM")) {
         // This is an alternate way of storing BPM.
-        QString sBpm = getQString(mp4->itemListMap()[
+        QString sBpm = toQString(mp4->itemListMap()[
             "----:com.apple.iTunes:BPM"].toStringList().toString());
         processBpmString("MP4", sBpm);
     }
@@ -572,7 +572,7 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
     // Get Album Artist
     if (mp4->itemListMap().contains("aART")) {
         // this is technically a list of values -> concatenate into single string
-        QString albumArtist = getQString(
+        QString albumArtist = toQString(
             mp4->itemListMap()["aART"].toStringList().toString());
         setAlbumArtist(albumArtist);
     }
@@ -581,21 +581,21 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
     if (mp4->itemListMap().contains("\251wrt")) {
         // rryan 1/2012 I believe this is technically a list of composers. We
         // don't support multiple composers in Mixxx, so just use them joined.
-        QString composer = getQString(
+        QString composer = toQString(
             mp4->itemListMap()["\251wrt"].toStringList().toString());
         setComposer(composer);
     }
 
     // Get Grouping
     if (mp4->itemListMap().contains("\251grp")) {
-        QString grouping = getQString(
+        QString grouping = toQString(
             mp4->itemListMap()["\251grp"].toStringList().toString());
         setGrouping(grouping);
     }
 
     // Get KEY (conforms to Rapid Evolution)
     if (mp4->itemListMap().contains("----:com.apple.iTunes:KEY")) {
-        QString key = getQString(
+        QString key = toQString(
             mp4->itemListMap()["----:com.apple.iTunes:KEY"].toStringList().toString());
         setKey(key);
     }
@@ -606,7 +606,7 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
         // TODO(XXX) find tracks with this property and check what it looks
         // like.
 
-        //QString replaygain = getQString(mp4->itemListMap()["----:com.apple.iTunes:replaygain_track_gain"].toStringList().toString());
+        //QString replaygain = toQString(mp4->itemListMap()["----:com.apple.iTunes:replaygain_track_gain"].toStringList().toString());
     }
 
     return true;

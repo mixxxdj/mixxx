@@ -14,7 +14,6 @@
 			            <Horizontal>false</Horizontal>
 			            <Connection>
 				            <ConfigKey>[ChannelX],volume</ConfigKey>
-				            <EmitOnDownPress>false</EmitOnDownPress>
 			            </Connection>
 		            </SliderComposed>
 		            <PushButton>
@@ -53,7 +52,6 @@
 					  <!--<Pos>4,54</Pos>-->
 					    <Connection>
 						    <ConfigKey>[ChannelX],filterHighKill</ConfigKey>
-						    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 						    <ButtonState>LeftButton</ButtonState>
 					    </Connection>
 				    </PushButton>
@@ -74,7 +72,6 @@
 					    <!--<Pos>4,93</Pos>-->
 					    <Connection>
 						    <ConfigKey>[ChannelX],filterMidKill</ConfigKey>
-						    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 						    <ButtonState>LeftButton</ButtonState>
 					    </Connection>
 				    </PushButton>
@@ -95,7 +92,6 @@
 					    <!--Pos>4,130</Pos>-->
 					    <Connection>
 						    <ConfigKey>[ChannelX],filterLowKill</ConfigKey>
-						    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 						    <ButtonState>LeftButton</ButtonState>
 					    </Connection>
 				    </PushButton>

@@ -51,9 +51,7 @@
 										</State>
 										<Connection>
 											<ConfigKey>[PreviewDeck1],eject</ConfigKey>
-											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 											<ButtonState>LeftButton</ButtonState>
-											<ConnectValueToWidget>false</ConnectValueToWidget>
 										</Connection>
 									</PushButton>
 								</Children>
@@ -82,14 +80,11 @@
 								</State>
 								<Connection>
 									<ConfigKey>[PreviewDeck1],play</ConfigKey>
-									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>LeftButton</ButtonState>
 								</Connection>
 								<Connection>
 									<ConfigKey>[PreviewDeck1],start</ConfigKey>
-									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 							</PushButton>
 							<Overview>
@@ -118,7 +113,6 @@
 								</Mark>
 								<Connection>
 									<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
 							</Overview>
 						</Children>
@@ -142,7 +136,7 @@
 									<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 								</Connection>
 							</StatusLight>
-		
+
 							<VuMeter>
 								<TooltipId>channel_VuMeter</TooltipId>
 								<PathVu>btn_volume_display_previewdeck_over.png</PathVu>
@@ -158,7 +152,7 @@
 							</VuMeter>
 						</Children>
 					</WidgetGroup>
-					
+
 					<SliderComposed>
 						<TooltipId>pregain</TooltipId>
 						<Handle>knob_volume_previewdeck.png</Handle>
@@ -166,7 +160,6 @@
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[PreviewDeck1],pregain</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</SliderComposed>
 				</Children>
