@@ -1152,7 +1152,7 @@
                 <status>0xB0</status>
                 <midino>0x54</midino>
                 <options>
-                    <hercjog/>
+                    <hercjogfast/>
                 </options>
             </control>
             <control>
@@ -1161,7 +1161,7 @@
                 <status>0xB0</status>
                 <midino>0x55</midino>
                 <options>
-                    <hercjog/>
+                    <hercjogfast/>
                 </options>
             </control>
             <control>
@@ -1170,7 +1170,7 @@
                 <status>0xB0</status>
                 <midino>0x5C</midino>
                 <options>
-                    <hercjog/>
+                    <hercjogfast/>
                 </options>
             </control>
             <control>
@@ -1179,7 +1179,7 @@
                 <status>0xB0</status>
                 <midino>0x5D</midino>
                 <options>
-                    <hercjog/>
+                    <hercjogfast/>
                 </options>
             </control>
 			<!-- Effects Controls [Effect Mode] -->
