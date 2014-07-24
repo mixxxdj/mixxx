@@ -51,6 +51,8 @@
 #include "widget/weffectchain.h"
 #include "widget/weffect.h"
 #include "widget/weffectparameter.h"
+#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectparameterbase.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewrgb.h"
@@ -450,6 +452,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseEffectName(node));
     } else if (nodeName == "EffectParameterName") {
         result = wrapWidget(parseEffectParameterName(node));
+    } else if (nodeName == "EffectButtonParameterName") {
+        result = wrapWidget(parseEffectButtonParameterName(node));
     } else if (nodeName == "Spinny") {
         result = wrapWidget(parseSpinny(node));
     } else if (nodeName == "Time") {
@@ -1295,9 +1299,15 @@ QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
-    WEffectParameter* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
+    WEffectParameterBase* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectParameter);
     return pEffectParameter;
+}
+
+QWidget* LegacySkinParser::parseEffectButtonParameterName(QDomElement node) {
+    WEffectParameterBase* pEffectButtonParameter = new WEffectButtonParameter(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffectButtonParameter);
+    return pEffectButtonParameter;
 }
 
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
