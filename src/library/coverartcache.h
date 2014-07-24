@@ -19,6 +19,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                           const QString& coverLocation = QString(),
                           const QString& md5Hash = QString(),
                           const bool tryLoadAndSearch = true,
+                          const bool croppedPixmap = false,
                           const bool emitSignals = true);
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
@@ -42,14 +43,17 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QString coverLocation;
         QString md5Hash;
         QImage img;
+        bool croppedImg;
         bool emitSignals;
     };
 
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
+                             const bool croppedPixmap = false,
                              const bool emitSignals = true);
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
                            const QString& md5Hash,
+                           const bool croppedPixmap = false,
                            const bool emitSignals = true);
 
   private:
@@ -61,6 +65,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QSet<int> m_runningIds;
 
     QString calculateMD5(QImage img);
+    QImage cropImage(QImage img);
     QImage rescaleBigImage(QImage img);
     QImage extractEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,

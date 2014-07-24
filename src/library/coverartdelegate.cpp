@@ -60,29 +60,32 @@ void CoverArtDelegate::paint(QPainter *painter,
     QString md5Hash = index.sibling(index.row(), trackModel->fieldIndex(
                         LIBRARYTABLE_COVERART_MD5)).data().toString();
     int trackId = trackModel->getTrackId(index);
-    bool drawPixmap = coverLocation != defaultLoc;
     QPixmap pixmap;
-    if (drawPixmap) {
+    if (coverLocation != defaultLoc) { // draw cover_art
         // If the CoverDelegate is locked, it must not try
         // to load (from coverLocation) and search covers.
         // It means that in this cases it will just draw
         // covers which are already in the pixmapcache.
         pixmap = CoverArtCache::instance()->requestPixmap(
-                    trackId, coverLocation, md5Hash, !m_bIsLocked, false);
-    }
-    drawPixmap = !pixmap.isNull();
+                                            trackId, coverLocation, md5Hash,
+                                            !m_bIsLocked, true, false);
 
-    if (drawPixmap) {
-        painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
-        int width = 100;
-        if (option.rect.width() < width) {
-            width = option.rect.width();
+        if (!pixmap.isNull()) {
+            // It already got a cropped pixmap (from covercache)
+            // that fit to the cell.
+
+            // If you want to change the cropped_cover size,
+            // you MUST do it in CoverArtCache::cropCover()
+            int width = pixmap.width();
+            if (option.rect.width() < width) {
+                width = option.rect.width();
+            }
+
+            QRect target(option.rect.x(), option.rect.y(),
+                         width, option.rect.height());
+            QRect source(0, 0, width, pixmap.height());
+            painter->drawPixmap(target, pixmap, source);
         }
-        int height = (float) option.rect.height() * pixmap.width() / width;
-        QRect target(option.rect.x(), option.rect.y(),
-                     width, option.rect.height());
-        QRect source(0, 0, pixmap.width(), height);
-        painter->drawPixmap(target, pixmap, source);
     }
 
     painter->restore();
