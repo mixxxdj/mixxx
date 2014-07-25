@@ -1,4 +1,5 @@
 #include "effects/lv2/lv2manifest.h"
+#include "effects/effectmanifestparameter.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
@@ -50,8 +51,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
-        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
-            !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])) {
             controlPortIndices.append(i);
             EffectManifestParameter* param = m_effectManifest.addParameter();
 
@@ -63,16 +63,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             lilv_node_free(info);
 
             // Build and set the parameter id from its name
+            // Append its index to avoid duplicate ids
             param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
             qDebug() << "Parameter id: " << paramName.trimmed().toLower().replace(' ', '_').append(i + '0');
-
-            param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-            if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
-                qDebug() << "asta a fost un integer port";
-                param->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
-            } else {
-                param->setValueHint(EffectManifestParameter::VALUE_FLOAT);
-            }
 
             param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -83,45 +76,29 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                      << m_default[i] << ", " << m_minimum[i]
                      << ", " << m_maximum[i];
 
-            // Currently not available to make button parameters
-//            if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-//                qDebug() << "asta a fost un button port";
-//            }
-//            if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
-//                qDebug() << "asta a fost un enumeration port";
-//            }
-            qDebug() << inputPorts << " " << outputPorts << endl;
+            // Set the appropriate Hints
+            if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
+                qDebug() << "this is a button port";
+                param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+            } else {
+                param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+            }
+
+            if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
+                qDebug() << "this is an enumeration port";
+                // TODO: build the scale points descriptions and their values
+                // Idea: QList<QPair<QString, QVariant>>
+                param->setValueHint(EffectManifestParameter::VALUE_ENUMERATION);
+            } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
+                qDebug() << "this is an integer port";
+                param->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+            } else {
+                param->setValueHint(EffectManifestParameter::VALUE_FLOAT);
+            }
         }
     }
 
-    // Temporary hack to put the button parameters at the end
-    for (int i = 0; i < numPorts; i++) {
-        const LilvPort *port = lilv_plugin_get_port_by_index(plug, i);
-        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
-            lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-            controlPortIndices.append(i);
-            EffectManifestParameter* param = m_effectManifest.addButtonParameter();
-            // Get and set the parameter name
-            info = lilv_port_get_name(m_pLV2plugin, port);
-            QString paramName = lilv_node_as_string(info);
-            qDebug() << "Parameter name: " << paramName;
-            param->setName(paramName);
-            lilv_node_free(info);
-
-            // Build and set the parameter id from its name
-            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
-            qDebug() << "Parameter id: " << paramName.trimmed().toLower().replace(' ', '_').append(i + '0');
-
-            param->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
-            param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
-            param->setDefault(m_default[i]);
-            param->setMinimum(m_minimum[i]);
-            param->setMaximum(m_maximum[i]);
-        }
-    }
-
-
-    // Also, we only support the case when the input and output samples are stereo
+    // We only support the case when the input and output samples are stereo
     if (inputPorts == 2 && outputPorts == 2) {
         m_isValid = true;
     }
