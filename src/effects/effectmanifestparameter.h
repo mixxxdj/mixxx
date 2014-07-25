@@ -11,7 +11,8 @@ class EffectManifestParameter {
         VALUE_UNKNOWN = 0,
         VALUE_BOOLEAN,
         VALUE_INTEGRAL,
-        VALUE_FLOAT
+        VALUE_FLOAT,
+        VALUE_ENUMERATION
     };
 
     enum ControlHint {
