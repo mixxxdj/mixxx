@@ -165,8 +165,7 @@ ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
           m_minDB(minDB),
           m_maxDB(maxDB),
           m_offset(db2ratio(m_minDB)) {
-    double midiNeutral = ceil(m_neutralParameter * 127);
-    m_midiCorrection = ((midiNeutral / 127) - m_neutralParameter) / midiNeutral;
+    m_midiCorrection = ceil(m_neutralParameter * 127) - (m_neutralParameter * 127);
 }
 
 ControlAudioTaperPotBehavior::~ControlAudioTaperPotBehavior() {
@@ -181,7 +180,11 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
         // m_minDB = 0
         // 0 dB = m_neutralParame;
         double overlay = m_offset * (1 - dValue);
-        dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+        if (m_minDB) {
+            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+        } else {
+            dParam = dValue * m_neutralParameter;
+        }
     } else if (dValue == 1.0) {
         dParam = m_neutralParameter;
     } else if (dValue < m_dMaxValue) {
@@ -201,8 +204,12 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
         // db + linear overlay to reach
         // m_minDB = 0
         // 0 dB = m_neutralParame;
-        double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
-        dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
+        if (m_minDB) {
+            double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
+            dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
+        } else {
+            dValue = dParam / m_neutralParameter;
+        }
     } else if (dParam == m_neutralParameter) {
         dValue = 1.0;
     } else if (dParam <= 1.0) {
@@ -214,6 +221,23 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     return dValue;
 }
 
+double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
+    double dParam;
+    if (m_neutralParameter && m_neutralParameter != 1.0) {
+        double neutralTest = (midiValue - m_midiCorrection) / 127.0;
+        if (neutralTest < m_neutralParameter) {
+            dParam = midiValue /
+                    (127.0 + m_midiCorrection / m_neutralParameter);
+        } else {
+            dParam = (midiValue - m_midiCorrection / m_neutralParameter) /
+                    (127.0 - m_midiCorrection / m_neutralParameter);
+        }
+    } else {
+        dParam = midiValue / 127.0;
+    }
+    return dParam;
+}
+
 double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center.
@@ -221,13 +245,11 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     // always on a full Midi integer
     double dParam = valueToParameter(dValue);
     double dMidiParam = dParam * 127.0;
-    if (m_neutralParameter != 1.0) {
-        double midiNeutral = ceil(m_neutralParameter * 127);
-        double correction = (midiNeutral - (m_neutralParameter * 127)) / midiNeutral;
+    if (m_neutralParameter && m_neutralParameter != 1.0) {
         if (dParam < m_neutralParameter) {
-            dMidiParam -= m_midiCorrection * dMidiParam * 127;
+            dMidiParam += m_midiCorrection * dParam / m_neutralParameter;
         } else {
-            dMidiParam += m_midiCorrection * (128 - dMidiParam) * 127;
+            dMidiParam += m_midiCorrection * (1 - dParam) / m_neutralParameter;
         }
     }
     return dMidiParam;
@@ -236,15 +258,7 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
 void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o, double dMidiParam,
                                                            ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    double dParam = dMidiParam / 127.0;
-    if (m_neutralParameter != 1.0) {
-        if (dParam < m_neutralParameter) {
-            dParam += m_midiCorrection * dMidiParam;
-        } else {
-            dParam -= m_midiCorrection * (128 - dMidiParam);
-        }
-        qDebug() << m_midiCorrection << dMidiParam << dMidiParam / 127.0 << dParam << parameterToValue(dParam);
-    }
+    double dParam = midiValueToParameter(dMidiParam);
     pControl->set(parameterToValue(dParam), NULL);
 }
 
