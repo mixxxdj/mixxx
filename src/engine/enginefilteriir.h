@@ -7,6 +7,8 @@
 #define MIXXX
 #include "fidlib.h"
 
+#define IIR_ANALYSIS 1
+
 enum IIRPass {
     IIR_LP,
     IIR_BP,
@@ -39,6 +41,29 @@ class EngineFilterIIR : public EngineObjectConstIn {
         memcpy(m_oldCoef, m_coef, sizeof(m_coef));
         m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
                 spec, sampleRate, freq0, freq1, adj);
+
+#if(IIR_ANALYSIS)
+        char* desc;
+        FidFilter* filt = fid_design(spec, sampleRate, freq0, freq1, adj, &desc);
+        int delay = fid_calc_delay(filt);
+        qDebug() << QString().fromAscii(desc) << "delay:" << delay;
+        double resp0, phase0;
+        resp0 = fid_response_pha(filt, freq0 / sampleRate, &phase0);
+        qDebug() << "freq0:" << freq0 << resp0 << phase0;
+        if (freq1) {
+            double resp1, phase1;
+            resp1 = fid_response_pha(filt, freq1 / sampleRate, &phase1);
+            qDebug() << "freq1:" << freq1 << resp1 << phase1;
+        }
+        double resp2, phase2;
+        resp2 = fid_response_pha(filt, freq0 / sampleRate / 2, &phase2);
+        qDebug() << "freq2:" << freq0 / 2 << resp2 << phase0;
+        double resp3, phase3;
+        resp3 = fid_response_pha(filt, freq0 / sampleRate * 2, &phase3);
+        qDebug() << "freq3:" << freq0 * 2 << resp3 << phase0;
+        free(filt);
+#endif
+
         initBuffers();
         m_doRamping = true;
     }
@@ -52,6 +77,39 @@ class EngineFilterIIR : public EngineObjectConstIn {
                 spec1, sampleRate, freq01, freq11, adj1) *
                     fid_design_coef(m_coef + 1 + n_coef1, SIZE - n_coef1,
                 spec2, sampleRate, freq02, freq12, adj2);
+
+#if(IIR_ANALYSIS)
+        char* desc1;
+        char* desc2;
+        FidFilter* filt1 = fid_design(spec1, sampleRate, freq01, freq11, adj1, &desc1);
+        FidFilter* filt2 = fid_design(spec2, sampleRate, freq02, freq12, adj2, &desc2);
+        FidFilter* filt = fid_cat(1, filt1, filt2, NULL);
+        int delay = fid_calc_delay(filt);
+        qDebug() << QString().fromAscii(desc1) << "X" << QString().fromAscii(desc2) << "delay:" << delay;
+        double resp0, phase0;
+        resp0 = fid_response_pha(filt, freq01 / sampleRate, &phase0);
+        qDebug() << "freq01:" << freq01 << resp0 << phase0;
+        resp0 = fid_response_pha(filt, freq01 / sampleRate, &phase0);
+        qDebug() << "freq02:" << freq02 << resp0 << phase0;
+        if (freq11) {
+            double resp1, phase1;
+            resp1 = fid_response_pha(filt, freq11 / sampleRate, &phase1);
+            qDebug() << "freq1:" << freq11 << resp1 << phase1;
+        }
+        if (freq12) {
+            double resp1, phase1;
+            resp1 = fid_response_pha(filt, freq12 / sampleRate, &phase1);
+            qDebug() << "freq1:" << freq12 << resp1 << phase1;
+        }
+        double resp2, phase2;
+        resp2 = fid_response_pha(filt, freq01 / sampleRate / 2, &phase2);
+        qDebug() << "freq2:" << freq01 / 2 << resp2 << phase0;
+        double resp3, phase3;
+        resp3 = fid_response_pha(filt, freq01 / sampleRate * 2, &phase3);
+        qDebug() << "freq3:" << freq01 * 2 << resp3 << phase0;
+        free(filt);
+#endif
+
         initBuffers();
         m_doRamping = true;
     }
