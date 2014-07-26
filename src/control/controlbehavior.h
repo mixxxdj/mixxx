@@ -80,11 +80,19 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
                                            ControlDoublePrivate* pControl);
 
   protected:
-    double m_neutralParameter; // a knob position between 0 and 1 where the gain is 1 (0dB)
-    double m_minDB; // the Start value of the pure db scale it cranked to -Infinity by the linar part of the AudioTaperPot
-    double m_maxDB; // maxDB is the upper gain Value
-    double m_offset; // offset at knob position 0 (Parameter = 0) to reach -Infinity
-    double m_midiCorrection; // ensures that the neutral position on a integer midi value
+    // a knob position between 0 and 1 where the gain is 1 (0dB)
+    double m_neutralParameter;
+    // the Start value of the pure db scale it cranked to -Infinity by the
+    // linear part of the AudioTaperPot
+    double m_minDB;
+    // maxDB is the upper gain Value
+    double m_maxDB;
+    // offset at knob position 0 (Parameter = 0) to reach -Infinity
+    double m_offset;
+    // ensures that the neutral position on a integer midi value
+    // This value is subtracted from the Midi value at neutral position
+    // and is allways < 1
+    double m_midiCorrection;
 };
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
