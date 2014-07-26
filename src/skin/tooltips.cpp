@@ -256,8 +256,8 @@ void Tooltips::addStandardTooltips() {
     // Currently used for samplers
     add("play_start")
             << tr("Play/Pause")
-            << QString("%1: %2").arg(leftClick, tr("Toggles playing or pausing the track."))
-            << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track."));
+            << QString("%1: %2").arg(leftClick, tr("Starts playing from the beginning of the track."))
+            << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track and stops."));
 
     // Currently used for decks
     QString cueSet = tr("Places a cue-point at the current position on the waveform.");
@@ -297,7 +297,8 @@ void Tooltips::addStandardTooltips() {
 
     // Ghetto-Sync (TM)
     add("beatsync_beatsync_tempo")
-            << tr("Synchronize")
+            << tr("Old Synchronize")
+            << tr("(This skin should be updated to use Master Sync!)")
             << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "))
             << tr("if BPM is detected on both.")
             << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track,"))
@@ -305,6 +306,18 @@ void Tooltips::addStandardTooltips() {
             << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
             << tr("If no deck is playing, syncs to the first deck that has a BPM.")
             << tr("Decks can't sync to samplers and samplers can only sync to decks.");
+
+    // Awesome-Sync (TM)
+    add("sync_enabled")
+            << tr("Enable Master Sync")
+            << tr("Tap to sync the tempo to other playing tracks or the master clock")
+            << tr("Hold for at least a second to enable sync lock for this deck.")
+            << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
+                  "quantize enabled will always have their beats lined up");
+
+    add("sync_master")
+            << tr("Enable Sync Clock Master")
+            << tr("When enabled, this device will serve as the master clock for all other decks");
 
     add("rate")
             << tr("Speed Control")
