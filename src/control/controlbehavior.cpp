@@ -221,7 +221,7 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     return dValue;
 }
 
-double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
+double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) const {
     double dParam;
     if (m_neutralParameter && m_neutralParameter != 1.0) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
