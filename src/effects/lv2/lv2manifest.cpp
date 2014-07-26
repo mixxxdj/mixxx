@@ -139,3 +139,20 @@ const LilvPlugin* LV2Manifest::getPlugin() {
 bool LV2Manifest::isValid() {
     return m_isValid;
 }
+
+void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
+                                          EffectManifestParameter* param) {
+    LilvScalePoints* options = lilv_port_get_scale_points(m_pLV2plugin, port);
+    LILV_FOREACH(scale_points, iterator, options) {
+        const LilvScalePoint* option = lilv_scale_points_get(options, iterator);
+        const LilvNode* description = lilv_scale_point_get_label(option);
+        const LilvNode* value = lilv_scale_point_get_value(option);
+        QString strDescription(lilv_node_as_string(description));
+        QVariant varValue(lilv_node_as_float(value));
+        param->insertOption(qMakePair(strDescription, varValue));
+    }
+
+    if (options != NULL) {
+        lilv_scale_points_free(options);
+    }
+}

@@ -8,13 +8,15 @@ class LV2Manifest {
   public:
     LV2Manifest(const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
     ~LV2Manifest();
-
     EffectManifest getEffectManifest();
     QList<int> getAudioPortIndices();
     QList<int> getControlPortIndices();
     const LilvPlugin* getPlugin();
     bool isValid();
+
   private:
+    void buildEnumerationOptions(const LilvPort* port,
+                                 EffectManifestParameter* param);
     const LilvPlugin* m_pLV2plugin;
     EffectManifest m_effectManifest;
 
@@ -33,6 +35,5 @@ class LV2Manifest {
     float* m_default;
     bool m_isValid;
 };
-
 
 #endif // LV2MANIFEST_H
