@@ -35,8 +35,8 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Midi value 64 should result in 0,5
         ASSERT_EQ(neutralParameter, catpb->midiValueToParameter(neutralMidi));
         // roundtrip check
-        ASSERT_GE(0.00000000001, fabs(0.25 - catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25)))));
-        ASSERT_GE(0.00000000001, fabs(0.75 - catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75)))));
+        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75))));
         delete catpb;
     }
 
@@ -57,8 +57,8 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Midi value 64 should result in 0,5
         ASSERT_EQ(neutralParameter, catpb->midiValueToParameter(neutralMidi));
         // roundtrip check
-        ASSERT_GE(0.00000000001, fabs(0.25 - catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25)))));
-        ASSERT_GE(0.00000000001, fabs(0.75 - catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75)))));
+        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75))));
         delete catpb;
     }
 
@@ -79,8 +79,8 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Midi value 64 should result in 0,5
         ASSERT_EQ(neutralParameter, catpb->midiValueToParameter(neutralMidi));
         // roundtrip checkx
-        ASSERT_GE(0.00000000001, fabs(0.25 - catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25)))));
-        ASSERT_GE(0.00000000001, fabs(0.75 - catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75)))));
+        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75))));
         delete catpb;
     }
 }
