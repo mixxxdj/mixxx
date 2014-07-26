@@ -225,7 +225,7 @@ void SoundSource::setKey(QString key){
 
 QString SoundSource::toQString(TagLib::String tstring) const {
     if (tstring == TagLib::String::null) {
-        return  QString();
+        return QString();
     }
     return TStringToQString(tstring);
 }
