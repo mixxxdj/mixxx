@@ -13,6 +13,7 @@ LV2Backend::LV2Backend(QObject* pParent)
         LilvNode* name = lilv_plugin_get_name(plug);
         qDebug() << lilv_node_as_string(name) << "-----------------------------";
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
+
         if (lv2Manifest->isValid()) {
             m_registeredEffects.insert(lv2Manifest->getEffectManifest().id(),
                                        lv2Manifest);

@@ -77,18 +77,21 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                      << ", " << m_maximum[i];
 
             // Set the appropriate Hints
+            // We are not currently supporting button ports
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
                 qDebug() << "this is a button port";
+                m_isValid = false;
                 param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
             } else {
                 param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
             }
 
+            // We are not currently supporting enumeration ports
             if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 qDebug() << "this is an enumeration port";
-                // TODO: build the scale points descriptions and their values
-                // Idea: QList<QPair<QString, QVariant>>
+                buildEnumerationOptions(port, param);
                 param->setValueHint(EffectManifestParameter::VALUE_ENUMERATION);
+                m_isValid = false;
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 qDebug() << "this is an integer port";
                 param->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
