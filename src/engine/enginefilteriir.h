@@ -61,6 +61,12 @@ class EngineFilterIIR : public EngineObjectConstIn {
         double resp3, phase3;
         resp3 = fid_response_pha(filt, freq0 / sampleRate * 2, &phase3);
         qDebug() << "freq3:" << freq0 * 2 << resp3 << phase0;
+        double resp4, phase4;
+        resp4 = fid_response_pha(filt, freq0 / sampleRate / 2.2, &phase4);
+        qDebug() << "freq4:" << freq0 / 2.2 << resp2 << phase0;
+        double resp5, phase5;
+        resp5 = fid_response_pha(filt, freq0 / sampleRate * 2.2, &phase5);
+        qDebug() << "freq5:" << freq0 * 2.2 << resp3 << phase0;
         free(filt);
 #endif
 
@@ -107,6 +113,12 @@ class EngineFilterIIR : public EngineObjectConstIn {
         double resp3, phase3;
         resp3 = fid_response_pha(filt, freq01 / sampleRate * 2, &phase3);
         qDebug() << "freq3:" << freq01 * 2 << resp3 << phase0;
+        double resp4, phase4;
+        resp4 = fid_response_pha(filt, freq01 / sampleRate / 2.2, &phase4);
+        qDebug() << "freq4:" << freq01 / 2.2 << resp2 << phase0;
+        double resp5, phase5;
+        resp5 = fid_response_pha(filt, freq01 / sampleRate * 2.2, &phase5);
+        qDebug() << "freq5:" << freq01 * 2.2 << resp3 << phase0;
         free(filt);
 #endif
 

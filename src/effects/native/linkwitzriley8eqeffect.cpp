@@ -14,7 +14,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, roll-off -48 db/Oct)"
+        "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct)"
         "To adjust frequency shelves see the Equalizer preferences."));
 
     EffectManifestParameter* low = manifest.addParameter();
@@ -57,23 +57,26 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
 }
 
 LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState()
-        : low(NULL), band(NULL), high(NULL), old_low(1.0),
-          old_mid(1.0), old_high(1.0) {
+        : old_low(1.0),
+          old_mid(1.0),
+          old_high(1.0) {
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     // Initialize filters with the default values
     // TODO(rryan): use the real samplerate
-    low = new EngineFilterLinkwtzRiley8Low(44100, 246);
-    band = new EngineFilterLinkwtzRiley8Low(44100, 2484);
-    high = new EngineFilterLinkwtzRiley8High(44100, 2484);
+    m_low1 = new EngineFilterLinkwtzRiley8Low(44100, 246);
+    m_high1 = new EngineFilterLinkwtzRiley8High(44100, 246);
+    m_low2 = new EngineFilterLinkwtzRiley8Low(44100, 2484);
+    m_high2 = new EngineFilterLinkwtzRiley8High(44100, 2484);
 }
 
 LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
-    delete low;
-    delete band;
-    delete high;
+    delete m_low1;
+    delete m_high1;
+    delete m_low2;
+    delete m_high2;
     SampleUtil::free(m_pLowBuf);
     SampleUtil::free(m_pBandBuf);
     SampleUtil::free(m_pHighBuf);
@@ -81,9 +84,10 @@ LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
 
 void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq,
                                                int highFreq) {
-    low->setFrequencyCorners(sampleRate, lowFreq);
-    band->setFrequencyCorners(sampleRate, highFreq);
-    high->setFrequencyCorners(sampleRate, highFreq);
+    m_low1->setFrequencyCorners(sampleRate, lowFreq);
+    m_high1->setFrequencyCorners(sampleRate, lowFreq);
+    m_low2->setFrequencyCorners(sampleRate, highFreq);
+    m_high2->setFrequencyCorners(sampleRate, highFreq);
 }
 
 LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect,
@@ -125,57 +129,19 @@ void LinkwitzRiley8EQEffect::processGroup(const QString& group,
         pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
     }
 
-    // Process the new EQ'd signals.
-    // They use up to 16 frames history so in case we are just starting,
-    // 16 frames are junk, this is handled by ramp_delay
-    int ramp_delay = 0;
-    if (fLow || pState->old_low) {
-        pState->low->process(pInput, pState->m_pLowBuf, numSamples);
-        if(pState->old_low == 0) {
-            ramp_delay = 30;
-        }
-    }
-    if (fMid || pState->old_mid) {
-        pState->band->process(pInput, pState->m_pBandBuf, numSamples);
-        if(pState->old_mid== 0) {
-            ramp_delay = 30;
-        }
-    }
-    if (fHigh || pState->old_high) {
-        pState->high->process(pInput, pState->m_pHighBuf, numSamples);
-        if(pState->old_high == 0) {
-            ramp_delay = 30;
-        }
-    }
+    pState->m_high2->process(pInput, pState->m_pHighBuf, numSamples); // HighPass first run
+    pState->m_low2->process(pInput, pState->m_pLowBuf, numSamples); // LowPass first run for low and bandpass
+    SampleUtil::copy2WithGain(pState->m_pHighBuf,
+            pState->m_pHighBuf, fHigh,
+            pState->m_pLowBuf, fMid,
+            numSamples);
 
-    if (ramp_delay) {
-        // first use old gains
-        SampleUtil::copy3WithGain(pOutput,
-                pState->m_pLowBuf, pState->old_low,
-                pState->m_pBandBuf, pState->old_mid,
-                pState->m_pHighBuf, pState->old_high,
-                ramp_delay);
-        // Now ramp the remaining frames
-        SampleUtil::copy3WithRampingGain(&pOutput[ramp_delay],
-                &pState->m_pLowBuf[ramp_delay], pState->old_low, fLow,
-                &pState->m_pBandBuf[ramp_delay], pState->old_mid, fMid,
-                &pState->m_pHighBuf[ramp_delay], pState->old_high, fHigh,
-                numSamples - ramp_delay);
-    } else if (fLow != pState->old_low ||
-            fMid != pState->old_mid ||
-            fHigh != pState->old_high) {
-        SampleUtil::copy3WithRampingGain(pOutput,
-                pState->m_pLowBuf, pState->old_low, fLow,
-                pState->m_pBandBuf, pState->old_mid, fMid,
-                pState->m_pHighBuf, pState->old_high, fHigh,
-                numSamples);
-    } else {
-        SampleUtil::copy3WithGain(pOutput,
-                pState->m_pLowBuf, fLow,
-                pState->m_pBandBuf, fMid,
-                pState->m_pHighBuf, fHigh,
-                numSamples);
-    }
+    pState->m_high1->process(pState->m_pHighBuf, pState->m_pBandBuf, numSamples); // HighPass + BandPass second run
+    pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf, numSamples); // LowPass second run
+    SampleUtil::copy2WithGain(pOutput,
+            pState->m_pLowBuf, fLow,
+            pState->m_pBandBuf, 1,
+            numSamples);
 
     pState->old_low = fLow;
     pState->old_mid = fMid;
