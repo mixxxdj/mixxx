@@ -56,6 +56,7 @@ available_features = [features.Mad,
                       features.ColorDiagnostics,
                       features.AddressSanitizer,
                       features.LocaleCompare,
+                      features.Lilv,
 
                       # "Features" of dubious quality
                       features.PerfTools,

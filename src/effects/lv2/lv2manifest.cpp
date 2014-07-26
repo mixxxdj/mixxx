@@ -80,13 +80,11 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // We are not currently supporting button ports
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
                 qDebug() << "this is a button port";
-                m_isValid = false;
                 param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 qDebug() << "this is an enumeration port";
                 buildEnumerationOptions(port, param);
                 param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-                m_isValid = false;
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 qDebug() << "this is an integer port";
                 param->setControlHint(EffectManifestParameter::CONTROL_KNOB_STEPPING);
@@ -133,4 +131,21 @@ const LilvPlugin* LV2Manifest::getPlugin() {
 
 bool LV2Manifest::isValid() {
     return m_isValid;
+}
+
+void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
+                                          EffectManifestParameter* param) {
+    LilvScalePoints* options = lilv_port_get_scale_points(m_pLV2plugin, port);
+    LILV_FOREACH(scale_points, iterator, options) {
+        const LilvScalePoint* option = lilv_scale_points_get(options, iterator);
+        const LilvNode* description = lilv_scale_point_get_label(option);
+        const LilvNode* value = lilv_scale_point_get_value(option);
+        QString strDescription(lilv_node_as_string(description));
+        param->appendStep(qMakePair(strDescription, 
+		(double)lilv_node_as_float(value)));
+    }
+
+    if (options != NULL) {
+        lilv_scale_points_free(options);
+    }
 }
