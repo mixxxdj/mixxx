@@ -7,7 +7,7 @@
 #define MIXXX
 #include "fidlib.h"
 
-#define IIR_ANALYSIS 1
+#define IIR_ANALYSIS 0
 
 enum IIRPass {
     IIR_LP,
