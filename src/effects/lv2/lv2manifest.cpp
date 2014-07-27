@@ -80,7 +80,6 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // We are not currently supporting button ports
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
                 qDebug() << "this is a button port";
-                m_isValid = false;
                 param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
             } else {
                 param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
@@ -91,7 +90,6 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                 qDebug() << "this is an enumeration port";
                 buildEnumerationOptions(port, param);
                 param->setValueHint(EffectManifestParameter::VALUE_ENUMERATION);
-                m_isValid = false;
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 qDebug() << "this is an integer port";
                 param->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
