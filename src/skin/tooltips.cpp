@@ -468,5 +468,5 @@ void Tooltips::addStandardTooltips() {
 
     add("audio_latency_overload")
             << tr("Audio Latency Overload Indicator")
-            << tr("Indicates that the audio buffer is to small to do all audio processing.");
+            << tr("Indicates that the audio buffer is too small to do all audio processing.");
 }
