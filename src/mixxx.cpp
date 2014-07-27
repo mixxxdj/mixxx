@@ -38,7 +38,9 @@
 #include "engine/enginemicrophone.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
+#ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
+#endif
 #include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -144,8 +146,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // effect backends to refer to controls that are produced by the engine.
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
+#ifdef __LILV__
     LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pLV2Backend);
+#endif
 
     // Sets up the default EffectChains and EffectRack.
     m_pEffectsManager->setupDefaults();
