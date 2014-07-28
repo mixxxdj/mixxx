@@ -6,19 +6,6 @@ LV2Backend::LV2Backend(QObject* pParent)
     m_pWorld = lilv_world_new();
     initializeProperties();
     lilv_world_load_all(m_pWorld);
-    const LilvPlugins *plugs = lilv_world_get_all_plugins(m_pWorld);
-    qDebug() << "enumerating plugins";
-    LILV_FOREACH(plugins, i, plugs) {
-        const LilvPlugin *plug = lilv_plugins_get(plugs, i);
-        LilvNode* name = lilv_plugin_get_name(plug);
-        qDebug() << lilv_node_as_string(name) << "-----------------------------";
-        LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
-
-        if (lv2Manifest->isValid()) {
-            m_registeredEffects.insert(lv2Manifest->getEffectManifest().id(),
-                                       lv2Manifest);
-        }
-    }
 }
 
 LV2Backend::~LV2Backend() {
@@ -28,6 +15,30 @@ LV2Backend::~LV2Backend() {
     lilv_world_free(m_pWorld);
     foreach(LV2Manifest* lv2Manifest, m_registeredEffects) {
         delete lv2Manifest;
+    }
+}
+
+void LV2Backend::enumeratePlugins() {
+    qDebug() << "enumerating plugins";
+    const LilvPlugins *plugs = lilv_world_get_all_plugins(m_pWorld);
+    LILV_FOREACH(plugins, i, plugs) {
+        const LilvPlugin *plug = lilv_plugins_get(plugs, i);
+        LilvNode* name = lilv_plugin_get_name(plug);
+        qDebug() << lilv_node_as_string(name) << "-----------------------------";
+        LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
+
+        bool isAvailable;
+        if (lv2Manifest->isValid()) {
+            m_registeredEffects.insert(lv2Manifest->getEffectManifest().id(),
+                                       lv2Manifest);
+            isAvailable = true;
+        } else {
+            isAvailable = false;
+        }
+
+        // Add the current plugin to the list of discovered ones
+        m_allLV2Plugins.append(qMakePair(QString(lilv_node_as_string(name)),
+                                         isAvailable));
     }
 }
 
@@ -42,7 +53,6 @@ void LV2Backend::initializeProperties() {
 }
 
 const QSet<QString> LV2Backend::getEffectIds() const {
-    QSet<QString> result;
     return m_registeredEffects.keys().toSet();
 }
 

@@ -3,7 +3,7 @@
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
-        : m_isValid(false) {
+        : m_isValid(true) {
 
     m_pLV2plugin = plug;
 
@@ -58,35 +58,25 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // Get and set the parameter name
             info = lilv_port_get_name(m_pLV2plugin, port);
             QString paramName = lilv_node_as_string(info);
-            qDebug() << "Parameter name: " << paramName;
             param->setName(paramName);
             lilv_node_free(info);
 
             // Build and set the parameter id from its name
             // Append its index to avoid duplicate ids
             param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
-            qDebug() << "Parameter id: " << paramName.trimmed().toLower().replace(' ', '_').append(i + '0');
-
             param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
             param->setDefault(m_default[i]);
             param->setMinimum(m_minimum[i]);
             param->setMaximum(m_maximum[i]);
-            qDebug() << paramName << " values(def, min, max)"
-                     << m_default[i] << ", " << m_minimum[i]
-                     << ", " << m_maximum[i];
 
             // Set the appropriate Hints
-            // We are not currently supporting button ports
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-                qDebug() << "this is a button port";
                 param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
-                qDebug() << "this is an enumeration port";
                 buildEnumerationOptions(port, param);
                 param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
-                qDebug() << "this is an integer port";
                 param->setControlHint(EffectManifestParameter::CONTROL_KNOB_STEPPING);
             } else {
                  param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
@@ -95,8 +85,8 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
     }
 
     // We only support the case when the input and output samples are stereo
-    if (inputPorts == 2 && outputPorts == 2) {
-        m_isValid = true;
+    if (inputPorts != 2 || outputPorts != 2) {
+        m_isValid = false;
     }
 
     // We don't support any features

@@ -562,10 +562,6 @@ class MixxxCore(Feature):
                    "effects/native/echoeffect.cpp",
                    "effects/native/reverb/Reverb.cc",
 
-                   "effects/lv2/lv2manifest.cpp",
-                   "effects/lv2/lv2backend.cpp",
-                   "effects/lv2/lv2effectprocessor.cpp",
-
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
                    "engine/effects/engineeffectchain.cpp",
