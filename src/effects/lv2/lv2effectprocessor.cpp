@@ -1,7 +1,6 @@
 #include "effects/lv2/lv2effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 
-#define MAX_PARAMS 100
 #define MAX_BUFFER_LEN 160000
 
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
@@ -14,7 +13,7 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     inputR = new float[MAX_BUFFER_LEN];
     outputL = new float[MAX_BUFFER_LEN];
     outputR = new float[MAX_BUFFER_LEN];
-    params = new float[MAX_PARAMS];
+    params = new float[manifest.parameters().size()];
 
     handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL);
     const QList<EffectManifestParameter> effectManifestParameterList =
