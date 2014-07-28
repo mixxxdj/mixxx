@@ -2,12 +2,12 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartdelegate.h"
-#include "library/trackmodel.h"
 #include "library/dao/trackdao.h"
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
           m_pTableView(NULL),
+          m_pTrackModel(NULL),
           m_bIsLocked(false) {
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(lockCoverArtDelegate(bool)),
@@ -15,6 +15,7 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
 
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
+        m_pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
     }
 }
 
@@ -32,17 +33,16 @@ void CoverArtDelegate::paint(QPainter *painter,
         painter->fillRect(option.rect, option.palette.highlight());
     }
 
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
-    if (!trackModel) {
+    if (!m_pTrackModel) {
         return;
     }
 
     QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
-    QString coverLocation = index.sibling(index.row(), trackModel->fieldIndex(
+    QString coverLocation = index.sibling(index.row(), m_pTrackModel->fieldIndex(
                             LIBRARYTABLE_COVERART_LOCATION)).data().toString();
-    QString md5Hash = index.sibling(index.row(), trackModel->fieldIndex(
+    QString md5Hash = index.sibling(index.row(), m_pTrackModel->fieldIndex(
                         LIBRARYTABLE_COVERART_MD5)).data().toString();
-    int trackId = trackModel->getTrackId(index);
+    int trackId = m_pTrackModel->getTrackId(index);
     QPixmap pixmap;
     if (coverLocation != defaultLoc) { // draw cover_art
         // If the CoverDelegate is locked, it must not try

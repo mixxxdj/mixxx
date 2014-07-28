@@ -4,6 +4,8 @@
 #include <QStyledItemDelegate>
 #include <QTableView>
 
+#include "library/trackmodel.h"
+
 class CoverArtDelegate : public QStyledItemDelegate {
   Q_OBJECT
 
@@ -29,6 +31,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
 
   private:
     QTableView* m_pTableView;
+    TrackModel* m_pTrackModel;
     bool m_bIsLocked;
 };
 
