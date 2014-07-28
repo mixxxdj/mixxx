@@ -8,7 +8,8 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
           m_pTableView(NULL),
           m_pTrackModel(NULL),
-          m_bIsLocked(false) {
+          m_bIsLocked(false),
+          m_sDefaultCover(CoverArtCache::instance()->getDefaultCoverLocation()) {
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(lockCoverArtDelegate(bool)),
             this, SLOT(slotLock(bool)));
@@ -37,19 +38,17 @@ void CoverArtDelegate::paint(QPainter *painter,
         return;
     }
 
-    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
     QString coverLocation = index.sibling(index.row(), m_pTrackModel->fieldIndex(
                             LIBRARYTABLE_COVERART_LOCATION)).data().toString();
     QString md5Hash = index.sibling(index.row(), m_pTrackModel->fieldIndex(
                         LIBRARYTABLE_COVERART_MD5)).data().toString();
     int trackId = m_pTrackModel->getTrackId(index);
-    QPixmap pixmap;
-    if (coverLocation != defaultLoc) { // draw cover_art
+    if (coverLocation != m_sDefaultCover) { // draw cover_art
         // If the CoverDelegate is locked, it must not try
         // to load (from coverLocation) and search covers.
         // It means that in this cases it will just draw
         // covers which are already in the pixmapcache.
-        pixmap = CoverArtCache::instance()->requestPixmap(
+        QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
                                             trackId, coverLocation, md5Hash,
                                             !m_bIsLocked, true, false);
 

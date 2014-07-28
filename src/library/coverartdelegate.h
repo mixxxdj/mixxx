@@ -33,6 +33,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
     QTableView* m_pTableView;
     TrackModel* m_pTrackModel;
     bool m_bIsLocked;
+    QString m_sDefaultCover;
 };
 
 #endif // COVERARTDELEGATE_H
