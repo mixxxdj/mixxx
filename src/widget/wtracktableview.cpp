@@ -484,22 +484,31 @@ void WTrackTableView::slotShowTrackInfo() {
 void WTrackTableView::slotNextTrackInfo() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showTrackInfo(nextRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevTrackInfo() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showTrackInfo(prevRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showTrackInfo(QModelIndex index) {
     TrackModel* trackModel = getTrackModel();
 
-    if (!trackModel)
+    if (!trackModel) {
         return;
+    }
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
@@ -511,15 +520,23 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 void WTrackTableView::slotNextDlgTagFetcher() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showDlgTagFetcher(nextRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevDlgTagFetcher() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showDlgTagFetcher(prevRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
