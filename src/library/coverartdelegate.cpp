@@ -9,7 +9,9 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
           m_pTableView(NULL),
           m_pTrackModel(NULL),
           m_bIsLocked(false),
-          m_sDefaultCover(CoverArtCache::instance()->getDefaultCoverLocation()) {
+          m_sDefaultCover(CoverArtCache::instance()->getDefaultCoverLocation()),
+          m_iCoverLocationColumn(-1),
+          m_iMd5Column(-1) {
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(lockCoverArtDelegate(bool)),
             this, SLOT(slotLock(bool)));
@@ -17,6 +19,8 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
         m_pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+        m_iCoverLocationColumn = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
+        m_iMd5Column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
     }
 }
 
@@ -34,16 +38,25 @@ void CoverArtDelegate::paint(QPainter *painter,
         painter->fillRect(option.rect, option.palette.highlight());
     }
 
-    if (!m_pTrackModel) {
+    if (!m_pTrackModel || m_iCoverLocationColumn == -1 || m_iMd5Column == -1) {
         return;
     }
 
-    QString coverLocation = index.sibling(index.row(), m_pTrackModel->fieldIndex(
-                            LIBRARYTABLE_COVERART_LOCATION)).data().toString();
-    QString md5Hash = index.sibling(index.row(), m_pTrackModel->fieldIndex(
-                        LIBRARYTABLE_COVERART_MD5)).data().toString();
     int trackId = m_pTrackModel->getTrackId(index);
+    if (trackId < 1) {
+        return;
+    }
+
+    QString coverLocation = index.sibling(index.row(),
+                                          m_iCoverLocationColumn
+                                          ).data().toString();
+
     if (coverLocation != m_sDefaultCover) { // draw cover_art
+
+        QString md5Hash = index.sibling(index.row(),
+                                        m_iMd5Column
+                                        ).data().toString();
+
         // If the CoverDelegate is locked, it must not try
         // to load (from coverLocation) and search covers.
         // It means that in this cases it will just draw
