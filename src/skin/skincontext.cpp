@@ -318,15 +318,16 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
 
 
 void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
-	QDomNamedNodeMap attributes = node.attributes();
+    QDomNamedNodeMap attributes = node.attributes();
+    QDomElement element = node.toElement();
     uint i;
     int pos;
     QString varName, varValue, attributeValue, attributeName,
-			propName, match, replacement;
+            propName, match, replacement;
     QStringList captured;
     QDomAttr attribute;
-    QRegExp rx("var\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");	// var( part1 [, part2] )
-    QRegExp nameRx("^var-([a-zA-Z0-9_-]+)$");											// var-attribute-name;
+    QRegExp rx("var\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");    // var( part1 [, part2] )
+    QRegExp nameRx("^var-([^=\\s]+)$");                                                // var-attribute-name;
     
     for (i=0; i < attributes.length(); i++){
         
@@ -334,43 +335,45 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         attributeValue = attribute.value();
         attributeName = attribute.name();
         
-        // searching variable attributes
-        if ((pos = rx.indexIn(attributeValue, pos)) != -1) {
-			captured = rx.capturedTexts();
-			
-		}
+        // searching variable attributes : var-attribute_name="variable_name"
+        if (nameRx.indexIn(attributeName) != -1) {
+            if (!(varValue = variable(attributeValue)).isNull()){
+                // qDebug() << "setting " << varValue << " as attribute " << nameRx.cap(1) << " \n";
+                element.setAttribute( nameRx.cap(1), varValue);
+            }
+        }
          
         
-        // searching vars in the attribute value
-		pos = 0;
+        pos = 0;
+        // searching vars in the attribute value (styles or classes)
         while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
-			captured = rx.capturedTexts();
-			// qWarning() << "AAAAA " << captured.length() << " '" << captured.join("', '") << "'\n";
-			match = rx.cap(0);
-			
-			varName = rx.cap(3);
-			if (varName.length()){ // var( prop, name )
-				propName = rx.cap(1);
-				varName = rx.cap(3);
-				varValue = variable(varName);
-				replacement = varValue.length() ? propName + ":" + varValue : "";
-			} else{ // var( name )
-				
-				varName = rx.cap(1);
-				replacement = variable(varName);
-			}
-			
-			qDebug() << "setting " << replacement << " as " << match << "in "<< attributeValue << "\n";
-			
-			attributeValue.replace(pos, match.length(), replacement);
-			pos += replacement.length();
-		}
-		
-		
-		
+            captured = rx.capturedTexts();
+            // qWarning() << "AAAAA " << captured.length() << " '" << captured.join("', '") << "'\n";
+            match = rx.cap(0);
+            
+            varName = rx.cap(3);
+            if (varName.length()){ // var( prop, name )
+                propName = rx.cap(1);
+                varName = rx.cap(3);
+                varValue = variable(varName);
+                replacement = varValue.length() ? propName + ":" + varValue : "";
+            } else{ // var( name )
+                
+                varName = rx.cap(1);
+                replacement = variable(varName);
+            }
+            
+            // qDebug() << "setting " << replacement << " as " << match << "in "<< attributeValue << "\n";
+            
+            attributeValue.replace(pos, match.length(), replacement);
+            pos += replacement.length();
+        }
+        
+        
+        
         attribute.setValue(attributeValue);
     }
-	
+    
 }
 
 void SkinContext::parseTree(const QDomNode& node, void (SkinContext::*callback)(const QDomNode& node)const) const {
@@ -381,9 +384,9 @@ void SkinContext::parseTree(const QDomNode& node, void (SkinContext::*callback)(
     uint i;
     
     for (i=0; i<children.length(); i++){
-		child = children.at(i);
-		if( child.isElement() )
-			parseTree( child, callback );
-	}
+        child = children.at(i);
+        if( child.isElement() )
+            parseTree( child, callback );
+    }
 }
 
