@@ -96,13 +96,6 @@ ButterworthStaticEQEffectGroupState::~ButterworthStaticEQEffectGroupState() {
     SampleUtil::free(m_pHighBuf);
 }
 
-//void ButterworthStaticEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
-//                                               int highFreq) {
-//    low->setFrequencyCorners(sampleRate, lowFreq);
-//    band->setFrequencyCorners(sampleRate, lowFreq, highFreq);
-//    high->setFrequencyCorners(sampleRate, highFreq);
-//}
-
 ButterworthStaticEQEffect::ButterworthStaticEQEffect(EngineEffect* pEffect,
                                          const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
@@ -130,16 +123,6 @@ void ButterworthStaticEQEffect::processGroup(const QString& group,
         fMid[i] = m_pPotMid[i]->value().toDouble();
     }
     fHigh = m_pPotHigh->value().toDouble();
-
-//    int sampleRate = getSampleRate();
-//    if (m_oldSampleRate != sampleRate ||
-//            (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
-//            (m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
-//        m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
-//        m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
-//        m_oldSampleRate = sampleRate;
-//        pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
-//    }
 
     // Process the new EQ'd signals.
     // They use up to 16 frames history so in case we are just starting,
