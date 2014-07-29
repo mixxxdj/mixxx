@@ -1332,8 +1332,8 @@ class Lilv(Feature):
         if build.platform_is_linux or build.platform_is_osx \
                 or build.platform_is_bsd:
             # Check for liblilv-0
-            if not conf.CheckForPKG('lilv-0', '0.18'):
-                raise Exception('Missing liblilv-0 (needs at least 0.18)')
+            if not conf.CheckForPKG('lilv-0', '0.5'):
+                raise Exception('Missing liblilv-0 (needs at least 0.5)')
 
             build.env.Append(CPPDEFINES='__LILV__')
 	    build.env.ParseConfig('pkg-config lilv-0 --silence-errors \
