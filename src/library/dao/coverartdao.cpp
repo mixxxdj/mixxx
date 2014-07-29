@@ -45,6 +45,44 @@ int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
     return coverId;
 }
 
+QList<int> CoverArtDAO::saveCoverArt(QList<QPair<QString, QString> > covers) {
+    if (covers.isEmpty()) {
+        return QList<int>();
+    }
+
+    // it'll be used to avoid writing a new ID for
+    // rows which have the same md5 (not changed).
+    QString selectCoverId = QString("SELECT id FROM cover_art WHERE md5='%1'");
+
+    // preparing query to insert multi rows
+    QString sQuery;
+    sQuery = QString("INSERT OR REPLACE INTO cover_art ('id', 'location', 'md5') "
+                     "SELECT (%1) AS 'id', '%2' AS 'location', '%3' AS 'md5' ")
+                    .arg(selectCoverId.arg(covers.first().second))
+                    .arg(covers.first().first)
+                    .arg(covers.first().second);
+    for (int i=1; i<covers.size(); i++) {
+        sQuery = sQuery % QString("UNION SELECT (%1), '%2', '%3'")
+                .arg(selectCoverId.arg(covers.at(i).second))
+                .arg(covers.at(i).first)
+                .arg(covers.at(i).second);
+    }
+    QSqlQuery query(m_database);
+    if (!query.exec(sQuery)) {
+        LOG_FAILED_QUERY(query) << "Failed to save multiple covers!";
+        return QList<int>();
+    }
+
+    // getting the last inserted cover id's
+    QList<int> coverIds;
+    for (int index=0; index<covers.size(); index++) {
+        int coverId = getCoverArtId(covers.at(index).second);
+        coverIds.append(coverId);
+    }
+
+    return coverIds;
+}
+
 void CoverArtDAO::deleteUnusedCoverArts() {
     QSqlQuery query(m_database);
 
