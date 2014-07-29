@@ -188,6 +188,20 @@ void EffectsManager::setupDefaults() {
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+
+    // Add another effect rack for the Master EQ
+    pRack = addEffectRack();
+    pRack->addMasterEQEffectChainSlot();
+    // Set the EQ to be active on Master
+    ControlObjectSlave cot(QString("[EffectRack%1_EffectUnit%2]").arg(2).arg(1),
+                           QString("group_[Master]_enable"));
+    cot.set(1.0);
+
+    // Set the Master EQ to be fully wet
+    ControlObjectSlave cotMix(QString("[EffectRack%1_EffectUnit%2]").arg(2).arg(1),
+                              QString("mix"));
+    cotMix.set(1.0);
+
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
