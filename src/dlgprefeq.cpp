@@ -29,15 +29,18 @@
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
+DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
+                     ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
           m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
+          m_filterLow("[EffectRack1_EffectChain1_Effect1]", "parameter1"),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
-          m_highEqFreq(0.0) {
+          m_highEqFreq(0.0),
+          m_pEffectsManager(pEffectsManager) {
     setupUi(this);
 
     // Connection

@@ -24,7 +24,9 @@
 #include "configobject.h"
 #include "engine/enginefilterblock.h"
 #include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
+#include "effects/effectsmanager.h"
 
 /**
   *@author John Sully
@@ -33,7 +35,8 @@
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, ConfigObject<ConfigValue>* _config);
+    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
+              ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
 
   public slots:
@@ -61,8 +64,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     ControlObjectThread m_COTHiFreq;
     ControlObjectThread m_COTLoFi;
     ControlObjectThread m_COTEnableEq;
+    ControlObjectSlave m_filterLow;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
+
+    EffectsManager* m_pEffectsManager;
 };
 
 #endif

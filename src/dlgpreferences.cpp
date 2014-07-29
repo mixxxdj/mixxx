@@ -58,6 +58,7 @@
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
+                               EffectsManager* pEffectsManager,
                                ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
         : m_pConfig(pConfig),
           m_pageSizeHint(QSize(0, 0)),
@@ -98,7 +99,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wwaveform);
     m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
     addPageWidget(m_wautodj);
-    m_weq = new DlgPrefEQ(this, m_pConfig);
+    m_weq = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
     addPageWidget(m_weq);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
