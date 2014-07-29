@@ -165,6 +165,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.trackId = coverInfo.trackId;
     res.croppedImg = croppedPixmap;
     res.emitSignals = emitSignals;
+    res.newImgFound = false;
 
     // Looking for embedded cover art.
     //
@@ -175,28 +176,34 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         if (res.md5Hash.isEmpty()) {
             res.md5Hash = calculateMD5(res.img);
         }
+        res.newImgFound = true;
+    }
 
+    // Looking for cover stored in track diretory.
+    //
+    if (!res.newImgFound) {
+        res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
+                                                   coverInfo.trackBaseName,
+                                                   coverInfo.album);
+        res.img = QImage(res.coverLocation);
+        res.md5Hash = calculateMD5(res.img);
+        res.newImgFound = true;
+    }
+
+    // adjusting the cover size according to the final purpose
+    if (res.newImgFound) {
         if (res.croppedImg) {
             res.img = cropImage(res.img);
         } else {
             res.img = rescaleBigImage(res.img);
         }
-
-        return res;
     }
 
-    // Looking for cover stored in track diretory.
-    //
-    res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
-                                               coverInfo.trackBaseName,
-                                               coverInfo.album);
-
-    res.img = QImage(res.coverLocation);
-    res.md5Hash = calculateMD5(res.img);
-    if (res.croppedImg) {
-        res.img = cropImage(res.img);
-    } else {
-        res.img = rescaleBigImage(res.img);
+    // check if this image is really new
+    // (different from the one that we have in db)
+    if (coverInfo.md5Hash == res.md5Hash)
+    {
+        res.newImgFound = false;
     }
 
     return res;
@@ -293,9 +300,13 @@ void CoverArtCache::imageFound() {
             }
         }
     }
+
     // update DB
-    int coverId = m_pCoverArtDAO->saveCoverArt(res.coverLocation, res.md5Hash);
-    m_pTrackDAO->updateCoverArt(res.trackId, coverId);
+    if (res.newImgFound) {
+        int coverId = m_pCoverArtDAO->saveCoverArt(res.coverLocation,
+                                                   res.md5Hash);
+        m_pTrackDAO->updateCoverArt(res.trackId, coverId);
+    }
 
     m_runningIds.remove(res.trackId);
 }

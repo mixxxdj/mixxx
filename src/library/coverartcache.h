@@ -45,6 +45,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QImage img;
         bool croppedImg;
         bool emitSignals;
+        bool newImgFound;
     };
 
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
