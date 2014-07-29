@@ -52,6 +52,11 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
+    connect(sliderLow, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateLowFilter()));
+    connect(sliderLow, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLowFilter()));
+    connect(sliderLow, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLowFilter()));
+
+
     connect(radioButton_bypass, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_butterworth8, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
@@ -193,6 +198,20 @@ void DlgPrefEQ::slotUpdateLoEQ()
                    ConfigValue(QString::number(m_lowEqFreq, 'f')));
 
     slotApply();
+}
+
+void DlgPrefEQ::slotUpdateLowFilter() {
+    double value = sliderLow->value() / 100.0 * 4;
+    EffectsRequest* pRequest = new EffectsRequest();
+    EngineEffect* ee = m_pEffectsManager->getEffectRack(1)->getEffectChainSlot(0)->getEffectSlot(0)->getEffect()->getEngineEffect();
+    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
+    pRequest->pTargetEffect = ee;
+    pRequest->SetParameterParameters.iParameter = 7;
+    pRequest->value = value;
+    pRequest->minimum = 0;
+    pRequest->maximum = 4;
+    pRequest->default_value = 2;
+    m_pEffectsManager->writeRequest(pRequest);
 }
 
 int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)

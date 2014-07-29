@@ -46,6 +46,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     /** Update Lo EQ **/
     void slotUpdateLoEQ();
     /** Apply changes to widget */
+    void slotUpdateLowFilter();
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
