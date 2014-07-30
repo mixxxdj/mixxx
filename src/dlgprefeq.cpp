@@ -126,8 +126,7 @@ void DlgPrefEQ::loadSettings() {
     }
 }
 
-void DlgPrefEQ::setDefaultShelves()
-{
+void DlgPrefEQ::setDefaultShelves() {
     m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(2500));
     m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(250));
     m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"), ConfigValue(2500.0));
@@ -163,8 +162,7 @@ void DlgPrefEQ::slotEqChanged() {
     slotApply();
 }
 
-void DlgPrefEQ::slotUpdateHiEQ()
-{
+void DlgPrefEQ::slotUpdateHiEQ() {
     if (SliderHiEQ->value() < SliderLoEQ->value())
     {
         SliderHiEQ->setValue(SliderLoEQ->value());
@@ -186,8 +184,7 @@ void DlgPrefEQ::slotUpdateHiEQ()
     slotApply();
 }
 
-void DlgPrefEQ::slotUpdateLoEQ()
-{
+void DlgPrefEQ::slotUpdateLoEQ() {
     if (SliderLoEQ->value() > SliderHiEQ->value())
     {
         SliderLoEQ->setValue(SliderHiEQ->value());
@@ -212,19 +209,17 @@ void DlgPrefEQ::slotUpdateLoEQ()
 void DlgPrefEQ::slotUpdateLowFilter() {
     double value = sliderLow->value() / 100.0 * 4;
     EffectsRequest* pRequest = new EffectsRequest();
-    EngineEffect* ee = m_pEffectsManager->getEffectRack(1)->getEffectChainSlot(0)->getEffectSlot(0)->getEffect()->getEngineEffect();
     pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
-    pRequest->pTargetEffect = ee;
-    pRequest->SetParameterParameters.iParameter = 7;
+    pRequest->pTargetEffect = m_pEngineEffectMasterEQ;
+    pRequest->SetParameterParameters.iParameter = 0;
     pRequest->value = value;
     pRequest->minimum = 0;
     pRequest->maximum = 4;
-    pRequest->default_value = 2;
+    pRequest->default_value = 1;
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
-{
+int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue) {
     if (eqFreq >= kFrequencyUpperLimit) {
         return maxValue;
     } else if (eqFreq <= kFrequencyLowerLimit) {
