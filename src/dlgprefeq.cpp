@@ -61,6 +61,15 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_butterworth8, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
 
+    // Initialize EngineEffect with Master EQ's engine effect
+    EffectPointer masterEQEffect = m_pEffectsManager->getEffectRack(1)->
+            getEffectChainSlot(0)->getEffectSlot(0)->getEffect();
+    if (masterEQEffect) {
+        m_pEngineEffectMasterEQ = masterEQEffect->getEngineEffect();
+    } else {
+        m_pEngineEffectMasterEQ = 0;
+    }
+
     loadSettings();
     slotUpdate();
     slotApply();
