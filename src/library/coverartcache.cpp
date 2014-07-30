@@ -3,6 +3,7 @@
 #include <QPixmap>
 #include <QStringBuilder>
 #include <QtConcurrentRun>
+#include <QTimer>
 
 #include "coverartcache.h"
 #include "soundsourceproxy.h"
@@ -11,7 +12,10 @@ CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
           m_pTrackDAO(NULL),
           m_sDefaultCoverLocation(":/images/library/default_cover.png"),
-          m_defaultCover(m_sDefaultCoverLocation) {
+          m_defaultCover(m_sDefaultCoverLocation),
+          m_timer(new QTimer(this)) {
+    m_timer->setSingleShot(true);
+    connect(m_timer, SIGNAL(timeout()), SLOT(updateDB()));
 }
 
 CoverArtCache::~CoverArtCache() {
@@ -67,6 +71,12 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
     if (m_runningIds.contains(trackId)) {
+        return QPixmap();
+    }
+
+    // check if we have already found a cover for this track
+    // and if it is just waiting to be inserted/updated in the DB.
+    if (m_queueOfUpdates.contains(trackId)) {
         return QPixmap();
     }
 
@@ -302,13 +312,31 @@ void CoverArtCache::imageFound() {
     }
 
     // update DB
-    if (res.newImgFound) {
-        int coverId = m_pCoverArtDAO->saveCoverArt(res.coverLocation,
-                                                   res.md5Hash);
-        m_pTrackDAO->updateCoverArt(res.trackId, coverId);
+    if (res.newImgFound && !m_queueOfUpdates.contains(res.trackId)) {
+        m_queueOfUpdates.insert(res.trackId,
+                                qMakePair(res.coverLocation, res.md5Hash));
+    }
+
+    if (m_queueOfUpdates.size() == 1 && !m_timer->isActive()) {
+        m_timer->start(500); // after 0.5s, it will call `updateDB()`
     }
 
     m_runningIds.remove(res.trackId);
+}
+
+// sqlite can only do about 50 writes per second,
+// so it is important to collect all new covers and write them at once.
+void CoverArtCache::updateDB() {
+    if (m_queueOfUpdates.isEmpty()) {
+        return;
+    }
+
+    QList<int> coverIds = m_pCoverArtDAO->saveCoverArt(m_queueOfUpdates.values());
+
+    Q_ASSERT(m_queueOfUpdates.keys().size() == coverIds.size());
+    m_pTrackDAO->updateCoverArt(m_queueOfUpdates.keys(), coverIds);
+
+    m_queueOfUpdates.clear();
 }
 
 // It will return a cropped cover that is ready to be

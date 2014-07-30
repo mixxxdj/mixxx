@@ -30,6 +30,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     void imageFound();
     void imageLoaded();
 
+  private slots:
+    void updateDB();
+
   signals:
     void pixmapFound(int trackId, QPixmap pixmap);
 
@@ -63,7 +66,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     TrackDAO* m_pTrackDAO;
     const QString m_sDefaultCoverLocation;
     const QPixmap m_defaultCover;
+    QTimer* m_timer;
     QSet<int> m_runningIds;
+    QHash<int, QPair<QString, QString> > m_queueOfUpdates;
 
     QString calculateMD5(QImage img);
     QImage cropImage(QImage img);
