@@ -41,15 +41,17 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   public slots:
     void slotEqChanged();
-    /** Update Hi EQ **/
+    // Update Hi EQ
     void slotUpdateHiEQ();
-    /** Update Lo EQ **/
+    // Update Lo EQ
     void slotUpdateLoEQ();
-    /** Apply changes to widget */
-    void slotUpdateLowFilter();
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    // Update the Master EQ
+    void slotUpdateLowFilter();
+    void slotUpdateHighFilter();
 
   signals:
     void apply(const QString &);
