@@ -50,6 +50,7 @@
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
 #include "dlgprefreplaygain.h"
+#include "dlgpreflv2.h"
 #include "mixxx.h"
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
@@ -101,6 +102,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wautodj);
     m_weq = new DlgPrefEQ(this, m_pConfig);
     addPageWidget(m_weq);
+    m_wlv2 = new DlgPrefLV2(this, pLV2Backend, m_pConfig);
+    addPageWidget(m_wlv2);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
 
@@ -186,6 +189,12 @@ void DlgPreferences::createIcons() {
     m_pEqButton->setText(0, tr("Equalizers"));
     m_pEqButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pEqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pLV2Button = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pLV2Button->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.png"));
+    m_pLV2Button->setText(0, tr("LV2 plugins"));
+    m_pLV2Button->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pLV2Button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pCrossfaderButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pCrossfaderButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_crossfader.png"));
@@ -274,6 +283,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wautodj);
     } else if (current == m_pEqButton) {
         switchToPage(m_weq);
+    } else if (current == m_pLV2Button) {
+        switchToPage(m_wlv2);
     } else if (current == m_pCrossfaderButton) {
         switchToPage(m_wcrossfader);
     } else if (current == m_pRecordingButton) {
