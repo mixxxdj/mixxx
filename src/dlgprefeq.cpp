@@ -51,10 +51,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-    connect(sliderLow, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateLowFilter()));
-    connect(sliderLow, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLowFilter()));
-    connect(sliderLow, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLowFilter()));
-
 
     connect(radioButton_bypass, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
@@ -67,6 +63,20 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
         m_pEngineEffectMasterEQ = masterEQEffect->getEngineEffect();
     } else {
         m_pEngineEffectMasterEQ = 0;
+    }
+
+    // Create and set up Master EQ's sliders
+    for (int i = 0; i < 11; i++) {
+        QSlider* slider = new QSlider(this);
+        slider->setMinimum(0);
+        slider->setMaximum(100);
+        slider->setSingleStep(1);
+        slider->setValue(25);
+        // Set the index as a property because we need it inside slotUpdateFilter()
+        slider->setProperty("index", QVariant(i));
+        horizontalLayout->addWidget(slider);
+        m_masterEQSliders.append(slider);
+        connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateFilter(int)));
     }
 
     loadSettings();
