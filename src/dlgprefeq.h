@@ -69,7 +69,9 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
+    // Members needed for the Master EQ
     EffectsManager* m_pEffectsManager;
+    EngineEffect* m_pEngineEffectMasterEQ;
 };
 
 #endif
