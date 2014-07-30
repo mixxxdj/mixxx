@@ -62,16 +62,17 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
+    void updateBandFilter(int index, double value);
 
     ControlObjectThread m_COTLoFreq;
     ControlObjectThread m_COTHiFreq;
     ControlObjectThread m_COTLoFi;
     ControlObjectThread m_COTEnableEq;
-    ControlObjectSlave m_filterLow;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
     // Members needed for the Master EQ
+    QList<QSlider*> m_masterEQSliders;
     EffectsManager* m_pEffectsManager;
     EngineEffect* m_pEngineEffectMasterEQ;
 };
