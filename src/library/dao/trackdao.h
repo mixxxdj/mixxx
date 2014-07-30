@@ -116,6 +116,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     // it will update the Library.cover_art column in DB
     bool updateCoverArt(int trackId, int coverId);
+    bool updateCoverArt(QList<int> trackIds, QList<int> coverIds);
 
   signals:
     void trackDirty(int trackId);

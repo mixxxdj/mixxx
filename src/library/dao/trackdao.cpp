@@ -1246,6 +1246,31 @@ bool TrackDAO::updateCoverArt(int trackId, int coverId) {
     return true;
 }
 
+bool TrackDAO::updateCoverArt(QList<int> trackIds, QList<int> coverIds) {
+    if (trackIds.isEmpty() || coverIds.isEmpty()) {
+        return false;
+    }
+
+    // TODO: it should be done in a single query
+    QSqlQuery query(m_database);
+    for (int i=0; i<trackIds.size(); i++) {
+        qDebug() << coverIds.at(i) << trackIds.at(i);
+        query.prepare("UPDATE library SET cover_art=:coverId WHERE id=:trackId");
+        query.bindValue(":coverId", coverIds.at(i));
+        query.bindValue(":trackId", trackIds.at(i));
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
+            return false;
+        }
+    }
+
+    // we also need to update the cover_art column in the tablemodel.
+    // TODO: we should create a new signal with a better name, updateTracksInBTC?
+    emit(tracksAdded(trackIds.toSet()));
+    return true;
+}
+
 // Mark all the tracks in the library as invalid.
 // That means we'll need to later check that those tracks actually
 // (still) exist as part of the library scanning procedure.
