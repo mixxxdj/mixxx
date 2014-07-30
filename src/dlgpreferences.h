@@ -115,6 +115,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefNoVinyl* m_wnovinylcontrol;
     DlgPrefShoutcast* m_wshoutcast;
     DlgPrefReplayGain* m_wreplaygain;
+    DlgPrefLV2* m_wlv2;
 #ifdef __MODPLUG__
     DlgPrefModplug* m_wmodplug;
 #endif
@@ -125,6 +126,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pAutoDJButton;
     QTreeWidgetItem* m_pEqButton;
+    QTreeWidgetItem* m_pLV2Button;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBeatDetectionButton;
