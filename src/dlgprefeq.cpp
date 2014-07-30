@@ -215,13 +215,15 @@ void DlgPrefEQ::slotUpdateLoEQ() {
     slotApply();
 }
 
-void DlgPrefEQ::slotUpdateLowFilter() {
-    double value = sliderLow->value() / 100.0 * 4;
+void DlgPrefEQ::slotUpdateFilter(int value) {
+    QSlider* slider = qobject_cast<QSlider*>(sender());
+    int index = slider->property("index").toInt();
+    double paramValue = value / 100.0 * 4;
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
     pRequest->pTargetEffect = m_pEngineEffectMasterEQ;
-    pRequest->SetParameterParameters.iParameter = 0;
-    pRequest->value = value;
+    pRequest->SetParameterParameters.iParameter = index;
+    pRequest->value = paramValue;
     pRequest->minimum = 0;
     pRequest->maximum = 4;
     pRequest->default_value = 1;

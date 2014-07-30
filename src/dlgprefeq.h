@@ -50,8 +50,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotUpdate();
     void slotResetToDefaults();
     // Update the Master EQ
-    void slotUpdateLowFilter();
-    void slotUpdateHighFilter();
+    void slotUpdateFilter(int value);
 
   signals:
     void apply(const QString &);
