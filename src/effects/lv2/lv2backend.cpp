@@ -85,3 +85,7 @@ EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
                                                         lv2manifest->getAudioPortIndices(),
                                                         lv2manifest->getControlPortIndices()))));
 }
+
+QList<QPair<QString, bool> > LV2Backend::getAllDiscoveredPlugins() {
+    return m_allLV2Plugins;
+}
