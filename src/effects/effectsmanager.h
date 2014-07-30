@@ -14,11 +14,11 @@
 #include "effects/effectsbackend.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
+#include "effects/effectchainmanager.h"
 #include "effects/effectrack.h"
 #include "engine/effects/message.h"
 
 class EngineEffectsManager;
-class EffectChainManager;
 
 class EffectsManager : public QObject {
     Q_OBJECT

@@ -3,7 +3,6 @@
 #include <QMetaType>
 #include <QtAlgorithms>
 
-#include "effects/effectchainmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 
 EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
