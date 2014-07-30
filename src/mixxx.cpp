@@ -149,6 +149,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #ifdef __LILV__
     LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pLV2Backend);
+    pLV2Backend->enumeratePlugins();
+#else
+    LV2Backend* pLV2Backend = 0;
 #endif
 
     // Sets up the default EffectChains and EffectRack.
