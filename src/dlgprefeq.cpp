@@ -68,7 +68,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     }
 
     // Create and set up Master EQ's sliders
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 10; i++) {
         QSlider* slider = new QSlider(this);
         slider->setMinimum(0);
         slider->setMaximum(100);
