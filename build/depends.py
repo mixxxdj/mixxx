@@ -584,7 +584,7 @@ class MixxxCore(Feature):
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
                    "effects/native/butterworth8eqeffect.cpp",
-                   "effects/native/biquadstaticeqeffect.cpp",
+                   "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
                    "effects/native/reverbeffect.cpp",

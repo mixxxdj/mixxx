@@ -1,20 +1,20 @@
-#include "effects/native/biquadstaticeqeffect.h"
+#include "effects/native/graphiceqeffect.h"
 #include "util/math.h"
 
 // static
-QString BiquadStaticEQEffect::getId() {
-    return "org.mixxx.effects.biquadstaticeq";
+QString GraphicEQEffect::getId() {
+    return "org.mixxx.effects.graphiceq";
 }
 
 // static
-EffectManifest BiquadStaticEQEffect::getManifest() {
+EffectManifest GraphicEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Biquad Static EQ"));
+    manifest.setName(QObject::tr("Graphic EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Biquad 10 band static EQ"));
+        "A 10 band Graphic EQ implemented using Biquad Filters"));
 
     for (int i = 0; i < 10; i++) {
         EffectManifestParameter* mid = manifest.addParameter();
@@ -33,7 +33,7 @@ EffectManifest BiquadStaticEQEffect::getManifest() {
     return manifest;
 }
 
-BiquadStaticEQEffectGroupState::BiquadStaticEQEffectGroupState() {
+GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     for (int i = 0; i < 10; i++) {
         m_pBandBuf.append(SampleUtil::alloc(MAX_BUFFER_LEN));
         old_mid.append(1.0);
@@ -54,7 +54,7 @@ BiquadStaticEQEffectGroupState::BiquadStaticEQEffectGroupState() {
 
 }
 
-BiquadStaticEQEffectGroupState::~BiquadStaticEQEffectGroupState() {
+GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
     foreach (EngineFilterBiquad1Band* filter, band) {
         delete filter;
     }
@@ -63,7 +63,7 @@ BiquadStaticEQEffectGroupState::~BiquadStaticEQEffectGroupState() {
     }
 }
 
-BiquadStaticEQEffect::BiquadStaticEQEffect(EngineEffect* pEffect,
+GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
                                          const EffectManifest& manifest) {
     Q_UNUSED(manifest);
     for (int i = 0; i < 10; i++) {
@@ -71,11 +71,11 @@ BiquadStaticEQEffect::BiquadStaticEQEffect(EngineEffect* pEffect,
     }
 }
 
-BiquadStaticEQEffect::~BiquadStaticEQEffect() {
+GraphicEQEffect::~GraphicEQEffect() {
 }
 
-void BiquadStaticEQEffect::processGroup(const QString& group,
-                                       BiquadStaticEQEffectGroupState* pState,
+void GraphicEQEffect::processGroup(const QString& group,
+                                       GraphicEQEffectGroupState* pState,
                                        const CSAMPLE* pInput, CSAMPLE* pOutput,
                                        const unsigned int numSamples,
                                        const GroupFeatureState& groupFeatures) {

@@ -158,7 +158,7 @@ EffectChainSlotPointer EffectRack::addMasterEQEffectChainSlot() {
     // effect slots on the fly without having to load a chain.
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
                                               EffectChainPointer()));
-    EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect("org.mixxx.effects.butterworthstaticeq");
+    EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect("org.mixxx.effects.graphiceq");
     pChain->setName("Empty Chain");
     pChainSlotPointer->loadEffectChain(pChain);
     pChain->replaceEffect(0, pNextEffect);

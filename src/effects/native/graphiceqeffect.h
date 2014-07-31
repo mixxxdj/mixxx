@@ -1,5 +1,5 @@
-#ifndef BIQUADSTATICEQEFFECT_H
-#define BIQUADSTATICEQEFFECT_H
+#ifndef GRAPHICEQEFFECT_H
+#define GRAPHICEQEFFECT_H
 
 #include <QMap>
 
@@ -14,10 +14,10 @@
 #include "util/defs.h"
 #include "sampleutil.h"
 
-class BiquadStaticEQEffectGroupState {
+class GraphicEQEffectGroupState {
   public:
-    BiquadStaticEQEffectGroupState();
-    virtual ~BiquadStaticEQEffectGroupState();
+    GraphicEQEffectGroupState();
+    virtual ~GraphicEQEffectGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
@@ -26,17 +26,17 @@ class BiquadStaticEQEffectGroupState {
     QList<CSAMPLE*> m_pBandBuf;
 };
 
-class BiquadStaticEQEffect : public GroupEffectProcessor<BiquadStaticEQEffectGroupState> {
+class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {
   public:
-    BiquadStaticEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~BiquadStaticEQEffect();
+    GraphicEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~GraphicEQEffect();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processGroup(const QString& group,
-                      BiquadStaticEQEffectGroupState* pState,
+                      GraphicEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
                       const GroupFeatureState& groupFeatureState);
@@ -48,7 +48,7 @@ class BiquadStaticEQEffect : public GroupEffectProcessor<BiquadStaticEQEffectGro
 
     QList<EngineEffectParameter*> m_pPotMid;
 
-    DISALLOW_COPY_AND_ASSIGN(BiquadStaticEQEffect);
+    DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);
 };
 
-#endif // BIQUADHSTATICEQEFFECT_H
+#endif // GRAPHICEQEFFECT_H
