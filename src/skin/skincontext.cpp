@@ -233,16 +233,15 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
     
     // replace variables
     QDomNodeList variablesElements = svgElement.elementsByTagName("Variable");
-    uint variableIndex;
+    int i=variablesElements.length()-1;
     QDomElement varElement;
     QString varName, varValue;
     QDomNode varNode, varParentNode, oldChild;
     QDomText varValueNode;
     
-    for (variableIndex=0; variableIndex < variablesElements.length(); variableIndex++){
+    while ( i >= 0 && (varNode = variablesElements.item(i)).isNull() == false ){
         
         // retrieve value
-        varNode = variablesElements.item(variableIndex);
         varElement = varNode.toElement();
         varName = varElement.attribute("name");
         varValue = variable(varName);
@@ -256,6 +255,8 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
             // replaceChild has a really weird behaviour so I add this check
             qDebug() << "SVG : unable to replace dom node changed. \n";
         }
+        
+        --i;
     }
     
     
