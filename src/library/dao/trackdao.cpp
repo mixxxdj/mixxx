@@ -1247,7 +1247,8 @@ bool TrackDAO::updateCoverArt(int trackId, int coverId) {
 }
 
 bool TrackDAO::updateCoverArt(QList<int> trackIds, QList<int> coverIds) {
-    if (trackIds.isEmpty() || coverIds.isEmpty()) {
+    if (trackIds.size() != coverIds.size() ||
+        trackIds.isEmpty() || coverIds.isEmpty()) {
         return false;
     }
 
