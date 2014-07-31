@@ -237,6 +237,74 @@ void DlgPrefEQ::slotUpdate() {
     slotEqChanged();
 }
 
+void DlgPrefEQ::setUpMasterEQ() {
+    // Initialize the EngineEffect* used for writing an EffectRequest
+    int numberOfRacks = m_pEffectsManager->getEffectChainManager()->getEffectRacksSize();
+    // The Master EQ is the only Effect on the last Effect Rack
+    EffectPointer masterEQEffect = m_pEffectsManager->getEffectRack(numberOfRacks - 1)->
+            getEffectChainSlot(0)->getEffectSlot(0)->getEffect();
+    if (masterEQEffect) {
+        m_pEngineEffectMasterEQ = masterEQEffect->getEngineEffect();
+    } else {
+        m_pEngineEffectMasterEQ = 0;
+    }
+
+    // Create and set up Master EQ's sliders
+    for (int i = 0; i < 10; i++) {
+        QSlider* slider = new QSlider(this);
+        slider->setMinimum(0);
+        slider->setMaximum(100);
+        slider->setSingleStep(1);
+        slider->setValue(25);
+        // Set the index as a property because we need it inside slotUpdateFilter()
+        slider->setProperty("index", QVariant(i));
+        slidersGridLayout->addWidget(slider, 0, i);
+        m_masterEQSliders.append(slider);
+        connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateFilter(int)));
+    }
+
+    // Display center frequencies for each filter
+    QLabel* centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("31.25 Hz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 0);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("62.50 Hz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 1);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("125 Hz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 2);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("250 Hz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 3);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("500 Hz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 4);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("1 kHz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 5);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("2 kHz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 6);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("4 kHz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 7);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("8 kHz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 8);
+
+    centerFreqLabel = new QLabel(this);
+    centerFreqLabel->setText("16 kHz");
+    slidersGridLayout->addWidget(centerFreqLabel, 1, 9);
+}
+
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
     // We're mapping f(x) = x^4 onto the range kFrequencyLowerLimit,
     // kFrequencyUpperLimit with x [minValue, maxValue]. First translate x into
