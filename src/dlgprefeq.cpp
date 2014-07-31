@@ -56,30 +56,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_butterworth8, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
 
-    // Initialize EngineEffect with Master EQ's engine effect
-    int numberOfRacks = m_pEffectsManager->getEffectChainManager()->getEffectRacksSize();
-    // The Master EQ is the only Effect on the last Effect Rack
-    EffectPointer masterEQEffect = m_pEffectsManager->getEffectRack(numberOfRacks - 1)->
-            getEffectChainSlot(0)->getEffectSlot(0)->getEffect();
-    if (masterEQEffect) {
-        m_pEngineEffectMasterEQ = masterEQEffect->getEngineEffect();
-    } else {
-        m_pEngineEffectMasterEQ = 0;
-    }
+    setUpMasterEQ();
 
-    // Create and set up Master EQ's sliders
-    for (int i = 0; i < 10; i++) {
-        QSlider* slider = new QSlider(this);
-        slider->setMinimum(0);
-        slider->setMaximum(100);
-        slider->setSingleStep(1);
-        slider->setValue(25);
-        // Set the index as a property because we need it inside slotUpdateFilter()
-        slider->setProperty("index", QVariant(i));
-        horizontalLayout->addWidget(slider);
-        m_masterEQSliders.append(slider);
-        connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateFilter(int)));
-    }
 
     loadSettings();
     slotUpdate();

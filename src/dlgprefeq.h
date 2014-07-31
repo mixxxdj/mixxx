@@ -62,6 +62,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
     void updateBandFilter(int index, double value);
+    void setUpMasterEQ();
 
     ControlObjectThread m_COTLoFreq;
     ControlObjectThread m_COTHiFreq;
