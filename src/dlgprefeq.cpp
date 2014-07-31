@@ -264,45 +264,19 @@ void DlgPrefEQ::setUpMasterEQ() {
     }
 
     // Display center frequencies for each filter
-    QLabel* centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("31.25 Hz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 0);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("62.50 Hz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 1);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("125 Hz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 2);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("250 Hz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 3);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("500 Hz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 4);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("1 kHz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 5);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("2 kHz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 6);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("4 kHz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 7);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("8 kHz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 8);
-
-    centerFreqLabel = new QLabel(this);
-    centerFreqLabel->setText("16 kHz");
-    slidersGridLayout->addWidget(centerFreqLabel, 1, 9);
+    float centerFrequencies[10] = {31.25, 62.5, 125, 250, 500, 1000,
+                                   2000, 4000, 8000, 16000};
+    for (int i = 0; i < 10; i++) {
+        QLabel* centerFreqLabel = new QLabel(this);
+        QString labelText;
+        if (centerFrequencies[i] < 1000) {
+            labelText = QString("%1 Hz").arg(centerFrequencies[i]);
+        } else {
+            labelText = QString("%1 kHz").arg(centerFrequencies[i] / 1000);
+        }
+        centerFreqLabel->setText(labelText);
+        slidersGridLayout->addWidget(centerFreqLabel, 1, i, Qt::AlignCenter);
+    }
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
