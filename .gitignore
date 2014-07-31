@@ -9,6 +9,7 @@
 *_build
 *~
 .#*
+.directory
 .sconf_temp
 .sconsign.branch
 .sconsign.dblite
