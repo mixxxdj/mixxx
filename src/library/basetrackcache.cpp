@@ -118,6 +118,13 @@ void BaseTrackCache::slotUpdateTrack(int trackId) {
     updateTrackInIndex(trackId);
 }
 
+void BaseTrackCache::slotUpdateTracks(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotUpdateTracks" << trackIds.size();
+    }
+    updateTracksInIndex(trackIds);
+}
+
 bool BaseTrackCache::isCached(int trackId) const {
     return m_trackInfo.contains(trackId);
 }

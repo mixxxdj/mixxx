@@ -1268,8 +1268,7 @@ bool TrackDAO::updateCoverArt(QList<int> trackIds, QList<int> coverIds) {
     }
 
     // we also need to update the cover_art column in the tablemodel.
-    // TODO: we should create a new signal with a better name, updateTracksInBTC?
-    emit(tracksAdded(trackIds.toSet()));
+    emit(updateTracksInBTC(trackIds.toSet()));
     return true;
 }
 
