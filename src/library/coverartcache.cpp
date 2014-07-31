@@ -173,6 +173,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
                                            const bool emitSignals) {
     FutureResult res;
     res.trackId = coverInfo.trackId;
+    res.md5Hash = coverInfo.md5Hash;
     res.croppedImg = croppedPixmap;
     res.emitSignals = emitSignals;
     res.newImgFound = false;
