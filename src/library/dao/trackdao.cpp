@@ -1251,18 +1251,19 @@ bool TrackDAO::updateCoverArt(QList<int> trackIds, QList<int> coverIds) {
         return false;
     }
 
-    // TODO: it should be done in a single query
-    QSqlQuery query(m_database);
+    QStringList idStringList;
+    QString sQuery = "UPDATE library SET cover_art = CASE id ";
     for (int i=0; i<trackIds.size(); i++) {
-        qDebug() << coverIds.at(i) << trackIds.at(i);
-        query.prepare("UPDATE library SET cover_art=:coverId WHERE id=:trackId");
-        query.bindValue(":coverId", coverIds.at(i));
-        query.bindValue(":trackId", trackIds.at(i));
+        sQuery = sQuery % QString("WHEN '%1' THEN '%2' ").arg(trackIds.at(i))
+                                                         .arg(coverIds.at(i));
+        idStringList.append(QString::number(trackIds.at(i)));
+    }
+    sQuery = sQuery % QString("END WHERE id IN (%1)").arg(idStringList.join(","));
 
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
-            return false;
-        }
+    QSqlQuery query(m_database);
+    if (!query.exec(sQuery)) {
+        LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
+        return false;
     }
 
     // we also need to update the cover_art column in the tablemodel.
