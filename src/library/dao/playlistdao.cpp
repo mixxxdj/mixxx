@@ -5,6 +5,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "util/math.h"
 
 PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -776,6 +777,25 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
     emit(changed(playlistId));
 }
 
+void searchForDuplicateTrack(const int fromPosition,
+                             const int toPosition,
+                             const int trackID,
+                             const int excludePosition,
+                             const int otherTrackPosition,
+                             const QHash<int,int>* pTrackPositionIds,
+                             int* pTrackDistance) {
+    //qDebug() << "        Searching from " << fromPosition << " to " << toPosition;
+    for (int pos = fromPosition; pos <= toPosition; pos++) {
+        if (pTrackPositionIds->value(pos) == trackID &&
+                pos != excludePosition) {
+            int tempTrackDistance =
+                    (otherTrackPosition - pos) * (otherTrackPosition - pos);
+            if (tempTrackDistance < *pTrackDistance || *pTrackDistance == -1)
+                *pTrackDistance = tempTrackDistance;
+        }
+    }
+}
+
 void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
@@ -784,7 +804,13 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     qsrand(seed);
     QHash<int,int> trackPositionIds = allIds;
     QList<int> newPositions = positions;
-    const int searchDistance = trackPositionIds.count() / 4;
+    const int searchDistance = math_max(trackPositionIds.count() / 4, 1);
+
+    qDebug() << "Shuffling Tracks";
+    qDebug() << "*** Search Distance: " << searchDistance;
+    //for (int z = 0; z < positions.count(); z++) {
+        //qDebug() << "*** Position: " << positions[z] << " | ID: " << allIds.value(positions[z]);
+    //}
 
     // This is a modified Fisher-Yates shuffling algorithm.
     //
@@ -795,9 +821,9 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     //     2) Repeat a maximum of 10 times or until a good place (1/4 of the
     //        playlist away from a conflict) is reached:
     //         a) Pick a random track within the shuffle set (Track B)
-    //         b) Check 1/4 of the playlist up and down (clamped at the
+    //         b) Check 1/4 of the playlist up and down (wrapped at the
     //            beginning and end) from Track B's position for Track A
-    //         c) Check 1/4 of the playlist up and down (clamped at the
+    //         c) Check 1/4 of the playlist up and down (wrapped at the
     //            beginning and end) from Track A's position for Track B
     //         d) If there was a conflict, store the position if it was better
     //            than the already stored best position. The position is deemed
@@ -816,6 +842,9 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         int bestTrackDistance = -1;
         int bestTrackBPosition = -1;
 
+        //qDebug() << "Track A:";
+        //qDebug() << "Position: " << trackAPosition << " | Id: " << trackAId;
+
         for (int limit = 10; limit > 0 && conflictFound; limit--) {
             int randomShuffleSetIndex =
                 (int)(qrand() / (RAND_MAX + 1.0) * (newPositions.count()));
@@ -823,45 +852,64 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
             trackBId = trackPositionIds.value(trackBPosition);
             conflictFound = false;
             int trackDistance = -1;
+            int playlistEnd = trackPositionIds.count();
 
-            int startPosition = trackBPosition - searchDistance;
-            int endPosition = trackBPosition + searchDistance;
-            if (startPosition < 0)
-                startPosition = 0;
-            if (endPosition > trackPositionIds.count() - 1)
-                endPosition = trackPositionIds.count() - 1;
-            for (int count=startPosition; count < endPosition; count++) {
-                if (trackPositionIds.value(count) == trackAId &&
-                        count != trackAPosition) {
-                    conflictFound = true;
-                    int tempTrackDistance =
-                            (trackBPosition - count) * (trackBPosition - count);
-                    if (tempTrackDistance < trackDistance || trackDistance == -1)
-                        trackDistance = tempTrackDistance;
-                }
+            //qDebug() << "    Trying new Track B:";
+            //qDebug() << "        Position: " << trackBPosition << " | Id: " <<trackBId;
+
+            // Search around Track B for Track A
+            searchForDuplicateTrack(
+                math_clamp(trackBPosition - searchDistance, 0, playlistEnd),
+                math_clamp(trackBPosition + searchDistance, 0, playlistEnd),
+                trackAId, trackAPosition, trackBPosition,
+                &trackPositionIds, &trackDistance);
+            // Wrap search if needed
+            if (trackBPosition - searchDistance < 1) {
+                searchForDuplicateTrack(
+                    playlistEnd + (trackBPosition - searchDistance),
+                    playlistEnd,
+                    trackAId, trackAPosition, trackBPosition,
+                    &trackPositionIds, &trackDistance);
+            }
+            if (trackBPosition + searchDistance > playlistEnd) {
+                searchForDuplicateTrack(
+                    1,
+                    (trackBPosition + searchDistance) - playlistEnd,
+                    trackAId, trackAPosition, trackBPosition,
+                    &trackPositionIds, &trackDistance);
+            }
+            // Search around Track A for Track B
+            searchForDuplicateTrack(
+                math_clamp(trackAPosition - searchDistance, 0, playlistEnd),
+                math_clamp(trackAPosition + searchDistance, 0, playlistEnd),
+                trackBId,
+                trackBPosition,
+                trackAPosition,
+                &trackPositionIds,
+                &trackDistance);
+            // Wrap search if needed
+            if (trackAPosition - searchDistance < 1) {
+                searchForDuplicateTrack(
+                    playlistEnd + (trackAPosition - searchDistance),
+                    playlistEnd,
+                    trackBId, trackBPosition, trackAPosition,
+                    &trackPositionIds, &trackDistance);
+            }
+            if (trackAPosition + searchDistance > playlistEnd) {
+                searchForDuplicateTrack(
+                    1,
+                    (trackAPosition + searchDistance) - playlistEnd,
+                    trackBId, trackBPosition, trackAPosition,
+                    &trackPositionIds, &trackDistance);
             }
 
-            startPosition = trackAPosition - searchDistance;
-            endPosition = trackAPosition + searchDistance;
-            if (startPosition < 0)
-                startPosition = 0;
-            if (endPosition > trackPositionIds.count() - 1)
-                endPosition = trackPositionIds.count() - 1;
-            for (int count=startPosition; count < endPosition; count++) {
-                if (trackPositionIds.value(count) == trackBId &&
-                        count != trackBPosition) {
-                    conflictFound = true;
-                    int tempTrackDistance =
-                            (trackAPosition - count) * (trackAPosition - count);
-                    if (tempTrackDistance < trackDistance || trackDistance == -1)
-                        trackDistance = tempTrackDistance;
-                }
-            }
-
+            conflictFound = trackDistance != -1;
+            //qDebug() << "            Conflict found? " << conflictFound;
             if (bestTrackDistance < trackDistance) {
                 bestTrackDistance = trackDistance;
                 bestTrackBPosition = trackBPosition;
             }
+            //qDebug() << "        Current Best Position: " << bestTrackBPosition << " | Distance: " << bestTrackDistance;
         }
 
         if (conflictFound) {
@@ -871,7 +919,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
             }
         }
 
-        qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
+        //qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
         trackPositionIds.insert(trackAPosition, trackBId);
         trackPositionIds.insert(trackBPosition, trackAId);
         newPositions.swap(newPositions.indexOf(trackAPosition),
