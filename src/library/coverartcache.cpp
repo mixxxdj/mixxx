@@ -181,9 +181,10 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     //
     res.img = extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
-        // it is the first time that we are loading the embedded cover,
-        // so we need to recalculate the md5 hash.
+        res.img = rescaleBigImage(res.img);
         if (res.md5Hash.isEmpty()) {
+            // it is the first time that we are loading the embedded cover,
+            // so we need to recalculate the md5 hash.
             res.md5Hash = calculateMD5(res.img);
         }
         res.newImgFound = true;
@@ -195,21 +196,17 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
                                                    coverInfo.trackBaseName,
                                                    coverInfo.album);
-        res.img = QImage(res.coverLocation);
+        res.img = rescaleBigImage(QImage(res.coverLocation));
         res.md5Hash = calculateMD5(res.img);
         res.newImgFound = true;
     }
 
     // adjusting the cover size according to the final purpose
-    if (res.newImgFound) {
-        if (res.croppedImg) {
-            res.img = cropImage(res.img);
-        } else {
-            res.img = rescaleBigImage(res.img);
-        }
+    if (res.newImgFound && res.croppedImg) {
+        res.img = cropImage(res.img);
     }
 
-    // check if this image is really new
+    // check if this image is really a new one
     // (different from the one that we have in db)
     if (coverInfo.md5Hash == res.md5Hash)
     {
