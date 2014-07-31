@@ -322,7 +322,7 @@ void CoverArtCache::imageFound() {
     m_runningIds.remove(res.trackId);
 }
 
-// sqlite can only do about 50 writes per second,
+// sqlite can't do a huge number of updates in a very short time,
 // so it is important to collect all new covers and write them at once.
 void CoverArtCache::updateDB() {
     if (m_queueOfUpdates.isEmpty()) {
