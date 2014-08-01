@@ -55,13 +55,15 @@ class EngineFilterIIR : public EngineObjectConstIn {
             double cross_inc = 2.0 / static_cast<double>(iBufferSize);
             for (int i = 0; i < iBufferSize; i += 2) {
                 // Do a linear cross fade between the old samples and the new samples
-                double new1 = processSample(m_coef, m_buf1, pIn[i]);
-                double new2 = processSample(m_coef, m_buf2, pIn[i + 1]);
+                // Fade input of the new filter, bacause it is settled for In = 0
+                // Fade output of the old filter, to reach 0 after ramp is over. 
+                double new1 = processSample(m_coef, m_buf1, pIn[i] * cross_mix);
+                double new2 = processSample(m_coef, m_buf2, pIn[i + 1] * cross_mix);
                 double old1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
                 double old2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
-                pOutput[i] = new1 * cross_mix +
+                pOutput[i] = new1 +
                              old1 * (1.0 - cross_mix);
-                pOutput[i + 1] = new2 * cross_mix +
+                pOutput[i + 1] = new2 +
                                  old2 * (1.0 - cross_mix);
                 cross_mix += cross_inc;
             }
