@@ -112,6 +112,12 @@ void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
     m_pControlValue->set(value.toDouble());
 }
 
+void EffectParameterSlot::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setValue(v);
+    }
+}
+
 void EffectParameterSlot::onChainParameterChanged(double parameter) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
