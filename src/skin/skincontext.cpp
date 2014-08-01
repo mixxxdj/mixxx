@@ -259,6 +259,7 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
         --i;
     }
     
+    parseScriptsInSvg(svgNode);
     
     parseTree(svgNode, &SkinContext::setVariablesInAttributes);
     
@@ -273,7 +274,8 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
     if( svgFile.open() ){
         // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
         QTextStream out(&svgFile);
-        svgNode.save( out, -1 );
+        // svgNode.save( out, -1 );
+        svgNode.save( out, 2 );
         svgFile.close();
         svgTempFileName = svgFile.fileName();
     } else {
@@ -327,8 +329,27 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
             propName, match, replacement;
     QStringList captured;
     QDomAttr attribute;
-    QRegExp rx("var\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");    // var( part1 [, part2] )
-    QRegExp nameRx("^var-([^=\\s]+)$");                                                // var-attribute-name;
+    
+    
+	QScriptValue global = m_scriptEngine.globalObject();
+	QScriptValue hookNames;
+	
+	hookNames = global.property("hookNames").call( global );
+	
+	QString hooksPattern;
+    
+    if( hookNames.toString().length() ){
+		hooksPattern = hookNames.property("toPattern").call(hookNames).toString();
+		// qDebug() << "PATTERN : " << hooksPattern << "\n";
+	} else {
+		hooksPattern = "variable";
+	}
+    
+    // QRegExp rx("("+hooksPattern+")\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");    // var( part1 [, part2] )
+    QRegExp rx("\\s*("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");    // var( part1 [, part2]... )
+    
+    
+    QRegExp nameRx("^(var|expr)-([^=\\s]+)$");                                                // var-attribute-name;
     
     for (i=0; i < attributes.length(); i++){
         
@@ -338,39 +359,33 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         
         // searching variable attributes : var-attribute_name="variable_name"
         if (nameRx.indexIn(attributeName) != -1) {
-            if (!(varValue = variable(attributeValue)).isNull()){
+			
+			if(nameRx.cap(1) == "var"){
+				varValue = variable(attributeValue);
+			} else if(nameRx.cap(1) == "expr"){
+				varValue = evaluate(attributeValue).toString();
+			}
+			
+            // qDebug() << "Qstring : " << nameRx.cap(0) << " -> " << varValue.length() << "\n";
+            if (varValue.length()){
                 // qDebug() << "setting " << varValue << " as attribute " << nameRx.cap(1) << " \n";
-                element.setAttribute( nameRx.cap(1), varValue);
+                element.setAttribute( nameRx.cap(2), varValue);
             }
+            
+            continue;
         }
          
-        
         pos = 0;
-        // searching vars in the attribute value (styles or classes)
+        // searching expressions in the attribute value (styles or classes)
         while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
             captured = rx.capturedTexts();
-            // qWarning() << "AAAAA " << captured.length() << " '" << captured.join("', '") << "'\n";
             match = rx.cap(0);
+            qDebug() << "Expression : " << match << "\n";
             
-            varName = rx.cap(3);
-            if (varName.length()){ // var( prop, name )
-                propName = rx.cap(1);
-                varName = rx.cap(3);
-                varValue = variable(varName);
-                replacement = varValue.length() ? propName + ":" + varValue : "";
-            } else{ // var( name )
-                
-                varName = rx.cap(1);
-                replacement = variable(varName);
-            }
-            
-            // qDebug() << "setting " << replacement << " as " << match << "in "<< attributeValue << "\n";
-            
+            replacement = evaluate( match ).toString();
             attributeValue.replace(pos, match.length(), replacement);
             pos += replacement.length();
-        }
-        
-        
+		}
         
         attribute.setValue(attributeValue);
     }
@@ -391,3 +406,85 @@ void SkinContext::parseTree(const QDomNode& node, void (SkinContext::*callback)(
     }
 }
 
+
+// 
+void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
+    
+    // clone svg to don't alter xml input
+    QDomNode svgNode = svgSkinNode.cloneNode(true);
+    QDomElement svgElement = svgNode.toElement();
+    
+    // parse script content
+    QDomNodeList scriptElements = svgElement.elementsByTagName("script");
+    int i = 0;
+    QString expression;
+    QDomNode scriptNode;
+    
+    /*
+    QString hookablePrototype = "\
+		this.templateHooks = {};\
+		\
+		this.regexpQuote = function (str, delimiter) {\
+			return String(str).replace(\
+				new RegExp(\
+					'[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]',\
+					'g'\
+				),\
+				'\\$&'\
+			);\
+		}\
+		\
+		this.hookNames = function(){\
+			var hookNames = ['var'];\
+			for( var i in this.templateHooks )\
+				hookNames.push(i);\
+			\
+			hookNames.toPattern = function(){\
+		//		for( var i in this )\
+		//			this[i] = regexpQuote(this[i]);\
+				return this.join('|');\
+			}\
+			\
+			return hookNames;\
+		}\
+	";
+    */
+    
+    
+    while ( !(scriptNode = scriptElements.item(i)).isNull() && ++i ){
+        // retrieve script
+        expression = nodeToString(scriptNode);
+        m_scriptEngine.evaluate( expression );
+    }
+    
+    /** /
+	QScriptValue global = m_scriptEngine.globalObject();
+	QScriptValue hookNames;
+	
+    if( scriptElements.length() ){
+		hookNames = global.property("hookNames").call( global );
+		
+		// qDebug() << "SVG : script. \n" << global.property("hookNames").toString() << "\n";
+		qDebug() << "SVG : script. \n" << hookNames.toString() << "\n";
+	}
+	/**/
+}
+
+QScriptValue SkinContext::evaluate(QString expression) const {
+    QString shell = "\
+		(function(){\n\
+			var out = '';\n\
+			try{\n\
+				out = " + expression + ";\n\
+			} catch(e){ \n\
+				print(e);\n\
+			}\n\
+			return out;\n\
+		})();\n\
+	";
+	QScriptValue out = m_scriptEngine.evaluate(shell);
+	
+	// qDebug() << shell << "\n";
+	qDebug() << expression << " -> " << out.toString() << "\n";
+	return out;
+}

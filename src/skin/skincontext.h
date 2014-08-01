@@ -68,7 +68,9 @@ class SkinContext {
     QString variableNodeToText(const QDomElement& element) const;
     QString setVariablesInSvg(const QDomNode& svgNode) const;
     void setVariablesInAttributes(const QDomNode& node) const;
-
+    void parseScriptsInSvg(const QDomNode& svgNode) const;
+    QScriptValue evaluate(QString expression) const;
+    
     mutable QScriptEngine m_scriptEngine;
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
