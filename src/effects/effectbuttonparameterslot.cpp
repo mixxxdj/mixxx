@@ -46,6 +46,9 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
         m_pEffectParameter = pEffect->getButtonParameter(m_iParameterNumber);
 
         if (m_pEffectParameter) {
+            // Set the number of states
+            int numStates = m_pEffectParameter->manifest().getOptions().size();
+            m_pControlValue->setStates(numStates);
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue().toDouble();
             double dMinimum = m_pEffectParameter->getMinimum().toDouble();
