@@ -13,7 +13,9 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     inputR = new float[MAX_BUFFER_LEN];
     outputL = new float[MAX_BUFFER_LEN];
     outputR = new float[MAX_BUFFER_LEN];
-    params = new float[manifest.parameters().size()];
+    int totalParams = manifest.parameters().size() +
+                      manifest.buttonParameters().size();
+    params = new float[totalParams];
 
     handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL);
     const QList<EffectManifestParameter> effectManifestParameterList =
