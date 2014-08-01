@@ -147,42 +147,39 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         return CoverArtInfo();
     }
 
-    QSqlQuery query(m_database);
-    query.prepare(
-        "SELECT album, cover_art.location AS cover, cover_art.md5 AS md5, "
-        "track_locations.directory AS directory, "
-        "track_locations.filename AS filename, "
-        "track_locations.location AS location "
-        "FROM Library INNER JOIN track_locations "
-        "ON library.location = track_locations.id "
-        "LEFT JOIN cover_art ON cover_art.id = library.cover_art "
-        "WHERE library.id=:id "
-    );
-    query.bindValue(":id", trackId);
+    // This method can be called a lot of times (by CoverCache),
+    // if we use functions like "indexOf()" to find the column numbers
+    // it will do at least one new loop for each column and it can bring
+    // performance issues...
+    QString columns = "album,"                         //0
+                      "cover_art.location AS cover,"   //1
+                      "cover_art.md5,"                 //2
+                      "track_locations.directory,"     //3
+                      "track_locations.filename,"      //4
+                      "track_locations.location";      //5
 
-    if (!query.exec()) {
+    QString sQuery = QString(
+         "SELECT " % columns % " FROM Library "
+         "INNER JOIN track_locations ON library.location = track_locations.id "
+         "LEFT JOIN cover_art ON cover_art.id = library.cover_art "
+         "WHERE library.id = %1").arg(trackId);
+
+    QSqlQuery query(m_database);
+    if (!query.exec(sQuery)) {
       LOG_FAILED_QUERY(query);
       return CoverArtInfo();
     }
 
-    QSqlRecord queryRecord = query.record();
-    const int albumColumn = queryRecord.indexOf("album");
-    const int coverColumn = queryRecord.indexOf("cover");
-    const int md5Column = queryRecord.indexOf("md5");
-    const int directoryColumn = queryRecord.indexOf("directory");
-    const int filenameColumn = queryRecord.indexOf("filename");
-    const int locationColumn = queryRecord.indexOf("location");
-
     if (query.next()) {
         CoverArtInfo coverInfo;
         coverInfo.trackId = trackId;
-        coverInfo.album = query.value(albumColumn).toString();
-        coverInfo.coverLocation = query.value(coverColumn).toString();
-        coverInfo.md5Hash = query.value(md5Column).toString();
-        coverInfo.trackDirectory = query.value(directoryColumn).toString();
-        coverInfo.trackLocation = query.value(locationColumn).toString();
-        coverInfo.trackBaseName = QFileInfo(query.value(filenameColumn)
-                                            .toString()).baseName();
+        coverInfo.album = query.value(0).toString();
+        coverInfo.coverLocation = query.value(1).toString();
+        coverInfo.md5Hash = query.value(2).toString();
+        coverInfo.trackDirectory = query.value(3).toString();
+        QString filename = query.value(4).toString();
+        coverInfo.trackLocation = query.value(5).toString();
+        coverInfo.trackBaseName = QFileInfo(filename).baseName();
         return coverInfo;
     }
 
