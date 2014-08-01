@@ -18,17 +18,17 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
     handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL);
     const QList<EffectManifestParameter> effectManifestParameterList =
             manifest.parameters();
-//    const QList<EffectManifestParameter> effectManifestButtonParameterList =
-//            manifest.buttonParameters();
+    const QList<EffectManifestParameter> effectManifestButtonParameterList =
+            manifest.buttonParameters();
 
     // Initialize EngineEffectParameters
     foreach (EffectManifestParameter param, effectManifestParameterList) {
         m_parameters.append(pEngineEffect->getParameterById(param.id()));
     }
 
-//    foreach (EffectManifestParameter param, effectManifestButtonParameterList) {
-//        m_parameters.append(pEngineEffect->getButtonParameterById(param.id()));
-//    }
+    foreach (EffectManifestParameter param, effectManifestButtonParameterList) {
+        m_parameters.append(pEngineEffect->getButtonParameterById(param.id()));
+    }
 
     for (int i = 0; i < m_parameters.size(); i++) {
         params[i] = m_parameters[i]->value().toFloat();
