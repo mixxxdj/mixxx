@@ -1,5 +1,6 @@
 #include "effects/lv2/lv2manifest.h"
 #include "effects/effectmanifestparameter.h"
+#include <math.h>
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
@@ -51,7 +52,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             }
         }
 
-        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])) {
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
+            !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) &&
+            !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
             controlPortIndices.append(i);
             EffectManifestParameter* param = m_effectManifest.addParameter();
 
@@ -80,6 +83,62 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                 param->setControlHint(EffectManifestParameter::CONTROL_KNOB_STEPPING);
             } else {
                  param->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+            }
+        }
+    }
+
+    // Hack for putting enum parameters to the end of controlportindices
+    for (int i = 0; i < numPorts; i++) {
+        const LilvPort *port = lilv_plugin_get_port_by_index(plug, i);
+
+        if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"]) &&
+                (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"]) ||
+                lilv_port_has_property(m_pLV2plugin, port, properties["button_port"]))) {
+            controlPortIndices.append(i);
+            EffectManifestParameter* param = m_effectManifest.addParameter();
+
+            // Get and set the parameter name
+            info = lilv_port_get_name(m_pLV2plugin, port);
+            QString paramName = lilv_node_as_string(info);
+            param->setName(paramName);
+            lilv_node_free(info);
+
+            // Build and set the parameter id from its name
+            // Append its index to avoid duplicate ids
+            // Set the appropriate Hints
+            param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
+            param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+            param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+            param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+            if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
+                buildEnumerationOptions(port, param);
+            } else {
+                param->appendStep(qMakePair(QString("Inactive"), 0.0));
+                param->appendStep(qMakePair(QString("Active"), 1.0));
+            }
+
+            // Some plugins don't specify minimum, maximum and default values
+            // In this case set the minimum and default values to 0 and
+            // the maximum to the number of scale points
+            if (isnan(m_default[i])) {
+                param->setDefault(0);
+            } else {
+                param->setDefault(m_default[i]);
+            }
+
+            if (isnan(m_minimum[i])) {
+                param->setMinimum(0);
+            } else {
+                param->setMinimum(m_minimum[i]);
+            }
+
+            if (isnan(m_maximum[i])) {
+                qDebug() << "INSIDE MAXIMUM>>ISNAN";
+                param->setMaximum(param->getSteps().size() - 1);
+            } else {
+                qDebug() << "INSIDE MAXIMUM>>ISNOTNAN";
+                qDebug() << m_maximum[i];
+                param->setMaximum(m_maximum[i]);
             }
         }
     }
