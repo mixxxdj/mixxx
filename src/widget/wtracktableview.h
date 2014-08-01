@@ -150,6 +150,10 @@ class WTrackTableView : public WLibraryTableView {
 
     bool m_sorting;
 
+    // Column numbers
+    int m_iCoverLocationColumn; // cover art location
+    int m_iMd5Column;           // cover art md5 hash
+
     // Control the delay to load a cover art.
     double m_lastSelection;
     bool m_bLastCoverLoaded;
