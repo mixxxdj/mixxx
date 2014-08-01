@@ -113,12 +113,10 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setId(paramName.trimmed().toLower().replace(' ', '_').append(i + '0'));
             param->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+            param->setValueHint(EffectManifestParameter::VALUE_ENUMERATION);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
-                param->setValueHint(EffectManifestParameter::VALUE_ENUMERATION);
                 buildEnumerationOptions(port, param);
             } else {
-                param->setValueHint(EffectManifestParameter::VALUE_FLOAT);
-                param->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
                 param->insertOption(qMakePair(QString("Inactive"), QVariant(0.0)));
                 param->insertOption(qMakePair(QString("Active"), QVariant(1.0)));
             }
