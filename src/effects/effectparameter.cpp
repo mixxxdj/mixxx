@@ -133,6 +133,16 @@ bool EffectParameter::clampValue(EffectManifestParameter::ValueHint valueHint, Q
                 return true;
             }
             break;
+        case EffectManifestParameter::VALUE_ENUMERATION:
+            if (value.toDouble() < minimum.toDouble()) {
+                value = maximum;
+                return true;
+            } else if (value.toDouble() > maximum.toDouble()) {
+                value = minimum;
+                return true;
+            }
+            break;
+
         default:
             qWarning() << "ERROR: Unhandled valueHint";
             break;
