@@ -55,6 +55,7 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
             break;
         case EffectManifestParameter::VALUE_UNKNOWN: // Treat unknown like float
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             m_minimum = m_parameter.hasMinimum() && m_parameter.getMinimum().canConvert<double>() ?
                     m_parameter.getMinimum() : QVariant(0.0f);
             m_maximum = m_parameter.hasMaximum() && m_parameter.getMinimum().canConvert<double>() ?
@@ -153,6 +154,7 @@ bool EffectParameter::checkType(const QVariant& value) const {
             return value.canConvert<int>();
         case EffectManifestParameter::VALUE_FLOAT:
         case EffectManifestParameter::VALUE_UNKNOWN:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             return value.canConvert<double>();
         default:
             qWarning() << debugString() << "ERROR: Unhandled valueHint";
@@ -270,6 +272,7 @@ void EffectParameter::setMinimum(QVariant minimum) {
             break;
         case EffectManifestParameter::VALUE_UNKNOWN:
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             m_minimum = minimum.toDouble();
 
             if (m_parameter.hasMinimum() && m_minimum.toDouble() < m_parameter.getMinimum().toDouble()) {
@@ -345,6 +348,8 @@ void EffectParameter::setMaximum(QVariant maximum) {
             break;
         case EffectManifestParameter::VALUE_UNKNOWN:
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
+
             m_maximum = maximum.toDouble();
 
             if (m_parameter.hasMaximum() && m_maximum.toDouble() > m_parameter.getMaximum().toDouble()) {
