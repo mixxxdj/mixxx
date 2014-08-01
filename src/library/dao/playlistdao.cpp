@@ -777,13 +777,13 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
     emit(changed(playlistId));
 }
 
-void searchForDuplicateTrack(const int fromPosition,
-                             const int toPosition,
-                             const int trackID,
-                             const int excludePosition,
-                             const int otherTrackPosition,
-                             const QHash<int,int>* pTrackPositionIds,
-                             int* pTrackDistance) {
+void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
+                                          const int toPosition,
+                                          const int trackID,
+                                          const int excludePosition,
+                                          const int otherTrackPosition,
+                                          const QHash<int,int>* pTrackPositionIds,
+                                          int* pTrackDistance) {
     //qDebug() << "        Searching from " << fromPosition << " to " << toPosition;
     for (int pos = fromPosition; pos <= toPosition; pos++) {
         if (pTrackPositionIds->value(pos) == trackID &&
@@ -847,7 +847,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 
         for (int limit = 10; limit > 0 && conflictFound; limit--) {
             int randomShuffleSetIndex =
-                (int)(qrand() / (RAND_MAX + 1.0) * (newPositions.count()));
+                    (int)(qrand() / (RAND_MAX + 1.0) * (newPositions.count()));
             trackBPosition = positions.at(randomShuffleSetIndex);
             trackBId = trackPositionIds.value(trackBPosition);
             conflictFound = false;
@@ -859,48 +859,45 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 
             // Search around Track B for Track A
             searchForDuplicateTrack(
-                math_clamp(trackBPosition - searchDistance, 0, playlistEnd),
-                math_clamp(trackBPosition + searchDistance, 0, playlistEnd),
-                trackAId, trackAPosition, trackBPosition,
-                &trackPositionIds, &trackDistance);
+                    math_clamp(trackBPosition - searchDistance, 0, playlistEnd),
+                    math_clamp(trackBPosition + searchDistance, 0, playlistEnd),
+                    trackAId, trackAPosition, trackBPosition,
+                    &trackPositionIds, &trackDistance);
             // Wrap search if needed
             if (trackBPosition - searchDistance < 1) {
                 searchForDuplicateTrack(
-                    playlistEnd + (trackBPosition - searchDistance),
-                    playlistEnd,
-                    trackAId, trackAPosition, trackBPosition,
-                    &trackPositionIds, &trackDistance);
+                        playlistEnd + (trackBPosition - searchDistance),
+                        playlistEnd,
+                        trackAId, trackAPosition, trackBPosition,
+                        &trackPositionIds, &trackDistance);
             }
             if (trackBPosition + searchDistance > playlistEnd) {
                 searchForDuplicateTrack(
-                    1,
-                    (trackBPosition + searchDistance) - playlistEnd,
-                    trackAId, trackAPosition, trackBPosition,
-                    &trackPositionIds, &trackDistance);
+                        1,
+                        (trackBPosition + searchDistance) - playlistEnd,
+                        trackAId, trackAPosition, trackBPosition,
+                        &trackPositionIds, &trackDistance);
             }
             // Search around Track A for Track B
             searchForDuplicateTrack(
-                math_clamp(trackAPosition - searchDistance, 0, playlistEnd),
-                math_clamp(trackAPosition + searchDistance, 0, playlistEnd),
-                trackBId,
-                trackBPosition,
-                trackAPosition,
-                &trackPositionIds,
-                &trackDistance);
+                    math_clamp(trackAPosition - searchDistance, 0, playlistEnd),
+                    math_clamp(trackAPosition + searchDistance, 0, playlistEnd),
+                    trackBId, trackBPosition, trackAPosition,
+                    &trackPositionIds, &trackDistance);
             // Wrap search if needed
             if (trackAPosition - searchDistance < 1) {
                 searchForDuplicateTrack(
-                    playlistEnd + (trackAPosition - searchDistance),
-                    playlistEnd,
-                    trackBId, trackBPosition, trackAPosition,
-                    &trackPositionIds, &trackDistance);
+                        playlistEnd + (trackAPosition - searchDistance),
+                        playlistEnd,
+                        trackBId, trackBPosition, trackAPosition,
+                        &trackPositionIds, &trackDistance);
             }
             if (trackAPosition + searchDistance > playlistEnd) {
                 searchForDuplicateTrack(
-                    1,
-                    (trackAPosition + searchDistance) - playlistEnd,
-                    trackBId, trackBPosition, trackAPosition,
-                    &trackPositionIds, &trackDistance);
+                        1,
+                        (trackAPosition + searchDistance) - playlistEnd,
+                        trackBId, trackBPosition, trackAPosition,
+                        &trackPositionIds, &trackDistance);
             }
 
             conflictFound = trackDistance != -1;

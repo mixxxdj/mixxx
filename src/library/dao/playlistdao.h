@@ -111,6 +111,13 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
   private:
     void removeTracksFromPlaylistsInner(const QStringList& idList);
+    void searchForDuplicateTrack(const int fromPosition,
+                                 const int toPosition,
+                                 const int trackID,
+                                 const int excludePosition,
+                                 const int otherTrackPosition,
+                                 const QHash<int,int>* pTrackPositionIds,
+                                 int* pTrackDistance);
 
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
