@@ -156,7 +156,7 @@ class EffectManifestParameter {
     virtual void insertOption(QPair<QString, QVariant> option) {
         m_enumerationOptions.append(option);
     }
-    virtual QList<QPair<QString, QVariant> > getOptions() {
+    virtual QList<QPair<QString, QVariant> > getOptions() const {
         return m_enumerationOptions;
     }
 
