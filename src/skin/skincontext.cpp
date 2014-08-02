@@ -420,7 +420,7 @@ void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
     QString expression;
     QDomNode scriptNode;
     
-    /*
+    /**/
     QString hookablePrototype = "\
 		this.templateHooks = {};\
 		\
@@ -448,11 +448,22 @@ void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
 			return hookNames;\
 		}\
 	";
-    */
+    // m_scriptEngine.evaluate( hookablePrototype );
+    /**/
     
-    
+    QFile scriptFile;
     while ( !(scriptNode = scriptElements.item(i)).isNull() && ++i ){
         // retrieve script
+        if( scriptNode.toElement().hasAttribute("src") ){
+			// qDebug() << "script fil !!!! \n";
+			QFile scriptFile( getSkinPath( scriptNode.toElement().attribute("src") ) );
+			scriptFile.open(QIODevice::ReadOnly | QIODevice::Text);
+			
+			QTextStream in(&scriptFile);
+			// qDebug() << scriptFile.size() << in.readAll();
+			m_scriptEngine.evaluate( in.readAll() );
+		}
+        
         expression = nodeToString(scriptNode);
         m_scriptEngine.evaluate( expression );
     }
