@@ -1,3 +1,4 @@
+#include <QHashIterator>
 #include <QtDebug>
 #include <QThread>
 
@@ -45,42 +46,57 @@ int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
     return coverId;
 }
 
-QList<int> CoverArtDAO::saveCoverArt(QList<QPair<QString, QString> > covers) {
+QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
+                            QHash<int, QPair<QString, QString> > covers) {
     if (covers.isEmpty()) {
-        return QList<int>();
+        return QSet<QPair<int, int> >();
     }
 
     // it'll be used to avoid writing a new ID for
     // rows which have the same md5 (not changed).
     QString selectCoverId = QString("SELECT id FROM cover_art WHERE md5='%1'");
 
+    // <trackId, coverId>
+    QSet<QPair<int, int> > res;
+
     // preparing query to insert multi rows
     QString sQuery;
+    QHashIterator<int, QPair<QString, QString> > i(covers);
+    i.next();
+    res.insert(qMakePair(i.key(), -1));
     sQuery = QString("INSERT OR REPLACE INTO cover_art ('id', 'location', 'md5') "
                      "SELECT (%1) AS 'id', '%2' AS 'location', '%3' AS 'md5' ")
-                    .arg(selectCoverId.arg(covers.first().second))
-                    .arg(covers.first().first)
-                    .arg(covers.first().second);
-    for (int i=1; i<covers.size(); i++) {
+                    .arg(selectCoverId.arg(i.value().second))
+                    .arg(i.value().first)
+                    .arg(i.value().second);
+
+    while (i.hasNext()) {
+        i.next();
+        res.insert(qMakePair(i.key(), -1));
         sQuery = sQuery % QString("UNION SELECT (%1), '%2', '%3'")
-                .arg(selectCoverId.arg(covers.at(i).second))
-                .arg(covers.at(i).first)
-                .arg(covers.at(i).second);
+                .arg(selectCoverId.arg(i.value().second))
+                .arg(i.value().first)
+                .arg(i.value().second);
     }
+
     QSqlQuery query(m_database);
     if (!query.exec(sQuery)) {
         LOG_FAILED_QUERY(query) << "Failed to save multiple covers!";
-        return QList<int>();
+        return QSet<QPair<int, int> >();
     }
 
-    // getting the last inserted cover id's
-    QList<int> coverIds;
-    for (int index=0; index<covers.size(); index++) {
-        int coverId = getCoverArtId(covers.at(index).second);
-        coverIds.append(coverId);
+    QSetIterator<QPair<int, int> > set(res);
+    while (set.hasNext()) {
+        QPair<int, int> p = set.next();
+        int trackId = p.first;
+        int coverId = getCoverArtId(covers.value(trackId).second);
+        if (coverId > 0) {
+            res.remove(p);
+            res.insert(qMakePair(trackId, coverId));
+        }
     }
 
-    return coverIds;
+    return res;
 }
 
 void CoverArtDAO::deleteUnusedCoverArts() {

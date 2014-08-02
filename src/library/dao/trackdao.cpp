@@ -1246,20 +1246,26 @@ bool TrackDAO::updateCoverArt(int trackId, int coverId) {
     return true;
 }
 
-bool TrackDAO::updateCoverArt(QList<int> trackIds, QList<int> coverIds) {
-    if (trackIds.size() != coverIds.size() ||
-        trackIds.isEmpty() || coverIds.isEmpty()) {
+// @param <trackId, coverId>
+bool TrackDAO::updateCoverArt(QSet<QPair<int, int> > covers) {
+    if (covers.isEmpty()) {
         return false;
     }
 
-    QStringList idStringList;
+    QSet<int> trackIds;
+    QStringList trackIdsStringList;
     QString sQuery = "UPDATE library SET cover_art = CASE id ";
-    for (int i=0; i<trackIds.size(); i++) {
-        sQuery = sQuery % QString("WHEN '%1' THEN '%2' ").arg(trackIds.at(i))
-                                                         .arg(coverIds.at(i));
-        idStringList.append(QString::number(trackIds.at(i)));
+
+    QSetIterator<QPair<int, int> > set(covers);
+    while (set.hasNext()) {
+        QPair<int, int> p = set.next();
+        sQuery = sQuery % QString("WHEN '%1' THEN '%2' ").arg(p.first)
+                                                         .arg(p.second);
+        trackIds.insert(p.first);
+        trackIdsStringList.append(QString::number(p.first));
     }
-    sQuery = sQuery % QString("END WHERE id IN (%1)").arg(idStringList.join(","));
+    sQuery = sQuery % QString("END WHERE id IN (%1)")
+                        .arg(trackIdsStringList.join(","));
 
     QSqlQuery query(m_database);
     if (!query.exec(sQuery)) {
@@ -1268,7 +1274,7 @@ bool TrackDAO::updateCoverArt(QList<int> trackIds, QList<int> coverIds) {
     }
 
     // we also need to update the cover_art column in the tablemodel.
-    emit(updateTracksInBTC(trackIds.toSet()));
+    emit(updateTracksInBTC(trackIds));
     return true;
 }
 

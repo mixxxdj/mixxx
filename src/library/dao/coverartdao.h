@@ -22,7 +22,10 @@ class CoverArtDAO : public DAO {
     void deleteUnusedCoverArts();
     int getCoverArtId(QString md5Hash);
     int saveCoverArt(QString coverLocation, QString md5Hash);
-    QList<int> saveCoverArt(QList<QPair<QString, QString> > covers);
+
+    // @param covers: <trackId, <coverLoc, md5>>
+    // @return <trackId, coverId>
+    QSet<QPair<int, int> > saveCoverArt(QHash<int, QPair<QString, QString> > covers);
 
     struct CoverArtInfo {
         int trackId;

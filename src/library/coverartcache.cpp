@@ -328,12 +328,9 @@ void CoverArtCache::updateDB() {
     if (m_queueOfUpdates.isEmpty()) {
         return;
     }
-
-    QList<int> coverIds = m_pCoverArtDAO->saveCoverArt(m_queueOfUpdates.values());
-
-    Q_ASSERT(m_queueOfUpdates.keys().size() == coverIds.size());
-    m_pTrackDAO->updateCoverArt(m_queueOfUpdates.keys(), coverIds);
-
+    QSet<QPair<int, int> > covers;
+    covers = m_pCoverArtDAO->saveCoverArt(m_queueOfUpdates);
+    m_pTrackDAO->updateCoverArt(covers);
     m_queueOfUpdates.clear();
 }
 
