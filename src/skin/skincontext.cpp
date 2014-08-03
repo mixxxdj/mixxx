@@ -346,7 +346,7 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
 	}
     
     // QRegExp rx("("+hooksPattern+")\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");    // var( part1 [, part2] )
-    QRegExp rx("\\s*("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");    // var( part1 [, part2]... )
+    QRegExp rx("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");    // var( part1 [, part2]... )
     
     
     QRegExp nameRx("^(var|expr)-([^=\\s]+)$");                                                // var-attribute-name;
@@ -382,7 +382,7 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
             match = rx.cap(0);
             qDebug() << "Expression : " << match << "\n";
             
-            replacement = evaluate( match ).toString();
+            replacement = evaluate( "this.templateHooks." + match ).toString();
             attributeValue.replace(pos, match.length(), replacement);
             pos += replacement.length();
 		}
@@ -420,47 +420,12 @@ void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
     QString expression;
     QDomNode scriptNode;
     
-    /**/
-    QString hookablePrototype = "\
-		this.templateHooks = {};\
-		\
-		this.regexpQuote = function (str, delimiter) {\
-			return String(str).replace(\
-				new RegExp(\
-					'[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]',\
-					'g'\
-				),\
-				'\\$&'\
-			);\
-		}\
-		\
-		this.hookNames = function(){\
-			var hookNames = ['var'];\
-			for( var i in this.templateHooks )\
-				hookNames.push(i);\
-			\
-			hookNames.toPattern = function(){\
-		//		for( var i in this )\
-		//			this[i] = regexpQuote(this[i]);\
-				return this.join('|');\
-			}\
-			\
-			return hookNames;\
-		}\
-	";
-    // m_scriptEngine.evaluate( hookablePrototype );
-    /**/
-    
-    QFile scriptFile;
     while ( !(scriptNode = scriptElements.item(i)).isNull() && ++i ){
         // retrieve script
         if( scriptNode.toElement().hasAttribute("src") ){
-			// qDebug() << "script fil !!!! \n";
 			QFile scriptFile( getSkinPath( scriptNode.toElement().attribute("src") ) );
 			scriptFile.open(QIODevice::ReadOnly | QIODevice::Text);
-			
 			QTextStream in(&scriptFile);
-			// qDebug() << scriptFile.size() << in.readAll();
 			m_scriptEngine.evaluate( in.readAll() );
 		}
         
