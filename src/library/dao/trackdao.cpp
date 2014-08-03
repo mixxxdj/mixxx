@@ -842,7 +842,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QSqlQuery query(m_database);
 
     query.prepare(
-        "SELECT library.id, artist, title, album, album_artist, cover_art, year, genre, composer, "
+        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, "
         "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
@@ -861,7 +861,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int titleColumn = queryRecord.indexOf("title");
         const int albumColumn = queryRecord.indexOf("album");
         const int albumArtistColumn = queryRecord.indexOf("album_artist");
-        const int coverArtColumn = queryRecord.indexOf("cover_art");
         const int yearColumn = queryRecord.indexOf("year");
         const int genreColumn = queryRecord.indexOf("genre");
         const int composerColumn = queryRecord.indexOf("composer");
@@ -897,7 +896,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString title = query.value(titleColumn).toString();
             QString album = query.value(albumColumn).toString();
             QString albumArtist = query.value(albumArtistColumn).toString();
-            int coverArtId = query.value(coverArtColumn).toInt();
             QString year = query.value(yearColumn).toString();
             QString genre = query.value(genreColumn).toString();
             QString composer = query.value(composerColumn).toString();
