@@ -3,7 +3,7 @@
 #include "controlpushbutton.h"
 
 // The maximum number of effect parameters we're going to support.
-const unsigned int kDefaultMaxParameters = 10;
+const unsigned int kDefaultMaxParameters = 8;
 
 EffectSlot::EffectSlot(const unsigned int iRackNumber,
                        const unsigned int iChainNumber,
