@@ -62,3 +62,10 @@ void EffectParameterSlotBase::slotValueType(double v) {
     //qDebug() << debugString() << "slotValueType" << v;
     qWarning() << "WARNING: value_type is a read-only control.";
 }
+
+const EffectManifestParameter EffectParameterSlotBase::getManifest() {
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->manifest();
+    }
+    return EffectManifestParameter();
+}
