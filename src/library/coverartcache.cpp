@@ -9,7 +9,9 @@
 
 CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
-          m_pTrackDAO(NULL) {
+          m_pTrackDAO(NULL),
+          m_defaultCover(":/images/library/default_cover.png"),
+          m_sDefaultCoverLocation(":/images/library/default_cover.png") {
 }
 
 CoverArtCache::~CoverArtCache() {
@@ -21,6 +23,35 @@ void CoverArtCache::setCoverArtDAO(CoverArtDAO* coverdao) {
 
 void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
     m_pTrackDAO = trackdao;
+}
+
+bool CoverArtCache::changeCoverArt(int trackId,
+                                   const QString& newCoverLocation) {
+    if (trackId < 1 || newCoverLocation.isEmpty()) {
+        return false;
+    }
+
+    QImage img(newCoverLocation);
+    QString md5Hash = calculateMD5(img);
+    if (md5Hash.isEmpty()) {
+        return false;
+    }
+
+    // Update DB
+    int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, md5Hash);
+    m_pTrackDAO->updateCoverArt(trackId, coverId);
+
+    QPixmap pixmap;
+    if (QPixmapCache::find(md5Hash, &pixmap)) {
+        emit(pixmapFound(trackId, pixmap));
+    } else {
+        pixmap.convertFromImage(img);
+        if (QPixmapCache::insert(md5Hash, pixmap)) {
+            emit(pixmapFound(trackId, pixmap));
+        }
+    }
+
+    return true;
 }
 
 void CoverArtCache::requestPixmap(int trackId,
@@ -99,7 +130,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 
     // Looking for embedded cover art.
     //
-    res.img = searchEmbeddedCover(coverInfo.trackLocation);
+    res.img = extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.img = rescaleBigImage(res.img);
         if (res.md5Hash.isEmpty()) {
@@ -179,7 +210,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
 
 // this method will parse the information stored in the sound file
 // just to extract the embedded cover art
-QImage CoverArtCache::searchEmbeddedCover(QString trackLocation) {
+QImage CoverArtCache::extractEmbeddedCover(QString trackLocation) {
     if (trackLocation.isEmpty()) {
         return QImage();
     }
@@ -231,6 +262,9 @@ QImage CoverArtCache::rescaleBigImage(QImage img) {
 }
 
 QString CoverArtCache::calculateMD5(QImage img) {
+    if (img.isNull()) {
+        return QString();
+    }
     QByteArray arr((char*)img.bits(), img.byteCount());
     QCryptographicHash md5(QCryptographicHash::Md5);
     md5.addData(arr);

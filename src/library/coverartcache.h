@@ -14,12 +14,14 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
   public:
+    bool changeCoverArt(int trackId, const QString& newCoverLocation);
     void requestPixmap(int trackId,
                        const QString& coverLocation = QString(),
                        const QString& md5Hash = QString());
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
-    QString getDefaultCoverLocation(int trackId);
+    QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
+    QPixmap getDefaultCoverArt() { return m_defaultCover; }
 
   public slots:
     void imageFound();
@@ -49,11 +51,13 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     static CoverArtCache* m_instance;
     CoverArtDAO* m_pCoverArtDAO;
     TrackDAO* m_pTrackDAO;
+    const QString m_sDefaultCoverLocation;
+    const QPixmap m_defaultCover;
     QSet<int> m_runningIds;
 
     QString calculateMD5(QImage img);
     QImage rescaleBigImage(QImage img);
-    QImage searchEmbeddedCover(QString trackLocation);
+    QImage extractEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,
                                    QString trackBaseName,
                                    QString album);

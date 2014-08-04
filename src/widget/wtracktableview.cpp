@@ -567,6 +567,14 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     // NULL is fine.
     m_pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
+
+    QString coverLocation = index.sibling(index.row(),
+        trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION)).data().toString();
+    QString md5Hash = index.sibling(index.row(),
+        trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5)).data().toString();
+    int trackId = trackModel->getTrackId(index);
+    m_pTrackInfo->slotLoadCoverArt(coverLocation, md5Hash, trackId);
+
     m_pTrackInfo->show();
 }
 

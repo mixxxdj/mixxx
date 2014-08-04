@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>410</height>
+    <width>600</width>
+    <height>400</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -55,9 +55,212 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,80,0,20">
+        <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,98,1,1">
+         <item row="4" column="2">
+          <widget class="QLabel" name="lblYear">
+           <property name="text">
+            <string>Year:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="txtComposer">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>25</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="lblGenre">
+           <property name="text">
+            <string>Genre:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="lblArtist">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Artist:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QLabel" name="lblKey">
+           <property name="text">
+            <string>Key:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="txtGenre">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>25</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="lblAlbumArtist">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Album Artist:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLineEdit" name="txtGrouping">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>25</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="QLabel" name="lblTrackNumber">
+           <property name="text">
+            <string>Track #:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="lblComposer">
+           <property name="text">
+            <string>Composer:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="lblAlbum">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Album:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="lblGrouping">
+           <property name="text">
+            <string>Grouping:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lblTrackName">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Title:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
          <item row="4" column="3">
           <widget class="QLineEdit" name="txtYear">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>25</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="3">
+          <widget class="QLineEdit" name="txtKey">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -100,161 +303,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="2">
-          <widget class="QLabel" name="lblKey">
-           <property name="text">
-            <string>Key:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtTrackName">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>25</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="lblGrouping">
-           <property name="text">
-            <string>Grouping:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="lblComposer">
-           <property name="text">
-            <string>Composer:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
-          <widget class="QLineEdit" name="txtKey">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>25</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="lblGenre">
-           <property name="text">
-            <string>Genre:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="lblTrackName">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Title:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtAlbum">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>25</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="lblArtist">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Artist:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="lblAlbumArtist">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Album Artist:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1" colspan="3">
+         <item row="3" column="1">
           <widget class="QLineEdit" name="txtAlbumArtist">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -276,7 +325,29 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1" colspan="3">
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="txtAlbum">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>25</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
           <widget class="QLineEdit" name="txtArtist">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -298,34 +369,8 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="lblAlbum">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Album:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="2">
-          <widget class="QLabel" name="lblTrackNumber">
-           <property name="text">
-            <string>Track #:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLineEdit" name="txtComposer">
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="txtTrackName">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -346,66 +391,53 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="2">
-          <widget class="QLabel" name="lblYear">
+         <item row="0" column="2" rowspan="4" colspan="2">
+          <widget class="QPushButton" name="coverArt">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>110</horstretch>
+             <verstretch>110</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>110</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>110</width>
+             <height>120</height>
+            </size>
+           </property>
            <property name="text">
-            <string>Year:</string>
+            <string/>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="txtGenre">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>25</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
+           <property name="iconSize">
             <size>
-             <width>0</width>
-             <height>25</height>
+             <width>110</width>
+             <height>110</height>
             </size>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="txtGrouping">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>25</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
+           <property name="flat">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,1,1,1,1,1,1,1">
-         <item row="0" column="4">
-          <widget class="QLabel" name="lblBitrate">
+         <item row="1" column="0">
+          <widget class="QLabel" name="lblLocation">
            <property name="font">
             <font>
              <weight>75</weight>
@@ -413,10 +445,10 @@
             </font>
            </property>
            <property name="text">
-            <string>Bitrate:</string>
+            <string>Location:</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
            </property>
           </widget>
          </item>
@@ -436,8 +468,8 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="5">
-          <widget class="QLabel" name="txtBitrate">
+         <item row="0" column="3">
+          <widget class="QLabel" name="txtBpm">
            <property name="text">
             <string/>
            </property>
@@ -446,8 +478,8 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="lblLocation">
+         <item row="0" column="2">
+          <widget class="QLabel" name="lblBpm">
            <property name="font">
             <font>
              <weight>75</weight>
@@ -455,15 +487,25 @@
             </font>
            </property>
            <property name="text">
-            <string>Location:</string>
+            <string>BPM:</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
-          <widget class="QLabel" name="txtBpm">
+         <item row="0" column="7">
+          <widget class="QLabel" name="txtType">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="txtBitrate">
            <property name="text">
             <string/>
            </property>
@@ -482,10 +524,13 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="7">
-          <widget class="QLabel" name="txtType">
+         <item row="1" column="1" colspan="7">
+          <widget class="QLabel" name="txtLocation">
            <property name="text">
             <string/>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -508,8 +553,8 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="lblBpm">
+         <item row="0" column="4">
+          <widget class="QLabel" name="lblBitrate">
            <property name="font">
             <font>
              <weight>75</weight>
@@ -517,29 +562,10 @@
             </font>
            </property>
            <property name="text">
-            <string>BPM:</string>
+            <string>Bitrate:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="7">
-          <widget class="QLabel" name="txtLocation">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>
@@ -553,7 +579,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>0</width>
-           <height>38</height>
+           <height>29</height>
           </size>
          </property>
         </spacer>
@@ -571,6 +597,13 @@
           <widget class="QPushButton" name="btnReloadFromFile">
            <property name="text">
             <string>Reload track metadata from file</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="btnOpenFileBrowser">
+           <property name="text">
+            <string>Open in file browser</string>
            </property>
           </widget>
          </item>

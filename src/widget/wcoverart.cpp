@@ -15,8 +15,7 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnableWidget(true),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
-          m_bDefaultCover(true),
-          m_defaultCover(":/images/library/vinyl-record.png") {
+          m_bDefaultCover(true) {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
     m_iconHide = m_iconHide.scaled(20,
@@ -95,6 +94,11 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     }
 
     if (m_lastRequestedTrackId == trackId) {
+        if (m_lastRequestedCoverLocation == CoverArtCache::instance()
+                                            ->getDefaultCoverLocation()) {
+            setToDefault();
+            return;
+        }
         m_sCoverTitle = QFileInfo(m_lastRequestedCoverLocation).baseName();
         m_currentCover = pixmap;
         m_currentScaledCover = scaledCoverArt(pixmap);
@@ -141,7 +145,8 @@ void WCoverArt::paintEvent(QPaintEvent*) {
         int x = width() / 2 - height() / 2 + 4;
         int y = 6;
         if (m_bDefaultCover) {
-            painter.drawPixmap(x, y, m_defaultCover);
+            painter.drawPixmap(x, y,
+                              CoverArtCache::instance()->getDefaultCoverArt());
         } else {
             painter.drawPixmap(x, y, m_currentScaledCover);
         }
