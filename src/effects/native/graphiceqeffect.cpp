@@ -97,57 +97,22 @@ void GraphicEQEffect::processGroup(const QString& group,
         fMid[i] = m_pPotMid[i]->value().toDouble();
     }
 
-    // Process the new EQ'd signals.
-    // They use up to 16 frames history so in case we are just starting,
-    // 16 frames are junk, this is handled by ramp_delay
-    int ramp_delay = 0;
-
     for (int i = 0; i < 10; i++) {
         if (fMid[i] || pState->old_mid[i]) {
             pState->band[i]->process(pInput, pState->m_pBandBuf[i], numSamples);
-            if(pState->old_mid[i] == 0) {
-                ramp_delay = 30;
-            }
         }
     }
 
-    if (ramp_delay) {
-        // first use old gains
-        SampleUtil::copy10WithGain(pOutput,
-                pState->m_pBandBuf[0], pState->old_mid[0],
-                pState->m_pBandBuf[1], pState->old_mid[1],
-                pState->m_pBandBuf[2], pState->old_mid[2],
-                pState->m_pBandBuf[3], pState->old_mid[3],
-                pState->m_pBandBuf[4], pState->old_mid[4],
-                pState->m_pBandBuf[5], pState->old_mid[5],
-                pState->m_pBandBuf[6], pState->old_mid[6],
-                pState->m_pBandBuf[7], pState->old_mid[7],
-                pState->m_pBandBuf[8], pState->old_mid[8],
-                pState->m_pBandBuf[9], pState->old_mid[9],
-                ramp_delay);
-        // Now ramp the remaining frames
-        SampleUtil::copy10WithRampingGain(&pOutput[ramp_delay],
-                &pState->m_pBandBuf[0][ramp_delay], pState->old_mid[0], fMid[0],
-                &pState->m_pBandBuf[1][ramp_delay], pState->old_mid[1], fMid[1],
-                &pState->m_pBandBuf[2][ramp_delay], pState->old_mid[2], fMid[2],
-                &pState->m_pBandBuf[3][ramp_delay], pState->old_mid[3], fMid[3],
-                &pState->m_pBandBuf[4][ramp_delay], pState->old_mid[4], fMid[4],
-                &pState->m_pBandBuf[5][ramp_delay], pState->old_mid[5], fMid[5],
-                &pState->m_pBandBuf[6][ramp_delay], pState->old_mid[6], fMid[6],
-                &pState->m_pBandBuf[7][ramp_delay], pState->old_mid[7], fMid[7],
-                &pState->m_pBandBuf[8][ramp_delay], pState->old_mid[8], fMid[8],
-                &pState->m_pBandBuf[9][ramp_delay], pState->old_mid[9], fMid[9],
-                numSamples - ramp_delay);
-    } else if (fMid[0] != pState->old_mid[0] ||
-               fMid[1] != pState->old_mid[1] ||
-               fMid[2] != pState->old_mid[2] ||
-               fMid[3] != pState->old_mid[3] ||
-               fMid[4] != pState->old_mid[4] ||
-               fMid[5] != pState->old_mid[5] ||
-               fMid[6] != pState->old_mid[6] ||
-               fMid[7] != pState->old_mid[7] ||
-               fMid[8] != pState->old_mid[8] ||
-               fMid[9] != pState->old_mid[9]) {
+    if (fMid[0] != pState->old_mid[0] ||
+        fMid[1] != pState->old_mid[1] ||
+        fMid[2] != pState->old_mid[2] ||
+        fMid[3] != pState->old_mid[3] ||
+        fMid[4] != pState->old_mid[4] ||
+        fMid[5] != pState->old_mid[5] ||
+        fMid[6] != pState->old_mid[6] ||
+        fMid[7] != pState->old_mid[7] ||
+        fMid[8] != pState->old_mid[8] ||
+        fMid[9] != pState->old_mid[9]) {
         SampleUtil::copy10WithRampingGain(pOutput,
                 pState->m_pBandBuf[0], pState->old_mid[0], fMid[0],
                 pState->m_pBandBuf[1], pState->old_mid[1], fMid[1],
