@@ -133,6 +133,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(int trackId,
     res.md5Hash = md5Hash;
     res.croppedImg = croppedPixmap;
     res.emitSignals = emitSignals;
+    res.newImgFound = true;
 
     if (res.croppedImg) {
         res.img = cropImage(res.img);
