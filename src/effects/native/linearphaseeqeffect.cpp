@@ -128,6 +128,28 @@ void LinearPhaseEQEffect::processGroup(const QString& group,
         }
     }
 
+    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
+    fLow = m_pPotLow->value().toDouble();
+    fMid = m_pPotMid->value().toDouble();
+    fHigh = m_pPotHigh->value().toDouble();
+
+    // Since this is a linear phase Filter we can subtract or add the filtered signal to the dry signal
+    // The dry signal represents the low gain
+    // Then the lower high pass result is added and at least the higher high pass result.
+    fHigh = fHigh - fMid;
+    fMid = fMid - fLow;
+
+    int sampleRate = getSampleRate();
+    if (m_oldSampleRate != sampleRate ||
+            (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
+            (m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
+        m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
+        m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
+        m_oldSampleRate = sampleRate;
+        pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
+    }
+
+
     // Apply Hanning window to the old samples and copy them to process buffer
     for (unsigned int i = 0; i < numSamples / 2; ++i) {
         pState->m_pProcessBuf[i * 2] = pState->m_pLastIn[i * 2] * pState->m_pWindow[i];
@@ -151,15 +173,20 @@ void LinearPhaseEQEffect::processGroup(const QString& group,
         pState->m_pProcessBuf[numSamples * 2 + i] = 0;
     }
 
-    // Process Butterworth forward
-    //pState->high->process(pState->m_pProcessBuf, pState->m_pProcessBuf, numSamples * 2 + 3000);
-    //pState->high->processReverse(pState->m_pProcessBuf, pState->m_pProcessBuf, numSamples * 2 + 3000);
+    // Process Butterworth forward and backward
+    pState->low->process(pState->m_pProcessBuf, pState->m_pLowBuf, numSamples * 2 + 3000);
+    pState->low->processReverse(pState->m_pLowBuf, pState->m_pLowBuf, numSamples * 2 + 3000);
 
-    // Process Buttweroeth backward
+    // Process Butterworth forward and backward
+    pState->high->process(pState->m_pProcessBuf, pState->m_pHighBuf, numSamples * 2 + 3000);
+    pState->high->processReverse(pState->m_pHighBuf, pState->m_pHighBuf, numSamples * 2 + 3000);
 
-    // Save current samples for the next round
-    // Apply Hanning window
-    // copy them to process buffer
+    // No raming is required here since we are in a Hanning Window
+    SampleUtil::copy3WithGain(pState->m_pProcessBuf,
+            pState->m_pProcessBuf, fLow,
+            pState->m_pLowBuf, fMid,
+            pState->m_pHighBuf, fHigh,
+            numSamples * 2);
 
     // Coppy second half of old data to output
     for (unsigned int i = 0; i < numSamples; ++i) {
