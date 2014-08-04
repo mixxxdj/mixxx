@@ -51,16 +51,16 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
 
     // Initialize filters with the default values
     // TODO(rryan): use the real samplerate
-    band.append(new EngineFilterBiquad1Band(44100, 31.25));
-    band.append(new EngineFilterBiquad1Band(44100, 62.5));
-    band.append(new EngineFilterBiquad1Band(44100, 125.0));
-    band.append(new EngineFilterBiquad1Band(44100, 250.0));
-    band.append(new EngineFilterBiquad1Band(44100, 500.0));
-    band.append(new EngineFilterBiquad1Band(44100, 1000.0));
-    band.append(new EngineFilterBiquad1Band(44100, 2000.0));
-    band.append(new EngineFilterBiquad1Band(44100, 4000.0));
-    band.append(new EngineFilterBiquad1Band(44100, 8000.0));
-    band.append(new EngineFilterBiquad1Band(44100, 16000.0));
+    band.append(new EngineFilterBiquad1Band(44100, 31.25, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 62.5, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 125.0, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 250.0, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 500.0, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 1000.0, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 2000.0, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 4000.0, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 8000.0, 2));
+    band.append(new EngineFilterBiquad1Band(44100, 16000.0, 2));
 
 }
 
