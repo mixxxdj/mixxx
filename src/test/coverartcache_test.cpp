@@ -8,17 +8,17 @@
 class CoverArtCacheTest : public CoverArtCache, public MixxxTest {
 };
 
-const QString& coverLocationTest = ":/images/library/default_cover.png";
+const QString& kCoverLocationTest = "res/images/library/default_cover.png";
 
 TEST_F(CoverArtCacheTest, loadImage) {
     int trackId = 1;
-    QImage img = QImage(coverLocationTest);
+    QImage img = QImage(kCoverLocationTest);
     QString md5hash = "md5hash"; // fake md5 hash
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadImage(trackId, coverLocationTest, md5hash);
+    res = CoverArtCache::loadImage(trackId, kCoverLocationTest, md5hash);
     ASSERT_EQ(trackId, res.trackId);
-    EXPECT_QSTRING_EQ(coverLocationTest, res.coverLocation);
+    EXPECT_QSTRING_EQ(kCoverLocationTest, res.coverLocation);
     EXPECT_QSTRING_EQ(md5hash, res.md5Hash);
     ASSERT_TRUE(img.operator==(res.img));
 }
@@ -46,7 +46,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     ASSERT_TRUE(res.coverLocation.isEmpty());
 
     // setting image source and default format
-    QImage img(coverLocationTest);
+    QImage img(kCoverLocationTest);
     const char* format("jpg");
 
     //
