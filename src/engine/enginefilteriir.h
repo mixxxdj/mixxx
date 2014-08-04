@@ -71,6 +71,14 @@ class EngineFilterIIR : public EngineObjectConstIn {
         }
     }
 
+    virtual void processReverse(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                                     const int iBufferSize) {
+        for (int i = iBufferSize - 2; i >= 0; i -= 2) {
+            pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
+            pOutput[i + 1] = processSample(m_coef, m_buf2, pIn[i + 1]);
+        }
+    }
+
   protected:
     inline double processSample(double* coef, double* buf, register double val);
 
