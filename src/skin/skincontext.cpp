@@ -274,7 +274,6 @@ QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
     if( svgFile.open() ){
         // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
         QTextStream out(&svgFile);
-        // svgNode.save( out, -1 );
         svgNode.save( out, 2 );
         svgFile.close();
         svgTempFileName = svgFile.fileName();
@@ -331,25 +330,20 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
     QDomAttr attribute;
     
     
-	QScriptValue global = m_scriptEngine.globalObject();
-	QScriptValue hookNames;
-	
-	hookNames = global.property("hookNames").call( global );
-	
-	QString hooksPattern;
+    QScriptValue global = m_scriptEngine.globalObject();
+    QScriptValue hookNames;
+    QString hooksPattern;
+    
+    hookNames = global.property("hookNames").call( global );
     
     if( hookNames.toString().length() ){
-		hooksPattern = hookNames.property("toPattern").call(hookNames).toString();
-		// qDebug() << "PATTERN : " << hooksPattern << "\n";
-	} else {
-		hooksPattern = "variable";
-	}
+        hooksPattern = hookNames.property("toPattern").call(hookNames).toString();
+    } else {
+        hooksPattern = "variable";
+    }
     
-    // QRegExp rx("("+hooksPattern+")\\(\\s*([^\\(\\),\\s]+)(\\s*,\\s*([^\\(\\),\\s]+))?\\s*\\)");    // var( part1 [, part2] )
-    QRegExp rx("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");    // var( part1 [, part2]... )
-    
-    
-    QRegExp nameRx("^(var|expr)-([^=\\s]+)$");                                                // var-attribute-name;
+    QRegExp rx("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");                   // hook( arg1 [, arg2]... )
+    QRegExp nameRx("^(var|expr)-([^=\\s]+)$");                                  // var-attribute_name="var_name";
     
     for (i=0; i < attributes.length(); i++){
         
@@ -359,16 +353,14 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         
         // searching variable attributes : var-attribute_name="variable_name"
         if (nameRx.indexIn(attributeName) != -1) {
-			
-			if(nameRx.cap(1) == "var"){
-				varValue = variable(attributeValue);
-			} else if(nameRx.cap(1) == "expr"){
-				varValue = evaluate(attributeValue).toString();
-			}
-			
-            // qDebug() << "Qstring : " << nameRx.cap(0) << " -> " << varValue.length() << "\n";
+            
+            if(nameRx.cap(1) == "var"){
+                varValue = variable(attributeValue);
+            } else if(nameRx.cap(1) == "expr"){
+                varValue = evaluateTemplateExpression(attributeValue).toString();
+            }
+            
             if (varValue.length()){
-                // qDebug() << "setting " << varValue << " as attribute " << nameRx.cap(1) << " \n";
                 element.setAttribute( nameRx.cap(2), varValue);
             }
             
@@ -382,10 +374,10 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
             match = rx.cap(0);
             qDebug() << "Expression : " << match << "\n";
             
-            replacement = evaluate( "this.templateHooks." + match ).toString();
+            replacement = evaluateTemplateExpression( "this.templateHooks." + match ).toString();
             attributeValue.replace(pos, match.length(), replacement);
             pos += replacement.length();
-		}
+        }
         
         attribute.setValue(attributeValue);
     }
@@ -407,7 +399,6 @@ void SkinContext::parseTree(const QDomNode& node, void (SkinContext::*callback)(
 }
 
 
-// 
 void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
@@ -423,44 +414,32 @@ void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
     while ( !(scriptNode = scriptElements.item(i)).isNull() && ++i ){
         // retrieve script
         if( scriptNode.toElement().hasAttribute("src") ){
-			QFile scriptFile( getSkinPath( scriptNode.toElement().attribute("src") ) );
-			scriptFile.open(QIODevice::ReadOnly | QIODevice::Text);
-			QTextStream in(&scriptFile);
-			m_scriptEngine.evaluate( in.readAll() );
-		}
+            QFile scriptFile( getSkinPath( scriptNode.toElement().attribute("src") ) );
+            scriptFile.open(QIODevice::ReadOnly | QIODevice::Text);
+            QTextStream in(&scriptFile);
+            m_scriptEngine.evaluate( in.readAll() );
+        }
         
         expression = nodeToString(scriptNode);
         m_scriptEngine.evaluate( expression );
     }
     
-    /** /
-	QScriptValue global = m_scriptEngine.globalObject();
-	QScriptValue hookNames;
-	
-    if( scriptElements.length() ){
-		hookNames = global.property("hookNames").call( global );
-		
-		// qDebug() << "SVG : script. \n" << global.property("hookNames").toString() << "\n";
-		qDebug() << "SVG : script. \n" << hookNames.toString() << "\n";
-	}
-	/**/
 }
 
-QScriptValue SkinContext::evaluate(QString expression) const {
+QScriptValue SkinContext::evaluateTemplateExpression(QString expression) const {
     QString shell = "\
-		(function(){\n\
-			var out = '';\n\
-			try{\n\
-				out = " + expression + ";\n\
-			} catch(e){ \n\
-				print(e);\n\
-			}\n\
-			return out;\n\
-		})();\n\
-	";
-	QScriptValue out = m_scriptEngine.evaluate(shell);
-	
-	// qDebug() << shell << "\n";
-	qDebug() << expression << " -> " << out.toString() << "\n";
-	return out;
+        (function(){\n\
+            var out = '';\n\
+            try{\n\
+                out = " + expression + ";\n\
+            } catch(e){ \n\
+                print(e);\n\
+            }\n\
+            return out;\n\
+        })();\n\
+    ";
+    QScriptValue out = m_scriptEngine.evaluate(shell);
+    
+    // qDebug() << expression << " -> " << out.toString() << "\n";
+    return out;
 }
