@@ -19,6 +19,9 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
         m_pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+    }
+
+    if (m_pTrackModel) {
         m_iMd5Column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
         m_iCoverLocationColumn = m_pTrackModel->fieldIndex(
                                     LIBRARYTABLE_COVERART_LOCATION);
