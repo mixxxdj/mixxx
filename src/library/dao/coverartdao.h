@@ -41,7 +41,6 @@ class CoverArtDAO : public DAO {
 
   private:
     QSqlDatabase& m_database;
-    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif // COVERARTDAO_H
