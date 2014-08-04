@@ -70,6 +70,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScaleBpm(int); 
     void slotClearBeats();
     void slotGuiTickTime(double);
+    void slotScrollValueChanged(int);
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -148,6 +149,10 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearBeatsAction;
 
     bool m_sorting;
+
+    // Column numbers
+    int m_iCoverLocationColumn; // cover art location
+    int m_iMd5Column;           // cover art md5 hash
 
     // Control the delay to load a cover art.
     double m_lastSelection;
