@@ -16,10 +16,20 @@ EffectManifest GraphicEQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A 10 band Graphic EQ based on Biquad Filters"));
 
+    // Display center frequencies for each filter
+    float centerFrequencies[10] = {31.25, 62.5, 125, 250, 500, 1000,
+                                   2000, 4000, 8000, 16000};
+    QString paramName;
     for (int i = 0; i < 10; i++) {
+        if (centerFrequencies[i] < 1000) {
+            paramName = QString("%1 Hz").arg(centerFrequencies[i]);
+        } else {
+            paramName = QString("%1 kHz").arg(centerFrequencies[i] / 1000);
+        }
+
         EffectManifestParameter* mid = manifest.addParameter();
         mid->setId(QString("mid%1").arg(i));
-        mid->setName(QString("Mid%1").arg(i));
+        mid->setName(paramName);
         mid->setDescription(QString("Gain for Band Filter %1").arg(i));
         mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
         mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
