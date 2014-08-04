@@ -372,6 +372,9 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
     bool isFirstPacket = TRUE;
     bool m_bReadLoop = FALSE;
 
+    uint8_t *l_iOut = NULL;
+    uint16_t l_iResampleReadSize = 0;
+
     // loop until requested number of samples has been retrieved
     //l_SPacket.data = NULL;
     //av_init_packet(&l_SPacket);
@@ -446,7 +449,8 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
                 //frame->
                 if (frameFinished) {
-                    m_pResample->reSample(l_pFrame);
+                    l_iOut = NULL;
+                    l_iResampleReadSize = m_pResample->reSample(l_pFrame, &l_iOut);
                     readBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                                                            l_pFrame->nb_samples,
                                                            m_pCodecCtx->sample_fmt, 1);
@@ -556,11 +560,11 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
                     isFirstPacket = FALSE;
                     m_bIsSeeked = FALSE;
 
-                    if (m_pResample->getBufferSize() > 0) {
-                        readBuffer.write((const char *)m_pResample->getBuffer(),
-                                         m_pResample->getBufferSize());
-                        readBytes = m_pResample->getBufferSize();
-                        m_pResample->removeBuffer();
+                    if (l_iResampleReadSize > 0) {
+                        readBuffer.write((const char *)l_iOut,
+                                         l_iResampleReadSize);
+                        readBytes = l_iResampleReadSize;
+                        free(l_iOut);
 
                     } else {
                         readBuffer.write((const char *)
