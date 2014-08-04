@@ -93,6 +93,18 @@ class EngineFilterIIR : public EngineObjectConstIn {
 };
 
 template<>
+inline double EngineFilterIIR<2, IIR_BP>::processSample(double* coef, double* buf, register double val) {
+    register double tmp, fir, iir;
+    tmp = buf[0]; buf[0] = buf[1];
+    iir = val * coef[0];
+    iir -= coef[1] * tmp; fir = -tmp;
+    iir -= coef[2] * buf[0];
+    fir += iir;
+    buf[1] = iir; val = fir;
+    return val;
+}
+
+template<>
 inline double EngineFilterIIR<4, IIR_LP>::processSample(double* coef, double* buf, register double val) {
     register double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
