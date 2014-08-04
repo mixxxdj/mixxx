@@ -3768,40 +3768,55 @@ Numark mode:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefeqdlg.ui" line="32"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="25"/>
+        <source>Disable Mixxx`s internal equalizers if you prefer to use equalizers on connected hardware mixers, and to lower CPU utilization.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefeqdlg.ui" line="35"/>
         <source>Bessel 4th order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefeqdlg.ui" line="42"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="38"/>
+        <source>Use this option if you prefer lower CPU utilization.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefeqdlg.ui" line="48"/>
         <source>Butterworth 8th order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefeqdlg.ui" line="54"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="51"/>
+        <source>Use this option if you prefer steep roll-off.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefeqdlg.ui" line="63"/>
         <source>High Shelf EQ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefeqdlg.ui" line="114"/>
-        <location filename="../../src/dlgprefeqdlg.ui" line="241"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="123"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="250"/>
         <source>16 Hz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefeqdlg.ui" line="140"/>
-        <location filename="../../src/dlgprefeqdlg.ui" line="267"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="149"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="276"/>
         <source>1.014 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefeqdlg.ui" line="166"/>
-        <location filename="../../src/dlgprefeqdlg.ui" line="293"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="175"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="302"/>
         <source>20.05 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefeqdlg.ui" line="179"/>
+        <location filename="../../src/dlgprefeqdlg.ui" line="188"/>
         <source>Low Shelf EQ</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7467,7 +7482,7 @@ To abort this action, press Cancel on the file dialog.</source>
     </message>
     <message>
         <location filename="../../src/effects/native/butterworth8eqeffect.cpp" line="16"/>
-        <source>A Butterworth 8th order filter equalizer (flat responds, roll-off -48 db/Oct)To adjust frequency shelves see the Equalizer preferences.</source>
+        <source>A Butterworth 8th order filter equalizer (flat response, roll-off -48 db/Oct). To adjust frequency shelves see the Equalizer preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8243,6 +8258,11 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/skin/tooltips.cpp" line="471"/>
+        <source>Indicates that the audio buffer is too small to do all audio processing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/skin/tooltips.cpp" line="263"/>
         <source>Places a cue-point at the current position on the waveform.</source>
         <translation type="unfinished"></translation>
@@ -8471,11 +8491,6 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="470"/>
         <source>Audio Latency Overload Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="471"/>
-        <source>Indicates that the audio buffer is to small to do all audio processing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -9120,78 +9135,78 @@ Click OK to exit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="632"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1232"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="649"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1249"/>
         <source>Create New Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="662"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1293"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="679"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1310"/>
         <source>Create New Crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1233"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1250"/>
         <source>Enter name for new playlist:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1235"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1252"/>
         <source>New Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1241"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1245"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1254"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1258"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1262"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1271"/>
         <source>Playlist Creation Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1242"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1259"/>
         <source>A playlist by that name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1246"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1263"/>
         <source>A playlist cannot have a blank name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1255"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1272"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1294"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1311"/>
         <source>Enter name for new crate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1295"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1312"/>
         <source>New Crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1302"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1307"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1318"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1319"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1324"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1335"/>
         <source>Creating Crate Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1303"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1320"/>
         <source>A crate by that name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1308"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1325"/>
         <source>A crate cannot have a blank name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1319"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1336"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -9241,12 +9256,12 @@ Click OK to exit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="572"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="589"/>
         <source>Load to Deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="591"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="608"/>
         <source>Sampler %1</source>
         <translation type="unfinished"></translation>
     </message>
