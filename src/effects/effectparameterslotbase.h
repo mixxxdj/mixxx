@@ -35,6 +35,7 @@ class EffectParameterSlotBase : public QObject {
 
     QString name() const;
     QString description() const;
+    const EffectManifestParameter getManifest();
 
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
