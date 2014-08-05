@@ -14,10 +14,11 @@ class LV2Backend : public EffectsBackend {
     void enumeratePlugins();
     const QSet<QString> getEffectIds() const;
     EffectManifest getManifest(const QString& effectId) const;
+    EffectManifest& getManifestReference(const QString& effectId);
     bool canInstantiateEffect(const QString& effectId) const;
     EffectPointer instantiateEffect(EffectsManager* pEffectsManager,
                                     const QString& effectId);
-    QList<QPair<QString, bool> > getAllDiscoveredPlugins();
+    QList<QPair<QPair<QString, bool>, QString> > getAllDiscoveredPlugins();
 
   private:
     void initializeProperties();
@@ -25,7 +26,11 @@ class LV2Backend : public EffectsBackend {
     QHash<QString, LilvNode*> m_properties;
     QHash<QString, LV2Manifest*> m_registeredEffects;
     // List used for displaying the available LV2 plugins
-    QList<QPair<QString, bool> > m_allLV2Plugins;
+    // It stores the name of the plugin, its availability and its id
+    // entry.first.first -> name
+    // entry.first.second -> availability
+    // entry.second -> id
+    QList<QPair<QPair<QString, bool>, QString> > m_allLV2Plugins;
 
     QString debugString() const {
         return "LV2Backend";
