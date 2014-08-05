@@ -15,7 +15,8 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnableWidget(true),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
-          m_bDefaultCover(true) {
+          m_bDefaultCover(true),
+          m_lastRequestedTrackId(-1) {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
     m_iconHide = m_iconHide.scaled(20,
@@ -79,7 +80,7 @@ void WCoverArt::setToDefault() {
 }
 
 void WCoverArt::slotResetWidget() {
-    m_lastRequestedTrackId = 0;
+    m_lastRequestedTrackId = -1;
     m_lastRequestedCoverLocation.clear();
     m_lastRequestedMd5Hash.clear();
     m_bCoverIsVisible = false;
