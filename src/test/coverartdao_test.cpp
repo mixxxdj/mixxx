@@ -17,13 +17,13 @@ class CoverArtDAOTest : public MixxxTest {
         // make sure we clean up the db
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("DELETE FROM " % COVERART_TABLE);
-        query.exec();
+        ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
-        query.exec();
+        ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM library");
-        query.exec();
+        ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM track_locations");
-        query.exec();
+        ASSERT_TRUE(query.exec());
 
         delete m_pTrackCollection;
     }
@@ -57,7 +57,7 @@ TEST_F(CoverArtDAOTest, saveCoverArt) {
         " AND " % COVERARTTABLE_MD5 % "=:md5"));
     query.bindValue(":location", testCoverLoc);
     query.bindValue(":md5", testMd5Hash);
-    query.exec();
+    ASSERT_TRUE(query.exec());
     int testCoverId = -1;
     if (query.next()) {
         testCoverId = query.value(0).toInt();
@@ -161,7 +161,7 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
         "WHERE " % LIBRARYTABLE_ID % "=:trackId"));
     query.bindValue(":album", album);
     query.bindValue(":trackId", trackId);
-    query.exec();
+    ASSERT_TRUE(query.exec());
 
     // adding cover art
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
