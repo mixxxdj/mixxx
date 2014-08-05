@@ -1,33 +1,69 @@
 #include <QWidget>
 #include <QString>
 #include <QPair>
-#include <QCheckBox>
 #include <QLabel>
+#include <QCheckBox>
+#include <QPushButton>
 
 #include "dlgpreflv2.h"
 #include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "util/math.h"
 
+#define pluginName first.first
+#define isAvailable first.second
+#define pluginId second
+
 DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
                        ConfigObject<ConfigValue>* pConfig)
-        : DlgPreferencePage(pParent) {
+        : DlgPreferencePage(pParent),
+          m_pLV2Backend(lv2Backend) {
     Q_UNUSED(pConfig);
     setupUi(this);
-    if (!lv2Backend) {
+    if (!m_pLV2Backend) {
         return;
     }
-    QList<QPair<QString, bool> > allPlugins = lv2Backend->getAllDiscoveredPlugins();
+    QList<QPair<QPair<QString, bool>, QString> > allPlugins = m_pLV2Backend->getAllDiscoveredPlugins();
+
     for (int i = 0; i < allPlugins.size(); i++) {
-        QLabel* label = new QLabel(this);
-        if (!allPlugins[i].second) {
-            label->setText(QString("<s>") + allPlugins[i].first + QString("</s>"));
+        QPushButton* button = new QPushButton(this);
+        button->setText(allPlugins[i].pluginName);
+        if (!allPlugins[i].isAvailable) {
+            button->setDisabled(true);
         } else {
-            label->setText(allPlugins[i].first);
+            button->setDisabled(false);
         }
-        lv2_vertical_layout->addWidget(label);
+        lv2_vertical_layout_left->addWidget(button);
+        button->setProperty("id", QVariant(allPlugins[i].pluginId));
+        connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
     }
 }
 
 DlgPrefLV2::~DlgPrefLV2() {
+}
+
+void DlgPrefLV2::slotDisplayParameters() {
+    // Clear the right vertical layout
+    foreach (QCheckBox* box, m_pluginParameters) {
+        delete box;
+    }
+    m_pluginParameters.clear();
+
+    QLayoutItem* item;
+    while ((item = lv2_vertical_layout_right->takeAt(1)) != 0) {
+        lv2_vertical_layout_right->removeWidget(item->widget());
+        delete item->widget();
+    }
+
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    QString pluginId = button->property("id").toString();
+    EffectManifest& manifest = m_pLV2Backend->getManifestReference(pluginId);
+    // Need to do the remapping here
+    foreach (EffectManifestParameter param, manifest.parameters()) {
+        QCheckBox* entry = new QCheckBox(this);
+        entry->setText(param.name());
+        lv2_vertical_layout_right->addWidget(entry);
+        m_pluginParameters.append(entry);
+    }
+    lv2_vertical_layout_right->addStretch();
 }

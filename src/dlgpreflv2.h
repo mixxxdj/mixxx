@@ -2,6 +2,7 @@
 #define DLGPREFLV2_H
 
 #include <QWidget>
+#include <QCheckBox>
 
 #include "ui_dlgpreflv2dlg.h"
 #include "configobject.h"
@@ -14,6 +15,14 @@ class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     DlgPrefLV2(QWidget *parent, LV2Backend* lv2Backend,
                ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefLV2();
+
+  private slots:
+    void slotDisplayParameters();
+
+  private:
+    LV2Backend* m_pLV2Backend;
+    QList<QCheckBox*> m_pluginParameters;
+
 };
 
 #endif
