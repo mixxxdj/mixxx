@@ -72,6 +72,10 @@ EffectManifest LV2Backend::getManifest(const QString& effectId) const {
     return EffectManifest();
 }
 
+EffectManifest& LV2Backend::getManifestReference(const QString& effectId) {
+    return m_registeredEffects[effectId]->getEffectManifestReference();
+}
+
 EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
                                                 const QString& effectId) {
     if (!canInstantiateEffect(effectId)) {
