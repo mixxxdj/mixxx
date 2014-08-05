@@ -21,7 +21,12 @@
 // example, a database-backed manifest)
 class EffectManifest {
   public:
-    EffectManifest() { }
+    EffectManifest() {
+        for (unsigned int i = 0; i < 188; i++) {
+            m_activeParameters.append(i);
+        }
+    }
+
     virtual ~EffectManifest() {
         //qDebug() << debugString() << "deleted";
     }
@@ -65,7 +70,6 @@ class EffectManifest {
         return m_parameters;
     }
 
-
     virtual EffectManifestParameter* addParameter() {
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();
@@ -80,6 +84,14 @@ class EffectManifest {
         return &m_buttonParameters.last();
     }
 
+    virtual void setActiveParameter(int index, unsigned int value) {
+        m_activeParameters[index] = value;
+    }
+
+    virtual unsigned int getActiveParameter(int index) const {
+        return m_activeParameters[index];
+    }
+
   private:
     QString debugString() const {
         return QString("EffectManifest(%1)").arg(m_id);
@@ -92,6 +104,7 @@ class EffectManifest {
     QString m_description;
     QList<EffectManifestParameter> m_parameters;
     QList<EffectManifestParameter> m_buttonParameters;
+    QList<unsigned int> m_activeParameters;
 };
 
 #endif /* EFFECTMANIFEST_H */
