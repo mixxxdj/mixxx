@@ -37,8 +37,10 @@ void LV2Backend::enumeratePlugins() {
         }
 
         // Add the current plugin to the list of discovered ones
-        m_allLV2Plugins.append(qMakePair(QString(lilv_node_as_string(name)),
-                                         isAvailable));
+        QString pluginName(lilv_node_as_string(name));
+        QString pluginId = lv2Manifest->getEffectManifest().id();
+        m_allLV2Plugins.append(qMakePair(qMakePair(pluginName, isAvailable),
+                                         pluginId));
     }
 }
 
@@ -86,6 +88,6 @@ EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
                                                         lv2manifest->getControlPortIndices()))));
 }
 
-QList<QPair<QString, bool> > LV2Backend::getAllDiscoveredPlugins() {
+QList<QPair<QPair<QString, bool>, QString> > LV2Backend::getAllDiscoveredPlugins() {
     return m_allLV2Plugins;
 }
