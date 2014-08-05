@@ -9,6 +9,7 @@ class LV2Manifest {
     LV2Manifest(const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
     ~LV2Manifest();
     EffectManifest getEffectManifest();
+    EffectManifest& getEffectManifestReference();
     QList<int> getAudioPortIndices();
     QList<int> getControlPortIndices();
     const LilvPlugin* getPlugin();

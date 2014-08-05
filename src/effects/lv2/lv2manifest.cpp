@@ -170,6 +170,10 @@ EffectManifest LV2Manifest::getEffectManifest() {
     return m_effectManifest;
 }
 
+EffectManifest& LV2Manifest::getEffectManifestReference() {
+    return m_effectManifest;
+}
+
 QList<int> LV2Manifest::getAudioPortIndices() {
     return audioPortIndices;
 }
