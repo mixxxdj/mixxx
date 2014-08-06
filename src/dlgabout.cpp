@@ -1,9 +1,9 @@
 /***************************************************************************
-						  dlgabout.cpp  -  description
-							 -------------------
-	begin                : Mon Nov 19 2007
-	copyright            : (C) 2007 by Albert Santoni
-	email                : gamegod at users.sf.net
+                          dlgabout.cpp  -  description
+                             -------------------
+    begin                : Mon Nov 19 2007
+    copyright            : (C) 2007 by Albert Santoni
+    email                : gamegod at users.sf.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -19,35 +19,35 @@
 #include "util/version.h"
 
 DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
-	setupUi(this);
+    setupUi(this);
 
-	QString mixxxVersion = Version::version();
-	QString buildBranch = Version::developmentBranch();
-	QString buildRevision = Version::developmentRevision();
+    QString mixxxVersion = Version::version();
+    QString buildBranch = Version::developmentBranch();
+    QString buildRevision = Version::developmentRevision();
 
-	QStringList version;
-	version.append(mixxxVersion);
+    QStringList version;
+    version.append(mixxxVersion);
 
-	if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
-		QStringList buildInfo;
-		buildInfo.append("build");
-		if (!buildBranch.isEmpty()) {
-			buildInfo.append(buildBranch);
-		}
-		if (!buildRevision.isEmpty()) {
-			buildInfo.append(QString("r%1").arg(buildRevision));
-		}
-		version.append(QString("(%1)").arg(buildInfo.join(" ")));
-	}
-	version_label->setText(version.join(" "));
+    if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
+        QStringList buildInfo;
+        buildInfo.append("build");
+        if (!buildBranch.isEmpty()) {
+            buildInfo.append(buildBranch);
+        }
+        if (!buildRevision.isEmpty()) {
+            buildInfo.append(QString("r%1").arg(buildRevision));
+        }
+        version.append(QString("(%1)").arg(buildInfo.join(" ")));
+    }
+    version_label->setText(version.join(" "));
 
-	QString s_devTeam = tr("Mixxx %1 Development Team").arg(mixxxVersion);
-	QString s_contributions = tr("With contributions from:");
-	QString s_specialThanks = tr("And special thanks to:");
-	QString s_pastDevs = tr("Past Developers");
-	QString s_pastContribs = tr("Past Contributors");
+    QString s_devTeam = tr("Mixxx %1 Development Team").arg(mixxxVersion);
+    QString s_contributions = tr("With contributions from:");
+    QString s_specialThanks = tr("And special thanks to:");
+    QString s_pastDevs = tr("Past Developers");
+    QString s_pastContribs = tr("Past Contributors");
 
-	QString credits = QString("<p align=\"center\"><b>%1</b></p>"
+    QString credits = QString("<p align=\"center\"><b>%1</b></p>"
 "<p align=\"center\">"
 "Albert Santoni<br>"
 "RJ Ryan<br>"
@@ -227,9 +227,9 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
 "Bruno Buccolo<br>"
 "Ryan Baker<br>"
 "Dennis Wallace<br>"
-	"</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
+    "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
 
-	textBrowser->setHtml(credits);
+    textBrowser->setHtml(credits);
 }
 
 DlgAbout::~DlgAbout() {
