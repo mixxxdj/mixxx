@@ -85,6 +85,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("bpm_tap", tr("BPM Tap"), tr("BPM tap button"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust Beatgrid"),
                    tr("Align beatgrid to current position"), bpmMenu);
+    addDeckControl("beats_translate_to_sync", tr("Adjust Beatgrid to Sync"),
+                   tr("Align beatgrid to sync with other deck."), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), bpmMenu);
 
     QMenu* syncMenu = addSubmenu(tr("Sync"));

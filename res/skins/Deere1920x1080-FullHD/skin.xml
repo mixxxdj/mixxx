@@ -5294,6 +5294,11 @@
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
+				<Connection>
+					<ConfigKey>[Channel1],beats_translate_to_sync</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>RightButton</ButtonState>
+				</Connection>
 			</PushButton>
 
 			<!--
@@ -6403,6 +6408,11 @@
 					<ConfigKey>[Channel2],beats_translate_curpos</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+				<Connection>
+					<ConfigKey>[Channel2],beats_translate_to_sync</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>RightButton</ButtonState>
 				</Connection>
 			</PushButton>
 

@@ -75,6 +75,7 @@ class BpmControl : public EngineControl {
     void slotAdjustRateSlider();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
+    void slotBeatsTranslateToSync(double);
 
   private:
     SyncMode getSyncMode() const {
@@ -116,6 +117,8 @@ class BpmControl : public EngineControl {
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
     ControlPushButton* m_pTranslateBeats;
+    // Button that translates beats to match another playing deck
+    ControlPushButton* m_pTranslateBeatsToSync;
 
     double m_dPreviousSample;
 
