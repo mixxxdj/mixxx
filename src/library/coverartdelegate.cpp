@@ -70,7 +70,7 @@ void CoverArtDelegate::paint(QPainter *painter,
         // covers which are already in the pixmapcache.
         QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
                                             trackId, coverLocation, md5Hash,
-                                            !m_bIsLocked, true, false);
+                                            !m_bIsLocked, true, true);
 
         if (!pixmap.isNull()) {
             // It already got a cropped pixmap (from covercache)

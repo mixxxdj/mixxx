@@ -7,6 +7,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
+#include "library/coverartcache.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
@@ -96,6 +97,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotGuiTickTime(double)));
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
+
+    connect(CoverArtCache::instance(), SIGNAL(requestRepaint()),
+            this, SLOT(update()));
 }
 
 WTrackTableView::~WTrackTableView() {

@@ -63,7 +63,7 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
                                      const QString& md5Hash,
                                      const bool tryLoadAndSearch,
                                      const bool croppedPixmap,
-                                     const bool emitSignals) {
+                                     const bool fromDelegate) {
     if (trackId < 1) {
         return QPixmap();
     }
@@ -89,7 +89,9 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
-        if (emitSignals) {
+        if (fromDelegate) {
+            emit(requestRepaint());
+        } else {
             emit(pixmapFound(trackId, pixmap));
         }
         return pixmap;
@@ -105,12 +107,12 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
         CoverArtDAO::CoverArtInfo coverInfo;
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
-                                   coverInfo, croppedPixmap, emitSignals);
+                                   coverInfo, croppedPixmap, fromDelegate);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
                                    trackId, coverLocation, md5Hash,
-                                   croppedPixmap, emitSignals);
+                                   croppedPixmap, fromDelegate);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
     m_runningIds.insert(trackId);
@@ -125,14 +127,14 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(int trackId,
                                                      const QString& coverLocation,
                                                      const QString& md5Hash,
                                                      const bool croppedPixmap,
-                                                     const bool emitSignals) {
+                                                     const bool fromDelegate) {
     FutureResult res;
     res.trackId = trackId;
     res.coverLocation = coverLocation;
     res.img = QImage(coverLocation);
     res.md5Hash = md5Hash;
     res.croppedImg = croppedPixmap;
-    res.emitSignals = emitSignals;
+    res.fromDelegate = fromDelegate;
     res.newImgFound = true;
 
     if (res.croppedImg) {
@@ -152,12 +154,14 @@ void CoverArtCache::imageLoaded() {
 
     QPixmap pixmap;
     QString cacheKey = res.croppedImg ? res.md5Hash % "_cropped" : res.md5Hash;
-    if (QPixmapCache::find(cacheKey, &pixmap) && res.emitSignals) {
+    if (QPixmapCache::find(cacheKey, &pixmap) && res.fromDelegate) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
         pixmap.convertFromImage(res.img);
         if (QPixmapCache::insert(cacheKey, pixmap)) {
-            if (res.emitSignals) {
+            if (res.fromDelegate) {
+                emit(requestRepaint());
+            } else {
                 emit(pixmapFound(res.trackId, pixmap));
             }
         }
@@ -171,12 +175,12 @@ void CoverArtCache::imageLoaded() {
 CoverArtCache::FutureResult CoverArtCache::searchImage(
                                            CoverArtDAO::CoverArtInfo coverInfo,
                                            const bool croppedPixmap,
-                                           const bool emitSignals) {
+                                           const bool fromDelegate) {
     FutureResult res;
     res.trackId = coverInfo.trackId;
     res.md5Hash = coverInfo.md5Hash;
     res.croppedImg = croppedPixmap;
-    res.emitSignals = emitSignals;
+    res.fromDelegate = fromDelegate;
     res.newImgFound = false;
 
     // Looking for embedded cover art.
@@ -299,12 +303,14 @@ void CoverArtCache::imageFound() {
 
     QPixmap pixmap;
     QString cacheKey = res.croppedImg ? res.md5Hash % "_cropped" : res.md5Hash;
-    if (QPixmapCache::find(cacheKey, &pixmap) && res.emitSignals) {
+    if (QPixmapCache::find(cacheKey, &pixmap) && res.fromDelegate) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
         pixmap.convertFromImage(res.img);
         if (QPixmapCache::insert(cacheKey, pixmap)) {
-            if (res.emitSignals) {
+            if (res.fromDelegate) {
+                emit(requestRepaint());
+            } else {
                 emit(pixmapFound(res.trackId, pixmap));
             }
         }
