@@ -146,6 +146,10 @@ void LinearPhaseEQEffect::processGroup(const QString& group,
         m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
         m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
         m_oldSampleRate = sampleRate;
+        // Clamp frequency corners to the border, defined by the window size.
+        // this avoids artifacts in the low band
+        m_loFreq = math_max(m_loFreq, sampleRate / (int)numSamples * 5);
+        m_hiFreq = math_max(m_hiFreq, m_loFreq);
         pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
     }
 
@@ -174,12 +178,17 @@ void LinearPhaseEQEffect::processGroup(const QString& group,
     }
 
     // Process Butterworth forward and backward
-    pState->low->process(pState->m_pProcessBuf, pState->m_pLowBuf, numSamples * 2 + 3000);
-    pState->low->processReverse(pState->m_pLowBuf, pState->m_pLowBuf, numSamples * 2 + 3000);
+    pState->low->processForwardAndReverse(pState->m_pProcessBuf,
+                                          pState->m_pLowBuf, numSamples * 2 + 3000);
+
+    //qDebug() << "#################";
+    //for (unsigned int i = 0; i < numSamples / 2 + 1500; ++i) {
+    //    qDebug() << i << pState->m_pLowBuf[i*2];
+    //}
 
     // Process Butterworth forward and backward
-    pState->high->process(pState->m_pProcessBuf, pState->m_pHighBuf, numSamples * 2 + 3000);
-    pState->high->processReverse(pState->m_pHighBuf, pState->m_pHighBuf, numSamples * 2 + 3000);
+    pState->high->processForwardAndReverse(pState->m_pProcessBuf,
+                                           pState->m_pHighBuf, numSamples * 2 + 3000);
 
     // No raming is required here since we are in a Hanning Window
     SampleUtil::copy3WithGain(pState->m_pProcessBuf,
