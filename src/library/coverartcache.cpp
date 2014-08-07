@@ -89,9 +89,7 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
-        if (fromDelegate) {
-            emit(requestRepaint());
-        } else {
+        if (!fromDelegate) {
             emit(pixmapFound(trackId, pixmap));
         }
         return pixmap;
