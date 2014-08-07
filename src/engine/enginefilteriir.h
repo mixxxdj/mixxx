@@ -52,26 +52,38 @@ class EngineFilterIIR : public EngineObjectConstIn {
             }
         } else {
             double cross_mix = 0.0;
-            double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+            double cross_inc = 4.0 / static_cast<double>(iBufferSize);
             for (int i = 0; i < iBufferSize; i += 2) {
-                // Do a linear cross fade between the old samples and the new
-                // samples. Fade input of the new filter, because it is
-                // settled for In = 0. Otherwise the filter sees the
-                // rectangular start impulse.
-                // Fade output of the old filter, to reach 0 after ramp is over. 
+                // Do a linear cross fade between the output of the old
+                // Filter and the new filter.
+                // The new filter is settled for Input = 0 and it sees
+                // all frequencies of the rectangular start impulse.
+                // Since the group delay, after which the start impulse
+                // has passed is unknown here, we just what the half
+                // iBufferSize until we use the samples of the new filter.
+                // In one of the previous version we have faded the Input
+                // of the new filter but it turns out that this produces
+                // a gain drop due to the filter delay which is more
+                // conspicuous than the settling noise.
                 double new1 =
-                        processSample(m_coef, m_buf1, pIn[i] * cross_mix);
+                        processSample(m_coef, m_buf1, pIn[i]);
                 double new2 =
-                        processSample(m_coef, m_buf2, pIn[i + 1] * cross_mix);
+                        processSample(m_coef, m_buf2, pIn[i + 1]);
                 double old1 =
                         processSample(m_oldCoef, m_oldBuf1, pIn[i]);
                 double old2 =
                         processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
-                pOutput[i] = new1 +
-                             old1 * (1.0 - cross_mix);
-                pOutput[i + 1] = new2 +
-                                 old2 * (1.0 - cross_mix);
-                cross_mix += cross_inc;
+
+                if (i < iBufferSize / 2) {
+                    pOutput[i] = old1;
+                    pOutput[i + 1] = old2;
+                } else {
+                    pOutput[i] = new1 * cross_mix +
+                                 old1 * (1.0 - cross_mix);
+                    pOutput[i + 1] = new2  * cross_mix +
+                                     old2 * (1.0 - cross_mix);
+                    cross_mix += cross_inc;
+                }
             }
             m_doRamping = false;
         }
