@@ -100,17 +100,14 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
 }
 
 void CoverArtDAO::deleteUnusedCoverArts() {    
-    QString covers = "SELECT " % COVERARTTABLE_ID %
-                     " FROM " % COVERART_TABLE %
-                     " WHERE " % COVERARTTABLE_ID % " NOT IN "
-                     "(SELECT " % LIBRARYTABLE_COVERART_LOCATION %
+    QString covers = "SELECT " % LIBRARYTABLE_COVERART_LOCATION %
                      " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
                      " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART_LOCATION %
                      " = " % COVERART_TABLE % "." % COVERARTTABLE_ID %
-                     " GROUP BY " % LIBRARYTABLE_COVERART_LOCATION % ")";
+                     " GROUP BY " % LIBRARYTABLE_COVERART_LOCATION;
 
     QString sQuery = "DELETE FROM " % COVERART_TABLE %
-                     " WHERE " % COVERARTTABLE_ID % " IN (" % covers % ")";
+                     " WHERE " % COVERARTTABLE_ID % " NOT IN (" % covers % ")";
 
     QSqlQuery query(m_database);
     if (!query.exec(sQuery)) {
