@@ -99,37 +99,21 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
     return res;
 }
 
-void CoverArtDAO::deleteUnusedCoverArts() {
+void CoverArtDAO::deleteUnusedCoverArts() {    
+    QString covers = "SELECT " % COVERARTTABLE_ID %
+                     " FROM " % COVERART_TABLE %
+                     " WHERE " % COVERARTTABLE_ID % " NOT IN "
+                     "(SELECT " % LIBRARYTABLE_COVERART_LOCATION %
+                     " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
+                     " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART_LOCATION %
+                     " = " % COVERART_TABLE % "." % COVERARTTABLE_ID %
+                     " GROUP BY " % LIBRARYTABLE_COVERART_LOCATION % ")";
+
+    QString sQuery = "DELETE FROM " % COVERART_TABLE %
+                     " WHERE " % COVERARTTABLE_ID % " IN (" % covers % ")";
+
     QSqlQuery query(m_database);
-
-    query.prepare("SELECT " % COVERARTTABLE_ID %
-                  " FROM " % COVERART_TABLE %
-                  " WHERE " % COVERARTTABLE_ID % " NOT IN "
-                      "(SELECT " % LIBRARYTABLE_COVERART_LOCATION %
-                      " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
-                      " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART_LOCATION %
-                      " = " % COVERART_TABLE % "." % COVERARTTABLE_ID %
-                      " GROUP BY " % LIBRARYTABLE_COVERART_LOCATION % ")");
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
-    QStringList coverIdList;
-    QSqlRecord queryRecord = query.record();
-    const int coverIdColumn = queryRecord.indexOf("id");
-    while (query.next()) {
-        coverIdList << query.value(coverIdColumn).toString();
-    }
-
-    if (coverIdList.empty()) {
-        return;
-    }
-
-    query.prepare(QString("DELETE FROM " % COVERART_TABLE %
-                          " WHERE " % COVERARTTABLE_ID % " IN (%1)")
-                  .arg(coverIdList.join(",")));
-    if (!query.exec()) {
+    if (!query.exec(sQuery)) {
         LOG_FAILED_QUERY(query);
     }
 }
