@@ -62,13 +62,55 @@ void DlgPrefLV2::slotDisplayParameters() {
 
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString pluginId = button->property("id").toString();
-    EffectManifest& manifest = m_pLV2Backend->getManifestReference(pluginId);
+    m_currentEffectId = pluginId;
+    EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(pluginId);
     // Need to do the remapping here
-    foreach (EffectManifestParameter param, manifest.parameters()) {
+    foreach (EffectManifestParameter param, currentEffectManifest.parameters()) {
         QCheckBox* entry = new QCheckBox(this);
         entry->setText(param.name());
         lv2_vertical_layout_right->addWidget(entry);
         m_pluginParameters.append(entry);
+        connect(entry, SIGNAL(stateChanged(int)),
+                this, SLOT(slotUpdateOnParameterCheck(int)));
     }
     lv2_vertical_layout_right->addStretch();
+}
+
+void DlgPrefLV2::slotApply() {
+    EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(m_currentEffectId);
+    // It displays the first 8 checked parameters
+    int visible = 0;
+    int hidden = m_iCheckedParameters;
+    for (int i = 0; i < m_pluginParameters.size(); i++) {
+        if (m_pluginParameters[i]->isChecked()) {
+            currentEffectManifest.setActiveParameter(visible, i);
+            visible++;
+        } else {
+            currentEffectManifest.setActiveParameter(hidden, i);
+            hidden++;
+        }
+    }
+}
+
+void DlgPrefLV2::slotUpdateOnParameterCheck(int state) {
+    if (state == Qt::Checked) {
+        m_iCheckedParameters++;
+    } else {
+        m_iCheckedParameters--;
+    }
+
+    // If 8 parameters are already checked, disable all other checkboxes
+    if (m_iCheckedParameters >= 8) {
+        foreach (QCheckBox* box, m_pluginParameters) {
+            if (!box->isChecked()) {
+                box->setEnabled(false);
+            }
+        }
+    } else {
+        foreach (QCheckBox* box, m_pluginParameters) {
+            if (!box->isChecked()) {
+                box->setEnabled(true);
+            }
+        }
+    }
 }
