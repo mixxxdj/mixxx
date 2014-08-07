@@ -17,7 +17,8 @@
 DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
                        ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
-          m_pLV2Backend(lv2Backend) {
+          m_pLV2Backend(lv2Backend),
+          m_iCheckedParameters(0) {
     Q_UNUSED(pConfig);
     setupUi(this);
     if (!m_pLV2Backend) {
