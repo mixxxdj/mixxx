@@ -354,20 +354,20 @@ QImage CoverArtCache::cropImage(QImage img) {
     // it defines the maximum width of the covers displayed
     // in the cover art column (tableviews).
     // (if you want to increase it - you have to change JUST it.)
-    const int WIDTH = 100;
-    const int CELL_HEIGHT = 20;
+    const int kWidth = 100;
+    const int kCellHeight = 20;
 
-    img = img.scaledToWidth(WIDTH, Qt::SmoothTransformation);
-    return img.copy(0, 0, img.width(), CELL_HEIGHT);
+    img = img.scaledToWidth(kWidth, Qt::SmoothTransformation);
+    return img.copy(0, 0, img.width(), kCellHeight);
 }
 
 // if it's too big, we have to scale it.
 // big images would be quickly removed from cover cache.
 QImage CoverArtCache::rescaleBigImage(QImage img) {
-    const int MAXSIZE = 300;
+    const int kMaxSize = 300;
     QSize size = img.size();
-    if (size.height() > MAXSIZE || size.width() > MAXSIZE) {
-        return img.scaled(MAXSIZE, MAXSIZE,
+    if (size.height() > kMaxSize || size.width() > kMaxSize) {
+        return img.scaled(kMaxSize, kMaxSize,
                           Qt::KeepAspectRatio,
                           Qt::SmoothTransformation);
     } else {
