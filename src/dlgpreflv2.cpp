@@ -44,6 +44,10 @@ DlgPrefLV2::~DlgPrefLV2() {
 }
 
 void DlgPrefLV2::slotDisplayParameters() {
+    // Set the number of checked parameters to 0 because new parameters are
+    // displayed
+    m_iCheckedParameters = 0;
+
     // Clear the right vertical layout
     foreach (QCheckBox* box, m_pluginParameters) {
         delete box;
