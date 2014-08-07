@@ -152,7 +152,7 @@ void CoverArtCache::imageLoaded() {
 
     QPixmap pixmap;
     QString cacheKey = res.croppedImg ? res.md5Hash % "_cropped" : res.md5Hash;
-    if (QPixmapCache::find(cacheKey, &pixmap) && res.issueRepaint) {
+    if (QPixmapCache::find(cacheKey, &pixmap) && !res.issueRepaint) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
         pixmap.convertFromImage(res.img);
@@ -301,7 +301,7 @@ void CoverArtCache::imageFound() {
 
     QPixmap pixmap;
     QString cacheKey = res.croppedImg ? res.md5Hash % "_cropped" : res.md5Hash;
-    if (QPixmapCache::find(cacheKey, &pixmap) && res.issueRepaint) {
+    if (QPixmapCache::find(cacheKey, &pixmap) && !res.issueRepaint) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
         pixmap.convertFromImage(res.img);
