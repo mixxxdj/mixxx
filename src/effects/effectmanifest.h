@@ -72,6 +72,10 @@ class EffectManifest {
         return &m_parameters.last();
     }
 
+    virtual EffectManifestParameter* parameter(int i) {
+        return &m_parameters[i];
+    }
+
   private:
     QString debugString() const {
         return QString("EffectManifest(%1)").arg(m_id);
