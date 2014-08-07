@@ -20,7 +20,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                           const QString& md5Hash = QString(),
                           const bool tryLoadAndSearch = true,
                           const bool croppedPixmap = false,
-                          const bool fromDelegate = false);
+                          const bool issueRepaint = false);
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
@@ -48,7 +48,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QString md5Hash;
         QImage img;
         bool croppedImg;
-        bool fromDelegate;
+        bool issueRepaint;
         bool newImgFound;
     };
 
