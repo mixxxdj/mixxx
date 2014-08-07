@@ -16,13 +16,18 @@ class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
                ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefLV2();
 
+  public slots:
+    void slotApply();
+
   private slots:
     void slotDisplayParameters();
+    void slotUpdateOnParameterCheck(int state);
 
   private:
     LV2Backend* m_pLV2Backend;
+    QString m_currentEffectId;
     QList<QCheckBox*> m_pluginParameters;
-
+    int m_iCheckedParameters;
 };
 
 #endif
