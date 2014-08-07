@@ -134,11 +134,12 @@ int CoverArtDAO::getCoverArtId(QString md5Hash) {
         return -1;
     }
 
+    int coverId = -1;
     if (query.next()) {
-        return query.value(0).toInt();
+        coverId = query.value(0).toInt();
     }
 
-    return -1;
+    return coverId;
 }
 
 // it'll get just the fields which are required for scanCover stuff
