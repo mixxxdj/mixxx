@@ -233,10 +233,10 @@ void SoundSource::setKey(QString key){
 }
 
 QString SoundSource::toQString(TagLib::String tstring) const {
-    if (tstring != TagLib::String::null) {
-        return TStringToQString(tstring);
+    if (tstring == TagLib::String::null) {
+        return QString();
     }
-    return  QString();
+    return TStringToQString(tstring);
 }
 
 bool SoundSource::processTaglibFile(TagLib::File& f) {
@@ -246,7 +246,6 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
     if (f.isValid()) {
         TagLib::Tag *tag = f.tag();
         if (tag) {
-
             QString title = toQString(tag->title());
             setTitle(title);
 
