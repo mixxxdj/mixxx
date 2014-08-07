@@ -148,6 +148,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
 "Jean Claveau<br>"
 "Nino MP<br>"
 "Ryan Kramer<br>"
+"Zak Reynolds<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -225,6 +226,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
 "Pavol Rusnak<br>"
 "Bruno Buccolo<br>"
 "Ryan Baker<br>"
+"Dennis Wallace<br>"
     "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
 
     textBrowser->setHtml(credits);

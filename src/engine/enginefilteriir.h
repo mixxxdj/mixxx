@@ -135,18 +135,38 @@ class EngineFilterIIR : public EngineObjectConstIn {
             }
         } else {
             double cross_mix = 0.0;
-            double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+            double cross_inc = 4.0 / static_cast<double>(iBufferSize);
             for (int i = 0; i < iBufferSize; i += 2) {
-                // Do a linear cross fade between the old samples and the new samples
-                double new1 = processSample(m_coef, m_buf1, pIn[i]);
-                double new2 = processSample(m_coef, m_buf2, pIn[i + 1]);
-                double old1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
-                double old2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
-                pOutput[i] = new1 * cross_mix +
-                             old1 * (1.0 - cross_mix);
-                pOutput[i + 1] = new2 * cross_mix +
-                                 old2 * (1.0 - cross_mix);
-                cross_mix += cross_inc;
+                // Do a linear cross fade between the output of the old
+                // Filter and the new filter.
+                // The new filter is settled for Input = 0 and it sees
+                // all frequencies of the rectangular start impulse.
+                // Since the group delay, after which the start impulse
+                // has passed is unknown here, we just what the half
+                // iBufferSize until we use the samples of the new filter.
+                // In one of the previous version we have faded the Input
+                // of the new filter but it turns out that this produces
+                // a gain drop due to the filter delay which is more
+                // conspicuous than the settling noise.
+                double new1 =
+                        processSample(m_coef, m_buf1, pIn[i]);
+                double new2 =
+                        processSample(m_coef, m_buf2, pIn[i + 1]);
+                double old1 =
+                        processSample(m_oldCoef, m_oldBuf1, pIn[i]);
+                double old2 =
+                        processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
+
+                if (i < iBufferSize / 2) {
+                    pOutput[i] = old1;
+                    pOutput[i + 1] = old2;
+                } else {
+                    pOutput[i] = new1 * cross_mix +
+                                 old1 * (1.0 - cross_mix);
+                    pOutput[i + 1] = new2  * cross_mix +
+                                     old2 * (1.0 - cross_mix);
+                    cross_mix += cross_inc;
+                }
             }
             m_doRamping = false;
         }
@@ -174,7 +194,9 @@ class EngineFilterIIR : public EngineObjectConstIn {
 };
 
 template<>
-inline double EngineFilterIIR<4, IIR_LP>::processSample(double* coef, double* buf, register double val) {
+inline double EngineFilterIIR<4, IIR_LP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
     register double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     iir = val * coef[0];
@@ -191,7 +213,9 @@ inline double EngineFilterIIR<4, IIR_LP>::processSample(double* coef, double* bu
 }
 
 template<>
-inline double EngineFilterIIR<8, IIR_BP>::processSample(double* coef, double* buf, register double val) {
+inline double EngineFilterIIR<8, IIR_BP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
     register double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
@@ -219,7 +243,9 @@ inline double EngineFilterIIR<8, IIR_BP>::processSample(double* coef, double* bu
 }
 
 template<>
-inline double EngineFilterIIR<4, IIR_HP>::processSample(double* coef, double* buf, register double val) {
+inline double EngineFilterIIR<4, IIR_HP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
     register double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     iir= val * coef[0];
@@ -236,7 +262,9 @@ inline double EngineFilterIIR<4, IIR_HP>::processSample(double* coef, double* bu
 }
 
 template<>
-inline double EngineFilterIIR<8, IIR_LP>::processSample(double* coef, double* buf, register double val) {
+inline double EngineFilterIIR<8, IIR_LP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
     register double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
@@ -264,7 +292,9 @@ inline double EngineFilterIIR<8, IIR_LP>::processSample(double* coef, double* bu
 }
 
 template<>
-inline double EngineFilterIIR<16, IIR_BP>::processSample(double* coef, double* buf, register double val) {
+inline double EngineFilterIIR<16, IIR_BP>::processSample(double* coef,
+                                                         double* buf,
+                                                         register double val) {
     register double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
@@ -314,7 +344,9 @@ inline double EngineFilterIIR<16, IIR_BP>::processSample(double* coef, double* b
 }
 
 template<>
-inline double EngineFilterIIR<8, IIR_HP>::processSample(double* coef, double* buf, register double val) {
+inline double EngineFilterIIR<8, IIR_HP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
     register double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];

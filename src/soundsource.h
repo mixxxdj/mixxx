@@ -122,6 +122,10 @@ protected:
     void processBpmString(QString tagName, QString sBpm);
     void parseReplayGainString(QString sReplayGain);
 
+    // Taglib strings can be NULL and using it could cause some segfaults,
+    // so in this case it will return a QString()
+    QString toQString(TagLib::String tstring) const;
+
     /** File name */
     QString m_qFilename;
 
