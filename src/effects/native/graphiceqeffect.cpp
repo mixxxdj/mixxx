@@ -92,6 +92,7 @@ void GraphicEQEffect::processGroup(const QString& group,
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
+    float fMid[10];
     for (int i = 0; i < 10; i++) {
         fMid[i] = m_pPotMid[i]->value().toDouble();
     }
