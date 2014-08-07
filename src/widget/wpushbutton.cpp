@@ -68,7 +68,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     // Load pixmaps for associated states
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {
-        if (state.isElement()) {
+        if (state.isElement() && state.nodeName() == "State") {
             // support for variables in State elements
             SkinContext* stateContext = new SkinContext(context);
             stateContext->updateVariables(state);
