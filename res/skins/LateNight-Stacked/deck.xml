@@ -61,7 +61,6 @@
   		                <Horizontal>false</Horizontal>
   		                <Connection>
   		                    <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>
-  		                    <EmitOnDownPress>false</EmitOnDownPress>
   		                </Connection>
   		            </SliderComposed>
 		            <WidgetGroup>
@@ -83,12 +82,10 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_perm_down_small</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
 		                                </Connection>
 		                            </PushButton>
@@ -102,12 +99,10 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_perm_up_small</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
 		                                </Connection>
 		                            </PushButton>
@@ -127,12 +122,10 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_temp_down_small</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
 		                                </Connection>
 		                            </PushButton>
@@ -146,12 +139,10 @@
 		                                </State>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>LeftButton</ButtonState>
 		                                </Connection>
 		                                <Connection>
 		                                    <ConfigKey>[Channel<Variable name="channum" />],rate_temp_up_small</ConfigKey>
-		                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		                                    <ButtonState>RightButton</ButtonState>
 		                                </Connection>
 		                            </PushButton>
@@ -180,12 +171,10 @@
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],sync_enabled</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>LeftButton</ButtonState>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],beatsync_tempo</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>RightButton</ButtonState>
                                 </Connection>
                             </PushButton>
@@ -206,7 +195,6 @@
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],sync_master</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>LeftButton</ButtonState>
                                 </Connection>
                             </PushButton> -->
