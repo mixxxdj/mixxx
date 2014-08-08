@@ -24,6 +24,7 @@ class EffectManifest {
     EffectManifest() {
         for (unsigned int i = 0; i < 188; i++) {
             m_activeParameters.append(i);
+            m_activeButtonParameters.append(i);
         }
     }
 
@@ -92,6 +93,14 @@ class EffectManifest {
         return m_activeParameters[index];
     }
 
+    virtual void setActiveButtonParameter(int index, unsigned int value) {
+        m_activeButtonParameters[index] = value;
+    }
+
+    virtual unsigned int getActiveButtonParameter(int index) const {
+        return m_activeButtonParameters[index];
+    }
+
   private:
     QString debugString() const {
         return QString("EffectManifest(%1)").arg(m_id);
@@ -105,6 +114,7 @@ class EffectManifest {
     QList<EffectManifestParameter> m_parameters;
     QList<EffectManifestParameter> m_buttonParameters;
     QList<unsigned int> m_activeParameters;
+    QList<unsigned int> m_activeButtonParameters;
 };
 
 #endif /* EFFECTMANIFEST_H */
