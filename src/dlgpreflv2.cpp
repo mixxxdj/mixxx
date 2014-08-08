@@ -55,8 +55,8 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_pluginParameters.clear();
 
     QLayoutItem* item;
-    while ((item = lv2_vertical_layout_right->takeAt(1)) != 0) {
-        lv2_vertical_layout_right->removeWidget(item->widget());
+    while ((item = lv2_vertical_layout_params->takeAt(1)) != 0) {
+        lv2_vertical_layout_params->removeWidget(item->widget());
         delete item->widget();
     }
 
@@ -68,12 +68,12 @@ void DlgPrefLV2::slotDisplayParameters() {
     foreach (EffectManifestParameter param, currentEffectManifest.parameters()) {
         QCheckBox* entry = new QCheckBox(this);
         entry->setText(param.name());
-        lv2_vertical_layout_right->addWidget(entry);
+        lv2_vertical_layout_params->addWidget(entry);
         m_pluginParameters.append(entry);
         connect(entry, SIGNAL(stateChanged(int)),
                 this, SLOT(slotUpdateOnParameterCheck(int)));
     }
-    lv2_vertical_layout_right->addStretch();
+    lv2_vertical_layout_params->addStretch();
 }
 
 void DlgPrefLV2::slotApply() {

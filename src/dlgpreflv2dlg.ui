@@ -57,7 +57,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="lv2_vertical_layout_right">
+      <layout class="QVBoxLayout" name="lv2_vertical_layout_params">
        <item>
         <widget class="QLabel" name="label_2">
          <property name="sizePolicy">
