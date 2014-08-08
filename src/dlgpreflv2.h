@@ -22,12 +22,16 @@ class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
   private slots:
     void slotDisplayParameters();
     void slotUpdateOnParameterCheck(int state);
+    void slotDisplayButtonParameters();
+    void slotUpdateOnButtonParameterCheck(int state);
 
   private:
     LV2Backend* m_pLV2Backend;
     QString m_currentEffectId;
     QList<QCheckBox*> m_pluginParameters;
     int m_iCheckedParameters;
+    QList<QCheckBox*> m_pluginButtonParameters;
+    int m_iCheckedButtonParameters;
 };
 
 #endif

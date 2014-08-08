@@ -114,3 +114,59 @@ void DlgPrefLV2::slotUpdateOnParameterCheck(int state) {
         }
     }
 }
+
+void DlgPrefLV2::slotDisplayButtonParameters() {
+    // Set the number of checked parameters to 0 because new parameters are
+    // displayed
+    m_iCheckedButtonParameters = 0;
+
+    // Clear the right vertical layout
+    foreach (QCheckBox* box, m_pluginButtonParameters) {
+        delete box;
+    }
+    m_pluginButtonParameters.clear();
+
+    QLayoutItem* item;
+    while ((item = lv2_vertical_layout_button_params->takeAt(1)) != 0) {
+        lv2_vertical_layout_button_params->removeWidget(item->widget());
+        delete item->widget();
+    }
+
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    QString pluginId = button->property("id").toString();
+    m_currentEffectId = pluginId;
+    EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(pluginId);
+    // Need to do the remapping here
+    foreach (EffectManifestParameter param, currentEffectManifest.buttonParameters()) {
+        QCheckBox* entry = new QCheckBox(this);
+        entry->setText(param.name());
+        lv2_vertical_layout_button_params->addWidget(entry);
+        m_pluginButtonParameters.append(entry);
+        connect(entry, SIGNAL(stateChanged(int)),
+                this, SLOT(slotUpdateOnButtonParameterCheck(int)));
+    }
+    lv2_vertical_layout_button_params->addStretch();
+}
+
+void DlgPrefLV2::slotUpdateOnButtonParameterCheck(int state) {
+    if (state == Qt::Checked) {
+        m_iCheckedButtonParameters++;
+    } else {
+        m_iCheckedButtonParameters--;
+    }
+
+    // If 8 parameters are already checked, disable all other checkboxes
+    if (m_iCheckedButtonParameters >= 8) {
+        foreach (QCheckBox* box, m_pluginButtonParameters) {
+            if (!box->isChecked()) {
+                box->setEnabled(false);
+            }
+        }
+    } else {
+        foreach (QCheckBox* box, m_pluginButtonParameters) {
+            if (!box->isChecked()) {
+                box->setEnabled(true);
+            }
+        }
+    }
+}
