@@ -79,20 +79,20 @@ void DlgTrackInfo::init(){
     // Cover art actions
     // change cover art location
     QAction* changeCover = new QAction(
-                QIcon(":/images/library/ic_cover_change.png"),
-                tr("&Change"), this);
+            QIcon(":/images/library/ic_cover_change.png"),
+            tr("&Change"), this);
     connect(changeCover, SIGNAL(triggered()),
             this, SLOT(slotChangeCoverArt()));
     // unset cover art - load default
     QAction* unsetCover = new QAction(
-                QIcon(":/images/library/ic_cover_unset.png"),
-                tr("&Unset"), this);
+            QIcon(":/images/library/ic_cover_unset.png"),
+            tr("&Unset"), this);
     connect(unsetCover, SIGNAL(triggered()),
             this, SLOT(slotUnsetCoverArt()));
     // reload just cover art using the search algorithm (in CoverArtCache)
     QAction* reloadCover = new QAction(
-                QIcon(":/images/library/ic_cover_reload.png"),
-                tr("&Reload"), this);
+            QIcon(":/images/library/ic_cover_reload.png"),
+            tr("&Reload"), this);
     connect(reloadCover, SIGNAL(triggered()),
             this, SLOT(slotReloadCover()));
     // Cover art popup menu
