@@ -37,6 +37,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
         lv2_vertical_layout_left->addWidget(button);
         button->setProperty("id", QVariant(allPlugins[i].pluginId));
         connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
+        connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayButtonParameters()));
     }
 }
 
