@@ -90,6 +90,18 @@ void DlgPrefLV2::slotApply() {
             hidden++;
         }
     }
+
+    visible = 0;
+    hidden = m_iCheckedButtonParameters;
+    for (int i = 0; i < m_pluginButtonParameters.size(); i++) {
+        if (m_pluginButtonParameters[i]->isChecked()) {
+            currentEffectManifest.setActiveButtonParameter(visible, i);
+            visible++;
+        } else {
+            currentEffectManifest.setActiveButtonParameter(hidden, i);
+            hidden++;
+        }
+    }
 }
 
 void DlgPrefLV2::slotUpdateOnParameterCheck(int state) {
