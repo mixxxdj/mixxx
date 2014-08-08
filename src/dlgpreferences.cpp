@@ -193,7 +193,7 @@ void DlgPreferences::createIcons() {
     m_pEqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pLV2Button = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pLV2Button->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.png"));
+    m_pLV2Button->setIcon(0, QIcon(":/images/preferences/ic_preferences_lv2.png"));
     m_pLV2Button->setText(0, tr("LV2 plugins"));
     m_pLV2Button->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pLV2Button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);

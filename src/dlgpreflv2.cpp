@@ -20,16 +20,19 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
           m_pLV2Backend(lv2Backend),
           m_iCheckedParameters(0) {
     Q_UNUSED(pConfig);
+
     setupUi(this);
+
     if (!m_pLV2Backend) {
         return;
     }
-    QList<QPair<QPair<QString, bool>, QString> > allPlugins = m_pLV2Backend->getAllDiscoveredPlugins();
 
+    QList<QPair<QPair<QString, bool>, QString> > allPlugins = m_pLV2Backend->getAllDiscoveredPlugins();
     for (int i = 0; i < allPlugins.size(); i++) {
         QPushButton* button = new QPushButton(this);
         button->setText(allPlugins[i].pluginName);
         if (!allPlugins[i].isAvailable) {
+            // Tooltip with info why is this disabled
             button->setDisabled(true);
         } else {
             button->setDisabled(false);
@@ -46,7 +49,6 @@ DlgPrefLV2::~DlgPrefLV2() {
 void DlgPrefLV2::slotDisplayParameters() {
     // Set the number of checked parameters to 0 because new parameters are
     // displayed
-    m_iCheckedParameters = 0;
 
     // Clear the right vertical layout
     foreach (QCheckBox* box, m_pluginParameters) {
@@ -55,25 +57,36 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_pluginParameters.clear();
 
     QLayoutItem* item;
-    while ((item = lv2_vertical_layout_right->takeAt(1)) != 0) {
-        lv2_vertical_layout_right->removeWidget(item->widget());
+    while ((item = lv2_vertical_layout_params->takeAt(1)) != 0) {
+        lv2_vertical_layout_params->removeWidget(item->widget());
         delete item->widget();
     }
 
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString pluginId = button->property("id").toString();
     m_currentEffectId = pluginId;
+
     EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(pluginId);
-    // Need to do the remapping here
-    foreach (EffectManifestParameter param, currentEffectManifest.parameters()) {
+    QList<EffectManifestParameter> parameterList = currentEffectManifest.parameters();
+    int parameterListSize = parameterList.size();
+
+    for (int i = 0; i < parameterListSize; i++) {
         QCheckBox* entry = new QCheckBox(this);
-        entry->setText(param.name());
-        lv2_vertical_layout_right->addWidget(entry);
+        entry->setText(parameterList[i].name());
+        if (parameterList[i].showInParameterSlot()) {
+            entry->setChecked(true);
+        } else {
+            entry->setChecked(false);
+            entry->setEnabled(false);
+        }
+        lv2_vertical_layout_params->addWidget(entry);
         m_pluginParameters.append(entry);
         connect(entry, SIGNAL(stateChanged(int)),
                 this, SLOT(slotUpdateOnParameterCheck(int)));
     }
-    lv2_vertical_layout_right->addStretch();
+    lv2_vertical_layout_params->addStretch();
+
+    m_iCheckedParameters = parameterListSize < 8 ? parameterListSize : 8;
 }
 
 void DlgPrefLV2::slotApply() {
