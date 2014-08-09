@@ -127,6 +127,28 @@ TEST_F(CoverArtDAOTest, saveCoverArts) {
         }
         EXPECT_TRUE(hasTrackId);
     }
+
+    // adding invalid covers (empty md5hash)
+    covers.clear();
+    covers.insert(1, qMakePair(QString(""), QString("")));
+    covers.insert(2, qMakePair(QString("/coverInv.jpg"), QString("")));
+    res = m_CoverArtDAO.saveCoverArt(covers);
+    ASSERT_TRUE(res.size() <= covers.size());
+
+    set = QSetIterator<QPair<int, int> >(res);
+    hash = QHashIterator<int, QPair<QString, QString> >(covers);
+    while (hash.hasNext()) {
+        hash.next();
+        int trackId = hash.key();
+        bool hasTrackId = false;
+        set.toFront();
+        while (set.hasNext() && !hasTrackId) {
+            QPair<int, int> p = set.next();
+            hasTrackId = p.first == trackId;
+            EXPECT_TRUE(p.second == -1); // invalid cover
+        }
+        EXPECT_TRUE(hasTrackId);
+    }
 }
 
 TEST_F(CoverArtDAOTest, getCoverArtId) {
