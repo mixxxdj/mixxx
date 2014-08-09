@@ -80,8 +80,8 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
 
 void GraphicEQEffectGroupState::setFilters(int sampleRate, double Q) {
     for (int i = 0; i < 10; i++) {
-        m_bands.append(new EngineFilterBiquad1Band(sampleRate,
-                                                m_centerFrequencies[i], Q));
+        m_bands[i]->pauseFilter();
+        m_bands[i]->setFrequencyCorners(sampleRate, m_centerFrequencies[i], Q);
     }
 }
 
