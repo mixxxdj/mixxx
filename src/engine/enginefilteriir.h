@@ -320,6 +320,4 @@ inline double EngineFilterIIR<8, IIR_HP>::processSample(double* coef,
     return val;
 }
 
-
-
 #endif // ENGINEFILTERIIR_H
