@@ -65,6 +65,48 @@ TEST_F(CoverArtDAOTest, saveCoverArt) {
     ASSERT_EQ(coverId, testCoverId);
 }
 
+// saving many covers at once
+TEST_F(CoverArtDAOTest, saveCoverArts) {
+    CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
+    // <trackId, <coverLoc, md5> >
+    QHash<int, QPair<QString, QString> > covers;
+    QHash<int, QPair<QString, QString> > coversAux;
+    // <trackId, coverId>
+    QSet<QPair<int, int> > res;
+    QSet<QPair<int, int> > resAux;
+
+    // adding a empty hash
+    res = m_CoverArtDAO.saveCoverArt(covers);
+    ASSERT_TRUE(covers.isEmpty());
+    ASSERT_TRUE(res.isEmpty());
+
+    // adding new covers (all valid and new)
+    covers.insert(1, qMakePair(QString("/cover1.jpg"), QString("COVER1")));
+    covers.insert(2, qMakePair(QString("/cover2.jpg"), QString("COVER2")));
+    covers.insert(3, qMakePair(QString("/cover3.jpg"), QString("COVER3")));
+    res = m_CoverArtDAO.saveCoverArt(covers);
+    ASSERT_TRUE(res.size() <= covers.size());
+
+    QSetIterator<QPair<int, int> > set(res);
+    QHashIterator<int, QPair<QString, QString> > hash(covers);
+    while (hash.hasNext()) {
+        hash.next();
+        int trackId = hash.key();
+        bool hasTrackId = false;
+        set.toFront();
+        while (set.hasNext() && !hasTrackId) {
+            QPair<int, int> p = set.next();
+            hasTrackId = p.first == trackId;
+            EXPECT_TRUE(p.second > 0); // valid cover
+        }
+        EXPECT_TRUE(hasTrackId);
+    }
+
+    // adding existing covers
+    resAux = m_CoverArtDAO.saveCoverArt(covers);
+    EXPECT_TRUE(res == resAux);
+}
+
 TEST_F(CoverArtDAOTest, getCoverArtId) {
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
     QString testCoverLoc = "a/b/cover2.jpg";
