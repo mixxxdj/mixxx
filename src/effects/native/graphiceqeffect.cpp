@@ -49,18 +49,20 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
         old_mid.append(1.0);
     }
 
-    // Initialize filters with the default values
+    // Initialize the default center frequencies
+    m_centerFrequencies[0] = 31.25;
+    m_centerFrequencies[1] = 62.5;
+    m_centerFrequencies[2] = 125.0;
+    m_centerFrequencies[3] = 250.0;
+    m_centerFrequencies[4] = 500.0;
+    m_centerFrequencies[5] = 1000.0;
+    m_centerFrequencies[6] = 2000.0;
+    m_centerFrequencies[7] = 4000.0;
+    m_centerFrequencies[8] = 8000.0;
+    m_centerFrequencies[9] = 16000.0;
+
     // TODO(rryan): use the real samplerate
-    band.append(new EngineFilterBiquad1Band(44100, 31.25, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 62.5, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 125.0, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 250.0, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 500.0, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 1000.0, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 2000.0, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 4000.0, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 8000.0, 2));
-    band.append(new EngineFilterBiquad1Band(44100, 16000.0, 2));
+    setFilters(44100, 2);
 }
 
 GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
@@ -72,8 +74,16 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
     }
 }
 
+void GraphicEQEffectGroupState::setFilters(int sampleRate, double Q) {
+    for (int i = 0; i < 10; i++) {
+        band.append(new EngineFilterBiquad1Band(sampleRate,
+                                                m_centerFrequencies[i], Q));
+    }
+}
+
 GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
-                                         const EffectManifest& manifest) {
+                                 const EffectManifest& manifest)
+        : m_oldSampleRate(44100) {
     Q_UNUSED(manifest);
     for (int i = 0; i < 10; i++) {
         m_pPotMid.append(pEffect->getParameterById(QString("mid%1").arg(i)));
@@ -90,6 +100,14 @@ void GraphicEQEffect::processGroup(const QString& group,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
+
+    // If the sample rate has changed, initialize the filters using the new
+    // sample rate
+    int sampleRate = getSampleRate();
+    if (m_oldSampleRate != sampleRate) {
+        m_oldSampleRate = sampleRate;
+        pState->setFilters(sampleRate, 2);
+    }
 
     float fMid[10];
     for (int i = 0; i < 10; i++) {
