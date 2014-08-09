@@ -608,6 +608,7 @@ class MixxxCore(Feature):
                    "engine/enginebufferscalelinear.cpp",
                    "engine/enginefilterblock.cpp",
                    "engine/enginefilterbessel4.cpp",
+                   "engine/enginefilterbessel8.cpp",
                    "engine/enginefilterbutterworth4.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginefilter.cpp",
