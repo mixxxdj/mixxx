@@ -17,12 +17,21 @@ template<unsigned int SIZE, enum IIRPass PASS>
 class EngineFilterIIR : public EngineObjectConstIn {
   public:
     EngineFilterIIR()
-            : m_doRamping(false){
+            : m_doRamping(false),
+              m_doStart(false) {
         memset(m_coef, 0, sizeof(m_coef));
-        initBuffers();
+        pauseFilter();
     }
 
     virtual ~EngineFilterIIR() {};
+
+    void pauseFilter() {
+        // Set the current buffers to 0
+        memset(m_buf1, 0, sizeof(m_buf1));
+        memset(m_buf2, 0, sizeof(m_buf2));
+        m_doRamping = true;
+        m_doStart = true;
+    }
 
     void initBuffers() {
         // Copy the current buffers into the old buffers
@@ -31,6 +40,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
         // Set the current buffers to 0
         memset(m_buf1, 0, sizeof(m_buf1));
         memset(m_buf2, 0, sizeof(m_buf2));
+        m_doRamping = true;
     }
 
     void setCoefs(const char* spec, double sampleRate,
@@ -40,7 +50,6 @@ class EngineFilterIIR : public EngineObjectConstIn {
         m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
                 spec, sampleRate, freq0, freq1, adj);
         initBuffers();
-        m_doRamping = true;
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
@@ -65,14 +74,18 @@ class EngineFilterIIR : public EngineObjectConstIn {
                 // of the new filter but it turns out that this produces
                 // a gain drop due to the filter delay which is more
                 // conspicuous than the settling noise.
-                double new1 =
-                        processSample(m_coef, m_buf1, pIn[i]);
-                double new2 =
-                        processSample(m_coef, m_buf2, pIn[i + 1]);
-                double old1 =
-                        processSample(m_oldCoef, m_oldBuf1, pIn[i]);
-                double old2 =
-                        processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
+                double old1;
+                double old2;
+                if (!m_doStart) {
+                    // Process old filter only if we do not do a fresh start
+                    old1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
+                    old2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
+                } else {
+                    old1 = 0;
+                    old2 = 0;
+                }
+                double new1 = processSample(m_coef, m_buf1, pIn[i]);
+                double new2 = processSample(m_coef, m_buf2, pIn[i + 1]);
 
                 if (i < iBufferSize / 2) {
                     pOutput[i] = old1;
@@ -86,6 +99,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
                 }
             }
             m_doRamping = false;
+            m_doStart = false;
         }
     }
 
@@ -108,6 +122,8 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
     // Flag set to true if ramping needs to be done
     bool m_doRamping;
+    // Flag set to if old filter is invalid
+    bool m_doStart;
 };
 
 template<>
