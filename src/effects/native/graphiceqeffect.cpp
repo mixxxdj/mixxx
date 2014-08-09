@@ -46,7 +46,7 @@ EffectManifest GraphicEQEffect::getManifest() {
 GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     for (int i = 0; i < 10; i++) {
         m_pBandBuf.append(SampleUtil::alloc(MAX_BUFFER_LEN));
-        old_mid.append(1.0);
+        m_oldMid.append(1.0);
     }
 
     // Initialize the default center frequencies
@@ -66,7 +66,7 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
 }
 
 GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
-    foreach (EngineFilterBiquad1Band* filter, band) {
+    foreach (EngineFilterBiquad1Band* filter, m_bands) {
         delete filter;
     }
     foreach (CSAMPLE* buf, m_pBandBuf) {
@@ -76,7 +76,7 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
 
 void GraphicEQEffectGroupState::setFilters(int sampleRate, double Q) {
     for (int i = 0; i < 10; i++) {
-        band.append(new EngineFilterBiquad1Band(sampleRate,
+        m_bands.append(new EngineFilterBiquad1Band(sampleRate,
                                                 m_centerFrequencies[i], Q));
     }
 }
@@ -115,34 +115,34 @@ void GraphicEQEffect::processGroup(const QString& group,
     }
 
     for (int i = 0; i < 10; i++) {
-        if (fMid[i] || pState->old_mid[i]) {
-            pState->band[i]->process(pInput, pState->m_pBandBuf[i], numSamples);
+        if (fMid[i] || pState->m_oldMid[i]) {
+            pState->m_bands[i]->process(pInput, pState->m_pBandBuf[i], numSamples);
         } else {
-            pState->band[i]->pauseFilter();
+            pState->m_bands[i]->pauseFilter();
         }
     }
 
-    if (fMid[0] != pState->old_mid[0] ||
-        fMid[1] != pState->old_mid[1] ||
-        fMid[2] != pState->old_mid[2] ||
-        fMid[3] != pState->old_mid[3] ||
-        fMid[4] != pState->old_mid[4] ||
-        fMid[5] != pState->old_mid[5] ||
-        fMid[6] != pState->old_mid[6] ||
-        fMid[7] != pState->old_mid[7] ||
-        fMid[8] != pState->old_mid[8] ||
-        fMid[9] != pState->old_mid[9]) {
+    if (fMid[0] != pState->m_oldMid[0] ||
+        fMid[1] != pState->m_oldMid[1] ||
+        fMid[2] != pState->m_oldMid[2] ||
+        fMid[3] != pState->m_oldMid[3] ||
+        fMid[4] != pState->m_oldMid[4] ||
+        fMid[5] != pState->m_oldMid[5] ||
+        fMid[6] != pState->m_oldMid[6] ||
+        fMid[7] != pState->m_oldMid[7] ||
+        fMid[8] != pState->m_oldMid[8] ||
+        fMid[9] != pState->m_oldMid[9]) {
         SampleUtil::copy10WithRampingGain(pOutput,
-                pState->m_pBandBuf[0], pState->old_mid[0], fMid[0],
-                pState->m_pBandBuf[1], pState->old_mid[1], fMid[1],
-                pState->m_pBandBuf[2], pState->old_mid[2], fMid[2],
-                pState->m_pBandBuf[3], pState->old_mid[3], fMid[3],
-                pState->m_pBandBuf[4], pState->old_mid[4], fMid[4],
-                pState->m_pBandBuf[5], pState->old_mid[5], fMid[5],
-                pState->m_pBandBuf[6], pState->old_mid[6], fMid[6],
-                pState->m_pBandBuf[7], pState->old_mid[7], fMid[7],
-                pState->m_pBandBuf[8], pState->old_mid[8], fMid[8],
-                pState->m_pBandBuf[9], pState->old_mid[9], fMid[9],
+                pState->m_pBandBuf[0], pState->m_oldMid[0], fMid[0],
+                pState->m_pBandBuf[1], pState->m_oldMid[1], fMid[1],
+                pState->m_pBandBuf[2], pState->m_oldMid[2], fMid[2],
+                pState->m_pBandBuf[3], pState->m_oldMid[3], fMid[3],
+                pState->m_pBandBuf[4], pState->m_oldMid[4], fMid[4],
+                pState->m_pBandBuf[5], pState->m_oldMid[5], fMid[5],
+                pState->m_pBandBuf[6], pState->m_oldMid[6], fMid[6],
+                pState->m_pBandBuf[7], pState->m_oldMid[7], fMid[7],
+                pState->m_pBandBuf[8], pState->m_oldMid[8], fMid[8],
+                pState->m_pBandBuf[9], pState->m_oldMid[9], fMid[9],
                 numSamples);
     } else {
         SampleUtil::copy10WithGain(pOutput,
@@ -160,6 +160,6 @@ void GraphicEQEffect::processGroup(const QString& group,
     }
 
     for (int i = 0; i < 10; i++) {
-        pState->old_mid[i] = fMid[i];
+        pState->m_oldMid[i] = fMid[i];
     }
 }

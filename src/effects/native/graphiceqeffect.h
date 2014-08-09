@@ -21,8 +21,8 @@ class GraphicEQEffectGroupState {
 
     void setFilters(int sampleRate, double Q);
 
-    QList<EngineFilterBiquad1Band*> band;
-    QList<double> old_mid;
+    QList<EngineFilterBiquad1Band*> m_bands;
+    QList<double> m_oldMid;
     QList<CSAMPLE*> m_pBandBuf;
 
   private:
