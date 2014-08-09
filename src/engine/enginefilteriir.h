@@ -18,7 +18,8 @@ class EngineFilterIIR : public EngineObjectConstIn {
   public:
     EngineFilterIIR()
             : m_doRamping(false),
-              m_doStart(false) {
+              m_doStart(false),
+              m_isPaused(false) {
         memset(m_coef, 0, sizeof(m_coef));
         pauseFilter();
     }
@@ -26,11 +27,14 @@ class EngineFilterIIR : public EngineObjectConstIn {
     virtual ~EngineFilterIIR() {};
 
     void pauseFilter() {
-        // Set the current buffers to 0
-        memset(m_buf1, 0, sizeof(m_buf1));
-        memset(m_buf2, 0, sizeof(m_buf2));
-        m_doRamping = true;
-        m_doStart = true;
+        if (!m_isPaused) {
+            m_isPaused = true;
+            // Set the current buffers to 0
+            memset(m_buf1, 0, sizeof(m_buf1));
+            memset(m_buf2, 0, sizeof(m_buf2));
+            m_doRamping = true;
+            m_doStart = true;
+        }
     }
 
     void initBuffers() {
@@ -54,6 +58,9 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                      const int iBufferSize) {
+        if (!m_isPaused) {
+            m_isPaused = false;
+        }
         if (!m_doRamping) {
             for (int i = 0; i < iBufferSize; i += 2) {
                 pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
@@ -124,6 +131,8 @@ class EngineFilterIIR : public EngineObjectConstIn {
     bool m_doRamping;
     // Flag set to true if old filter is invalid
     bool m_doStart;
+    // Flag set to true if filter is paused
+    bool m_isPaused;
 };
 
 template<>
