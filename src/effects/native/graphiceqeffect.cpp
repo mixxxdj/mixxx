@@ -61,7 +61,6 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     band.append(new EngineFilterBiquad1Band(44100, 4000.0, 2));
     band.append(new EngineFilterBiquad1Band(44100, 8000.0, 2));
     band.append(new EngineFilterBiquad1Band(44100, 16000.0, 2));
-
 }
 
 GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
@@ -100,6 +99,8 @@ void GraphicEQEffect::processGroup(const QString& group,
     for (int i = 0; i < 10; i++) {
         if (fMid[i] || pState->old_mid[i]) {
             pState->band[i]->process(pInput, pState->m_pBandBuf[i], numSamples);
+        } else {
+            pState->band[i]->pauseFilter();
         }
     }
 
