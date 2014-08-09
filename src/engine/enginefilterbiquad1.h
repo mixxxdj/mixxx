@@ -6,10 +6,8 @@
 class EngineFilterBiquad1Band : public EngineFilterIIR<2, IIR_BP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1Band(int sampleRate, double centerFreq, int Q);
-    void setFrequencyCorners(int sampleRate, double centerFreq);
-  private:
-    QString specification;
+    EngineFilterBiquad1Band(int sampleRate, double centerFreq, double Q);
+    void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
 };
 
 #endif // ENGINEFILTERBIQUAD1_H
