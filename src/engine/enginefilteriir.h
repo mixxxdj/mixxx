@@ -122,7 +122,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
     // Flag set to true if ramping needs to be done
     bool m_doRamping;
-    // Flag set to if old filter is invalid
+    // Flag set to true if old filter is invalid
     bool m_doStart;
 };
 
