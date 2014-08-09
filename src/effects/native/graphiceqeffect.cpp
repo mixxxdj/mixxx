@@ -62,7 +62,11 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     m_centerFrequencies[9] = 16000.0;
 
     // TODO(rryan): use the real samplerate
-    setFilters(44100, 2);
+    // Initialize the filters with default parameters
+    for (int i = 0; i < 10; i++) {
+        m_bands.append(new EngineFilterBiquad1Band(44100,
+                                                m_centerFrequencies[i], 2));
+    }
 }
 
 GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
