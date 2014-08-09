@@ -84,10 +84,10 @@ GraphicEQEffect::~GraphicEQEffect() {
 }
 
 void GraphicEQEffect::processGroup(const QString& group,
-                                       GraphicEQEffectGroupState* pState,
-                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                       const unsigned int numSamples,
-                                       const GroupFeatureState& groupFeatures) {
+                                   GraphicEQEffectGroupState* pState,
+                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                   const unsigned int numSamples,
+                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
