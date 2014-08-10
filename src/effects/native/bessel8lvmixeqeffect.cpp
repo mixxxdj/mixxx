@@ -86,10 +86,10 @@ void Bessel8LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
                                                int highFreq) {
     m_low1->setFrequencyCorners(sampleRate, lowFreq);
     m_low2->setFrequencyCorners(sampleRate, highFreq);
-    unsigned int delay_low1 = sampleRate / lowFreq * kGroupDelay1Hz;
-    unsigned int delay_low2 = sampleRate / highFreq * kGroupDelay1Hz ;
-    m_delay2->setDelay((delay_low1 - delay_low2) * 2);
-    m_delay3->setDelay(delay_low1 * 2);
+    double delay_low1 = sampleRate * kGroupDelay1Hz / lowFreq ;
+    double delay_low2 = sampleRate * kGroupDelay1Hz / highFreq  ;
+    m_delay2->setDelay((unsigned int)(delay_low1 - delay_low2) * 2);
+    m_delay3->setDelay((unsigned int)(delay_low1) * 2);
 }
 
 Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
@@ -145,10 +145,19 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
 
     pState->m_delay3->process(pInput, pState->m_pHighBuf, numSamples);
 
-    pState->m_low2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
-    pState->m_delay2->process(pInput, pState->m_pBandBuf, numSamples);
+    pState->m_low2->process(pInput, pState->m_pBandBuf, numSamples);
+    pState->m_delay2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
 
     pState->m_low1->process(pInput, pState->m_pLowBuf, numSamples);
+
+    // SampleUtil::copy2WithGain(pOutput,
+    //        pState->m_pLowBuf, -1,
+    //        pState->m_pHighBuf, 1,
+    //        numSamples);
+    //for (unsigned int i = 0; i < numSamples; i +=2) {
+    //    pOutput[i] = pState->m_pLowBuf[i];
+    //    pOutput[i + 1] = pState->m_pBandBuf[i];
+    //}
 
     if (fLow != pState->old_low ||
             fMid != pState->old_mid ||
