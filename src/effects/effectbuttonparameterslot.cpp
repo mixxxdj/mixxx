@@ -8,10 +8,10 @@
 EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
-                                         const unsigned int iParameterNumber)
+                                         const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(iRackNumber, iChainNumber, iSlotNumber,
-                                  iParameterNumber) {
-    QString itemPrefix = formatItemPrefix(iParameterNumber);
+                                  iParameterSlotNumber) {
+    QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
@@ -49,7 +49,7 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getButtonParameterForSlot(m_iParameterNumber);
+        m_pEffectParameter = pEffect->getButtonParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             // Set the number of states

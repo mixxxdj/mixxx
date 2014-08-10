@@ -23,11 +23,11 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     EffectParameterSlot(const unsigned int iRackNumber,
                         const unsigned int iChainNumber,
                         const unsigned int iSlotNumber,
-                        const unsigned int iParameterNumber);
+                        const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlot();
 
-    static QString formatItemPrefix(const unsigned int iParameterNumber) {
-        return QString("parameter%1").arg(iParameterNumber + 1);
+    static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
+        return QString("parameter%1").arg(iParameterSlotNumber + 1);
     }
 
     // Load the parameter of the given effect into this EffectParameterSlot
@@ -42,7 +42,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
   private:
     QString debugString() const {
-        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
+        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
     }
 
     // Clear the currently loaded effect

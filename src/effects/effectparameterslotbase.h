@@ -21,7 +21,7 @@ class EffectParameterSlotBase : public QObject {
     EffectParameterSlotBase(const unsigned int iRackNumber,
                         const unsigned int iChainNumber,
                         const unsigned int iSlotNumber,
-                        const unsigned int iParameterNumber);
+                        const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlotBase();
 
     static QString formatGroupString(const unsigned int iRackNumber,
@@ -51,7 +51,7 @@ class EffectParameterSlotBase : public QObject {
     const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
     const unsigned int m_iSlotNumber;
-    const unsigned int m_iParameterNumber;
+    const unsigned int m_iParameterSlotNumber;
     QString m_group;
     EffectPointer m_pEffect;
     EffectParameter* m_pEffectParameter;
