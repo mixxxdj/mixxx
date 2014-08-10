@@ -49,7 +49,7 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getButtonParameter(pEffect->getManifest().getActiveButtonParameter(m_iParameterNumber));
+        m_pEffectParameter = pEffect->getButtonParameterForSlot(m_iParameterNumber);
 
         if (m_pEffectParameter) {
             // Set the number of states
