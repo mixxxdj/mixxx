@@ -1,6 +1,7 @@
 #include "effects/effectslot.h"
 
 #include "controlpushbutton.h"
+#include "controlobjectslave.h"
 
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 8;
@@ -65,6 +66,11 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
         addEffectButtonParameterSlot();
     }
 
+    QString effectUnitGroup =  QString("[EffectRack%1_EffectUnit%2]").arg(
+        QString::number(iRackNumber+1), QString::number(iChainNumber+1));
+
+    m_pCoSuper = new ControlObjectSlave(ConfigKey(effectUnitGroup, "parameter"));
+
     clear();
 }
 
@@ -82,6 +88,7 @@ EffectSlot::~EffectSlot() {
     delete m_pControlEffectSelector;
     delete m_pControlClear;
     delete m_pControlEnabled;
+    delete m_pCoSuper;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
@@ -189,6 +196,19 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
 
         foreach (EffectParameterSlotPointer pParameter, m_parameters) {
             pParameter->loadEffect(m_pEffect);
+        }
+
+        // find first linked parameter
+        foreach (EffectParameterSlotPointer pParameter, m_parameters) {
+            EffectManifestParameter::LinkType linkType = pParameter->getLinkType();
+            if (linkType != EffectManifestParameter::LINK_NONE) {
+                if (linkType == EffectManifestParameter::LINK_INVERSE) {
+                    m_pCoSuper->set(1 - pParameter->getValueParameter());
+                } else {
+                    m_pCoSuper->set(pParameter->getValueParameter());
+                }
+                break;
+            }
         }
 
         foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
