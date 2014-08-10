@@ -84,12 +84,31 @@ Bessel8LVMixEQEffectGroupState::~Bessel8LVMixEQEffectGroupState() {
 
 void Bessel8LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
                                                int highFreq) {
-    m_low1->setFrequencyCorners(sampleRate, lowFreq);
-    m_low2->setFrequencyCorners(sampleRate, highFreq);
-    double delay_low1 = sampleRate * kGroupDelay1Hz / lowFreq ;
-    double delay_low2 = sampleRate * kGroupDelay1Hz / highFreq  ;
-    m_delay2->setDelay((unsigned int)(delay_low1 - delay_low2) * 2);
-    m_delay3->setDelay((unsigned int)(delay_low1) * 2);
+    double delayLow1 = sampleRate * kGroupDelay1Hz / lowFreq + kDelayOffset;
+    double delayLow2 = sampleRate * kGroupDelay1Hz / highFreq + kDelayOffset;
+    // Since we delay only full samples, we can only allow frequencies
+    // producing such delays
+    unsigned int iDelayLow1 = (unsigned int)delayLow1;
+    unsigned int iDelayLow2 = (unsigned int)delayLow2;
+    int stepLowFreq;
+    if (iDelayLow1 > 1) {
+        stepLowFreq = sampleRate * kGroupDelay1Hz / (iDelayLow1 - kDelayOffset + 0.5);
+    } else {
+        iDelayLow1 = 1;
+        stepLowFreq = kMaxCornerFreq;
+    }
+    int stepHighFreq;
+    if (iDelayLow1 > 1) {
+        stepHighFreq = sampleRate * kGroupDelay1Hz / (iDelayLow2 - kDelayOffset + 0.5);
+    } else {
+        iDelayLow2 = 1;
+        stepHighFreq = kMaxCornerFreq;
+    }
+
+    m_low1->setFrequencyCorners(sampleRate, stepLowFreq);
+    m_low2->setFrequencyCorners(sampleRate, stepHighFreq);
+    m_delay2->setDelay((iDelayLow1 - iDelayLow2) * 2);
+    m_delay3->setDelay(iDelayLow1 * 2);
 }
 
 Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,

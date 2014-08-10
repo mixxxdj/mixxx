@@ -18,6 +18,9 @@
 // constant to calculate the group delay from the low pass corner
 // mean value of a set of fid_calc_delay() calls for different corners
 const double kGroupDelay1Hz = 0.5067964223;
+// kDelayOffset is required to match short delays.
+const double kDelayOffset = 0.2;
+const double kMaxCornerFreq = 14212;
 const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 
 class Bessel8LVMixEQEffectGroupState {
