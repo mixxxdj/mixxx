@@ -159,16 +159,22 @@ EffectParameter* Effect::getButtonParameterById(const QString& id) const {
     return pParameter;
 }
 
-EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
+EffectParameter* Effect::getParameterForSlot(unsigned int slotNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
-    return m_parameters.value(parameterNumber, NULL);
+    if (static_cast<unsigned int>(m_parameters.size()) <= slotNumber) {
+        return NULL;
+    }
+    return m_parameters.value(m_manifest.getActiveParameter(slotNumber));
 }
 
-EffectParameter* Effect::getButtonParameter(unsigned int parameterNumber) {
+EffectParameter* Effect::getButtonParameterForSlot(unsigned int slotNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
-    return m_buttonParameters.value(parameterNumber, NULL);
+    if (static_cast<unsigned int>(m_buttonParameters.size()) <= slotNumber) {
+        return NULL;
+    }
+    return m_buttonParameters.value(m_manifest.getActiveButtonParameter(slotNumber));
 }
 
 QDomElement Effect::toXML(QDomDocument* doc) const {
