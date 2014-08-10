@@ -29,6 +29,12 @@ class CoverArtDAOTest : public MixxxTest {
     }
 
     TrackCollection* m_pTrackCollection;
+
+    // this method gives support to saveCoverArts (only)
+    // it is just to make 'saveCoverArts' more readable and less repetitive
+    void iterateQHashAndQSet(QHash<int, QPair<QString, QString> > covers,
+                             QSet<QPair<int, int> > res,
+                             QList<int> invalidCoverKeys = QList<int>());
 };
 
 TEST_F(CoverArtDAOTest, saveCoverArt) {
@@ -83,22 +89,7 @@ TEST_F(CoverArtDAOTest, saveCoverArts) {
     covers.insert(2, qMakePair(QString("/cover2.jpg"), QString("COVER2")));
     covers.insert(3, qMakePair(QString("/cover3.jpg"), QString("COVER3")));
     res = m_CoverArtDAO.saveCoverArt(covers);
-    ASSERT_TRUE(res.size() <= covers.size());
-
-    QSetIterator<QPair<int, int> > set(res);
-    QHashIterator<int, QPair<QString, QString> > hash(covers);
-    while (hash.hasNext()) {
-        hash.next();
-        int trackId = hash.key();
-        bool hasTrackId = false;
-        set.toFront();
-        while (set.hasNext() && !hasTrackId) {
-            QPair<int, int> p = set.next();
-            hasTrackId = p.first == trackId;
-            EXPECT_TRUE(p.second > 0); // valid cover
-        }
-        EXPECT_TRUE(hasTrackId);
-    }
+    iterateQHashAndQSet(covers, res);
 
     // adding existing covers
     QSet<QPair<int, int> > resAux;
@@ -111,44 +102,18 @@ TEST_F(CoverArtDAOTest, saveCoverArts) {
     covers.insert(5, qMakePair(QString("/cover5.jpg"), QString("COVER5")));
     covers.insert(6, qMakePair(QString("/cover6.jpg"), QString("COVER6")));
     res = m_CoverArtDAO.saveCoverArt(covers);
-    ASSERT_TRUE(res.size() <= covers.size());
-
-    set = QSetIterator<QPair<int, int> >(res);
-    hash = QHashIterator<int, QPair<QString, QString> >(covers);
-    while (hash.hasNext()) {
-        hash.next();
-        int trackId = hash.key();
-        bool hasTrackId = false;
-        set.toFront();
-        while (set.hasNext() && !hasTrackId) {
-            QPair<int, int> p = set.next();
-            hasTrackId = p.first == trackId;
-            EXPECT_TRUE(p.second > 0); // valid cover
-        }
-        EXPECT_TRUE(hasTrackId);
-    }
+    iterateQHashAndQSet(covers, res);
 
     // adding invalid covers (empty md5hash)
     QHash<int, QPair<QString, QString> > invalidCovers;
-    invalidCovers.insert(7, qMakePair(QString(""), QString("")));
-    invalidCovers.insert(8, qMakePair(QString("/coverInv.jpg"), QString("")));
+    QList<int> invalidCoverKeys;
+    invalidCoverKeys << 7 << 8;
+    invalidCovers.insert(invalidCoverKeys.at(0),
+                         qMakePair(QString(""), QString("")));
+    invalidCovers.insert(invalidCoverKeys.at(1),
+                         qMakePair(QString("/coverInv.jpg"), QString("")));
     res = m_CoverArtDAO.saveCoverArt(invalidCovers);
-    ASSERT_TRUE(res.size() <= invalidCovers.size());
-
-    set = QSetIterator<QPair<int, int> >(res);
-    hash = QHashIterator<int, QPair<QString, QString> >(invalidCovers);
-    while (hash.hasNext()) {
-        hash.next();
-        int trackId = hash.key();
-        bool hasTrackId = false;
-        set.toFront();
-        while (set.hasNext() && !hasTrackId) {
-            QPair<int, int> p = set.next();
-            hasTrackId = p.first == trackId;
-            EXPECT_TRUE(p.second == -1); // invalid cover
-        }
-        EXPECT_TRUE(hasTrackId);
-    }
+    iterateQHashAndQSet(invalidCovers, res, invalidCoverKeys);
 
     // adding 'invalid', 'existing' and 'new' covers
     // it trust that "QHash covers" has existing covers
@@ -156,10 +121,18 @@ TEST_F(CoverArtDAOTest, saveCoverArts) {
     covers.insert(10, qMakePair(QString("/newCover2.jpg"), QString("NEWCOVER2")));
     covers.unite(invalidCovers);
     res = m_CoverArtDAO.saveCoverArt(covers);
-    ASSERT_TRUE(res.size() <= covers.size());
+    iterateQHashAndQSet(covers, res, invalidCoverKeys);
+}
 
-    set = QSetIterator<QPair<int, int> >(res);
-    hash = QHashIterator<int, QPair<QString, QString> >(covers);
+// this method gives support to 'saveCoverArts' (only)
+// it is just to make 'saveCoverArts' more readable and less repetitive
+void CoverArtDAOTest::iterateQHashAndQSet(QHash<int, QPair<QString, QString> > covers,
+                                          QSet<QPair<int, int> > res,
+                                          QList<int> invalidCoverKeys)
+{
+    ASSERT_TRUE(res.size() <= covers.size());
+    QSetIterator<QPair<int, int> > set(res);
+    QHashIterator<int, QPair<QString, QString> > hash(covers);
     while (hash.hasNext()) {
         hash.next();
         int trackId = hash.key();
@@ -168,8 +141,7 @@ TEST_F(CoverArtDAOTest, saveCoverArts) {
         while (set.hasNext() && !hasTrackId) {
             QPair<int, int> p = set.next();
             hasTrackId = p.first == trackId;
-            // invalid covers
-            if (p.first == 7 || p.first == 8) {
+            if (invalidCoverKeys.contains(p.first)) {
                 EXPECT_TRUE(p.second == -1);
             } else {
                 EXPECT_TRUE(p.second > 0);
