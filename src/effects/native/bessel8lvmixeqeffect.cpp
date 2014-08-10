@@ -142,18 +142,27 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
     fLow = fLow - fMid;
     fMid = fMid - fHigh;
 
+    if (fHigh || pState->old_high) {
+        pState->m_delay3->process(pInput, pState->m_pHighBuf, numSamples);
+    } else {
+        pState->m_delay3->pauseFilter();
+    }
 
-    pState->m_delay3->process(pInput, pState->m_pHighBuf, numSamples);
+    if (fMid || pState->old_mid) {
+        pState->m_low2->process(pInput, pState->m_pBandBuf, numSamples);
+        pState->m_delay2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
+    } else {
+        pState->m_low2->pauseFilter();
+        pState->m_delay2->pauseFilter();
+    }
 
-    pState->m_low2->process(pInput, pState->m_pBandBuf, numSamples);
-    pState->m_delay2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
+    if (fLow || pState->old_low) {
+        pState->m_low1->process(pInput, pState->m_pLowBuf, numSamples);
+    } else {
+        pState->m_low1->pauseFilter();
+    }
 
-    pState->m_low1->process(pInput, pState->m_pLowBuf, numSamples);
-
-    // SampleUtil::copy2WithGain(pOutput,
-    //        pState->m_pLowBuf, -1,
-    //        pState->m_pHighBuf, 1,
-    //        numSamples);
+    // Test code for comparing streams as two stereo channels
     //for (unsigned int i = 0; i < numSamples; i +=2) {
     //    pOutput[i] = pState->m_pLowBuf[i];
     //    pOutput[i + 1] = pState->m_pBandBuf[i];
