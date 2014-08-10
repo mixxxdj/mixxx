@@ -57,23 +57,26 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
 }
 
 Bessel8LVMixEQEffectGroupState::Bessel8LVMixEQEffectGroupState()
-        : low(NULL), band(NULL), high(NULL), old_low(1.0),
-          old_mid(1.0), old_high(1.0) {
+        : old_low(1.0),
+          old_mid(1.0),
+          old_high(1.0) {
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     // Initialize filters with the default values
     // TODO(rryan): use the real samplerate
-    low = new EngineFilterBessel8Low(44100, 246);
-    band = new EngineFilterBessel8Band(44100, 246, 2484);
-    high = new EngineFilterBessel8High(44100, 2484);
+    m_low1 = new EngineFilterBessel8Low(44100, 246);
+    m_low2 = new EngineFilterBessel8Low(44100, 2484);
+    m_delay2 = new EngineFilterDelay<kMaxDelay>();
+    m_delay3 = new EngineFilterDelay<kMaxDelay>();
 }
 
 Bessel8LVMixEQEffectGroupState::~Bessel8LVMixEQEffectGroupState() {
-    delete low;
-    delete band;
-    delete high;
+    delete m_low1;
+    delete m_low2;
+    delete m_delay2;
+    delete m_delay3;
     SampleUtil::free(m_pLowBuf);
     SampleUtil::free(m_pBandBuf);
     SampleUtil::free(m_pHighBuf);
@@ -81,9 +84,12 @@ Bessel8LVMixEQEffectGroupState::~Bessel8LVMixEQEffectGroupState() {
 
 void Bessel8LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
                                                int highFreq) {
-    low->setFrequencyCorners(sampleRate, lowFreq);
-    band->setFrequencyCorners(sampleRate, lowFreq, highFreq);
-    high->setFrequencyCorners(sampleRate, highFreq);
+    m_low1->setFrequencyCorners(sampleRate, lowFreq);
+    m_low2->setFrequencyCorners(sampleRate, highFreq);
+    unsigned int delay_low1 = sampleRate / lowFreq * kGroupDelay1Hz;
+    unsigned int delay_low2 = sampleRate / highFreq * kGroupDelay1Hz ;
+    m_delay2->setDelay((delay_low1 - delay_low2) * 2);
+    m_delay3->setDelay(delay_low1 * 2);
 }
 
 Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
@@ -122,46 +128,29 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
         m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
         m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
         m_oldSampleRate = sampleRate;
+        // Clamp frequency corners to the border, defined by the maximum delay.
+        int minFreq = sampleRate / (kMaxDelay - 1) * kGroupDelay1Hz * 2;
+        m_loFreq = math_max(m_loFreq, minFreq);
+        m_hiFreq = math_max(m_hiFreq, minFreq);
         pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
     }
 
-    // Process the new EQ'd signals.
-    // They use up to 16 frames history so in case we are just starting,
-    // 16 frames are junk, this is handled by ramp_delay
-    int ramp_delay = 0;
-    if (fLow || pState->old_low) {
-        pState->low->process(pInput, pState->m_pLowBuf, numSamples);
-        if(pState->old_low == 0) {
-            ramp_delay = 30;
-        }
-    }
-    if (fMid || pState->old_mid) {
-        pState->band->process(pInput, pState->m_pBandBuf, numSamples);
-        if(pState->old_mid== 0) {
-            ramp_delay = 30;
-        }
-    }
-    if (fHigh || pState->old_high) {
-        pState->high->process(pInput, pState->m_pHighBuf, numSamples);
-        if(pState->old_high == 0) {
-            ramp_delay = 30;
-        }
-    }
+    // Since a Bessel Low pass Filter has a constant group delay in the pass band,
+    // we can subtract or add the filtered signal to the dry signal if we compensate this delay
+    // The dry signal represents the high gain
+    // Then the higher low pass is added and at least the lower low pass result.
+    fLow = fLow - fMid;
+    fMid = fMid - fHigh;
 
-    if (ramp_delay) {
-        // first use old gains
-        SampleUtil::copy3WithGain(pOutput,
-                pState->m_pLowBuf, pState->old_low,
-                pState->m_pBandBuf, pState->old_mid,
-                pState->m_pHighBuf, pState->old_high,
-                ramp_delay);
-        // Now ramp the remaining frames
-        SampleUtil::copy3WithRampingGain(&pOutput[ramp_delay],
-                &pState->m_pLowBuf[ramp_delay], pState->old_low, fLow,
-                &pState->m_pBandBuf[ramp_delay], pState->old_mid, fMid,
-                &pState->m_pHighBuf[ramp_delay], pState->old_high, fHigh,
-                numSamples - ramp_delay);
-    } else if (fLow != pState->old_low ||
+
+    pState->m_delay3->process(pInput, pState->m_pHighBuf, numSamples);
+
+    pState->m_low2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
+    pState->m_delay2->process(pInput, pState->m_pBandBuf, numSamples);
+
+    pState->m_low1->process(pInput, pState->m_pLowBuf, numSamples);
+
+    if (fLow != pState->old_low ||
             fMid != pState->old_mid ||
             fHigh != pState->old_high) {
         SampleUtil::copy3WithRampingGain(pOutput,

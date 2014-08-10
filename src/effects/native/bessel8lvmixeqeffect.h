@@ -9,10 +9,16 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbessel8.h"
+#include "engine/enginefilterdelay.h"
 #include "util.h"
 #include "util/types.h"
 #include "util/defs.h"
 #include "sampleutil.h"
+
+// constant to calculate the group delay from the low pass corner
+// mean value of a set of fid_calc_delay() calls for different corners
+const double kGroupDelay1Hz = 0.5067964223;
+const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 
 class Bessel8LVMixEQEffectGroupState {
   public:
@@ -21,9 +27,10 @@ class Bessel8LVMixEQEffectGroupState {
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
-    EngineFilterBessel8Low* low;
-    EngineFilterBessel8Band* band;
-    EngineFilterBessel8High* high;
+    EngineFilterBessel8Low* m_low1;
+    EngineFilterBessel8Low* m_low2;
+    EngineFilterDelay<kMaxDelay>* m_delay2;
+    EngineFilterDelay<kMaxDelay>* m_delay3;
 
     double old_low;
     double old_mid;
