@@ -53,13 +53,13 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     };
 
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
-                             const bool croppedPixmap = false,
-                             const bool emitSignals = true);
+                             const bool croppedPixmap,
+                             const bool emitSignals);
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
                            const QString& md5Hash,
-                           const bool croppedPixmap = false,
-                           const bool emitSignals = true);
+                           const bool croppedPixmap,
+                           const bool emitSignals);
 
   private:
     static CoverArtCache* m_instance;

@@ -16,7 +16,8 @@ TEST_F(CoverArtCacheTest, loadImage) {
     QString md5hash = "md5hash"; // fake md5 hash
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadImage(trackId, kCoverLocationTest, md5hash);
+    res = CoverArtCache::loadImage(trackId, kCoverLocationTest,
+                                   md5hash, false, false);
     ASSERT_EQ(trackId, res.trackId);
     EXPECT_QSTRING_EQ(kCoverLocationTest, res.coverLocation);
     EXPECT_QSTRING_EQ(md5hash, res.md5Hash);
@@ -42,7 +43,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
 
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::searchImage(cInfo);
+    res = CoverArtCache::searchImage(cInfo, false, false);
     ASSERT_TRUE(res.coverLocation.isEmpty());
 
     // setting image source and default format
@@ -65,7 +66,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     QString cLoc_foo = QString(trackdir % "/" % "foo.").append(format);
     EXPECT_TRUE(img.save(cLoc_foo, format));
     // looking for cover in an directory with one image
-    res = CoverArtCache::searchImage(cInfo);
+    res = CoverArtCache::searchImage(cInfo, false, false);
     EXPECT_QSTRING_EQ(cLoc_foo, res.coverLocation);
     QFile::remove(cLoc_foo);
 
@@ -116,7 +117,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // we must find covers in the right order
     ASSERT_EQ(7, prefCovers.size());
     for (int coverNameId = 0; coverNameId < prefCovers.size(); coverNameId++) {
-        res = CoverArtCache::searchImage(cInfo);
+        res = CoverArtCache::searchImage(cInfo, false, false);
         EXPECT_QSTRING_EQ(prefCovers[coverNameId], res.coverLocation);
         QFile::remove(prefCovers[coverNameId]);
     }
@@ -132,7 +133,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     QString cLoc_coverjpg = trackdir % "/" % "cover." % "jpg";
     EXPECT_TRUE(img.scaled(400,400).save(cLoc_coverjpg, "jpg"));
     extraCovers << cLoc_coverJPG << cLoc_coverjpg;
-    res = CoverArtCache::searchImage(cInfo);
+    res = CoverArtCache::searchImage(cInfo, false, false);
     EXPECT_QSTRING_EQ(cLoc_coverJPG, res.coverLocation);
 
     // As we are looking for %album%.jpg and %base_track.jpg%,
@@ -150,14 +151,14 @@ TEST_F(CoverArtCacheTest, searchImage) {
     cLoc_filename = QString(trackdir % "/" % cInfoUtf8.trackBaseName % ".");
     cLoc_filename.append(format);
     EXPECT_TRUE(img.save(cLoc_filename, format));
-    res = CoverArtCache::searchImage(cInfoUtf8);
+    res = CoverArtCache::searchImage(cInfoUtf8, false, false);
     EXPECT_QSTRING_EQ(cLoc_filename, res.coverLocation);
     QFile::remove(cLoc_filename);
     // 2. album_name.jpg
     cLoc_albumName = QString(trackdir % "/" % cInfoUtf8.album % ".");
     cLoc_albumName.append(format);
     EXPECT_TRUE(img.save(cLoc_albumName, format));
-    res = CoverArtCache::searchImage(cInfoUtf8);
+    res = CoverArtCache::searchImage(cInfoUtf8, false, false);
     EXPECT_QSTRING_EQ(cLoc_albumName, res.coverLocation);
     QFile::remove(cLoc_albumName);
 
