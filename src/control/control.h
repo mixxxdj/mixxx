@@ -75,6 +75,7 @@ class ControlDoublePrivate : public QObject {
     void setParameter(double dParam, QObject* pSender);
     double getParameter() const;
     double getParameterForValue(double value) const;
+    double getParameterForMidiValue(double midiValue) const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;
