@@ -40,13 +40,12 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     virtual ~DlgPrefEQ();
 
   public slots:
-    void slotLoFiChanged();
     void slotEffectChangedOnDeck(int effectIndex);
     void slotBasicEffectChangedOnDeck(int effectIndex);
     void slotAddComboBox(double numDecks);
     // Slot for toggling between advanced and basic views
     void slotShowAllEffects();
-    void slotEnaEQChanged();
+    void slotEqChanged();
     /** Update Hi EQ **/
     void slotUpdateHiEQ();
     /** Update Lo EQ **/

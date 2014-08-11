@@ -20,7 +20,7 @@
 #include <QHBoxLayout>
 
 #include "dlgprefeq.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "util/math.h"
 
@@ -58,9 +58,12 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-    connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
-    connect(CheckBoxEnbEQ, SIGNAL(stateChanged(int)), this, SLOT(slotEnaEQChanged()));
-    connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)), this, SLOT(slotShowAllEffects()));
+    connect(radioButton_bypass, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
+    connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
+    connect(radioButton_butterworth8, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
+
+    connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
+            this, SLOT(slotShowAllEffects()));
 
     connect(this, SIGNAL(effectOnChainSlot(const unsigned int,
                                            const unsigned int, QString)),
@@ -124,13 +127,13 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         int selectedEffectIndex;
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("EffectForDeck%1").arg(m_deckEffectSelectors.size())),
-                QString("Default EQ"));
+                QString("Butterworth8 EQ"));
         selectedEffectIndex = box->findText(configuredEffect);
         box->setCurrentIndex(selectedEffectIndex);
 
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("BasicEffectForDeck%1").arg(m_deckBasicEffectSelectors.size())),
-                QString("Default EQ"));
+                QString("Butterworth8 EQ"));
         selectedEffectIndex = simpleBox->findText(configuredEffect);
         simpleBox->setCurrentIndex(selectedEffectIndex);
 
@@ -195,7 +198,6 @@ void DlgPrefEQ::loadSettings() {
     highEqFreq = highEqPrecise.isEmpty() ? highEqFreq : highEqPrecise.toDouble();
 
     if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
-        CheckBoxLoFi->setChecked(true);
         setDefaultShelves();
         lowEqFreq = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise")).toDouble();
         highEqFreq = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise")).toDouble();
@@ -210,12 +212,22 @@ void DlgPrefEQ::loadSettings() {
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
 
-    CheckBoxLoFi->setChecked(m_pConfig->getValueString(
-            ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"));
-
-    // Default internal EQs to enabled.
-    CheckBoxEnbEQ->setChecked(m_pConfig->getValueString(
-            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes"));
+    if (m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes")) {
+        radioButton_bypass->setChecked(false);
+        if (m_pConfig->getValueString(
+                ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")) {
+            radioButton_bessel4->setChecked(true);
+            radioButton_butterworth8->setChecked(false);
+        } else {
+            radioButton_bessel4->setChecked(false);
+            radioButton_butterworth8->setChecked(true);
+        }
+    } else {
+        radioButton_bypass->setChecked(true);
+        radioButton_bessel4->setChecked(false);
+        radioButton_butterworth8->setChecked(false);
+    }
 }
 
 void DlgPrefEQ::setDefaultShelves()
@@ -227,29 +239,31 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
-    setDefaultShelves();
-    CheckBoxEnbEQ->setChecked(true);
-    CheckBoxLoFi->setChecked(true);
+    radioButton_bypass->setChecked(false);
+    radioButton_butterworth8->setChecked(false);
+    radioButton_bessel4->setChecked(true);
+    slotEqChanged();
     setDefaultShelves();
     loadSettings();
     slotUpdate();
     slotApply();
 }
 
-void DlgPrefEQ::slotEnaEQChanged() {
-    m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ),
-                   CheckBoxEnbEQ->isChecked() ? QString("yes") : QString("no"));
-}
-
-void DlgPrefEQ::slotLoFiChanged()
-{
-    GroupBoxHiEQ->setEnabled(!CheckBoxLoFi->isChecked());
-    GroupBoxLoEQ->setEnabled(!CheckBoxLoFi->isChecked());
-    if(CheckBoxLoFi->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("yes")));
+void DlgPrefEQ::slotEqChanged() {
+    if (radioButton_bypass->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no"));
     } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("yes"));
+    }
+
+    if (radioButton_bessel4->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("yes")));
+    }
+
+    if (radioButton_butterworth8->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("no")));
     }
+
     slotApply();
 }
 
@@ -339,21 +353,20 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
     return dsliderPos;
 }
 
-
-void DlgPrefEQ::slotApply()
-{
+void DlgPrefEQ::slotApply() {
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
-    m_COTLoFi.slotSet(CheckBoxLoFi->isChecked());
-    m_COTEnableEq.slotSet(CheckBoxEnbEQ->isChecked());
+
+    m_COTLoFi.slotSet((m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")));
+    m_COTEnableEq.slotSet((m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes")));
 }
 
-void DlgPrefEQ::slotUpdate()
-{
+void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
-    slotLoFiChanged();
-    slotEnaEQChanged();
+    slotEqChanged();
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {

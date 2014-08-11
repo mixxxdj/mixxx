@@ -26,6 +26,7 @@ class VinylControlControl : public EngineControl {
     void slotControlVinylSeek(double value);
 
   private:
+    ControlObject* m_pControlVinylRate;
     ControlObject* m_pControlVinylSeek;
     ControlObject* m_pControlVinylSpeedType;
     ControlObject* m_pControlVinylStatus;

@@ -191,6 +191,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
+    header->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -483,22 +484,31 @@ void WTrackTableView::slotShowTrackInfo() {
 void WTrackTableView::slotNextTrackInfo() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showTrackInfo(nextRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevTrackInfo() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showTrackInfo(prevRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showTrackInfo(QModelIndex index) {
     TrackModel* trackModel = getTrackModel();
 
-    if (!trackModel)
+    if (!trackModel) {
         return;
+    }
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
@@ -510,15 +520,23 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 void WTrackTableView::slotNextDlgTagFetcher() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showDlgTagFetcher(nextRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevDlgTagFetcher() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showDlgTagFetcher(prevRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
@@ -1157,6 +1175,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
                                              iAutoDJPlaylistId, 2);
     } else {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(
                 trackIds, iAutoDJPlaylistId);
     }
@@ -1257,6 +1276,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
    }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }
@@ -1319,6 +1339,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         }
     }
     if (trackIds.size() > 0) {
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         crateDao.addTracksToCrate(iCrateId, &trackIds);
     }
 }

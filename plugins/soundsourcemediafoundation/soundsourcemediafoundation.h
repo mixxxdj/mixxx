@@ -23,7 +23,7 @@
 #include <QFile>
 #include <QString>
 
-#include "defs.h"
+#include "util/defs.h"
 #include "defs_version.h"
 #include "soundsource.h"
 
@@ -41,11 +41,11 @@ class SoundSourceMediaFoundation : public Mixxx::SoundSource {
   public:
     SoundSourceMediaFoundation(QString filename);
     ~SoundSourceMediaFoundation();
-    int open();
+    Result open();
     long seek(long filepos);
     unsigned read(unsigned long size, const SAMPLE *buffer);
     inline long unsigned length();
-    int parseHeader();
+    Result parseHeader();
     static QList<QString> supportedFileExtensions();
 
   private:

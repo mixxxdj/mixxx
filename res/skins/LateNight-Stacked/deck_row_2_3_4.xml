@@ -10,26 +10,44 @@
 		        <Layout>horizontal</Layout>
 		        <SizePolicy>me,min</SizePolicy>
 		        <Children>
-					<TrackProperty>
-						<TooltipId>track_title</TooltipId>
-						<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-							Unicode, Arial, Verdana, sans-serif;
-							color: #EECE33;}
-						</Style>
-						<Property>title</Property>
-						<Channel>
-							<Variable name="channum" />
-						</Channel>
-					</TrackProperty>
+                    <WidgetGroup>
+                        <ObjectName>AlignLeftTop</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,min</SizePolicy>
+                        <Children>
+        					<TrackProperty>
+                                <Alignment>Left</Alignment>
+        						<TooltipId>track_title</TooltipId>
+        						<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
+        							Unicode, Arial, Verdana, sans-serif; text-align: left;
+        							color: #EECE33;}
+        						</Style>
+        						<Property>title</Property>
+        						<Channel>
+        							<Variable name="channum" />
+        						</Channel>
+        					</TrackProperty>
+                        </Children>
+                    </WidgetGroup>
 					<WidgetGroup>
                         <ObjectName>TimeGutter</ObjectName>
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
+                        <Children/>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>AlignRightTop</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <MinimumSize>100,</MinimumSize>
+                        <MaximumSize>100,</MaximumSize>
                         <Children>
                             <NumberPos>
                                 <TooltipId>track_time</TooltipId>
+                                <Alignment>right</Alignment>
                                 <Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-                                    Unicode, Arial, Verdana, sans-serif;  color: #EECE33;}
+                                    Unicode, Arial, Verdana, sans-serif;
+                                    color: #EECE33;}
                                 </Style>
                                 <Channel>
                                     <Variable name="channum" />

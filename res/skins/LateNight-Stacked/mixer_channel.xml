@@ -17,7 +17,6 @@
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
-              <EmitOnDownPress>false</EmitOnDownPress>
             </Connection>
           </SliderComposed>
           <PushButton>
@@ -54,7 +53,6 @@
     	      <Pos>4,54</Pos>
     	      <Connection>
     		      <ConfigKey>[Channel<Variable name="channum"/>],filterHighKill</ConfigKey>
-    		      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
     		      <ButtonState>LeftButton</ButtonState>
     	      </Connection>
           </PushButton>
@@ -74,7 +72,6 @@
     	      <Pos>4,93</Pos>
     	      <Connection>
     		      <ConfigKey>[Channel<Variable name="channum"/>],filterMidKill</ConfigKey>
-    		      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
     		      <ButtonState>LeftButton</ButtonState>
     	      </Connection>
           </PushButton>
@@ -94,7 +91,6 @@
     	      <Pos>4,130</Pos>
     	      <Connection>
     		      <ConfigKey>[Channel<Variable name="channum"/>],filterLowKill</ConfigKey>
-    		      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
     		      <ButtonState>LeftButton</ButtonState>
     	      </Connection>
           </PushButton>
@@ -159,7 +155,7 @@
           </VuMeter>
         </Children>
       </WidgetGroup> <!-- /Channel1 mixer vertical -->
-      
+
       <WidgetGroup>  <!--  Channel1 controls side-by-side-->
         <ObjectName>MixerChannelHoriz</ObjectName>
         <Layout>horizontal</Layout>
@@ -205,7 +201,6 @@
                     <Pos>4,54</Pos>
                     <Connection>
                         <ConfigKey>[Channel<Variable name="channum"/>],filterHighKill</ConfigKey>
-                        <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         <ButtonState>LeftButton</ButtonState>
                     </Connection>
                 </PushButton>
@@ -225,7 +220,6 @@
                     <Pos>4,93</Pos>
                     <Connection>
                         <ConfigKey>[Channel<Variable name="channum"/>],filterMidKill</ConfigKey>
-                        <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         <ButtonState>LeftButton</ButtonState>
                     </Connection>
                 </PushButton>
@@ -245,7 +239,6 @@
                     <Pos>4,130</Pos>
                     <Connection>
                         <ConfigKey>[Channel<Variable name="channum"/>],filterLowKill</ConfigKey>
-                        <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         <ButtonState>LeftButton</ButtonState>
                     </Connection>
                 </PushButton>
@@ -300,7 +293,6 @@
                   <Pos>1,50</Pos>
                   <Connection>
                     <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
-                    <EmitOnDownPress>false</EmitOnDownPress>
                   </Connection>
                 </SliderComposed>
               </Children>

@@ -105,7 +105,7 @@ VestaxTyphoon.handleEvent = function(channel, control, value, status, group) {
     var deck = VestaxTyphoon.GetDeck(group);
     if (deck != null) {
         deck.handleEvent(channel, control, value, status, group);
-    } 
+    }
     try {
         var buttons = VestaxTyphoon.controls[control];
     } catch (ex) {
@@ -315,8 +315,6 @@ VestaxTyphoon.Button.prototype.handleFF = function() {
 
 VestaxTyphoon.Button.prototype.handleWheelTouchFilter = function() {
     if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        // disable keylock on scratch
-        //this.keylock = engine.getValue(this.group, "keylock");
         if (this.timer > 0) {
             engine.stopTimer(this.timer);
             this.timer = 0;
@@ -344,4 +342,3 @@ VestaxTyphoon.Button.prototype.handleWheel = function() {
         engine.setValue(this.group, "jog", this.state - 0x40);
     }
 }
-
