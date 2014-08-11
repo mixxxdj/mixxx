@@ -65,7 +65,6 @@ void DlgPrefLV2::slotDisplayParameters() {
     QString pluginId = button->property("id").toString();
     m_currentEffectId = pluginId;
     EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(pluginId);
-    // Need to do the remapping here
     foreach (EffectManifestParameter param, currentEffectManifest.parameters()) {
         QCheckBox* entry = new QCheckBox(this);
         entry->setText(param.name());
@@ -149,7 +148,6 @@ void DlgPrefLV2::slotDisplayButtonParameters() {
     QString pluginId = button->property("id").toString();
     m_currentEffectId = pluginId;
     EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(pluginId);
-    // Need to do the remapping here
     foreach (EffectManifestParameter param, currentEffectManifest.buttonParameters()) {
         QCheckBox* entry = new QCheckBox(this);
         entry->setText(param.name());
