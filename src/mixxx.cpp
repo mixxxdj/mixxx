@@ -644,6 +644,35 @@ void MixxxMainWindow::createCOAliases() {
     // Example:
     // ControlDoublePrivate::insertAlias(ConfigKey("[Microphone]", "volume"),
     //                                   ConfigKey("[Microphone1]", "volume"));
+
+    // Aliases needed for the EQ Rack
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel1]", "filterLow"),
+                ConfigKey("[EffectRack2_EffectUnit1_Effect1]", "parameter1"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel1]", "filterMid"),
+                ConfigKey("[EffectRack2_EffectUnit1_Effect1]", "parameter2"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel1]", "filterHigh"),
+                ConfigKey("[EffectRack2_EffectUnit1_Effect1]", "parameter3"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel2]", "filterLow"),
+                ConfigKey("[EffectRack2_EffectUnit2_Effect1]", "parameter1"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel2]", "filterMid"),
+                ConfigKey("[EffectRack2_EffectUnit2_Effect1]", "parameter2"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel2]", "filterHigh"),
+                ConfigKey("[EffectRack2_EffectUnit2_Effect1]", "parameter3"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel3]", "filterLow"),
+                ConfigKey("[EffectRack2_EffectUnit3_Effect1]", "parameter1"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel3]", "filterMid"),
+                ConfigKey("[EffectRack2_EffectUnit3_Effect1]", "parameter2"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel3]", "filterHigh"),
+                ConfigKey("[EffectRack2_EffectUnit3_Effect1]", "parameter3"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel4]", "filterLow"),
+                ConfigKey("[EffectRack2_EffectUnit4_Effect1]", "parameter1"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel4]", "filterMid"),
+                ConfigKey("[EffectRack2_EffectUnit4_Effect1]", "parameter2"));
+    ControlDoublePrivate::insertAlias(ConfigKey("[Channel4]", "filterHigh"),
+                ConfigKey("[EffectRack2_EffectUnit4_Effect1]", "parameter3"));
 }
 
 void MixxxMainWindow::logBuildDetails() {
