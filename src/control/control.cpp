@@ -208,6 +208,14 @@ double ControlDoublePrivate::getParameterForValue(double value) const {
     return value;
 }
 
+double ControlDoublePrivate::getParameterForMidiValue(double midiValue) const {
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    if (!pBehavior.isNull()) {
+        return pBehavior->midiValueToParameter(midiValue);
+    }
+    return midiValue;
+}
+
 void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior.isNull()) {

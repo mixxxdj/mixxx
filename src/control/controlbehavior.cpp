@@ -15,6 +15,10 @@ double ControlNumericBehavior::valueToParameter(double dValue) {
     return dValue;
 }
 
+double ControlNumericBehavior::midiValueToParameter(double midiValue) {
+    return midiValue;
+}
+
 double ControlNumericBehavior::parameterToValue(double dParam) {
     return dParam;
 }
@@ -26,7 +30,8 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
 void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
                                                        ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    pControl->set(dParam, NULL);
+    double dNorm = midiValueToParameter(dParam);
+    pControl->set(parameterToValue(dNorm), NULL);
 }
 
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
@@ -69,6 +74,17 @@ double ControlPotmeterBehavior::valueToParameter(double dValue) {
     return (dValue - m_dMinValue) / m_dValueRange;
 }
 
+double ControlPotmeterBehavior::midiValueToParameter(double midiValue) {
+    double parameter;
+    if (midiValue > 64) {
+        parameter = (midiValue - 1) / 126.0;
+    } else {
+        // Hack for 0.5 at 64
+        parameter = midiValue / 128.0;
+    }
+    return parameter;
+}
+
 double ControlPotmeterBehavior::parameterToValue(double dParam) {
     return m_dMinValue + (dParam * m_dValueRange);
 }
@@ -76,17 +92,15 @@ double ControlPotmeterBehavior::parameterToValue(double dParam) {
 double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center. We fake things a
-    // little bit here to make that the case. This piece-wise function is linear
-    // from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
+    // little bit here to make that the case. This function is linear from [0,
+    // 127.0/128.0] with slope 128 and then cuts off at 127 from 127.0/128.0 to
+    // 1.0.  from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
     double dNorm = valueToParameter(dValue);
-    return dNorm < 0.5 ? dNorm * 128.0 : dNorm * 126.0 + 1.0;
-}
-
-void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                        ControlDoublePrivate* pControl) {
-    Q_UNUSED(o);
-    double dNorm = dParam < 64 ? dParam / 128.0 : (dParam - 1.0) / 126.0;
-    pControl->set(parameterToValue(dNorm), NULL);
+    if (dNorm > 0.5) {
+        return (dNorm * 126) + 1;
+    } else {
+        return dNorm * 128.0;
+    }
 }
 
 #define maxPosition 1.0
@@ -151,32 +165,6 @@ ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double 
 }
 
 ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
-}
-
-double ControlLinPotmeterBehavior::valueToMidiParameter(double dValue) {
-    // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
-    // center. The industry convention is that 64 is center. We fake things a
-    // little bit here to make that the case. This function is linear from [0,
-    // 127.0/128.0] with slope 128 and then cuts off at 127 from 127.0/128.0 to
-    // 1.0.  from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
-    double dNorm = valueToParameter(dValue);
-    if (dNorm > 0.5) {
-        return (dNorm * 126) + 1;
-    } else {
-        return dNorm * 128.0;
-    }
-}
-
-void ControlLinPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                           ControlDoublePrivate* pControl) {
-    Q_UNUSED(o);
-    double dNorm;
-    if (dParam > 64) {
-        dNorm = (dParam - 1) / 126.0;
-    } else {
-        dNorm = dParam / 128.0;
-    }
-    pControl->set(parameterToValue(dNorm), NULL);
 }
 
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
