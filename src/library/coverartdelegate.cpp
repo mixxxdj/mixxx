@@ -64,12 +64,14 @@ void CoverArtDelegate::paint(QPainter *painter,
                                         m_iMd5Column
                                         ).data().toString();
 
+        QSize coverSize(100, option.rect.height());
+
         // If the CoverDelegate is locked, it must not try
         // to load (from coverLocation) and search covers.
         // It means that in this cases it will just draw
         // covers which are already in the pixmapcache.
         QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
-                trackId, coverLocation, md5Hash, !m_bIsLocked, true, true);
+                trackId, coverLocation, md5Hash, coverSize, !m_bIsLocked, true);
 
         if (!pixmap.isNull()) {
             // It already got a cropped pixmap (from covercache)

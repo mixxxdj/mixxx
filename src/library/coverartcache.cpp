@@ -61,8 +61,8 @@ bool CoverArtCache::changeCoverArt(int trackId,
 QPixmap CoverArtCache::requestPixmap(int trackId,
                                      const QString& coverLocation,
                                      const QString& md5Hash,
+                                     const QSize& croppedPixmap,
                                      const bool tryLoadAndSearch,
-                                     const bool croppedPixmap,
                                      const bool issueRepaint) {
     if (trackId < 1) {
         return QPixmap();
@@ -85,8 +85,9 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
     // in the table view (cover art column).
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
-    QString cacheKey = croppedPixmap ? md5Hash % "_cropped" : md5Hash;
-
+    QString cacheKey = QString("%1_%2x%3").arg(md5Hash)
+                                          .arg(croppedPixmap.width())
+                                          .arg(croppedPixmap.height());
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         if (!issueRepaint) {
@@ -124,7 +125,7 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
 CoverArtCache::FutureResult CoverArtCache::loadImage(int trackId,
                                                      const QString& coverLocation,
                                                      const QString& md5Hash,
-                                                     const bool croppedPixmap,
+                                                     const QSize& croppedPixmap,
                                                      const bool issueRepaint) {
     FutureResult res;
     res.trackId = trackId;
@@ -135,10 +136,10 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(int trackId,
     res.issueRepaint = issueRepaint;
     res.newImgFound = true;
 
-    if (res.croppedImg) {
-        res.img = cropImage(res.img);
-    } else {
+    if (res.croppedImg.isNull()) {
         res.img = rescaleBigImage(res.img);
+    } else {
+        res.img = cropImage(res.img, res.croppedImg);
     }
 
     return res;
@@ -150,8 +151,10 @@ void CoverArtCache::imageLoaded() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
+    QString cacheKey = QString("%1_%2x%3").arg(res.md5Hash)
+                                          .arg(res.croppedImg.width())
+                                          .arg(res.croppedImg.height());
     QPixmap pixmap;
-    QString cacheKey = res.croppedImg ? res.md5Hash % "_cropped" : res.md5Hash;
     if (QPixmapCache::find(cacheKey, &pixmap) && !res.issueRepaint) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
@@ -172,7 +175,7 @@ void CoverArtCache::imageLoaded() {
 // is executed in a separate thread via QtConcurrent::run
 CoverArtCache::FutureResult CoverArtCache::searchImage(
                                            CoverArtDAO::CoverArtInfo coverInfo,
-                                           const bool croppedPixmap,
+                                           const QSize& croppedPixmap,
                                            const bool issueRepaint) {
     FutureResult res;
     res.trackId = coverInfo.trackId;
@@ -206,8 +209,8 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     }
 
     // adjusting the cover size according to the final purpose
-    if (res.newImgFound && res.croppedImg) {
-        res.img = cropImage(res.img);
+    if (res.newImgFound && !res.croppedImg.isNull()) {
+        res.img = cropImage(res.img, res.croppedImg);
     }
 
     // check if this image is really a new one
@@ -299,8 +302,11 @@ void CoverArtCache::imageFound() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
+    QString cacheKey = QString("%1_%2x%3").arg(res.md5Hash)
+                                          .arg(res.croppedImg.width())
+                                          .arg(res.croppedImg.height());
+
     QPixmap pixmap;
-    QString cacheKey = res.croppedImg ? res.md5Hash % "_cropped" : res.md5Hash;
     if (QPixmapCache::find(cacheKey, &pixmap) && !res.issueRepaint) {
         emit(pixmapFound(res.trackId, pixmap));
     } else if (!res.img.isNull()) {
@@ -346,19 +352,12 @@ void CoverArtCache::updateDB() {
 // because it would be much slower and could easily freeze the UI...
 // Also, this method will run in separate thread
 // (via Qtconcurrent - called by searchImage() or loadImage())
-QImage CoverArtCache::cropImage(QImage img) {
+QImage CoverArtCache::cropImage(QImage img, const QSize& finalSize) {
     if (img.isNull()) {
         return QImage();
     }
-
-    // it defines the maximum width of the covers displayed
-    // in the cover art column (tableviews).
-    // (if you want to increase it - you have to change JUST it.)
-    const int kWidth = 100;
-    const int kCellHeight = 20;
-
-    img = img.scaledToWidth(kWidth, Qt::SmoothTransformation);
-    return img.copy(0, 0, img.width(), kCellHeight);
+    img = img.scaledToWidth(finalSize.width(), Qt::SmoothTransformation);
+    return img.copy(0, 0, img.width(), finalSize.height());
 }
 
 // if it's too big, we have to scale it.

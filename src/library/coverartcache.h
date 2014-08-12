@@ -18,8 +18,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QPixmap requestPixmap(int trackId,
                           const QString& coverLocation = QString(),
                           const QString& md5Hash = QString(),
+                          const QSize& croppedPixmap = QSize(),
                           const bool tryLoadAndSearch = true,
-                          const bool croppedPixmap = false,
                           const bool issueRepaint = false);
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
@@ -47,18 +47,18 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QString coverLocation;
         QString md5Hash;
         QImage img;
-        bool croppedImg;
+        QSize croppedImg;
         bool issueRepaint;
         bool newImgFound;
     };
 
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
-                             const bool croppedPixmap,
+                             const QSize& croppedPixmap,
                              const bool emitSignals);
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
                            const QString& md5Hash,
-                           const bool croppedPixmap,
+                           const QSize &croppedPixmap,
                            const bool emitSignals);
 
   private:
@@ -71,8 +71,11 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QSet<int> m_runningIds;
     QHash<int, QPair<QString, QString> > m_queueOfUpdates;
 
+    // @param img: image that will be cropped
+    // @param size: (desired cover width, cell height)
+    QImage cropImage(QImage img, const QSize& finalSize);
+
     QString calculateMD5(QImage img);
-    QImage cropImage(QImage img);
     QImage rescaleBigImage(QImage img);
     QImage extractEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,
