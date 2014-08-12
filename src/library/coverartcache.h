@@ -15,6 +15,22 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     Q_OBJECT
   public:
     bool changeCoverArt(int trackId, const QString& newCoverLocation);
+
+    /* This method is used to request a cover art pixmap.
+     *
+     * @param croppedPixmap : QSize(finalCoverWidth, finalCoverHeight)
+     *      it determines the final cover size.
+     *      Use QSize() to get the original size.
+     *      NOTE!
+     *          the cover will be resized to 'finalCoverWidth' and
+     *          it'll be cropped from the top until the finalCoverHeight' pixel
+     *
+     * @param tryLoadAndSearch : if it is 'true', the method will NOT try to load
+     *      covers from the given 'coverLocation' and it will also NOT run the
+     *      search algorithm.
+     *      In this way, the method will just look into CoverCache and return
+     *      a Pixmap if it is already loaded in the QPixmapCache.
+     */
     QPixmap requestPixmap(int trackId,
                           const QString& coverLocation = QString(),
                           const QString& md5Hash = QString(),
