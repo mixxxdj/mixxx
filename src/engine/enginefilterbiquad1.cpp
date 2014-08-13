@@ -1,3 +1,4 @@
+#include <QLocale>
 #include "engine/enginefilterbiquad1.h"
 
 EngineFilterBiquad1Band::EngineFilterBiquad1Band(int sampleRate,
@@ -7,6 +8,6 @@ EngineFilterBiquad1Band::EngineFilterBiquad1Band(int sampleRate,
 
 void EngineFilterBiquad1Band::setFrequencyCorners(int sampleRate,
                                                   double centerFreq, double Q) {
-    QString specification = QString("BpBq/%1").arg(Q);
+    QString specification = "BpBq/" + QLocale().toString(Q);
     setCoefs(qPrintable(specification), sampleRate, centerFreq);
 }
