@@ -19,14 +19,14 @@ class GraphicEQEffectGroupState {
     GraphicEQEffectGroupState();
     virtual ~GraphicEQEffectGroupState();
 
-    void setFilters(int sampleRate, double Q);
+    void setFilters(int sampleRate);
 
     QList<EngineFilterBiquad1Band*> m_bands;
     QList<double> m_oldMid;
     QList<CSAMPLE*> m_pBandBuf;
 
   private:
-    float m_centerFrequencies[10];
+    float m_centerFrequencies[8];
 };
 
 class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {

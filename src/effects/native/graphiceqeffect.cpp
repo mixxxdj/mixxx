@@ -1,6 +1,8 @@
 #include "effects/native/graphiceqeffect.h"
 #include "util/math.h"
 
+#define Q 1.2247449
+
 // static
 QString GraphicEQEffect::getId() {
     return "org.mixxx.effects.graphiceq";
@@ -50,22 +52,21 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     }
 
     // Initialize the default center frequencies
-    m_centerFrequencies[0] = 31.25;
-    m_centerFrequencies[1] = 62.5;
-    m_centerFrequencies[2] = 125.0;
-    m_centerFrequencies[3] = 250.0;
-    m_centerFrequencies[4] = 500.0;
-    m_centerFrequencies[5] = 1000.0;
-    m_centerFrequencies[6] = 2000.0;
-    m_centerFrequencies[7] = 4000.0;
-    m_centerFrequencies[8] = 8000.0;
-    m_centerFrequencies[9] = 16000.0;
+    m_centerFrequencies[0] = 62.5;
+    m_centerFrequencies[1] = 125.0;
+    m_centerFrequencies[2] = 250.0;
+    m_centerFrequencies[3] = 500.0;
+    m_centerFrequencies[4] = 1000.0;
+    m_centerFrequencies[5] = 2000.0;
+    m_centerFrequencies[6] = 6000.0;
+    m_centerFrequencies[7] = 10000.0;
 
     // TODO(rryan): use the real samplerate
     // Initialize the filters with default parameters
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
         m_bands.append(new EngineFilterBiquad1Band(44100,
-                                                m_centerFrequencies[i], 2));
+                                                   m_centerFrequencies[i],
+                                                   Q));
     }
 }
 
@@ -78,8 +79,8 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
     }
 }
 
-void GraphicEQEffectGroupState::setFilters(int sampleRate, double Q) {
-    for (int i = 0; i < 10; i++) {
+void GraphicEQEffectGroupState::setFilters(int sampleRate) {
+    for (int i = 0; i < 8; i++) {
         m_bands[i]->pauseFilter();
         m_bands[i]->setFrequencyCorners(sampleRate, m_centerFrequencies[i], Q);
     }
@@ -89,7 +90,7 @@ GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
                                  const EffectManifest& manifest)
         : m_oldSampleRate(44100) {
     Q_UNUSED(manifest);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
         m_pPotMid.append(pEffect->getParameterById(QString("mid%1").arg(i)));
     }
 }
@@ -110,15 +111,15 @@ void GraphicEQEffect::processGroup(const QString& group,
     int sampleRate = getSampleRate();
     if (m_oldSampleRate != sampleRate) {
         m_oldSampleRate = sampleRate;
-        pState->setFilters(sampleRate, 2);
+        pState->setFilters(sampleRate);
     }
 
-    float fMid[10];
-    for (int i = 0; i < 10; i++) {
+    float fMid[8];
+    for (int i = 0; i < 8; i++) {
         fMid[i] = m_pPotMid[i]->value().toDouble();
     }
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
         if (fMid[i] || pState->m_oldMid[i]) {
             pState->m_bands[i]->process(pInput, pState->m_pBandBuf[i], numSamples);
         } else {
@@ -133,10 +134,8 @@ void GraphicEQEffect::processGroup(const QString& group,
         fMid[4] != pState->m_oldMid[4] ||
         fMid[5] != pState->m_oldMid[5] ||
         fMid[6] != pState->m_oldMid[6] ||
-        fMid[7] != pState->m_oldMid[7] ||
-        fMid[8] != pState->m_oldMid[8] ||
-        fMid[9] != pState->m_oldMid[9]) {
-        SampleUtil::copy10WithRampingGain(pOutput,
+        fMid[7] != pState->m_oldMid[7]) {
+        SampleUtil::copy8WithRampingGain(pOutput,
                 pState->m_pBandBuf[0], pState->m_oldMid[0], fMid[0],
                 pState->m_pBandBuf[1], pState->m_oldMid[1], fMid[1],
                 pState->m_pBandBuf[2], pState->m_oldMid[2], fMid[2],
@@ -145,11 +144,9 @@ void GraphicEQEffect::processGroup(const QString& group,
                 pState->m_pBandBuf[5], pState->m_oldMid[5], fMid[5],
                 pState->m_pBandBuf[6], pState->m_oldMid[6], fMid[6],
                 pState->m_pBandBuf[7], pState->m_oldMid[7], fMid[7],
-                pState->m_pBandBuf[8], pState->m_oldMid[8], fMid[8],
-                pState->m_pBandBuf[9], pState->m_oldMid[9], fMid[9],
                 numSamples);
     } else {
-        SampleUtil::copy10WithGain(pOutput,
+        SampleUtil::copy8WithGain(pOutput,
                 pState->m_pBandBuf[0], fMid[0],
                 pState->m_pBandBuf[1], fMid[1],
                 pState->m_pBandBuf[2], fMid[2],
@@ -158,12 +155,10 @@ void GraphicEQEffect::processGroup(const QString& group,
                 pState->m_pBandBuf[5], fMid[5],
                 pState->m_pBandBuf[6], fMid[6],
                 pState->m_pBandBuf[7], fMid[7],
-                pState->m_pBandBuf[8], fMid[8],
-                pState->m_pBandBuf[9], fMid[9],
                 numSamples);
     }
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
         pState->m_oldMid[i] = fMid[i];
     }
 }
