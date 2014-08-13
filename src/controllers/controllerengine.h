@@ -175,7 +175,7 @@ class ControllerEngine : public QObject {
         bool oneShot;
     };
     QHash<int, TimerInfo> m_timers;
-    SoftTakeover m_st;
+    SoftTakeoverCtrl m_st;
     ByteArrayClass *m_pBaClass;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
