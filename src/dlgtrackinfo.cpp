@@ -173,6 +173,10 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     if (!directory.exists()) {
         directory = QDir::home();
     }
+    // This function does not work for a non-existent directory!
+    // so it is essential that in the worst case it try opening
+    // a valid directory, in this case, 'QDir::home()'.
+    // Otherwise nothing would happen...
     QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
 }
 
