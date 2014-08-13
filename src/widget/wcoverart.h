@@ -29,6 +29,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);
+    void slotShowFullSize();
 
   protected:
     void paintEvent(QPaintEvent*);
@@ -40,7 +41,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
   private:
     QPixmap scaledCoverArt(QPixmap normal);
     void setToDefault();
-    void showFullSize();
 
     ConfigObject<ConfigValue>* m_pConfig;
 

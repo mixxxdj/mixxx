@@ -5,9 +5,10 @@
 #include <QIcon>
 #include <QPainter>
 
-#include "library/coverartcache.h"
+#include "dlgcoverartfullsize.h"
 #include "wcoverart.h"
 #include "wskincolor.h"
+#include "library/coverartcache.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig)
@@ -48,11 +49,16 @@ WCoverArt::WCoverArt(QWidget* parent,
     QAction* reloadCover = new QAction(
             QIcon(":/images/library/ic_cover_reload.png"),
             tr("&Reload"), this);
+    // show full size cover in a new window
+    QAction* fullSize = new QAction(tr("&Show Full Size"), this);
+    connect(fullSize, SIGNAL(triggered()),
+            this, SLOT(slotShowFullSize()));
 
     m_pMenu = new QMenu(this);
     m_pMenu->addAction(changeCover);
     m_pMenu->addAction(unsetCover);
     m_pMenu->addAction(reloadCover);
+    m_pMenu->addAction(fullSize);
 }
 
 WCoverArt::~WCoverArt() {
@@ -92,6 +98,10 @@ void WCoverArt::setToDefault() {
     m_sCoverTitle = "Cover Art";
     m_bDefaultCover = true;
     update();
+}
+
+void WCoverArt::slotShowFullSize() {
+    DlgCoverArtFullSize::instance()->init(m_currentCover, m_sCoverTitle);
 }
 
 void WCoverArt::slotResetWidget() {
@@ -222,31 +232,4 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
 void WCoverArt::leaveEvent(QEvent*) {
     m_bCoverIsHovered = false;
     update();
-}
-
-// When the current cover is not a default one,
-// it'll show the full sized cover in a new window.
-void WCoverArt::showFullSize() {
-    if (!m_bDefaultCover) {
-        QLabel *lb = new QLabel(this, Qt::Popup |
-                                      Qt::Tool |
-                                      Qt::CustomizeWindowHint |
-                                      Qt::WindowCloseButtonHint);
-        lb->setWindowModality(Qt::ApplicationModal);
-        lb->setWindowTitle(m_sCoverTitle);
-
-        QSize sz = QApplication::activeWindow()->size();
-        if (m_currentCover.height() > sz.height() / 1.2) {
-            m_currentCover = m_currentCover.scaledToHeight(
-                                             sz.height() / 1.2,
-                                             Qt::SmoothTransformation);
-        }
-
-        lb->setPixmap(m_currentCover);
-        lb->setGeometry(sz.width() / 2 - m_currentCover.width() / 2,
-                        sz.height() / 2 - m_currentCover.height() / 2.2,
-                        m_currentCover.width(),
-                        m_currentCover.height());
-        lb->show();
-    }
 }
