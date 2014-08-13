@@ -58,7 +58,9 @@ void CoverArtDelegate::paint(QPainter *painter,
                                           m_iCoverLocationColumn
                                           ).data().toString();
 
-    if (coverLocation != m_sDefaultCover) { // draw cover_art
+    // drawing only an existing cover_art,
+    // otherwise leave it blank...
+    if (coverLocation != m_sDefaultCover) {
 
         QString md5Hash = index.sibling(index.row(),
                                         m_iMd5Column

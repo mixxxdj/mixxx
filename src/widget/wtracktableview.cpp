@@ -143,7 +143,8 @@ WTrackTableView::~WTrackTableView() {
 
 void WTrackTableView::slotScrollValueChanged(int) {
     if (m_bLastCoverLoaded) {
-        // not draw covers in the tableview (cover_art column)
+        // don't try to load and search covers, drawing only
+        // covers which are already in the QPixmapCache.
         emit(lockCoverArtDelegate(true));
     }
     m_bLastCoverLoaded = false;
@@ -158,7 +159,8 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
     if (m_bLastCoverLoaded) {
         // load default cover art
         emit(loadCoverArt("", "", 0));
-        // not draw covers in the tableview (cover_art column)
+        // don't try to load and search covers, drawing only
+        // covers which are already in the QPixmapCache.
         emit(lockCoverArtDelegate(true));
     }
     m_bLastCoverLoaded = false;
@@ -197,6 +199,7 @@ void WTrackTableView::slotLoadCoverArt() {
         }
     }
     emit(loadCoverArt(coverLocation, md5Hash, trackId));
+    // it will allows CoverCache to load and search covers normally
     emit(lockCoverArtDelegate(false));
     update();
 }

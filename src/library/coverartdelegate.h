@@ -24,8 +24,8 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // covers which are already in the pixmapcache.
     // It is very important when the user scoll down
     // very fast or when they hold an arrow key, because
-    // in these cases paint() would be called MANY times
-    // and it would be doing tons of "requestPixmaps",
+    // in these cases 'paint()' would be called MANY times and
+    // consequently it would be calling 'requestPixmap()' as well,
     // which could easily freeze the whole UI.
     void slotLock(bool lock);
 
