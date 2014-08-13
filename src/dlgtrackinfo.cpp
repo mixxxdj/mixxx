@@ -169,15 +169,26 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     if (m_pLoadedTrack == NULL) {
         return;
     }
-    QDir directory(m_pLoadedTrack->getDirectory());
-    if (!directory.exists()) {
-        directory = QDir::home();
+
+    QDir dir;
+    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    const int pathSize = splittedPath.size();
+    for (int i = 0; i < pathSize; i++) {
+        dir = QDir(splittedPath.join("/"));
+        if (dir.exists()) {
+            break;
+        }
+        splittedPath.removeLast();
     }
+
     // This function does not work for a non-existent directory!
     // so it is essential that in the worst case it try opening
     // a valid directory, in this case, 'QDir::home()'.
     // Otherwise nothing would happen...
-    QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
+    if (!dir.exists()) {
+        dir = QDir::home();
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
