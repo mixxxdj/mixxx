@@ -73,7 +73,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     // Fired by changed to beat_distance (typically only from BpmControl during
     // BpmControl::process()).
-    void slotBeatDistanceChanged(double beatDistance);
+    //void slotBeatDistanceChanged(double beatDistance);
 
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);
@@ -90,11 +90,12 @@ class SyncControl : public EngineControl, public Syncable {
     BpmControl* m_pBpmControl;
     RateControl* m_pRateControl;
     bool m_bOldScratching;
+    double m_dBeatDistance;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
-    QScopedPointer<ControlObject> m_pSyncBeatDistance;
+    //QScopedPointer<ControlObject> m_pSyncBeatDistance;
 
     QScopedPointer<ControlObjectSlave> m_pPlayButton;
     QScopedPointer<ControlObjectSlave> m_pBpm;

@@ -23,6 +23,7 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_dPreviousSample(0),
+        m_dThisBeatDistance(0.0),
         m_dSyncTargetBeatDistance(0.0),
         m_dSyncInstantaneousBpm(0.0),
         m_dSyncAdjustment(1.0),
@@ -92,7 +93,7 @@ BpmControl::BpmControl(const char* _group,
             Qt::DirectConnection);
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
-    m_pThisBeatDistance = new ControlObjectSlave(_group, "beat_distance", this);
+    //m_pThisBeatDistance = new ControlObjectSlave(_group, "beat_distance", this);
     m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
 }
 
@@ -111,7 +112,7 @@ BpmControl::~BpmControl() {
     delete m_pButtonSyncPhase;
     delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
-    delete m_pThisBeatDistance;
+    //delete m_pThisBeatDistance;
 }
 
 double BpmControl::getBpm() const {
@@ -630,6 +631,8 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
         }
     }
 
+    qDebug() << m_sGroup << " sync distance " << (dNewPlaypos - dThisPosition);
+
     return dNewPlaypos - dThisPosition;
 }
 
@@ -704,8 +707,15 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(iBufferSize);
     // It doesn't make sense to me to use the position before update, but this
     // results in better sync.
-    m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
+    //m_pThisBeatDistance->set(getBeatDistance(dCurrentSample));
     return kNoTrigger;
+}
+
+double BpmControl::updateBeatDistance() {
+    double beat_distance = getBeatDistance(m_dPreviousSample);
+    //m_pThisBeatDistance->set(beat_distance);
+    m_dThisBeatDistance = beat_distance;
+    return beat_distance;
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {

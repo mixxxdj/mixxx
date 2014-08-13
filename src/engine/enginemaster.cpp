@@ -269,6 +269,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         }
     }
 
+    QList<EngineChannel*> processed_channels;
     it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
@@ -300,6 +301,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
         // Process the buffer if necessary
         if (needsProcessing) {
+            processed_channels.append(pChannel);
             pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
             if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
@@ -307,6 +309,14 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                 m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
             }
         }
+    }
+
+    // After all the engines have been processed, trigger post-processing
+    // which ensures that all channels are updating certain values at the
+    // same point in time.  This prevents sync from failing depending on
+    // if the sync target was processed before or after the sync origin.
+    foreach (EngineChannel* channel, processed_channels) {
+        channel->postProcess();
     }
 }
 

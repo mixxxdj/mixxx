@@ -39,6 +39,7 @@ EngineChannel* BaseSyncableListener::getMaster() const {
 
 Syncable* BaseSyncableListener::getSyncableForGroup(const QString& group) {
     foreach (Syncable* pSyncable, m_syncables) {
+        qDebug() << "SYNCABLES! " << pSyncable->getGroup();
         if (pSyncable->getGroup() == group) {
             return pSyncable;
         }

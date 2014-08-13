@@ -18,7 +18,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
           m_pEngineSync(pEngineSync),
           m_pBpmControl(NULL),
           m_pRateControl(NULL),
-          m_bOldScratching(false) {
+          m_bOldScratching(false),
+          m_dBeatDistance(0.) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(pGroup, "play", this));
@@ -43,10 +44,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     m_pSyncEnabled->connectValueChangeRequest(
             this, SLOT(slotSyncEnabledChangeRequest(double)), Qt::DirectConnection);
 
-    m_pSyncBeatDistance.reset(
-            new ControlObject(ConfigKey(pGroup, "beat_distance")));
-    connect(m_pSyncBeatDistance.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatDistanceChanged(double)), Qt::DirectConnection);
+//    m_pSyncBeatDistance.reset(
+//            new ControlObject(ConfigKey(pGroup, "beat_distance")));
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(pGroup, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
@@ -130,12 +129,14 @@ void SyncControl::requestSyncPhase() {
 }
 
 double SyncControl::getBeatDistance() const {
-    return m_pSyncBeatDistance->get();
+    //return m_pSyncBeatDistance->get();
+    return m_dBeatDistance;
 }
 
 void SyncControl::setBeatDistance(double beatDistance) {
     //qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
     // Set the BpmControl target beat distance to beatDistance.
+    m_dBeatDistance = beatDistance;
     m_pBpmControl->setTargetBeatDistance(beatDistance);
 }
 
@@ -304,11 +305,12 @@ void SyncControl::slotRateChanged() {
     m_pEngineSync->notifyBpmChanged(this, bpm, false);
 }
 
-void SyncControl::slotBeatDistanceChanged(double beatDistance) {
-    // TODO(rryan): This update should not be received over a CO -- BpmControl
-    // should call directly.
-    m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
-}
+//void SyncControl::slotBeatDistanceChanged(double beatDistance) {
+//    // TODO(rryan): This update should not be received over a CO -- BpmControl
+//    // should call directly.
+//    qDebug() << m_sGroup << "beat distance change! " << beatDistance;
+//    //m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
+//}
 
 void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
     if (m_bOldScratching ^ scratching) {

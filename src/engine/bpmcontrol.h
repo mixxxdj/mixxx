@@ -30,6 +30,7 @@ class BpmControl : public EngineControl {
     double getSyncedRate() const;
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
+    double getBeatDistance(double dThisPosition) const;
 
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double process(const double dRate,
@@ -38,6 +39,7 @@ class BpmControl : public EngineControl {
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
+    double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
@@ -80,7 +82,6 @@ class BpmControl : public EngineControl {
     SyncMode getSyncMode() const {
         return syncModeFromDouble(m_pSyncMode->get());
     }
-    double getBeatDistance(double dThisPosition) const;
     bool syncTempo();
     bool syncPhase();
 
@@ -121,7 +122,8 @@ class BpmControl : public EngineControl {
 
     // Master Sync objects and values.
     ControlObject* m_pSyncMode;
-    ControlObjectSlave* m_pThisBeatDistance;
+    //ControlObjectSlave* m_pThisBeatDistance;
+    double m_dThisBeatDistance;
     double m_dSyncTargetBeatDistance;
     double m_dSyncInstantaneousBpm;
     double m_dSyncAdjustment;

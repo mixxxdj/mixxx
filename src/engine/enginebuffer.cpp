@@ -1049,6 +1049,10 @@ void EngineBuffer::processSeek() {
     }
 }
 
+void EngineBuffer::postProcess() {
+    m_pSyncControl->setBeatDistance(m_pBpmControl->updateBeatDistance());
+}
+
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Increase samplesCalculated by the buffer size

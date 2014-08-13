@@ -135,6 +135,7 @@ class EngineBuffer : public EngineObject {
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
+    void postProcess();
 
     const char* getGroup();
     bool isTrackLoaded();

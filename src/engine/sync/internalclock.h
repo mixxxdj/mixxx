@@ -50,7 +50,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
 
   private slots:
     void slotBpmChanged(double bpm);
-    void slotBeatDistanceChanged(double beat_distance);
+    //void slotBeatDistanceChanged(double beat_distance);
     void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
@@ -59,12 +59,13 @@ class InternalClock : public QObject, public Clock, public Syncable {
     QString m_group;
     SyncableListener* m_pEngineSync;
     QScopedPointer<ControlPotmeter> m_pClockBpm;
-    QScopedPointer<ControlObject> m_pClockBeatDistance;
+    //QScopedPointer<ControlObject> m_pClockBeatDistance;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     SyncMode m_mode;
 
     int m_iOldSampleRate;
     double m_dOldBpm;
+    double m_dBeatDistance;
 
     // The internal clock rate is stored in terms of samples per beat.
     // Fractional values are allowed.
