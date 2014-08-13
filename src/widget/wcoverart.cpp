@@ -1,6 +1,8 @@
+#include <QAction>
 #include <QApplication>
 #include <QBitmap>
 #include <QLabel>
+#include <QIcon>
 #include <QPainter>
 
 #include "library/coverartcache.h"
@@ -33,6 +35,24 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+
+    // change cover art location
+    QAction* changeCover = new QAction(
+            QIcon(":/images/library/ic_cover_change.png"),
+            tr("&Change"), this);
+    // unset cover art - load default
+    QAction* unsetCover = new QAction(
+            QIcon(":/images/library/ic_cover_unset.png"),
+            tr("&Unset"), this);
+    // reload just cover art using the search algorithm (in CoverArtCache)
+    QAction* reloadCover = new QAction(
+            QIcon(":/images/library/ic_cover_reload.png"),
+            tr("&Reload"), this);
+
+    m_pMenu = new QMenu(this);
+    m_pMenu->addAction(changeCover);
+    m_pMenu->addAction(unsetCover);
+    m_pMenu->addAction(reloadCover);
 }
 
 WCoverArt::~WCoverArt() {
@@ -178,18 +198,19 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
-    QPoint lastPoint(event->pos());
-    if (m_bCoverIsVisible) {
-        if(lastPoint.x() > width() - (height() / 5)
-                && lastPoint.y() < (height() / 5) + 5) {
-            m_bCoverIsVisible = false;
-            resize(sizeHint());
-        } else {
-            showFullSize();
-        }
-    } else {
+    if (!m_bCoverIsVisible) { // show widget
         m_bCoverIsVisible = true;
         resize(sizeHint());
+        return;
+    }
+
+    QPoint lastPoint(event->pos());
+    if(lastPoint.x() > width() - (height() / 5)
+            && lastPoint.y() < (height() / 5) + 5) { // hide widget
+        m_bCoverIsVisible = false;
+        resize(sizeHint());
+    } else { // show context-menu
+        m_pMenu->exec(event->globalPos());
     }
 }
 

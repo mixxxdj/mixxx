@@ -3,6 +3,7 @@
 
 #include <QColor>
 #include <QDomNode>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QWidget>
 
@@ -47,6 +48,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bCoverIsHovered;
     bool m_bCoverIsVisible;
     bool m_bDefaultCover;
+
+    QMenu* m_pMenu;
 
     QString m_sCoverTitle;
     QPixmap m_currentCover;
