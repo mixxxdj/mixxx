@@ -646,33 +646,38 @@ void MixxxMainWindow::createCOAliases() {
     //                                   ConfigKey("[Microphone1]", "volume"));
 
     // Aliases needed for the EQ Rack
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel1]", "filterLow"),
-                ConfigKey("[EffectRack2_EffectUnit1_Effect1]", "parameter1"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel1]", "filterMid"),
-                ConfigKey("[EffectRack2_EffectUnit1_Effect1]", "parameter2"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel1]", "filterHigh"),
-                ConfigKey("[EffectRack2_EffectUnit1_Effect1]", "parameter3"));
+    int eqRack = m_pEffectsManager->getEffectChainManager()->getEffectRacksSize();
+    const int maxDecks = 8;
+    for (int i = 1; i <= maxDecks; i++) {
+        ControlDoublePrivate::insertAlias(
+                    ConfigKey(QString("[Channel%1]").arg(i), "filterLow"),
+                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                      arg(eqRack).arg(i), "parameter1"));
 
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel2]", "filterLow"),
-                ConfigKey("[EffectRack2_EffectUnit2_Effect1]", "parameter1"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel2]", "filterMid"),
-                ConfigKey("[EffectRack2_EffectUnit2_Effect1]", "parameter2"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel2]", "filterHigh"),
-                ConfigKey("[EffectRack2_EffectUnit2_Effect1]", "parameter3"));
+        ControlDoublePrivate::insertAlias(
+                    ConfigKey(QString("[Channel%1]").arg(i), "filterMid"),
+                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                      arg(eqRack).arg(i), "parameter2"));
 
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel3]", "filterLow"),
-                ConfigKey("[EffectRack2_EffectUnit3_Effect1]", "parameter1"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel3]", "filterMid"),
-                ConfigKey("[EffectRack2_EffectUnit3_Effect1]", "parameter2"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel3]", "filterHigh"),
-                ConfigKey("[EffectRack2_EffectUnit3_Effect1]", "parameter3"));
+        ControlDoublePrivate::insertAlias(
+                    ConfigKey(QString("[Channel%1]").arg(i), "filterHigh"),
+                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                      arg(eqRack).arg(i), "parameter3"));
+        ControlDoublePrivate::insertAlias(
+                    ConfigKey(QString("[Channel%1]").arg(i), "filterLowKill"),
+                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                      arg(eqRack).arg(i), "button_parameter1"));
 
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel4]", "filterLow"),
-                ConfigKey("[EffectRack2_EffectUnit4_Effect1]", "parameter1"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel4]", "filterMid"),
-                ConfigKey("[EffectRack2_EffectUnit4_Effect1]", "parameter2"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Channel4]", "filterHigh"),
-                ConfigKey("[EffectRack2_EffectUnit4_Effect1]", "parameter3"));
+        ControlDoublePrivate::insertAlias(
+                    ConfigKey(QString("[Channel%1]").arg(i), "filterMidKill"),
+                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                      arg(eqRack).arg(i), "button_parameter2"));
+
+        ControlDoublePrivate::insertAlias(
+                    ConfigKey(QString("[Channel%1]").arg(i), "filterHighKill"),
+                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                      arg(eqRack).arg(i), "button_parameter3"));
+    }
 }
 
 void MixxxMainWindow::logBuildDetails() {
