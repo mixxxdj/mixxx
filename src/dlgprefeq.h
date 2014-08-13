@@ -45,12 +45,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotAddComboBox(double numDecks);
     // Slot for toggling between advanced and basic views
     void slotShowAllEffects();
-    void slotEqChanged();
-    /** Update Hi EQ **/
+    // Update Hi EQ
     void slotUpdateHiEQ();
-    /** Update Lo EQ **/
+    // Update Lo EQ
     void slotUpdateLoEQ();
-    /** Apply changes to widget */
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
@@ -68,7 +67,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     ControlObjectThread m_COTLoFreq;
     ControlObjectThread m_COTHiFreq;
-    ControlObjectThread m_COTLoFi;
     ControlObjectThread m_COTEnableEq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;

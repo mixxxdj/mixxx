@@ -35,7 +35,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
         : DlgPreferencePage(pParent),
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
-          m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
           m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
@@ -58,10 +57,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-    connect(radioButton_bypass, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
-    connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
-    connect(radioButton_butterworth8, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
-
     connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
             this, SLOT(slotShowAllEffects()));
 
@@ -79,6 +74,9 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotAddComboBox(double)));
     slotAddComboBox(m_pNumDecks->get());
+
+    // Enable internal EQ
+    m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("yes"));
 
     loadSettings();
     slotUpdate();
@@ -211,23 +209,6 @@ void DlgPrefEQ::loadSettings() {
         getSliderPosition(lowEqFreq,
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
-
-    if (m_pConfig->getValueString(
-            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes")) {
-        radioButton_bypass->setChecked(false);
-        if (m_pConfig->getValueString(
-                ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")) {
-            radioButton_bessel4->setChecked(true);
-            radioButton_butterworth8->setChecked(false);
-        } else {
-            radioButton_bessel4->setChecked(false);
-            radioButton_butterworth8->setChecked(true);
-        }
-    } else {
-        radioButton_bypass->setChecked(true);
-        radioButton_bessel4->setChecked(false);
-        radioButton_butterworth8->setChecked(false);
-    }
 }
 
 void DlgPrefEQ::setDefaultShelves()
@@ -239,31 +220,9 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
-    radioButton_bypass->setChecked(false);
-    radioButton_butterworth8->setChecked(false);
-    radioButton_bessel4->setChecked(true);
-    slotEqChanged();
     setDefaultShelves();
     loadSettings();
     slotUpdate();
-    slotApply();
-}
-
-void DlgPrefEQ::slotEqChanged() {
-    if (radioButton_bypass->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no"));
-    } else {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("yes"));
-    }
-
-    if (radioButton_bessel4->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("yes")));
-    }
-
-    if (radioButton_butterworth8->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("no")));
-    }
-
     slotApply();
 }
 
@@ -357,8 +316,6 @@ void DlgPrefEQ::slotApply() {
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
 
-    m_COTLoFi.slotSet((m_pConfig->getValueString(
-            ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")));
     m_COTEnableEq.slotSet((m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes")));
 }
@@ -366,7 +323,6 @@ void DlgPrefEQ::slotApply() {
 void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
-    slotEqChanged();
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
