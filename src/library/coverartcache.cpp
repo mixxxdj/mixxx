@@ -154,17 +154,19 @@ void CoverArtCache::imageLoaded() {
     QString cacheKey = QString("%1_%2x%3").arg(res.md5Hash)
                                           .arg(res.croppedImg.width())
                                           .arg(res.croppedImg.height());
+
     QPixmap pixmap;
-    if (QPixmapCache::find(cacheKey, &pixmap) && !res.issueRepaint) {
-        emit(pixmapFound(res.trackId, pixmap));
-    } else if (!res.img.isNull()) {
+    QPixmapCache::find(cacheKey, &pixmap);
+    if (pixmap.isNull() && !res.img.isNull()) {
         pixmap.convertFromImage(res.img);
-        if (QPixmapCache::insert(cacheKey, pixmap)) {
-            if (res.issueRepaint) {
-                emit(requestRepaint());
-            } else {
-                emit(pixmapFound(res.trackId, pixmap));
-            }
+        QPixmapCache::insert(cacheKey, pixmap);
+    }
+
+    if (!pixmap.isNull()) {
+        if (res.issueRepaint) {
+            emit(requestRepaint());
+        } else {
+            emit(pixmapFound(res.trackId, pixmap));
         }
     }
     m_runningIds.remove(res.trackId);
@@ -307,16 +309,17 @@ void CoverArtCache::imageFound() {
                                           .arg(res.croppedImg.height());
 
     QPixmap pixmap;
-    if (QPixmapCache::find(cacheKey, &pixmap) && !res.issueRepaint) {
-        emit(pixmapFound(res.trackId, pixmap));
-    } else if (!res.img.isNull()) {
+    QPixmapCache::find(cacheKey, &pixmap);
+    if (pixmap.isNull() && !res.img.isNull()) {
         pixmap.convertFromImage(res.img);
-        if (QPixmapCache::insert(cacheKey, pixmap)) {
-            if (res.issueRepaint) {
-                emit(requestRepaint());
-            } else {
-                emit(pixmapFound(res.trackId, pixmap));
-            }
+        QPixmapCache::insert(cacheKey, pixmap);
+    }
+
+    if (!pixmap.isNull()) {
+        if (res.issueRepaint) {
+            emit(requestRepaint());
+        } else {
+            emit(pixmapFound(res.trackId, pixmap));
         }
     }
 
