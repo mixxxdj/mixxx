@@ -342,6 +342,8 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         hooksPattern = "variable";
     }
     
+    // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
+    
     QRegExp rx("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");                   // hook( arg1 [, arg2]... )
     QRegExp nameRx("^(var|expr)-([^=\\s]+)$");                                  // var-attribute_name="var_name";
     
@@ -354,11 +356,11 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         // searching variable attributes : var-attribute_name="variable_name"
         if (nameRx.indexIn(attributeName) != -1) {
             
-            if(nameRx.cap(1) == "var"){
-                varValue = variable(attributeValue);
-            } else if(nameRx.cap(1) == "expr"){
+            // if(nameRx.cap(1) == "var"){
+                // varValue = variable(attributeValue);
+            // } else if(nameRx.cap(1) == "expr"){
                 varValue = evaluateTemplateExpression(attributeValue).toString();
-            }
+            // }
             
             if (varValue.length()){
                 element.setAttribute( nameRx.cap(2), varValue);
@@ -368,13 +370,13 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         }
          
         pos = 0;
-        // searching expressions in the attribute value (styles or classes)
+        // searching hooks in the attribute value
         while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
             captured = rx.capturedTexts();
             match = rx.cap(0);
-            qDebug() << "Expression : " << match << "\n";
-            
-            replacement = evaluateTemplateExpression( "this.templateHooks." + match ).toString();
+			QString tmp = "templateHooks." + match;
+			// qDebug() <<  "expression : " << tmp << "\n";
+            replacement = evaluateTemplateExpression( tmp ).toString();
             attributeValue.replace(pos, match.length(), replacement);
             pos += replacement.length();
         }
@@ -433,12 +435,23 @@ QScriptValue SkinContext::evaluateTemplateExpression(QString expression) const {
             try{\n\
                 out = " + expression + ";\n\
             } catch(e){ \n\
-                print(e);\n\
+                print( e );\n\
             }\n\
             return out;\n\
         })();\n\
     ";
     QScriptValue out = m_scriptEngine.evaluate(shell);
+    
+    // e object example : 
+                // print( ' in ' + '\"" + expression.replace("'", "\'") + "\"' );\n
+	// Debug [Main]: message -> Can't find variable: borderPath
+	// Debug [Main]: lineNumber -> 4
+	// Debug [Main]: sourceId -> 139754315634944
+	// Debug [Main]: fileName -> 
+	// Debug [Main]: expressionBeginOffset -> 86
+	// Debug [Main]: expressionCaretOffset -> 96
+	// Debug [Main]: expressionEndOffset -> 96
+	// Debug [Main]: name -> ReferenceError
     
     // qDebug() << expression << " -> " << out.toString() << "\n";
     return out;

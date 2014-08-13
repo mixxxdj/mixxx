@@ -81,7 +81,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     while (it->hasNext()) {
         int beatPosition = it->next();
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
-
+        
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);
