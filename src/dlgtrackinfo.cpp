@@ -1,6 +1,7 @@
 // dlgtrackinfo.cpp
 // Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QDesktopServices>
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
@@ -62,6 +63,8 @@ void DlgTrackInfo::init(){
             this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
+    connect(btnOpenFileBrowser, SIGNAL(clicked()),
+            this, SLOT(slotOpenInFileBrowser()));
     m_bpmTapTimer.start();
     for (int i = 0; i < kFilterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
@@ -160,6 +163,17 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+}
+
+void DlgTrackInfo::slotOpenInFileBrowser() {
+    if (m_pLoadedTrack == NULL) {
+        return;
+    }
+    QDir directory(m_pLoadedTrack->getDirectory());
+    if (!directory.exists()) {
+        directory = QDir::home();
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {

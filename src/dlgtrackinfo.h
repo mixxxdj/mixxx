@@ -50,6 +50,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmTap();
 
     void reloadTrackMetadata();
+    void slotOpenInFileBrowser();
 
   private:
     void populateFields(TrackPointer pTrack);
