@@ -315,9 +315,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
+    qDebug() << "post process!";
     foreach (EngineChannel* channel, processed_channels) {
         channel->postProcess();
     }
+    qDebug() << "post process done";
 }
 
 void EngineMaster::process(const int iBufferSize) {
@@ -332,8 +334,6 @@ void EngineMaster::process(const int iBufferSize) {
     bool headphoneEnabled = m_pHeadphoneEnabled->get();
 
     int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
-    // Update internal master sync.
-    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
@@ -345,6 +345,8 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Prepare each channel for output
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
+    // Update internal master sync.
+    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix

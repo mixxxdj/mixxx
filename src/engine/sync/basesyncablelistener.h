@@ -1,8 +1,6 @@
 #ifndef BASESYNCABLELISTENER_H
 #define BASESYNCABLELISTENER_H
 
-#include <gtest/gtest.h>
-
 #include "engine/sync/syncable.h"
 #include "configobject.h"
 
@@ -79,8 +77,6 @@ class BaseSyncableListener : public SyncableListener {
     // The list of all Syncables registered with BaseSyncableListener via
     // addSyncableDeck.
     QList<Syncable*> m_syncables;
-
-    FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsMaster);
 };
 
 #endif /* BASESYNCABLELISTENER_H */

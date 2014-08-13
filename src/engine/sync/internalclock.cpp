@@ -14,10 +14,8 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
           m_mode(SYNC_NONE),
           m_iOldSampleRate(44100),
           m_dOldBpm(124.0),
-          m_dBeatDistance(0.0),
           m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
           m_dClockPosition(0) {
-    qDebug() << "INTERNAL CLOCK LIVES " << pGroup;
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the master BPM. This also creates bpm_up
     // and bpm_down controls.
@@ -32,10 +30,10 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);
 
-//    m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
-//    connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)),
-//            this, SLOT(slotBeatDistanceChanged(double)),
-//            Qt::DirectConnection);
+    m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
+    connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatDistanceChanged(double)),
+            Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
         new ControlPushButton(ConfigKey(pGroup, "sync_master")));
@@ -83,15 +81,13 @@ double InternalClock::getBeatDistance() const {
         qDebug() << "ERROR: InternalClock beat length should never be less than zero";
         return 0.0;
     }
-    qDebug() << "InternalClock::getBeatDistance " << (m_dClockPosition / m_dBeatLength);
     return m_dClockPosition / m_dBeatLength;
 }
 
 void InternalClock::setBeatDistance(double beatDistance) {
     qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
-    //m_pClockBeatDistance->set(beatDistance);
-    m_dBeatDistance = beatDistance;
+    m_pClockBeatDistance->set(beatDistance);
 }
 
 double InternalClock::getBpm() const {
@@ -115,12 +111,12 @@ void InternalClock::slotBpmChanged(double bpm) {
     m_pEngineSync->notifyBpmChanged(this, bpm);
 }
 
-//void InternalClock::slotBeatDistanceChanged(double beat_distance) {
-//    if (beat_distance < 0.0 || beat_distance > 1.0) {
-//        return;
-//    }
-//    setBeatDistance(beat_distance);
-//}
+void InternalClock::slotBeatDistanceChanged(double beat_distance) {
+    if (beat_distance < 0.0 || beat_distance > 1.0) {
+        return;
+    }
+    setBeatDistance(beat_distance);
+}
 
 void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     if (m_iOldSampleRate == sampleRate && bpm == m_dOldBpm) {
@@ -175,8 +171,8 @@ void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
     }
 
     double beat_distance = getBeatDistance();
-    //m_pClockBeatDistance->set(beat_distance);
-    setBeatDistance(beat_distance);
+    m_pClockBeatDistance->set(beat_distance);
+    qDebug() << "Internal Clock updating beat distance " << beat_distance;
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }

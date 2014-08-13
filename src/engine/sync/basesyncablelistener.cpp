@@ -39,7 +39,6 @@ EngineChannel* BaseSyncableListener::getMaster() const {
 
 Syncable* BaseSyncableListener::getSyncableForGroup(const QString& group) {
     foreach (Syncable* pSyncable, m_syncables) {
-        qDebug() << "SYNCABLES! " << pSyncable->getGroup();
         if (pSyncable->getGroup() == group) {
             return pSyncable;
         }
@@ -118,11 +117,13 @@ void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setBeatDistance(beat_distance);
     }
+    qDebug() << "setmasterbeatdist";
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 pSyncable->getSyncMode() == SYNC_NONE) {
             continue;
         }
+        qDebug() << pSyncable->getGroup() << " setting master beat distance " << beat_distance;
         pSyncable->setBeatDistance(beat_distance);
     }
 }

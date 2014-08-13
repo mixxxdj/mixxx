@@ -23,7 +23,6 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_dPreviousSample(0),
-        m_dThisBeatDistance(0.0),
         m_dSyncTargetBeatDistance(0.0),
         m_dSyncInstantaneousBpm(0.0),
         m_dSyncAdjustment(1.0),
@@ -93,7 +92,7 @@ BpmControl::BpmControl(const char* _group,
             Qt::DirectConnection);
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
-    //m_pThisBeatDistance = new ControlObjectSlave(_group, "beat_distance", this);
+    m_pThisBeatDistance = new ControlObjectSlave(_group, "beat_distance", this);
     m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
 }
 
@@ -112,7 +111,7 @@ BpmControl::~BpmControl() {
     delete m_pButtonSyncPhase;
     delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
-    //delete m_pThisBeatDistance;
+    delete m_pThisBeatDistance;
 }
 
 double BpmControl::getBpm() const {
@@ -178,7 +177,8 @@ void BpmControl::slotControlPlay(double v) {
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
     if (!v) return;
-    syncPhase();
+    //syncPhase();
+    getEngineBuffer()->requestSyncPhase();
 }
 
 void BpmControl::slotControlBeatSyncTempo(double v) {
@@ -192,7 +192,9 @@ void BpmControl::slotControlBeatSync(double v) {
     // If the player is playing, and adjusting its tempo succeeded, adjust its
     // phase so that it plays in sync.
     if (syncTempo() && m_pPlayButton->get() > 0) {
-        syncPhase();
+        //syncPhase();
+        qDebug() << "sync phase request";
+        getEngineBuffer()->requestSyncPhase();
     }
 }
 
@@ -447,20 +449,20 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     return 0.0;
 }
 
-bool BpmControl::syncPhase() {
-    if (getSyncMode() == SYNC_MASTER) {
-        return true;
-    }
-    double dThisPosition = getCurrentSample();
-    double offset = getPhaseOffset(dThisPosition);
-    if (offset == 0.0) {
-        return false;
-    }
-
-    double dNewPlaypos = dThisPosition + offset;
-    seekAbs(dNewPlaypos);
-    return true;
-}
+//bool BpmControl::syncPhase() {
+//    if (getSyncMode() == SYNC_MASTER) {
+//        return true;
+//    }
+//    double dThisPosition = getCurrentSample();
+//    double offset = getPhaseSync(dThisPosition);
+//    if (offset == 0.0) {
+//        return false;
+//    }
+//
+//    double dNewPlaypos = dThisPosition + offset;
+//    seekAbs(dNewPlaypos);
+//    return true;
+//}
 
 // static
 bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
@@ -503,6 +505,7 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
     }
 
     if (dpBeatPercentage != NULL) {
+        qDebug() << "beat percentage " << ((dPosition - dPrevBeat) / dBeatLength) << " " << dPosition << " " << dPrevBeat << " " << dBeatLength;
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
     }
@@ -520,6 +523,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     double dThisPrevBeat;
     double dThisNextBeat;
     double dThisBeatLength;
+    qDebug() << "call to beatcontext";
     if (!getBeatContext(m_pBeats, dThisPosition,
                         &dThisPrevBeat, &dThisNextBeat,
                         &dThisBeatLength, NULL)) {
@@ -527,9 +531,11 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     }
 
     double dOtherBeatFraction;
+    qDebug() << m_sGroup << "my beat fr -->" << dThisPosition << " " << m_pThisBeatDistance->get() << " beat len " << dThisBeatLength;
     if (getSyncMode() == SYNC_FOLLOWER) {
         // If we're a slave, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance;
+        qDebug() << m_sGroup << "other beat fr " << dOtherBeatFraction;
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
@@ -554,6 +560,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
                                         NULL, NULL, NULL, &dOtherBeatFraction)) {
             return 0.0;
         }
+        qDebug() << m_sGroup << "other beat fr2 " << dOtherBeatFraction;
     }
 
     bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
@@ -577,12 +584,16 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     // works will be wrong then.
 
     double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
+    qDebug() << "new fractional playpos " << dNewPlaypos;
     if (this_near_next == other_near_next) {
+        qDebug() << m_sGroup << " add prevbeat " << dThisPrevBeat;
         dNewPlaypos += dThisPrevBeat;
     } else if (this_near_next && !other_near_next) {
+        qDebug() << m_sGroup << " add nextbeat " << dThisNextBeat;
         dNewPlaypos += dThisNextBeat;
     } else {  //!this_near_next && other_near_next
         dThisPrevBeat = m_pBeats->findNthBeat(dThisPosition, -2);
+        qDebug() << m_sGroup << " add nth " << dThisPrevBeat;
         dNewPlaypos += dThisPrevBeat;
     }
 
@@ -631,7 +642,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
         }
     }
 
-    qDebug() << m_sGroup << " sync distance " << (dNewPlaypos - dThisPosition);
+    qDebug() << m_sGroup << " sync destination: " << dNewPlaypos << " " << dThisPosition << (dNewPlaypos - dThisPosition);
 
     return dNewPlaypos - dThisPosition;
 }
@@ -693,7 +704,9 @@ void BpmControl::slotBeatsTranslate(double v) {
 }
 
 void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
-    m_dPreviousSample = getCurrentSample();
+    m_dPreviousSample = dCurrentSample;
+    qDebug() << m_sGroup << "set current sample " << " "
+            << m_dPreviousSample;
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
 
@@ -705,20 +718,19 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(dCurrentSample);
     Q_UNUSED(dTotalSamples);
     Q_UNUSED(iBufferSize);
-    // It doesn't make sense to me to use the position before update, but this
-    // results in better sync.
-    //m_pThisBeatDistance->set(getBeatDistance(dCurrentSample));
     return kNoTrigger;
 }
 
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(m_dPreviousSample);
-    //m_pThisBeatDistance->set(beat_distance);
-    m_dThisBeatDistance = beat_distance;
+    qDebug() << m_sGroup << " update dist based on currentsample " << m_dPreviousSample << " "
+            << beat_distance;
+    m_pThisBeatDistance->set(beat_distance);
     return beat_distance;
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
+    qDebug() << m_sGroup << " set target beat dist " << beatDistance;
     m_dSyncTargetBeatDistance = beatDistance;
 }
 

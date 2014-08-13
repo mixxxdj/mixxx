@@ -91,6 +91,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
+          m_iEnableSyncQueued(0),
+          m_iSyncModeQueued(SYNC_NONE),
           m_bLastBufferPaused(true),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
@@ -223,8 +225,9 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    m_pSyncControl = new SyncControl(_group, _config, pChannel,
-                                     pMixingEngine->getEngineSync());
+    m_pEngineSync = pMixingEngine->getEngineSync();
+
+    m_pSyncControl = new SyncControl(_group, _config, pChannel, m_pEngineSync);
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
@@ -401,6 +404,14 @@ void EngineBuffer::requestSyncPhase() {
     }
 }
 
+void EngineBuffer::requestEnableSync(bool enabled) {
+    m_iEnableSyncQueued = static_cast<int>(enabled) + 1;
+}
+
+void EngineBuffer::requestSyncMode(int mode) {
+    m_iSyncModeQueued = mode + 1;
+}
+
 void EngineBuffer::clearScale() {
     // This is called when seeking, after scaler change and direction change
     // Read extra buffer with the original scale for crossfading with new one
@@ -419,7 +430,7 @@ void EngineBuffer::clearScale() {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    //qDebug() << m_group << "engine new pos " << newpos;
+    qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
 
@@ -720,6 +731,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
                                           fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
+        processSyncRequests();
         processSeek();
 
         // If the baserate, speed, or pitch has changed, we need to update the
@@ -1004,6 +1016,22 @@ void EngineBuffer::processSlip(int iBufferSize) {
     }
 }
 
+void EngineBuffer::processSyncRequests() {
+    int enable_request = m_iEnableSyncQueued;
+    int mode_request = m_iSyncModeQueued;
+    if (enable_request) {
+        m_iEnableSyncQueued = 0;
+        bool enabled = static_cast<bool>(enable_request - 1);
+        qDebug() << "OK!!!! "<< m_pEngineSync << " " << m_pSyncControl;
+        m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
+    }
+    if (mode_request) {
+        m_iSyncModeQueued = 0;
+        m_pEngineSync->requestSyncMode(m_pSyncControl,
+                                       static_cast<SyncMode>(mode_request - 1));
+    }
+}
+
 void EngineBuffer::processSeek() {
     // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
@@ -1032,13 +1060,22 @@ void EngineBuffer::processSeek() {
         }
         case SEEK_PHASE: {
             // XXX: syncPhase is private in bpmcontrol, so we seek directly.
+            // Phase offsets have to be based on the previous buffer's position.
+            // Otherwise we could be getting the offset from this buffer's new
+            // position and the target buffer's old position.
+            //double dOldPosition = m_pBpmControl->getPreviousSample();
             double dThisPosition = m_pBpmControl->getCurrentSample();
+            qDebug() << m_group << "figuring out offset based on who knows what "
+                    << dThisPosition;
             double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
+            qDebug() << m_group << "doing seek phase " << dThisPosition <<
+                     " " << offset;
             if (offset != 0.0) {
                 double dNewPlaypos = round(dThisPosition + offset);
                 if (!even(static_cast<int>(dNewPlaypos))) {
                     dNewPlaypos--;
                 }
+                qDebug() << "seek to " << dNewPlaypos;
                 setNewPlaypos(dNewPlaypos);
             }
             break;
@@ -1050,7 +1087,7 @@ void EngineBuffer::processSeek() {
 }
 
 void EngineBuffer::postProcess() {
-    m_pSyncControl->setBeatDistance(m_pBpmControl->updateBeatDistance());
+    m_pBpmControl->updateBeatDistance();
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
