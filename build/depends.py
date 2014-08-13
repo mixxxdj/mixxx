@@ -562,6 +562,7 @@ class MixxxCore(Feature):
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
                    "dlgdevelopertools.cpp",
+                   "dlgcoverartfullsize.cpp",
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -953,6 +954,7 @@ class MixxxCore(Feature):
             'dlgaboutdlg.ui',
             'dlganalysis.ui',
             'dlgautodj.ui',
+            'dlgcoverartfullsize.ui',
             'dlgdevelopertoolsdlg.ui',
             'dlghidden.ui',
             'dlgmissing.ui',
