@@ -317,6 +317,7 @@ void DlgTrackInfo::saveTrack() {
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
         m_pLoadedTrack->removeCue(pCue);
     }
+    emit(tagsUpdated(m_pLoadedTrack));
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -404,6 +405,6 @@ void DlgTrackInfo::reloadTrackMetadata() {
 }
 
 void DlgTrackInfo::fetchTag() {
-    m_DlgTagFetcher.init(m_pLoadedTrack);
+    m_DlgTagFetcher.loadTrack(m_pLoadedTrack);
     m_DlgTagFetcher.show();
 }

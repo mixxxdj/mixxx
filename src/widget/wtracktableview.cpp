@@ -31,7 +31,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
-    m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
+    m_pTrackInfo = new DlgTrackInfo(NULL, m_DlgTagFetcher);
     connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
     connect(m_pTrackInfo, SIGNAL(previous()),
@@ -40,8 +40,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotNextDlgTagFetcher()));
     connect(&m_DlgTagFetcher, SIGNAL(previous()),
             this, SLOT(slotPrevDlgTagFetcher()));
+    // reload Track once the tags are updated.
     connect(&m_DlgTagFetcher, SIGNAL(tagsUpdated(TrackPointer)),
             m_pTrackInfo, SLOT(loadTrack(TrackPointer)));
+    connect(m_pTrackInfo, SIGNAL(tagsUpdated(TrackPointer)),
+            &m_DlgTagFetcher, SLOT(updateOrgTrack(TrackPointer)));
 
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
@@ -562,7 +565,7 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine
-    m_DlgTagFetcher.init(pTrack);
+    m_DlgTagFetcher.loadTrack(pTrack);
     currentTrackInfoIndex = index;
     m_DlgTagFetcher.show();
 }

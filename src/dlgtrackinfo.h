@@ -1,4 +1,3 @@
-
 #ifndef DLGTRACKINFO_H
 #define DLGTRACKINFO_H
 
@@ -30,6 +29,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   signals:
     void next();
     void previous();
+    void tagsUpdated(TrackPointer);
 
   private slots:
     void slotNext();
