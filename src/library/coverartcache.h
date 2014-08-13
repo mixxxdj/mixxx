@@ -34,7 +34,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QPixmap requestPixmap(int trackId,
                           const QString& coverLocation = QString(),
                           const QString& md5Hash = QString(),
-                          const QSize& croppedPixmap = QSize(),
+                          const QSize& croppedPixmap = QSize(0,0),
                           const bool tryLoadAndSearch = true,
                           const bool issueRepaint = false);
     void setCoverArtDAO(CoverArtDAO* coverdao);
