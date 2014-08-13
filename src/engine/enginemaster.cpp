@@ -315,11 +315,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    qDebug() << "post process!";
     foreach (EngineChannel* channel, processed_channels) {
         channel->postProcess();
     }
-    qDebug() << "post process done";
 }
 
 void EngineMaster::process(const int iBufferSize) {

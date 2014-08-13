@@ -84,7 +84,6 @@ class BpmControl : public EngineControl {
         return syncModeFromDouble(m_pSyncMode->get());
     }
     bool syncTempo();
-    bool syncPhase();
 
     friend class SyncControl;
 

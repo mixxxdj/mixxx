@@ -85,7 +85,7 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setBeatDistance(double beatDistance) {
-    qDebug() << "InternalClock::setBeatDistance" << beatDistance;
+    //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
 }
@@ -172,7 +172,6 @@ void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
 
     double beat_distance = getBeatDistance();
     m_pClockBeatDistance->set(beat_distance);
-    qDebug() << "Internal Clock updating beat distance " << beat_distance;
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }

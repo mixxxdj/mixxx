@@ -30,7 +30,7 @@ EngineSync::~EngineSync() {
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
-    qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+    //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     Q_ASSERT(pSyncable);
 
@@ -39,7 +39,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     if (mode == SYNC_MASTER) {
         activateMaster(pSyncable);
         setMasterBpm(pSyncable, pSyncable->getBpm());
-        qDebug() << "request sync mode setmasterbeatdist";
         setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
     } else if (mode == SYNC_FOLLOWER) {
         if (pSyncable == m_pInternalClock && channelIsMaster) {
@@ -85,7 +84,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
+    //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
@@ -112,7 +111,6 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                     foundTargetBpm = true;
                     targetBpm = otherDeckBpm;
                     targetBeatDistance = other_deck->getBeatDistance();
-                    qDebug() << "getting other deck distance " << targetBeatDistance;
 
                     // If the other deck is playing we stop looking
                     // immediately. Otherwise continue looking for a playing
@@ -219,7 +217,7 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
-    qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+    //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
@@ -235,7 +233,6 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
 
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
     pSyncable->setBpm(masterBpm());
-    qDebug() << "follower activated";
     pSyncable->setBeatDistance(masterBeatDistance());
 }
 

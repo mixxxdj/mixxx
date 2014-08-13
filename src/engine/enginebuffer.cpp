@@ -92,7 +92,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
           m_iEnableSyncQueued(0),
-          m_iSyncModeQueued(SYNC_NONE),
+          m_iSyncModeQueued(0),
           m_bLastBufferPaused(true),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
@@ -430,7 +430,7 @@ void EngineBuffer::clearScale() {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    qDebug() << m_group << "engine new pos " << newpos;
+    //qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
 
@@ -1022,7 +1022,6 @@ void EngineBuffer::processSyncRequests() {
     if (enable_request) {
         m_iEnableSyncQueued = 0;
         bool enabled = static_cast<bool>(enable_request - 1);
-        qDebug() << "OK!!!! "<< m_pEngineSync << " " << m_pSyncControl;
         m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
     }
     if (mode_request) {
@@ -1060,22 +1059,13 @@ void EngineBuffer::processSeek() {
         }
         case SEEK_PHASE: {
             // XXX: syncPhase is private in bpmcontrol, so we seek directly.
-            // Phase offsets have to be based on the previous buffer's position.
-            // Otherwise we could be getting the offset from this buffer's new
-            // position and the target buffer's old position.
-            //double dOldPosition = m_pBpmControl->getPreviousSample();
             double dThisPosition = m_pBpmControl->getCurrentSample();
-            qDebug() << m_group << "figuring out offset based on who knows what "
-                    << dThisPosition;
             double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
-            qDebug() << m_group << "doing seek phase " << dThisPosition <<
-                     " " << offset;
             if (offset != 0.0) {
                 double dNewPlaypos = round(dThisPosition + offset);
                 if (!even(static_cast<int>(dNewPlaypos))) {
                     dNewPlaypos--;
                 }
-                qDebug() << "seek to " << dNewPlaypos;
                 setNewPlaypos(dNewPlaypos);
             }
             break;
