@@ -37,8 +37,9 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void leaveEvent(QEvent*);
 
   private:
-    void setToDefault();
     QPixmap scaledCoverArt(QPixmap normal);
+    void setToDefault();
+    void showFullSize();
 
     ConfigObject<ConfigValue>* m_pConfig;
 
@@ -53,7 +54,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
     QPixmap m_iconHide;
     QPixmap m_iconShow;
-    QCursor m_zoomCursor;
 
     int m_lastRequestedTrackId;
     QString m_lastRequestedCoverLocation;

@@ -31,11 +31,6 @@ WCoverArt::WCoverArt(QWidget* parent,
                                    Qt::KeepAspectRatioByExpanding,
                                    Qt::SmoothTransformation);
 
-    // load zoom cursor
-    QPixmap zoomImg(":/images/library/ic_library_zoom_in.png");
-    zoomImg = zoomImg.scaled(24, 24);
-    m_zoomCursor = QCursor(zoomImg);
-
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 }
@@ -183,75 +178,54 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
-    QPoint lastPoint;
-    lastPoint = event->pos();
+    QPoint lastPoint(event->pos());
     if (m_bCoverIsVisible) {
         if(lastPoint.x() > width() - (height() / 5)
                 && lastPoint.y() < (height() / 5) + 5) {
             m_bCoverIsVisible = false;
             resize(sizeHint());
         } else {
-            // When the current cover is not a default one,
-            // it'll show the cover in a full size
-            // (in a new window - by left click)
-            if (!m_bDefaultCover) {
-                QLabel *lb = new QLabel(this, Qt::Popup |
-                                              Qt::Tool |
-                                              Qt::CustomizeWindowHint |
-                                              Qt::WindowCloseButtonHint);
-                lb->setWindowModality(Qt::ApplicationModal);
-                lb->setWindowTitle(m_sCoverTitle);
-
-                QSize sz = QApplication::activeWindow()->size();
-                if (m_currentCover.height() > sz.height() / 1.2) {
-                    m_currentCover = m_currentCover.scaledToHeight(
-                                                     sz.height() / 1.2,
-                                                     Qt::SmoothTransformation);
-                }
-
-                lb->setPixmap(m_currentCover);
-                lb->setGeometry(sz.width() / 2 - m_currentCover.width() / 2,
-                                sz.height() / 2 - m_currentCover.height() / 2.2,
-                                m_currentCover.width(),
-                                m_currentCover.height());
-                lb->show();
-            }
+            showFullSize();
         }
     } else {
         m_bCoverIsVisible = true;
-        setCursor(Qt::ArrowCursor);
         resize(sizeHint());
     }
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if (!m_bEnableWidget) {
-        return;
-    }
-
-    QPoint lastPoint;
-    lastPoint = event->pos();
-    if (event->HoverEnter) {
-        m_bCoverIsHovered  = true;
-        if (m_bCoverIsVisible) {
-            if (lastPoint.x() > width() - (height() / 5)
-                    && lastPoint.y() < (height() / 5) + 5) {
-                setCursor(Qt::ArrowCursor);
-            } else {
-                if (m_bDefaultCover) {
-                    setCursor(Qt::ArrowCursor);
-                } else {
-                    setCursor(m_zoomCursor);
-                }
-            }
-        } else {
-            setCursor(Qt::PointingHandCursor);
-        }
-    }
+    m_bCoverIsHovered  = event->HoverEnter;
     update();
 }
 
 void WCoverArt::leaveEvent(QEvent*) {
     m_bCoverIsHovered = false;
     update();
+}
+
+// When the current cover is not a default one,
+// it'll show the full sized cover in a new window.
+void WCoverArt::showFullSize() {
+    if (!m_bDefaultCover) {
+        QLabel *lb = new QLabel(this, Qt::Popup |
+                                      Qt::Tool |
+                                      Qt::CustomizeWindowHint |
+                                      Qt::WindowCloseButtonHint);
+        lb->setWindowModality(Qt::ApplicationModal);
+        lb->setWindowTitle(m_sCoverTitle);
+
+        QSize sz = QApplication::activeWindow()->size();
+        if (m_currentCover.height() > sz.height() / 1.2) {
+            m_currentCover = m_currentCover.scaledToHeight(
+                                             sz.height() / 1.2,
+                                             Qt::SmoothTransformation);
+        }
+
+        lb->setPixmap(m_currentCover);
+        lb->setGeometry(sz.width() / 2 - m_currentCover.width() / 2,
+                        sz.height() / 2 - m_currentCover.height() / 2.2,
+                        m_currentCover.width(),
+                        m_currentCover.height());
+        lb->show();
+    }
 }
