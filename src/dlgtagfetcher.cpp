@@ -67,6 +67,7 @@ void DlgTagFetcher::apply() {
              m_data.m_results[resultIndex]->getTrackNumber() != "0") {
             m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
         }
+        emit(tagsUpdated(m_track));
     }
 }
 

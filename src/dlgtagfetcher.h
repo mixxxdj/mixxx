@@ -29,6 +29,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   signals:
     void next();
     void previous();
+    void tagsUpdated(TrackPointer);
 
   private slots:
     void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);

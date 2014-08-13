@@ -40,6 +40,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotNextDlgTagFetcher()));
     connect(&m_DlgTagFetcher, SIGNAL(previous()),
             this, SLOT(slotPrevDlgTagFetcher()));
+    connect(&m_DlgTagFetcher, SIGNAL(tagsUpdated(TrackPointer)),
+            m_pTrackInfo, SLOT(loadTrack(TrackPointer)));
 
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
