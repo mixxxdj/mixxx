@@ -5,14 +5,16 @@
 #include <QMenu>
 #include <QWidget>
 
+#include "trackinfoobject.h"
+
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
     WCoverArtMenu(QWidget *parent = 0);
     virtual ~WCoverArtMenu();
 
-    void updateData(int trackId, QString coverLocation,
-                    QString md5, QString trackLocation="");
+    void updateData(QString coverLocation, QString md5,
+                    int trackId, TrackPointer pTrack=TrackPointer());
 
   private slots:
     void slotChange();
@@ -30,7 +32,7 @@ class WCoverArtMenu : public QMenu {
     QAction* m_pUnset;
 
     int m_iTrackId;
-    QString m_sTrackLocation;
+    TrackPointer m_pTrack;
     QString m_sCoverLocation;
     QString m_sMd5;
 };

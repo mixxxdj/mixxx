@@ -48,11 +48,11 @@ void WCoverArtMenu::addActions() {
 }
 
 void WCoverArtMenu::updateData(int trackId, QString coverLocation,
-                               QString md5, QString trackLocation) {
+                               QString md5, TrackPointer pTrack) {
     m_iTrackId = trackId;
     m_sCoverLocation = coverLocation;
     m_sMd5 = md5;
-    m_sTrackLocation = trackLocation;
+    m_pTrack = pTrack;
 }
 
 void WCoverArtMenu::slotChange() {
