@@ -16,6 +16,10 @@ void DlgCoverArtFullSize::slotPixmapFound(int trackId, QPixmap pixmap) {
     Q_UNUSED(trackId);
     m_cover = pixmap;
 
+    if (!QApplication::activeWindow()) {
+        return;
+    }
+
     // If cover is bigger than Mixxx, it must be resized!
     // In this case, it need to do a small adjust to make
     // this dlg a bit smaller than the Mixxx window.
