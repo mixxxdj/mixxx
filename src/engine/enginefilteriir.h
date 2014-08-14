@@ -47,12 +47,12 @@ class EngineFilterIIR : public EngineObjectConstIn {
             double freq0, double freq1 = 0, int adj = 0) {
         // Copy the old coefficients into m_oldCoef
         memcpy(m_oldCoef, m_coef, sizeof(m_coef));
-		
-		char* spec_d = (char*) malloc(strlen(spec) + 1);
-		strcpy(spec_d, spec);
+
+        char* spec_d = (char*) malloc(strlen(spec) + 1);
+        strcpy(spec_d, spec);
         m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
                 spec_d, sampleRate, freq0, freq1, adj);
-		free(spec_d);
+        free(spec_d);
         initBuffers();
     }
 
