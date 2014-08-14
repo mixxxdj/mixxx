@@ -2,10 +2,10 @@
 #define ENGINEFILTERIIR_H
 
 #include <string.h>
-#include <fidlib.h>
 
 #include "engine/engineobject.h"
 #define MIXXX
+#include <fidlib.h>
 
 enum IIRPass {
     IIR_LP,
@@ -48,7 +48,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
         // Copy the old coefficients into m_oldCoef
         memcpy(m_oldCoef, m_coef, sizeof(m_coef));
 		
-		char* spec_d = malloc(strlen(spec) + 1);
+		char* spec_d = (char*) malloc(strlen(spec) + 1);
 		strcpy(spec_d, spec);
         m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
                 spec_d, sampleRate, freq0, freq1, adj);
