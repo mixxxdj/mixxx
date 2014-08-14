@@ -18,26 +18,33 @@ WCoverArtMenu::~WCoverArtMenu() {
 }
 
 void WCoverArtMenu::createActions() {
-    // change cover art location
-    m_pChange = new QAction(QIcon(":/images/library/ic_cover_change.png"),
-                            tr("&Change"), this);
+    char* title;
+    char* context; // to help translators
+    QString iconPath;
 
-    // unset cover art - load default
-    m_pUnset = new QAction(QIcon(":/images/library/ic_cover_unset.png"),
-                           tr("&Unset"), this);
-
-    // reload just cover art using the search algorithm (in CoverArtCache)
-    m_pReload = new QAction(QIcon(":/images/library/ic_cover_reload.png"),
-                            tr("&Reload"), this);
-
-    // show full size cover in a new window
-    m_pFullSize = new QAction(QIcon(":/images/library/ic_cover_fullsize.png"),
-                              tr("&Show Full Size"), this);
-
+    context = (char*) "change cover art location";
+    title =  (char*) "&Choose new cover";
+    iconPath = ":/images/library/ic_cover_change.png";
+    m_pChange = new QAction(QIcon(iconPath), tr(title, context), this);
     connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
+
+    context = (char*) "show full size cover in a new window";
+    title = (char*) "&Show Full Size";
+    iconPath = (":/images/library/ic_cover_fullsize.png");
+    m_pFullSize = new QAction(QIcon(iconPath), tr(title, context), this);
     connect(m_pFullSize, SIGNAL(triggered()), this, SLOT(slotShowFullSize()));
-    connect(m_pReload, SIGNAL(triggered()), this, SLOT(slotReload()));
+
+    context = (char*) "unset cover art - load default";
+    title = (char*) "Unset cover";
+    iconPath = (":/images/library/ic_cover_unset.png");
+    m_pUnset = new QAction(QIcon(iconPath), tr(title, context), this);
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
+
+    context = (char*) "reload just cover art, using the search algorithm";
+    title = (char*) "&Reload from track/folder";
+    iconPath = (":/images/library/ic_cover_reload.png");
+    m_pReload = new QAction(QIcon(iconPath), tr(title, context), this);
+    connect(m_pReload, SIGNAL(triggered()), this, SLOT(slotReload()));
 }
 
 void WCoverArtMenu::addActions() {
