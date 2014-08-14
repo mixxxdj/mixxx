@@ -329,4 +329,18 @@ inline double EngineFilterIIR<8, IIR_HP>::processSample(double* coef,
     return val;
 }
 
+template<>
+inline double EngineFilterIIR<5, IIR_BP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
+    register double tmp, fir, iir;
+    tmp = buf[0]; buf[0] = buf[1];
+    iir = val * coef[0];
+    iir -= coef[1] * tmp; fir = coef[2] * tmp;
+    iir -= coef[3] * buf[0]; fir += coef[4] * buf[0];
+    fir += coef[5] * iir;
+    buf[1] = iir; val = fir;
+    return val;
+}
+
 #endif // ENGINEFILTERIIR_H
