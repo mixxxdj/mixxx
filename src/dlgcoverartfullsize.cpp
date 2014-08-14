@@ -4,7 +4,7 @@
 
 DlgCoverArtFullSize::DlgCoverArtFullSize() {
     setupUi(this);
-    setWindowTitle(tr("Cover Art: Original Size"));
+    setWindowTitle(tr("Cover Art"));
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 }
@@ -38,6 +38,7 @@ void DlgCoverArtFullSize::init() {
     if (m_cover.isNull())  {
         return;
     }
+    resize(m_cover.size());
     coverArt->setPixmap(m_cover);
     show();
 }
