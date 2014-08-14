@@ -175,6 +175,7 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
      } else {
         setMinimumSize(0, 20);
         setToDefault();
+        DlgCoverArtFullSize::instance()->close();
     }
 }
 
