@@ -46,7 +46,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     void setCoefs(const char* spec, double sampleRate,
             double freq0, double freq1 = 0, int adj = 0) {
 
-        char* spec_d[32];
+        char spec_d[32];
         if (strlen(spec) < sizeof(spec_d)) {
             // Copy to dynamic-ish memory to prevent fidlib API breakage.
             strcpy(spec_d, spec);
