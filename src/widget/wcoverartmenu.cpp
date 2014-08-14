@@ -47,8 +47,8 @@ void WCoverArtMenu::addActions() {
     addAction(m_pFullSize);
 }
 
-void WCoverArtMenu::updateData(int trackId, QString coverLocation,
-                               QString md5, TrackPointer pTrack) {
+void WCoverArtMenu::updateData(QString coverLocation, QString md5,
+                               int trackId, TrackPointer pTrack) {
     m_iTrackId = trackId;
     m_sCoverLocation = coverLocation;
     m_sMd5 = md5;

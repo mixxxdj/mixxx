@@ -195,9 +195,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         m_bCoverIsVisible = false;
         resize(sizeHint());
     } else { // show context-menu
-        m_pMenu->updateData(m_lastRequestedTrackId,
-                            m_lastRequestedCoverLocation,
-                            m_lastRequestedMd5Hash);
+        m_pMenu->updateData(m_lastRequestedCoverLocation,
+                            m_lastRequestedMd5Hash,
+                            m_lastRequestedTrackId);
         m_pMenu->exec(event->globalPos());
     }
 }
