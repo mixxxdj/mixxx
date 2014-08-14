@@ -138,8 +138,8 @@ void WCoverArtMenu::slotChange() {
 }
 
 void WCoverArtMenu::slotShowFullSize() {
-    // TODO
-    // DlgCoverArtFullSize::instance()->init(m_currentCover, m_sCoverTitle);
+    QString title = QFileInfo(m_sCoverLocation).baseName();
+    DlgCoverArtFullSize::instance()->init(title);
 }
 
 void WCoverArtMenu::slotReload() {
