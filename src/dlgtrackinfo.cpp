@@ -2,8 +2,6 @@
 // Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QDesktopServices>
-#include <QFileDialog>
-#include <QMenu>
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
@@ -75,32 +73,6 @@ void DlgTrackInfo::init(){
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
-
-    // Cover art actions
-    // change cover art location
-    QAction* changeCover = new QAction(
-            QIcon(":/images/library/ic_cover_change.png"),
-            tr("&Change"), this);
-    connect(changeCover, SIGNAL(triggered()),
-            this, SLOT(slotChangeCoverArt()));
-    // unset cover art - load default
-    QAction* unsetCover = new QAction(
-            QIcon(":/images/library/ic_cover_unset.png"),
-            tr("&Unset"), this);
-    connect(unsetCover, SIGNAL(triggered()),
-            this, SLOT(slotUnsetCoverArt()));
-    // reload just cover art using the search algorithm (in CoverArtCache)
-    QAction* reloadCover = new QAction(
-            QIcon(":/images/library/ic_cover_reload.png"),
-            tr("&Reload"), this);
-    connect(reloadCover, SIGNAL(triggered()),
-            this, SLOT(slotReloadCover()));
-    // Cover art popup menu
-    QMenu* coverMenu = new QMenu(this);
-    coverMenu->addAction(changeCover);
-    coverMenu->addAction(unsetCover);
-    coverMenu->addAction(reloadCover);
-    coverArt->setMenu(coverMenu);
 }
 
 void DlgTrackInfo::OK() {
@@ -226,88 +198,11 @@ void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                              md5Hash);
 }
 
-void DlgTrackInfo::slotUnsetCoverArt() {
-    if (m_pLoadedTrack == NULL) {
-        return;
-    }
-    bool res = CoverArtCache::instance()->changeCoverArt(
-                    m_pLoadedTrack->getId(),
-                    CoverArtCache::instance()->getDefaultCoverLocation());
-    if (!res) {
-        QMessageBox::warning(this, tr("Unset Cover Art"),
-                             tr("Could not unset the cover art!"));
-    }
-}
-
-void DlgTrackInfo::slotChangeCoverArt() {
-    if (m_pLoadedTrack == NULL) {
-        return;
-    }
-
-    // get initial directory (trackdir or coverdir)
-    QString initialDir;
-    QString trackPath = m_pLoadedTrack->getDirectory();
-    if (m_sLoadedCoverLocation.isEmpty() ||
-        m_sLoadedCoverLocation == CoverArtCache::instance()
-                                  ->getDefaultCoverLocation()) {
-        initialDir = trackPath;
-    } else {
-        initialDir = m_sLoadedCoverLocation;
-    }
-
-    // open file dialog
-    QString selectedCover = QFileDialog::getOpenFileName(
-                this, tr("Change Cover Art"), initialDir,
-                tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
-
-    if (selectedCover.isEmpty()) {
-        return;
-    }
-
-    // if the cover comes from an external dir,
-    // we copy it to the track directory.
-    QString newCover;
-    QFileInfo coverInfo(selectedCover);
-    QString coverPath = coverInfo.absolutePath();
-    if (trackPath != coverPath) {
-        QString ext = coverInfo.suffix();
-        QStringList filepaths;
-        filepaths << trackPath % "/cover." % ext
-                  << trackPath % "/album." % ext
-                  << trackPath % "/mixxx-cover." % ext;
-
-        foreach (QString filepath, filepaths) {
-            if (QFile::copy(selectedCover, filepath)) {
-                newCover = filepath;
-                break;
-            }
-        }
-
-        if (newCover.isEmpty()) {
-            // overwrites "mixxx-cover"
-            QFile::remove(filepaths.last());
-            if (QFile::copy(selectedCover, filepaths.last())) {
-                newCover = filepaths.last();
-            }
-        }
-    } else {
-        newCover = selectedCover;
-    }
-
-    bool res = CoverArtCache::instance()->changeCoverArt(
-                m_pLoadedTrack->getId(), newCover);
-    if (res) {
-        m_sLoadedCoverLocation = newCover;
-    } else {
-        QMessageBox::warning(this, tr("Change Cover Art"),
-                             tr("Could not change the cover art!"));
-    }
-}
-
 void DlgTrackInfo::slotOpenInFileBrowser() {
     if (m_pLoadedTrack == NULL) {
         return;
     }
+
     QDir directory(m_pLoadedTrack->getDirectory());
     if (!directory.exists()) {
         directory = QDir::home();
@@ -528,13 +423,6 @@ void DlgTrackInfo::reloadTrackMetadata() {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
         populateFields(pTrack);
-    }
-}
-
-void DlgTrackInfo::slotReloadCover() {
-    if (m_pLoadedTrack) {
-        m_sLoadedCoverLocation.clear();
-        CoverArtCache::instance()->requestPixmap(m_pLoadedTrack->getId());
     }
 }
 
