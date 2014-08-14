@@ -57,6 +57,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
+    connect(checkBox_bypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
+
     connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
             this, SLOT(slotShowAllEffects()));
 
@@ -74,9 +76,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotAddComboBox(double)));
     slotAddComboBox(m_pNumDecks->get());
-
-    // Enable internal EQ
-    m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("yes"));
 
     loadSettings();
     slotUpdate();
@@ -102,6 +101,9 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             box->addItem(availableEffectNames[i].second);
             box->setItemData(i, QVariant(availableEffectNames[i].first));
         }
+        // Add an empty effect entry
+        box->addItem("None");
+        box->setItemData(availableEffectNames.size(), "none");
         m_deckEffectSelectors.append(box);
         connect(box, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotEffectChangedOnDeck(int)));
@@ -115,11 +117,14 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             simpleBox->addItem(availableEQEffectNames[i].second);
             simpleBox->setItemData(i, QVariant(availableEQEffectNames[i].first));
         }
+        // Add an empty effect entry
+        simpleBox->addItem("None");
+        simpleBox->setItemData(availableEQEffectNames.size(), "none");
         m_deckBasicEffectSelectors.append(simpleBox);
         connect(simpleBox, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotBasicEffectChangedOnDeck(int)));
 
-        // Set the configured effect for box and simpleBox or eqdefault
+        // Set the configured effect for box and simpleBox or Butterworth8 EQ
         // if none is configured
         QString configuredEffect;
         int selectedEffectIndex;
@@ -209,6 +214,11 @@ void DlgPrefEQ::loadSettings() {
         getSliderPosition(lowEqFreq,
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
+
+    if (m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes")) {
+        checkBox_bypass->setChecked(false);
+    }
 }
 
 void DlgPrefEQ::setDefaultShelves()
@@ -323,6 +333,40 @@ void DlgPrefEQ::slotApply() {
 void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
+}
+
+void DlgPrefEQ::slotBypass(int state) {
+    if (state) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no"));
+        // Load none on each deck
+        int noneIndex;
+        foreach(QComboBox* box, m_deckEffectSelectors) {
+            noneIndex = box->findText(QString("None"));
+            box->setCurrentIndex(noneIndex);
+            box->setEnabled(false);
+        }
+        foreach(QComboBox* box, m_deckBasicEffectSelectors) {
+            noneIndex = box->findText(QString("None"));
+            box->setCurrentIndex(noneIndex);
+            box->setEnabled(false);
+        }
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("yes"));
+        // Load Butterworth8 EQ on each slot after enabling the EQ
+        int defaultEqIndex;
+        foreach(QComboBox* box, m_deckEffectSelectors) {
+            defaultEqIndex = box->findText(QString("Butterworth8 EQ"));
+            box->setCurrentIndex(defaultEqIndex);
+            box->setEnabled(true);
+        }
+        foreach(QComboBox* box, m_deckBasicEffectSelectors) {
+            defaultEqIndex = box->findText(QString("Butterworth8 EQ"));
+            box->setCurrentIndex(defaultEqIndex);
+            box->setEnabled(true);
+        }
+    }
+
+    slotApply();
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {

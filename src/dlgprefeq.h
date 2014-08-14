@@ -23,7 +23,6 @@
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
-#include "engine/enginefilterblock.h"
 #include "controlobjectthread.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
@@ -53,6 +52,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void slotBypass(int state);
 
   signals:
     void apply(const QString &);

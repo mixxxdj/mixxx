@@ -17,6 +17,13 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
+      <widget class="QCheckBox" name="checkBox_bypass">
+       <property name="text">
+        <string>Bypass</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="CheckBoxShowAllEffects">
        <property name="text">
         <string>Show All Effects</string>
