@@ -147,5 +147,14 @@ void WCoverArtMenu::slotReload() {
 }
 
 void WCoverArtMenu::slotUnset() {
-    // TODO
+    if (m_iTrackId < 1) {
+        return;
+    }
+    bool res = CoverArtCache::instance()->changeCoverArt(
+                    m_iTrackId,
+                    CoverArtCache::instance()->getDefaultCoverLocation());
+    if (!res) {
+        QMessageBox::warning(this, tr("Unset Cover Art"),
+                             tr("Could not unset the cover art!"));
+    }
 }
