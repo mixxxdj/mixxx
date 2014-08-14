@@ -6,16 +6,17 @@ ControlEffectKnob::ControlEffectKnob(ConfigKey key, double dMinValue, double dMa
         : ControlPotmeter(key, dMinValue, dMaxValue) {
 }
 
-void ControlEffectKnob::setType(EffectManifestParameter::ControlHint type) {
+void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
+                                     double dMinValue, double dMaxValue) {
     if ( m_pControl == NULL) {
         return;
     }
 
     if (type == EffectManifestParameter::CONTROL_KNOB_LINEAR) {
             m_pControl->setBehavior(new ControlLinPotmeterBehavior(
-                    m_dMinValue, m_dMaxValue, false));
+                    dMinValue, dMaxValue, false));
     } else if (type == EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC) {
             m_pControl->setBehavior(new ControlLogPotmeterBehavior(
-                    m_dMinValue, m_dMaxValue));
+                    dMinValue, dMaxValue));
     }
 }

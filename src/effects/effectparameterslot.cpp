@@ -73,9 +73,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
             //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
-            m_pControlValue->setRange(dMinimum, dMaximum, false);
             EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
-            m_pControlValue->setType(type);
+            m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
             // TODO(rryan) expose this from EffectParameter
