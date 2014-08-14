@@ -11,6 +11,7 @@
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "widget/wbasewidget.h"
+#include "widget/wcoverartmenu.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
@@ -29,7 +30,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);
-    void slotShowFullSize();
 
   protected:
     void paintEvent(QPaintEvent*);
@@ -49,7 +49,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bCoverIsVisible;
     bool m_bDefaultCover;
 
-    QMenu* m_pMenu;
+    WCoverArtMenu* m_pMenu;
 
     QString m_sCoverTitle;
     QPixmap m_currentCover;

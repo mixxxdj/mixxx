@@ -19,6 +19,7 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
           m_bDefaultCover(true),
+          m_pMenu(new WCoverArtMenu(this)),
           m_lastRequestedTrackId(-1) {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
@@ -36,34 +37,10 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
-
-    // change cover art location
-    QAction* changeCover = new QAction(
-            QIcon(":/images/library/ic_cover_change.png"),
-            tr("&Change"), this);
-    // unset cover art - load default
-    QAction* unsetCover = new QAction(
-            QIcon(":/images/library/ic_cover_unset.png"),
-            tr("&Unset"), this);
-    // reload just cover art using the search algorithm (in CoverArtCache)
-    QAction* reloadCover = new QAction(
-            QIcon(":/images/library/ic_cover_reload.png"),
-            tr("&Reload"), this);
-    // show full size cover in a new window
-    QAction* fullSize = new QAction(
-            QIcon(":/images/library/ic_cover_fullsize.png"),
-            tr("&Show Full Size"), this);
-    connect(fullSize, SIGNAL(triggered()),
-            this, SLOT(slotShowFullSize()));
-
-    m_pMenu = new QMenu(this);
-    m_pMenu->addAction(changeCover);
-    m_pMenu->addAction(unsetCover);
-    m_pMenu->addAction(reloadCover);
-    m_pMenu->addAction(fullSize);
 }
 
 WCoverArt::~WCoverArt() {
+    delete m_pMenu;
 }
 
 void WCoverArt::setup(QDomNode node, const SkinContext& context) {
@@ -100,10 +77,6 @@ void WCoverArt::setToDefault() {
     m_sCoverTitle = "Cover Art";
     m_bDefaultCover = true;
     update();
-}
-
-void WCoverArt::slotShowFullSize() {
-    DlgCoverArtFullSize::instance()->init(m_currentCover, m_sCoverTitle);
 }
 
 void WCoverArt::slotResetWidget() {
@@ -222,6 +195,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         m_bCoverIsVisible = false;
         resize(sizeHint());
     } else { // show context-menu
+        m_pMenu->updateData(m_lastRequestedTrackId,
+                            m_lastRequestedCoverLocation,
+                            m_lastRequestedMd5Hash);
         m_pMenu->exec(event->globalPos());
     }
 }
