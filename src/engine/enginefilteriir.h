@@ -5,7 +5,7 @@
 
 #include "engine/engineobject.h"
 #define MIXXX
-#include "fidlib.h"
+#include <fidlib.h>
 
 enum IIRPass {
     IIR_LP,
