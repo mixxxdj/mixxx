@@ -1,7 +1,10 @@
+#include <QFileDialog>
 #include <QIcon>
+#include <QStringBuilder>
 
 #include "dlgcoverartfullsize.h"
 #include "wcoverartmenu.h"
+#include "library/coverartcache.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent),
@@ -63,7 +66,75 @@ void WCoverArtMenu::updateData(QString coverLocation, QString md5,
 }
 
 void WCoverArtMenu::slotChange() {
-    // TODO
+    if (m_iTrackId < 1) {
+        return;
+    }
+
+    if (!m_pTrack) {
+        m_pTrack = CoverArtCache::instance()->getTrack(m_iTrackId);
+        if (!m_pTrack) {
+            return;
+        }
+    }
+
+    // get initial directory (trackdir or coverdir)
+    QString initialDir;
+    QString trackPath = m_pTrack->getDirectory();
+    if (m_sCoverLocation.isEmpty() ||
+        m_sCoverLocation == CoverArtCache::instance()
+                                ->getDefaultCoverLocation()) {
+        initialDir = trackPath;
+    } else {
+        initialDir = m_sCoverLocation;
+    }
+
+    // open file dialog
+    QString selectedCover = QFileDialog::getOpenFileName(
+                this, tr("Change Cover Art"), initialDir,
+                tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
+
+    if (selectedCover.isEmpty()) {
+        return;
+    }
+
+    // if the cover comes from an external dir,
+    // we copy it to the track directory.
+    QString newCover;
+    QFileInfo coverInfo(selectedCover);
+    QString coverPath = coverInfo.absolutePath();
+    if (trackPath != coverPath) {
+        QString ext = coverInfo.suffix();
+        QStringList filepaths;
+        filepaths << trackPath % "/cover." % ext
+                  << trackPath % "/album." % ext
+                  << trackPath % "/mixxx-cover." % ext;
+
+        foreach (QString filepath, filepaths) {
+            if (QFile::copy(selectedCover, filepath)) {
+                newCover = filepath;
+                break;
+            }
+        }
+
+        if (newCover.isEmpty()) {
+            // overwrites "mixxx-cover"
+            QFile::remove(filepaths.last());
+            if (QFile::copy(selectedCover, filepaths.last())) {
+                newCover = filepaths.last();
+            }
+        }
+    } else {
+        newCover = selectedCover;
+    }
+
+    bool res = CoverArtCache::instance()->changeCoverArt(m_pTrack->getId(),
+                                                         newCover);
+    if (res) {
+        m_sCoverLocation = newCover;
+    } else {
+        QMessageBox::warning(this, tr("Change Cover Art"),
+                             tr("Could not change the cover art!"));
+    }
 }
 
 void WCoverArtMenu::slotShowFullSize() {
