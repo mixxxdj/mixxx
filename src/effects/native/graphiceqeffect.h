@@ -21,11 +21,14 @@ class GraphicEQEffectGroupState {
 
     void setFilters(int sampleRate);
 
+    EngineFilterBiquad1Low* m_low;
     QList<EngineFilterBiquad1Band*> m_bands;
+    EngineFilterBiquad1High* m_high;
+    CSAMPLE* m_pBuf1;
+    CSAMPLE* m_pBuf2;
     QList<double> m_oldMid;
-    QList<CSAMPLE*> m_pBandBuf;
-
-  private:
+    double m_oldLow;
+    double m_oldHigh;
     float m_centerFrequencies[8];
 };
 
@@ -49,7 +52,9 @@ class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {
         return getId();
     }
 
+    EngineEffectParameter* m_pPotLow;
     QList<EngineEffectParameter*> m_pPotMid;
+    EngineEffectParameter* m_pPotHigh;
     int m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);
