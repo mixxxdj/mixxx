@@ -18,18 +18,22 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
                        ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
           m_pLV2Backend(lv2Backend),
-          m_iCheckedParameters(0) {
+          m_iCheckedParameters(0),
+          m_iCheckedButtonParameters(0) {
     Q_UNUSED(pConfig);
+
     setupUi(this);
+
     if (!m_pLV2Backend) {
         return;
     }
-    QList<QPair<QPair<QString, bool>, QString> > allPlugins = m_pLV2Backend->getAllDiscoveredPlugins();
 
+    QList<QPair<QPair<QString, bool>, QString> > allPlugins = m_pLV2Backend->getAllDiscoveredPlugins();
     for (int i = 0; i < allPlugins.size(); i++) {
         QPushButton* button = new QPushButton(this);
         button->setText(allPlugins[i].pluginName);
         if (!allPlugins[i].isAvailable) {
+            // Tooltip with info why is this disabled
             button->setDisabled(true);
         } else {
             button->setDisabled(false);
@@ -47,7 +51,6 @@ DlgPrefLV2::~DlgPrefLV2() {
 void DlgPrefLV2::slotDisplayParameters() {
     // Set the number of checked parameters to 0 because new parameters are
     // displayed
-    m_iCheckedParameters = 0;
 
     // Clear the right vertical layout
     foreach (QCheckBox* box, m_pluginParameters) {
@@ -64,16 +67,33 @@ void DlgPrefLV2::slotDisplayParameters() {
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString pluginId = button->property("id").toString();
     m_currentEffectId = pluginId;
+
     EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(pluginId);
-    foreach (EffectManifestParameter param, currentEffectManifest.parameters()) {
+    QList<EffectManifestParameter> parameterList = currentEffectManifest.parameters();
+    int parameterListSize = parameterList.size();
+
+    QHash<int, bool> isActive;
+    for (int i = 0; i < 8 && i < parameterListSize; i++) {
+        isActive[currentEffectManifest.getActiveParameter(i)] = true;
+    }
+
+    for (int i = 0; i < parameterListSize; i++) {
         QCheckBox* entry = new QCheckBox(this);
-        entry->setText(param.name());
+        entry->setText(parameterList[i].name());
+        if (isActive[i]) {
+            entry->setChecked(true);
+        } else {
+            entry->setChecked(false);
+            entry->setEnabled(false);
+        }
         lv2_vertical_layout_params->addWidget(entry);
         m_pluginParameters.append(entry);
         connect(entry, SIGNAL(stateChanged(int)),
                 this, SLOT(slotUpdateOnParameterCheck(int)));
     }
     lv2_vertical_layout_params->addStretch();
+
+    m_iCheckedParameters = parameterListSize < 8 ? parameterListSize : 8;
 }
 
 void DlgPrefLV2::slotApply() {
@@ -128,10 +148,6 @@ void DlgPrefLV2::slotUpdateOnParameterCheck(int state) {
 }
 
 void DlgPrefLV2::slotDisplayButtonParameters() {
-    // Set the number of checked parameters to 0 because new parameters are
-    // displayed
-    m_iCheckedButtonParameters = 0;
-
     // Clear the right vertical layout
     foreach (QCheckBox* box, m_pluginButtonParameters) {
         delete box;
@@ -147,16 +163,34 @@ void DlgPrefLV2::slotDisplayButtonParameters() {
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString pluginId = button->property("id").toString();
     m_currentEffectId = pluginId;
+
     EffectManifest& currentEffectManifest = m_pLV2Backend->getManifestReference(pluginId);
-    foreach (EffectManifestParameter param, currentEffectManifest.buttonParameters()) {
+    QList<EffectManifestParameter> buttonParameterList = currentEffectManifest.buttonParameters();
+    int buttonParameterListSize = buttonParameterList.size();
+
+    QHash<int, bool> isActive;
+    for (int i = 0; i < 8 && i < buttonParameterListSize; i++) {
+        isActive[currentEffectManifest.getActiveButtonParameter(i)] = true;
+    }
+
+    for (int i = 0; i < buttonParameterListSize; i++) {
         QCheckBox* entry = new QCheckBox(this);
-        entry->setText(param.name());
+        entry->setText(buttonParameterList[i].name());
+        if (isActive[i]) {
+            entry->setChecked(true);
+        } else {
+            entry->setChecked(false);
+            entry->setEnabled(false);
+        }
         lv2_vertical_layout_button_params->addWidget(entry);
         m_pluginButtonParameters.append(entry);
         connect(entry, SIGNAL(stateChanged(int)),
                 this, SLOT(slotUpdateOnButtonParameterCheck(int)));
     }
     lv2_vertical_layout_button_params->addStretch();
+
+    m_iCheckedButtonParameters = buttonParameterListSize < 8 ?
+            buttonParameterListSize : 8;
 }
 
 void DlgPrefLV2::slotUpdateOnButtonParameterCheck(int state) {
