@@ -552,12 +552,16 @@ qproperty-layoutAlignment: 'AlignCenter';
   padding: 2px;
 }
 
+#TextColor1, #TextColor2 {
+  color: #eece33;
+}
 
-
+#TextColor3, #TextColor4 {
+  color: #09B2AE;
+}
 
 #TitleGutter WLabel, #EffectUnitNameContainer WLabel {
   font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  color: #eece33;
   text-transform: none;
   text-align: left;
 }
