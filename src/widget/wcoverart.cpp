@@ -50,7 +50,9 @@ WCoverArt::WCoverArt(QWidget* parent,
             QIcon(":/images/library/ic_cover_reload.png"),
             tr("&Reload"), this);
     // show full size cover in a new window
-    QAction* fullSize = new QAction(tr("&Show Full Size"), this);
+    QAction* fullSize = new QAction(
+            QIcon(":/images/library/ic_cover_fullsize.png"),
+            tr("&Show Full Size"), this);
     connect(fullSize, SIGNAL(triggered()),
             this, SLOT(slotShowFullSize()));
 

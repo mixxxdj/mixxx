@@ -109,5 +109,6 @@
         <file>images/library/ic_cover_change.png</file>
         <file>images/library/ic_cover_reload.png</file>
         <file>images/library/ic_cover_unset.png</file>
+        <file>images/library/ic_cover_fullsize.png</file>
     </qresource>
 </RCC>
