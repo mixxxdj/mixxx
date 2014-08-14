@@ -13,12 +13,18 @@ class DlgCoverArtFullSize
 {
     Q_OBJECT
   public:
-    void init(QPixmap cover, QString title=tr("Cover Art"));
+    void init(QString title=tr("Cover Art"));
 
   protected:
     DlgCoverArtFullSize();
     virtual ~DlgCoverArtFullSize();
     friend class Singleton<DlgCoverArtFullSize>;
+
+  private slots:
+    void slotPixmapFound(int trackId, QPixmap pixmap);
+
+  private:
+    QPixmap m_cover;
 };
 
 #endif // DLGCOVERARTFULLSIZE_H
