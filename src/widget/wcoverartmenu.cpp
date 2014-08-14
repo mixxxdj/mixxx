@@ -143,16 +143,20 @@ void WCoverArtMenu::slotShowFullSize() {
 }
 
 void WCoverArtMenu::slotReload() {
-    // TODO
+    if (m_iTrackId < 1) {
+        return;
+    }
+    CoverArtCache::instance()->changeCoverArt(m_iTrackId);
+    CoverArtCache::instance()->requestPixmap(m_iTrackId);
 }
 
 void WCoverArtMenu::slotUnset() {
     if (m_iTrackId < 1) {
         return;
     }
-    bool res = CoverArtCache::instance()->changeCoverArt(
-                    m_iTrackId,
-                    CoverArtCache::instance()->getDefaultCoverLocation());
+    m_sCoverLocation = CoverArtCache::instance()->getDefaultCoverLocation();
+    bool res = CoverArtCache::instance()->changeCoverArt(m_iTrackId,
+                                                         m_sCoverLocation);
     if (!res) {
         QMessageBox::warning(this, tr("Unset Cover Art"),
                              tr("Could not unset the cover art!"));

@@ -14,8 +14,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
   public:
-    bool changeCoverArt(int trackId, const QString& newCoverLocation);
-
     /* This method is used to request a cover art pixmap.
      *
      * @param croppedPixmap : QSize(finalCoverWidth, finalCoverHeight)
@@ -37,6 +35,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                           const QSize& croppedPixmap = QSize(0,0),
                           const bool tryLoadAndSearch = true,
                           const bool issueRepaint = false);
+
+    bool changeCoverArt(int trackId, const QString& newCoverLocation="");
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }

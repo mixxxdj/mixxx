@@ -31,12 +31,17 @@ void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
 
 bool CoverArtCache::changeCoverArt(int trackId,
                                    const QString& newCoverLocation) {
-    if (trackId < 1 || newCoverLocation.isEmpty()) {
+    if (trackId < 1) {
         return false;
     }
 
+    if (newCoverLocation.isEmpty()) {
+        m_pTrackDAO->updateCoverArt(trackId, -1);
+        return true;
+    }
+
     QImage img = rescaleBigImage(QImage(newCoverLocation));
-    QString md5Hash = calculateMD5(img);
+    QString md5Hash = calculateMD5(img); // NULL is fine
     if (md5Hash.isEmpty()) {
         return false;
     }
@@ -217,10 +222,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 
     // check if this image is really a new one
     // (different from the one that we have in db)
-    if (coverInfo.md5Hash == res.md5Hash)
-    {
-        res.newImgFound = false;
-    }
+    res.newImgFound = coverInfo.md5Hash != res.md5Hash;
 
     return res;
 }
