@@ -721,6 +721,7 @@ class MixxxCore(Feature):
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
                    "widget/wcoverart.cpp",
+                   "widget/wcoverartmenu.cpp",
 
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",
