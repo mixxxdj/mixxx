@@ -74,7 +74,6 @@ void WCoverArt::slotEnableWidget(bool enable) {
 }
 
 void WCoverArt::setToDefault() {
-    m_sCoverTitle = "Cover Art";
     m_bDefaultCover = true;
     update();
 }
@@ -100,8 +99,6 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
             setToDefault();
             return;
         }
-        m_sCoverTitle = QFileInfo(m_lastRequestedCoverLocation).baseName();
-        m_currentCover = pixmap;
         m_currentScaledCover = scaledCoverArt(pixmap);
         m_bDefaultCover = false;
         update();

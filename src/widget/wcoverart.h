@@ -3,7 +3,6 @@
 
 #include <QColor>
 #include <QDomNode>
-#include <QMenu>
 #include <QMouseEvent>
 #include <QWidget>
 
@@ -51,8 +50,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
     WCoverArtMenu* m_pMenu;
 
-    QString m_sCoverTitle;
-    QPixmap m_currentCover;
     QPixmap m_currentScaledCover;
 
     QPixmap m_iconHide;
