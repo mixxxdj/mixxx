@@ -71,7 +71,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidthF(1.5);
+    beatPen.setWidthF(1);
     painter->setPen(beatPen);
 
     const float rendererHeight = m_waveformRenderer->getHeight();
@@ -81,6 +81,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     while (it->hasNext()) {
         int beatPosition = it->next();
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
+        
+        xBeatPoint = qRound(xBeatPoint);
         
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
