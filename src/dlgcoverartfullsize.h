@@ -13,7 +13,7 @@ class DlgCoverArtFullSize
 {
     Q_OBJECT
   public:
-    void init(QString title=tr("Cover Art"));
+    void init();
 
   protected:
     DlgCoverArtFullSize();
