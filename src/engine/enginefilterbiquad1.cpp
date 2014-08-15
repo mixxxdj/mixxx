@@ -44,3 +44,42 @@ void EngineFilterBiquad1HighShelving::setFrequencyCorners(int sampleRate,
                             QLocale().toString(dBgain);
     setCoefs(qPrintable(specification), sampleRate, centerFreq);
 }
+
+EngineFilterBiquad1Low::EngineFilterBiquad1Low(int sampleRate,
+                                               double centerFreq,
+                                               double Q) {
+    setFrequencyCorners(sampleRate, centerFreq, Q);
+}
+
+void EngineFilterBiquad1Low::setFrequencyCorners(int sampleRate,
+                                                 double centerFreq,
+                                                 double Q) {
+    QString specification = "LpBq/" + QLocale().toString(Q);
+    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+}
+
+EngineFilterBiquad1Band::EngineFilterBiquad1Band(int sampleRate,
+                                                 double centerFreq,
+                                                 double Q) {
+    setFrequencyCorners(sampleRate, centerFreq, Q);
+}
+
+void EngineFilterBiquad1Band::setFrequencyCorners(int sampleRate,
+                                                  double centerFreq,
+                                                  double Q) {
+    QString specification = "BpBq/" + QLocale().toString(Q);
+    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+}
+
+EngineFilterBiquad1High::EngineFilterBiquad1High(int sampleRate,
+                                                 double centerFreq,
+                                                 double Q) {
+    setFrequencyCorners(sampleRate, centerFreq, Q);
+}
+
+void EngineFilterBiquad1High::setFrequencyCorners(int sampleRate,
+                                                  double centerFreq,
+                                                  double Q) {
+    QString specification = "HpBq/" + QLocale().toString(Q);
+    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+}
