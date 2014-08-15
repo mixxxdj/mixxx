@@ -9,6 +9,9 @@ class EngineFilterBiquad1LowShelving : public EngineFilterIIR<5, IIR_BP> {
     EngineFilterBiquad1LowShelving(int sampleRate, double centerFreq, double Q);
     void setFrequencyCorners(int sampleRate, double centerFreq,
                              double Q, double dBgain);
+
+  private:
+    char m_spec[32];
 };
 
 class EngineFilterBiquad1Peaking : public EngineFilterIIR<5, IIR_BP> {
@@ -17,6 +20,9 @@ class EngineFilterBiquad1Peaking : public EngineFilterIIR<5, IIR_BP> {
     EngineFilterBiquad1Peaking(int sampleRate, double centerFreq, double Q);
     void setFrequencyCorners(int sampleRate, double centerFreq,
                              double Q, double dBgain);
+
+  private:
+    char m_spec[32];
 };
 
 class EngineFilterBiquad1HighShelving : public EngineFilterIIR<5, IIR_BP> {
@@ -25,6 +31,9 @@ class EngineFilterBiquad1HighShelving : public EngineFilterIIR<5, IIR_BP> {
     EngineFilterBiquad1HighShelving(int sampleRate, double centerFreq, double Q);
     void setFrequencyCorners(int sampleRate, double centerFreq,
                              double Q, double dBgain);
+
+  private:
+    char m_spec[32];
 };
 
 class EngineFilterBiquad1Low : public EngineFilterIIR<2, IIR_LP> {
@@ -32,6 +41,9 @@ class EngineFilterBiquad1Low : public EngineFilterIIR<2, IIR_LP> {
   public:
     EngineFilterBiquad1Low(int sampleRate, double centerFreq, double Q);
     void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
+
+  private:
+    char m_spec[32];
 };
 
 class EngineFilterBiquad1Band : public EngineFilterIIR<2, IIR_BP> {
@@ -39,6 +51,9 @@ class EngineFilterBiquad1Band : public EngineFilterIIR<2, IIR_BP> {
   public:
     EngineFilterBiquad1Band(int sampleRate, double centerFreq, double Q);
     void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
+
+  private:
+    char m_spec[32];
 };
 
 class EngineFilterBiquad1High : public EngineFilterIIR<2, IIR_HP> {
@@ -46,6 +61,9 @@ class EngineFilterBiquad1High : public EngineFilterIIR<2, IIR_HP> {
   public:
     EngineFilterBiquad1High(int sampleRate, double centerFreq, double Q);
     void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
+
+  private:
+    char m_spec[32];
 };
 
 #endif // ENGINEFILTERBIQUAD1_H

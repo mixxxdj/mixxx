@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <QLocale>
 #include "engine/enginefilterbiquad1.h"
 
@@ -11,9 +12,8 @@ void EngineFilterBiquad1LowShelving::setFrequencyCorners(int sampleRate,
                                                          double centerFreq,
                                                          double Q,
                                                          double dBgain) {
-    QString specification = "LsBq/" + QLocale().toString(Q) + "/" +
-                            QLocale().toString(dBgain);
-    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+    snprintf(m_spec, sizeof(m_spec), "LsBq/%.10f/%.10f", Q, dBgain);
+    setCoefs(m_spec, sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1Peaking::EngineFilterBiquad1Peaking(int sampleRate,
@@ -25,9 +25,8 @@ void EngineFilterBiquad1Peaking::setFrequencyCorners(int sampleRate,
                                                      double centerFreq,
                                                      double Q,
                                                      double dBgain) {
-    QString specification = "PkBq/" + QLocale().toString(Q) + "/" +
-                            QLocale().toString(dBgain);
-    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+    snprintf(m_spec, sizeof(m_spec), "PkBq/%.10f/%.10f", Q, dBgain);
+    setCoefs(m_spec, sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1HighShelving::EngineFilterBiquad1HighShelving(int sampleRate,
@@ -40,9 +39,8 @@ void EngineFilterBiquad1HighShelving::setFrequencyCorners(int sampleRate,
                                                           double centerFreq,
                                                           double Q,
                                                           double dBgain) {
-    QString specification = "HsBq/" + QLocale().toString(Q) + "/" +
-                            QLocale().toString(dBgain);
-    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+    snprintf(m_spec, sizeof(m_spec), "HsBq/%.10f/%.10f", Q, dBgain);
+    setCoefs(m_spec, sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1Low::EngineFilterBiquad1Low(int sampleRate,
@@ -54,8 +52,8 @@ EngineFilterBiquad1Low::EngineFilterBiquad1Low(int sampleRate,
 void EngineFilterBiquad1Low::setFrequencyCorners(int sampleRate,
                                                  double centerFreq,
                                                  double Q) {
-    QString specification = "LpBq/" + QLocale().toString(Q);
-    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+    snprintf(m_spec, sizeof(m_spec), "LpBq/%.10f", Q);
+    setCoefs(m_spec, sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1Band::EngineFilterBiquad1Band(int sampleRate,
@@ -67,8 +65,8 @@ EngineFilterBiquad1Band::EngineFilterBiquad1Band(int sampleRate,
 void EngineFilterBiquad1Band::setFrequencyCorners(int sampleRate,
                                                   double centerFreq,
                                                   double Q) {
-    QString specification = "BpBq/" + QLocale().toString(Q);
-    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+    snprintf(m_spec, sizeof(m_spec), "BpBq/%.10f", Q);
+    setCoefs(m_spec, sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1High::EngineFilterBiquad1High(int sampleRate,
@@ -80,6 +78,6 @@ EngineFilterBiquad1High::EngineFilterBiquad1High(int sampleRate,
 void EngineFilterBiquad1High::setFrequencyCorners(int sampleRate,
                                                   double centerFreq,
                                                   double Q) {
-    QString specification = "HpBq/" + QLocale().toString(Q);
-    setCoefs(qPrintable(specification), sampleRate, centerFreq);
+    snprintf(m_spec, sizeof(m_spec), "HpBq/%.10f", Q);
+    setCoefs(m_spec, sampleRate, centerFreq);
 }
