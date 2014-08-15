@@ -80,6 +80,10 @@ void DlgTrackInfo::init(){
             this, SLOT(slotCoverMenu(QPoint)));
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+    connect(m_pCoverMenu,
+            SIGNAL(coverLocationUpdated(const QString&, const QString&)),
+            this,
+            SLOT(slotCoverLocationUpdated(const QString&, const QString&)));
 }
 
 void DlgTrackInfo::closeEvent(QCloseEvent*) {
@@ -191,6 +195,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack,
     pixmap = scaledCoverArt(pixmap);
     coverArt->setPixmap(pixmap);
     m_loadedCover = qMakePair(coverLocation, md5);
+    m_firstCoverLoc = coverLocation;
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -209,6 +214,13 @@ QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
     return original.scaled(100, 100,
                            Qt::KeepAspectRatio,
                            Qt::SmoothTransformation);
+}
+
+void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
+                                            const QString& oldLoc) {
+    if (isVisible() && m_loadedCover.first == oldLoc) {
+        m_loadedCover.first = newLoc;
+    }
 }
 
 void DlgTrackInfo::slotCoverMenu(const QPoint& pos) {
@@ -371,10 +383,15 @@ void DlgTrackInfo::unloadTrack(bool save) {
 
     if (save) {
         saveTrack();
+    } else if (m_firstCoverLoc != m_loadedCover.first){ // revert cover art
+        CoverArtCache::instance()->changeCoverArt(m_pLoadedTrack->getId(),
+                                                  m_firstCoverLoc);
     }
 
     clear();
     m_pLoadedTrack.clear();
+    m_loadedCover = qMakePair(QString(), QString());
+    m_firstCoverLoc.clear();
 }
 
 void DlgTrackInfo::clear() {

@@ -16,6 +16,10 @@ class WCoverArtMenu : public QMenu {
     void updateData(QPair<QString, QString> cover, int trackId,
                     TrackPointer pTrack=TrackPointer());
 
+  signals:
+    void coverLocationUpdated(const QString& newLocation,
+                              const QString& oldLocation);
+
   private slots:
     void slotChange();
     void slotShowFullSize();

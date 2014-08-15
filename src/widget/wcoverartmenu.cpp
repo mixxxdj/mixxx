@@ -129,12 +129,14 @@ void WCoverArtMenu::slotChange() {
 
     bool res = CoverArtCache::instance()->changeCoverArt(m_pTrack->getId(),
                                                          newCover);
-    if (res) {
-        m_sCoverLocation = newCover;
-    } else {
+    if (!res) {
         QMessageBox::warning(this, tr("Change Cover Art"),
                              tr("Could not change the cover art!"));
+        return;
     }
+
+    emit(coverLocationUpdated(newCover, m_sCoverLocation));
+    m_sCoverLocation = newCover;
 }
 
 void WCoverArtMenu::slotShowFullSize() {
@@ -153,11 +155,12 @@ void WCoverArtMenu::slotUnset() {
     if (m_iTrackId < 1) {
         return;
     }
-    m_sCoverLocation = CoverArtCache::instance()->getDefaultCoverLocation();
-    bool res = CoverArtCache::instance()->changeCoverArt(m_iTrackId,
-                                                         m_sCoverLocation);
-    if (!res) {
+    QString newLoc = CoverArtCache::instance()->getDefaultCoverLocation();
+    if (!CoverArtCache::instance()->changeCoverArt(m_iTrackId, newLoc)) {
         QMessageBox::warning(this, tr("Unset Cover Art"),
                              tr("Could not unset the cover art!"));
+        return;
     }
+    emit(coverLocationUpdated(newLoc, m_sCoverLocation));
+    m_sCoverLocation = newLoc;
 }

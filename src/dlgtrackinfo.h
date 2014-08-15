@@ -27,7 +27,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack, QString coverLocation, QString md5);
-    void slotCoverMenu(const QPoint& pos);
 
   signals:
     void next();
@@ -58,6 +57,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotOpenInFileBrowser();
 
     void slotPixmapFound(int trackId, QPixmap pixmap);
+    void slotCoverLocationUpdated(const QString& newLoc, const QString& oldLoc);
+    void slotCoverMenu(const QPoint& pos);
 
   private:
     void populateFields(TrackPointer pTrack);
@@ -78,6 +79,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     WCoverArtMenu* m_pCoverMenu;
     QPair<QString, QString> m_loadedCover;
+
+    // Useful to handle cases when the user cancel the changes.
+    // In this case DlgTrackInfo must revert the cover
+    QString m_firstCoverLoc;
 };
 
 #endif /* DLGTRACKINFO_H */
