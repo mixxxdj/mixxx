@@ -72,12 +72,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     QMutex m_mutex;
     DlgTagFetcher& m_DlgTagFetcher;
-
-    enum reloadCoverCases {
-        LOAD,
-        CHANGE,
-        UNSET
-    };
 };
 
 #endif /* DLGTRACKINFO_H */
