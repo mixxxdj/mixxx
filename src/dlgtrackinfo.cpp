@@ -227,10 +227,10 @@ void DlgTrackInfo::slotCoverMenu(const QPoint& pos) {
     if (m_pLoadedTrack == NULL) {
         return;
     }
-    m_pCoverMenu->updateData(m_loadedCover,
-                             m_pLoadedTrack->getId(),
-                             m_pLoadedTrack);
-    m_pCoverMenu->exec(coverArt->mapToGlobal(pos));
+    m_pCoverMenu->show(coverArt->mapToGlobal(pos),
+                       m_loadedCover,
+                       m_pLoadedTrack->getId(),
+                       m_pLoadedTrack);
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {

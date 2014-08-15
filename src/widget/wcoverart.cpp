@@ -182,8 +182,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         m_bCoverIsVisible = false;
         resize(sizeHint());
     } else if (event->button() == Qt::RightButton) { // show context-menu
-        m_pMenu->updateData(m_lastRequestedCover, m_lastRequestedTrackId);
-        m_pMenu->exec(event->globalPos());
+        m_pMenu->show(event->globalPos(),
+                      m_lastRequestedCover,
+                      m_lastRequestedTrackId);
     }
 }
 

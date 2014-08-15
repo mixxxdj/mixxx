@@ -57,12 +57,18 @@ void WCoverArtMenu::addActions() {
     addAction(m_pFullSize);
 }
 
-void WCoverArtMenu::updateData(QPair<QString, QString> cover,
-                               int trackId, TrackPointer pTrack) {
+void WCoverArtMenu::show(QPoint pos, QPair<QString, QString> cover,
+                         int trackId, TrackPointer pTrack) {
     m_iTrackId = trackId;
     m_sCoverLocation = cover.first;
     m_sMd5 = cover.second;
     m_pTrack = pTrack;
+
+    if (trackId < 1) {
+        return;
+    }
+
+    popup(pos);
 }
 
 void WCoverArtMenu::slotChange() {

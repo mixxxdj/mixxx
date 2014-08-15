@@ -10,11 +10,14 @@
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
+    // This class implements a context-menu with all CoverArt actions.
+    // Callers MUST use the method show(...) to open the menu.
+    // do NOT use exec() or popup()
     WCoverArtMenu(QWidget *parent = 0);
     virtual ~WCoverArtMenu();
 
-    void updateData(QPair<QString, QString> cover, int trackId,
-                    TrackPointer pTrack=TrackPointer());
+    void show(QPoint pos, QPair<QString, QString> cover,
+              int trackId, TrackPointer pTrack=TrackPointer());
 
   signals:
     void coverLocationUpdated(const QString& newLocation,
