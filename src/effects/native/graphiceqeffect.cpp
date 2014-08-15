@@ -92,16 +92,17 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
 
     // TODO(rryan): use the real samplerate
     // Initialize the filters with default parameters
-    m_low = new EngineFilterBiquad1Low(44100, m_centerFrequencies[0], Q);
-    m_high = new EngineFilterBiquad1High(44100, m_centerFrequencies[7], Q);
+    m_low = new EngineFilterBiquad1LowShelving(44100, m_centerFrequencies[0], Q);
+    m_high = new EngineFilterBiquad1HighShelving(44100, m_centerFrequencies[7], Q);
     for (int i = 1; i < 7; i++) {
-        m_bands.append(new EngineFilterBiquad1Band(44100,
-                                                   m_centerFrequencies[i], Q));
+        m_bands.append(new EngineFilterBiquad1Peaking(44100,
+                                                      m_centerFrequencies[i],
+                                                      Q));
     }
 }
 
 GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
-    foreach (EngineFilterBiquad1Band* filter, m_bands) {
+    foreach (EngineFilterBiquad1Peaking* filter, m_bands) {
         delete filter;
     }
     SampleUtil::free(m_pBuf1);
@@ -161,16 +162,19 @@ void GraphicEQEffect::processGroup(const QString& group,
 
 
     if (fLow != pState->m_oldLow) {
-        pState->m_low->setFrequencyCorners(sampleRate, pState->m_centerFrequencies[0], Q,
+        pState->m_low->setFrequencyCorners(sampleRate,
+                                           pState->m_centerFrequencies[0], Q,
                                            fLow);
     }
     if (fHigh != pState->m_oldHigh) {
-        pState->m_high->setFrequencyCorners(sampleRate, pState->m_centerFrequencies[7], Q,
+        pState->m_high->setFrequencyCorners(sampleRate,
+                                            pState->m_centerFrequencies[7], Q,
                                             fHigh);
     }
     for (int i = 0; i < 6; i++) {
         if (fMid[i] != pState->m_oldMid[i]) {
-            pState->m_bands[i]->setFrequencyCorners(sampleRate, pState->m_centerFrequencies[i + 1],
+            pState->m_bands[i]->setFrequencyCorners(sampleRate,
+                                                    pState->m_centerFrequencies[i + 1],
                                                     Q, fMid[i]);
         }
     }
@@ -189,5 +193,4 @@ void GraphicEQEffect::processGroup(const QString& group,
     for (int i = 0; i < 6; i++) {
         pState->m_oldMid[i] = fMid[i];
     }
-
 }
