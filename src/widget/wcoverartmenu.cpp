@@ -68,6 +68,13 @@ void WCoverArtMenu::show(QPoint pos, QPair<QString, QString> cover,
         return;
     }
 
+    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
+    if (cover.first == defaultLoc || cover.second.isEmpty()) {
+        m_pFullSize->setEnabled(false);
+    } else {
+        m_pFullSize->setEnabled(true);
+    }
+
     popup(pos);
 }
 
