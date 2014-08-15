@@ -181,7 +181,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
             && lastPoint.y() < (height() / 5) + 5) { // hide widget
         m_bCoverIsVisible = false;
         resize(sizeHint());
-    } else { // show context-menu
+    } else if (event->button() == Qt::RightButton) { // show context-menu
         m_pMenu->updateData(m_lastRequestedCover, m_lastRequestedTrackId);
         m_pMenu->exec(event->globalPos());
     }
