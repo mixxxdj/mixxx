@@ -158,44 +158,45 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 }
 
-void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
+void DlgTrackInfo::loadTrack(TrackPointer pTrack,
+                             QString coverLocation,
+                             QString md5) {
     m_pLoadedTrack = pTrack;
     clear();
 
-    if (m_pLoadedTrack == NULL)
+    if (m_pLoadedTrack == NULL) {
         return;
+    }
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
 
-    // Load Default Cover Art
-    coverArt->setPixmap(scaledCoverArt(CoverArtCache::instance()->getDefaultCoverArt()));
-    m_sLoadedCoverLocation.clear();
-}
-
-QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
-     return original.scaled(100, 100,
-                            Qt::KeepAspectRatio,
-                            Qt::SmoothTransformation);
+    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(pTrack->getId(),
+                                                              coverLocation,
+                                                              md5);
+    if (pixmap.isNull()) { // use default cover art
+        pixmap = CoverArtCache::instance()->getDefaultCoverArt();
+    }
+    pixmap = scaledCoverArt(pixmap);
+    coverArt->setPixmap(pixmap);
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
-    if (m_pLoadedTrack == NULL)
+    if (m_pLoadedTrack == NULL) {
         return;
+    }
 
     if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setPixmap(scaledCoverArt(pixmap));
+        pixmap = scaledCoverArt(pixmap);
+        coverArt->setPixmap(pixmap);
         update();
     }
 }
 
-void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
-                                    const QString& md5Hash,
-                                    int trackId) {
-    m_sLoadedCoverLocation = coverLocation;
-    CoverArtCache::instance()->requestPixmap(trackId,
-                                             m_sLoadedCoverLocation,
-                                             md5Hash);
+QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
+    return original.scaled(100, 100,
+                           Qt::KeepAspectRatio,
+                           Qt::SmoothTransformation);
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {

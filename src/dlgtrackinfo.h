@@ -25,10 +25,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
-    void loadTrack(TrackPointer pTrack);
-    void slotLoadCoverArt(const QString& coverLocation,
-                          const QString& md5Hash,
-                          int trackId);
+    void loadTrack(TrackPointer pTrack, QString coverLocation, QString md5);
 
   signals:
     void next();
