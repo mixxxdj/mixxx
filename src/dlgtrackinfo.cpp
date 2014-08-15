@@ -32,6 +32,7 @@ void DlgTrackInfo::init(){
     setupUi(this);
 
     cueTable->hideColumn(0);
+    txtLocation->viewport()->setAutoFillBackground(false);
 
     connect(btnNext, SIGNAL(clicked()),
             this, SLOT(slotNext()));
@@ -142,7 +143,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
-    txtLocation->setText(pTrack->getLocation());
+    txtLocation->setPlainText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
@@ -371,7 +372,7 @@ void DlgTrackInfo::clear() {
 
     txtDuration->setText("");
     txtType->setText("");
-    txtLocation->setText("");
+    txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
 
