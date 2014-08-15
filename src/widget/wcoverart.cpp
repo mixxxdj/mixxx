@@ -73,18 +73,14 @@ void WCoverArt::slotEnableWidget(bool enable) {
     update();
 }
 
-void WCoverArt::setToDefault() {
-    m_bDefaultCover = true;
-    update();
-}
-
 void WCoverArt::slotResetWidget() {
     m_lastRequestedTrackId = -1;
     m_lastRequestedCover = qMakePair(QString(), QString());
     m_bCoverIsVisible = false;
     m_bCoverIsHovered = false;
+    m_bDefaultCover = true;
     setMinimumSize(0, 20);
-    setToDefault();
+    update();
 }
 
 void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -95,7 +91,8 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     if (m_lastRequestedTrackId == trackId) {
         if (m_lastRequestedCover.first == CoverArtCache::instance()
                                             ->getDefaultCoverLocation()) {
-            setToDefault();
+            m_bDefaultCover = true;
+            update();
             return;
         }
         m_currentScaledCover = scaledCoverArt(pixmap);
@@ -116,7 +113,8 @@ void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
     if (!m_bCoverIsVisible) {
         return;
     }
-    setToDefault();
+    m_bDefaultCover = true;
+    update();
     CoverArtCache::instance()->requestPixmap(trackId,
                                              coverLocation,
                                              md5Hash);
@@ -168,8 +166,9 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
                          m_lastRequestedCover.second,
                          m_lastRequestedTrackId);
      } else {
+        m_bDefaultCover = true;
         setMinimumSize(0, 20);
-        setToDefault();
+        update();
         DlgCoverArtFullSize::instance()->close();
     }
 }
