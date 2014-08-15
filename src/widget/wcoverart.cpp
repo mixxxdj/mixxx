@@ -80,7 +80,7 @@ void WCoverArt::setToDefault() {
 
 void WCoverArt::slotResetWidget() {
     m_lastRequestedTrackId = -1;
-    m_lastRequestedCover = qMakePair("","");
+    m_lastRequestedCover = qMakePair(QString(), QString());
     m_bCoverIsVisible = false;
     m_bCoverIsHovered = false;
     setMinimumSize(0, 20);
