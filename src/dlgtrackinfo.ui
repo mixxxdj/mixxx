@@ -392,36 +392,33 @@
           </widget>
          </item>
          <item row="0" column="2" rowspan="4" colspan="2">
-          <widget class="QPushButton" name="coverArt">
+          <widget class="QLabel" name="coverArt">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>110</horstretch>
-             <verstretch>110</verstretch>
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
-             <width>110</width>
-             <height>110</height>
+             <width>100</width>
+             <height>100</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>110</width>
-             <height>120</height>
+             <width>100</width>
+             <height>100</height>
             </size>
+           </property>
+           <property name="lineWidth">
+            <number>0</number>
            </property>
            <property name="text">
             <string/>
            </property>
-           <property name="iconSize">
-            <size>
-             <width>110</width>
-             <height>110</height>
-            </size>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>

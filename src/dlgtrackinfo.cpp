@@ -169,12 +169,12 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     populateCues(m_pLoadedTrack);
 
     // Load Default Cover Art
-    coverArt->setIcon(scaledCoverArt(CoverArtCache::instance()->getDefaultCoverArt()));
+    coverArt->setPixmap(scaledCoverArt(CoverArtCache::instance()->getDefaultCoverArt()));
     m_sLoadedCoverLocation.clear();
 }
 
 QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
-     return original.scaled(110, 110,
+     return original.scaled(100, 100,
                             Qt::KeepAspectRatio,
                             Qt::SmoothTransformation);
 }
@@ -184,7 +184,7 @@ void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
         return;
 
     if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setIcon(scaledCoverArt(pixmap));
+        coverArt->setPixmap(scaledCoverArt(pixmap));
         update();
     }
 }
