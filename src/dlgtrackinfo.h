@@ -33,6 +33,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void next();
     void previous();
 
+  protected:
+    void closeEvent(QCloseEvent*);
+
   private slots:
     void slotNext();
     void slotPrev();

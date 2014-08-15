@@ -4,6 +4,7 @@
 #include <QDesktopServices>
 #include <QtDebug>
 
+#include "dlgcoverartfullsize.h"
 #include "dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
@@ -79,6 +80,10 @@ void DlgTrackInfo::init(){
             this, SLOT(slotCoverMenu(QPoint)));
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+}
+
+void DlgTrackInfo::closeEvent(QCloseEvent*) {
+    DlgCoverArtFullSize::instance()->close();
 }
 
 void DlgTrackInfo::OK() {
