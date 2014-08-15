@@ -71,8 +71,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
 
-    QMutex m_mutex;
     DlgTagFetcher& m_DlgTagFetcher;
+
     WCoverArtMenu* m_pCoverMenu;
     QPair<QString, QString> m_loadedCover;
 };
