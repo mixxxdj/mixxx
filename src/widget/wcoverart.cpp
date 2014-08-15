@@ -18,8 +18,8 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnableWidget(true),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
-          m_bDefaultCover(true),
           m_pMenu(new WCoverArtMenu(this)),
+          m_loadedCover(CoverArtCache::instance()->getDefaultCoverArt()),
           m_lastRequestedTrackId(-1) {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
@@ -78,7 +78,8 @@ void WCoverArt::slotResetWidget() {
     m_lastRequestedCover = qMakePair(QString(), QString());
     m_bCoverIsVisible = false;
     m_bCoverIsHovered = false;
-    m_bDefaultCover = true;
+    m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
+    m_loadedCover = scaledCoverArt(m_loadedCover);
     setMinimumSize(0, 20);
     update();
 }
@@ -87,16 +88,8 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     if (!m_bEnableWidget) {
         return;
     }
-
     if (m_lastRequestedTrackId == trackId) {
-        if (m_lastRequestedCover.first == CoverArtCache::instance()
-                                            ->getDefaultCoverLocation()) {
-            m_bDefaultCover = true;
-            update();
-            return;
-        }
-        m_currentScaledCover = scaledCoverArt(pixmap);
-        m_bDefaultCover = false;
+        m_loadedCover = scaledCoverArt(pixmap);
         update();
     }
 }
@@ -110,14 +103,19 @@ void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
 
     m_lastRequestedTrackId = trackId;
     m_lastRequestedCover = qMakePair(coverLocation, md5Hash);
+
     if (!m_bCoverIsVisible) {
         return;
     }
-    m_bDefaultCover = true;
+
+    m_loadedCover = CoverArtCache::instance()->requestPixmap(trackId,
+                                                             coverLocation,
+                                                             md5Hash);
+    if (m_loadedCover.isNull()) {
+        m_loadedCover = CoverArtCache::instance()->getDefaultCoverLocation();
+    }
+    m_loadedCover = scaledCoverArt(m_loadedCover);
     update();
-    CoverArtCache::instance()->requestPixmap(trackId,
-                                             coverLocation,
-                                             md5Hash);
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
@@ -138,12 +136,7 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     if (m_bCoverIsVisible) {
         int x = width() / 2 - height() / 2 + 4;
         int y = 6;
-        if (m_bDefaultCover) {
-            painter.drawPixmap(x, y,
-                              CoverArtCache::instance()->getDefaultCoverArt());
-        } else {
-            painter.drawPixmap(x, y, m_currentScaledCover);
-        }
+        painter.drawPixmap(x, y, m_loadedCover);
     } else {
         painter.drawPixmap(1, 2 ,m_iconShow);
         painter.drawText(25, 15, tr("Show Cover Art"));
@@ -166,9 +159,8 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
                          m_lastRequestedCover.second,
                          m_lastRequestedTrackId);
      } else {
-        m_bDefaultCover = true;
+        m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
         setMinimumSize(0, 20);
-        update();
         DlgCoverArtFullSize::instance()->close();
     }
 }

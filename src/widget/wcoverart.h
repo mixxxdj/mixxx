@@ -45,11 +45,10 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bEnableWidget;
     bool m_bCoverIsHovered;
     bool m_bCoverIsVisible;
-    bool m_bDefaultCover;
 
     WCoverArtMenu* m_pMenu;
 
-    QPixmap m_currentScaledCover;
+    QPixmap m_loadedCover;
 
     QPixmap m_iconHide;
     QPixmap m_iconShow;
