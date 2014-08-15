@@ -136,6 +136,20 @@ class EngineFilterIIR : public EngineObjectConstIn {
 };
 
 template<>
+inline double EngineFilterIIR<2, IIR_LP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
+    register double tmp, fir, iir;
+    tmp = buf[0]; buf[0] = buf[1];
+    iir = val * coef[0];
+    iir -= coef[1] * tmp; fir = tmp;
+    iir -= coef[2] * buf[0]; fir += buf[0] + buf[0];
+    fir += iir;
+    buf[1] = iir; val = fir;
+    return val;
+}
+
+template<>
 inline double EngineFilterIIR<2, IIR_BP>::processSample(double* coef,
                                                         double* buf,
                                                         register double val) {
@@ -144,6 +158,20 @@ inline double EngineFilterIIR<2, IIR_BP>::processSample(double* coef,
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = -tmp;
     iir -= coef[2] * buf[0];
+    fir += iir;
+    buf[1] = iir; val = fir;
+    return val;
+}
+
+template<>
+inline double EngineFilterIIR<2, IIR_HP>::processSample(double* coef,
+                                                        double* buf,
+                                                        register double val) {
+    register double tmp, fir, iir;
+    tmp = buf[0]; buf[0] = buf[1];
+    iir = val * coef[0];
+    iir -= coef[1] * tmp; fir = tmp;
+    iir -= coef[2] * buf[0]; fir += -buf[0] - buf[0];
     fir += iir;
     buf[1] = iir; val = fir;
     return val;
@@ -329,6 +357,7 @@ inline double EngineFilterIIR<8, IIR_HP>::processSample(double* coef,
     return val;
 }
 
+// IIR_LP and IIR_HP use the same processSample routine
 template<>
 inline double EngineFilterIIR<5, IIR_BP>::processSample(double* coef,
                                                         double* buf,
