@@ -48,7 +48,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     }
 
     void setCoefs(const char* spec, double sampleRate,
-            double freq0, double freq1 = 0, int adj = 0) {
+                  double freq0, double freq1 = 0, int adj = 0) {
         // Copy the old coefficients into m_oldCoef
         memcpy(m_oldCoef, m_coef, sizeof(m_coef));
         m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
@@ -57,7 +57,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                                     const int iBufferSize) {
+                         const int iBufferSize) {
         if (!m_isPaused) {
             m_isPaused = false;
         }
