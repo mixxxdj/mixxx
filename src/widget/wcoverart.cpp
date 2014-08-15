@@ -80,8 +80,7 @@ void WCoverArt::setToDefault() {
 
 void WCoverArt::slotResetWidget() {
     m_lastRequestedTrackId = -1;
-    m_lastRequestedCoverLocation.clear();
-    m_lastRequestedMd5Hash.clear();
+    m_lastRequestedCover = qMakePair("","");
     m_bCoverIsVisible = false;
     m_bCoverIsHovered = false;
     setMinimumSize(0, 20);
@@ -94,7 +93,7 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     }
 
     if (m_lastRequestedTrackId == trackId) {
-        if (m_lastRequestedCoverLocation == CoverArtCache::instance()
+        if (m_lastRequestedCover.first == CoverArtCache::instance()
                                             ->getDefaultCoverLocation()) {
             setToDefault();
             return;
@@ -113,8 +112,7 @@ void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
     }
 
     m_lastRequestedTrackId = trackId;
-    m_lastRequestedCoverLocation = coverLocation;
-    m_lastRequestedMd5Hash = md5Hash;
+    m_lastRequestedCover = qMakePair(coverLocation, md5Hash);
     if (!m_bCoverIsVisible) {
         return;
     }
@@ -166,8 +164,8 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
 
     if (m_bCoverIsVisible) {
         setMinimumSize(0, parentWidget()->height() / 3);
-        slotLoadCoverArt(m_lastRequestedCoverLocation,
-                         m_lastRequestedMd5Hash,
+        slotLoadCoverArt(m_lastRequestedCover.first,
+                         m_lastRequestedCover.second,
                          m_lastRequestedTrackId);
      } else {
         setMinimumSize(0, 20);
@@ -193,9 +191,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         m_bCoverIsVisible = false;
         resize(sizeHint());
     } else { // show context-menu
-        m_pMenu->updateData(m_lastRequestedCoverLocation,
-                            m_lastRequestedMd5Hash,
-                            m_lastRequestedTrackId);
+        m_pMenu->updateData(m_lastRequestedCover, m_lastRequestedTrackId);
         m_pMenu->exec(event->globalPos());
     }
 }

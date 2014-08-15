@@ -13,8 +13,8 @@ class WCoverArtMenu : public QMenu {
     WCoverArtMenu(QWidget *parent = 0);
     virtual ~WCoverArtMenu();
 
-    void updateData(QString coverLocation, QString md5,
-                    int trackId, TrackPointer pTrack=TrackPointer());
+    void updateData(QPair<QString, QString> cover, int trackId,
+                    TrackPointer pTrack=TrackPointer());
 
   private slots:
     void slotChange();

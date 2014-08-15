@@ -210,8 +210,9 @@ void DlgTrackInfo::slotCoverMenu(const QPoint& pos) {
     if (m_pLoadedTrack == NULL) {
         return;
     }
-    m_pCoverMenu->updateData(m_loadedCover.first, m_loadedCover.second,
-                             m_pLoadedTrack->getId(), m_pLoadedTrack);
+    m_pCoverMenu->updateData(m_loadedCover,
+                             m_pLoadedTrack->getId(),
+                             m_pLoadedTrack);
     m_pCoverMenu->exec(coverArt->mapToGlobal(pos));
 }
 

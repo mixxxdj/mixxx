@@ -56,8 +56,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_iconShow;
 
     int m_lastRequestedTrackId;
-    QString m_lastRequestedCoverLocation;
-    QString m_lastRequestedMd5Hash;
+    QPair<QString, QString> m_lastRequestedCover;
 };
 
 #endif // WCOVERART_H
