@@ -5,9 +5,9 @@
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
+#include "trackinfoobject.h"
 #include "library/coverartcache.h"
 #include "library/dao/cue.h"
-#include "trackinfoobject.h"
 
 const int kMinBPM = 30;
 const int kMaxBPM = 240;
@@ -19,11 +19,13 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
-              m_DlgTagFetcher(DlgTagFetcher) {
+              m_DlgTagFetcher(DlgTagFetcher),
+              m_pCoverMenu(new WCoverArtMenu(this)) {
     init();
 }
 
 DlgTrackInfo::~DlgTrackInfo() {
+    delete m_pCoverMenu;
     unloadTrack(false);
     qDebug() << "~DlgTrackInfo()";
 }
@@ -72,6 +74,9 @@ void DlgTrackInfo::init(){
         m_bpmTapFilter[i] = 0.0f;
     }
 
+    coverArt->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(coverArt, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(slotCoverMenu(QPoint)));
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 }
@@ -180,6 +185,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack,
     }
     pixmap = scaledCoverArt(pixmap);
     coverArt->setPixmap(pixmap);
+    m_loadedCover = qMakePair(coverLocation, md5);
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -198,6 +204,15 @@ QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
     return original.scaled(100, 100,
                            Qt::KeepAspectRatio,
                            Qt::SmoothTransformation);
+}
+
+void DlgTrackInfo::slotCoverMenu(const QPoint& pos) {
+    if (m_pLoadedTrack == NULL) {
+        return;
+    }
+    m_pCoverMenu->updateData(m_loadedCover.first, m_loadedCover.second,
+                             m_pLoadedTrack->getId(), m_pLoadedTrack);
+    m_pCoverMenu->exec(coverArt->mapToGlobal(pos));
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {

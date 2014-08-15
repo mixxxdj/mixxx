@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
 #include "util/types.h"
+#include "widget/wcoverartmenu.h"
 
 const int kFilterLength = 5;
 
@@ -26,6 +27,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack, QString coverLocation, QString md5);
+    void slotCoverMenu(const QPoint& pos);
 
   signals:
     void next();
@@ -71,6 +73,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     QMutex m_mutex;
     DlgTagFetcher& m_DlgTagFetcher;
+    WCoverArtMenu* m_pCoverMenu;
+    QPair<QString, QString> m_loadedCover;
 };
 
 #endif /* DLGTRACKINFO_H */
