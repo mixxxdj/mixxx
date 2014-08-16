@@ -6,6 +6,12 @@
 
 class LV2Manifest {
   public:
+    enum Status {
+        AVAILABLE,
+        IO_NOT_STEREO,
+        HAS_REQUIRED_FEATURES
+    };
+
     LV2Manifest(const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
     ~LV2Manifest();
     EffectManifest getEffectManifest();
