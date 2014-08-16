@@ -19,7 +19,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     EngineFilterIIR()
             : m_doRamping(false),
               m_doStart(false),
-              m_isPaused(false) {
+              m_startFromDry(false) {
         memset(m_coef, 0, sizeof(m_coef));
         pauseFilter();
     }
@@ -27,8 +27,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     virtual ~EngineFilterIIR() {};
 
     void pauseFilter() {
-        if (!m_isPaused) {
-            m_isPaused = true;
+        if (!m_doStart) {
             // Set the current buffers to 0
             memset(m_buf1, 0, sizeof(m_buf1));
             memset(m_buf2, 0, sizeof(m_buf2));
@@ -58,9 +57,6 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
-        if (!m_isPaused) {
-            m_isPaused = false;
-        }
         if (!m_doRamping) {
             for (int i = 0; i < iBufferSize; i += 2) {
                 pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
@@ -88,8 +84,13 @@ class EngineFilterIIR : public EngineObjectConstIn {
                     old1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
                     old2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
                 } else {
-                    old1 = 0;
-                    old2 = 0;
+                    if (m_startFromDry) {
+                        old1 = pIn[i];
+                        old2 = pIn[i + 1];
+                    } else {
+                        old1 = 0;
+                        old2 = 0;
+                    }
                 }
                 double new1 = processSample(m_coef, m_buf1, pIn[i]);
                 double new2 = processSample(m_coef, m_buf2, pIn[i + 1]);
@@ -131,8 +132,8 @@ class EngineFilterIIR : public EngineObjectConstIn {
     bool m_doRamping;
     // Flag set to true if old filter is invalid
     bool m_doStart;
-    // Flag set to true if filter is paused
-    bool m_isPaused;
+    // Flag set to true if this is a chained filter
+    bool m_startFromDry;
 };
 
 template<>

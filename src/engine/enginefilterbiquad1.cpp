@@ -5,6 +5,7 @@
 EngineFilterBiquad1LowShelving::EngineFilterBiquad1LowShelving(int sampleRate,
                                                                double centerFreq,
                                                                double Q) {
+    m_startFromDry = true;
     setFrequencyCorners(sampleRate, centerFreq, Q, 0);
 }
 
@@ -18,6 +19,7 @@ void EngineFilterBiquad1LowShelving::setFrequencyCorners(int sampleRate,
 
 EngineFilterBiquad1Peaking::EngineFilterBiquad1Peaking(int sampleRate,
                                                        double centerFreq, double Q) {
+    m_startFromDry = true;
     setFrequencyCorners(sampleRate, centerFreq, Q, 0);
 }
 
@@ -32,6 +34,7 @@ void EngineFilterBiquad1Peaking::setFrequencyCorners(int sampleRate,
 EngineFilterBiquad1HighShelving::EngineFilterBiquad1HighShelving(int sampleRate,
                                                                  double centerFreq,
                                                                  double Q) {
+    m_startFromDry = true;
     setFrequencyCorners(sampleRate, centerFreq, Q, 0);
 }
 
