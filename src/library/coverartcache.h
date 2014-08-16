@@ -16,7 +16,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
   public:
     /* This method is used to request a cover art pixmap.
      *
-     * @param croppedPixmap : QSize(finalCoverWidth, finalCoverHeight)
+     * @param croppedSize : QSize(finalCoverWidth, finalCoverHeight)
      *      it determines the final cover size.
      *      Use QSize() to get the original size.
      *      NOTE!
@@ -32,7 +32,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QPixmap requestPixmap(int trackId,
                           const QString& coverLocation = QString(),
                           const QString& md5Hash = QString(),
-                          const QSize& croppedPixmap = QSize(0,0),
+                          const QSize& croppedSize = QSize(0,0),
                           const bool tryLoadAndSearch = true,
                           const bool issueRepaint = false);
 
@@ -64,18 +64,18 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QString coverLocation;
         QString md5Hash;
         QImage img;
-        QSize croppedImg;
+        QSize croppedSize;
         bool issueRepaint;
         bool newImgFound;
     };
 
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
-                             const QSize& croppedPixmap,
+                             const QSize& croppedSize,
                              const bool emitSignals);
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
                            const QString& md5Hash,
-                           const QSize &croppedPixmap,
+                           const QSize &croppedSize,
                            const bool emitSignals);
 
   private:
