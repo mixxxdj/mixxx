@@ -33,7 +33,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                           const QString& coverLocation = QString(),
                           const QString& md5Hash = QString(),
                           const QSize& croppedSize = QSize(0,0),
-                          const bool onlyCached = true,
+                          const bool onlyCached = false,
                           const bool issueRepaint = false);
 
     bool changeCoverArt(int trackId, const QString& newCoverLocation="");

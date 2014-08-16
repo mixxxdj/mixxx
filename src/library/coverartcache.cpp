@@ -101,7 +101,7 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
         return pixmap;
     }
 
-    if (!onlyCached) {
+    if (onlyCached) {
         return QPixmap();
     }
 
