@@ -26,21 +26,8 @@ void LV2Backend::enumeratePlugins() {
         LilvNode* name = lilv_plugin_get_name(plug);
         qDebug() << lilv_node_as_string(name) << "-----------------------------";
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
-
-        bool isAvailable;
-        if (lv2Manifest->isValid()) {
-            m_registeredEffects.insert(lv2Manifest->getEffectManifest().id(),
-                                       lv2Manifest);
-            isAvailable = true;
-        } else {
-            isAvailable = false;
-        }
-
-        // Add the current plugin to the list of discovered ones
-        QString pluginName(lilv_node_as_string(name));
-        QString pluginId = lv2Manifest->getEffectManifest().id();
-        m_allLV2Plugins.append(qMakePair(qMakePair(pluginName, isAvailable),
-                                         pluginId));
+        m_registeredEffects.insert(lv2Manifest->getEffectManifest().id(),
+                                   lv2Manifest);
     }
 }
 
