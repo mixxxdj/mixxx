@@ -151,6 +151,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
             ConfigKey(group, "keylock_engine")).toDouble());
 
     m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),true, false, true); // persist = true
+    m_pMasterMono = new ControlObject(ConfigKey(group, "mono"),true, false, true); // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
 }
 
@@ -184,6 +185,7 @@ EngineMaster::~EngineMaster() {
     delete m_pAudioLatencyOverload;
 
     delete m_pMasterEnabled;
+    delete m_pMasterMono;
     delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
@@ -501,6 +503,13 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
                 m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
             }
+        }
+    }
+
+    if (m_pMasterMono->get()) {
+        // Mix two Mono channels. This is useful for outdoor gigs
+        for (int i = 0; i + 1 < iBufferSize; i += 2) {
+            m_pMaster[i + 1] = m_pMaster[i] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
         }
     }
 

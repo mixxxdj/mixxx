@@ -249,6 +249,7 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE m_headphoneVolumeOld;
 
     ControlObject* m_pMasterEnabled;
+    ControlObject* m_pMasterMono;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];
