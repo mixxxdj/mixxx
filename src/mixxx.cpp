@@ -644,40 +644,6 @@ void MixxxMainWindow::createCOAliases() {
     // Example:
     // ControlDoublePrivate::insertAlias(ConfigKey("[Microphone]", "volume"),
     //                                   ConfigKey("[Microphone1]", "volume"));
-
-    // Aliases needed for the EQ Rack
-    int eqRack = m_pEffectsManager->getEffectChainManager()->getEffectRacksSize();
-    const int maxDecks = 8;
-    for (int i = 1; i <= maxDecks; i++) {
-        ControlDoublePrivate::insertAlias(
-                    ConfigKey(QString("[Channel%1]").arg(i), "filterLow"),
-                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
-                                      arg(eqRack).arg(i), "parameter1"));
-
-        ControlDoublePrivate::insertAlias(
-                    ConfigKey(QString("[Channel%1]").arg(i), "filterMid"),
-                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
-                                      arg(eqRack).arg(i), "parameter2"));
-
-        ControlDoublePrivate::insertAlias(
-                    ConfigKey(QString("[Channel%1]").arg(i), "filterHigh"),
-                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
-                                      arg(eqRack).arg(i), "parameter3"));
-        ControlDoublePrivate::insertAlias(
-                    ConfigKey(QString("[Channel%1]").arg(i), "filterLowKill"),
-                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
-                                      arg(eqRack).arg(i), "button_parameter1"));
-
-        ControlDoublePrivate::insertAlias(
-                    ConfigKey(QString("[Channel%1]").arg(i), "filterMidKill"),
-                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
-                                      arg(eqRack).arg(i), "button_parameter2"));
-
-        ControlDoublePrivate::insertAlias(
-                    ConfigKey(QString("[Channel%1]").arg(i), "filterHighKill"),
-                    ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
-                                      arg(eqRack).arg(i), "button_parameter3"));
-    }
 }
 
 void MixxxMainWindow::logBuildDetails() {

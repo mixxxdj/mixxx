@@ -200,6 +200,36 @@ void EffectsManager::addEqualizer(int channelNumber) {
         QString("mix"));
     cotMix.set(1.0);
 
+    // Create aliases
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterLow"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter1"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterMid"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter2"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHigh"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter3"));
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterLowKill"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter1"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterMidKill"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter2"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHighKill"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter3"));
+
 }
 
 void EffectsManager::setupDefaults() {
