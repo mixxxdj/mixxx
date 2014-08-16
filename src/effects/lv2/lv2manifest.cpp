@@ -4,7 +4,7 @@
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
-        : m_isValid(true) {
+        : m_status(AVAILABLE) {
 
     m_pLV2plugin = plug;
 
@@ -145,13 +145,13 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
     // We only support the case when the input and output samples are stereo
     if (inputPorts != 2 || outputPorts != 2) {
-        m_isValid = false;
+        m_status = IO_NOT_STEREO;
     }
 
     // We don't support any features
     LilvNodes* features = lilv_plugin_get_required_features(m_pLV2plugin);
     if (lilv_nodes_size(features) > 0) {
-        m_isValid = false;
+        m_status = HAS_REQUIRED_FEATURES;
     }
     lilv_nodes_free(features);
 }
