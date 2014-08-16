@@ -63,6 +63,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void masterDelayChanged(double value);
     void masterMixChanged(int value);
     void masterEnabledChanged(double value);
+    void masterMonoChanged(int value);
+    void masterMonoChanged(double value);
 
   private slots:
     void addPath(AudioOutput output);
@@ -93,6 +95,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlObjectSlave* m_pMasterDelay;
     ControlObjectSlave* m_pKeylockEngine;
     ControlObjectSlave* m_pMasterEnabled;
+    ControlObjectSlave* m_pMasterMono;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;

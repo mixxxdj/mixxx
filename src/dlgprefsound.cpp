@@ -132,6 +132,15 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterMixChanged(int)));
     m_pMasterEnabled->connectValueChanged(this, SLOT(masterEnabledChanged(double)));
 
+    m_pMasterMono =
+            new ControlObjectSlave("[Master]", "mono", this);
+    masterMonoComboBox->addItem(tr("Stereo"));
+    masterMonoComboBox->addItem(tr("Mono"));
+    masterMonoComboBox->setCurrentIndex(m_pMasterMono->get() ? 1 : 0);
+    connect(masterMonoComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(masterMonoChanged(int)));
+    m_pMasterMono->connectValueChanged(this, SLOT(masterMonoChanged(double)));
+
 
     m_pKeylockEngine =
             new ControlObjectSlave("[Master]", "keylock_engine", this);
@@ -553,4 +562,11 @@ void DlgPrefSound::masterEnabledChanged(double value) {
     masterMixComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
+void DlgPrefSound::masterMonoChanged(int value) {
+    m_pMasterMono->set(value);
+}
+
+void DlgPrefSound::masterMonoChanged(double value) {
+    masterMonoComboBox->setCurrentIndex(value ? 1 : 0);
+}
 
