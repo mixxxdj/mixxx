@@ -77,8 +77,8 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     }
     m_oldHigh = 0;
 
-    m_pBuf1 = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pBuf2 = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pBufs.append(SampleUtil::alloc(MAX_BUFFER_LEN));
+    m_pBufs.append(SampleUtil::alloc(MAX_BUFFER_LEN));
 
     // Initialize the default center frequencies
     m_centerFrequencies[0] = 81;
@@ -105,8 +105,10 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
     foreach (EngineFilterBiquad1Peaking* filter, m_bands) {
         delete filter;
     }
-    SampleUtil::free(m_pBuf1);
-    SampleUtil::free(m_pBuf2);
+
+    foreach(CSAMPLE* buf, m_pBufs) {
+        SampleUtil::free(buf);
+    }
 }
 
 void GraphicEQEffectGroupState::setFilters(int sampleRate) {
@@ -179,14 +181,19 @@ void GraphicEQEffect::processGroup(const QString& group,
         }
     }
 
-    pState->m_low->process(pInput, pState->m_pBuf1, numSamples);
-    pState->m_bands[0]->process(pState->m_pBuf1, pState->m_pBuf2, numSamples);
-    pState->m_bands[1]->process(pState->m_pBuf2, pState->m_pBuf1, numSamples);
-    pState->m_bands[2]->process(pState->m_pBuf1, pState->m_pBuf2, numSamples);
-    pState->m_bands[3]->process(pState->m_pBuf2, pState->m_pBuf1, numSamples);
-    pState->m_bands[4]->process(pState->m_pBuf1, pState->m_pBuf2, numSamples);
-    pState->m_bands[5]->process(pState->m_pBuf2, pState->m_pBuf1, numSamples);
-    pState->m_high->process(pState->m_pBuf1, pOutput, numSamples);
+    pState->m_low->process(pInput, pState->m_pBufs[0], numSamples);
+
+    int bufIndex = 0;
+    for (int i = 0; i < 6; i++) {
+        if (fMid[i]) {
+            pState->m_bands[i]->process(pState->m_pBufs[bufIndex],
+                                        pState->m_pBufs[1 - bufIndex], numSamples);
+            bufIndex = 1 - bufIndex;
+        } else {
+            pState->m_bands[i]->pauseFilter();
+        }
+    }
+    pState->m_high->process(pState->m_pBufs[bufIndex], pOutput, numSamples);
 
     pState->m_oldLow = fLow;
     pState->m_oldHigh = fHigh;

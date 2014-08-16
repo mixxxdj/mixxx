@@ -24,8 +24,7 @@ class GraphicEQEffectGroupState {
     EngineFilterBiquad1LowShelving* m_low;
     QList<EngineFilterBiquad1Peaking*> m_bands;
     EngineFilterBiquad1HighShelving* m_high;
-    CSAMPLE* m_pBuf1;
-    CSAMPLE* m_pBuf2;
+    QList<CSAMPLE*> m_pBufs;
     QList<double> m_oldMid;
     double m_oldLow;
     double m_oldHigh;
