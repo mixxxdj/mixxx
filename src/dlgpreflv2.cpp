@@ -26,16 +26,32 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
     QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().toList();
     // Display them alphabetically
     qSort(allPlugins.begin(), allPlugins.end());
+
     foreach (QString effectId, allPlugins) {
         EffectManifest effectManifest = m_pLV2Backend->getManifest(effectId);
+        LV2Manifest* lv2Manifest = m_pLV2Backend->getLV2Manifest(effectId);
         QPushButton* button = new QPushButton(this);
         button->setText(effectManifest.name());
+
         if (!m_pLV2Backend->canInstantiateEffect(effectId)) {
-            // Tooltip with info why is this disabled
+            // Tooltip displaying why this effect is disabled
+            LV2Manifest::Status status = lv2Manifest->getStatus();
+            switch (status) {
+                case LV2Manifest::IO_NOT_STEREO:
+                    button->setToolTip(QObject::tr("Input/Output is not stereo"));
+                    break;
+                case LV2Manifest::HAS_REQUIRED_FEATURES:
+                    button->setToolTip(QObject::tr("Has features which are not "
+                                                   "yet supported"));
+                    break;
+                default:
+                    button->setToolTip(QObject::tr("Unknown status"));
+            }
             button->setDisabled(true);
         } else {
             button->setDisabled(false);
         }
+
         lv2_vertical_layout_left->addWidget(button);
         button->setProperty("id", QVariant(effectManifest.id()));
         connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
