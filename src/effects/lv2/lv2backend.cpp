@@ -70,6 +70,10 @@ EffectManifest LV2Backend::getManifest(const QString& effectId) const {
     return EffectManifest();
 }
 
+LV2Manifest* LV2Backend::getLV2Manifest(const QString& effectId) const {
+    return m_registeredEffects[effectId];
+}
+
 EffectManifest& LV2Backend::getManifestReference(const QString& effectId) {
     return m_registeredEffects[effectId]->getEffectManifestReference();
 }
