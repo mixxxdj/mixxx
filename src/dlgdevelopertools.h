@@ -24,6 +24,7 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
   private slots:
     void slotControlSearch(const QString& search);
     void slotControlSearchClear();
+    void slotLogSearch();
 
   private:
     ControlModel m_controlModel;
@@ -33,6 +34,8 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     QSortFilterProxyModel m_statProxyModel;
 
     QFile m_logFile;
+    QTextCursor m_logCursor;
+
 };
 
 #endif /* DLGDEVELOPERTOOLS_H */

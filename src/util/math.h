@@ -6,6 +6,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
+#include <QDebug>
 
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
@@ -17,7 +18,12 @@ using std::fabs;
 
 template <typename T>
 inline T math_clamp(const T& value, const T& min, const T& max) {
-    // XXX: If max < min, behavior is undefined.
+    // XXX: If max < min, behavior is undefined, and has been causing problems.
+    // if debugging is on, assert when this happens.
+    if (max < min) {
+        qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
+                   << max << " " << min;
+    }
     if (value > max) {
         return max;
     }

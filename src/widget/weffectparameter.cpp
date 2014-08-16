@@ -4,9 +4,7 @@
 #include "effects/effectsmanager.h"
 
 WEffectParameter::WEffectParameter(QWidget* pParent, EffectsManager* pEffectsManager)
-        : WLabel(pParent),
-          m_pEffectsManager(pEffectsManager) {
-    parameterUpdated();
+        : WEffectParameterBase(pParent, pEffectsManager) {
 }
 
 WEffectParameter::~WEffectParameter() {
@@ -45,7 +43,7 @@ void WEffectParameter::setup(QDomNode node, const SkinContext& context) {
         if (pChainSlot) {
             EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
             if (pEffectSlot) {
-                EffectParameterSlotPointer pParameterSlot =
+                EffectParameterSlotBasePointer pParameterSlot =
                         pEffectSlot->getEffectParameterSlot(parameterNumber);
                 if (pParameterSlot) {
                     setEffectParameterSlot(pParameterSlot);
@@ -60,24 +58,5 @@ void WEffectParameter::setup(QDomNode node, const SkinContext& context) {
         }
     } else {
         qDebug() << "EffectParameterName node had invalid EffectRack number:" << rackNumber;
-    }
-}
-
-void WEffectParameter::setEffectParameterSlot(EffectParameterSlotPointer pEffectParameterSlot) {
-    if (pEffectParameterSlot) {
-        m_pEffectParameterSlot = pEffectParameterSlot;
-        connect(pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
-        parameterUpdated();
-    }
-}
-
-void WEffectParameter::parameterUpdated() {
-    if (m_pEffectParameterSlot) {
-        setText(m_pEffectParameterSlot->name());
-        setBaseTooltip(m_pEffectParameterSlot->description());
-    } else {
-        setText(tr("None"));
-        setBaseTooltip(tr("No effect loaded."));
     }
 }

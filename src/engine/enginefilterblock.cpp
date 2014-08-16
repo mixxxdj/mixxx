@@ -21,7 +21,7 @@
 #include "controllogpotmeter.h"
 #include "controlobjectslave.h"
 #include "engine/enginefilterblock.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginefilter.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
@@ -41,7 +41,7 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     m_eqNeverTouched = true;
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-    m_iOldSampleRate = 0;
+    m_iOldSampleRate = static_cast<int>(m_pSampleRate->get());
 
     // Setup Filter Controls
 
@@ -52,10 +52,17 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
         s_EnableEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "EnableEQs"));
     }
 
-    high = band = low = NULL;
-
     // Load Defaults
-    setFilters(true);
+    lowLight = new EngineFilterBessel4Low(m_iOldSampleRate, 246);
+    bandLight = new EngineFilterBessel4Band(m_iOldSampleRate, 246, 2484);
+    highLight = new EngineFilterBessel4High(m_iOldSampleRate, 2484);
+    lowDef = new EngineFilterButterworth8Low(m_iOldSampleRate, 246);
+    bandDef = new EngineFilterButterworth8Band(m_iOldSampleRate, 246, 2484);
+    highDef = new EngineFilterButterworth8High(m_iOldSampleRate, 2484);
+
+    low = lowDef;
+    band = bandDef;
+    high = highDef;
 
     /*
        lowrbj = new EngineFilterRBJ();
@@ -92,9 +99,12 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
 
 EngineFilterBlock::~EngineFilterBlock()
 {
-    delete high;
-    delete band;
-    delete low;
+    delete lowLight;
+    delete bandLight;
+    delete highLight;
+    delete lowDef;
+    delete bandDef;
+    delete highDef;
     delete [] m_pHighBuf;
     delete [] m_pBandBuf;
     delete [] m_pLowBuf;
@@ -118,30 +128,30 @@ EngineFilterBlock::~EngineFilterBlock()
     s_EnableEq = NULL;
 }
 
-void EngineFilterBlock::setFilters(bool forceSetting) {
+void EngineFilterBlock::setFilters() {
     int iSampleRate = static_cast<int>(m_pSampleRate->get());
     if (m_iOldSampleRate != iSampleRate ||
             (ilowFreq != (int)s_loEqFreq->get()) ||
             (ihighFreq != (int)s_hiEqFreq->get()) ||
-            (blofi != (int)s_lofiEq->get()) ||
-            forceSetting) {
-        delete low;
-        delete band;
-        delete high;
+            (blofi != (int)s_lofiEq->get())) {
         ilowFreq = (int)s_loEqFreq->get();
         ihighFreq = (int)s_hiEqFreq->get();
         blofi = (int)s_lofiEq->get();
         m_iOldSampleRate = iSampleRate;
         if (blofi) {
-            // why is this DJM800 at line ~34 (LOFI ifdef) and just
-            // bessel_lowpass# here? bkgood
-            low = new EngineFilterIIR(bessel_lowpass4,4);
-            band = new EngineFilterIIR(bessel_bandpass,8);
-            high = new EngineFilterIIR(bessel_highpass4,4);
+            lowLight->setFrequencyCorners(iSampleRate, ilowFreq);
+            bandLight->setFrequencyCorners(iSampleRate, ilowFreq, ihighFreq);
+            highLight->setFrequencyCorners(iSampleRate, ihighFreq);
+            low = lowLight;
+            band = bandLight;
+            high = highLight;
         } else {
-            low = new EngineFilterButterworth8Low(iSampleRate, ilowFreq);
-            band = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
-            high = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
+            lowDef->setFrequencyCorners(iSampleRate, ilowFreq);
+            bandDef->setFrequencyCorners(iSampleRate, ilowFreq, ihighFreq);
+            highDef->setFrequencyCorners(iSampleRate, ihighFreq);
+            low = lowDef;
+            band = bandDef;
+            high = highDef;
         }
     }
 }
