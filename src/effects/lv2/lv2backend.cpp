@@ -19,12 +19,9 @@ LV2Backend::~LV2Backend() {
 }
 
 void LV2Backend::enumeratePlugins() {
-    qDebug() << "enumerating plugins";
     const LilvPlugins *plugs = lilv_world_get_all_plugins(m_pWorld);
     LILV_FOREACH(plugins, i, plugs) {
         const LilvPlugin *plug = lilv_plugins_get(plugs, i);
-        LilvNode* name = lilv_plugin_get_name(plug);
-        qDebug() << lilv_node_as_string(name) << "-----------------------------";
         LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
         m_registeredEffects.insert(lv2Manifest->getEffectManifest().id(),
                                    lv2Manifest);
