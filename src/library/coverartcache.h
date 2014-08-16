@@ -31,7 +31,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
      */
     QPixmap requestPixmap(int trackId,
                           const QString& coverLocation = QString(),
-                          const QString& md5Hash = QString(),
+                          QString md5Hash = QString(),
                           const QSize& croppedSize = QSize(0,0),
                           const bool onlyCached = false,
                           const bool issueRepaint = false);
