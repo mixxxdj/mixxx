@@ -145,7 +145,7 @@ void WTrackTableView::slotScrollValueChanged(int) {
     if (m_bLastCoverLoaded) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
-        emit(lockCoverArtDelegate(true));
+        emit(onlyCachedCoverArt(true));
     }
     m_bLastCoverLoaded = false;
     m_lastSelection = m_pCOTGuiTickTime->get();
@@ -161,7 +161,7 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
         emit(loadCoverArt("", "", 0));
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
-        emit(lockCoverArtDelegate(true));
+        emit(onlyCachedCoverArt(true));
     }
     m_bLastCoverLoaded = false;
     m_lastSelection = m_pCOTGuiTickTime->get();
@@ -200,7 +200,7 @@ void WTrackTableView::slotLoadCoverArt() {
     }
     emit(loadCoverArt(coverLocation, md5Hash, trackId));
     // it will allows CoverCache to load and search covers normally
-    emit(lockCoverArtDelegate(false));
+    emit(onlyCachedCoverArt(false));
     update();
 }
 
