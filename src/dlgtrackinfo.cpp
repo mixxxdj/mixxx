@@ -186,6 +186,7 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     // a valid directory, in this case, 'QDir::home()'.
     // Otherwise nothing would happen...
     if (!dir.exists()) {
+        // it ensures a valid dir for any OS (Windows)
         dir = QDir::home();
     }
     QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
