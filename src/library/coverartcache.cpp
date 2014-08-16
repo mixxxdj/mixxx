@@ -67,7 +67,7 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
                                      const QString& coverLocation,
                                      const QString& md5Hash,
                                      const QSize& croppedSize,
-                                     const bool tryLoadAndSearch,
+                                     const bool onlyCached,
                                      const bool issueRepaint) {
     if (trackId < 1) {
         return QPixmap();
@@ -101,7 +101,7 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
         return pixmap;
     }
 
-    if (!tryLoadAndSearch) {
+    if (!onlyCached) {
         return QPixmap();
     }
 

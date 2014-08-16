@@ -23,7 +23,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
      *          the cover will be resized to 'finalCoverWidth' and
      *          it'll be cropped from the top until the finalCoverHeight' pixel
      *
-     * @param tryLoadAndSearch : if it is 'true', the method will NOT try to load
+     * @param onlyCached : if it is 'true', the method will NOT try to load
      *      covers from the given 'coverLocation' and it will also NOT run the
      *      search algorithm.
      *      In this way, the method will just look into CoverCache and return
@@ -33,7 +33,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                           const QString& coverLocation = QString(),
                           const QString& md5Hash = QString(),
                           const QSize& croppedSize = QSize(0,0),
-                          const bool tryLoadAndSearch = true,
+                          const bool onlyCached = true,
                           const bool issueRepaint = false);
 
     bool changeCoverArt(int trackId, const QString& newCoverLocation="");
