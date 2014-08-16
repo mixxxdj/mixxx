@@ -40,6 +40,7 @@ class LV2Manifest {
     float* m_minimum;
     float* m_maximum;
     float* m_default;
+    Status m_status;
     bool m_isValid;
 };
 
