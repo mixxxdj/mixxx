@@ -10,10 +10,6 @@
 #include "controlobject.h"
 #include "util/math.h"
 
-#define pluginName first.first
-#define isAvailable first.second
-#define pluginId second
-
 DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
                        ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
