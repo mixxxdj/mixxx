@@ -18,13 +18,13 @@ EffectManifest GraphicEQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "An 8 band Graphic EQ based on Biquad Filters"));
 
-    // Display center frequencies for each filter
-    float centerFrequencies[8] = {31.25, 62.5, 125, 250, 500, 1000,
-                                  2000, 4000};
+    // Display rounded center frequencies for each filter
+    float centerFrequencies[8] = {80, 100, 220, 500, 1100, 2500,
+                                  5500, 10000};
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId(QString("low"));
-    low->setName(QString("31.25 Hz"));
+    low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
     low->setDescription(QString("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
@@ -36,7 +36,7 @@ EffectManifest GraphicEQEffect::getManifest() {
 
     QString paramName;
     for (int i = 0; i < 6; i++) {
-        if (centerFrequencies[i] < 1000) {
+        if (centerFrequencies[i + 1] < 1000) {
             paramName = QString("%1 Hz").arg(centerFrequencies[i + 1]);
         } else {
             paramName = QString("%1 kHz").arg(centerFrequencies[i + 1] / 1000);
@@ -57,7 +57,7 @@ EffectManifest GraphicEQEffect::getManifest() {
 
     EffectManifestParameter* high = manifest.addParameter();
     high->setId(QString("high"));
-    high->setName(QString("4 kHz"));
+    high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
     high->setDescription(QString("Gain for Hight Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
@@ -81,14 +81,14 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     m_pBuf2 = SampleUtil::alloc(MAX_BUFFER_LEN);
 
     // Initialize the default center frequencies
-    m_centerFrequencies[0] = 31.25;
-    m_centerFrequencies[1] = 62.5;
-    m_centerFrequencies[2] = 125.0;
-    m_centerFrequencies[3] = 250.0;
-    m_centerFrequencies[4] = 500.0;
-    m_centerFrequencies[5] = 1000.0;
-    m_centerFrequencies[6] = 2000.0;
-    m_centerFrequencies[7] = 4000.0;
+    m_centerFrequencies[0] = 81;
+    m_centerFrequencies[1] = 100;
+    m_centerFrequencies[2] = 222;
+    m_centerFrequencies[3] = 494;
+    m_centerFrequencies[4] = 1097;
+    m_centerFrequencies[5] = 2437;
+    m_centerFrequencies[6] = 5416;
+    m_centerFrequencies[7] = 9828;
 
     // TODO(rryan): use the real samplerate
     // Initialize the filters with default parameters
