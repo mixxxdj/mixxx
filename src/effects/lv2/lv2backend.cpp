@@ -42,11 +42,22 @@ void LV2Backend::initializeProperties() {
 }
 
 const QSet<QString> LV2Backend::getEffectIds() const {
+    QSet<QString> availableEffects;
+    foreach (LV2Manifest* lv2Manifest, m_registeredEffects) {
+        if (lv2Manifest->isValid()) {
+            availableEffects.insert(lv2Manifest->getEffectManifest().id());
+        }
+    }
+    return availableEffects;
+}
+
+const QSet<QString> LV2Backend::getDiscoveredPluginIds() const {
     return m_registeredEffects.keys().toSet();
 }
 
 bool LV2Backend::canInstantiateEffect(const QString& effectId) const {
-    if (m_registeredEffects.contains(effectId)) {
+    if (m_registeredEffects.contains(effectId) &&
+        m_registeredEffects[effectId]->isValid()) {
         return true;
     }
     return false;

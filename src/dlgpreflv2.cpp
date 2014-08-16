@@ -27,18 +27,21 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
         return;
     }
 
-    QList<QPair<QPair<QString, bool>, QString> > allPlugins = m_pLV2Backend->getAllDiscoveredPlugins();
-    for (int i = 0; i < allPlugins.size(); i++) {
+    QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().toList();
+    // Display them alphabetically
+    qSort(allPlugins.begin(), allPlugins.end());
+    foreach (QString effectId, allPlugins) {
+        EffectManifest effectManifest = m_pLV2Backend->getManifest(effectId);
         QPushButton* button = new QPushButton(this);
-        button->setText(allPlugins[i].pluginName);
-        if (!allPlugins[i].isAvailable) {
+        button->setText(effectManifest.name());
+        if (!m_pLV2Backend->canInstantiateEffect(effectId)) {
             // Tooltip with info why is this disabled
             button->setDisabled(true);
         } else {
             button->setDisabled(false);
         }
         lv2_vertical_layout_left->addWidget(button);
-        button->setProperty("id", QVariant(allPlugins[i].pluginId));
+        button->setProperty("id", QVariant(effectManifest.id()));
         connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
     }
 }
