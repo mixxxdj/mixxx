@@ -172,14 +172,10 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
 
     QDir dir;
     QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
-    const int pathSize = splittedPath.size();
-    for (int i = 0; i < pathSize; i++) {
+    do {
         dir = QDir(splittedPath.join("/"));
-        if (dir.exists()) {
-            break;
-        }
         splittedPath.removeLast();
-    }
+    } while (!dir.exists() && splittedPath.size());
 
     // This function does not work for a non-existent directory!
     // so it is essential that in the worst case it try opening
