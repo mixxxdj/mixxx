@@ -182,8 +182,12 @@ const LilvPlugin* LV2Manifest::getPlugin() {
     return m_pLV2plugin;
 }
 
+LV2Manifest::Status LV2Manifest::getStatus() {
+    return m_status;
+}
+
 bool LV2Manifest::isValid() {
-    return m_isValid;
+    return m_status == AVAILABLE;
 }
 
 void LV2Manifest::buildEnumerationOptions(const LilvPort* port,

@@ -20,6 +20,7 @@ class LV2Manifest {
     QList<int> getControlPortIndices();
     const LilvPlugin* getPlugin();
     bool isValid();
+    Status getStatus();
 
   private:
     void buildEnumerationOptions(const LilvPort* port,
