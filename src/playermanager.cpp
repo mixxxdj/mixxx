@@ -389,7 +389,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
             pDeck->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
+        ++it;
     }
 }
 
@@ -405,6 +405,6 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
             pSampler->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
+        ++it;
     }
 }
