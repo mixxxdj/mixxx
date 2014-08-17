@@ -169,10 +169,10 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
 }
 
 void WTrackTableView::slotGuiTickTime(double cpuTime) {
-    // if the user is stoped in the same row for more than 0.1s,
+    // if the user is stoped in the same row for more than 0.05s,
     // we load the cover art once.
     if (!m_bLastCoverLoaded) {
-        if (cpuTime >= m_lastSelection + 0.1) {
+        if (cpuTime >= m_lastSelection + 0.05) {
             slotLoadCoverArt();
             m_bLastCoverLoaded = true;
         }
