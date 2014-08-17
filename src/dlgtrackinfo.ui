@@ -247,7 +247,7 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>42</width>
              <height>25</height>
             </size>
            </property>
@@ -394,7 +394,7 @@
          <item row="0" column="2" rowspan="4" colspan="2">
           <widget class="QLabel" name="coverArt">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -407,7 +407,7 @@
            </property>
            <property name="maximumSize">
             <size>
-             <width>100</width>
+             <width>16777215</width>
              <height>100</height>
             </size>
            </property>
