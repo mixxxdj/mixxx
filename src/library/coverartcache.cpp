@@ -53,10 +53,12 @@ bool CoverArtCache::changeCoverArt(int trackId,
     QPixmap pixmap;
     if (QPixmapCache::find(md5Hash, &pixmap)) {
         emit(pixmapFound(trackId, pixmap));
+        emit(requestRepaint());
     } else {
         pixmap.convertFromImage(img);
         if (QPixmapCache::insert(md5Hash, pixmap)) {
             emit(pixmapFound(trackId, pixmap));
+            emit(requestRepaint());
         }
     }
 
