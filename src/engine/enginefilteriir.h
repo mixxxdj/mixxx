@@ -5,7 +5,7 @@
 
 #include "engine/engineobject.h"
 #define MIXXX
-#include "fidlib.h"
+#include <fidlib.h>
 
 enum IIRPass {
     IIR_LP,
@@ -47,12 +47,21 @@ class EngineFilterIIR : public EngineObjectConstIn {
     }
 
     void setCoefs(const char* spec, double sampleRate,
-                  double freq0, double freq1 = 0, int adj = 0) {
-        // Copy the old coefficients into m_oldCoef
-        memcpy(m_oldCoef, m_coef, sizeof(m_coef));
-        m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
-                spec, sampleRate, freq0, freq1, adj);
-        initBuffers();
+            double freq0, double freq1 = 0, int adj = 0) {
+
+        char spec_d[32];
+        if (strlen(spec) < sizeof(spec_d)) {
+            // Copy to dynamic-ish memory to prevent fidlib API breakage.
+            strcpy(spec_d, spec);
+
+            // Copy the old coefficients into m_oldCoef
+            memcpy(m_oldCoef, m_coef, sizeof(m_coef));
+
+            m_coef[0] = fid_design_coef(m_coef + 1, SIZE,
+                    spec_d, sampleRate, freq0, freq1, adj);
+
+            initBuffers();
+        }
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
