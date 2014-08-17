@@ -16,6 +16,13 @@ CoverArtCache::CoverArtCache()
 }
 
 CoverArtCache::~CoverArtCache() {
+    qDebug() << "~CoverArtCache()";
+
+    // The queue of updates might have some covers/tracks
+    // waiting for db insert.
+    // So, we force the update in order to save everything
+    // before the destruction...
+    updateDB(true);
 }
 
 void CoverArtCache::setCoverArtDAO(CoverArtDAO* coverdao) {
@@ -338,8 +345,8 @@ void CoverArtCache::imageFound() {
 
 // sqlite can't do a huge number of updates in a very short time,
 // so it is important to collect all new covers and write them at once.
-void CoverArtCache::updateDB() {
-    if (m_queueOfUpdates.size() < 500) {
+void CoverArtCache::updateDB(bool forceUpdate) {
+    if (!forceUpdate && m_queueOfUpdates.size() < 500) {
         return;
     }
 

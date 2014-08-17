@@ -42,6 +42,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     qDebug() << "~TrackCollection()";
+    m_coverArtDao.finish();
     m_trackDao.finish();
 
     if (m_db.isOpen()) {

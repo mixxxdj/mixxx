@@ -2,15 +2,26 @@
 #include <QtDebug>
 #include <QThread>
 
+#include "library/coverartcache.h"
+#include "library/queryutil.h"
 #include "library/dao/coverartdao.h"
 #include "library/dao/trackdao.h"
-#include "library/queryutil.h"
 
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database)
         : m_database(database) {
 }
 
 CoverArtDAO::~CoverArtDAO() {
+    qDebug() << "~CoverArtDAO()";
+}
+
+void CoverArtDAO::finish() {
+    // As CoverArtCache needs to have an available CoverArtDAO/TrackDAO,
+    // it must be destroyed BEFORE them.
+    // During the CoverArtCache destruction, some covers and tracks
+    // might be updated (queued).
+    CoverArtCache::destroy();
+
     deleteUnusedCoverArts();
 }
 

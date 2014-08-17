@@ -542,7 +542,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     // the data models.
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
-    CoverArtCache::destroy();
+
     DlgCoverArtFullSize::Singleton::destroy();
 
     // RecordingManager depends on config, engine

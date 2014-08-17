@@ -39,16 +39,17 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     bool changeCoverArt(int trackId, const QString& newCoverLocation="");
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
+    TrackPointer getTrack(int trackId);
+
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
-    TrackPointer getTrack(int trackId);
 
   public slots:
     void imageFound();
     void imageLoaded();
 
   private slots:
-    void updateDB();
+    void updateDB(bool forceUpdate=false);
 
   signals:
     void pixmapFound(int trackId, QPixmap pixmap);
