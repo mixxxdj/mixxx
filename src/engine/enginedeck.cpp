@@ -113,8 +113,8 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     m_pVUMeter->process(pOut, iBufferSize);
 }
 
-void EngineDeck::postProcess() {
-    m_pBuffer->postProcess();
+void EngineDeck::postProcess(const int iBufferSize) {
+    m_pBuffer->postProcess(iBufferSize);
 }
 
 EngineBuffer* EngineDeck::getEngineBuffer() {

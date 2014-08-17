@@ -316,7 +316,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
     foreach (EngineChannel* channel, processed_channels) {
-        channel->postProcess();
+        channel->postProcess(iBufferSize);
     }
 }
 

@@ -412,7 +412,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
     }
 }
 
-void EngineBuffer::requestSyncMode(int mode) {
+void EngineBuffer::requestSyncMode(SyncMode mode) {
     m_iSyncModeQueued = mode;
 }
 
@@ -884,13 +884,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         }
         m_engineLock.unlock();
 
-        // Report our speed to SyncControl. If we are the master then it will
-        // broadcast this update to followers.
-        m_pSyncControl->reportPlayerSpeed(speed, is_scratching);
-
-        // Update all the indicators that EngineBuffer publishes to allow
-        // external parts of Mixxx to observe its status.
-        updateIndicators(speed, iBufferSize);
+        m_scratching_old = is_scratching;
 
         // Handle repeat mode
         at_start = m_filepos_play <= 0;
@@ -1021,15 +1015,16 @@ void EngineBuffer::processSlip(int iBufferSize) {
 }
 
 void EngineBuffer::processSyncRequests() {
-    int enable_request = m_iEnableSyncQueued;
-    int mode_request = m_iSyncModeQueued;
-    if (enable_request) {
-        m_iEnableSyncQueued = SYNC_REQUEST_NONE;
+    SyncRequestQueued enable_request =
+            static_cast<SyncRequestQueued>(
+                    m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
+    SyncMode mode_request =
+            static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
+    if (enable_request != SYNC_REQUEST_NONE) {
         bool enabled = enable_request == SYNC_REQUEST_ENABLE;
         m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
     }
-    if (mode_request) {
-        m_iSyncModeQueued = 0;
+    if (mode_request != SYNC_INVALID) {
         m_pEngineSync->requestSyncMode(m_pSyncControl,
                                        static_cast<SyncMode>(mode_request));
     }
@@ -1052,7 +1047,7 @@ void EngineBuffer::processSeek() {
             bool paused = m_playButton->get() == 0.0;
             // If we are playing and quantize is on, match phase when seeking.
             if (!paused && m_pQuantize->get() > 0.0) {
-                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(position));
+                int offset = static_cast<int>(round(m_pBpmControl->getPhaseOffset(position)));
                 if (!even(offset)) {
                     offset--;
                 }
@@ -1080,8 +1075,15 @@ void EngineBuffer::processSeek() {
     }
 }
 
-void EngineBuffer::postProcess() {
+void EngineBuffer::postProcess(const int iBufferSize) {
     m_pBpmControl->updateBeatDistance();
+    // Report our speed to SyncControl. If we are the master then it will
+    // broadcast this update to followers.
+    m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+
+    // Update all the indicators that EngineBuffer publishes to allow
+    // external parts of Mixxx to observe its status.
+    updateIndicators(m_speed_old, iBufferSize);
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
