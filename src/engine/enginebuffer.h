@@ -96,6 +96,12 @@ const int ENGINE_RAMP_UP = 1;
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
+  private:
+    enum SyncRequestQueued {
+        SYNC_REQUEST_NONE,
+        SYNC_REQUEST_ENABLE,
+        SYNC_REQUEST_DISABLE
+    };
   public:
     enum SeekRequest {
         NO_SEEK,

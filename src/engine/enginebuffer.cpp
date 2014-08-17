@@ -91,8 +91,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
-          m_iEnableSyncQueued(0),
-          m_iSyncModeQueued(0),
+          m_iEnableSyncQueued(SYNC_REQUEST_NONE),
+          m_iSyncModeQueued(SYNC_INVALID),
           m_bLastBufferPaused(true),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
@@ -405,11 +405,15 @@ void EngineBuffer::requestSyncPhase() {
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {
-    m_iEnableSyncQueued = static_cast<int>(enabled) + 1;
+    if (enabled) {
+        m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
+    } else {
+        m_iEnableSyncQueued = SYNC_REQUEST_DISABLE;
+    }
 }
 
 void EngineBuffer::requestSyncMode(int mode) {
-    m_iSyncModeQueued = mode + 1;
+    m_iSyncModeQueued = mode;
 }
 
 void EngineBuffer::clearScale() {
@@ -1020,14 +1024,14 @@ void EngineBuffer::processSyncRequests() {
     int enable_request = m_iEnableSyncQueued;
     int mode_request = m_iSyncModeQueued;
     if (enable_request) {
-        m_iEnableSyncQueued = 0;
-        bool enabled = static_cast<bool>(enable_request - 1);
+        m_iEnableSyncQueued = SYNC_REQUEST_NONE;
+        bool enabled = enable_request == SYNC_REQUEST_ENABLE;
         m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
     }
     if (mode_request) {
         m_iSyncModeQueued = 0;
         m_pEngineSync->requestSyncMode(m_pSyncControl,
-                                       static_cast<SyncMode>(mode_request - 1));
+                                       static_cast<SyncMode>(mode_request));
     }
 }
 

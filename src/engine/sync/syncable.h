@@ -6,6 +6,7 @@
 class EngineChannel;
 
 enum SyncMode {
+    SYNC_INVALID = -1,
     SYNC_NONE = 0,
     SYNC_FOLLOWER = 1,
     SYNC_MASTER = 2,
