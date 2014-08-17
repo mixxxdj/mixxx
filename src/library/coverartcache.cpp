@@ -12,10 +12,7 @@ CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
           m_pTrackDAO(NULL),
           m_sDefaultCoverLocation(":/images/library/default_cover.png"),
-          m_defaultCover(m_sDefaultCoverLocation),
-          m_timer(new QTimer(this)) {
-    m_timer->setSingleShot(true);
-    connect(m_timer, SIGNAL(timeout()), SLOT(updateDB()));
+          m_defaultCover(m_sDefaultCoverLocation) {
 }
 
 CoverArtCache::~CoverArtCache() {
@@ -34,6 +31,8 @@ bool CoverArtCache::changeCoverArt(int trackId,
     if (trackId < 1) {
         return false;
     }
+
+    m_queueOfUpdates.remove(trackId);
 
     if (newCoverLocation.isEmpty()) {
         m_pTrackDAO->updateCoverArt(trackId, -1);
@@ -331,10 +330,7 @@ void CoverArtCache::imageFound() {
     if (res.newImgFound && !m_queueOfUpdates.contains(res.trackId)) {
         m_queueOfUpdates.insert(res.trackId,
                                 qMakePair(res.coverLocation, res.md5Hash));
-    }
-
-    if (m_queueOfUpdates.size() == 1 && !m_timer->isActive()) {
-        m_timer->start(500); // after 0.5s, it will call `updateDB()`
+        updateDB();
     }
 
     m_runningIds.remove(res.trackId);
@@ -343,9 +339,12 @@ void CoverArtCache::imageFound() {
 // sqlite can't do a huge number of updates in a very short time,
 // so it is important to collect all new covers and write them at once.
 void CoverArtCache::updateDB() {
-    if (m_queueOfUpdates.isEmpty()) {
+    if (m_queueOfUpdates.size() < 500) {
         return;
     }
+
+    qDebug() << "CoverCache : Updating" << m_queueOfUpdates.size() << "tracks!";
+
     QSet<QPair<int, int> > covers;
     covers = m_pCoverArtDAO->saveCoverArt(m_queueOfUpdates);
     m_pTrackDAO->updateCoverArt(covers);
