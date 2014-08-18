@@ -92,7 +92,7 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
 
     QSqlQuery query(m_database);
     if (!query.exec(sQuery)) {
-        LOG_FAILED_QUERY(query) << "Failed to save multiple covers!";
+        LOG_FAILED_QUERY(query) << sQuery << "Failed to save multiple covers!";
         return QSet<QPair<int, int> >();
     }
 
