@@ -10,7 +10,7 @@
 
 /***********************************************************************
  * Vestax VCI-300 controller script
- * Author: Uwe Klotz
+ * Author: Uwe Klotz a/k/a tapir
  *
  * All controls should work as expected.
  *
@@ -48,9 +48,7 @@
  * -          Double       = double loop length
  * - Shift  + Double       = jump to end of track (while not playing)
  * - Scroll + Double       = seek forward (while not playing)
- * -          Auto Tempo   = toggle quantize
- * - Shift  + Auto Tempo   = trigger beatsync
- * - Scroll + Auto Tempo   = tap BPM
+ * -          Auto Tempo   = toggle sync (push-and-hold)
  * -          Keylock      = toggle keylock
  * - Shift  + Keylock      = reset pitch to 0.00% (quartz)
  * -          Censor       = play backwards while button is pressed
@@ -191,6 +189,9 @@
  *            - The "Auto Tempo" button now triggers the new "sync_enabled"
  *              control. Tapping the BPM manually by holding "Scroll" is
  *              still possible.
+ * 2014-08-18 Sync mapping with push-and-hold
+ *            - Use MIDI mapping for "sync_enabled" to support push-and-hold
+ *            - Use setParameter() instead of setValue() for effect parameters
  * ...to be continued...
  **********************************************************************/
 
@@ -500,7 +501,6 @@ VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "loop_halve", this.onLoopHalveValueCB);
 	VestaxVCI300.connectControl(this.group, "loop_double", this.onLoopDoubleValueCB);
 	VestaxVCI300.connectControl(this.group, "sync_enabled", this.onSyncValueCB);
-	VestaxVCI300.connectControl(this.group, "bpm_tap", this.onSyncValueCB);
 	VestaxVCI300.connectControl(this.group, "reverseroll", this.onCensorFilterValueCB);
 	VestaxVCI300.connectControl(this.filterGroup, "enabled", this.onCensorFilterValueCB);
 	for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
@@ -533,8 +533,8 @@ VestaxVCI300.Deck.prototype.loadFilterPreset = function () {
 };
 
 VestaxVCI300.Deck.prototype.initFilterParameters = function () {
-	engine.setValue(this.filterGroup, "mix", 1.0); // wet
-	engine.setValue(this.filterGroup, "parameter", VestaxVCI300.FILTER_PARAMETER_DEFAULT);
+	engine.setParameter(this.filterGroup, "mix", 1.0); // wet
+	engine.setParameter(this.filterGroup, "parameter", VestaxVCI300.FILTER_PARAMETER_DEFAULT);
 	engine.setValue(this.filterGroup, "group_" + this.group + "_enable", true);
 	engine.setValue(this.filterGroup, "enabled", false);
 };
@@ -835,19 +835,6 @@ VestaxVCI300.onKeyLockButton = function (channel, control, value, status, group)
 			VestaxVCI300.toggleBinaryValue(group, "keylock");
 		}
 	}
-};
-
-VestaxVCI300.onSyncButton = function (channel, control, value, status, group) {
-	var deck = VestaxVCI300.decksByGroup[group];
-	if (VestaxVCI300.scrollState) {
-		// tap bpm
-		engine.setValue(group, "sync_enabled", false);
-		engine.setValue(group, "bpm_tap", VestaxVCI300.getButtonPressed(value));
-	} else {
-		engine.setValue(group, "bpm_tap", false);
-		engine.setValue(group, "sync_enabled", VestaxVCI300.getButtonPressed(value));
-	}
-	deck.updateSyncState();
 };
 
 VestaxVCI300.onPFLButton = function (channel, control, value, status, group) {
