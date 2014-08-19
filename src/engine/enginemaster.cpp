@@ -150,8 +150,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pKeylockEngine->set(_config->getValueString(
             ConfigKey(group, "keylock_engine")).toDouble());
 
-    m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),true, false, true); // persist = true
-    m_pMasterMono = new ControlObject(ConfigKey(group, "mono"),true, false, true); // persist = true
+    m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),
+            true, false, true);  // persist = true
+    m_pMasterMono = new ControlObject(ConfigKey(group, "mono"),
+            true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
 }
 
