@@ -345,7 +345,7 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
     // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
     
     QRegExp rx("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");                   // hook( arg1 [, arg2]... )
-    QRegExp nameRx("^(var|expr)-([^=\\s]+)$");                                  // var-attribute_name="var_name";
+    QRegExp nameRx("^expr-([^=\\s]+)$");                                        // expr-attribute_name="var_name";
     
     for (i=0; i < attributes.length(); i++){
         
@@ -356,14 +356,10 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         // searching variable attributes : var-attribute_name="variable_name"
         if (nameRx.indexIn(attributeName) != -1) {
             
-            // if(nameRx.cap(1) == "var"){
-                // varValue = variable(attributeValue);
-            // } else if(nameRx.cap(1) == "expr"){
-                varValue = evaluateTemplateExpression(attributeValue).toString();
-            // }
+            varValue = evaluateTemplateExpression(attributeValue).toString();
             
             if (varValue.length()){
-                element.setAttribute( nameRx.cap(2), varValue);
+                element.setAttribute( nameRx.cap(1), varValue);
             }
             
             continue;
@@ -414,7 +410,6 @@ void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
     QDomNode scriptNode;
     
     while ( !(scriptNode = scriptElements.item(i)).isNull() && ++i ){
-        // retrieve script
         if( scriptNode.toElement().hasAttribute("src") ){
             QFile scriptFile( getSkinPath( scriptNode.toElement().attribute("src") ) );
             scriptFile.open(QIODevice::ReadOnly | QIODevice::Text);
