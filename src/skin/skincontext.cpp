@@ -374,8 +374,8 @@ void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
         while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
             captured = rx.capturedTexts();
             match = rx.cap(0);
-			QString tmp = "templateHooks." + match;
-			// qDebug() <<  "expression : " << tmp << "\n";
+            QString tmp = "templateHooks." + match;
+            // qDebug() <<  "expression : " << tmp << "\n";
             replacement = evaluateTemplateExpression( tmp ).toString();
             attributeValue.replace(pos, match.length(), replacement);
             pos += replacement.length();
@@ -429,30 +429,15 @@ void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
 }
 
 QScriptValue SkinContext::evaluateTemplateExpression(QString expression) const {
-    QString shell = "\
-        (function(){\n\
-            var out = '';\n\
-            try{\n\
-                out = " + expression + ";\n\
-            } catch(e){ \n\
-                print( e );\n\
-            }\n\
-            return out;\n\
-        })();\n\
-    ";
-    QScriptValue out = m_scriptEngine.evaluate(shell);
-    
-    // e object example : 
-                // print( ' in ' + '\"" + expression.replace("'", "\'") + "\"' );\n
-	// Debug [Main]: message -> Can't find variable: borderPath
-	// Debug [Main]: lineNumber -> 4
-	// Debug [Main]: sourceId -> 139754315634944
-	// Debug [Main]: fileName -> 
-	// Debug [Main]: expressionBeginOffset -> 86
-	// Debug [Main]: expressionCaretOffset -> 96
-	// Debug [Main]: expressionEndOffset -> 96
-	// Debug [Main]: name -> ReferenceError
-    
-    // qDebug() << expression << " -> " << out.toString() << "\n";
-    return out;
+    QScriptValue out = m_scriptEngine.evaluate(expression);
+    if(m_scriptEngine.hasUncaughtException()){
+        qDebug()
+            << "SVG script exception : " << out.toString()
+            << "Empty string returned";
+        
+        // return an empty string as remplacement for the in-attribute expression
+        return QString();
+    } else {
+        return out;
+    }
 }
