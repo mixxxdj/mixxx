@@ -87,7 +87,7 @@ void ButterworthEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
 }
 
 Butterworth8EQEffect::Butterworth8EQEffect(EngineEffect* pEffect,
-                                         const EffectManifest& manifest)
+                                           const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
@@ -103,10 +103,10 @@ Butterworth8EQEffect::~Butterworth8EQEffect() {
 }
 
 void Butterworth8EQEffect::processGroup(const QString& group,
-                                       ButterworthEQEffectGroupState* pState,
-                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                       const unsigned int numSamples,
-                                       const GroupFeatureState& groupFeatures) {
+                                        ButterworthEQEffectGroupState* pState,
+                                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                        const unsigned int numSamples,
+                                        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
