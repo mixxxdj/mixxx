@@ -15,7 +15,9 @@ class EffectProcessor {
     EffectProcessor() {
         m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
     }
-    virtual ~EffectProcessor() { }
+    virtual ~EffectProcessor() {
+        delete m_pSampleRate;
+    }
 
     virtual void initialize(const QSet<QString>& registeredGroups) = 0;
 
@@ -53,7 +55,6 @@ class GroupEffectProcessor : public EffectProcessor {
             it = m_groupState.erase(it);
             delete pState;
         }
-        delete m_pSampleRate;
     }
 
     virtual void initialize(const QSet<QString>& registeredGroups) {
