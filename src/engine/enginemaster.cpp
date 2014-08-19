@@ -510,9 +510,7 @@ void EngineMaster::process(const int iBufferSize) {
 
     if (m_pMasterMono->get()) {
         // Mix two Mono channels. This is useful for outdoor gigs
-        for (int i = 0; i + 1 < iBufferSize; i += 2) {
-            m_pMaster[i + 1] = m_pMaster[i] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
-        }
+        SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, iBufferSize);
     }
 
     if (masterEnabled) {
