@@ -182,7 +182,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     
 }
 
-void SvgParser::parseTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const {
+void SvgParser::scanTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const {
     
     (this->*callback)( node );
     QDomNodeList children = node.childNodes();
@@ -192,7 +192,7 @@ void SvgParser::parseTree(const QDomNode& node, void (SvgParser::*callback)(cons
     for (i=0; i<children.length(); i++){
         child = children.at(i);
         if( child.isElement() )
-            parseTree( child, callback );
+            scanTree( child, callback );
     }
 }
 
