@@ -34,7 +34,7 @@ class SvgParser {
 
     // Methods for evaluating nodes given the context.
     QDomDocument getDocument(const QDomNode& node) const;
-    void parseTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const;
+    void scanTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const;
 
 
     QString parseSvgTree(const QDomNode& svgSkinNode) const;

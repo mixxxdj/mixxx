@@ -60,7 +60,7 @@ QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     
     parseScriptElements(svgNode);
     
-    parseTree(svgNode, &SvgParser::parseAttributes);
+    scanTree(svgNode, &SvgParser::parseAttributes);
     
     // Save the new svg in a temp file to use it with setPixmap
     QTemporaryFile svgFile;
