@@ -56,11 +56,11 @@ QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
     
-    setVariables(svgNode);
+    parseVariableElements(svgNode);
     
     parseScriptElements(svgNode);
     
-    parseTree(svgNode, &SvgParser::setVariablesInAttributes);
+    parseTree(svgNode, &SvgParser::parseAttributes);
     
     // Save the new svg in a temp file to use it with setPixmap
     QTemporaryFile svgFile;
@@ -84,7 +84,7 @@ QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
 }
 
 // replaces Variables nodes in an svg dom tree
-void SvgParser::setVariables(const QDomNode& svgNode) const {
+void SvgParser::parseVariableElements(const QDomNode& svgNode) const {
     
     QDomDocument document = getDocument(svgNode);
     QDomElement svgElement = svgNode.toElement();
@@ -119,7 +119,7 @@ void SvgParser::setVariables(const QDomNode& svgNode) const {
 }
 
 
-void SvgParser::setVariablesInAttributes(const QDomNode& node) const {
+void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomNamedNodeMap attributes = node.attributes();
     QDomElement element = node.toElement();
     uint i;

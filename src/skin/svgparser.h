@@ -39,11 +39,11 @@ class SvgParser {
 
     QString parseSvgTree(const QDomNode& svgSkinNode) const;
     QString parseSvgFile(const QString& svgFileName) const;
-    void setVariables(const QDomNode& svgNode) const;
+    void parseVariableElements(const QDomNode& svgNode) const;
 
 
   private:
-    void setVariablesInAttributes(const QDomNode& node) const;
+    void parseAttributes(const QDomNode& node) const;
     void parseScriptElements(const QDomNode& svgNode) const;
     QScriptValue evaluateTemplateExpression(QString expression) const;
     
