@@ -110,21 +110,17 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             new ControlObjectSlave("[Master]", "audio_latency_overload_count", this);
     m_pMasterAudioLatencyOverloadCount->connectValueChanged(SLOT(bufferUnderflow(double)));
 
-    m_pMasterLatency =
-            new ControlObjectSlave("[Master]", "latency", this);
+    m_pMasterLatency = new ControlObjectSlave("[Master]", "latency", this);
     m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
 
 
-    m_pHeadDelay =
-            new ControlObjectSlave("[Master]", "headDelay", this);
-    m_pMasterDelay =
-            new ControlObjectSlave("[Master]", "delay", this);
+    m_pHeadDelay = new ControlObjectSlave("[Master]", "headDelay", this);
+    m_pMasterDelay = new ControlObjectSlave("[Master]", "delay", this);
 
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     masterDelaySpinBox->setValue(m_pMasterDelay->get());
 
-    m_pMasterEnabled =
-            new ControlObjectSlave("[Master]", "enabled", this);
+    m_pMasterEnabled = new ControlObjectSlave("[Master]", "enabled", this);
     masterMixComboBox->addItem(tr("Disabled"));
     masterMixComboBox->addItem(tr("Enabled"));
     masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
@@ -132,8 +128,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterMixChanged(int)));
     m_pMasterEnabled->connectValueChanged(this, SLOT(masterEnabledChanged(double)));
 
-    m_pMasterMono =
-            new ControlObjectSlave("[Master]", "mono", this);
+    m_pMasterMono = new ControlObjectSlave("[Master]", "mono", this);
     masterMonoComboBox->addItem(tr("Stereo"));
     masterMonoComboBox->addItem(tr("Mono"));
     masterMonoComboBox->setCurrentIndex(m_pMasterMono->get() ? 1 : 0);
