@@ -223,16 +223,7 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
             if (!pixmapName.isEmpty()) {
                 pixmapName = getSkinPath(pixmapName);
                 if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-                    
-                    QFile* file = new QFile(pixmapName);
-                    if(file->open(QIODevice::ReadWrite | QIODevice::Text)){
-                        QDomDocument document;
-                        document.setContent(file);
-                        QDomNode svgNode = document.elementsByTagName("svg").item(0);
-                        
-                        pixmapPath = scaler->parseSvgTree(svgNode);
-                        file->close();
-                    }
+                    pixmapPath = scaler->parseSvgFile(pixmapName);
                 } else {
                     pixmapPath = pixmapName;
                 }

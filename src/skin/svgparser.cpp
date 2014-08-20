@@ -37,6 +37,20 @@ QDomDocument SvgParser::getDocument(const QDomNode& node) const {
     return document;
 }
 
+QString SvgParser::parseSvgFile(const QString& svgFileName) const {
+    QFile* file = new QFile(svgFileName);
+    if(file->open(QIODevice::ReadWrite | QIODevice::Text)){
+        QDomDocument document;
+        document.setContent(file);
+        QDomNode svgNode = document.elementsByTagName("svg").item(0);
+        QString pixmapPath = parseSvgTree(svgNode);
+        file->close();
+        return pixmapPath;
+    } else {
+        return svgFileName;
+    }
+}
+
 QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input

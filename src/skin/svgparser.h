@@ -38,6 +38,7 @@ class SvgParser {
 
 
     QString parseSvgTree(const QDomNode& svgSkinNode) const;
+    QString parseSvgFile(const QString& svgFileName) const;
     void setVariables(const QDomNode& svgNode) const;
 
 
