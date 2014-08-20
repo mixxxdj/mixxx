@@ -60,16 +60,10 @@ class SkinContext {
                                   const QString& attributeName,
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
-    QDomDocument getDocument(const QDomNode& node) const;
     QString getPixmapPath(const QDomNode& pixmapNode) const;
-    void parseTree(const QDomNode& node, void (SkinContext::*callback)(const QDomNode& node)const) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
-    QString setVariablesInSvg(const QDomNode& svgNode) const;
-    void setVariablesInAttributes(const QDomNode& node) const;
-    void parseScriptsInSvg(const QDomNode& svgNode) const;
-    QScriptValue evaluateTemplateExpression(QString expression) const;
     
     mutable QScriptEngine m_scriptEngine;
     QHash<QString, QString> m_variables;

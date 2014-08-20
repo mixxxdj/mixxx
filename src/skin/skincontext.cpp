@@ -4,6 +4,7 @@
 #include <QTemporaryFile>
 
 #include "skin/skincontext.h"
+#include "skin/svgparser.h"
 
 SkinContext::SkinContext() {
 }
@@ -207,91 +208,16 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
     return result.join("");
 }
 
-
-// look for the document of a node
-QDomDocument SkinContext::getDocument(const QDomNode& node) const {
-    
-    QDomDocument document;
-    QDomNode parentNode = node;
-    while( !parentNode.isNull() ){
-        if( parentNode.isDocument() )
-            document = parentNode.toDocument();
-        parentNode = parentNode.parentNode();
-    }
-    
-    return document;
-}
-
-
-// replaces Variables nodes in an svg dom tree
-QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
-    
-    // clone svg to don't alter xml input
-    QDomNode svgNode = svgSkinNode.cloneNode(true);
-    QDomDocument document = getDocument(svgNode);
-    QDomElement svgElement = svgNode.toElement();
-    
-    // replace variables
-    QDomNodeList variablesElements = svgElement.elementsByTagName("Variable");
-    int i=variablesElements.length()-1;
-    QDomElement varElement;
-    QString varName, varValue;
-    QDomNode varNode, varParentNode, oldChild;
-    QDomText varValueNode;
-    
-    while ( i >= 0 && (varNode = variablesElements.item(i)).isNull() == false ){
-        
-        // retrieve value
-        varElement = varNode.toElement();
-        varName = varElement.attribute("name");
-        varValue = variable(varName);
-        
-        // replace node by its value
-        varParentNode = varNode.parentNode();
-        varValueNode = document.createTextNode(varValue);
-        oldChild = varParentNode.replaceChild( varValueNode, varNode );
-        
-        if( oldChild.isNull() ){
-            // replaceChild has a really weird behaviour so I add this check
-            qDebug() << "SVG : unable to replace dom node changed. \n";
-        }
-        
-        --i;
-    }
-    
-    parseScriptsInSvg(svgNode);
-    
-    parseTree(svgNode, &SkinContext::setVariablesInAttributes);
-    
-    // Save the new svg in a temp file to use it with setPixmap
-    QTemporaryFile svgFile;
-    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
-    
-    // the file will be removed before being parsed in skin if set to true
-    svgFile.setAutoRemove( false );
-    
-    QString svgTempFileName;
-    if( svgFile.open() ){
-        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
-        QTextStream out(&svgFile);
-        svgNode.save( out, 2 );
-        svgFile.close();
-        svgTempFileName = svgFile.fileName();
-    } else {
-        qDebug() << "Unable to open temp file for inline svg \n";
-    }
-    
-    return svgTempFileName;
-}
-
 QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
+    const SvgParser* scaler = new SvgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            pixmapPath = setVariablesInSvg(svgNode);
+            // pixmapPath = setVariablesInSvg(svgNode);
+			pixmapPath = scaler->setVariablesInSvg(svgNode);
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
@@ -305,7 +231,8 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
                         document.setContent(file);
                         QDomNode svgNode = document.elementsByTagName("svg").item(0);
                         
-                        pixmapPath = setVariablesInSvg(svgNode);
+                        // pixmapPath = setVariablesInSvg(svgNode);
+                        pixmapPath = scaler->setVariablesInSvg(svgNode);
                         file->close();
                     }
                 } else {
@@ -318,121 +245,3 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     return pixmapPath;
 }
 
-
-void SkinContext::setVariablesInAttributes(const QDomNode& node) const {
-    QDomNamedNodeMap attributes = node.attributes();
-    QDomElement element = node.toElement();
-    uint i;
-    int pos;
-    QString varName, varValue, attributeValue, attributeName,
-            propName, match, replacement;
-    QStringList captured;
-    QDomAttr attribute;
-    
-    
-    QScriptValue global = m_scriptEngine.globalObject();
-    QScriptValue hookNames;
-    QString hooksPattern;
-    
-    hookNames = global.property("hookNames").call( global );
-    
-    if( hookNames.toString().length() ){
-        hooksPattern = hookNames.property("toPattern").call(hookNames).toString();
-    } else {
-        hooksPattern = "variable";
-    }
-    
-    // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
-    
-    QRegExp rx("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");                   // hook( arg1 [, arg2]... )
-    QRegExp nameRx("^expr-([^=\\s]+)$");                                        // expr-attribute_name="var_name";
-    
-    for (i=0; i < attributes.length(); i++){
-        
-        attribute = attributes.item(i).toAttr();
-        attributeValue = attribute.value();
-        attributeName = attribute.name();
-        
-        // searching variable attributes : var-attribute_name="variable_name"
-        if (nameRx.indexIn(attributeName) != -1) {
-            
-            varValue = evaluateTemplateExpression(attributeValue).toString();
-            
-            if (varValue.length()){
-                element.setAttribute( nameRx.cap(1), varValue);
-            }
-            
-            continue;
-        }
-         
-        pos = 0;
-        // searching hooks in the attribute value
-        while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
-            captured = rx.capturedTexts();
-            match = rx.cap(0);
-            QString tmp = "templateHooks." + match;
-            // qDebug() <<  "expression : " << tmp << "\n";
-            replacement = evaluateTemplateExpression( tmp ).toString();
-            attributeValue.replace(pos, match.length(), replacement);
-            pos += replacement.length();
-        }
-        
-        attribute.setValue(attributeValue);
-    }
-    
-}
-
-void SkinContext::parseTree(const QDomNode& node, void (SkinContext::*callback)(const QDomNode& node)const) const {
-    
-    (this->*callback)( node );
-    QDomNodeList children = node.childNodes();
-    QDomNode child;
-    uint i;
-    
-    for (i=0; i<children.length(); i++){
-        child = children.at(i);
-        if( child.isElement() )
-            parseTree( child, callback );
-    }
-}
-
-
-void SkinContext::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
-    
-    // clone svg to don't alter xml input
-    QDomNode svgNode = svgSkinNode.cloneNode(true);
-    QDomElement svgElement = svgNode.toElement();
-    
-    // parse script content
-    QDomNodeList scriptElements = svgElement.elementsByTagName("script");
-    int i = 0;
-    QString expression;
-    QDomNode scriptNode;
-    
-    while ( !(scriptNode = scriptElements.item(i)).isNull() && ++i ){
-        if( scriptNode.toElement().hasAttribute("src") ){
-            QFile scriptFile( getSkinPath( scriptNode.toElement().attribute("src") ) );
-            scriptFile.open(QIODevice::ReadOnly | QIODevice::Text);
-            QTextStream in(&scriptFile);
-            m_scriptEngine.evaluate( in.readAll() );
-        }
-        
-        expression = nodeToString(scriptNode);
-        m_scriptEngine.evaluate( expression );
-    }
-    
-}
-
-QScriptValue SkinContext::evaluateTemplateExpression(QString expression) const {
-    QScriptValue out = m_scriptEngine.evaluate(expression);
-    if(m_scriptEngine.hasUncaughtException()){
-        qDebug()
-            << "SVG script exception : " << out.toString()
-            << "Empty string returned";
-        
-        // return an empty string as remplacement for the in-attribute expression
-        return QString();
-    } else {
-        return out;
-    }
-}
