@@ -269,7 +269,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         }
     }
 
-    QList<EngineChannel*> processed_channels;
+    QSet<EngineChannel*> processed_channels;
     it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
@@ -301,7 +301,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
         // Process the buffer if necessary
         if (needsProcessing) {
-            processed_channels.append(pChannel);
+            processed_channels.insert(pChannel);
             pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
             if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
