@@ -10,7 +10,6 @@ SvgParser::SvgParser() {
 
 SvgParser::SvgParser(const SkinContext& parent)
         : m_variables(parent.variables()) {
-          // m_skinBasePath(parent.m_skinBasePath) {
     QScriptValue context = m_scriptEngine.currentContext()->activationObject();
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
@@ -40,7 +39,7 @@ QDomDocument SvgParser::getDocument(const QDomNode& node) const {
 
 
 // replaces Variables nodes in an svg dom tree
-QString SvgParser::setVariablesInSvg(const QDomNode& svgSkinNode) const {
+QString SvgParser::setVariables(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
@@ -75,7 +74,7 @@ QString SvgParser::setVariablesInSvg(const QDomNode& svgSkinNode) const {
         --i;
     }
     
-    parseScriptsInSvg(svgNode);
+    parseScriptElements(svgNode);
     
     parseTree(svgNode, &SvgParser::setVariablesInAttributes);
     
@@ -179,7 +178,7 @@ void SvgParser::parseTree(const QDomNode& node, void (SvgParser::*callback)(cons
 }
 
 
-void SvgParser::parseScriptsInSvg(const QDomNode& svgSkinNode) const {
+void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);

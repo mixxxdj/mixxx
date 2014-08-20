@@ -37,12 +37,12 @@ class SvgParser {
     void parseTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const;
 
 
-    QString setVariablesInSvg(const QDomNode& svgNode) const;
+    QString setVariables(const QDomNode& svgNode) const;
 
 
   private:
     void setVariablesInAttributes(const QDomNode& node) const;
-    void parseScriptsInSvg(const QDomNode& svgNode) const;
+    void parseScriptElements(const QDomNode& svgNode) const;
     QScriptValue evaluateTemplateExpression(QString expression) const;
     
     mutable QScriptEngine m_scriptEngine;

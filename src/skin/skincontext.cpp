@@ -216,8 +216,7 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            // pixmapPath = setVariablesInSvg(svgNode);
-			pixmapPath = scaler->setVariablesInSvg(svgNode);
+			pixmapPath = scaler->setVariables(svgNode);
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
@@ -231,8 +230,7 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
                         document.setContent(file);
                         QDomNode svgNode = document.elementsByTagName("svg").item(0);
                         
-                        // pixmapPath = setVariablesInSvg(svgNode);
-                        pixmapPath = scaler->setVariablesInSvg(svgNode);
+                        pixmapPath = scaler->setVariables(svgNode);
                         file->close();
                     }
                 } else {
