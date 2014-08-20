@@ -133,8 +133,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     masterMonoComboBox->addItem(tr("Mono"));
     masterMonoComboBox->setCurrentIndex(m_pMasterMono->get() ? 1 : 0);
     connect(masterMonoComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(masterMonoChanged(int)));
-    m_pMasterMono->connectValueChanged(this, SLOT(masterMonoChanged(double)));
+            this, SLOT(masterMonoComboBoxChanged(int)));
+    m_pMasterMono->connectValueChanged(this, SLOT(masterMonoCoChanged(double)));
 
 
     m_pKeylockEngine =
@@ -557,11 +557,11 @@ void DlgPrefSound::masterEnabledChanged(double value) {
     masterMixComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
-void DlgPrefSound::masterMonoChanged(int value) {
-    m_pMasterMono->set(value);
+void DlgPrefSound::masterMonoComboBoxChanged(int value) {
+    m_pMasterMono->set((double)value);
 }
 
-void DlgPrefSound::masterMonoChanged(double value) {
+void DlgPrefSound::masterMonoCoChanged(double value) {
     masterMonoComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
