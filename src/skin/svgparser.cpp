@@ -37,12 +37,41 @@ QDomDocument SvgParser::getDocument(const QDomNode& node) const {
     return document;
 }
 
-
-// replaces Variables nodes in an svg dom tree
-QString SvgParser::setVariables(const QDomNode& svgSkinNode) const {
+QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
+    
+    setVariables(svgNode);
+    
+    parseScriptElements(svgNode);
+    
+    parseTree(svgNode, &SvgParser::setVariablesInAttributes);
+    
+    // Save the new svg in a temp file to use it with setPixmap
+    QTemporaryFile svgFile;
+    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
+    
+    // the file will be removed before being parsed in skin if set to true
+    svgFile.setAutoRemove( false );
+    
+    QString svgTempFileName;
+    if( svgFile.open() ){
+        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
+        QTextStream out(&svgFile);
+        svgNode.save( out, 2 );
+        svgFile.close();
+        svgTempFileName = svgFile.fileName();
+    } else {
+        qDebug() << "Unable to open temp file for inline svg \n";
+    }
+    
+    return svgTempFileName;
+}
+
+// replaces Variables nodes in an svg dom tree
+void SvgParser::setVariables(const QDomNode& svgNode) const {
+    
     QDomDocument document = getDocument(svgNode);
     QDomElement svgElement = svgNode.toElement();
     
@@ -73,30 +102,6 @@ QString SvgParser::setVariables(const QDomNode& svgSkinNode) const {
         
         --i;
     }
-    
-    parseScriptElements(svgNode);
-    
-    parseTree(svgNode, &SvgParser::setVariablesInAttributes);
-    
-    // Save the new svg in a temp file to use it with setPixmap
-    QTemporaryFile svgFile;
-    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
-    
-    // the file will be removed before being parsed in skin if set to true
-    svgFile.setAutoRemove( false );
-    
-    QString svgTempFileName;
-    if( svgFile.open() ){
-        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
-        QTextStream out(&svgFile);
-        svgNode.save( out, 2 );
-        svgFile.close();
-        svgTempFileName = svgFile.fileName();
-    } else {
-        qDebug() << "Unable to open temp file for inline svg \n";
-    }
-    
-    return svgTempFileName;
 }
 
 
@@ -180,11 +185,8 @@ void SvgParser::parseTree(const QDomNode& node, void (SvgParser::*callback)(cons
 
 void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
     
-    // clone svg to don't alter xml input
-    QDomNode svgNode = svgSkinNode.cloneNode(true);
-    QDomElement svgElement = svgNode.toElement();
-    
     // parse script content
+    QDomElement svgElement = svgSkinNode.toElement();
     QDomNodeList scriptElements = svgElement.elementsByTagName("script");
     int i = 0;
     QString expression;
@@ -212,7 +214,7 @@ QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
             << "Empty string returned";
         
         // return an empty string as remplacement for the in-attribute expression
-        return QString();
+        return m_scriptEngine.nullValue();
     } else {
         return out;
     }
