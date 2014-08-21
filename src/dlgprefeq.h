@@ -37,8 +37,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     virtual ~DlgPrefEQ();
 
   public slots:
-    void slotLoFiChanged();
-    void slotEnaEQChanged();
+    void slotEqChanged();
     /** Update Hi EQ **/
     void slotUpdateHiEQ();
     /** Update Lo EQ **/
@@ -46,12 +45,10 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     /** Apply changes to widget */
     void slotApply();
     void slotUpdate();
+    void slotResetToDefaults();
 
   signals:
     void apply(const QString &);
-
-  private slots:
-    void reset();
 
   private:
     void loadSettings();

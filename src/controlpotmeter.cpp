@@ -19,12 +19,23 @@
 #include "controlpotmeter.h"
 #include "controlobjectthread.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue)
-        : ControlObject(key),
+ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
+                                 bool allowOutOfBounds,
+                                 bool bIgnoreNops,
+                                 bool bTrack,
+                                 bool bPersist)
+        : ControlObject(key, bIgnoreNops, bTrack, bPersist),
           m_controls(key) {
-    setRange(dMinValue, dMaxValue);
-    setStep(m_dValueRange / 10.f);
-    setSmallStep(m_dValueRange / 100.f);
+    setRange(dMinValue, dMaxValue, allowOutOfBounds);
+    setStep(m_dValueRange / 10.0);
+    setSmallStep(m_dValueRange / 100.0);
+
+    double default_value = m_dMinValue + 0.5 * m_dValueRange;
+    setDefaultValue(default_value);
+    if (!bPersist) {
+        set(default_value);
+    }
+    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
 ControlPotmeter::~ControlPotmeter() {
@@ -46,20 +57,17 @@ void ControlPotmeter::setSmallStep(double dValue) {
     m_controls.setSmallStep(dValue);
 }
 
-void ControlPotmeter::setRange(double dMinValue, double dMaxValue) {
+void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
+                               bool allowOutOfBounds) {
     m_dMinValue = dMinValue;
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue - m_dMinValue;
-    double default_value = m_dMinValue + 0.5 * m_dValueRange;
+    m_bAllowOutOfBounds = allowOutOfBounds;
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlPotmeterBehavior(dMinValue, dMaxValue));
+                new ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
     }
-
-    setDefaultValue(default_value);
-    set(default_value);
-    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
@@ -204,4 +212,3 @@ void PotmeterControls::toggleMinusValue(double v) {
         m_pControl->set(value > 0.0 ? -1.0 : 1.0);
     }
 }
-

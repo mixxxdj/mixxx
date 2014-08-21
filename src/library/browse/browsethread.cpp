@@ -31,7 +31,7 @@ BrowseThread::BrowseThread(QObject *parent)
     m_bStopThread = false;
     m_model_observer = NULL;
     //start Thread
-    start(QThread::LowestPriority);
+    start(QThread::LowPriority);
 
 }
 

@@ -20,7 +20,8 @@ PresetInfo::PresetInfo()
         : m_valid(false) {
 }
 
-PresetInfo::PresetInfo(const QString preset_path) {
+PresetInfo::PresetInfo(const QString preset_path)
+        : m_valid(false) {
     // Parse <info> header section from a controller description XML file
     // Contents parsed by xml path:
     // info.name        Preset name, used for drop down menus in dialogs
@@ -133,22 +134,26 @@ QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) c
     return product;
 }
 
-PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig)
+PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig) {
-
-    QString configPath = m_pConfig->getResourcePath();
-    controllerDirPaths.append(configPath.append("controllers/"));
-    QString settingsPath = m_pConfig->getSettingsPath();
-    controllerDirPaths.append(settingsPath.append("presets/"));
+    controllerDirPaths.append(localPresetsPath(pConfig));
+    controllerDirPaths.append(resourcePresetsPath(pConfig));
 
     // Static list of supported default extensions, sorted by popularity
-    fileExtensions.append(QString(".midi.xml"));
-    fileExtensions.append(QString(".cntrlr.xml"));
-    fileExtensions.append(QString(".hid.xml"));
-    fileExtensions.append(QString(".bulk.xml"));
-    fileExtensions.append(QString(".osc.xml"));
+    fileExtensions.append(QString(MIDI_PRESET_EXTENSION));
+    fileExtensions.append(QString(HID_PRESET_EXTENSION));
+    fileExtensions.append(QString(BULK_PRESET_EXTENSION));
 
     loadSupportedPresets();
+}
+
+PresetInfoEnumerator::~PresetInfoEnumerator() {
+    for (QMap<QString, ControllerPresetFileHandler*>::iterator it =
+                 m_presetFileHandlersByExtension.begin();
+         it != m_presetFileHandlersByExtension.end(); ++it) {
+        delete it.value();
+        it = m_presetFileHandlersByExtension.erase(it);
+    }
 }
 
 bool PresetInfoEnumerator::isValidExtension(const QString extension) {
@@ -215,7 +220,6 @@ void PresetInfoEnumerator::addExtension(const QString extension) {
 }
 
 void PresetInfoEnumerator::loadSupportedPresets() {
-
     foreach (QString dirPath, controllerDirPaths) {
         QDirIterator it(dirPath);
         while (it.hasNext()) {

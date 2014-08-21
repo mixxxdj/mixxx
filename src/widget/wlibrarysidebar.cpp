@@ -21,6 +21,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setDropIndicatorShown(true);
     setAcceptDrops(true);
     setAutoScroll(true);
+    setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
     header()->setResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -141,32 +142,41 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
     }
 }
 
-void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return)
-    {
-        QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
-        if (selectedIndices.size() > 0) {
-            QModelIndex index = selectedIndices.at(0);
-            emit(pressed(index));
-            //Expand or collapse the item as necessary.
-            setExpanded(index, !isExpanded(index));
-        }
+
+void WLibrarySidebar::toggleSelectedItem() {
+    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0) {
+        QModelIndex index = selectedIndices.at(0);
+        // Activate the item so its content shows in the main library.
+        emit(pressed(index));
+        // Expand or collapse the item as necessary.
+        setExpanded(index, !isExpanded(index));
     }
-    else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)
-    {
-        //Let the tree view move up and down for us...
+}
+
+void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return) {
+        toggleSelectedItem();
+        return;
+    } else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) {
+        // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
-        //But force the index to be activated/clicked after the selection
-        //changes. (Saves you from having to push "enter" after changing the selection.)
+
+        // But force the index to be activated/clicked after the selection
+        // changes. (Saves you from having to push "enter" after changing the
+        // selection.)
         QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+
         //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
             emit(pressed(index));
         }
+        return;
     }
-    else
-        QTreeView::keyPressEvent(event);
+
+    // Fall through to deafult handler.
+    QTreeView::keyPressEvent(event);
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {

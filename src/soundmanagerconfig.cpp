@@ -18,6 +18,7 @@
 #include "sounddevice.h"
 #include "soundmanager.h"
 #include "util/cmdlineargs.h"
+#include "util/math.h"
 
 // this (7) represents latency values from 1 ms to about 80 ms -- bkgood
 const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
@@ -29,11 +30,14 @@ const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
 // audioBufferSizeIndex=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
 const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
+const int SoundManagerConfig::kDefaultSyncBuffers = 2;
+
 SoundManagerConfig::SoundManagerConfig()
     : m_api("None"),
       m_sampleRate(kFallbackSampleRate),
       m_deckCount(kDefaultDeckCount),
-      m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex) {
+      m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
+      m_syncBuffers(2) {
     m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() + SOUNDMANAGERCONFIG_FILENAME);
 }
 
@@ -64,6 +68,7 @@ bool SoundManagerConfig::readFromDisk() {
     setSampleRate(rootElement.attribute("samplerate", "0").toUInt());
     // audioBufferSizeIndex is refereed as "latency" in the config file
     setAudioBufferSizeIndex(rootElement.attribute("latency", "0").toUInt());
+    setSyncBuffers(rootElement.attribute("sync_buffers", "2").toUInt());
     setDeckCount(rootElement.attribute("deck_count",
                                        QString(kDefaultDeckCount)).toUInt());
     clearOutputs();
@@ -119,6 +124,7 @@ bool SoundManagerConfig::writeToDisk() const {
     docElement.setAttribute("samplerate", m_sampleRate);
     // audioBufferSizeIndex is refereed as "latency" in the config file
     docElement.setAttribute("latency", m_audioBufferSizeIndex);
+    docElement.setAttribute("sync_buffers", m_syncBuffers);
     docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
 
@@ -177,6 +183,16 @@ unsigned int SoundManagerConfig::getSampleRate() const {
 void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
     // making sure we don't divide by zero elsewhere
     m_sampleRate = sampleRate != 0 ? sampleRate : kFallbackSampleRate;
+}
+
+
+unsigned int SoundManagerConfig::getSyncBuffers() const {
+    return m_syncBuffers;
+}
+
+void SoundManagerConfig::setSyncBuffers(unsigned int syncBuffers) {
+    // making sure we don't divide by zero elsewhere
+    m_syncBuffers = qMin(syncBuffers, (unsigned int)2);
 }
 
 /**
@@ -393,4 +409,6 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         }
         m_audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
+
+    m_syncBuffers = kDefaultSyncBuffers;
 }

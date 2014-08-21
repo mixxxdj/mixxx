@@ -8,13 +8,12 @@ bool HidControllerPresetFileHandler::save(const HidControllerPreset& preset,
 }
 
 ControllerPresetPointer HidControllerPresetFileHandler::load(const QDomElement root,
-                                                             const QString deviceName,
-                                                             const bool forceLoad) {
+                                                             const QString deviceName) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
 
-    QDomElement controller = getControllerNode(root, deviceName, forceLoad);
+    QDomElement controller = getControllerNode(root, deviceName);
     if (controller.isNull()) {
         return ControllerPresetPointer();
     }

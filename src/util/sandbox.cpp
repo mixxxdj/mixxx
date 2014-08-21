@@ -11,7 +11,7 @@
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
 #include <Security/SecCode.h>
 #include <Security/SecRequirement.h>
 #endif
@@ -30,7 +30,7 @@ void Sandbox::initialize(const QString& permissionsFile) {
     s_pSandboxPermissions = new ConfigObject<ConfigValue>(permissionsFile);
 
 #ifdef Q_OS_MAC
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     // If we are running on at least 10.7.0 and have the com.apple.security.app-sandbox
     // entitlement, we are in a sandbox
     SInt32 version = 0;
@@ -157,6 +157,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
     }
 
 #ifdef Q_OS_MAC
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(canonicalPath),
             kCFURLPOSIXPathStyle, isDirectory);
@@ -190,6 +191,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
             qDebug() << "Failed to create security-scoped bookmark URL for" << canonicalPath;
         }
     }
+#endif
 #endif
     return false;
 }
@@ -321,6 +323,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
 SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
                                                     const QString& bookmarkBase64) {
 #ifdef Q_OS_MAC
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
     if (!bookmarkBA.isEmpty()) {
         CFDataRef bookmarkData = CFDataCreate(
@@ -358,6 +361,11 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
         }
     }
 #endif
+#else
+    Q_UNUSED(canonicalPath);
+    Q_UNUSED(bookmarkBase64);
+#endif
+
     return SecurityTokenPointer();
 }
 
@@ -378,10 +386,12 @@ SandboxSecurityToken::~SandboxSecurityToken() {
     if (sDebug) {
         qDebug() << "~SandboxSecurityToken" << m_path;
     }
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     if (m_url) {
         CFURLStopAccessingSecurityScopedResource(m_url);
         CFRelease(m_url);
         m_url = 0;
     }
+#endif
 #endif
 }

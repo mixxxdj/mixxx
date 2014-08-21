@@ -1,12 +1,9 @@
 #ifndef CONTROLBEHAVIOR_H
 #define CONTROLBEHAVIOR_H
 
-#include <math.h>
-
 #include <QTimer>
 
 #include "controllers/midi/midimessage.h"
-#include "mathstuff.h"
 
 class ControlDoublePrivate;
 
@@ -20,6 +17,7 @@ class ControlNumericBehavior {
 
     virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
+    virtual double midiValueToParameter(double midiValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
@@ -28,28 +26,29 @@ class ControlNumericBehavior {
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
-    ControlPotmeterBehavior(double dMinValue, double dMaxValue);
+    ControlPotmeterBehavior(double dMinValue, double dMaxValue,
+                            bool allowOutOfBounds);
     virtual ~ControlPotmeterBehavior();
 
     virtual bool setFilter(double* dValue);
     virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
+    virtual double midiValueToParameter(double midiValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
 
   protected:
     double m_dMinValue;
     double m_dMaxValue;
     double m_dValueRange;
     double m_dDefaultValue;
+    bool m_bAllowOutOfBounds;
 };
 
-class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
+class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLogpotmeterBehavior(double dMaxValue);
-    virtual ~ControlLogpotmeterBehavior();
+    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue);
+    virtual ~ControlLogPotmeterBehavior();
 
     virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
@@ -62,12 +61,9 @@ class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue);
+    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+                               bool allowOutOfBounds);
     virtual ~ControlLinPotmeterBehavior();
-
-    virtual double valueToMidiParameter(double dValue);
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
 };
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {

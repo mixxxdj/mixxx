@@ -61,7 +61,7 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     // from, the auto-DJ queue.
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(slotAddCrateToAutoDj(int)));
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove"), this);
+    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
 
@@ -127,6 +127,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     QList<int> trackIds;
     if (pSource) {
         trackIds = trackDao.getTrackIds(files);
+        trackDao.unhideTracks(trackIds);
     } else {
         trackIds = trackDao.addTracks(files, true);
     }

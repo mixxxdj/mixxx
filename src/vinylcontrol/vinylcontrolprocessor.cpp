@@ -5,8 +5,8 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
+#include "util/defs.h"
 #include "controlpushbutton.h"
-#include "defs.h"
 #include "util/timer.h"
 #include "util/event.h"
 #include "sampleutil.h"
@@ -199,6 +199,9 @@ void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
     delete pVC;
 }
 
+bool VinylControlProcessor::deckConfigured(int index) const {
+    return m_processors[index] != NULL;
+}
 
 void VinylControlProcessor::receiveBuffer(AudioInput input,
                                           const CSAMPLE* pBuffer,

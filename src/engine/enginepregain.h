@@ -30,7 +30,7 @@ class EnginePregain : public EngineObject {
     EnginePregain(const char* group);
     virtual ~EnginePregain();
 
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
     float m_fPrevGain;

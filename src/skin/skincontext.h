@@ -6,6 +6,7 @@
 #include <QDomNode>
 #include <QDomElement>
 #include <QScriptEngine>
+#include <QDir>
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -20,8 +21,7 @@ class SkinContext {
 
     // Gets a path relative to the skin path.
     QString getSkinPath(const QString& relativePath) const {
-        QString l(relativePath);
-        return l.prepend(m_skinBasePath);
+        return QDir(m_skinBasePath).filePath(relativePath);
     }
 
     // Sets the base path used by getSkinPath.
@@ -49,8 +49,9 @@ class SkinContext {
     QString selectString(const QDomNode& node, const QString& nodeName) const;
     float selectFloat(const QDomNode& node, const QString& nodeName) const;
     double selectDouble(const QDomNode& node, const QString& nodeName) const;
-    int selectInt(const QDomNode& node, const QString& nodeName) const;
+    int selectInt(const QDomNode& node, const QString& nodeName, bool* pOk=NULL) const;
     bool selectBool(const QDomNode& node, const QString& nodeName, bool defaultValue) const;
+    bool hasNodeSelectString(const QDomNode& node, const QString& nodeName, QString *value) const;
     bool hasNodeSelectBool(const QDomNode& node, const QString& nodeName, bool *value) const;
     bool selectAttributeBool(const QDomElement& element,
                              const QString& attributeName,
@@ -59,6 +60,9 @@ class SkinContext {
                                   const QString& attributeName,
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
+    QDomDocument getDocument(const QDomNode& node) const;
+    QString setVariablesInSvg(const QDomNode& svgNode) const;
+    QString getPixmapPath(const QDomNode& pixmapNode) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
@@ -66,6 +70,7 @@ class SkinContext {
     mutable QScriptEngine m_scriptEngine;
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
+    
 };
 
 #endif /* SKINCONTEXT_H */

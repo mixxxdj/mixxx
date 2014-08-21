@@ -19,6 +19,8 @@
 #define ENGINEFILTERBLOCK_H
 
 #include "engine/engineobject.h"
+#include "engine/enginefilterbessel4.h"
+#include "engine/enginefilterbutterworth8.h"
 
 class ControlObjectSlave;
 class ControlLogpotmeter;
@@ -42,13 +44,19 @@ class EngineFilterBlock : public EngineObject {
     EngineFilterBlock(const char* group);
     virtual ~EngineFilterBlock();
 
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
-    void setFilters(bool forceSetting = false);
+    void setFilters();
 
-    CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3;
-    EngineObject *low, *band, *high;
+    CSAMPLE *m_pLowBuf, *m_pBandBuf, *m_pHighBuf;
+    EngineFilterBessel4Low* lowLight;
+    EngineFilterBessel4Band* bandLight;
+    EngineFilterBessel4High* highLight;
+    EngineFilterButterworth8Low* lowDef;
+    EngineFilterButterworth8Band* bandDef;
+    EngineFilterButterworth8High* highDef;
+    EngineObjectConstIn *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
     ControlObjectSlave* m_pSampleRate;
@@ -58,10 +66,11 @@ class EngineFilterBlock : public EngineObject {
     static ControlPushButton *s_EnableEq;
 
     int m_iOldSampleRate;
-    double old_low, old_mid, old_high;
+    double old_low, old_mid, old_high, old_dry;
 
     int ilowFreq, ihighFreq;
     bool blofi;
+    bool m_eqNeverTouched;
 };
 
 #endif

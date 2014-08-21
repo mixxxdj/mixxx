@@ -4,6 +4,7 @@
 
 #include "engine/sync/enginesync.h"
 #include "controlobject.h"
+#include "controlpotmeter.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
 
@@ -12,10 +13,19 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
           m_pEngineSync(pEngineSync),
           m_mode(SYNC_NONE),
           m_iOldSampleRate(44100),
-          m_dOldBpm(0.0),
-          m_dBeatLength(0),
+          m_dOldBpm(124.0),
+          m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
           m_dClockPosition(0) {
-    m_pClockBpm.reset(new ControlObject(ConfigKey(m_group, "bpm")));
+    // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
+    // map a soft-takeover MIDI knob to the master BPM. This also creates bpm_up
+    // and bpm_down controls.
+    m_pClockBpm.reset(new ControlPotmeter(ConfigKey(m_group, "bpm"),
+                                          1, 200, true));
+    // bpm_up / bpm_down steps by 1
+    m_pClockBpm->setStep(1);
+    // bpm_up_small / bpm_down_small steps by 0.1
+    m_pClockBpm->setSmallStep(0.1);
+
     connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);
@@ -85,7 +95,7 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setBpm(double bpm) {
-    qDebug() << "InternalClock::setBpm" << bpm;
+    //qDebug() << "InternalClock::setBpm" << bpm;
     m_pClockBpm->set(bpm);
     updateBeatLength(m_iOldSampleRate, bpm);
 }

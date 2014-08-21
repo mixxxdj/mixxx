@@ -21,10 +21,10 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "defs.h"
 #include "widget/wpixmapstore.h"
 #include "widget/controlwidgetconnection.h"
 #include "util/debug.h"
+#include "util/math.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
@@ -50,11 +50,11 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     unsetPixmaps();
 
     if (context.hasNode(node, "Slider")) {
-        QString pathSlider = context.getSkinPath(context.selectString(node, "Slider"));
+        QString pathSlider = context.getPixmapPath(context.selectNode(node, "Slider"));
         setSliderPixmap(pathSlider);
     }
 
-    QString pathHandle = context.getSkinPath(context.selectString(node, "Handle"));
+    QString pathHandle = context.getPixmapPath(context.selectNode(node, "Handle"));
     bool h = context.selectBool(node, "Horizontal", false);
     setHandlePixmap(h, pathHandle);
 
@@ -97,7 +97,8 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getControlParameter());
+        // Value is unused in WSliderComposed.
+        onConnectedControlChanged(getControlParameter(), 0);
         update();
     }
 }
@@ -136,7 +137,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         }
 
         // If we don't change this, then updates might be rejected in
-        // onConnectedControlValueChanged.
+        // onConnectedControlChanged.
         m_dOldValue = newValue;
 
         // Emit valueChanged signal
@@ -155,10 +156,11 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
     double newValue = m_dOldValue + wheelDirection;
 
     // Clamp to [0.0, 1.0]
-    newValue = math_max(0.0, math_min(1.0, newValue));
+    newValue = math_clamp(newValue, 0.0, 1.0);
 
     setControlParameter(newValue);
-    onConnectedControlValueChanged(newValue);
+    // Value is unused in WSliderComposed.
+    onConnectedControlChanged(newValue, 0);
     update();
 
     e->accept();
@@ -216,23 +218,50 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
-void WSliderComposed::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag && m_dOldValue != dValue) {
-        m_dOldValue = dValue;
+void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
+    Q_UNUSED(pEvent);
+    m_dOldValue = -1;
+    m_iPos = -1;
+    // Re-calculate m_iPos based on our new width/height.
+    onConnectedControlChanged(getControlParameter(), 0);
+}
+
+void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
+    // WARNING: The second parameter to this method is unused and called with
+    // invalid values in parts of WSliderComposed. Do not use it unless you fix
+    // this.
+
+    // We don't update slider values while you're dragging them. This way you
+    // don't have to "fight" with a controller that is also changing the
+    // control.
+    if (m_bDrag) {
+        return;
+    }
+
+    if (m_dOldValue != dParameter) {
+        m_dOldValue = dParameter;
 
         // Calculate handle position
         if (!m_bHorizontal) {
-            dValue = 1.0 - dValue;
+            dParameter = 1.0 - dParameter;
         }
         int sliderLength = m_bHorizontal ? width() : height();
-        m_iPos = static_cast<int>(dValue * (sliderLength - m_iHandleLength));
 
-        if (m_iPos > (sliderLength - m_iHandleLength)) {
-            m_iPos = sliderLength - m_iHandleLength;
-        } else if (m_iPos < 0) {
-            m_iPos = 0;
+        int newPos = static_cast<int>(dParameter * (sliderLength - m_iHandleLength));
+        if (newPos > (sliderLength - m_iHandleLength)) {
+            newPos = sliderLength - m_iHandleLength;
+        } else if (newPos < 0) {
+            newPos = 0;
         }
-        update();
+
+        // Check a second time for no-ops. It's possible the parameter changed
+        // but the visible pixmap didn't. Only update() the widget if we're
+        // really sure we need to since this involves painting ALL of its
+        // parents.
+        if (newPos != m_iPos) {
+            m_iPos = newPos;
+            update();
+        }
     }
 }
 

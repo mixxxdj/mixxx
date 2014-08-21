@@ -30,6 +30,10 @@ class ControlObject : public QObject {
     Q_OBJECT
   public:
     ControlObject();
+
+    // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
+    // bTrack: Record statistics about this control.
+    // bPersist: Store value on exit, load on startup.
     ControlObject(ConfigKey key,
                   bool bIgnoreNops=true, bool bTrack=false,
                   bool bPersist=false);
@@ -67,19 +71,39 @@ class ControlObject : public QObject {
     }
 
     // Return the key of the object
-    inline ConfigKey getKey() const { return m_key; }
+    inline ConfigKey getKey() const {
+        return m_key;
+    }
+
     // Returns the value of the ControlObject
-    double get() const;
+    inline double get() const {
+        return m_pControl ? m_pControl->get() : 0.0;
+    }
+
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
+
     // Sets the ControlObject value. May require confirmation by owner.
-    void set(double value);
+    inline void set(double value) {
+        if (m_pControl) {
+            m_pControl->set(value, this);
+        }
+    }
     // Sets the ControlObject value and confirms it.
-    void setAndConfirm(double value);
+    inline void setAndConfirm(double value) {
+        if (m_pControl) {
+            m_pControl->setAndConfirm(value, this);
+        }
+    }
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
+
     // Sets the default value
-    void reset();
+    inline void reset() {
+        if (m_pControl) {
+            m_pControl->reset();
+        }
+    }
 
     inline void setDefaultValue(double dValue) {
         if (m_pControl) {
@@ -89,6 +113,21 @@ class ControlObject : public QObject {
     inline double defaultValue() const {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
+
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameter() const;
+
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameterForValue(double value) const;
+
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameterForMidiValue(double midiValue) const;
+
+    // Sets the control parameterized value to v. Thread safe, non-blocking.
+    virtual void setParameter(double v);
+
+    // Sets the control parameterized value to v. Thread safe, non-blocking.
+    virtual void setParameterFrom(double v, QObject* pSender = NULL);
 
     // Connects a Qt slot to a signal that is delivered when a new value change
     // request arrives for this control.

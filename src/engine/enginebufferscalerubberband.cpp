@@ -9,6 +9,8 @@
 #include "sampleutil.h"
 #include "track/keyutils.h"
 #include "util/counter.h"
+#include "util/math.h"
+#include "util/defs.h"
 
 using RubberBand::RubberBandStretcher;
 
@@ -239,7 +241,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     }
 
     if (remaining_frames > 0) {
-        SampleUtil::applyGain(read, 0.0f, remaining_frames * iNumChannels);
+        SampleUtil::clear(read, remaining_frames * iNumChannels);
         Counter counter("EngineBufferScaleRubberBand::getScaled underflow");
         counter.increment();
     }

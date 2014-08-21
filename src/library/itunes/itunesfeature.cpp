@@ -169,7 +169,7 @@ void ITunesFeature::activate(bool forceReload) {
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit (featureIsLoading(this));
+        emit (featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pITunesTrackModel));
@@ -323,7 +323,7 @@ void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader &xml) {
 TreeItem* ITunesFeature::importLibrary() {
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowestPriority);
+    thisThread->setPriority(QThread::LowPriority);
 
     //Delete all table entries of iTunes feature
     ScopedTransaction transaction(m_database);

@@ -20,7 +20,8 @@
 #include "engine/engineobject.h"
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
-#define UPDATE_RATE 20
+#define VU_UPDATE_RATE 30 // in 1/s, fits to display frame rate
+#define PEAK_DURATION 500 // in ms
 
 // SMOOTHING FACTORS
 // Must be from 0-1 the lower the factor, the more smoothing that is applied
@@ -28,6 +29,7 @@
 #define DECAY_SMOOTHING .1  //.16//.4
 
 class ControlPotmeter;
+class ControlObjectSlave;
 
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
@@ -35,21 +37,28 @@ class EngineVuMeter : public EngineObject {
     EngineVuMeter(const char*);
     virtual ~EngineVuMeter();
 
-    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    virtual void process(CSAMPLE* pInOut, const int iBufferSize);
+
+    virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
     void reset();
 
   private:
+    void doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume);
+
     ControlPotmeter* m_ctrlVuMeter;
     ControlPotmeter* m_ctrlVuMeterL;
     ControlPotmeter* m_ctrlVuMeterR;
-    FLOAT_TYPE m_fRMSvolumeL;
-    FLOAT_TYPE m_fRMSvolumeSumL;
-    FLOAT_TYPE m_fRMSvolumeR;
-    FLOAT_TYPE m_fRMSvolumeSumR;
+    CSAMPLE m_fRMSvolumeL;
+    CSAMPLE m_fRMSvolumeSumL;
+    CSAMPLE m_fRMSvolumeR;
+    CSAMPLE m_fRMSvolumeSumR;
     int m_iSamplesCalculated;
 
-    void doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume);
+    ControlPotmeter* m_ctrlPeakIndicator;
+    int m_peakDuration;
+
+    ControlObjectSlave* m_pSampleRate;
 };
 
 #endif

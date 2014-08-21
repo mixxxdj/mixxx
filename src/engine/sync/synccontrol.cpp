@@ -25,7 +25,9 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     m_pPlayButton->connectValueChanged(this, SLOT(slotControlPlay(double)),
                                        Qt::DirectConnection);
 
-    m_pSyncMode.reset(new ControlObject(ConfigKey(pGroup, "sync_mode")));
+    m_pSyncMode.reset(new ControlPushButton(ConfigKey(pGroup, "sync_mode")));
+    m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMode->setStates(SYNC_NUM_MODES);
     m_pSyncMode->connectValueChangeRequest(
             this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
 
@@ -109,7 +111,7 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
     if (mode == SYNC_FOLLOWER) {
-        if (m_pVCEnabled->get()) {
+        if (m_pVCEnabled && m_pVCEnabled->get()) {
             // If follower mode is enabled, disable vinyl control.
             m_pVCEnabled->set(0.0);
         }
@@ -150,7 +152,7 @@ void SyncControl::setBpm(double bpm) {
     }
 
     // Vinyl Control overrides.
-    if (m_pVCEnabled->get() > 0.0) {
+    if (m_pVCEnabled && m_pVCEnabled->get() > 0.0) {
         return;
     }
 
@@ -240,6 +242,10 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
             // Already master.
             return;
         }
+        if (m_pPassthroughEnabled->get()) {
+            qDebug() << "Disallowing enabling of sync mode when passthrough active";
+            return;
+        }
         m_pEngineSync->requestSyncMode(this, SYNC_MASTER);
     } else {
         // Turning off master goes back to follower mode.
@@ -259,6 +265,10 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
     // If we are not already in the enabled state requested, request a
     // transition.
     if (bEnabled != syncEnabled) {
+        if (bEnabled && m_pPassthroughEnabled->get()) {
+            qDebug() << "Disallowing enabling of sync mode when passthrough active";
+            return;
+        }
         m_pEngineSync->requestEnableSync(this, bEnabled);
     }
 }

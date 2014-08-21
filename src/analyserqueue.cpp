@@ -291,6 +291,12 @@ void AnalyserQueue::run() {
         // Could happen if the track was queued but then deleted.
         // Or if dequeueNextBlocking is unblocked by exit == true
         if (!nextTrack) {
+            m_qm.lock();
+            m_queue_size = m_tioq.size();
+            m_qm.unlock();
+            if (m_queue_size == 0) {
+                emit(queueEmpty()); // emit asynchrony for no deadlock
+            }
             continue;
         }
 
@@ -421,7 +427,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }
 
@@ -430,12 +436,11 @@ AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
         ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(pConfig));
     ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }

@@ -17,6 +17,7 @@
 #include "soundsourceproxy.h"
 #include "playermanager.h"
 #include "util/dnd.h"
+#include "dlgpreflibrary.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -190,6 +191,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
+    header->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -359,11 +361,25 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         return;
     }
-
-    TrackModel* trackModel = getTrackModel();
-    TrackPointer pTrack;
-    if (trackModel && (pTrack = trackModel->getTrack(index))) {
-        emit(loadTrack(pTrack));
+    // Read the current TrackLoadAction settings
+    int action = DlgPrefLibrary::LOAD_TRACK_DECK; // default action
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        action = m_pConfig->getValueString(ConfigKey("[Library]","TrackLoadAction")).toInt();
+    }
+    switch (action) {
+    case DlgPrefLibrary::ADD_TRACK_BOTTOM:
+            sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
+            break;
+    case DlgPrefLibrary::ADD_TRACK_TOP:
+            sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
+            break;
+    default: // load track to next available deck
+            TrackModel* trackModel = getTrackModel();
+            TrackPointer pTrack;
+            if (trackModel && (pTrack = trackModel->getTrack(index))) {
+                emit(loadTrack(pTrack));
+            }
+            break;
     }
 }
 
@@ -468,22 +484,31 @@ void WTrackTableView::slotShowTrackInfo() {
 void WTrackTableView::slotNextTrackInfo() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showTrackInfo(nextRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevTrackInfo() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showTrackInfo(prevRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showTrackInfo(QModelIndex index) {
     TrackModel* trackModel = getTrackModel();
 
-    if (!trackModel)
+    if (!trackModel) {
         return;
+    }
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
@@ -495,15 +520,23 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 void WTrackTableView::slotNextDlgTagFetcher() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showDlgTagFetcher(nextRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevDlgTagFetcher() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showDlgTagFetcher(prevRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
@@ -1142,6 +1175,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
                                              iAutoDJPlaylistId, 2);
     } else {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(
                 trackIds, iAutoDJPlaylistId);
     }
@@ -1242,6 +1276,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
    }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }
@@ -1304,6 +1339,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         }
     }
     if (trackIds.size() > 0) {
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         crateDao.addTracksToCrate(iCrateId, &trackIds);
     }
 }

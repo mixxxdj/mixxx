@@ -1,5 +1,6 @@
 #include "control/controlbehavior.h"
 #include "control/control.h"
+#include "util/math.h"
 
 bool ControlNumericBehavior::setFilter(double* dValue) {
     Q_UNUSED(dValue);
@@ -14,6 +15,10 @@ double ControlNumericBehavior::valueToParameter(double dValue) {
     return dValue;
 }
 
+double ControlNumericBehavior::midiValueToParameter(double midiValue) {
+    return midiValue;
+}
+
 double ControlNumericBehavior::parameterToValue(double dParam) {
     return dParam;
 }
@@ -25,21 +30,30 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
 void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
                                                        ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    pControl->set(dParam, NULL);
+    double dNorm = midiValueToParameter(dParam);
+    pControl->set(parameterToValue(dNorm), NULL);
 }
 
-ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue)
+ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
+                                                 bool allowOutOfBounds)
         : m_dMinValue(dMinValue),
           m_dMaxValue(dMaxValue),
           m_dValueRange(m_dMaxValue - m_dMinValue),
-          m_dDefaultValue(m_dMinValue + 0.5 * m_dValueRange) {
+          m_dDefaultValue(m_dMinValue + 0.5 * m_dValueRange),
+          m_bAllowOutOfBounds(allowOutOfBounds) {
 }
 
 ControlPotmeterBehavior::~ControlPotmeterBehavior() {
 }
 
 bool ControlPotmeterBehavior::setFilter(double* dValue) {
-    Q_UNUSED(dValue);
+    if (!m_bAllowOutOfBounds) {
+        if (*dValue > m_dMaxValue) {
+            *dValue = m_dMaxValue;
+        } else if (*dValue < m_dMinValue) {
+            *dValue = m_dMinValue;
+        }
+    }
     return true;
 }
 
@@ -60,6 +74,17 @@ double ControlPotmeterBehavior::valueToParameter(double dValue) {
     return (dValue - m_dMinValue) / m_dValueRange;
 }
 
+double ControlPotmeterBehavior::midiValueToParameter(double midiValue) {
+    double parameter;
+    if (midiValue > 64) {
+        parameter = (midiValue - 1) / 126.0;
+    } else {
+        // Hack for 0.5 at 64
+        parameter = midiValue / 128.0;
+    }
+    return parameter;
+}
+
 double ControlPotmeterBehavior::parameterToValue(double dParam) {
     return m_dMinValue + (dParam * m_dValueRange);
 }
@@ -67,17 +92,15 @@ double ControlPotmeterBehavior::parameterToValue(double dParam) {
 double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center. We fake things a
-    // little bit here to make that the case. This piece-wise function is linear
-    // from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
+    // little bit here to make that the case. This function is linear from [0,
+    // 127.0/128.0] with slope 128 and then cuts off at 127 from 127.0/128.0 to
+    // 1.0.  from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
     double dNorm = valueToParameter(dValue);
-    return dNorm < 0.5 ? dNorm * 128.0 : dNorm * 126.0 + 1.0;
-}
-
-void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                        ControlDoublePrivate* pControl) {
-    Q_UNUSED(o);
-    double dNorm = dParam < 64 ? dParam / 128.0 : (dParam - 1.0) / 126.0;
-    pControl->set(parameterToValue(dNorm), NULL);
+    if (dNorm > 0.5) {
+        return (dNorm * 126) + 1;
+    } else {
+        return dNorm * 128.0;
+    }
 }
 
 #define maxPosition 1.0
@@ -85,11 +108,13 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 #define middlePosition ((maxPosition - minPosition) / 2.0)
 #define positionrange (maxPosition - minPosition)
 
-ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
-        : ControlPotmeterBehavior(0, dMaxValue) {
-    if (dMaxValue == 1.0) {
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false),
+          m_dB1(0.0),
+          m_dB2(0.0) {
+    if (dMaxValue == 1.0 || dMinValue != 0.0 ) {
         m_bTwoState = false;
-        m_dB1 = log10(2.0) / maxPosition;
+        m_dB1 = log10((dMaxValue - dMinValue) + 1.0) / maxPosition;
     } else {
         m_bTwoState = true;
         m_dB1 = log10(2.0) / middlePosition;
@@ -97,22 +122,22 @@ ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
     }
 }
 
-ControlLogpotmeterBehavior::~ControlLogpotmeterBehavior() {
+ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
 }
 
-double ControlLogpotmeterBehavior::defaultValue(double dDefault) const {
+double ControlLogPotmeterBehavior::defaultValue(double dDefault) const {
     Q_UNUSED(dDefault);
     return 1.0;
 }
 
-double ControlLogpotmeterBehavior::valueToParameter(double dValue) {
+double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     if (dValue > m_dMaxValue) {
         dValue = m_dMaxValue;
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
     if (!m_bTwoState) {
-        return log10(dValue + 1) / m_dB1;
+        return log10((dValue - m_dMinValue) + 1) / m_dB1;
     } else {
         if (dValue > 1.0) {
             return log10(dValue) / m_dB2 + middlePosition;
@@ -122,9 +147,9 @@ double ControlLogpotmeterBehavior::valueToParameter(double dValue) {
     }
 }
 
-double ControlLogpotmeterBehavior::parameterToValue(double dParam) {
+double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     if (!m_bTwoState) {
-        return pow(10.0, m_dB1 * dParam) - 1.0;
+        return pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
     } else {
         if (dParam <= middlePosition) {
             return pow(10.0, m_dB1 * dParam) - 1;
@@ -134,28 +159,12 @@ double ControlLogpotmeterBehavior::parameterToValue(double dParam) {
     }
 }
 
-ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue) {
+ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+                                                       bool allowOutOfBounds)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
 
 ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
-}
-
-double ControlLinPotmeterBehavior::valueToMidiParameter(double dValue) {
-    // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
-    // center. The industry convention is that 64 is center. We fake things a
-    // little bit here to make that the case. This function is linear from [0,
-    // 127.0/128.0] with slope 128 and then cuts off at 127 from 127.0/128.0 to
-    // 1.0.  from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
-    double dNorm = valueToParameter(dValue);
-    return math_max(127.0, dNorm * 128.0);
-}
-
-void ControlLinPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                           ControlDoublePrivate* pControl) {
-    Q_UNUSED(o);
-    double dNorm = dParam / 128.0;
-    pControl->set(parameterToValue(dNorm), NULL);
 }
 
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
@@ -163,7 +172,7 @@ double ControlTTRotaryBehavior::valueToParameter(double dValue) {
 }
 
 double ControlTTRotaryBehavior::parameterToValue(double dParam) {
-    dParam *= 127.0;
+    dParam *= 128.0;
     // Non-linear scaling
     double temp = ((dParam - 64.0) * (dParam - 64.0)) / 64.0;
     if (dParam - 64 < 0) {
@@ -242,4 +251,3 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
         }
     }
 }
-

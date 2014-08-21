@@ -27,6 +27,8 @@
 #include "skin/colorschemeparser.h"
 #include "skin/skincontext.h"
 
+#include "effects/effectsmanager.h"
+
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
@@ -42,10 +44,17 @@
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wnumber.h"
+#include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
+#include "widget/weffectchain.h"
+#include "widget/weffect.h"
+#include "widget/weffectparameter.h"
+#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectparameterbase.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
+#include "widget/woverviewrgb.h"
 #include "widget/wspinny.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -60,6 +69,7 @@
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
 #include "util/valuetransformer.h"
+#include "util/cmdlineargs.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -112,13 +122,15 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
-                                   VinylControlManager* pVCMan)
+                                   VinylControlManager* pVCMan,
+                                   EffectsManager* pEffectsManager)
         : m_pConfig(pConfig),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
           m_pControllerManager(pControllerManager),
           m_pLibrary(pLibrary),
           m_pVCManager(pVCMan),
+          m_pEffectsManager(pEffectsManager),
           m_pParent(NULL),
           m_pContext(NULL) {
 }
@@ -415,6 +427,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
         // NumberBpm is deprecated, and is now the same as a Number
         result = wrapWidget(parseLabelWidget<WNumber>(node));
+    } else if (nodeName == "NumberDb") {
+        result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
     } else if (nodeName == "Knob") {
@@ -429,6 +443,14 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseWidgetGroup(node));
     } else if (nodeName == "WidgetStack") {
         result = wrapWidget(parseWidgetStack(node));
+    } else if (nodeName == "EffectChainName") {
+        result = wrapWidget(parseEffectChainName(node));
+    } else if (nodeName == "EffectName") {
+        result = wrapWidget(parseEffectName(node));
+    } else if (nodeName == "EffectParameterName") {
+        result = wrapWidget(parseEffectParameterName(node));
+    } else if (nodeName == "EffectButtonParameterName") {
+        result = wrapWidget(parseEffectButtonParameterName(node));
     } else if (nodeName == "Spinny") {
         result = wrapWidget(parseSpinny(node));
     } else if (nodeName == "Time") {
@@ -440,7 +462,7 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     } else if (nodeName == "Library") {
         result = wrapWidget(parseLibrary(node));
     } else if (nodeName == "Key") {
-        result = wrapWidget(parseLabelWidget<WKey>(node));
+        result = wrapWidget(parseEngineKey(node));
     } else if (nodeName == "SetVariable") {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
@@ -453,12 +475,10 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
-    WSplitter* pSplitter = new WSplitter(m_pParent);
+    WSplitter* pSplitter = new WSplitter(m_pParent, m_pConfig);
     setupConnections(node, pSplitter);
     setupBaseWidget(node, pSplitter);
     setupWidget(node, pSplitter);
-    pSplitter->setup(node, *m_pContext);
-    pSplitter->Init();
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     QWidget* pOldParent = m_pParent;
@@ -481,29 +501,8 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
             }
         }
     }
-
-    if (m_pContext->hasNode(node, "SplitSizes")) {
-        QString sizesJoined = m_pContext->selectString(node, "SplitSizes");
-        QStringList sizesSplit = sizesJoined.split(",");
-        QList<int> sizes;
-        bool ok = false;
-        foreach (const QString& sizeStr, sizesSplit) {
-            sizes.push_back(sizeStr.toInt(&ok));
-            if (!ok) {
-                break;
-            }
-        }
-        if (sizes.length() != pSplitter->count()) {
-            qDebug() << "<SplitSizes> for <Splitter> (" << sizesJoined
-                     << ") does not match the number of children nodes:"
-                     << pSplitter->count();
-            ok = false;
-        }
-        if (ok) {
-            pSplitter->setSizes(sizes);
-        }
-
-    }
+    pSplitter->setup(node, *m_pContext);
+    pSplitter->Init();
 
     m_pParent = pOldParent;
     return pSplitter;
@@ -552,14 +551,24 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     ControlObject* pPrevControl = controlFromConfigNode(
             node.toElement(), "PrevControl", &createdPrev);
 
-    WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
+    bool createdCurrentPage = false;
+    ControlObject* pCurrentPageControl = NULL;
+    QString currentpage_co = node.attribute("currentpage");
+    if (currentpage_co.length() > 0) {
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(currentpage_co);
+        QString persist_co = node.attribute("persist");
+        bool persist = m_pContext->selectAttributeBool(node, "persist", false);
+        pCurrentPageControl = controlFromConfigKey(configKey, persist,
+                                                   &createdCurrentPage);
+    }
+
+    WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl,
+                                            pPrevControl, pCurrentPageControl);
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     setupConnections(node, pStack);
     setupBaseWidget(node, pStack);
     setupWidget(node, pStack);
-    pStack->Init();
-
 
     if (createdNext && pNextControl) {
         pNextControl->setParent(pStack);
@@ -569,11 +578,14 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
         pPrevControl->setParent(pStack);
     }
 
-    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
+    if (createdCurrentPage) {
+        pCurrentPageControl->setParent(pStack);
+    }
 
     QWidget* pOldParent = m_pParent;
     m_pParent = pStack;
 
+    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     if (!childrenNode.isNull()) {
         // Descend chilren
         QDomNodeList children = childrenNode.childNodes();
@@ -608,8 +620,6 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             if (trigger_configkey.length() > 0) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
-                // TODO(rryan): Allow persist enabling. Not sure what the best
-                // option is -- need to think about it.
                 pControl = controlFromConfigKey(configKey, false, &created);
                 if (created) {
                     // If we created the control, parent it to the child widget so
@@ -620,6 +630,10 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             pStack->addWidgetWithControl(pChild, pControl);
         }
     }
+
+    // Init the widget last now that all the children have been created,
+    // so if the current page was saved we can switch to the correct page.
+    pStack->Init();
     m_pParent = pOldParent;
     return pStack;
 }
@@ -719,12 +733,14 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 
     WOverview* overviewWidget = NULL;
 
-    // HSV = "1" or "Filtered" = "0" (LMH) waveform overview type
-    if (m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"),
-            "0").toInt() == 0) {
+    // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
+    int type = m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+    if (type == 0) {
         overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
-    } else {
+    } else if (type == 1) {
         overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+    } else {
+        overviewWidget = new WOverviewRGB(pSafeChannelStr, m_pConfig, m_pParent);
     }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
@@ -882,14 +898,28 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     return p;
 }
 
+QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
+    WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
+    setupLabelWidget(node, pEngineKey);
+    return pEngineKey;
+}
+
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
     WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
     if (!spinny->isValid()) {
         delete spinny;
         WLabel* dummy = new WLabel(m_pParent);
-        //: Shown when Spinny can not be displayd. Please keep \n unchanged
+        //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
@@ -909,7 +939,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig, m_pParent);
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
     setupBaseWidget(node, pLineEditSearch);
     setupWidget(node, pLineEditSearch);
     pLineEditSearch->setup(node, *m_pContext);
@@ -1233,6 +1263,30 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     return safe;
 }
 
+QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
+    WEffectChain* pEffectChain = new WEffectChain(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffectChain);
+    return pEffectChain;
+}
+
+QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
+    WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffect);
+    return pEffect;
+}
+
+QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {
+    WEffectParameterBase* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffectParameter);
+    return pEffectParameter;
+}
+
+QWidget* LegacySkinParser::parseEffectButtonParameterName(QDomElement node) {
+    WEffectParameterBase* pEffectButtonParameter = new WEffectButtonParameter(m_pParent, m_pEffectsManager);
+    setupLabelWidget(node, pEffectButtonParameter);
+    return pEffectButtonParameter;
+}
+
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
     if (m_pContext->hasNode(node, "Pos")) {
         QString pos = m_pContext->selectString(node, "Pos");
@@ -1481,12 +1535,17 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
     ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
 
-    while (!con.isNull()) {
+    for (QDomNode con = m_pContext->selectNode(node, "Connection");
+            !con.isNull();
+            con = con.nextSibling()) {
         // Check that the control exists
         bool created = false;
         ControlObject* control = controlFromConfigNode(
                 con.toElement(), "ConfigKey", &created);
 
+        if (!control) {
+            continue;
+        }
 
         ValueTransformer* pTransformer = NULL;
         if (m_pContext->hasNode(con, "Transform")) {
@@ -1496,7 +1555,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
 
         if (m_pContext->hasNode(con, "BindProperty")) {
             QString property = m_pContext->selectString(con, "BindProperty");
-            qDebug() << "Making property connection for" << property;
+            //qDebug() << "Making property connection for" << property;
 
             ControlObjectSlave* pControlWidget =
                     new ControlObjectSlave(control->getKey(),
@@ -1685,7 +1744,6 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 }
             }
         }
-        con = con.nextSibling();
     }
 
     // Legacy behavior: The last left-button or no-button connection with
