@@ -19,7 +19,7 @@
      <item row="0" column="1">
       <widget class="QComboBox" name="apiComboBox"/>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="headDelayLabel">
        <property name="text">
         <string>Headphone Delay</string>
@@ -36,7 +36,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -49,7 +49,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <widget class="QLabel" name="currentLatency">
        <property name="text">
         <string>20 ms</string>
@@ -66,10 +66,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QComboBox" name="keylockComboBox"/>
-     </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <spacer name="outputVSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -88,7 +85,7 @@
      <item row="1" column="1">
       <widget class="QComboBox" name="sampleRateComboBox"/>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="latencyLabel">
        <property name="text">
         <string>Known Latency</string>
@@ -98,7 +95,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="underflowLabel">
        <property name="text">
         <string>Buffer Underflow Count</string>
@@ -121,14 +118,14 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="10" column="1">
       <widget class="QLabel" name="bufferUnderflowCount">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QDoubleSpinBox" name="headDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -141,20 +138,10 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="masterDelayLabel">
        <property name="text">
         <string>Master Delay</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="keylockLabel">
-       <property name="text">
-        <string>Keylock/Pitch-Bending Engine</string>
-       </property>
-       <property name="buddy">
-        <cstring>keylockComboBox</cstring>
        </property>
       </widget>
      </item>
@@ -168,15 +155,38 @@
      <item row="3" column="1">
       <widget class="QComboBox" name="deviceSyncComboBox"/>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="masteMixLabel">
        <property name="text">
         <string>Master Mix</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QComboBox" name="masterMixComboBox"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="keylockLabel">
+       <property name="text">
+        <string>Keylock/Pitch-Bending Engine</string>
+       </property>
+       <property name="buddy">
+        <cstring>keylockComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="keylockComboBox"/>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="masterMonoLabel">
+       <property name="text">
+        <string>Master Output Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="masterOutputModeComboBox"/>
      </item>
     </layout>
    </item>
@@ -317,7 +327,6 @@
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>audioBufferComboBox</tabstop>
   <tabstop>deviceSyncComboBox</tabstop>
-  <tabstop>keylockComboBox</tabstop>
   <tabstop>headDelaySpinBox</tabstop>
   <tabstop>masterDelaySpinBox</tabstop>
   <tabstop>ioTabs</tabstop>

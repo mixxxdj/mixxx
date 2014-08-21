@@ -77,7 +77,7 @@ class ConfigValue {
     ConfigValue(QString _value);
     ConfigValue(int _value);
     inline ConfigValue(QDomNode /* node */) { reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here"); }
-    void valCopy(const ConfigValue _value);
+    void valCopy(const ConfigValue& _value);
 
     QString value;
     friend bool operator==(const ConfigValue & s1, const ConfigValue & s2);
@@ -90,7 +90,7 @@ class ConfigValueKbd : public ConfigValue {
     ConfigValueKbd(QString _value);
     ConfigValueKbd(QKeySequence key);
     inline ConfigValueKbd(QDomNode /* node */) { reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here"); }
-    void valCopy(const ConfigValueKbd v);
+    void valCopy(const ConfigValueKbd& v);
     friend bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2);
 
     QKeySequence m_qKey;

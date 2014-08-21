@@ -72,7 +72,7 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     // If our enabled state changed then tell each group to ramp in or out.
     if (wasEnabled ^ m_bEnabled) {
         for (QMap<QString, GroupStatus>::iterator it = m_groupStatus.begin();
-             it != m_groupStatus.end(); it++) {
+             it != m_groupStatus.end(); ++it) {
             GroupStatus& status = it.value();
 
             if (m_bEnabled) {
