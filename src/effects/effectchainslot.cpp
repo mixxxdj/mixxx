@@ -41,7 +41,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
-    m_pControlChainMix->set(0.0);
+    m_pControlChainMix->set(1.0);
 
     m_pControlChainParameter = new ControlPotmeter(ConfigKey(m_group, "parameter"), 0.0, 1.0);
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
