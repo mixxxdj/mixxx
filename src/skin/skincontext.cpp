@@ -1,7 +1,6 @@
 #include <QtDebug>
 #include <QStringList>
 #include <QScriptValue>
-#include <QTemporaryFile>
 
 #include "skin/skincontext.h"
 #include "skin/svgparser.h"
@@ -216,7 +215,7 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-			pixmapPath = scaler->parseSvgTree(svgNode);
+            pixmapPath = scaler->parseSvgTree(svgNode);
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
