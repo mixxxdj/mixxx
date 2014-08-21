@@ -18,7 +18,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlLinkType = new ControlPushButton(
         ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
+    m_pControlLinkType->setStates(EffectManifestParameter::LINK_INVERSE);
     m_pControlLinkInverse = new ControlPushButton(
         ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
@@ -84,10 +84,13 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
-            m_pControlLinkType->set(m_pEffectParameter->getLinkHint());
+
             if (m_pEffectParameter->getLinkHint() >= EffectManifestParameter::LINK_INVERSE) {
+                m_pControlLinkType->set(m_pEffectParameter->getLinkHint() -
+                        EffectManifestParameter::LINK_INVERSE + 1);
                 m_pControlLinkInverse->set(1);
             } else {
+                m_pControlLinkType->set(m_pEffectParameter->getLinkHint());
                 m_pControlLinkInverse->set(0);
             }
 
@@ -126,23 +129,50 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
         EffectManifestParameter::LinkType type =
                 static_cast<EffectManifestParameter::LinkType>(
                         (int)m_pControlLinkType->get());
-        bool inverse = m_pControlLinkInverse->get();
 
         switch (type) {
-            case EffectManifestParameter::LINK_INVERSE:
-                parameter = 1.0 - parameter;
-                // no break
             case EffectManifestParameter::LINK_LINKED:
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
-                if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
-                    m_pControlValue->setParameterFrom(parameter, NULL);
+                break;
+            case EffectManifestParameter::LINK_LINKED_LEFT:
+                if (parameter >= 0.0 && parameter <= 0.5) {
+                    parameter *= 2;
+                    parameter = 1.0 - parameter;
+                } else {
+                    return;
+                }
+                break;
+            case EffectManifestParameter::LINK_LINKED_RIGHT:
+                if (parameter >= 0.5 && parameter <= 1.0) {
+                    parameter -= 0.5;
+                    parameter *= 2;
+                } else {
+                    return;
+                }
+                break;
+            case EffectManifestParameter::LINK_LINKED_LEFT_RIGHT:
+                if (parameter >= 0.5 && parameter <= 1.0) {
+                    parameter -= 0.5;
+                    parameter *= 2;
+                } else if (parameter >= 0.0 && parameter <= 0.5) {
+                    parameter *= 2;
+                    parameter = 1.0 - parameter;
+                } else {
+                    return;
                 }
                 break;
             case EffectManifestParameter::LINK_NONE:
             default:
-                break;
+                return;
+        }
+
+        if (m_pControlLinkInverse->get()) {
+            parameter = 1.0 - parameter;
+        }
+        if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
+            m_pControlValue->setParameterFrom(parameter, NULL);
         }
     }
 }
