@@ -244,18 +244,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
 
-    // Add the same number of decks that were last used.  This ensures that when
-    // audio inputs and outputs are set up, connections for decks > 2 will
-    // succeed.
-    int deck_count = m_pConfig->getValueString(ConfigKey("[Master]",
-                                                         "num_decks"),
-                                               "2").toInt();
-    if (deck_count < 2) {
-        deck_count = 2;
-    }
-    for (int i = 0; i < deck_count; ++i) {
-        m_pPlayerManager->addDeck();
-    }
+    m_pPlayerManager->addConfiguredDecks();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
