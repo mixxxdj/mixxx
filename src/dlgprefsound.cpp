@@ -128,13 +128,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterMixChanged(int)));
     m_pMasterEnabled->connectValueChanged(this, SLOT(masterEnabledChanged(double)));
 
-    m_pMasterMono = new ControlObjectSlave("[Master]", "mono", this);
-    masterMonoComboBox->addItem(tr("Stereo"));
-    masterMonoComboBox->addItem(tr("Mono"));
-    masterMonoComboBox->setCurrentIndex(m_pMasterMono->get() ? 1 : 0);
-    connect(masterMonoComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(masterMonoComboBoxChanged(int)));
-    m_pMasterMono->connectValueChanged(this, SLOT(masterMonoCoChanged(double)));
+    m_pMasterMonoMixdown = new ControlObjectSlave("[Master]", "mono_mixdown", this);
+    masterOutputModeComboBox->addItem(tr("Stereo"));
+    masterOutputModeComboBox->addItem(tr("Mono"));
+    masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->get() ? 1 : 0);
+    connect(masterOutputModeComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(masterOutputModeComboBoxChanged(int)));
+    m_pMasterMonoMixdown->connectValueChanged(this, SLOT(masterMonoMixdownChanged(double)));
 
 
     m_pKeylockEngine =
@@ -557,11 +557,11 @@ void DlgPrefSound::masterEnabledChanged(double value) {
     masterMixComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
-void DlgPrefSound::masterMonoComboBoxChanged(int value) {
-    m_pMasterMono->set((double)value);
+void DlgPrefSound::masterOutputModeComboBoxChanged(int value) {
+    m_pMasterMonoMixdown->set((double)value);
 }
 
-void DlgPrefSound::masterMonoCoChanged(double value) {
-    masterMonoComboBox->setCurrentIndex(value ? 1 : 0);
+void DlgPrefSound::masterMonoMixdownChanged(double value) {
+    masterOutputModeComboBox->setCurrentIndex(value ? 1 : 0);
 }
 

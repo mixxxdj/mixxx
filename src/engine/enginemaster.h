@@ -252,7 +252,7 @@ class EngineMaster : public QObject, public AudioSource {
     // and right Bus and no recording and broadcast active
     ControlObject* m_pMasterEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
-    ControlObject* m_pMasterMono;
+    ControlObject* m_pMasterMonoMixdown;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];
