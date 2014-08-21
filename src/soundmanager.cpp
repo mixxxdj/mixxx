@@ -470,6 +470,10 @@ void SoundManager::checkConfig() {
         m_config.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
         m_config.loadDefaults(this, SoundManagerConfig::OTHER);
     }
+
+    // Even if we have a two-deck skin, if someone has configured a deck > 2
+    // then the configuration needs to know about that extra deck.
+    m_config.setCorrectDeckCount(getConfiguredDeckCount());
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
@@ -561,4 +565,14 @@ void SoundManager::setJACKName() const {
     }
 #endif
 #endif
+}
+
+void SoundManager::setConfiguredDeckCount(int count) {
+    m_config.setDeckCount(count);
+    checkConfig();
+    m_config.writeToDisk();
+}
+
+int SoundManager::getConfiguredDeckCount() const {
+    return m_config.getDeckCount();
 }
