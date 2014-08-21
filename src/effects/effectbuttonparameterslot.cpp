@@ -14,18 +14,12 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNum
     QString itemPrefix = formatItemPrefix(iParameterNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
-    m_pControlLinkType = new ControlPushButton(
-        ConfigKey(m_group, itemPrefix + QString("_link_type")));
-    m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlValue = new ControlPushButton(
         ConfigKey(m_group, itemPrefix));
     m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pControlType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLinkType(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
@@ -77,7 +71,6 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
-            m_pControlLinkType->set(m_pEffectParameter->getLinkType());
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
                     this, SLOT(slotParameterValueChanged(QVariant)));
@@ -98,7 +91,6 @@ void EffectButtonParameterSlot::clear() {
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
-    m_pControlLinkType->set(EffectManifestParameter::LINK_NONE);
     emit(updated());
 }
 

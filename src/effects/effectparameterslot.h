@@ -42,6 +42,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);
+    void slotLinkType(double v);
 
   private:
     QString debugString() const {
@@ -55,6 +56,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     // Control exposed to the rest of Mixxx
     ControlEffectKnob* m_pControlValue;
+    ControlPushButton* m_pControlLinkType;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };

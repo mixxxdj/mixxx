@@ -45,6 +45,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     //qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     delete m_pSoftTakeover;
+    delete m_pControlLinkType;
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
@@ -111,6 +112,15 @@ EffectManifestParameter::LinkType EffectParameterSlot::getLinkType() const{
         return m_pEffectParameter->getLinkType();
     }
     return EffectManifestParameter::LINK_NONE;
+}
+
+void EffectParameterSlot::slotLinkType(double v) {
+    //qDebug() << debugString() << "slotLinkType" << v;
+    if (m_pEffectParameter) {
+        // Intermediate cast to integer is needed for VC++.
+        m_pEffectParameter->setLinkType(
+            static_cast<EffectManifestParameter::LinkType>(int(v)));
+    }
 }
 
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
