@@ -57,6 +57,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // Control exposed to the rest of Mixxx
     ControlEffectKnob* m_pControlValue;
     ControlPushButton* m_pControlLinkType;
+    ControlPushButton* m_pControlLinkInverse;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };

@@ -19,6 +19,9 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
         ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
+    m_pControlLinkInverse = new ControlPushButton(
+        ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
+    m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlValue = new ControlEffectKnob(
         ConfigKey(m_group, itemPrefix));
     m_pControlType = new ControlObject(
@@ -46,6 +49,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pControlValue;
     delete m_pSoftTakeover;
     delete m_pControlLinkType;
+    delete m_pControlLinkInverse;
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
@@ -83,6 +87,11 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
             m_pControlLinkType->set(m_pEffectParameter->getLinkType());
+            if (m_pEffectParameter->getLinkType() >= EffectManifestParameter::LINK_INVERSE) {
+                m_pControlLinkInverse->set(1);
+            } else {
+                m_pControlLinkInverse->set(0);
+            }
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
                     this, SLOT(slotParameterValueChanged(QVariant)));
@@ -103,6 +112,7 @@ void EffectParameterSlot::clear() {
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
     m_pControlLinkType->set(EffectManifestParameter::LINK_NONE);
+    m_pControlLinkInverse->set(0.0);
     emit(updated());
 }
 
