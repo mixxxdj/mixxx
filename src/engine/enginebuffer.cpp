@@ -405,10 +405,23 @@ void EngineBuffer::requestSyncPhase() {
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {
+    SyncRequestQueued enable_request =
+            static_cast<SyncRequestQueued>(
+                    m_iEnableSyncQueued.fetchAndAddRelease(0));
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
-        m_iEnableSyncQueued = SYNC_REQUEST_DISABLE;
+        // If sync is enabled and disabled very quickly, it's is a one-shot
+        // sync event and needs to be handled specially. Otherwise the sync
+        // state will get stuck on or won't go on at all.
+        if (enable_request == SYNC_REQUEST_ENABLE) {
+            m_iEnableSyncQueued = SYNC_REQUEST_ENABLEDISABLE;
+        } else {
+            // Note that there is no DISABLEENABLE, because that's an irrelevant
+            // queuing.  Moreover, ENABLEDISABLEENABLE is also redundant, so
+            // we don't have to handle any special cases.
+            m_iEnableSyncQueued = SYNC_REQUEST_DISABLE;
+        }
     }
 }
 
@@ -1020,9 +1033,19 @@ void EngineBuffer::processSyncRequests() {
                     m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
     SyncMode mode_request =
             static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
-    if (enable_request != SYNC_REQUEST_NONE) {
-        bool enabled = enable_request == SYNC_REQUEST_ENABLE;
-        m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
+    switch (enable_request) {
+    case SYNC_REQUEST_ENABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        break;
+    case SYNC_REQUEST_DISABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        break;
+    case SYNC_REQUEST_ENABLEDISABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        break;
+    case SYNC_REQUEST_NONE:
+        break;
     }
     if (mode_request != SYNC_INVALID) {
         m_pEngineSync->requestSyncMode(m_pSyncControl,

@@ -260,15 +260,13 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
     bool syncEnabled = getSyncMode() != SYNC_NONE;
     // syncEnabled == true -> We are follower or master
 
-    // If we are not already in the enabled state requested, request a
-    // transition.
-    if (bEnabled != syncEnabled) {
-        if (bEnabled && m_pPassthroughEnabled->get()) {
-            qDebug() << "Disallowing enabling of sync mode when passthrough active";
-            return;
-        }
-        m_pChannel->getEngineBuffer()->requestEnableSync(bEnabled);
+    // Allow a request for state change even if it's the same as the current
+    // state.  We might have toggled on and off in the space of one buffer.
+    if (bEnabled && m_pPassthroughEnabled->get()) {
+        qDebug() << "Disallowing enabling of sync mode when passthrough active";
+        return;
     }
+    m_pChannel->getEngineBuffer()->requestEnableSync(bEnabled);
 }
 
 SyncMode SyncControl::getSyncMode() const {
