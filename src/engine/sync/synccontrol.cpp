@@ -257,8 +257,6 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
 
 void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
     bool bEnabled = enabled > 0.0;
-    bool syncEnabled = getSyncMode() != SYNC_NONE;
-    // syncEnabled == true -> We are follower or master
 
     // Allow a request for state change even if it's the same as the current
     // state.  We might have toggled on and off in the space of one buffer.
