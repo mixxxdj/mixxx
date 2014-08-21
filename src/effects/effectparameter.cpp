@@ -186,7 +186,7 @@ bool EffectParameter::clampRanges() {
     return false;
 }
 
-EffectManifestParameter::LinkType EffectParameter::getLinkType() const {
+EffectManifestParameter::LinkType EffectParameter::getLinkHint() const {
     return m_parameter.linkHint();
 }
 

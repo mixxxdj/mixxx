@@ -84,8 +84,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
-            m_pControlLinkType->set(m_pEffectParameter->getLinkType());
-            if (m_pEffectParameter->getLinkType() >= EffectManifestParameter::LINK_INVERSE) {
+            m_pControlLinkType->set(m_pEffectParameter->getLinkHint());
+            if (m_pEffectParameter->getLinkHint() >= EffectManifestParameter::LINK_INVERSE) {
                 m_pControlLinkInverse->set(1);
             } else {
                 m_pControlLinkInverse->set(0);
