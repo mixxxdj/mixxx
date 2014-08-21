@@ -1099,7 +1099,10 @@ void EngineBuffer::processSeek() {
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
-    m_pBpmControl->updateBeatDistance();
+    double beat_distance = m_pBpmControl->updateBeatDistance();
+    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+        m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
+    }
     // Report our speed to SyncControl. If we are the master then it will
     // broadcast this update to followers.
     m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);

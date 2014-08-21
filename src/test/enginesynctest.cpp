@@ -17,8 +17,6 @@
 #include "test/mixxxtest.h"
 
 
-namespace {
-
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
     std::string getMasterGroup() {
@@ -916,5 +914,3 @@ TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {
 
     EXPECT_FLOAT_EQ(0.0046439911, m_pChannel1->getEngineBuffer()->getVisualPlayPos());
 }
-
-}  // namespace

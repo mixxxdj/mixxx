@@ -45,7 +45,7 @@ class Syncable {
     virtual double getBeatDistance() const = 0;
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    virtual void setBeatDistance(double beatDistance) = 0;
+    virtual void setMasterBeatDistance(double beatDistance) = 0;
 
     virtual double getBpm() const = 0;
     // Must never result in a call to SyncableListener::notifyBpmChanged or

@@ -131,7 +131,7 @@ double SyncControl::getBeatDistance() const {
     return m_pSyncBeatDistance->get();
 }
 
-void SyncControl::setBeatDistance(double beatDistance) {
+void SyncControl::setMasterBeatDistance(double beatDistance) {
     //qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
     // Set the BpmControl target beat distance to beatDistance.
     m_pBpmControl->setTargetBeatDistance(beatDistance);
@@ -142,7 +142,7 @@ double SyncControl::getBpm() const {
 }
 
 void SyncControl::setBpm(double bpm) {
-    qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
+    //qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
