@@ -34,7 +34,6 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
 
-    EffectManifestParameter::LinkType getLinkType() const;
     double getValueParameter() const;
 
     void onChainParameterChanged(double parameter);
@@ -42,7 +41,6 @@ class EffectParameterSlot : public EffectParameterSlotBase {
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);
-    void slotLinkType(double v);
 
   private:
     QString debugString() const {

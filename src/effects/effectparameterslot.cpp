@@ -27,8 +27,6 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLinkType(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
@@ -116,23 +114,6 @@ void EffectParameterSlot::clear() {
     emit(updated());
 }
 
-EffectManifestParameter::LinkType EffectParameterSlot::getLinkType() const{
-    //qDebug() << debugString() << "slotLinkType" << v;
-    if (m_pEffectParameter) {
-        return m_pEffectParameter->getLinkType();
-    }
-    return EffectManifestParameter::LINK_NONE;
-}
-
-void EffectParameterSlot::slotLinkType(double v) {
-    //qDebug() << debugString() << "slotLinkType" << v;
-    if (m_pEffectParameter) {
-        // Intermediate cast to integer is needed for VC++.
-        m_pEffectParameter->setLinkType(
-            static_cast<EffectManifestParameter::LinkType>(int(v)));
-    }
-}
-
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
@@ -141,10 +122,16 @@ void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
 void EffectParameterSlot::onChainParameterChanged(double parameter) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
-        switch (m_pEffectParameter->getLinkType()) {
+        // Intermediate cast to integer is needed for VC++.
+        EffectManifestParameter::LinkType type =
+                static_cast<EffectManifestParameter::LinkType>(
+                        (int)m_pControlLinkType->get());
+        bool inverse = m_pControlLinkInverse->get();
+
+        switch (type) {
             case EffectManifestParameter::LINK_INVERSE:
                 parameter = 1.0 - parameter;
-                // Intentional fall-through.
+                // no break
             case EffectManifestParameter::LINK_LINKED:
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
