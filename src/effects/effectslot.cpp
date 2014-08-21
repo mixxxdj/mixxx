@@ -198,19 +198,6 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
             pParameter->loadEffect(m_pEffect);
         }
 
-        // find first linked parameter
-        foreach (EffectParameterSlotPointer pParameter, m_parameters) {
-            EffectManifestParameter::LinkType linkType = pParameter->getLinkType();
-            if (linkType != EffectManifestParameter::LINK_NONE) {
-                if (linkType == EffectManifestParameter::LINK_INVERSE) {
-                    m_pCoSuper->set(1 - pParameter->getValueParameter());
-                } else {
-                    m_pCoSuper->set(pParameter->getValueParameter());
-                }
-                break;
-            }
-        }
-
         foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
             pParameter->loadEffect(m_pEffect);
         }
