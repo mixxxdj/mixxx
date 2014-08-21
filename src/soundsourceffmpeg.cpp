@@ -415,19 +415,6 @@ Result SoundSourceFFmpeg::open() {
     filelength = (long int) ((double)m_pFormatCtx->duration * 2 / AV_TIME_BASE *
                              this->getSampleRate());
 
-    if (this->getType().compare("mp3") == 0) {
-        m_pCodecCtx->frame_size = FFMPEG_MP3_FRAME_SIZE;
-    } else if (this->getType().compare("mp4") == 0  ||
-               this->getType().compare("m4a")) {
-        m_pCodecCtx->frame_size = FFMPEG_MP4_FRAME_SIZE;
-    } else if (this->getType().compare("ogg") == 0) {
-        m_pCodecCtx->frame_size = FFMPEG_OGG_FRAME_SIZE;
-    } else if (this->getType().compare("opus") == 0) {
-        m_pCodecCtx->frame_size = FFMPEG_OPUS_FRAME_SIZE;
-    } else {
-        m_pCodecCtx->frame_size = FFMPEG_MP3_FRAME_SIZE;
-    }
-
     return OK;
 }
 
