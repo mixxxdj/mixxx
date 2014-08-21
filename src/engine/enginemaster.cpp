@@ -150,7 +150,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pKeylockEngine->set(_config->getValueString(
             ConfigKey(group, "keylock_engine")).toDouble());
 
-    m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),true, false, true); // persist = true
+    m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),
+            true, false, true);  // persist = true
+    m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
+            true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
 }
 
@@ -184,6 +187,7 @@ EngineMaster::~EngineMaster() {
     delete m_pAudioLatencyOverload;
 
     delete m_pMasterEnabled;
+    delete m_pMasterMonoMixdown;
     delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
@@ -502,6 +506,10 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
             }
         }
+    }
+
+    if (m_pMasterMonoMixdown->get()) {
+        SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, iBufferSize);
     }
 
     if (masterEnabled) {
