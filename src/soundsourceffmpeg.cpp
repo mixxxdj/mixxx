@@ -165,7 +165,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                         l_SObj->length = l_iRet / 2;
                         m_lCacheBytePos += l_iRet;
 
-                        if (offset < 0 || offset <= (m_lCacheBytePos / 2)) {
+                        if (offset < 0 || (uint64_t) offset <= (m_lCacheBytePos / 2)) {
                             l_iCount --;
                         }
                     } else {
