@@ -15,9 +15,8 @@ SvgParser::SvgParser(const SkinContext& parent)
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
     }
-
+    
     p_context = &parent;
-
 }
 
 SvgParser::~SvgParser() {
@@ -83,6 +82,33 @@ QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     return svgTempFileName;
 }
 
+
+QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
+    
+    // Save the new svg in a temp file to use it with setPixmap
+    QTemporaryFile svgFile;
+    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
+    
+    // the file will be removed before being parsed in skin if set to true
+    svgFile.setAutoRemove( false );
+    
+    QString svgTempFileName;
+    if( svgFile.open() ){
+        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
+        QTextStream out(&svgFile);
+        svgNode.save( out, 2 );
+        svgFile.close();
+        svgTempFileName = svgFile.fileName();
+    } else {
+        qDebug() << "Unable to open temp file for inline svg \n";
+    }
+    
+    return svgTempFileName;
+}
+
+
+
+
 // replaces Variables nodes in an svg dom tree
 void SvgParser::parseVariableElements(const QDomNode& svgNode) const {
     
@@ -133,19 +159,19 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     QScriptValue global = m_scriptEngine.globalObject();
     QScriptValue hookNames;
     QString hooksPattern;
+    QRegExp hookRx, nameRx;
     
     hookNames = global.property("hookNames").call( global );
     
     if( hookNames.toString().length() ){
-        hooksPattern = hookNames.property("toPattern").call(hookNames).toString();
-    } else {
-        hooksPattern = "variable";
+        hooksPattern = hookNames.property("toPattern")
+            .call(hookNames).toString();
+        hookRx.setPattern("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");        // hook( arg1 [, arg2]... )
+        // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
     }
     
-    // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
     
-    QRegExp rx("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");                   // hook( arg1 [, arg2]... )
-    QRegExp nameRx("^expr-([^=\\s]+)$");                                        // expr-attribute_name="var_name";
+    nameRx.setPattern("^expr-([^=\\s]+)$");                                     // expr-attribute_name="var_name";
     
     for (i=0; i < attributes.length(); i++){
         
@@ -153,28 +179,28 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
         attributeValue = attribute.value();
         attributeName = attribute.name();
         
-        // searching variable attributes : var-attribute_name="variable_name"
+        // searching variable attributes :
+        // expr-attribute_name="variable_name|expression"
         if (nameRx.indexIn(attributeName) != -1) {
-            
             varValue = evaluateTemplateExpression(attributeValue).toString();
-            
             if (varValue.length()){
                 element.setAttribute( nameRx.cap(1), varValue);
             }
-            
             continue;
         }
          
-        pos = 0;
-        // searching hooks in the attribute value
-        while ((pos = rx.indexIn(attributeValue, pos)) != -1) {
-            captured = rx.capturedTexts();
-            match = rx.cap(0);
-            QString tmp = "templateHooks." + match;
-            // qDebug() <<  "expression : " << tmp << "\n";
-            replacement = evaluateTemplateExpression( tmp ).toString();
-            attributeValue.replace(pos, match.length(), replacement);
-            pos += replacement.length();
+        if( !hookRx.isEmpty() ){
+            // searching hooks in the attribute value
+            pos = 0;
+            while ((pos = hookRx.indexIn(attributeValue, pos)) != -1) {
+                captured = hookRx.capturedTexts();
+                match = hookRx.cap(0);
+                QString tmp = "templateHooks." + match;
+                // qDebug() <<  "expression : " << tmp << "\n";
+                replacement = evaluateTemplateExpression( tmp ).toString();
+                attributeValue.replace(pos, match.length(), replacement);
+                pos += replacement.length();
+            }
         }
         
         attribute.setValue(attributeValue);
