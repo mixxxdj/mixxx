@@ -23,6 +23,8 @@
 #include <QString>
 #include <QByteArray>
 #include <QList>
+//#include <QContiguousCache>
+#include <QVector>
 
 #include "soundsource.h"
 extern "C" {
@@ -50,6 +52,11 @@ extern "C" {
 
 class TrackInfoObject;
 
+struct ffmpegCacheObject {
+    uint64_t startByte;
+    uint32_t length;
+    uint8_t *bytes;
+};
 
 class SoundSourceFFmpeg : public Mixxx::SoundSource {
 public:
@@ -68,11 +75,17 @@ public:
     double convertPtsToByteOffset(double pts, const AVRational &ffmpegtime);
     double convertByteOffsetToPts(double byteoffset, const AVRational &ffmpegtime);
 
+
 protected:
     int64_t convertPtsToByteOffsetOld(int64_t pos, const AVRational &time_base);
     int64_t convertByteOffsetToPtsOld(int64_t pos, const AVRational &time_base);
     void lock();
     void unlock();
+
+    bool readFramesToCache(unsigned int count, int64_t offset);
+    bool getBytesFromCache(char *buffer, uint64_t offset, uint64_t size);
+    uint64_t getSizeofCache();
+    bool clearCache();
 
 private:
     int m_iAudioStream;
@@ -95,6 +108,13 @@ private:
     QByteArray m_strBuffer;
 
     double_t m_fMixxBytePosition;
+
+    uint64_t m_lCacheBytePos;
+    uint64_t m_lCacheStartByte;
+    uint64_t m_lCacheEndByte;
+    uint32_t m_lCacheLastPos;
+    //QContiguousCache<struct ffmpegCacheObject  *> m_SCache;
+    QVector<struct ffmpegCacheObject  *> m_SCache;
 
 };
 
