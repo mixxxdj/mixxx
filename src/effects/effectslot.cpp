@@ -271,8 +271,4 @@ void EffectSlot::onChainParameterChanged(double parameter) {
     for (int i = 0; i < m_parameters.size(); ++i) {
         m_parameters[i]->onChainParameterChanged(parameter);
     }
-
-    for (int i = 0; i < m_buttonParameters.size(); ++i) {
-        m_buttonParameters[i]->onChainParameterChanged(parameter);
-    }
 }

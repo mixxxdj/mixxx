@@ -82,10 +82,6 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
                     this, SLOT(slotParameterValueChanged(QVariant)));
         }
-
-        // Update the newly loaded parameter to match the current chain
-        // superknob if it is linked.
-        onChainParameterChanged(m_dChainParameter);
     }
     emit(updated());
 }
@@ -109,24 +105,4 @@ void EffectButtonParameterSlot::clear() {
 void EffectButtonParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
-}
-
-void EffectButtonParameterSlot::onChainParameterChanged(double parameter) {
-    m_dChainParameter = parameter;
-    if (m_pEffectParameter != NULL) {
-        switch (m_pEffectParameter->getLinkType()) {
-            case EffectManifestParameter::LINK_INVERSE:
-                parameter = 1.0 - parameter;
-                // Intentional fall-through.
-            case EffectManifestParameter::LINK_LINKED:
-                if (parameter < 0.0 || parameter > 1.0) {
-                    return;
-                }
-                m_pControlValue->setParameterFrom(parameter, NULL);
-                break;
-            case EffectManifestParameter::LINK_NONE:
-            default:
-                break;
-        }
-    }
 }
