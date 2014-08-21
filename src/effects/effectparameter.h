@@ -39,7 +39,6 @@ class EffectParameter : public QObject {
     ///////////////////////////////////////////////////////////////////////////
 
     EffectManifestParameter::LinkType getLinkType() const;
-    void setLinkType(EffectManifestParameter::LinkType linkType);
 
     QVariant getValue() const;
     // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
@@ -78,7 +77,6 @@ class EffectParameter : public QObject {
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameter m_parameter;
-    EffectManifestParameter::LinkType m_linkType;
     QVariant m_minimum;
     QVariant m_maximum;
     QVariant m_default;

@@ -11,7 +11,6 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_parameter(parameter),
-          m_linkType(m_parameter.linkHint()),
           m_bAddedToEngine(false) {
     // qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
     //          << m_parameter.id();
@@ -188,12 +187,7 @@ bool EffectParameter::clampRanges() {
 }
 
 EffectManifestParameter::LinkType EffectParameter::getLinkType() const {
-    return m_linkType;
-}
-
-void EffectParameter::setLinkType(EffectManifestParameter::LinkType linkType) {
-    m_linkType = linkType;
-    // TODO(rryan) update value based on link type.
+    return m_parameter.linkHint();
 }
 
 QVariant EffectParameter::getValue() const {
