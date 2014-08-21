@@ -220,54 +220,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     ScopedTimer timer("EngineMaster::processChannels");
 
     QList<ChannelInfo*>::iterator it = m_channels.begin();
-    QList<ChannelInfo*>::iterator master_it = NULL;
 
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
-
-    // Find the Sync Master and process it first then process all the slaves
-    // (and skip the master).
-
-    EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
-    if (pMasterChannel != NULL) {
-        for (unsigned int channel_number = 0;
-             it != m_channels.end(); ++it, ++channel_number) {
-            ChannelInfo* pChannelInfo = *it;
-            EngineChannel* pChannel = pChannelInfo->m_pChannel;
-            if (!pChannel || !pChannel->isActive()) {
-               continue;
-            }
-
-            if (pMasterChannel == pChannel) {
-                master_it = it;
-
-                // Proceed with the processing as below.
-                bool needsProcessing = false;
-                if (pChannel->isMaster()) {
-                    busChannelConnectionFlags[pChannel->getOrientation()] |= (1 << channel_number);
-                    needsProcessing = true;
-                }
-
-                // If the channel is enabled for previewing in headphones, copy it
-                // over to the headphone buffer
-                if (pChannel->isPFL()) {
-                    *headphoneOutput |= (1 << channel_number);
-                    needsProcessing = true;
-                }
-
-                // Process the buffer if necessary, which it damn well better be
-                if (needsProcessing) {
-                    pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
-
-                    if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                            pChannel->isTalkover()) {
-                        m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
-                    }
-                }
-                break;
-            }
-        }
-    }
 
     QSet<EngineChannel*> processed_channels;
     it = m_channels.begin();
@@ -275,11 +230,6 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-
-        // Skip the master since we already processed it.
-        if (it == master_it) {
-            continue;
-        }
 
         // Skip inactive channels.
         if (!pChannel || !pChannel->isActive()) {

@@ -901,4 +901,20 @@ TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
                                                         "bpm"))->get());
 }
 
+TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {
+    // Regression test thanks to a bug.  Make sure that an explicit master
+    // channel gets post-processed.
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    pFileBpm1->set(160.0);
+    ProcessBuffer();
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(0.0046439911, m_pChannel1->getEngineBuffer()->getVisualPlayPos());
+}
+
 }  // namespace
