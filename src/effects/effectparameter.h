@@ -39,6 +39,7 @@ class EffectParameter : public QObject {
     ///////////////////////////////////////////////////////////////////////////
 
     EffectManifestParameter::LinkType getLinkHint() const;
+    double getNeutralHint() const;
 
     QVariant getValue() const;
     // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS

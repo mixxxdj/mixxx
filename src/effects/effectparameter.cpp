@@ -190,6 +190,10 @@ EffectManifestParameter::LinkType EffectParameter::getLinkHint() const {
     return m_parameter.linkHint();
 }
 
+double EffectParameter::getNeutralHint() const {
+    return m_parameter.neutralHint();
+}
+
 QVariant EffectParameter::getValue() const {
     return m_value;
 }

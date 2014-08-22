@@ -18,7 +18,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlLinkType = new ControlPushButton(
         ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlLinkType->setStates(EffectManifestParameter::LINK_INVERSE);
+    m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlLinkInverse = new ControlPushButton(
         ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
@@ -27,18 +27,18 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
+    m_pControlLinkType->connectValueChangeRequest(
                 this, SLOT(slotLinkTypeChanged(double)));
     connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
-                this, SLOT(slotLinkTypeChanged(double)));
+                this, SLOT(slotLinkInverseChanged(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-        this, SLOT(slotValueType(double)), Qt::AutoConnection);
+        this, SLOT(slotValueType(double)));
     m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
+        this, SLOT(slotLoaded(double)));
 
 
     m_pSoftTakeover = new SoftTakeover();
@@ -89,12 +89,11 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
 
-            if (m_pEffectParameter->getLinkHint() >= EffectManifestParameter::LINK_INVERSE) {
-                m_pControlLinkType->set(m_pEffectParameter->getLinkHint() -
-                        EffectManifestParameter::LINK_INVERSE + 1);
+            m_pControlLinkType->set(m_pEffectParameter->getLinkHint());
+
+            if (m_pEffectParameter->getNeutralHint() == 1.0) {
                 m_pControlLinkInverse->set(1);
             } else {
-                m_pControlLinkType->set(m_pEffectParameter->getLinkHint());
                 m_pControlLinkInverse->set(0);
             }
 
@@ -116,7 +115,7 @@ void EffectParameterSlot::clear() {
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
-    m_pControlLinkType->set(EffectManifestParameter::LINK_NONE);
+    m_pControlLinkType->setAndConfirm(EffectManifestParameter::LINK_NONE);
     m_pControlLinkInverse->set(0.0);
     emit(updated());
 }
@@ -127,6 +126,20 @@ void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
 }
 
 void EffectParameterSlot::slotLinkTypeChanged(double v) {
+    Q_UNUSED(v);
+    m_pSoftTakeover->ignoreNext();
+    if (v > EffectManifestParameter::LINK_LINKED) {
+        double neutral = m_pEffectParameter->getNeutralHint();
+        if (neutral > 0.0 && neutral < 1.0) {
+            // Button is already a split button
+            // Toggle back to 0
+            v = EffectManifestParameter::LINK_NONE;
+        }
+    }
+    m_pControlLinkType->setAndConfirm(v);
+}
+
+void EffectParameterSlot::slotLinkInverseChanged(double v) {
     Q_UNUSED(v);
     m_pSoftTakeover->ignoreNext();
 }
@@ -143,6 +156,22 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
             case EffectManifestParameter::LINK_LINKED:
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
+                }
+                {
+                    double neutral = m_pEffectParameter->getNeutralHint();
+                    if (neutral > 0.0 && neutral < 1.0) {
+                        // Button is already a split button
+                        // Match to center position of Super button
+                        if (parameter <= 0.5) {
+                            parameter /= 0.5;
+                            parameter *= neutral;
+                        } else {
+                            parameter -= 0.5;
+                            parameter /= 0.5;
+                            parameter *= 1 - neutral;
+                            parameter += neutral;
+                        }
+                    }
                 }
                 break;
             case EffectManifestParameter::LINK_LINKED_LEFT:

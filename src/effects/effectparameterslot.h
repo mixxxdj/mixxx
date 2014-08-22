@@ -37,11 +37,12 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     double getValueParameter() const;
 
     void onChainParameterChanged(double parameter);
-    void slotLinkTypeChanged(double v);
 
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);
+    void slotLinkTypeChanged(double v);
+    void slotLinkInverseChanged(double v);
 
   private:
     QString debugString() const {

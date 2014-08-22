@@ -41,10 +41,6 @@ class EffectManifestParameter {
         LINK_LINKED_LEFT,
         LINK_LINKED_RIGHT,
         LINK_LINKED_LEFT_RIGHT,
-        LINK_INVERSE,
-        LINK_INVERSE_LEFT,
-        LINK_INVERSE_RIGHT,
-        LINK_INVERSE_LEFT_RIGHT,
         NUM_LINK_TYPES
     };
 
