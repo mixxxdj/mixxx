@@ -53,7 +53,8 @@ class EffectManifestParameter {
               m_valueHint(VALUE_UNKNOWN),
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
-              m_linkHint(LINK_NONE) {
+              m_linkHint(LINK_NONE),
+              m_neutralHint(0.0) {
     }
 
     virtual ~EffectManifestParameter() {
@@ -124,6 +125,13 @@ class EffectManifestParameter {
         m_linkHint = linkHint;
     }
 
+    virtual double neutralHint() const {
+        return m_neutralHint;
+    }
+    virtual void setNeutralHint(double neutralHint) {
+        m_neutralHint = neutralHint;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Value Settings
     ////////////////////////////////////////////////////////////////////////////////
@@ -172,6 +180,7 @@ class EffectManifestParameter {
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
     LinkType m_linkHint;
+    double m_neutralHint;
 
     QVariant m_default;
     QVariant m_minimum;
