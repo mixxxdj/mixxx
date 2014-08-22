@@ -27,6 +27,10 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_type")));
 
+    connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
+                this, SLOT(slotLinkTypeChanged(double)));
+    connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
+                this, SLOT(slotLinkTypeChanged(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
@@ -120,6 +124,11 @@ void EffectParameterSlot::clear() {
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
+}
+
+void EffectParameterSlot::slotLinkTypeChanged(double v) {
+    Q_UNUSED(v);
+    m_pSoftTakeover->ignoreNext();
 }
 
 void EffectParameterSlot::onChainParameterChanged(double parameter) {

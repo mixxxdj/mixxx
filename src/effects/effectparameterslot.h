@@ -37,6 +37,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     double getValueParameter() const;
 
     void onChainParameterChanged(double parameter);
+    void slotLinkTypeChanged(double v);
 
   private slots:
     // Solely for handling control changes
