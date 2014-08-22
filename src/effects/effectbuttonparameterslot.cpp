@@ -25,9 +25,9 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNum
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-        this, SLOT(slotValueType(double)), Qt::AutoConnection);
+        this, SLOT(slotValueType(double)));
     m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
+        this, SLOT(slotLoaded(double)));
 
     clear();
 }

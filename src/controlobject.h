@@ -132,7 +132,7 @@ class ControlObject : public QObject {
     // Connects a Qt slot to a signal that is delivered when a new value change
     // request arrives for this control.
     bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type);
+                                   const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
   signals:
     void valueChanged(double);

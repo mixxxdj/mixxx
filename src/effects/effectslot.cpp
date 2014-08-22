@@ -18,23 +18,23 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
                                     m_iEffectNumber)) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
+        this, SLOT(slotLoaded(double)));
 
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
     m_pControlNumParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameters(double)));
 
     m_pControlNumParameterSlots = new ControlObject(ConfigKey(m_group, "num_parameterslots"));
     m_pControlNumParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameterSlots(double)));
 
     m_pControlNumButtonParameters = new ControlObject(ConfigKey(m_group, "num_button_parameters"));
     m_pControlNumButtonParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameters(double)));
 
     m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
     m_pControlNumButtonParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameterSlots(double)));
 
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
