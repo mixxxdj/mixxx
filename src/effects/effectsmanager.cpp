@@ -188,6 +188,20 @@ void EffectsManager::setupDefaults() {
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+    
+    pChain = EffectChainPointer(new EffectChain(
+        this, "org.mixxx.effectchain.butterwortheq"));
+    pChain->setName(tr("Butterworth8 EQ"));
+    pEffect = instantiateEffect("org.mixxx.effects.butterwortheq");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
+    
+    pChain = EffectChainPointer(new EffectChain(
+        this, "org.mixxx.effectchain.graphiceq"));
+    pChain->setName(tr("Graphic EQ"));
+    pEffect = instantiateEffect("org.mixxx.effects.graphiceq");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
