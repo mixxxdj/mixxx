@@ -39,6 +39,7 @@ class SvgParser {
 
     QString parseSvgTree(const QDomNode& svgSkinNode) const;
     QString parseSvgFile(const QString& svgFileName) const;
+    QString saveToTempFile(const QDomNode& svgNode) const;
     void parseVariableElements(const QDomNode& svgNode) const;
 
 
@@ -50,7 +51,7 @@ class SvgParser {
     mutable QScriptEngine m_scriptEngine;
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
-    const SkinContext * p_context;
+    const SkinContext * m_pContext;
     
 };
 

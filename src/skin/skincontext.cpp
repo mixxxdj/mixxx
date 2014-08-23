@@ -209,20 +209,20 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 
 QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
-    const SvgParser* scaler = new SvgParser(*this);
+    const SvgParser* pSvgParser = new SvgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            pixmapPath = scaler->parseSvgTree(svgNode);
+            pixmapPath = pSvgParser->parseSvgTree(svgNode);
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
                 pixmapName = getSkinPath(pixmapName);
                 if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-                    pixmapPath = scaler->parseSvgFile(pixmapName);
+                    pixmapPath = pSvgParser->parseSvgFile(pixmapName);
                 } else {
                     pixmapPath = pixmapName;
                 }
