@@ -24,6 +24,7 @@ inline SyncMode syncModeFromDouble(double value) {
 
 class Syncable {
   public:
+    virtual ~Syncable() { }
     virtual const QString& getGroup() const = 0;
     virtual EngineChannel* getChannel() const = 0;
 
