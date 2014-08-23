@@ -91,6 +91,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
+          m_iEnableSyncQueued(SYNC_REQUEST_NONE),
+          m_iSyncModeQueued(SYNC_INVALID),
           m_bLastBufferPaused(true),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
@@ -223,8 +225,9 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    m_pSyncControl = new SyncControl(_group, _config, pChannel,
-                                     pMixingEngine->getEngineSync());
+    m_pEngineSync = pMixingEngine->getEngineSync();
+
+    m_pSyncControl = new SyncControl(_group, _config, pChannel, m_pEngineSync);
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
@@ -398,6 +401,41 @@ void EngineBuffer::requestSyncPhase() {
     if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
         // Only honor phase syncing if quantize is on and playing.
         m_iSeekQueued = SEEK_PHASE;
+    }
+}
+
+void EngineBuffer::requestEnableSync(bool enabled) {
+    // If we're not playing, the queued event won't get processed so do it now.
+    if (m_playButton->get() == 0.0) {
+        m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
+        return;
+    }
+    SyncRequestQueued enable_request =
+            static_cast<SyncRequestQueued>(
+                    m_iEnableSyncQueued.fetchAndAddRelease(0));
+    if (enabled) {
+        m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
+    } else {
+        // If sync is enabled and disabled very quickly, it's is a one-shot
+        // sync event and needs to be handled specially. Otherwise the sync
+        // state will get stuck on or won't go on at all.
+        if (enable_request == SYNC_REQUEST_ENABLE) {
+            m_iEnableSyncQueued = SYNC_REQUEST_ENABLEDISABLE;
+        } else {
+            // Note that there is no DISABLEENABLE, because that's an irrelevant
+            // queuing.  Moreover, ENABLEDISABLEENABLE is also redundant, so
+            // we don't have to handle any special cases.
+            m_iEnableSyncQueued = SYNC_REQUEST_DISABLE;
+        }
+    }
+}
+
+void EngineBuffer::requestSyncMode(SyncMode mode) {
+    // If we're not playing, the queued event won't get processed so do it now.
+    if (m_playButton->get() == 0.0) {
+        m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
+    } else {
+        m_iSyncModeQueued = mode;
     }
 }
 
@@ -720,6 +758,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
                                           fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
+        processSyncRequests();
         processSeek();
 
         // If the baserate, speed, or pitch has changed, we need to update the
@@ -868,13 +907,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         }
         m_engineLock.unlock();
 
-        // Report our speed to SyncControl. If we are the master then it will
-        // broadcast this update to followers.
-        m_pSyncControl->reportPlayerSpeed(speed, is_scratching);
-
-        // Update all the indicators that EngineBuffer publishes to allow
-        // external parts of Mixxx to observe its status.
-        updateIndicators(speed, iBufferSize);
+        m_scratching_old = is_scratching;
 
         // Handle repeat mode
         at_start = m_filepos_play <= 0;
@@ -1004,6 +1037,32 @@ void EngineBuffer::processSlip(int iBufferSize) {
     }
 }
 
+void EngineBuffer::processSyncRequests() {
+    SyncRequestQueued enable_request =
+            static_cast<SyncRequestQueued>(
+                    m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
+    SyncMode mode_request =
+            static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
+    switch (enable_request) {
+    case SYNC_REQUEST_ENABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        break;
+    case SYNC_REQUEST_DISABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        break;
+    case SYNC_REQUEST_ENABLEDISABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        break;
+    case SYNC_REQUEST_NONE:
+        break;
+    }
+    if (mode_request != SYNC_INVALID) {
+        m_pEngineSync->requestSyncMode(m_pSyncControl,
+                                       static_cast<SyncMode>(mode_request));
+    }
+}
+
 void EngineBuffer::processSeek() {
     // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
@@ -1021,7 +1080,7 @@ void EngineBuffer::processSeek() {
             bool paused = m_playButton->get() == 0.0;
             // If we are playing and quantize is on, match phase when seeking.
             if (!paused && m_pQuantize->get() > 0.0) {
-                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(position));
+                int offset = static_cast<int>(round(m_pBpmControl->getPhaseOffset(position)));
                 if (!even(offset)) {
                     offset--;
                 }
@@ -1047,6 +1106,20 @@ void EngineBuffer::processSeek() {
             qWarning() << "Unhandled seek request type: " << seekType;
             return;
     }
+}
+
+void EngineBuffer::postProcess(const int iBufferSize) {
+    double beat_distance = m_pBpmControl->updateBeatDistance();
+    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+        m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
+    }
+    // Report our speed to SyncControl. If we are the master then it will
+    // broadcast this update to followers.
+    m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+
+    // Update all the indicators that EngineBuffer publishes to allow
+    // external parts of Mixxx to observe its status.
+    updateIndicators(m_speed_old, iBufferSize);
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
