@@ -207,7 +207,6 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     QScopedPointer<ControlObjectThread> pButtonSyncMaster2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_master")));
     pButtonSyncMaster2->slotSet(1.0);
-    ProcessBuffer();
 
     assertIsFollower(m_sGroup1);
     assertIsMaster(m_sGroup2);
@@ -216,7 +215,6 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_enabled")));
     pButtonSyncEnabled2->slotSet(0.0);
-    ProcessBuffer();
 
     assertIsFollower(m_sGroup1);
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->get());
@@ -257,7 +255,6 @@ TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
     QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_enabled")));
     pButtonSyncEnabled1->set(1.0);
-    ProcessBuffer();
 
     // After setting up the first deck, the internal BPM should be 80.
     ASSERT_FLOAT_EQ(80.0,
@@ -269,7 +266,6 @@ TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
     QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_enabled")));
     pButtonSyncEnabled2->set(1.0);
-    ProcessBuffer();
 
     // After the second one, though, the internal BPM should still be 80.
     ASSERT_FLOAT_EQ(80.0,
@@ -371,13 +367,11 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 
     // Set channel 2 to be slave.
     pButtonSyncEnabled2->slotSet(1);
-    ProcessBuffer();
 
     assertIsFollower(m_sGroup2);
 
     // Now set channel 2 to be master.
     pButtonSyncMaster2->slotSet(1);
-    ProcessBuffer();
 
     // Now channel 2 should be master, and channel 1 should be a slave.
     assertIsFollower(m_sGroup1);
@@ -385,7 +379,6 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 
     // Now back again.
     pButtonSyncMaster1->slotSet(1);
-    ProcessBuffer();
 
     // Now channel 1 should be master, and channel 2 should be a slave.
     assertIsMaster(m_sGroup1);
@@ -393,7 +386,6 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 
     // Now set channel 1 to not-master, internal will be master.
     pButtonSyncMaster1->slotSet(0);
-    ProcessBuffer();
 
     assertIsMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);

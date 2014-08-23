@@ -405,6 +405,11 @@ void EngineBuffer::requestSyncPhase() {
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {
+    // If we're not playing, the queued event won't get processed so do it now.
+    if (m_playButton->get() == 0.0) {
+        m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
+        return;
+    }
     SyncRequestQueued enable_request =
             static_cast<SyncRequestQueued>(
                     m_iEnableSyncQueued.fetchAndAddRelease(0));
@@ -426,7 +431,12 @@ void EngineBuffer::requestEnableSync(bool enabled) {
 }
 
 void EngineBuffer::requestSyncMode(SyncMode mode) {
-    m_iSyncModeQueued = mode;
+    // If we're not playing, the queued event won't get processed so do it now.
+    if (m_playButton->get() == 0.0) {
+        m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
+    } else {
+        m_iSyncModeQueued = mode;
+    }
 }
 
 void EngineBuffer::clearScale() {
