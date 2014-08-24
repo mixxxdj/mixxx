@@ -78,9 +78,6 @@ class GroupEffectProcessor : public EffectProcessor {
                               const unsigned int numSamples,
                               const unsigned int sampleRate,
                               const GroupFeatureState& groupFeatures) = 0;
-    int getSampleRate() {
-        return m_sampleRate;
-    }
 
   private:
     QMap<QString, T*> m_groupState;
