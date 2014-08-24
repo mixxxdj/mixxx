@@ -39,7 +39,8 @@ EngineDeck::EngineDeck(const char* group,
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(NULL) {
+          m_sampleBuffer(NULL),
+          m_sampleRate(44100) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerGroup(getGroup());
     }
@@ -53,6 +54,10 @@ EngineDeck::EngineDeck(const char* group,
     connect(m_pPassing, SIGNAL(valueChanged(double)),
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
+
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    m_pSampleRate->connectValueChanged(this, SLOT(slotSampleRateChanged(double)),
+                                       Qt::DirectConnection);
 
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
@@ -107,7 +112,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_pVUMeter->collectFeatures(&features);
         m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         features);
+                                         m_sampleRate, features);
     }
     // Update VU meter
     m_pVUMeter->process(pOut, iBufferSize);
@@ -165,4 +170,8 @@ bool EngineDeck::isPassthroughActive() const {
 
 void EngineDeck::slotPassingToggle(double v) {
     m_bPassthroughIsActive = v > 0;
+}
+
+void EngineDeck::slotSampleRateChanged(double dRate) {
+    m_sampleRate = static_cast<unsigned int>(dRate);
 }

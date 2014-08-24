@@ -4,10 +4,12 @@
 #ifndef ENGINEMICROPHONE_H
 #define ENGINEMICROPHONE_H
 
-#include "util/circularbuffer.h"
+#include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
+#include "util/circularbuffer.h"
+
 #include "soundmanagerutil.h"
 
 class EffectsManager;
@@ -47,14 +49,20 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     bool isSolo();
     double getSoloDamping();
 
+  private slots:
+    void slotSampleRateChanged(double);
+
+
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
     ControlLogpotmeter* m_pPregain;
+    ControlObjectSlave* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
 
     bool m_wasActive;
+    unsigned int m_sampleRate;
 };
 
 #endif /* ENGINEMICROPHONE_H */

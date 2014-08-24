@@ -18,11 +18,12 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
-#include "util/circularbuffer.h"
+#include "configobject.h"
+#include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
-#include "configobject.h"
+#include "util/circularbuffer.h"
 
 #include "soundmanagerutil.h"
 
@@ -76,6 +77,9 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   public slots:
     void slotPassingToggle(double v);
 
+  private slots:
+    void slotSampleRateChanged(double);
+
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pBuffer;
@@ -84,12 +88,14 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
     EngineEffectsManager* m_pEngineEffectsManager;
+    ControlObjectSlave* m_pSampleRate;
 
     // Begin vinyl passthrough fields
     ControlPushButton* m_pPassing;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
+    unsigned int m_sampleRate;
 };
 
 #endif

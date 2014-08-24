@@ -90,10 +90,9 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     m_centerFrequencies[6] = 5416;
     m_centerFrequencies[7] = 9828;
 
-    // TODO(rryan): use the real samplerate
     // Initialize the filters with default parameters
-    m_low = new EngineFilterBiquad1LowShelving(44100, m_centerFrequencies[0], Q);
-    m_high = new EngineFilterBiquad1HighShelving(44100, m_centerFrequencies[7], Q);
+    m_low = NULL;
+    m_high = NULL;
     for (int i = 1; i < 7; i++) {
         m_bands.append(new EngineFilterBiquad1Peaking(44100,
                                                       m_centerFrequencies[i],
@@ -112,6 +111,12 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
 }
 
 void GraphicEQEffectGroupState::setFilters(int sampleRate) {
+    if (m_low == NULL) {
+        m_low = new EngineFilterBiquad1LowShelving(sampleRate, m_centerFrequencies[0], Q);
+    }
+    if (m_high == NULL) {
+        m_high = new EngineFilterBiquad1HighShelving(44100, m_centerFrequencies[7], Q);
+    }
     m_low->setFrequencyCorners(sampleRate, m_centerFrequencies[0], Q,
                                m_oldLow);
     m_high->setFrequencyCorners(sampleRate, m_centerFrequencies[7], Q,
@@ -124,7 +129,9 @@ void GraphicEQEffectGroupState::setFilters(int sampleRate) {
 
 GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
                                  const EffectManifest& manifest)
-        : m_oldSampleRate(44100) {
+        : m_oldSampleRate(0) {
+    // old sample rate initialized to 0 so we're guaranteed to initialize the
+    // filters.
     Q_UNUSED(manifest);
     m_pPotLow = pEffect->getParameterById("low");
     for (int i = 0; i < 6; i++) {
@@ -140,13 +147,13 @@ void GraphicEQEffect::processGroup(const QString& group,
                                    GraphicEQEffectGroupState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
                                    const unsigned int numSamples,
+                                   const unsigned int sampleRate,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    int sampleRate = getSampleRate();
     if (m_oldSampleRate != sampleRate) {
         m_oldSampleRate = sampleRate;
         pState->setFilters(sampleRate);

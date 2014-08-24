@@ -5,10 +5,11 @@
 #ifndef ENGINEAUX_H
 #define ENGINEAUX_H
 
-#include "util/circularbuffer.h"
+#include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
+#include "util/circularbuffer.h"
 #include "soundmanagerutil.h"
 
 class EffectsManager;
@@ -45,12 +46,17 @@ class EngineAux : public EngineChannel, public AudioDestination {
     // a soundcard input.
     virtual void onInputUnconfigured(AudioInput input);
 
+  private slots:
+    void slotSampleRateChanged(double);
+
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
     ControlPushButton* m_pPassing;
     ControlLogpotmeter* m_pPregain;
+    ControlObjectSlave* m_pSampleRate;
+    unsigned int m_sampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };
