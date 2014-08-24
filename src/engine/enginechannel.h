@@ -53,6 +53,7 @@ class EngineChannel : public EngineObject {
     virtual bool isTalkover() const;
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
+    virtual void postProcess(const int iBuffersize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer() {

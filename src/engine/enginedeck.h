@@ -47,6 +47,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual ~EngineDeck();
 
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
+    virtual void postProcess(const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
