@@ -49,10 +49,6 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     bool isSolo();
     double getSoloDamping();
 
-  private slots:
-    void slotSampleRateChanged(double);
-
-
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
@@ -62,7 +58,6 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     const CSAMPLE* volatile m_sampleBuffer;
 
     bool m_wasActive;
-    unsigned int m_sampleRate;
 };
 
 #endif /* ENGINEMICROPHONE_H */

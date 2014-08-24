@@ -19,8 +19,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsM
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pPregain(new ControlLogpotmeter(ConfigKey(pGroup, "pregain"), 4)),
           m_sampleBuffer(NULL),
-          m_wasActive(false),
-          m_sampleRate(44100) {
+          m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerGroup(getGroup());
     }
@@ -32,8 +31,6 @@ EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsM
     setPFL(false);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-    m_pSampleRate->connectValueChanged(this, SLOT(slotSampleRateChanged(double)),
-                                       Qt::DirectConnection);
 
 }
 
@@ -106,12 +103,8 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_vuMeter.collectFeatures(&features);
         m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         m_sampleRate, features);
+                                         m_pSampleRate->get(), features);
     }
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);
-}
-
-void EngineMicrophone::slotSampleRateChanged(double dRate) {
-    m_sampleRate = static_cast<unsigned int>(dRate);
 }

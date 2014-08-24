@@ -77,9 +77,6 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   public slots:
     void slotPassingToggle(double v);
 
-  private slots:
-    void slotSampleRateChanged(double);
-
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pBuffer;
@@ -95,7 +92,6 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
-    unsigned int m_sampleRate;
 };
 
 #endif

@@ -19,7 +19,6 @@ EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
           m_pPregain(new ControlLogpotmeter(ConfigKey(pGroup, "pregain"), 4)),
-          m_sampleRate(44100),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
@@ -33,8 +32,6 @@ EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
     setPFL(false);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-    m_pSampleRate->connectValueChanged(this, SLOT(slotSampleRateChanged(double)),
-                                       Qt::DirectConnection);
 }
 
 EngineAux::~EngineAux() {
@@ -102,12 +99,8 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         m_vuMeter.collectFeatures(&features);
         // Process effects enabled for this channel
         m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         m_sampleRate, features);
+                                         m_pSampleRate->get(), features);
     }
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);
-}
-
-void EngineAux::slotSampleRateChanged(double dRate) {
-    m_sampleRate = static_cast<unsigned int>(dRate);
 }

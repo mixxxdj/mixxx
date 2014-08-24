@@ -46,9 +46,6 @@ class EngineAux : public EngineChannel, public AudioDestination {
     // a soundcard input.
     virtual void onInputUnconfigured(AudioInput input);
 
-  private slots:
-    void slotSampleRateChanged(double);
-
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
@@ -56,7 +53,6 @@ class EngineAux : public EngineChannel, public AudioDestination {
     ControlPushButton* m_pPassing;
     ControlLogpotmeter* m_pPregain;
     ControlObjectSlave* m_pSampleRate;
-    unsigned int m_sampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };
