@@ -21,8 +21,16 @@ class EngineFilterBiquadTest : public testing::Test {
 TEST_F(EngineFilterBiquadTest, fidlibInputRespectsLocale) {
     char spec[FIDSPEC_LENGTH];
 
-    // Indonesia uses commas as a decimal separator.
-    setlocale(LC_ALL, "Indonesian_Indonesia.1252");    
+    // Try to switch to a locale that uses comma as a decimal separator.
+    bool changedLocale = setlocale(LC_ALL, "Indonesian_Indonesia") != NULL
+        || setlocale(LC_ALL, "German_Germany") != NULL
+        || setlocale(LC_ALL, "Dutch_Netherlands") != NULL;
+
+    if (!changedLocale) {
+        // None were installed. Test inconclusive.
+        return;
+    }
+
     format_fidspec(spec, sizeof(spec), "LsBq/%.10f/%.10f", 1.22, -12.0);
     ASSERT_STREQ("LsBq/1,2200000000/-12,0000000000", spec);
     // The reason this is important is that fidlib will do strtod on parts
