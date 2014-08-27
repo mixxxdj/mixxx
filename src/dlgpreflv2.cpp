@@ -38,11 +38,12 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
             LV2Manifest::Status status = lv2Manifest->getStatus();
             switch (status) {
                 case LV2Manifest::IO_NOT_STEREO:
-                    button->setToolTip(QObject::tr("Input/Output is not stereo"));
+                    button->setToolTip(QObject::tr("This plugin does not support"
+                                                   "stereo samples as input/output"));
                     break;
                 case LV2Manifest::HAS_REQUIRED_FEATURES:
-                    button->setToolTip(QObject::tr("Has features which are not "
-                                                   "yet supported"));
+                    button->setToolTip(QObject::tr("This plugin has features"
+                                                   "which are not yet supported"));
                     break;
                 default:
                     button->setToolTip(QObject::tr("Unknown status"));
