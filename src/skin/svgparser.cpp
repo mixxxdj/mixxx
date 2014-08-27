@@ -60,27 +60,8 @@ QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     parseScriptElements(svgNode);
     scanTree(svgNode, &SvgParser::parseAttributes);
     
-    // Save the new svg in a temp file to use it with setPixmap
-    QTemporaryFile svgFile;
-    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
-    
-    // the file will be removed before being parsed in skin if set to true
-    svgFile.setAutoRemove(false);
-    
-    QString svgTempFileName;
-    if (svgFile.open()){
-        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
-        QTextStream out(&svgFile);
-        svgNode.save(out, 2);
-        svgFile.close();
-        svgTempFileName = svgFile.fileName();
-    } else {
-        qDebug() << "Unable to open temp file for inline svg \n";
-    }
-    
-    return svgTempFileName;
+    return saveToTempFile(svgNode);
 }
-
 
 QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
     
@@ -104,9 +85,6 @@ QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
     
     return svgTempFileName;
 }
-
-
-
 
 // replaces Variables nodes in an svg dom tree
 void SvgParser::parseVariableElements(const QDomNode& svgNode) const {
@@ -169,7 +147,6 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
         // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
     }
     
-    
     nameRx.setPattern("^expr-([^=\\s]+)$");                                     // expr-attribute_name="var_name";
     
     for (i=0; i < attributes.length(); i++) {
@@ -221,7 +198,6 @@ void SvgParser::scanTree(const QDomNode& node, void (SvgParser::*callback)(const
         }
     }
 }
-
 
 void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
     
