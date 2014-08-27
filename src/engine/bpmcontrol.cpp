@@ -56,6 +56,14 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pFileBpmDown, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmDown(double)),
             Qt::DirectConnection);
+    m_pBpmLeft = new ControlPushButton(ConfigKey(_group, "beats_translate_left"), false);
+    connect(m_pBpmLeft, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsLeft(double)),
+            Qt::DirectConnection);
+    m_pBpmRight = new ControlPushButton(ConfigKey(_group, "beats_translate_right"), false);
+    connect(m_pBpmRight, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsRight(double)),
+            Qt::DirectConnection);
 
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -139,16 +147,32 @@ void BpmControl::slotFileBpmChanged(double bpm) {
 }
 
 void BpmControl::slotFileBpmUp(double v) {
-    if (v > 0 && m_pTrack) {
-        double new_bpm = math_min(200.0, m_pFileBpm->get() + .01);
-        m_pTrack->setBpm(new_bpm);
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+        double new_bpm = math_min(200.0, m_pBeats->getBpm() + .01);
+        m_pBeats->setBpm(new_bpm);
     }
 }
 
 void BpmControl::slotFileBpmDown(double v) {
-    if (v > 0 && m_pTrack) {
-        double new_bpm = math_max(10.0, m_pFileBpm->get() - .01);
-        m_pTrack->setBpm(new_bpm);
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+        double new_bpm = math_max(10.0, m_pBeats->getBpm() - .01);
+        m_pBeats->setBpm(new_bpm);
+    }
+}
+
+void BpmControl::slotTranslateBeatsLeft(double v) {
+    if (v > 0 && m_pTrack && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        const int translate_dist = m_pTrack->getSampleRate() * .01;
+        m_pBeats->translate(-translate_dist);
+    }
+}
+
+void BpmControl::slotTranslateBeatsRight(double v) {
+    if (v > 0 && m_pTrack && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        const int translate_dist = m_pTrack->getSampleRate() * .01;
+        m_pBeats->translate(translate_dist);
     }
 }
 

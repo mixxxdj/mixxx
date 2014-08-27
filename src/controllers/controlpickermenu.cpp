@@ -85,6 +85,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("bpm_tap", tr("BPM Tap"), tr("BPM tap button"), bpmMenu);
     addDeckAndSamplerControl("file_bpm_up", tr("File BPM +.01"), tr("Increase file's BPM by 0.01"), bpmMenu);
     addDeckAndSamplerControl("file_bpm_down", tr("File BPM -.01"), tr("Decrease file's BPM by 0.01"), bpmMenu);
+    addDeckAndSamplerControl("beats_translate_left", tr("Move Beats Left"), tr("Adjust the beatgrid to the left"), bpmMenu);
+    addDeckAndSamplerControl("beats_translate_right", tr("Move Beats Right"), tr("Adjust the beatgrid to the right"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust Beatgrid"),
                    tr("Align beatgrid to current position"), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), bpmMenu);

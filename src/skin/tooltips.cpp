@@ -228,6 +228,14 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust BPM Up")
             << tr("When tapped, adjusts the BPM up by a small amount.");
 
+    add("beats_translate_left")
+            << tr("Adjust Beats Left")
+            << tr("When tapped, moves the beatgrid left by a small amount.");
+
+    add("beats_translate_right")
+            << tr("Adjust Beats Right")
+            << tr("When tapped, moves the beatgrid right by a small amount.");
+
     //this is a special case, in some skins (e.g. Deere) we display a transparent png for bpm_tap on top of visual_bpm
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
