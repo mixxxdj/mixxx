@@ -48,13 +48,13 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
-    m_pBeatsFaster = new ControlPushButton(ConfigKey(_group, "beats_adjust_faster"), false);
-    connect(m_pBeatsFaster, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatsFaster(double)),
+    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(_group, "beats_adjust_faster"), false);
+    connect(m_pAdjustBeatsFaster, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBeatsFaster(double)),
             Qt::DirectConnection);
-    m_pBeatsSlower = new ControlPushButton(ConfigKey(_group, "beats_adjust_slower"), false);
-    connect(m_pBeatsSlower, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatsSlower(double)),
+    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(_group, "beats_adjust_slower"), false);
+    connect(m_pAdjustBeatsSlower, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBeatsSlower(double)),
             Qt::DirectConnection);
     m_pTranslateBeatsLeft = new ControlPushButton(ConfigKey(_group, "beats_translate_left"), false);
     connect(m_pTranslateBeatsLeft, SIGNAL(valueChanged(double)),
@@ -146,14 +146,14 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     m_dSyncAdjustment = 1.0;
 }
 
-void BpmControl::slotBeatsFaster(double v) {
+void BpmControl::slotAdjustBeatsFaster(double v) {
     if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
         double new_bpm = math_min(200.0, m_pBeats->getBpm() + .01);
         m_pBeats->setBpm(new_bpm);
     }
 }
 
-void BpmControl::slotBeatsSlower(double v) {
+void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
         double new_bpm = math_max(10.0, m_pBeats->getBpm() - .01);
         m_pBeats->setBpm(new_bpm);
@@ -163,8 +163,8 @@ void BpmControl::slotBeatsSlower(double v) {
 void BpmControl::slotTranslateBeatsLeft(double v) {
     if (v > 0 && m_pTrack && m_pBeats &&
             (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        const int translate_dist = m_pTrack->getSampleRate() * .01;
-        m_pBeats->translate(-translate_dist);
+        const int translate_dist = m_pTrack->getSampleRate() * -.01;
+        m_pBeats->translate(translate_dist);
     }
 }
 
