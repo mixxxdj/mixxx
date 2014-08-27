@@ -143,11 +143,14 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     if (hookNames.toString().length()) {
         hooksPattern = hookNames.property("toPattern")
             .call(hookNames).toString();
-        hookRx.setPattern("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");        // hook( arg1 [, arg2]... )
+        
+        // hook_name( arg1 [, arg2]... )
+        hookRx.setPattern("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");
         // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
     }
     
-    nameRx.setPattern("^expr-([^=\\s]+)$");                                     // expr-attribute_name="var_name";
+    // expr-attribute_name="var_name";
+    nameRx.setPattern("^expr-([^=\\s]+)$");
     
     for (i=0; i < attributes.length(); i++) {
         
@@ -164,7 +167,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
             }
             continue;
         }
-         
+        
         if (!hookRx.isEmpty()) {
             // searching hooks in the attribute value
             pos = 0;
