@@ -48,6 +48,14 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
+    m_pFileBpmUp = new ControlPushButton(ConfigKey(_group, "file_bpm_up"), false);
+    connect(m_pFileBpmUp, SIGNAL(valueChanged(double)),
+            this, SLOT(slotFileBpmUp(double)),
+            Qt::DirectConnection);
+    m_pFileBpmDown = new ControlPushButton(ConfigKey(_group, "file_bpm_down"), false);
+    connect(m_pFileBpmDown, SIGNAL(valueChanged(double)),
+            this, SLOT(slotFileBpmDown(double)),
+            Qt::DirectConnection);
 
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -128,6 +136,20 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     }
     m_dUserOffset = 0.0;
     m_dSyncAdjustment = 1.0;
+}
+
+void BpmControl::slotFileBpmUp(double v) {
+    if (v > 0 && m_pTrack) {
+        double new_bpm = math_min(200.0, m_pFileBpm->get() + .01);
+        m_pTrack->setBpm(new_bpm);
+    }
+}
+
+void BpmControl::slotFileBpmDown(double v) {
+    if (v > 0 && m_pTrack) {
+        double new_bpm = math_max(10.0, m_pFileBpm->get() - .01);
+        m_pTrack->setBpm(new_bpm);
+    }
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {

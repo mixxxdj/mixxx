@@ -220,6 +220,14 @@ void Tooltips::addStandardTooltips() {
             << tr("BPM Tap")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
 
+    add("file_bpm_down")
+            << tr("Adjust BPM Down")
+            << tr("When tapped, adjusts the BPM down by a small amount.");
+
+    add("file_bpm_up")
+            << tr("Adjust BPM Up")
+            << tr("When tapped, adjusts the BPM up by a small amount.");
+
     //this is a special case, in some skins (e.g. Deere) we display a transparent png for bpm_tap on top of visual_bpm
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
