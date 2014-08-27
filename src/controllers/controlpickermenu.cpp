@@ -83,8 +83,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("bpm_up_small", tr("BPM +0.1"), tr("Increase BPM by 0.1"), bpmMenu);
     addDeckAndSamplerControl("bpm_down_small", tr("BPM -0.1"), tr("Decrease BPM by 0.1"), bpmMenu);
     addDeckAndSamplerControl("bpm_tap", tr("BPM Tap"), tr("BPM tap button"), bpmMenu);
-    addDeckAndSamplerControl("file_bpm_up", tr("File BPM +.01"), tr("Increase file's BPM by 0.01"), bpmMenu);
-    addDeckAndSamplerControl("file_bpm_down", tr("File BPM -.01"), tr("Decrease file's BPM by 0.01"), bpmMenu);
+    addDeckAndSamplerControl("beats_adjust_faster", tr("Adjust Beatgrid Faster +.01"), tr("Increase track's average BPM by 0.01"), bpmMenu);
+    addDeckAndSamplerControl("beats_adjust_slower", tr("Adjust Beatgrid Slower -.01"), tr("Decrease track's average BPM by 0.01"), bpmMenu);
     addDeckAndSamplerControl("beats_translate_left", tr("Move Beats Left"), tr("Adjust the beatgrid to the left"), bpmMenu);
     addDeckAndSamplerControl("beats_translate_right", tr("Move Beats Right"), tr("Adjust the beatgrid to the right"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust Beatgrid"),

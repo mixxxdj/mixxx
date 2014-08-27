@@ -220,13 +220,13 @@ void Tooltips::addStandardTooltips() {
             << tr("BPM Tap")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
 
-    add("file_bpm_down")
+    add("beats_adjust_slower")
             << tr("Adjust BPM Down")
-            << tr("When tapped, adjusts the BPM down by a small amount.");
+            << tr("When tapped, adjusts the average BPM down by a small amount.");
 
-    add("file_bpm_up")
+    add("beats_adjust_faster")
             << tr("Adjust BPM Up")
-            << tr("When tapped, adjusts the BPM up by a small amount.");
+            << tr("When tapped, adjusts the average BPM up by a small amount.");
 
     add("beats_translate_left")
             << tr("Adjust Beats Left")

@@ -48,20 +48,20 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
-    m_pFileBpmUp = new ControlPushButton(ConfigKey(_group, "file_bpm_up"), false);
-    connect(m_pFileBpmUp, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileBpmUp(double)),
+    m_pBeatsFaster = new ControlPushButton(ConfigKey(_group, "beats_adjust_faster"), false);
+    connect(m_pBeatsFaster, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatsFaster(double)),
             Qt::DirectConnection);
-    m_pFileBpmDown = new ControlPushButton(ConfigKey(_group, "file_bpm_down"), false);
-    connect(m_pFileBpmDown, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileBpmDown(double)),
+    m_pBeatsSlower = new ControlPushButton(ConfigKey(_group, "beats_adjust_slower"), false);
+    connect(m_pBeatsSlower, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatsSlower(double)),
             Qt::DirectConnection);
-    m_pBpmLeft = new ControlPushButton(ConfigKey(_group, "beats_translate_left"), false);
-    connect(m_pBpmLeft, SIGNAL(valueChanged(double)),
+    m_pTranslateBeatsLeft = new ControlPushButton(ConfigKey(_group, "beats_translate_left"), false);
+    connect(m_pTranslateBeatsLeft, SIGNAL(valueChanged(double)),
             this, SLOT(slotTranslateBeatsLeft(double)),
             Qt::DirectConnection);
-    m_pBpmRight = new ControlPushButton(ConfigKey(_group, "beats_translate_right"), false);
-    connect(m_pBpmRight, SIGNAL(valueChanged(double)),
+    m_pTranslateBeatsRight = new ControlPushButton(ConfigKey(_group, "beats_translate_right"), false);
+    connect(m_pTranslateBeatsRight, SIGNAL(valueChanged(double)),
             this, SLOT(slotTranslateBeatsRight(double)),
             Qt::DirectConnection);
 
@@ -146,14 +146,14 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     m_dSyncAdjustment = 1.0;
 }
 
-void BpmControl::slotFileBpmUp(double v) {
+void BpmControl::slotBeatsFaster(double v) {
     if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
         double new_bpm = math_min(200.0, m_pBeats->getBpm() + .01);
         m_pBeats->setBpm(new_bpm);
     }
 }
 
-void BpmControl::slotFileBpmDown(double v) {
+void BpmControl::slotBeatsSlower(double v) {
     if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
         double new_bpm = math_max(10.0, m_pBeats->getBpm() - .01);
         m_pBeats->setBpm(new_bpm);
