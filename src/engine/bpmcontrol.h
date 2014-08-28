@@ -71,8 +71,8 @@ class BpmControl : public EngineControl {
     void slotFileBpmChanged(double);
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
-    void slotTranslateBeatsLeft(double);
-    void slotTranslateBeatsRight(double);
+    void slotTranslateBeatsEarlier(double);
+    void slotTranslateBeatsLater(double);
     void slotControlPlay(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
@@ -108,8 +108,8 @@ class BpmControl : public EngineControl {
     ControlObject* m_pFileBpm;
     ControlPushButton* m_pAdjustBeatsFaster;
     ControlPushButton* m_pAdjustBeatsSlower;
-    ControlPushButton* m_pTranslateBeatsLeft;
-    ControlPushButton* m_pTranslateBeatsRight;
+    ControlPushButton* m_pTranslateBeatsEarlier;
+    ControlPushButton* m_pTranslateBeatsLater;
 
     // The current effective BPM of the engine
     ControlPotmeter* m_pEngineBpm;

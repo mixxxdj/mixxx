@@ -56,13 +56,13 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pAdjustBeatsSlower, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBeatsSlower(double)),
             Qt::DirectConnection);
-    m_pTranslateBeatsLeft = new ControlPushButton(ConfigKey(_group, "beats_translate_left"), false);
-    connect(m_pTranslateBeatsLeft, SIGNAL(valueChanged(double)),
-            this, SLOT(slotTranslateBeatsLeft(double)),
+    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(_group, "beats_translate_earlier"), false);
+    connect(m_pTranslateBeatsEarlier, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsEarlier(double)),
             Qt::DirectConnection);
-    m_pTranslateBeatsRight = new ControlPushButton(ConfigKey(_group, "beats_translate_right"), false);
-    connect(m_pTranslateBeatsRight, SIGNAL(valueChanged(double)),
-            this, SLOT(slotTranslateBeatsRight(double)),
+    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(_group, "beats_translate_later"), false);
+    connect(m_pTranslateBeatsLater, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsLater(double)),
             Qt::DirectConnection);
 
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
@@ -160,7 +160,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
     }
 }
 
-void BpmControl::slotTranslateBeatsLeft(double v) {
+void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && m_pTrack && m_pBeats &&
             (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         const int translate_dist = m_pTrack->getSampleRate() * -.01;
@@ -168,7 +168,7 @@ void BpmControl::slotTranslateBeatsLeft(double v) {
     }
 }
 
-void BpmControl::slotTranslateBeatsRight(double v) {
+void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && m_pTrack && m_pBeats &&
             (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         const int translate_dist = m_pTrack->getSampleRate() * .01;
