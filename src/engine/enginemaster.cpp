@@ -285,7 +285,7 @@ void EngineMaster::process(const int iBufferSize) {
     bool masterEnabled = m_pMasterEnabled->get();
     bool headphoneEnabled = m_pHeadphoneEnabled->get();
 
-    int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
+    unsigned int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
@@ -362,11 +362,11 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->process(getBusLeftGroup(), m_pOutputBusBuffers[0],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusCenterGroup(), m_pOutputBusBuffers[1],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusRightGroup(), m_pOutputBusBuffers[2],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
     }
 
     if (masterEnabled) {
@@ -387,7 +387,8 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
             m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster,
-                                             iBufferSize, masterFeatures);
+                                             iBufferSize, iSampleRate,
+                                             masterFeatures);
         }
 
         // Apply master volume after effects.
@@ -443,7 +444,7 @@ void EngineMaster::process(const int iBufferSize) {
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
             m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead,
-                                             iBufferSize, headphoneFeatures);
+                                             iBufferSize, iSampleRate, headphoneFeatures);
         }
         // Head volume
         CSAMPLE headphoneVolume = m_pHeadVolume->get();

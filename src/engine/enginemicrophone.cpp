@@ -29,6 +29,9 @@ EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsM
     // "master" controls.
     setMaster(true);
     setPFL(false);
+
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -100,7 +103,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_vuMeter.collectFeatures(&features);
         m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         features);
+                                         m_pSampleRate->get(), features);
     }
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);
