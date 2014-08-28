@@ -16,11 +16,11 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
-                     << "duration"
                      << "played"
                      << "rating"
                      << "bitrate";
-    m_specialFilters << "key";
+    m_specialFilters << "key"
+                     << "duration";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -134,6 +134,9 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else {
                     pQuery->addNode(new KeyFilterNode(key, fuzzy));
                 }
+            } else if (field == "duration") {
+                pQuery->addNode(new DurationFilterNode(
+                    m_fieldToSqlColumns[field], argument));
             }
         } else {
         // If no advanced search feature matched, treat it as a search term.

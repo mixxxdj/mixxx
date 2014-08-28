@@ -142,12 +142,6 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
         m_operator = operatorMatcher.cap(1);
         argument = operatorMatcher.cap(2);
     }
-    // first check if the query is about duration
-    if (sqlColumns.at(0) == "duration") {
-        // if it is duration then humanreadable time will be converted to computable time(second)
-        argument = parseHumanReadableTime(argument);
-    }
-
 
     bool parsed = false;
     // Try to convert to see if it parses.
@@ -170,7 +164,95 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
 
 }
 
-QString NumericFilterNode::parseHumanReadableTime(QString durationHumanReadable) {
+bool NumericFilterNode::match(const TrackPointer& pTrack) const {
+    foreach (QString sqlColumn, m_sqlColumns) {
+        QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
+        if (!value.isValid() || !qVariantCanConvert<double>(value)) {
+            continue;
+        }
+
+        double dValue = value.toDouble();
+        if (m_bOperatorQuery) {
+            if ((m_operator == "=" && dValue == m_dOperatorArgument) ||
+                (m_operator == "<" && dValue < m_dOperatorArgument) ||
+                (m_operator == ">" && dValue > m_dOperatorArgument) ||
+                (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
+                (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
+                return true;
+            }
+        } else if (m_bRangeQuery && dValue >= m_dRangeLow &&
+                   dValue <= m_dRangeHigh) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QString NumericFilterNode::toSql() const {
+    if (m_bOperatorQuery) {
+        QStringList searchClauses;
+        foreach (const QString& sqlColumn, m_sqlColumns) {
+            searchClauses << QString("(%1 %2 %3)").arg(
+                sqlColumn, m_operator, QString::number(m_dOperatorArgument));
+        }
+        return searchClauses.length() > 1 ?
+                QString("(%1)").arg(searchClauses.join(" OR ")) :
+                searchClauses[0];
+    }
+
+    if (m_bRangeQuery) {
+        QStringList searchClauses;
+        foreach (const QString& sqlColumn, m_sqlColumns) {
+            searchClauses << QString("(%1 >= %2 AND %1 <= %3)")
+                    .arg(sqlColumn, QString::number(m_dRangeLow),
+                         QString::number(m_dRangeHigh));
+        }
+
+        return searchClauses.length() > 1 ?
+                QString("(%1)").arg(searchClauses.join(" OR ")) :
+                searchClauses[0];
+    }
+
+    return QString();
+}
+
+DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
+                                       QString argument)
+        : m_sqlColumns(sqlColumns),
+          m_bOperatorQuery(false),
+          m_operator("="),
+          m_dOperatorArgument(0.0),
+          m_bRangeQuery(false),
+          m_dRangeLow(0.0),
+          m_dRangeHigh(0.0) {
+    QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
+    if (operatorMatcher.indexIn(argument) != -1) {
+        m_operator = operatorMatcher.cap(1);
+        argument = operatorMatcher.cap(2);
+    }
+
+    bool parsed = false;
+    argument = parseHumanReadableTime(argument);
+    // Try to convert to see if it parses.
+    m_dOperatorArgument = argument.toDouble(&parsed);
+    if (parsed) {
+        m_bOperatorQuery = true;
+    }
+
+    QStringList rangeArgs = argument.split("-");
+    if (rangeArgs.length() == 2) {
+        bool lowOk = false;
+        m_dRangeLow = rangeArgs[0].toDouble(&lowOk);
+        bool highOk = false;
+        m_dRangeHigh = rangeArgs[1].toDouble(&highOk);
+
+        if (lowOk && highOk && m_dRangeLow <= m_dRangeHigh) {
+            m_bRangeQuery = true;
+        }
+    }
+}
+
+QString DurationFilterNode::parseHumanReadableTime(QString durationHumanReadable) {
     QStringList durationRanges = durationHumanReadable.split("-");
     if (durationRanges.length() == 1) {
         //qDebug()<<"only one parameter";
@@ -184,7 +266,7 @@ QString NumericFilterNode::parseHumanReadableTime(QString durationHumanReadable)
     }
 }
 
-QString NumericFilterNode::getTimeInHMS(QString durationHumanReadable) {
+QString DurationFilterNode::getTimeInHMS(QString durationHumanReadable) {
     durationHumanReadable = formatInput(durationHumanReadable);
     bool parseable = false;
     double totalTime = -1;
@@ -244,12 +326,12 @@ QString NumericFilterNode::getTimeInHMS(QString durationHumanReadable) {
         } else {
             return durationHumanReadable;
         }
-    }   
+    }
     //qDebug()<<totalTime;
     return QString::number(totalTime);
 }
 
-QString NumericFilterNode::formatInput(QString inputDuration) {
+QString DurationFilterNode::formatInput(QString inputDuration) {
     QRegExp hour_minute_second_regexp("^(\\d+:\\d+:\\d+[hH]?)$");
     QRegExp minute_second_regexp("^(\\d+:\\d+[mM]?)$");
 
@@ -283,8 +365,7 @@ QString NumericFilterNode::formatInput(QString inputDuration) {
     }
 }
 
-
-bool NumericFilterNode::match(const TrackPointer& pTrack) const {
+bool DurationFilterNode::match(const TrackPointer& pTrack) const {
     foreach (QString sqlColumn, m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !qVariantCanConvert<double>(value)) {
@@ -308,7 +389,7 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     return false;
 }
 
-QString NumericFilterNode::toSql() const {
+QString DurationFilterNode::toSql() const {
     if (m_bOperatorQuery) {
         QStringList searchClauses;
         foreach (const QString& sqlColumn, m_sqlColumns) {
@@ -335,7 +416,6 @@ QString NumericFilterNode::toSql() const {
 
     return QString();
 }
-
 KeyFilterNode::KeyFilterNode(mixxx::track::io::key::ChromaticKey key,
                              bool fuzzy) {
     if (fuzzy) {

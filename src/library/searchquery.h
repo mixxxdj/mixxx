@@ -80,9 +80,6 @@ class NumericFilterNode : public QueryNode {
     QString toSql() const;
 
   private:
-    QString parseHumanReadableTime(QString durationHumanReadable);
-    QString getTimeInHMS(QString durationHumanReadable);
-    QString formatInput(QString inputDuration);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -101,6 +98,25 @@ class KeyFilterNode : public QueryNode {
 
   private:
     QList<mixxx::track::io::key::ChromaticKey> m_matchKeys;
+};
+
+class DurationFilterNode : public QueryNode {
+  public:
+    DurationFilterNode(const QStringList& sqlColumns, QString argument);
+    bool match(const TrackPointer& pTrack) const;
+    QString toSql() const;
+
+  private:
+    QString parseHumanReadableTime(QString durationHumanReadable);
+    QString getTimeInHMS(QString durationHumanReadable);
+    QString formatInput(QString inputDuration);
+    QStringList m_sqlColumns;
+    bool m_bOperatorQuery;
+    QString m_operator;
+    double m_dOperatorArgument;
+    bool m_bRangeQuery;
+    double m_dRangeLow;
+    double m_dRangeHigh;
 };
 
 class SqlNode : public QueryNode {
