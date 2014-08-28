@@ -398,7 +398,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // Write the position before the seek type, to reduce a possible race
     // condition effect
     m_queuedPosition.setValue(newpos);
-    m_iSeekQueued.fetchAndStoreRelease(seekType);
+    m_iSeekQueued = seekType;
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -415,8 +415,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(
-                    m_iEnableSyncQueued.fetchAndAddRelease(0));
+            static_cast<SyncRequestQueued>(m_iEnableSyncQueued);
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
