@@ -415,7 +415,8 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(m_iEnableSyncQueued);
+            static_cast<SyncRequestQueued>(
+                    static_cast<int>(m_iEnableSyncQueued));
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
