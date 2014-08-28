@@ -106,31 +106,21 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             continue;
         }
 
-        bool consumed = false;
-
-        if (!consumed && m_fuzzyMatcher.indexIn(token) != -1) {
+        if (m_fuzzyMatcher.indexIn(token) != -1) {
             // TODO(XXX): implement this feature.
-        }
-
-        if (!consumed && m_textFilterMatcher.indexIn(token) != -1) {
+        } else if (m_textFilterMatcher.indexIn(token) != -1) {
             QString field = m_textFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_textFilterMatcher.cap(2), &tokens).trimmed();
             pQuery->addNode(new TextFilterNode(
                 m_database, m_fieldToSqlColumns[field], argument));
-            consumed = true;
-        }
-
-        if (!consumed && m_numericFilterMatcher.indexIn(token) != -1) {
+        } else if (m_numericFilterMatcher.indexIn(token) != -1) {
             QString field = m_numericFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_numericFilterMatcher.cap(2), &tokens).trimmed();
             pQuery->addNode(new NumericFilterNode(
                 m_fieldToSqlColumns[field], argument));
-            consumed = true;
-        }
-
-        if (!consumed && m_specialFilterMatcher.indexIn(token) != -1) {
+        } else if (m_specialFilterMatcher.indexIn(token) != -1) {
             QString field = m_specialFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_specialFilterMatcher.cap(2), &tokens).trimmed();
@@ -144,15 +134,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else {
                     pQuery->addNode(new KeyFilterNode(key, fuzzy));
                 }
-                consumed = true;
             }
-        }
-
+        } else {
         // If no advanced search feature matched, treat it as a search term.
-        if (!consumed) {
             pQuery->addNode(new TextFilterNode(
                 m_database, searchColumns, token));
-            consumed = true;
         }
     }
 }
