@@ -1019,7 +1019,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 void EngineBuffer::processSlip(int iBufferSize) {
     // Do a single read from m_bSlipEnabled so we don't run in to race conditions.
     bool enabled = m_bSlipEnabled;
-    if (m_bSlipEnabled != m_bSlipEnabledProcessing) {
+    if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
         if (enabled) {
             m_dSlipPosition = m_filepos_play;
