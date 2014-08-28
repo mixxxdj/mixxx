@@ -82,7 +82,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_iUiSlowTick(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
-          m_bSlipEnabled(false),
+          m_slipEnabled(0),
           m_bSlipEnabledProcessing(false),
           m_pRepeat(NULL),
           m_startButton(NULL),
@@ -691,7 +691,7 @@ void EngineBuffer::slotControlStop(double v)
 
 void EngineBuffer::slotControlSlip(double v)
 {
-    m_bSlipEnabled = v > 0.0;
+    m_slipEnabled = static_cast<int>(v > 0.0);
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double d_index) {
@@ -1018,7 +1018,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
 void EngineBuffer::processSlip(int iBufferSize) {
     // Do a single read from m_bSlipEnabled so we don't run in to race conditions.
-    bool enabled = m_bSlipEnabled;
+    bool enabled = static_cast<bool>(m_slipEnabled);
     if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
         if (enabled) {
