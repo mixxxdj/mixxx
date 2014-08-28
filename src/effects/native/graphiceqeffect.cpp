@@ -124,8 +124,6 @@ void GraphicEQEffectGroupState::setFilters(int sampleRate) {
 GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
                                  const EffectManifest& manifest)
         : m_oldSampleRate(44100) {
-    // old sample rate initialized to 0 so we're guaranteed to initialize the
-    // filters.
     Q_UNUSED(manifest);
     m_pPotLow = pEffect->getParameterById("low");
     for (int i = 0; i < 6; i++) {
