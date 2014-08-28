@@ -36,7 +36,7 @@ class EffectProcessor {
 template <typename T>
 class GroupEffectProcessor : public EffectProcessor {
   public:
-    GroupEffectProcessor() : m_sampleRate(44100) {
+    GroupEffectProcessor() {
     }
     virtual ~GroupEffectProcessor() {
         for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
@@ -68,7 +68,6 @@ class GroupEffectProcessor : public EffectProcessor {
             m_groupState[group] = pState;
             qWarning() << "Allocated group state in the engine for" << group;
         }
-        m_sampleRate = sampleRate;
         processGroup(group, pState, pInput, pOutput, numSamples, sampleRate, groupFeatures);
     }
 
@@ -81,7 +80,6 @@ class GroupEffectProcessor : public EffectProcessor {
 
   private:
     QMap<QString, T*> m_groupState;
-    unsigned int m_sampleRate;
 };
 
 #endif /* EFFECTPROCESSOR_H */
