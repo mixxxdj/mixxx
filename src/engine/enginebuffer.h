@@ -303,9 +303,12 @@ class EngineBuffer : public EngineObject {
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // Slip Status
-    bool m_bSlipEnabled;
-    bool m_bSlipToggled;
+    // Slip Status -- a bitmask.
+    QAtomicInt m_SlipStatus;
+    enum {
+        SLIP_ENABLED = 1,
+        SLIP_TOGGLED = 2
+    };
 
 
     ControlObject* m_pTrackSamples;

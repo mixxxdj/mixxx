@@ -82,8 +82,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_iUiSlowTick(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
-          m_bSlipEnabled(false),
-          m_bSlipToggled(false),
+          m_SlipStatus(0),
           m_pRepeat(NULL),
           m_startButton(NULL),
           m_endButton(NULL),
@@ -692,12 +691,12 @@ void EngineBuffer::slotControlStop(double v)
 void EngineBuffer::slotControlSlip(double v)
 {
     bool enabled = v > 0.0;
-    if (enabled == m_bSlipEnabled) {
+    bool slip_enabled = m_SlipStatus.fetchAndAddAcquire(0) & SLIP_ENABLED;
+    if (enabled == slip_enabled) {
         return;
     }
-
-    m_bSlipEnabled = enabled;
-    m_bSlipToggled = true;
+    int maskval = (enabled ? SLIP_ENABLED : 0) + SLIP_TOGGLED;
+    m_SlipStatus.fetchAndStoreRelease(maskval);
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double d_index) {
@@ -1023,8 +1022,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 }
 
 void EngineBuffer::processSlip(int iBufferSize) {
-    if (m_bSlipToggled) {
-        if (m_bSlipEnabled) {
+    int maskval = m_SlipStatus.fetchAndAddAcquire(0);
+    bool enabled = maskval & SLIP_ENABLED;
+    bool toggled = maskval & SLIP_TOGGLED;
+    if (toggled) {
+        if (enabled) {
             m_dSlipPosition = m_filepos_play;
             m_dSlipRate = m_rate_old;
         } else {
@@ -1032,13 +1034,15 @@ void EngineBuffer::processSlip(int iBufferSize) {
             slotControlSeekExact(m_dSlipPosition);
             m_dSlipPosition = 0;
         }
-        m_bSlipToggled = false;
+        toggled = false;
     }
 
     // Increment slip position even if it was just toggled -- this ensures the position is correct.
-    if (m_bSlipEnabled) {
+    if (enabled) {
         m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
     }
+    maskval = (toggled ? SLIP_TOGGLED : 0) + (enabled ? SLIP_ENABLED : 0);
+    m_SlipStatus.fetchAndStoreRelease(maskval);
 }
 
 void EngineBuffer::processSyncRequests() {
@@ -1177,7 +1181,8 @@ void EngineBuffer::hintReader(const double dRate) {
     m_pReadAheadManager->hintReader(dRate, &m_hintList);
 
     //if slipping, hint about virtual position so we're ready for it
-    if (m_bSlipEnabled) {
+    bool slip_enabled = m_SlipStatus.fetchAndAddAcquire(0) & SLIP_ENABLED;
+    if (slip_enabled) {
         Hint hint;
         hint.length = 2048; //default length please
         hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
