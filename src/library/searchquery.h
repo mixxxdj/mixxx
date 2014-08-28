@@ -107,9 +107,7 @@ class DurationFilterNode : public QueryNode {
     QString toSql() const;
 
   private:
-    QString parseHumanReadableTime(QString durationHumanReadable);
-    QString getTimeInHMS(QString durationHumanReadable);
-    QString formatInput(QString inputDuration);
+    double parseTime(QString time, bool* ok);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;

@@ -161,7 +161,6 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
             m_bRangeQuery = true;
         }
     }
-
 }
 
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
@@ -232,9 +231,8 @@ DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
     }
 
     bool parsed = false;
-    argument = parseHumanReadableTime(argument);
     // Try to convert to see if it parses.
-    m_dOperatorArgument = argument.toDouble(&parsed);
+    m_dOperatorArgument = parseTime(argument, &parsed);
     if (parsed) {
         m_bOperatorQuery = true;
     }
@@ -242,9 +240,9 @@ DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
     QStringList rangeArgs = argument.split("-");
     if (rangeArgs.length() == 2) {
         bool lowOk = false;
-        m_dRangeLow = rangeArgs[0].toDouble(&lowOk);
+        m_dRangeLow = parseTime(rangeArgs[0], &lowOk);
         bool highOk = false;
-        m_dRangeHigh = rangeArgs[1].toDouble(&highOk);
+        m_dRangeHigh = parseTime(rangeArgs[1], &highOk);
 
         if (lowOk && highOk && m_dRangeLow <= m_dRangeHigh) {
             m_bRangeQuery = true;
@@ -252,118 +250,37 @@ DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
     }
 }
 
-QString DurationFilterNode::parseHumanReadableTime(QString durationHumanReadable) {
-    QStringList durationRanges = durationHumanReadable.split("-");
-    if (durationRanges.length() == 1) {
-        //qDebug()<<"only one parameter";
-        return getTimeInHMS(durationHumanReadable);
-    } else if (durationRanges.length() == 2) {
-         //qDebug()<<"two parameter";
-         return getTimeInHMS(durationRanges[0]) + "-" + getTimeInHMS(durationRanges[1]);
+double DurationFilterNode::parseTime(QString time, bool* ok){
+    QRegExp regex("^(\\d*)(m|:)?([0-6]?\\d)?s?$");
+    if (!regex.exactMatch(time)) {
+        qDebug() << time << " did not match regexp";
+        *ok = false;
+        return 0;
+    }
+    int pos = regex.indexIn(time);
+    QStringList caps = regex.capturedTexts();
+
+    // You can check that the minutes are parsed to entry 2 of the list and the
+    // seconds are in the 4th entry. If you don't believe me or this doesn't
+    // work anymore because we changed our Qt version just have a look at caps.
+    // -- (kain88, Aug 2014)
+    double m = 0;
+    double s = 0;
+    if (caps.at(3).isEmpty()) {
+        s = caps.at(1).toDouble(ok);
     } else {
-        //qDebug()<<"undefind";
-        return durationHumanReadable;
+        m = caps.at(1).toDouble(ok);
+        s = caps.at(3).toDouble(ok);
     }
+
+    if (!*ok) {
+        return 0;
+    }
+
+    *ok = true;
+    return 60 * m + s;
 }
 
-QString DurationFilterNode::getTimeInHMS(QString durationHumanReadable) {
-    durationHumanReadable = formatInput(durationHumanReadable);
-    bool parseable = false;
-    double totalTime = -1;
-    totalTime = durationHumanReadable.toDouble(&parseable);
-    if (parseable) {
-        return  durationHumanReadable;
-    }
-
-    QString holdDigits;
-    bool hour = false;
-    bool miniute = false;
-    bool second = false;
-
-    for(int i = 0; i< durationHumanReadable.length(); i++) {
-        if ((durationHumanReadable.at(i) == 'h'
-                ||  durationHumanReadable.at(i) == 'H'
-                ||  durationHumanReadable.at(i) == 'm'
-                ||  durationHumanReadable.at(i) == 'M'
-                ||  durationHumanReadable.at(i) == 's'
-                ||  durationHumanReadable.at(i) == 'S')
-                && !holdDigits.isEmpty()) {
-            bool parsed = false;
-            // Try to convert to see if it parses.
-            double dbl = holdDigits.trimmed().toDouble(&parsed);
-            if (parsed) {
-                if ((durationHumanReadable.at(i) == 'h' || durationHumanReadable.at(i) == 'H')
-                    && !hour) {
-                    totalTime+= dbl*3600;
-                    hour = true;
-                }
-                if ((durationHumanReadable.at(i) == 'm' || durationHumanReadable.at(i) == 'M')
-                    && !miniute) {
-                    totalTime+= dbl*60;
-                    miniute = true;
-                }
-                if ((durationHumanReadable.at(i) == 's' || durationHumanReadable.at(i) == 'S')
-                    && !second) {
-                    totalTime+= dbl;
-                    second = true;
-                }
-                //qDebug()<<dbl<<durationHumanReadable.at(i);
-                holdDigits = "";
-            } else {
-                return durationHumanReadable;
-            }
-        } else {
-              holdDigits.append(durationHumanReadable.at(i));
-        }
-    }
-
-    // if there is no Hour/miniute/second identification then it will taken as second
-    if (!holdDigits.isEmpty() && !second) {
-        bool parsed = false;
-        double dbl = holdDigits.trimmed().toDouble(&parsed);
-        if (parsed) {
-            totalTime+= dbl;
-        } else {
-            return durationHumanReadable;
-        }
-    }
-    //qDebug()<<totalTime;
-    return QString::number(totalTime);
-}
-
-QString DurationFilterNode::formatInput(QString inputDuration) {
-    QRegExp hour_minute_second_regexp("^(\\d+:\\d+:\\d+[hH]?)$");
-    QRegExp minute_second_regexp("^(\\d+:\\d+[mM]?)$");
-
-    if (inputDuration.contains(hour_minute_second_regexp)) {
-        //qDebug()<<"it's hour minute second";
-        //qDebug()<<inputDuration;
-        if (inputDuration.endsWith("h",Qt::CaseInsensitive)) {
-               inputDuration.chop(1);
-        }
-        QStringList timeSeparated = inputDuration.split(QRegExp(":"));
-        QString hour = timeSeparated.at(0);
-        QString minute = timeSeparated.at(1);
-        QString second = timeSeparated.at(2);
-        QStringList timeJoined;
-        timeJoined<<hour.append('h')<<minute.append('m')<<second.append('s');
-        return timeJoined.join("");
-    } else if (inputDuration.contains(minute_second_regexp)) {
-        //qDebug()<<"it's minute second";
-        //qDebug()<<inputDuration;
-        if (inputDuration.endsWith("m",Qt::CaseInsensitive)) {
-               inputDuration.chop(1);
-        }
-        QStringList timeSeparated = inputDuration.split(QRegExp(":"));
-        QString minute = timeSeparated.at(0);
-        QString second = timeSeparated.at(1);
-        QStringList timeJoined;
-        timeJoined<<minute.append('m')<<second.append('s');
-        return timeJoined.join("");
-    } else {
-        return inputDuration;
-    }
-}
 
 bool DurationFilterNode::match(const TrackPointer& pTrack) const {
     foreach (QString sqlColumn, m_sqlColumns) {

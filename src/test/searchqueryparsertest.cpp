@@ -364,7 +364,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     EXPECT_STREQ(
         qPrintable(QString("(duration = 90)")),
         qPrintable(pQuery->toSql()));
-    
+
     pQuery.reset(m_parser.parseQuery("duration:1m30s", searchColumns, ""));
     pTrack->setDuration(91);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -374,7 +374,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     EXPECT_STREQ(
         qPrintable(QString("(duration = 90)")),
         qPrintable(pQuery->toSql()));
-    
+
     pQuery.reset(m_parser.parseQuery("duration:90", searchColumns, ""));
     pTrack->setDuration(91);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -421,15 +421,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     EXPECT_STREQ(
         qPrintable(QString("(duration >= 90)")),
         qPrintable(pQuery->toSql()));
-    
-    pQuery.reset(m_parser.parseQuery("duration:>=1:30m", searchColumns, ""));
-    pTrack->setDuration(89);
-    EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setDuration(90);
-    EXPECT_TRUE(pQuery->match(pTrack));
-    EXPECT_STREQ(
-        qPrintable(QString("(duration >= 90)")),
-        qPrintable(pQuery->toSql()));
 
     pQuery.reset(m_parser.parseQuery("duration:<2:30", searchColumns, ""));
     pTrack->setDuration(151);
@@ -448,7 +439,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     EXPECT_STREQ(
         qPrintable(QString("(duration <= 150)")),
         qPrintable(pQuery->toSql()));
-    
+
     pQuery.reset(m_parser.parseQuery("duration:<=150", searchColumns, ""));
     pTrack->setDuration(191);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -456,8 +447,8 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("(duration <= 150)")),
-        qPrintable(pQuery->toSql())); 
-    
+        qPrintable(pQuery->toSql()));
+
     pQuery.reset(m_parser.parseQuery("duration:<=2m30s", searchColumns, ""));
     pTrack->setDuration(191);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -488,7 +479,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_STREQ(
         qPrintable(QString("(duration >= 150 AND duration <= 200)")),
         qPrintable(pQuery->toSql()));
-    
+
     pQuery.reset(m_parser.parseQuery("duration:2:30-200", searchColumns, ""));
     pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
