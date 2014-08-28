@@ -116,6 +116,7 @@ void LinearPhaseEQEffect::processGroup(const QString& group,
                                         LinearPhaseEQEffectGroupState* pState,
                                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                                        const unsigned int numSamples,
+                                       const unsigned int sampleRate,
                                        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
@@ -139,7 +140,6 @@ void LinearPhaseEQEffect::processGroup(const QString& group,
     fHigh = fHigh - fMid;
     fMid = fMid - fLow;
 
-    int sampleRate = getSampleRate();
     if (m_oldSampleRate != sampleRate ||
             (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
             (m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
@@ -148,7 +148,7 @@ void LinearPhaseEQEffect::processGroup(const QString& group,
         m_oldSampleRate = sampleRate;
         // Clamp frequency corners to the border, defined by the window size.
         // this avoids artifacts in the low band
-        m_loFreq = math_max(m_loFreq, sampleRate / (int)numSamples * 5);
+        m_loFreq = math_max(m_loFreq, (int)(sampleRate / numSamples * 5));
         m_hiFreq = math_max(m_hiFreq, m_loFreq);
         pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
     }

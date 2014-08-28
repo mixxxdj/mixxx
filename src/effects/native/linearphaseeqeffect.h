@@ -52,6 +52,7 @@ class LinearPhaseEQEffect : public GroupEffectProcessor<LinearPhaseEQEffectGroup
                       LinearPhaseEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatureState);
 
   private:
@@ -66,7 +67,7 @@ class LinearPhaseEQEffect : public GroupEffectProcessor<LinearPhaseEQEffectGroup
     ControlObjectSlave* m_pLoFreqCorner;
     ControlObjectSlave* m_pHiFreqCorner;
 
-    int m_oldSampleRate;
+    unsigned int m_oldSampleRate;
     int m_loFreq;
     int m_hiFreq;
 
