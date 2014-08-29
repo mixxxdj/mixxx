@@ -415,7 +415,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(m_iEnableSyncQueued);
+            static_cast<SyncRequestQueued>(load_atomic(m_iEnableSyncQueued));
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
@@ -628,8 +628,9 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    if ((!m_pCurrentTrack && atomic_load(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && m_filepos_play >= m_file_length_old && !m_iSeekQueued)) {
+    if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
+            (m_pCurrentTrack && m_filepos_play >= m_file_length_old &&
+                    load_atomic(!m_iSeekQueued))) {
         // play not possible
         playPossible = false;
     }
@@ -722,7 +723,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
     bool bCurBufferPaused = false;
     double rate = 0;
 
-    bool bTrackLoading = atomic_load(m_iTrackLoading) != 0;
+    bool bTrackLoading = load_atomic(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
@@ -1017,7 +1018,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
 void EngineBuffer::processSlip(int iBufferSize) {
     // Do a single read from m_bSlipEnabled so we don't run in to race conditions.
-    bool enabled = static_cast<bool>(m_slipEnabled);
+    bool enabled = static_cast<bool>(load_atomic(m_slipEnabled));
     if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
         if (enabled) {
