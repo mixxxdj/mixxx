@@ -398,7 +398,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // Write the position before the seek type, to reduce a possible race
     // condition effect
     m_queuedPosition.setValue(newpos);
-    m_iSeekQueued = seekType;
+    m_iSeekQueued = deref(seekType);
 }
 
 void EngineBuffer::requestSyncPhase() {
