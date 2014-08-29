@@ -76,10 +76,11 @@ class TextFilterNode : public QueryNode {
 class NumericFilterNode : public QueryNode {
   public:
     NumericFilterNode(const QStringList& sqlColumns, QString argument);
+    NumericFilterNode(const QStringList& sqlColumns);
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
 
-  private:
+  protected:
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -87,6 +88,14 @@ class NumericFilterNode : public QueryNode {
     bool m_bRangeQuery;
     double m_dRangeLow;
     double m_dRangeHigh;
+};
+
+class DurationFilterNode : public NumericFilterNode {
+  public:
+    DurationFilterNode(const QStringList& sqlColumns, QString argument);
+
+  private:
+    double parseTime(QString time, bool* ok);
 };
 
 class KeyFilterNode : public QueryNode {
@@ -98,23 +107,6 @@ class KeyFilterNode : public QueryNode {
 
   private:
     QList<mixxx::track::io::key::ChromaticKey> m_matchKeys;
-};
-
-class DurationFilterNode : public QueryNode {
-  public:
-    DurationFilterNode(const QStringList& sqlColumns, QString argument);
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
-
-  private:
-    double parseTime(QString time, bool* ok);
-    QStringList m_sqlColumns;
-    bool m_bOperatorQuery;
-    QString m_operator;
-    double m_dOperatorArgument;
-    bool m_bRangeQuery;
-    double m_dRangeLow;
-    double m_dRangeHigh;
 };
 
 class SqlNode : public QueryNode {
