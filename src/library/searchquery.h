@@ -80,6 +80,9 @@ class NumericFilterNode : public QueryNode {
     QString toSql() const;
 
   private:
+    QString parseHumanReadableTime(QString durationHumanReadable);
+    QString getTimeInHMS(QString durationHumanReadable);
+    QString formatInput(QString inputDuration);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
