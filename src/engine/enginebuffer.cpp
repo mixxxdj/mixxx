@@ -628,7 +628,7 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    if ((!m_pCurrentTrack && deref(m_iTrackLoading) == 0) ||
+    if ((!m_pCurrentTrack && atomic_load(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && m_filepos_play >= m_file_length_old && !m_iSeekQueued)) {
         // play not possible
         playPossible = false;
@@ -722,7 +722,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
     bool bCurBufferPaused = false;
     double rate = 0;
 
-    bool bTrackLoading = deref(m_iTrackLoading) != 0;
+    bool bTrackLoading = atomic_load(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
