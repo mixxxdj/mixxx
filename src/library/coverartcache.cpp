@@ -183,13 +183,17 @@ void CoverArtCache::imageLoaded() {
         QPixmapCache::insert(cacheKey, pixmap);
     }
 
-    if (!pixmap.isNull()) {
-        if (res.issueRepaint) {
-            emit(requestRepaint());
-        } else {
-            emit(pixmapFound(res.trackId, pixmap));
-        }
+    // The widgets expects a signal response.
+    if (pixmap.isNull()) {
+        pixmap = m_defaultCover;
     }
+
+    if (res.issueRepaint) {
+        emit(requestRepaint());
+    } else {
+        emit(pixmapFound(res.trackId, pixmap));
+    }
+
     m_runningIds.remove(res.trackId);
 }
 
@@ -333,12 +337,15 @@ void CoverArtCache::imageFound() {
         QPixmapCache::insert(cacheKey, pixmap);
     }
 
-    if (!pixmap.isNull()) {
-        if (res.issueRepaint) {
-            emit(requestRepaint());
-        } else {
-            emit(pixmapFound(res.trackId, pixmap));
-        }
+    // The widgets expects a signal response.
+    if (pixmap.isNull()) {
+        pixmap = m_defaultCover;
+    }
+
+    if (res.issueRepaint) {
+        emit(requestRepaint());
+    } else {
+        emit(pixmapFound(res.trackId, pixmap));
     }
 
     // update DB

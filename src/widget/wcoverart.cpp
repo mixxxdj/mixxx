@@ -97,27 +97,18 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
 void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
                                  const QString& md5Hash,
                                  int trackId, bool cachedOnly) {
-    if (!m_bEnableWidget) {
+    if (!m_bEnableWidget || !m_bCoverIsVisible) {
         return;
     }
 
     m_lastRequestedTrackId = trackId;
     m_lastRequestedCover = qMakePair(coverLocation, md5Hash);
 
-    if (!m_bCoverIsVisible) {
-        return;
-    }
-
-    m_loadedCover = CoverArtCache::instance()->requestPixmap(trackId,
-                                                             coverLocation,
+    CoverArtCache::instance()->requestPixmap(trackId,
+                                             coverLocation,
                                                              md5Hash,
                                                              QSize(0,0),
                                                              cachedOnly);
-    if (m_loadedCover.isNull()) {
-        m_loadedCover = CoverArtCache::instance()->getDefaultCoverLocation();
-    }
-    m_loadedCover = scaledCoverArt(m_loadedCover);
-    update();
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
