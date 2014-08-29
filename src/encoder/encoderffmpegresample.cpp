@@ -257,7 +257,21 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, uint8_t **outbuff
         }
         return l_iOutBytes;
     } else {
-        return 0;
+        uint8_t *l_ptrBuf = NULL;
+        int64_t l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
+                                 inframe->nb_samples,
+                                 m_pCodecCtx->sample_fmt, 1);
+
+        if(l_lInReadBytes < 0) {
+           return 0;
+        }
+
+        l_ptrBuf = (uint8_t *)av_malloc(l_lInReadBytes);
+
+        memcpy(l_ptrBuf, inframe->data[0], l_lInReadBytes);
+
+        outbuffer[0] = l_ptrBuf;
+        return l_lInReadBytes;
     }
 
     return 0;

@@ -191,8 +191,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                 }
             }
 
+// FFMPEG 0.11 54.11.100
+#if LIBAVCODEC_VERSION_INT > 3561060
             av_frame_unref(l_pFrame);
-
+#else
+            av_free(l_pFrame);
+#endif
             l_pFrame = NULL;
 
             if (l_iStop == true) {
