@@ -44,15 +44,23 @@ void DlgTagFetcher::init() {
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer track) {
+    if (track == NULL) {
+        return;
+    }
     results->clear();
     m_track = track;
     m_data = Data();
     m_TagFetcher.startFetch(m_track);
+
+    disconnect(this, SLOT(updateTrackMetadata(TrackPointer)));
+    connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata(TrackInfoObject*)));
+
     updateStack();
 }
 
-void DlgTagFetcher::updateOrgTrack(const TrackPointer track) {
-    m_track = track;
+void DlgTagFetcher::updateTrackMetadata(TrackInfoObject* pTIO) {
+    Q_UNUSED(pTIO);
     updateStack();
 }
 
@@ -76,7 +84,6 @@ void DlgTagFetcher::apply() {
              m_data.m_results[resultIndex]->getTrackNumber() != "0") {
             m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
         }
-        emit(tagsUpdated(m_track));
     }
 }
 

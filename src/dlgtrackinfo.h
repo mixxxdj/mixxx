@@ -29,7 +29,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   signals:
     void next();
     void previous();
-    void tagsUpdated(TrackPointer);
 
   private slots:
     void slotNext();
@@ -51,6 +50,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void reloadTrackMetadata();
     void slotOpenInFileBrowser();
+    void updateTrackMetadata();
 
   private:
     void populateFields(TrackPointer pTrack);

@@ -27,12 +27,11 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
 
   public slots:
     void loadTrack(const TrackPointer track);
-    void updateOrgTrack(const TrackPointer track);
+    void updateTrackMetadata(TrackInfoObject* pTIO);
 
   signals:
     void next();
     void previous();
-    void tagsUpdated(TrackPointer);
 
   private slots:
     void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);

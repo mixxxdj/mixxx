@@ -163,6 +163,10 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+
+    disconnect(this, SLOT(updateTrackMetadata()));
+    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata()));
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {
@@ -317,7 +321,6 @@ void DlgTrackInfo::saveTrack() {
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
         m_pLoadedTrack->removeCue(pCue);
     }
-    emit(tagsUpdated(m_pLoadedTrack));
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -329,6 +332,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
     }
 
     clear();
+    disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.clear();
 }
 
@@ -401,6 +405,12 @@ void DlgTrackInfo::reloadTrackMetadata() {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
         populateFields(pTrack);
+    }
+}
+
+void DlgTrackInfo::updateTrackMetadata() {
+    if (m_pLoadedTrack) {
+        populateFields(m_pLoadedTrack);
     }
 }
 

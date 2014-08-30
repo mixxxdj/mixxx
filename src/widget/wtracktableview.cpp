@@ -40,12 +40,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotNextDlgTagFetcher()));
     connect(&m_DlgTagFetcher, SIGNAL(previous()),
             this, SLOT(slotPrevDlgTagFetcher()));
-    // reload Track once the tags are updated.
-    connect(&m_DlgTagFetcher, SIGNAL(tagsUpdated(TrackPointer)),
-            m_pTrackInfo, SLOT(loadTrack(TrackPointer)));
-    connect(m_pTrackInfo, SIGNAL(tagsUpdated(TrackPointer)),
-            &m_DlgTagFetcher, SLOT(updateOrgTrack(TrackPointer)));
-
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
