@@ -21,7 +21,7 @@
 #include "controlaudiotaperpot.h"
 #include "controlobjectslave.h"
 #include "engine/enginefilterblock.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginefilter.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
@@ -41,9 +41,9 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     m_eqNeverTouched = true;
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-    m_iOldSampleRate = 0;
+    m_iOldSampleRate = static_cast<int>(m_pSampleRate->get());
 
-    //Setup Filter Controls
+    // Setup Filter Controls
 
     if (s_loEqFreq == NULL) {
         s_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
@@ -52,10 +52,17 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
         s_EnableEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "EnableEQs"));
     }
 
-    high = band = low = NULL;
+    // Load Defaults
+    lowLight = new EngineFilterBessel4Low(m_iOldSampleRate, 246);
+    bandLight = new EngineFilterBessel4Band(m_iOldSampleRate, 246, 2484);
+    highLight = new EngineFilterBessel4High(m_iOldSampleRate, 2484);
+    lowDef = new EngineFilterButterworth8Low(m_iOldSampleRate, 246);
+    bandDef = new EngineFilterButterworth8Band(m_iOldSampleRate, 246, 2484);
+    highDef = new EngineFilterButterworth8High(m_iOldSampleRate, 2484);
 
-    //Load Defaults
-    setFilters(true);
+    low = lowDef;
+    band = bandDef;
+    high = highDef;
 
     /*
        lowrbj = new EngineFilterRBJ();
@@ -83,25 +90,24 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     filterKillHigh = new ControlPushButton(ConfigKey(group, "filterHighKill"));
     filterKillHigh->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
-
-    memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_pLowBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pBandBuf = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pHighBuf = new CSAMPLE[MAX_BUFFER_LEN];
 
     old_low = old_mid = old_high = 1.0;
 }
 
 EngineFilterBlock::~EngineFilterBlock()
 {
-    delete high;
-    delete band;
-    delete low;
-    delete [] m_pTemp3;
-    delete [] m_pTemp2;
-    delete [] m_pTemp1;
+    delete lowLight;
+    delete bandLight;
+    delete highLight;
+    delete lowDef;
+    delete bandDef;
+    delete highDef;
+    delete [] m_pHighBuf;
+    delete [] m_pBandBuf;
+    delete [] m_pLowBuf;
     delete filterpotLow;
     delete filterKillLow;
     delete filterpotMid;
@@ -122,32 +128,31 @@ EngineFilterBlock::~EngineFilterBlock()
     s_EnableEq = NULL;
 }
 
-void EngineFilterBlock::setFilters(bool forceSetting) {
+void EngineFilterBlock::setFilters() {
     int iSampleRate = static_cast<int>(m_pSampleRate->get());
     if (m_iOldSampleRate != iSampleRate ||
             (ilowFreq != (int)s_loEqFreq->get()) ||
             (ihighFreq != (int)s_hiEqFreq->get()) ||
-            (blofi != (int)s_lofiEq->get()) ||
-            forceSetting) {
-        delete low;
-        delete band;
-        delete high;
+            (blofi != (int)s_lofiEq->get())) {
         ilowFreq = (int)s_loEqFreq->get();
         ihighFreq = (int)s_hiEqFreq->get();
         blofi = (int)s_lofiEq->get();
         m_iOldSampleRate = iSampleRate;
         if (blofi) {
-            // why is this DJM800 at line ~34 (LOFI ifdef) and just
-            // bessel_lowpass# here? bkgood
-            low = new EngineFilterIIR(bessel_lowpass4,4);
-            band = new EngineFilterIIR(bessel_bandpass,8);
-            high = new EngineFilterIIR(bessel_highpass4,4);
+            lowLight->setFrequencyCorners(iSampleRate, ilowFreq);
+            bandLight->setFrequencyCorners(iSampleRate, ilowFreq, ihighFreq);
+            highLight->setFrequencyCorners(iSampleRate, ihighFreq);
+            low = lowLight;
+            band = bandLight;
+            high = highLight;
         } else {
-            low = new EngineFilterButterworth8Low(iSampleRate, ilowFreq);
-            band = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
-            high = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
+            lowDef->setFrequencyCorners(iSampleRate, ilowFreq);
+            bandDef->setFrequencyCorners(iSampleRate, ilowFreq, ihighFreq);
+            highDef->setFrequencyCorners(iSampleRate, ihighFreq);
+            low = lowDef;
+            band = bandDef;
+            high = highDef;
         }
-
     }
 }
 
@@ -159,15 +164,16 @@ void EngineFilterBlock::process(CSAMPLE* pInOut, const int iBufferSize) {
         return;
     }
 
-    float fLow=0.f, fMid=0.f, fHigh=0.f;
-    if (filterKillLow->get()==0.)
-        fLow = filterpotLow->get(); //*0.7;
-    if (filterKillMid->get()==0.)
-        fMid = filterpotMid->get(); //*1.1;
-    if (filterKillHigh->get()==0.)
-        fHigh = filterpotHigh->get(); //*1.2;
-
-    setFilters();
+    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
+    if (filterKillLow->get() == 0.) {
+        fLow = filterpotLow->get();
+    }
+    if (filterKillMid->get() == 0.) {
+        fMid = filterpotMid->get();
+    }
+    if (filterKillHigh->get() == 0.) {
+        fHigh = filterpotHigh->get();
+    }
 
     // If the user has never touched the Eq controls (they are still at zero)
     // Then pass through.  As soon as the user twiddles one, actually activate
@@ -180,24 +186,80 @@ void EngineFilterBlock::process(CSAMPLE* pInOut, const int iBufferSize) {
         m_eqNeverTouched = false;
     }
 
-    low->process(pInOut, m_pTemp1, iBufferSize);
-    band->process(pInOut, m_pTemp2, iBufferSize);
-    high->process(pInOut, m_pTemp3, iBufferSize);
+    float fDry = 0;
+    // This is the RGBW Mix. It is currently not working,
+    // because of the group delay, introduced by the filters.
+    // Since the dry signal has no delay, we get a frequency distorsion
+    // once it is mixed together with the filtered signal
+    // This might be fixed later by an allpass filter for the dry signal
+    // or zero-phase no-lag filters
+    // "Linear Phase EQ" "filtfilt()"
+    //fDry = qMin(qMin(fLow, fMid), fHigh);
+    //fLow -= fDry;
+    //fMid -= fDry;
+    //fHigh -= fDry;
 
-    if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
-        SampleUtil::copy3WithRampingGain(pInOut,
-                                         m_pTemp1, old_low, fLow,
-                                         m_pTemp2, old_mid, fMid,
-                                         m_pTemp3, old_high, fHigh,
+    setFilters();
+
+    // Process the new EQ'd signals.
+    // They use up to 16 frames history so in case we are just starting,
+    // 16 frames are junk, this is handled by ramp_delay
+    int ramp_delay = 0;
+    if (fLow || old_low) {
+        low->process(pInOut, m_pLowBuf, iBufferSize);
+        if(old_low == 0) {
+            ramp_delay = 30;
+        }
+    }
+    if (fMid || old_mid) {
+        band->process(pInOut, m_pBandBuf, iBufferSize);
+        if(old_mid== 0) {
+            ramp_delay = 30;
+        }
+    }
+    if (fHigh || old_high) {
+        high->process(pInOut, m_pHighBuf, iBufferSize);
+        if(old_high == 0) {
+            ramp_delay = 30;
+        }
+    }
+
+    if (ramp_delay) {
+        // first use old gains
+        SampleUtil::copy4WithGain(pInOut,
+                                  pInOut, old_dry,
+                                  m_pLowBuf, old_low,
+                                  m_pBandBuf, old_mid,
+                                  m_pHighBuf, old_high,
+                                  ramp_delay);
+        // Now ramp the remaining frames
+        SampleUtil::copy4WithRampingGain(&pInOut[ramp_delay],
+                                         &pInOut[ramp_delay], old_dry, fDry,
+                                         &m_pLowBuf[ramp_delay], old_low, fLow,
+                                         &m_pBandBuf[ramp_delay], old_mid, fMid,
+                                         &m_pHighBuf[ramp_delay], old_high, fHigh,
+                                         iBufferSize - ramp_delay);
+    } else if (fLow != old_low ||
+            fMid != old_mid ||
+            fHigh != old_high ||
+            fDry != old_dry) {
+        SampleUtil::copy4WithRampingGain(pInOut,
+                                         pInOut, old_dry, fDry,
+                                         m_pLowBuf, old_low, fLow,
+                                         m_pBandBuf, old_mid, fMid,
+                                         m_pHighBuf, old_high, fHigh,
                                          iBufferSize);
     } else {
-        SampleUtil::copy3WithGain(pInOut,
-                          m_pTemp1, fLow,
-                          m_pTemp2, fMid,
-                          m_pTemp3, fHigh, iBufferSize);
+        SampleUtil::copy4WithGain(pInOut,
+                                  pInOut, fDry,
+                                  m_pLowBuf, fLow,
+                                  m_pBandBuf, fMid,
+                                  m_pHighBuf, fHigh,
+                                  iBufferSize);
     }
 
     old_low = fLow;
     old_mid = fMid;
     old_high = fHigh;
+    old_dry = fDry;
 }

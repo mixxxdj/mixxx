@@ -5,10 +5,11 @@
 #ifndef ENGINEAUX_H
 #define ENGINEAUX_H
 
-#include "util/circularbuffer.h"
+#include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
+#include "util/circularbuffer.h"
 #include "soundmanagerutil.h"
 
 class EffectsManager;
@@ -27,6 +28,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
+    virtual void postProcess(const int iBufferSize) { Q_UNUSED(iBufferSize) }
 
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the callback thread of
@@ -50,6 +52,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     ControlObject* m_pEnabled;
     ControlPushButton* m_pPassing;
     ControlAudioTaperPot* m_pPregain;
+    ControlObjectSlave* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };

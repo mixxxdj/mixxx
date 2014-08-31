@@ -81,7 +81,7 @@ double InternalClock::getBeatDistance() const {
     return m_dClockPosition / m_dBeatLength;
 }
 
-void InternalClock::setBeatDistance(double beatDistance) {
+void InternalClock::setMasterBeatDistance(double beatDistance) {
     //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
@@ -112,7 +112,7 @@ void InternalClock::slotBeatDistanceChanged(double beat_distance) {
     if (beat_distance < 0.0 || beat_distance > 1.0) {
         return;
     }
-    setBeatDistance(beat_distance);
+    setMasterBeatDistance(beat_distance);
 }
 
 void InternalClock::updateBeatLength(int sampleRate, double bpm) {
@@ -147,7 +147,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     m_iOldSampleRate = sampleRate;
 
     // Restore the old beat distance.
-    setBeatDistance(oldBeatDistance);
+    setMasterBeatDistance(oldBeatDistance);
 }
 
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {

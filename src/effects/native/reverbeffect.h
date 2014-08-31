@@ -1,4 +1,4 @@
-// Ported from SWH Plate Reverb 1423.
+// Ported from CAPS Reverb.
 // This effect is GPL code.
 
 #ifndef REVERBEFFECT_H
@@ -48,6 +48,7 @@ class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
                       ReverbGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatures);
 
   private:

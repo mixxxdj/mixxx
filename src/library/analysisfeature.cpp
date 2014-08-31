@@ -13,6 +13,7 @@
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 #include "util/dnd.h"
+#include "util/debug.h"
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
@@ -24,7 +25,9 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         m_pTrackCollection(pTrackCollection),
         m_pAnalyserQueue(NULL),
         m_iOldBpmEnabled(0),
+        m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(NULL) {
+	setTitleDefault();
 }
 
 AnalysisFeature::~AnalysisFeature() {
@@ -33,8 +36,27 @@ AnalysisFeature::~AnalysisFeature() {
     cleanupAnalyser();
 }
 
+// Sets the title of this feature to the default name, given by m_sAnalysisTitleName
+void AnalysisFeature::setTitleDefault() {
+	m_Title = m_analysisTitleName;
+	emit(featureIsLoading(this, false));	// Signals a change in title
+}
+
+// Sets the title of this feature to the default name followed by (x / y)
+// where x is the current track being analyzed and y is the total number of tracks in the job
+void AnalysisFeature::setTitleProgress(int trackNum, int totalNum) {
+	QString title = m_analysisTitleName;
+	title.append(" (");
+	title.append(QString::number(trackNum));
+	title.append(" / ");
+	title.append(QString::number(totalNum));
+	title.append(")");
+	m_Title = title;
+	emit(featureIsLoading(this, false));	// Signals a change in title
+}
+
 QVariant AnalysisFeature::title() {
-    return tr("Analyze");
+    return m_Title;
 }
 
 QIcon AnalysisFeature::getIcon() {
@@ -100,6 +122,8 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         connect(m_pAnalyserQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
         connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
+                this, SLOT(slotProgressUpdate(int)));
+        connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
                 m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
 
         connect(m_pAnalyserQueue, SIGNAL(queueEmpty()),
@@ -114,7 +138,17 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);
         }
     }
+    if(trackIds.size() > 0)
+    	setTitleProgress(0, trackIds.size());
     emit(trackAnalysisStarted(trackIds.size()));
+}
+
+void AnalysisFeature::slotProgressUpdate(int num_left) {
+	int num_tracks = m_pAnalysisView->getNumTracks();
+    if (num_left > 0) {
+        int currentTrack = num_tracks - num_left + 1;
+        setTitleProgress(currentTrack, num_tracks);
+    }
 }
 
 void AnalysisFeature::stopAnalysis() {
@@ -125,6 +159,7 @@ void AnalysisFeature::stopAnalysis() {
 }
 
 void AnalysisFeature::cleanupAnalyser() {
+	setTitleDefault();
     emit(analysisActive(false));
     if (m_pAnalyserQueue != NULL) {
         m_pAnalyserQueue->stop();

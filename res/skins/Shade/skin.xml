@@ -1,0 +1,550 @@
+	<!--
+	Shade, Skin for Mixxx 1.12.x
+	www.mixxx.org
+	Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
+	This file is part of the "Shade" Skin for Mixxx
+	"Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+	http://creativecommons.org/licenses/by-sa/3.0/
+
+	With every copy of the work, you are required to either provide a copy of the license it self
+	or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+
+	You are free:
+	to Share - to copy, distribute and transmit the work
+	to Remix - to adapt the work
+
+	Under the following conditions:
+	Attribution - You must attribute the work in the manner specified by the author or licensor
+	(but not in any way that suggests that they endorse you or your use of the work).
+	A attribution should include the following: The name of the author and/or licensor,
+	the title of the work, the URL that is associated with the work.
+
+	Share Alike - If you alter, transform, or build upon this work, you may distribute
+	the resulting work only under the same or similar license to this one.
+
+	See CHANGELOG.txt for the list of changes.
+	-->
+
+<!DOCTYPE skin>
+<skin>
+	<!--
+	############################################################################################
+	############################################################################################
+	Mixxx skin documentation:
+	http://mixxx.org/wiki/doku.php/creating_skins
+
+	List of controls:
+	http://mixxx.org/wiki/doku.php/mixxxcontrols
+
+	Qt Style Sheets documentation:
+	https://qt-project.org/doc/qt-4.8/stylesheet.html
+
+	Debugging:
+	To outline WidgetGroups change all occurrences (exept this one ;-) of
+	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
+
+	Parent WidgedGroups are outlined one pixel solid red;
+		Child WidgedGroups are outlined one pixel solid yellow;
+			Grandchild WidgedGroups are outlined one pixel solid green;
+	############################################################################################
+	############################################################################################
+	-->
+
+	<manifest>
+		<title>Shade</title>
+		<author>jus</author>
+		<version>1.12.0.01</version>
+		<description>A 2-deck split-waveform skin with 4 samplers.</description>
+		<language>en</language>
+		<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+		<attributes>
+			<attribute config_key="[Master],num_decks">2</attribute>
+			<attribute config_key="[Master],num_samplers">4</attribute>
+			<attribute config_key="[Master],num_preview_decks">1</attribute>
+			<!--Optionally, make elements visible on skin load-->
+			<attribute config_key="[Spinny1],show_spinny">1</attribute>
+			<attribute config_key="[Spinny2],show_spinny">1</attribute>
+			<attribute config_key="[Samplers],show_samplers">0</attribute>
+			<attribute config_key="[EffectRack1],show">0</attribute>
+			<attribute config_key="[Microphone],show_microphone">0</attribute>
+			<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
+		</attributes>
+	</manifest>
+
+	
+	<!--
+	**********************************************
+	General- Skin Colour Scheme
+	**********************************************
+	-->
+	<Schemes>
+		<Scheme>
+			<Name>Classic</Name>
+			<Filters/>
+		</Scheme>
+		<Scheme>
+			<Name>Dark</Name>
+			<Filters>
+				<HSVTweak>
+					<HConst>90</HConst>
+					<SConst>-30</SConst>
+					<VConst>-30</VConst>
+				</HSVTweak>
+				<Add>
+					<Amount>-40</Amount>
+				</Add>
+			</Filters>
+		</Scheme>
+		<Scheme>
+			<Name>Summer Sunset</Name>
+			<Filters>
+				<HSVTweak>
+					<SMin>100</SMin>
+					<VFact>0.7</VFact>
+					<HFact>0.3</HFact>
+				</HSVTweak>
+				<HSVTweak>
+					<SMax>50</SMax>
+					<HFact>0</HFact>
+					<HConst>50</HConst>
+					<SConst>120</SConst>
+					<VConst>-10</VConst>
+				</HSVTweak>
+			</Filters>
+		</Scheme>
+	</Schemes>
+
+
+	<!--
+	############################################################################################
+	############################################################################################
+	General- Main background picture
+	############################################################################################
+	############################################################################################
+	-->
+
+	<ObjectName>Mixxx</ObjectName>
+	<Style src="skin:style.qss"/>
+	<MinimumSize>1024,500</MinimumSize>
+	<SizePolicy>me,me</SizePolicy>
+	<Layout>vertical</Layout>
+	
+	<Children>
+		<WidgetGroup>
+    		<ObjectName>DecksAndMixer</ObjectName>
+    		<MinimumSize>1024,265</MinimumSize>
+  			<SizePolicy>e,f</SizePolicy>
+        	<Layout>horizontal</Layout>
+  			<Children>
+  				<WidgetGroup>
+  					<Size>378,265</Size>
+  					<SizePolicy>f,f</SizePolicy>
+					<Children>
+  						<Template src="skin:deck.xml">
+							<SetVariable name="channum">1</SetVariable>
+						</Template>	
+						<Template src="skin:microphone.xml">
+						</Template>	
+					</Children>
+				</WidgetGroup>	
+				<WidgetGroup>
+					<Size>260,265</Size>
+					<Children>
+						<Template src="skin:mixer_panel.xml">
+						</Template>	
+					</Children>
+				</WidgetGroup>
+				<WidgetGroup>
+  					<Size>378,265</Size>
+					<Children>
+						<Template src="skin:deck.xml">
+							<SetVariable name="channum">2</SetVariable>
+						</Template>	
+					</Children>
+				</WidgetGroup>
+        	</Children>
+    	</WidgetGroup>  	
+	
+		<!--
+		############################################################################################
+		############################################################################################
+		WidgetGroup : Show/hide Samplers, Preview Deck, and shrink Library
+		############################################################################################
+		############################################################################################
+		-->
+		<WidgetGroup>
+			<MinimumSize>1024,105</MinimumSize>
+			<SizePolicy>me,me</SizePolicy>
+			<Layout>vertical</Layout>
+			<!--deactivate the standard
+			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+			cause push buttons in library will show up with wrong margin/padding -->
+			<Style>QGroupBox { border: 0px solid red; }</Style>
+			<Children>
+				<!-- Sampler Bank sub-widget -->
+				<WidgetGroup>
+					<Layout>horizontal</Layout>
+					<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
+					<Children>
+  						<Template src="skin:sampler.xml">
+							<SetVariable name="samplernum">1</SetVariable>
+						</Template>	
+						<Template src="skin:sampler.xml">
+							<SetVariable name="samplernum">2</SetVariable>
+						</Template>
+						<Template src="skin:sampler.xml">
+							<SetVariable name="samplernum">3</SetVariable>
+						</Template>		
+						<Template src="skin:sampler.xml">
+							<SetVariable name="samplernum">4</SetVariable>
+						</Template>	
+					</Children>
+					<Connection>
+						<ConfigKey>[Samplers],show_samplers</ConfigKey>
+						<BindProperty>visible</BindProperty>
+					</Connection>
+				</WidgetGroup>
+				
+				
+				<!-- EffectRack1 sub-widget -->
+				<WidgetGroup>
+					<Size>i,m</Size>
+					<Layout>horizontal</Layout>
+					<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
+					<Children>
+  						<Template src="skin:effectunit.xml">
+							<SetVariable name="effectunitnum">1</SetVariable>
+						</Template>	
+						<Template src="skin:effectunit.xml">
+							<SetVariable name="effectunitnum">2</SetVariable>
+						</Template>
+					</Children>
+					<Connection>
+						<ConfigKey>[EffectRack1],show</ConfigKey>
+						<BindProperty>visible</BindProperty>
+					</Connection>
+				</WidgetGroup>
+
+				<!--
+				**********************************************
+				Library / Preview Deck / Search / Tree view
+				**********************************************
+				-->
+				<WidgetGroup>
+					<ObjectName>Library</ObjectName>
+					<Pos>0,0</Pos>
+					<Size>e,e</Size>
+					<SizePolicy>me,me</SizePolicy>
+					<Layout>horizontal</Layout>
+					<Style>
+					QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
+	
+					QTableView, QTextBrowser, QTreeView { border: 1px solid #656565; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+					background: transparent; color: #ACACAC;
+					<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
+					alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
+					<!--checkbox in library "Played" column -->
+					QTableView::indicator { width: 12px; height: 12px;}
+					QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
+					QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
+					<!--Button in library "Preview" column -->
+					QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
+					QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
+					QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
+	
+					QPushButton#LibraryBPMButton {background: transparent; border: 0;}
+					QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
+					QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
+	
+					QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+	
+					<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
+					You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
+					In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
+					The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
+					-->
+					<!--transition time in Auto DJ tab-->
+					QSpinBox:editable { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
+					QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+	
+					<!--library search bar-->
+					WSearchLineEdit { 
+						margin: 0px 0px 5px 5px; 
+						padding: 2px; 
+						border: 1px solid #656565; 
+						font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+						background: transparent; 
+						color: #ACACAC; 
+					}
+					WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,50); color: #D6D6D6;}
+	
+					<!--splitter between treeview and library-->
+					QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
+					QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
+					QSplitter::handle:horizontal { width: 6px; }
+					QSplitter::handle:vertical { height: 6px;}
+	
+					QPushButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+					<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
+					QLabel, QRadioButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #C1C1C1;}
+	
+					<!--Spacing between treeview and searchbar-->
+					QTreeView { margin: 0px 0px 0px 5px; }
+	
+					<!--triangle for closed/opened branches in treeview-->
+					QTreeView { show-decoration-selected: 0;} <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
+					QTreeView::branch:has-children:!has-siblings:closed,
+					QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
+					QTreeView::branch:open:has-children:!has-siblings,
+					QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
+					<!--
+					<BgColor>#101010</BgColor>
+					<FgColor>#C1C1C1</FgColor>
+					<BgColorRowEven>#101010</BgColorRowEven>
+					<BgColorRowUneven>#151515</BgColorRowUneven>
+					-->
+					</Style>
+					<Children>
+						<Splitter>
+							<Size>me,me</Size>
+							<Style></Style>
+							<SplitSizes>1,e</SplitSizes>
+							<Children>
+								<WidgetGroup>
+									<Style>QGroupBox {}</Style>
+									<Layout>vertical</Layout>
+									<Children>
+										<!-- Preview Deck-->
+										<WidgetGroup>
+											<Style>
+												QGroupBox {
+													margin: 0px 0px 4px 5px;
+													padding: 0px;
+													border: 1px solid #656565;
+													background: transparent;
+												}
+											</Style>
+											<Layout>horizontal</Layout>
+											<Children>
+												<!-- Preview Deck Column 1 Row 1-->
+												<WidgetGroup>
+												<Layout>vertical</Layout>
+												<Children>
+												<WidgetGroup>
+													<Style> QGroupBox {
+                                                        margin: 0px;
+														padding: 0px 0px 0px 0px;
+														border-left: 0px solid #656565;
+														border-right: 0px solid #2B2B2B;
+														border-top: 0px solid #656565;
+														border-bottom: 1px solid #2B2B2B;
+														background: transparent;
+													}
+													</Style>
+													<Layout>horizontal</Layout>
+													<Children>
+														<!--
+														**********************************************
+														Text- Track Title
+														**********************************************
+														-->
+														<Text>
+															<TooltipId>text</TooltipId>
+															<Style> QLabel {
+																font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+																background-color: transparent;
+																color: #ACACAC;
+																text-align: left;
+																padding-left: 1px;
+															}
+															</Style>
+															<Group>[PreviewDeck1]</Group>
+															<Pos></Pos>
+															<Size>50me,15f</Size>
+														</Text>
+														<!--
+														**********************************************
+														Button- Eject
+														**********************************************
+														-->
+														<PushButton>
+															<TooltipId>eject</TooltipId>
+															<Style></Style>
+															<NumberStates>1</NumberStates>
+															<State>
+																<Number>0</Number>
+																<Pressed>btn_eject1_over.png</Pressed>
+																<Unpressed>btn_eject1.png</Unpressed>
+															</State>
+															<Pos></Pos>
+															<Connection>
+																<ConfigKey>[PreviewDeck1],eject</ConfigKey>
+																<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+																<ButtonState>LeftButton</ButtonState>
+																<ConnectValueToWidget>false</ConnectValueToWidget>
+															</Connection>
+														</PushButton>
+													</Children>
+												</WidgetGroup>
+												<!-- Preview Deck Column 1 Row 2-->
+												<WidgetGroup>
+													<Style>
+														QGroupBox {												
+															padding: 0px;
+															margin: 0px;
+															border: 0px;
+														}
+													</Style>
+													<Layout>horizontal</Layout>
+													<Children>
+														<PushButton>
+															<TooltipId>play_start</TooltipId>
+															<Style></Style>
+															<NumberStates>2</NumberStates>
+															<RightClickIsPushButton>true</RightClickIsPushButton>
+															<State>
+																<Number>0</Number>
+																<Pressed>btn_play_sampler_down.png</Pressed>
+																<Unpressed>btn_play_sampler.png</Unpressed>
+															</State>
+															<State>
+																<Number>1</Number>
+																<Pressed>btn_play_sampler_overdown.png</Pressed>
+																<Unpressed>btn_play_sampler_over.png</Unpressed>
+															</State>
+															<Pos>2,2</Pos>
+															<Connection>
+																<ConfigKey>[PreviewDeck1],play</ConfigKey>
+																<EmitOnDownPress>true</EmitOnDownPress>
+																<ButtonState>LeftButton</ButtonState>
+															</Connection>
+															<Connection>
+																<ConfigKey>[PreviewDeck1],start</ConfigKey>
+																<EmitOnDownPress>true</EmitOnDownPress>
+																<ButtonState>RightButton</ButtonState>
+																<ConnectValueToWidget>false</ConnectValueToWidget>
+															</Connection>
+														</PushButton>
+														<Overview>
+															<TooltipId>waveform_overview</TooltipId>
+															<Style></Style>
+															<Group>[PreviewDeck1]</Group>
+															<Size>me,30f</Size>
+															<BgColor>#8D98A3</BgColor>
+															<SignalHighColor>#FFE300</SignalHighColor>
+															<SignalMidColor>#0099FF</SignalMidColor>
+															<SignalLowColor>#FF0035</SignalLowColor>
+															<SignalColor>#FF8000</SignalColor>
+															<PlayPosColor>#00FF00</PlayPosColor>
+															<DefaultMark>
+																<Align>bottom</Align>
+																<Color>#FFFFFF</Color>
+																<TextColor>#00FF00</TextColor>
+																<Text> %1 </Text>
+															</DefaultMark>
+															<Mark>
+																<Control>cue_point</Control>
+																<Text> C </Text>
+																<Align>top</Align>
+																<Color>#FF001C</Color>
+																<TextColor>#00FF00</TextColor>
+															</Mark>
+															<Connection>
+																<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+																<EmitOnDownPress>false</EmitOnDownPress>
+															</Connection>
+														</Overview>
+													</Children>
+												</WidgetGroup>
+												</Children>
+												</WidgetGroup>
+	
+											<!-- Preview Deck Column 2-->
+												<WidgetGroup>
+													<MinimumSize>20,62</MinimumSize>
+
+													<Children>
+													<!--
+													**********************************************
+													Visual- Volume peak indicator
+													**********************************************
+													-->
+													<StatusLight>
+														<TooltipId>PeakIndicator</TooltipId>
+														<Style></Style>
+														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
+														<PathBack>btn_clipping_previewdeck.png</PathBack>
+														<Pos>0,1</Pos>
+														<Connection>
+															<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
+														</Connection>
+													</StatusLight>
+	
+													<!--
+													**********************************************
+													Visual - Volume level display
+													**********************************************
+													-->
+													<VuMeter>
+														<TooltipId>channel_VuMeter</TooltipId>
+														<Style></Style>
+														<PathVu>btn_volume_display_previewdeck_over.png</PathVu>
+														<PathBack>btn_volume_display_previewdeck.png</PathBack>
+														<Pos>0,12</Pos>
+														<Horizontal>false</Horizontal>
+														<PeakHoldSize>3</PeakHoldSize>
+														<PeakHoldTime>250</PeakHoldTime>
+														<PeakFallTime>50</PeakFallTime>
+														<PeakFallStep>3</PeakFallStep>
+														<Connection>
+															<ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
+														</Connection>
+													</VuMeter>
+	
+													<!--
+													**********************************************
+													Slider- Channel Volume
+													**********************************************
+													-->
+													<SliderComposed>
+														<TooltipId>pregain</TooltipId>
+														<Style></Style>
+														<Handle>knob_volume_previewdeck.png</Handle>
+														<Slider>slider_volume_previewdeck.png</Slider>
+														<Pos>10,2</Pos>
+														<Horizontal>false</Horizontal>
+														<Connection>
+															<ConfigKey>[PreviewDeck1],pregain</ConfigKey>
+															<EmitOnDownPress>false</EmitOnDownPress>
+														</Connection>
+													</SliderComposed>
+													</Children>
+												</WidgetGroup>
+											</Children>
+											<Connection>
+												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+												<BindProperty>visible</BindProperty>
+											</Connection>
+										</WidgetGroup>
+										<!--Search Input Field-->
+										<SearchBox></SearchBox>
+										<!--Library Tree View-->
+										<LibrarySidebar></LibrarySidebar>
+									</Children>
+								</WidgetGroup>
+								<WidgetGroup>
+									<!-- Library Table-->
+									<Style>QGroupBox {}</Style>
+									<Layout>vertical</Layout>
+									<Children>
+										<Library></Library>
+									</Children>
+								</WidgetGroup>
+							</Children>
+						</Splitter>
+					</Children>
+				</WidgetGroup>
+			</Children>
+		</WidgetGroup>
+	</Children>
+</skin>

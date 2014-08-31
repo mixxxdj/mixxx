@@ -92,6 +92,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     QList<int> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
     } else {
         // If a track is dropped onto a playlist's name, but the track isn't in the
         // library, then add the track to the library before adding it to the

@@ -30,6 +30,8 @@ EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
     setPFL(false);
+
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }
 
 EngineAux::~EngineAux() {
@@ -97,7 +99,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         m_vuMeter.collectFeatures(&features);
         // Process effects enabled for this channel
         m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         features);
+                                         m_pSampleRate->get(), features);
     }
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);

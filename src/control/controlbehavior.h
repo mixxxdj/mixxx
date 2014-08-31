@@ -16,6 +16,7 @@ class ControlNumericBehavior {
     virtual bool setFilter(double* dValue);
 
     virtual double valueToParameter(double dValue);
+    virtual double midiValueToParameter(double midiValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
@@ -30,10 +31,9 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 
     virtual bool setFilter(double* dValue);
     virtual double valueToParameter(double dValue);
+    virtual double midiValueToParameter(double midiValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
 
   protected:
     double m_dMinValue;
@@ -60,10 +60,6 @@ class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
     ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
                                bool allowOutOfBounds);
     virtual ~ControlLinPotmeterBehavior();
-
-    virtual double valueToMidiParameter(double dValue);
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
 };
 
 class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {

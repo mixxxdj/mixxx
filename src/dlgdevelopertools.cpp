@@ -9,12 +9,13 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
         : QDialog(pParent) {
     Q_UNUSED(pConfig);
     setupUi(this);
+    this->setWindowFlags(Qt::Window);
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
 
     for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-         it != controlsList.end(); it++) {
+         it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
@@ -49,6 +50,14 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
             this, SLOT(slotControlSearch(const QString&)));
     connect(controlSearch, SIGNAL(searchCleared()),
             this, SLOT(slotControlSearchClear()));
+
+    // Set up the log search box
+    connect(logSearch, SIGNAL(returnPressed()),
+            this, SLOT(slotLogSearch()));
+    connect(logSearchButton, SIGNAL(clicked()),
+            this, SLOT(slotLogSearch()));
+
+    m_logCursor = logTextView->textCursor();
 
     // Update at 2FPS.
     startTimer(500);
@@ -96,4 +105,10 @@ void DlgDeveloperTools::slotControlSearch(const QString& search) {
 
 void DlgDeveloperTools::slotControlSearchClear() {
     m_controlProxyModel.setFilterFixedString(QString());
+}
+
+void DlgDeveloperTools::slotLogSearch() {
+    QString textToFind = logSearch->text();
+    m_logCursor = logTextView->document()->find(textToFind, m_logCursor);
+    logTextView->setTextCursor(m_logCursor);
 }

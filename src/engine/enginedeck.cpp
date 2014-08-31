@@ -24,7 +24,7 @@
 #include "engine/enginepregain.h"
 #include "engine/enginefilterblock.h"
 #include "engine/enginevumeter.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 
 #include "sampleutil.h"
 
@@ -53,6 +53,8 @@ EngineDeck::EngineDeck(const char* group,
     connect(m_pPassing, SIGNAL(valueChanged(double)),
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
+
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
@@ -106,11 +108,16 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
         m_pVUMeter->collectFeatures(&features);
-        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         features);
+        m_pEngineEffectsManager->process(
+                getGroup(), pOut, iBufferSize,
+                static_cast<unsigned int>(m_pSampleRate->get()), features);
     }
     // Update VU meter
     m_pVUMeter->process(pOut, iBufferSize);
+}
+
+void EngineDeck::postProcess(const int iBufferSize) {
+    m_pBuffer->postProcess(iBufferSize);
 }
 
 EngineBuffer* EngineDeck::getEngineBuffer() {

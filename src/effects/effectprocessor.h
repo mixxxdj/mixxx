@@ -27,6 +27,7 @@ class EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) = 0;
 };
 
@@ -35,7 +36,8 @@ class EffectProcessor {
 template <typename T>
 class GroupEffectProcessor : public EffectProcessor {
   public:
-    GroupEffectProcessor() {}
+    GroupEffectProcessor() {
+    }
     virtual ~GroupEffectProcessor() {
         for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
              it != m_groupState.end();) {
@@ -58,6 +60,7 @@ class GroupEffectProcessor : public EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) {
         T* pState = m_groupState.value(group, NULL);
         if (pState == NULL) {
@@ -65,13 +68,14 @@ class GroupEffectProcessor : public EffectProcessor {
             m_groupState[group] = pState;
             qWarning() << "Allocated group state in the engine for" << group;
         }
-        processGroup(group, pState, pInput, pOutput, numSamples, groupFeatures);
+        processGroup(group, pState, pInput, pOutput, numSamples, sampleRate, groupFeatures);
     }
 
     virtual void processGroup(const QString& group,
                               T* groupState,
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
                               const unsigned int numSamples,
+                              const unsigned int sampleRate,
                               const GroupFeatureState& groupFeatures) = 0;
 
   private:
