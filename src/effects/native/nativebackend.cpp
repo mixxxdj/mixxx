@@ -5,6 +5,7 @@
 #include "effects/native/bitcrushereffect.h"
 #include "effects/native/butterworth8eqeffect.h"
 #include "effects/native/bessel8lvmixeqeffect.h"
+#include "effects/native/graphiceqeffect.h"
 #include "effects/native/filtereffect.h"
 #ifndef __MACAPPSTORE__
 #include "effects/native/reverbeffect.h"
@@ -22,6 +23,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<EchoEffect>();
     registerEffect<Butterworth8EQEffect>();
     registerEffect<Bessel8LVMixEQEffect>();
+    registerEffect<GraphicEQEffect>();
 }
 
 NativeBackend::~NativeBackend() {

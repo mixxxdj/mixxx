@@ -170,7 +170,7 @@ void ControllerEngine::gracefulShutdown() {
         ConfigKey key = *it;
         ControlObjectThread *cot = m_controlCache.take(key);
         delete cot;
-        it++;
+        ++it;
     }
 
     delete m_pBaClass;
@@ -1440,7 +1440,8 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
 bool ControllerEngine::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
-    return getValue(group, "scratch2_enable") > 0;
+    // Don't report that we are scratching if we're ramping.
+    return getValue(group, "scratch2_enable") > 0 && !m_ramp[deck];
 }
 
 /*  -------- ------------------------------------------------------

@@ -6,6 +6,7 @@
 class EngineChannel;
 
 enum SyncMode {
+    SYNC_INVALID = -1,
     SYNC_NONE = 0,
     SYNC_FOLLOWER = 1,
     SYNC_MASTER = 2,
@@ -23,6 +24,7 @@ inline SyncMode syncModeFromDouble(double value) {
 
 class Syncable {
   public:
+    virtual ~Syncable() { }
     virtual const QString& getGroup() const = 0;
     virtual EngineChannel* getChannel() const = 0;
 
@@ -44,7 +46,7 @@ class Syncable {
     virtual double getBeatDistance() const = 0;
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    virtual void setBeatDistance(double beatDistance) = 0;
+    virtual void setMasterBeatDistance(double beatDistance) = 0;
 
     virtual double getBpm() const = 0;
     // Must never result in a call to SyncableListener::notifyBpmChanged or
