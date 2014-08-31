@@ -1,6 +1,10 @@
 #include "effects/native/bessel8lvmixeqeffect.h"
 #include "util/math.h"
 
+static const unsigned int kStartupSamplerate = 44100;
+static const unsigned int kStartupLoFreq = 246;
+static const unsigned int kStartupHiFreq = 2484;
+
 // static
 QString Bessel8LVMixEQEffect::getId() {
     return "org.mixxx.effects.bessel8lvmixeq";
@@ -59,15 +63,16 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
 Bessel8LVMixEQEffectGroupState::Bessel8LVMixEQEffectGroupState()
         : old_low(1.0),
           old_mid(1.0),
-          old_high(1.0) {
+          old_high(1.0),
+          m_oldSampleRate(kStartupSamplerate),
+          m_loFreq(kStartupLoFreq), 
+          m_hiFreq(kStartupHiFreq) {
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    // Initialize filters with the default values
-    // TODO(rryan): use the real samplerate
-    m_low1 = new EngineFilterBessel8Low(44100, 246);
-    m_low2 = new EngineFilterBessel8Low(44100, 2484);
+    m_low1 = new EngineFilterBessel8Low(kStartupSamplerate, kStartupLoFreq);
+    m_low2 = new EngineFilterBessel8Low(kStartupSamplerate, kStartupHiFreq);
     m_delay2 = new EngineFilterDelay<kMaxDelay>();
     m_delay3 = new EngineFilterDelay<kMaxDelay>();
 }
@@ -115,8 +120,7 @@ Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
                                          const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")),
-          m_oldSampleRate(0), m_loFreq(0), m_hiFreq(0) {
+          m_pPotHigh(pEffect->getParameterById("high")) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
@@ -128,10 +132,11 @@ Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
 }
 
 void Bessel8LVMixEQEffect::processGroup(const QString& group,
-                                       Bessel8LVMixEQEffectGroupState* pState,
-                                       const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                       const unsigned int numSamples,
-                                       const GroupFeatureState& groupFeatures) {
+                                        Bessel8LVMixEQEffectGroupState* pState,
+                                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                        const unsigned int numSamples,
+                                        const unsigned int sampleRate,
+                                        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
@@ -140,18 +145,17 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
     fMid = m_pPotMid->value().toDouble();
     fHigh = m_pPotHigh->value().toDouble();
 
-    int sampleRate = getSampleRate();
-    if (m_oldSampleRate != sampleRate ||
-            (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
-            (m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
-        m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
-        m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
-        m_oldSampleRate = sampleRate;
+    if (pState->m_oldSampleRate != sampleRate ||
+            (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
+            (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
+        pState->m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
+        pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
+        pState->m_oldSampleRate = sampleRate;
         // Clamp frequency corners to the border, defined by the maximum delay.
         int minFreq = sampleRate / (kMaxDelay - 1) * kGroupDelay1Hz * 2;
-        m_loFreq = math_max(m_loFreq, minFreq);
-        m_hiFreq = math_max(m_hiFreq, minFreq);
-        pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
+        pState->m_loFreq = math_max(pState->m_loFreq, minFreq);
+        pState->m_hiFreq = math_max(pState->m_hiFreq, minFreq);
+        pState->setFilters(sampleRate, pState->m_loFreq, pState->m_hiFreq);
     }
 
     // Since a Bessel Low pass Filter has a constant group delay in the pass band,

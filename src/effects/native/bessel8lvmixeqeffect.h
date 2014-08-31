@@ -39,6 +39,10 @@ class Bessel8LVMixEQEffectGroupState {
     double old_mid;
     double old_high;
 
+    unsigned int m_oldSampleRate;
+    int m_loFreq;
+    int m_hiFreq;
+
     CSAMPLE* m_pLowBuf;
     CSAMPLE* m_pBandBuf;
     CSAMPLE* m_pHighBuf;
@@ -57,6 +61,7 @@ class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGro
                       Bessel8LVMixEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatureState);
 
   private:
@@ -70,10 +75,6 @@ class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGro
 
     ControlObjectSlave* m_pLoFreqCorner;
     ControlObjectSlave* m_pHiFreqCorner;
-
-    int m_oldSampleRate;
-    int m_loFreq;
-    int m_hiFreq;
 
     DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
 };
