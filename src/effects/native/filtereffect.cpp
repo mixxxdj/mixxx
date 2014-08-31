@@ -81,6 +81,7 @@ void FilterEffect::processGroup(const QString& group,
                                 FilterGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples,
+                                const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
@@ -105,7 +106,7 @@ void FilterEffect::processGroup(const QString& group,
             applyFilters(pState,
                          pInput, pState->crossfadeBuffer,
                          pState->bandpassBuffer,
-                         numSamples, pState->oldDepth,
+                         numSamples, sampleRate, pState->oldDepth,
                          pState->oldBandpassGain);
         }
         if (depth < 0.0) {
@@ -113,14 +114,14 @@ void FilterEffect::processGroup(const QString& group,
             // Freq from 2^5=32Hz to 2^(5+9)=16384
             double freq = getLowFrequencyCorner(depth + 1.0);
             double freq2 = getHighFrequencyCorner(depth + 1.0, bandpass_width);
-            pState->lowFilter.setFrequencyCorners(freq2);
-            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->lowFilter.setFrequencyCorners(44100, freq2);
+            pState->bandpassFilter.setFrequencyCorners(44100, freq, freq2);
         } else if (depth > 0.0) {
             // Highpass + bandpass
             double freq = getLowFrequencyCorner(depth);
             double freq2 = getHighFrequencyCorner(depth, bandpass_width);
-            pState->highFilter.setFrequencyCorners(freq);
-            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->highFilter.setFrequencyCorners(44100, freq);
+            pState->bandpassFilter.setFrequencyCorners(44100, freq, freq2);
         }
     }
 
@@ -130,7 +131,7 @@ void FilterEffect::processGroup(const QString& group,
         SampleUtil::copyWithGain(pOutput, pInput, 0.0, numSamples);
     } else {
         applyFilters(pState, pInput, pOutput, pState->bandpassBuffer,
-                     numSamples, depth, bandpass_gain);
+                     numSamples, sampleRate, depth, bandpass_gain);
     }
 
     if (parametersChanged) {
@@ -145,8 +146,10 @@ void FilterEffect::processGroup(const QString& group,
 void FilterEffect::applyFilters(FilterGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 CSAMPLE* pTempBuffer,
-                                const int numSamples,
+                                const unsigned int numSamples,
+                                const unsigned int sampleRate,
                                 double depth, CSAMPLE bandpassGain) {
+    Q_UNUSED(sampleRate)
     if (depth < 0.0) {
         pState->lowFilter.process(pInput, pOutput, numSamples);
         pState->bandpassFilter.process(pInput, pTempBuffer, numSamples);

@@ -25,7 +25,9 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     depth->setDefault(16);
-    depth->setMinimum(4);
+    // for values -1 0 +1
+    // we do not allow a 1 bit version because this causes a distortion because of the missing sign bit
+    depth->setMinimum(2);
     depth->setMaximum(16);
 
     EffectManifestParameter* frequency = manifest.addParameter();
@@ -59,19 +61,24 @@ void BitCrusherEffect::processGroup(const QString& group,
                                     BitCrusherGroupState* pState,
                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
                                     const unsigned int numSamples,
+                                    const unsigned int sampleRate,
                                     const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
+    Q_UNUSED(sampleRate);
     // TODO(rryan) this is broken. it needs to take into account the sample
     // rate.
     const CSAMPLE downsample = m_pDownsampleParameter ?
             m_pDownsampleParameter->value().toDouble() : 0.0;
 
     CSAMPLE bit_depth = m_pBitDepthParameter ?
-            m_pBitDepthParameter->value().toDouble() : 1.0;
-    bit_depth = math_max(bit_depth, 1.0f);
+            m_pBitDepthParameter->value().toDouble() : 16;
 
-    const CSAMPLE scale = pow(2.0f, bit_depth - 1);
+    // divided by two because we use float math which includes the sing bit anyway
+    const CSAMPLE scale = pow(2.0f, bit_depth) / 2;
+    // Gain correction is required, because MSB (values above 0.5) is usually
+    // rarely used, to achieve equal loudness and maximum dynamic
+    const CSAMPLE gainCorrection = (17 - bit_depth) / 8;
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
@@ -79,8 +86,16 @@ void BitCrusherEffect::processGroup(const QString& group,
 
         if (pState->accumulator >= 1.0) {
             pState->accumulator -= 1.0;
-            pState->hold_l = floorf(pInput[i] * scale + 0.5f) / scale;
-            pState->hold_r = floorf(pInput[i+1] * scale + 0.5f) / scale;
+            if (bit_depth < 16) {
+
+                pState->hold_l = floorf(math_clamp(pInput[i] * gainCorrection, -1.0f, 1.0f) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_r = floorf(math_clamp(pInput[i+1] * gainCorrection, -1.0f, 1.0f) * scale + 0.5f) / scale / gainCorrection;
+            } else {
+                // Mixxx float has 24 bit depth, Audio CDs are 16 bit
+                // here we do not change the depth
+                pState->hold_l = pInput[i];
+                pState->hold_r = pInput[i+1];
+            }
         }
 
         pOutput[i] = pState->hold_l;

@@ -170,10 +170,14 @@ void TrackInfoObject::parse() {
         // TODO(rryan): Should we re-visit this decision?
         if (!(pProxiedSoundSource->getArtist().isEmpty())) {
             setArtist(pProxiedSoundSource->getArtist());
+        } else {
+            parseArtist();
         }
 
         if (!(pProxiedSoundSource->getTitle().isEmpty())) {
             setTitle(pProxiedSoundSource->getTitle());
+        } else {
+            parseTitle();
         }
 
         if (!(pProxiedSoundSource->getType().isEmpty())) {
@@ -188,14 +192,23 @@ void TrackInfoObject::parse() {
         setGrouping(pProxiedSoundSource->getGrouping());
         setComment(pProxiedSoundSource->getComment());
         setTrackNumber(pProxiedSoundSource->getTrackNumber());
-        setReplayGain(pProxiedSoundSource->getReplayGain());
-        setBpm(pProxiedSoundSource->getBPM());
+        float replayGain = pProxiedSoundSource->getReplayGain();
+        if (replayGain != 0) {
+            setReplayGain(replayGain);
+        }
+        float bpm = pProxiedSoundSource->getBPM();
+        if (bpm > 0) {
+            // do not delete beat grid if bpm is not set in file
+            setBpm(bpm);
+        }
         setDuration(pProxiedSoundSource->getDuration());
         setBitrate(pProxiedSoundSource->getBitrate());
         setSampleRate(pProxiedSoundSource->getSampleRate());
         setChannels(pProxiedSoundSource->getChannels());
-        setKeyText(pProxiedSoundSource->getKey(),
-                   mixxx::track::io::key::FILE_METADATA);
+        QString key = pProxiedSoundSource->getKey();
+        if (!key.isEmpty()) {
+            setKeyText(key, mixxx::track::io::key::FILE_METADATA);
+        }
         setHeaderParsed(true);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
@@ -207,31 +220,41 @@ void TrackInfoObject::parse() {
     }
 }
 
-
-void TrackInfoObject::parseFilename() {
+void TrackInfoObject::parseArtist() {
     QMutexLocker lock(&m_qMutex);
     QString filename = m_fileInfo.fileName();
+    filename = filename.replace("_", " ");
+    if (filename.count('-') == 1) {
+        m_sArtist = filename.section('-', 0, 0).trimmed();
+    }
+    setDirty(true);
+}
+
+void TrackInfoObject::parseTitle() {
+    QMutexLocker lock(&m_qMutex);
+    QString filename = m_fileInfo.fileName();
+    filename = filename.replace("_", " ");
+    if (filename.count('-') == 1) {
+        m_sTitle = filename.section('-', 1, 1).trimmed();
+        // Remove the file type from m_sTitle
+        m_sTitle = m_sTitle.section('.', 0, -2).trimmed();
+    } else {
+        m_sTitle = filename.section('.', 0, -2).trimmed();
+    }
+    setDirty(true);
+}
+
+void TrackInfoObject::parseFilename() {
     // If the file name has the following form: "Artist - Title.type", extract
     // Artist, Title and type fields
-    if (filename.count('-') == 1) {
-        m_sArtist = filename.section('-', 0, 0).trimmed(); // Get the first part
-        m_sTitle = filename.section('-', 1, 1); // Get the second part
-        m_sTitle = m_sTitle.section('.', 0, -2).trimmed(); // Remove the ending
-        if (m_sTitle.isEmpty()) {
-            m_sTitle = filename.section('.', 0, -2).trimmed();
-        }
-    } else {
-        m_sTitle = filename.section('.', 0, -2).trimmed(); // Remove the ending
-    }
-
-    // Replace underscores with spaces for Artist and Title
-    m_sArtist = m_sArtist.replace("_", " ");
-    m_sTitle = m_sTitle.replace("_", " ");
+    parseArtist();
+    parseTitle();
 
     // Add no comment
     m_sComment.clear();
 
     // Find the type
+    QString filename = m_fileInfo.fileName();
     m_sType = filename.section(".",-1).toLower().trimmed();
     setDirty(true);
 }

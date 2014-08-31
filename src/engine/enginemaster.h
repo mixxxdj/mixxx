@@ -68,6 +68,19 @@ class EngineMaster : public QObject, public AudioSource {
         return QString("[Headphone]");
     }
 
+    const QString getBusLeftGroup() const {
+        return QString("[BusLeft]");
+    }
+
+    const QString getBusCenterGroup() const {
+        return QString("[BusCenter]");
+    }
+
+    const QString getBusRightGroup() const {
+        return QString("[BusRight]");
+    }
+
+
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when
     // these methods are called the callback is guaranteed to be inactive
@@ -235,7 +248,11 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
 
+    // Produce the Master Mixxx, not Required if connected to left
+    // and right Bus and no recording and broadcast active
     ControlObject* m_pMasterEnabled;
+    // Mix two Mono channels. This is useful for outdoor gigs
+    ControlObject* m_pMasterMonoMixdown;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];

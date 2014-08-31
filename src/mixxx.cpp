@@ -244,18 +244,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
 
-    // Add the same number of decks that were last used.  This ensures that when
-    // audio inputs and outputs are set up, connections for decks > 2 will
-    // succeed.
-    int deck_count = m_pConfig->getValueString(ConfigKey("[Master]",
-                                                         "num_decks"),
-                                               "2").toInt();
-    if (deck_count < 2) {
-        deck_count = 2;
-    }
-    for (int i = 0; i < deck_count; ++i) {
-        m_pPlayerManager->addDeck();
-    }
+    m_pPlayerManager->addConfiguredDecks();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
@@ -390,6 +379,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pContextWidget->hide();
     SharedGLContext::setWidget(pContextWidget);
 
+    // Create Control aliases before loading the default skin and
+    // initializing controllers
+    createCOAliases();
+
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
@@ -472,6 +465,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         m_pLibraryScanner->scan(this);
     }
     slotNumDecksChanged(m_pNumDecks->get());
+
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -627,6 +621,15 @@ bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString user
 #endif  // QT_VERSION
     }
     return pTranslator->load(translation + prefix + userLocale, translationPath);
+}
+
+void MixxxMainWindow::createCOAliases() {
+    // Add aliases using
+    // ControlDoublePrivate::insertAlias(aliasConfigKey, originalConfigKey)
+
+    // Example:
+    // ControlDoublePrivate::insertAlias(ConfigKey("[Microphone]", "volume"),
+    //                                   ConfigKey("[Microphone1]", "volume"));
 }
 
 void MixxxMainWindow::logBuildDetails() {
@@ -1569,6 +1572,7 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
 }
 
 void MixxxMainWindow::slotControlPassthrough(int index) {
+#ifdef __VINYLCONTROL__
     if (index >= kMaximumVinylControlInputs || index >= m_iNumConfiguredDecks) {
         qWarning() << "Tried to activate passthrough on a deck that we "
                       "haven't configured -- ignoring request.";
@@ -1593,6 +1597,7 @@ void MixxxMainWindow::slotControlPassthrough(int index) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
+#endif
 }
 
 void MixxxMainWindow::slotControlAuxiliary(int index) {

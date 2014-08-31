@@ -25,6 +25,8 @@ class ControlDoublePrivate : public QObject {
         s_pUserConfig = pConfig;
     }
 
+    static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
+
     // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
     // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
     // does not exist.
@@ -66,13 +68,14 @@ class ControlDoublePrivate : public QObject {
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
-    // The caller must nut delete the behavior at any time. The memory is managed
+    // The caller must not delete the behavior at any time. The memory is managed
     // by this function.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
     void setParameter(double dParam, QObject* pSender);
     double getParameter() const;
     double getParameterForValue(double value) const;
+    double getParameterForMidiValue(double midiValue) const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;
@@ -166,9 +169,12 @@ class ControlDoublePrivate : public QObject {
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
+    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOAliasHash;
 
     // Mutex guarding access to the ControlDoublePrivate hash.
     static QMutex s_qCOHashMutex;
+    // Mutex guarding access to the ControlDoublePrivate aliases hash.
+    static QMutex s_qCOAliasHashMutex;
 };
 
 

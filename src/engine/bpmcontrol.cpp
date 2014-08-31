@@ -168,16 +168,14 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 void BpmControl::slotControlPlay(double v) {
     if (v > 0.0) {
         if (m_pQuantize->get() > 0.0) {
-            // Since Quantize is on we can directly seek
-            // SEEK_STANDARD will do the sync job in this case
-            seekAbs(getCurrentSample());
+            getEngineBuffer()->requestSyncPhase();
         }
     }
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
     if (!v) return;
-    syncPhase();
+    getEngineBuffer()->requestSyncPhase();
 }
 
 void BpmControl::slotControlBeatSyncTempo(double v) {
@@ -191,7 +189,7 @@ void BpmControl::slotControlBeatSync(double v) {
     // If the player is playing, and adjusting its tempo succeeded, adjust its
     // phase so that it plays in sync.
     if (syncTempo() && m_pPlayButton->get() > 0) {
-        syncPhase();
+        getEngineBuffer()->requestSyncPhase();
     }
 }
 
@@ -446,21 +444,6 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     return 0.0;
 }
 
-bool BpmControl::syncPhase() {
-    if (getSyncMode() == SYNC_MASTER) {
-        return true;
-    }
-    double dThisPosition = getCurrentSample();
-    double offset = getPhaseOffset(dThisPosition);
-    if (offset == 0.0) {
-        return false;
-    }
-
-    double dNewPlaypos = dThisPosition + offset;
-    seekAbs(dNewPlaypos);
-    return true;
-}
-
 // static
 bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
                                 const double dPosition,
@@ -690,7 +673,7 @@ void BpmControl::slotBeatsTranslate(double v) {
 }
 
 void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
-    m_dPreviousSample = getCurrentSample();
+    m_dPreviousSample = dCurrentSample;
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
 
@@ -702,10 +685,13 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(dCurrentSample);
     Q_UNUSED(dTotalSamples);
     Q_UNUSED(iBufferSize);
-    // It doesn't make sense to me to use the position before update, but this
-    // results in better sync.
-    m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     return kNoTrigger;
+}
+
+double BpmControl::updateBeatDistance() {
+    double beat_distance = getBeatDistance(m_dPreviousSample);
+    m_pThisBeatDistance->set(beat_distance);
+    return beat_distance;
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {

@@ -98,6 +98,7 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             case EffectsRequest::SET_EFFECT_PARAMETERS:
             case EffectsRequest::SET_PARAMETER_PARAMETERS:
+            case EffectsRequest::SET_PARAMETER_BUTTON_PARAMETERS:
                 if (!m_effects.contains(request->pTargetEffect)) {
                     if (kEffectDebugOutput) {
                         qDebug() << debugString()
@@ -133,9 +134,10 @@ void EngineEffectsManager::onCallbackStart() {
 void EngineEffectsManager::process(const QString& group,
                                    CSAMPLE* pInOut,
                                    const unsigned int numSamples,
+                                   const unsigned int sampleRate,
                                    const GroupFeatureState& groupFeatures) {
     foreach (EngineEffectRack* pRack, m_racks) {
-        pRack->process(group, pInOut, numSamples, groupFeatures);
+        pRack->process(group, pInOut, numSamples, sampleRate, groupFeatures);
     }
 }
 

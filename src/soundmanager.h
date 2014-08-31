@@ -73,6 +73,10 @@ class SoundManager : public QObject {
     // establishes the proper connections between them and the mixing engine.
     Result setupDevices();
 
+    // Playermanager will notify us when the number of decks changes.
+    void setConfiguredDeckCount(int count);
+    int getConfiguredDeckCount() const;
+
     SoundDevice* getErrorDevice() const;
 
     // Returns a list of samplerates we will attempt to support for a given API.

@@ -109,7 +109,7 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
         return effects.last();
     }
 
-    it--;
+    --it;
     return *it;
 }
 
@@ -173,12 +173,14 @@ void EffectsManager::setupDefaults() {
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
+#ifndef __MACAPPSTORE__
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.reverb"));
     pChain->setName(tr("Reverb"));
     pEffect = instantiateEffect("org.mixxx.effects.reverb");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+#endif
 
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.echo"));

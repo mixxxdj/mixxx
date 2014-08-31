@@ -175,11 +175,11 @@ class ControllerEngine : public QObject {
         bool oneShot;
     };
     QHash<int, TimerInfo> m_timers;
-    SoftTakeover m_st;
+    SoftTakeoverCtrl m_st;
     ByteArrayClass *m_pBaClass;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
-    QVarLengthArray<int> m_intervalAccumulator, m_brakeKeylock;
+    QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<uint> m_lastMovement;
     QVarLengthArray<float> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
