@@ -138,15 +138,16 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
 
         if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
             if (l_SPacket.stream_index==m_iAudioStream) {
-                if( m_lStoredSeekPoint > 0) {
+                if (m_lStoredSeekPoint > 0) {
                     // Seek for correct jump point
-                    if(m_lStoredSeekPoint > l_SPacket.pos && m_lStoredSeekPoint >= SOUNDSOURCEFFMPEG_POSDISTANCE ) {
-                      if (l_SPacket.data != NULL) {
-                          av_free(l_SPacket.data);
-                      }
-                      l_SPacket.data = NULL;
-                      l_SPacket.size = 0;
-                      continue;
+                    if (m_lStoredSeekPoint > l_SPacket.pos &&
+                            m_lStoredSeekPoint >= SOUNDSOURCEFFMPEG_POSDISTANCE) {
+                        if (l_SPacket.data != NULL) {
+                            av_free(l_SPacket.data);
+                        }
+                        l_SPacket.data = NULL;
+                        l_SPacket.size = 0;
+                        continue;
                     }
                     m_lStoredSeekPoint = -1;
                 }
@@ -187,20 +188,22 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                         // Ogg/Opus have packages pos that have many
                         // audio frames so seek next unique pos..
                         if (l_SPacket.pos != l_lLastPacketPos) {
-                          m_bUnique = true;
-                          l_lLastPacketPos = l_SPacket.pos;
+                            m_bUnique = true;
+                            l_lLastPacketPos = l_SPacket.pos;
                         }
 
                         // If we are over last storepos and we have read more than jump point need is and pos is unique we store it to memory
-                        if( m_lCacheBytePos > m_lLastStoredPos && m_lCacheBytePos > (SOUNDSOURCEFFMPEG_POSDISTANCE + m_lLastStoredPos) && m_bUnique == true)
-                        {
-                           struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(sizeof(struct ffmpegLocationObject));
-                           m_lLastStoredPos = m_lCacheBytePos;
-                           l_SJmp->startByte = m_lCacheBytePos / 2;
-                           l_SJmp->pos = l_SPacket.pos;
-                           l_SJmp->pts = l_SPacket.pts;
-                           m_SJumpPoints.append(l_SJmp);
-                           m_bUnique = false;
+                        if (m_lCacheBytePos > m_lLastStoredPos &&
+                                m_lCacheBytePos > (SOUNDSOURCEFFMPEG_POSDISTANCE + m_lLastStoredPos) &&
+                                m_bUnique == true) {
+                            struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(
+                                    sizeof(struct ffmpegLocationObject));
+                            m_lLastStoredPos = m_lCacheBytePos;
+                            l_SJmp->startByte = m_lCacheBytePos / 2;
+                            l_SJmp->pos = l_SPacket.pos;
+                            l_SJmp->pts = l_SPacket.pts;
+                            m_SJumpPoints.append(l_SJmp);
+                            m_bUnique = false;
                         }
 
                         if (offset < 0 || (uint64_t) offset <= (m_lCacheBytePos / 2)) {
@@ -248,7 +251,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
     l_SObj = m_SCache.last();
     m_lCacheEndByte = (l_SObj->startByte + l_SObj->length);
 
-    if ( !l_iCount ) {
+    if (!l_iCount) {
         return true;
     } else {
         return false;
@@ -455,14 +458,14 @@ long SoundSourceFFmpeg::seek(long filepos) {
         // Try to find some jump point near to
         // where we are located so we don't needed
         // to try guess it
-        if(filepos >= SOUNDSOURCEFFMPEG_POSDISTANCE) {
-          for(i = 0; i < m_SJumpPoints.size(); i ++) {
-              if(m_SJumpPoints[i]->startByte >= (unsigned long) filepos && i > 2) {
-                  m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte;
-                  m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
-                  break;
-              }
-          }
+        if (filepos >= SOUNDSOURCEFFMPEG_POSDISTANCE) {
+            for (i = 0; i < m_SJumpPoints.size(); i ++) {
+                if (m_SJumpPoints[i]->startByte >= (unsigned long) filepos && i > 2) {
+                    m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte;
+                    m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
+                    break;
+                }
+            }
         }
 
         if (filepos == 0) {

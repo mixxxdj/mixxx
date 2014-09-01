@@ -53,9 +53,9 @@ extern "C" {
 class TrackInfoObject;
 
 struct ffmpegLocationObject {
-  uint64_t pos;
-  int64_t pts;
-  uint64_t startByte;
+    uint64_t pos;
+    int64_t pts;
+    uint64_t startByte;
 };
 
 struct ffmpegCacheObject {
