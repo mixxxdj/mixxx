@@ -48,6 +48,7 @@ class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffec
                       LinkwitzRiley8EQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatureState);
 
   private:
@@ -62,7 +63,7 @@ class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffec
     ControlObjectSlave* m_pLoFreqCorner;
     ControlObjectSlave* m_pHiFreqCorner;
 
-    int m_oldSampleRate;
+    unsigned int m_oldSampleRate;
     int m_loFreq;
     int m_hiFreq;
 

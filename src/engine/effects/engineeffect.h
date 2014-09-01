@@ -41,6 +41,7 @@ class EngineEffect : public EffectsRequestHandler {
     void process(const QString& group,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
+                 const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);
 
     bool enabled() const {
