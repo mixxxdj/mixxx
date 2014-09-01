@@ -1074,21 +1074,21 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel1]_enable</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x92</status>
-                <midino>0x03</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>group_[Channel2]_enable</key>
                 <description>MIDI Learned from 8 messages.</description>
                 <status>0x93</status>
                 <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x92</status>
+                <midino>0x03</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1132,21 +1132,21 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel2]_enable</key>
-                <description>MIDI Learned from 6 messages.</description>
-                <status>0x93</status>
-                <midino>0x03</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>group_[Channel3]_enable</key>
                 <description>MIDI Learned from 12 messages.</description>
                 <status>0x94</status>
                 <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 6 messages.</description>
+                <status>0x93</status>
+                <midino>0x03</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1181,6 +1181,16 @@
                 </options>
             </control>
             <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>MIDI Learned from 16 messages.</description>
+                <status>0x95</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel3]_enable</key>
                 <description>MIDI Learned from 10 messages.</description>
@@ -1191,11 +1201,11 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel4]_enable</key>
-                <description>MIDI Learned from 16 messages.</description>
+                <description>MIDI Learned from 14 messages.</description>
                 <status>0x95</status>
-                <midino>0x04</midino>
+                <midino>0x03</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1216,16 +1226,6 @@
                 <description>MIDI Learned from 88 messages.</description>
                 <status>0x93</status>
                 <midino>0x01</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel4]_enable</key>
-                <description>MIDI Learned from 14 messages.</description>
-                <status>0x95</status>
-                <midino>0x03</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1261,6 +1261,16 @@
                 </options>
             </control>
             <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>next_chain</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x9C</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel4]</group>
                 <key>sync_enabled</key>
                 <description>MIDI Learned from 90 messages.</description>
@@ -1275,6 +1285,36 @@
                 <key>headMix</key>
                 <status>0xBE</status>
                 <midino>0x2A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>next_chain</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x9D</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x9C</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x9D</status>
+                <midino>0x08</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1777,13 +1817,33 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>mix</key>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>VestaxVCI400.fx1Knob</key>
+                <description>MIDI Learned from 144 messages.</description>
+                <status>0xBC</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>parameter3</key>
                 <description>MIDI Learned from 116 messages.</description>
                 <status>0xBC</status>
                 <midino>0x03</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>VestaxVCI400.fx2Knob</key>
+                <description>MIDI Learned from 144 messages.</description>
+                <status>0xBD</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1797,8 +1857,8 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>mix</key>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>parameter3</key>
                 <description>MIDI Learned from 330 messages.</description>
                 <status>0xBD</status>
                 <midino>0x03</midino>
@@ -1937,6 +1997,13 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x93</status>
+                <midino>0x03</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
                 <group>[Channel4]</group>
                 <key>play_indicator</key>
                 <status>0x95</status>
@@ -1955,6 +2022,13 @@
                 <key>eject</key>
                 <status>0x95</status>
                 <midino>0x07</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel4]_enable</key>
+                <status>0x95</status>
+                <midino>0x03</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2021,6 +2095,13 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x93</status>
+                <midino>0x04</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
                 <group>[Channel3]</group>
                 <key>vinylcontrol_enabled</key>
                 <status>0x94</status>
@@ -2053,6 +2134,20 @@
                 <key>sync_enabled</key>
                 <status>0x95</status>
                 <midino>0x01</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x92</status>
+                <midino>0x03</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel4]_enable</key>
+                <status>0x95</status>
+                <midino>0x04</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2095,6 +2190,13 @@
                 <key>vinylcontrol_enabled</key>
                 <status>0x93</status>
                 <midino>0x1E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel3]_enable</key>
+                <status>0x94</status>
+                <midino>0x03</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2154,6 +2256,13 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x92</status>
+                <midino>0x04</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
                 <group>[Channel4]</group>
                 <key>vinylcontrol_mode</key>
                 <status>0x95</status>
@@ -2196,6 +2305,13 @@
                 <minimum>0.1</minimum>
             </output>
             <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel3]_enable</key>
+                <status>0x94</status>
+                <midino>0x04</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
                 <group>[Channel2]</group>
                 <key>eject</key>
                 <status>0x93</status>
@@ -2228,6 +2344,34 @@
                 <key>sync_enabled</key>
                 <status>0x93</status>
                 <midino>0x01</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>enabled</key>
+                <status>0x9C</status>
+                <midino>0x08</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>enabled</key>
+                <status>0x9D</status>
+                <midino>0x08</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>next_chain</key>
+                <status>0x9C</status>
+                <midino>0x09</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>next_chain</key>
+                <status>0x9D</status>
+                <midino>0x09</midino>
                 <minimum>0.5</minimum>
             </output>
         </outputs>

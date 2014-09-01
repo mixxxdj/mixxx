@@ -678,6 +678,28 @@ VestaxVCI400.Deck.prototype.onVinyl = function(value) {
     }
 }
 
+VestaxVCI400.fx1Knob = function (channel, control, value, status, group) {
+    var mixVal = engine.getValue("[EffectRack1_EffectUnit1]", "mix");
+    if (value == 0x01) {
+        mixVal += 0.05;
+    } else {
+        mixVal -= 0.05;
+    }
+    mixVal = Math.max(0.0, Math.min(1.0, mixVal));
+    engine.setValue("[EffectRack1_EffectUnit1]", "mix", mixVal);
+}
+
+VestaxVCI400.fx2Knob = function (channel, control, value, status, group) {
+    var mixVal = engine.getValue("[EffectRack1_EffectUnit2]", "mix");
+    if (value == 0x01) {
+        mixVal += 0.05;
+    } else {
+        mixVal -= 0.05;
+    }
+    mixVal = Math.max(0.0, Math.min(1.0, mixVal));
+    engine.setValue("[EffectRack1_EffectUnit2]", "mix", mixVal);
+}
+
 /*
  * Pad Buttons
  */
