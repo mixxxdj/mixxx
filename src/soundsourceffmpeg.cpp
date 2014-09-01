@@ -44,17 +44,10 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
     m_iAudioStream = -1;
     filelength = -1;
     m_pFormatCtx = NULL;
-    m_pIformat = NULL;
     m_pCodecCtx = NULL;
     m_pCodec = NULL;
-    m_iOffset = 0;
-    m_iSeekOffset = 0;
     m_bIsSeeked = FALSE;
-    m_iReadedBytes = 0;
-    m_iNextMixxxPCMPoint = -1;
     m_pResample = NULL;
-    m_fMixxBytePosition = 0;
-    m_iLastFirstFfmpegByteOffset = 0;
     m_iCurrentMixxTs = 0;
     m_lCacheBytePos = 0;
     m_lCacheStartByte = 0;
@@ -338,43 +331,10 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, uint64_t offset,
     return false;
 }
 
-double SoundSourceFFmpeg::convertPtsToByteOffset(double pts,
-        const AVRational &ffmpegtime) {
-    return (pts / (double)ffmpegtime.den * (double)this->getSampleRate() *
-            (double)2.);
-}
-
-double SoundSourceFFmpeg::convertByteOffsetToPts(double byteoffset,
-        const AVRational &ffmpegtime) {
-    return (byteoffset / (double)this->getSampleRate() / (double)2.) *
-           (double)ffmpegtime.den;
-}
-
-int64_t SoundSourceFFmpeg::convertPtsToByteOffsetOld(int64_t pts,
-        const AVRational &ffmpegbase) {
-    int64_t l_lReturnValue = 0;
-
-    l_lReturnValue = round(convertPtsToByteOffset(pts, ffmpegbase));
-
-    if ((l_lReturnValue % 4) != 0) {
-        l_lReturnValue += 4 - (l_lReturnValue % 4);
-    }
-
-    return l_lReturnValue;
-}
-
-int64_t SoundSourceFFmpeg::convertByteOffsetToPtsOld(int64_t byteoffset,
-        const AVRational &ffmpegtime) {
-    int64_t l_lReturnValue = 0;
-    l_lReturnValue = round(convertByteOffsetToPts(byteoffset, ffmpegtime));
-    return l_lReturnValue + (l_lReturnValue % 2);
-}
-
 Result SoundSourceFFmpeg::open() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    m_iOffset = 0;
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 
     // Initialize FFMPEG
@@ -497,7 +457,7 @@ long SoundSourceFFmpeg::seek(long filepos) {
         // to try guess it
         if(filepos >= SOUNDSOURCEFFMPEG_POSDISTANCE) {
           for(i = 0; i < m_SJumpPoints.size(); i ++) {
-              if(m_SJumpPoints[i]->startByte >= filepos && i > 2) {
+              if(m_SJumpPoints[i]->startByte >= (unsigned long) filepos && i > 2) {
                   m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte;
                   m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
                   break;

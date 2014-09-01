@@ -78,13 +78,9 @@ public:
     AVCodecContext *getCodecContext();
     AVFormatContext *getFormatContext();
     int getAudioStreamIndex();
-    double convertPtsToByteOffset(double pts, const AVRational &ffmpegtime);
-    double convertByteOffsetToPts(double byteoffset, const AVRational &ffmpegtime);
 
 
 protected:
-    int64_t convertPtsToByteOffsetOld(int64_t pos, const AVRational &time_base);
-    int64_t convertByteOffsetToPtsOld(int64_t pos, const AVRational &time_base);
     void lock();
     void unlock();
 
@@ -102,24 +98,16 @@ private:
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 
+    int64_t m_iCurrentMixxTs;
+
     EncoderFfmpegResample *m_pResample;
 
-    int64_t m_iOffset;
-    int64_t m_iSeekOffset;
-    int64_t m_iCurrentMixxTs;
-    int64_t m_iLastFirstFfmpegByteOffset;
-    int64_t m_iNextMixxxPCMPoint;
     bool m_bIsSeeked;
-    int64_t m_iReadedBytes;
-    QByteArray m_strBuffer;
-
-    double_t m_fMixxBytePosition;
 
     uint64_t m_lCacheBytePos;
     uint64_t m_lCacheStartByte;
     uint64_t m_lCacheEndByte;
     uint32_t m_lCacheLastPos;
-    //QContiguousCache<struct ffmpegCacheObject  *> m_SCache;
     QVector<struct ffmpegCacheObject  *> m_SCache;
     QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
     uint64_t m_lLastStoredPos;
