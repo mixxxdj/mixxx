@@ -304,10 +304,10 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     pButtonSyncEnabled1->slotSet(1.0);
     ProcessBuffer();
 
-    // The master sync should now be internal and the speed should match deck 2.
+    // The master sync should now be internal and the speed should match deck 1.
     assertIsMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
-    ASSERT_FLOAT_EQ(130.0,
+    EXPECT_FLOAT_EQ(100.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
     // Set channel 2 to be enabled.
@@ -320,7 +320,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     assertIsMaster(m_sInternalClockGroup);
 
     // The rate should not have changed -- deck 1 still matches deck 2.
-    ASSERT_FLOAT_EQ(getRateSliderValue(1.3),
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.0),
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 
     // Reset channel 2 rate, set channel 2 to play, and process a buffer.
@@ -841,6 +841,85 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
     EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+}
+
+TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
+    // Like it says -- if the current deck is playing, and the target deck is
+    // playing, they should sync even if there's no sync mode enabled.
+
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+
+    // Set up decks so they can be playing, and start deck 1.
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(100.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(130.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ProcessBuffer();
+
+    // Set channel 1 to be enabled momentarily.
+    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->slotSet(0.0);
+    ProcessBuffer();
+
+    // The master sync should still be off and the speed should match deck 2.
+    assertNoMaster();
+    assertSyncOff(m_sGroup1);
+    assertSyncOff(m_sGroup2);
+    EXPECT_FLOAT_EQ(130.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+
+    // Also works if deck 1 is not playing.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ProcessBuffer();
+    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->slotSet(0.0);
+    ProcessBuffer();
+    assertNoMaster();
+    assertSyncOff(m_sGroup1);
+    assertSyncOff(m_sGroup2);
+    EXPECT_FLOAT_EQ(130.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+
+    // Also works if neither deck is playing.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    ProcessBuffer();
+    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->slotSet(0.0);
+    ProcessBuffer();
+    assertNoMaster();
+    assertSyncOff(m_sGroup1);
+    assertSyncOff(m_sGroup2);
+    EXPECT_FLOAT_EQ(130.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+
+
+    // But it doesn't work if deck 2 isn't playing and deck 1 is. (This would
+    // cause deck1 to suddenly change bpm while playing back).
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    ProcessBuffer();
+    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->slotSet(0.0);
+    ProcessBuffer();
+    assertNoMaster();
+    assertSyncOff(m_sGroup1);
+    assertSyncOff(m_sGroup2);
+    EXPECT_FLOAT_EQ(100.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, EjectTrackSyncRemains) {

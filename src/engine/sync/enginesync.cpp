@@ -108,6 +108,11 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
                 double otherDeckBpm = other_deck->getBpm();
                 if (otherDeckBpm > 0.0) {
+                    // If the requesting deck is playing, but the other deck
+                    // is not, do not sync.
+                    if (pSyncable->isPlaying() && !other_deck->isPlaying()) {
+                        continue;
+                    }
                     foundTargetBpm = true;
                     targetBpm = otherDeckBpm;
                     targetBeatDistance = other_deck->getBeatDistance();
