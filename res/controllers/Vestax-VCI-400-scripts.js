@@ -172,6 +172,8 @@ VestaxVCI400.Deck = function (deckNumber, group, active) {
    this.isActive = active; // If this deck is currently controlled by the VCI-400 (A/C B/D switches)
    this.Buttons = [];
    this.deckNumber = group.substring(8,9);// [Channel1]
+   this.vinylActive = false;
+   this.wheelTouchInertiaTimer = 0;
 }
 /*
  * Each deck has a disjunct set of buttons
@@ -271,7 +273,7 @@ VestaxVCI400.Deck.prototype.onDynamicButtonPressed = function(button, buttonNumb
             }
         } else {
             if(value == VestaxVCI400.ButtonState.pressed) {
-                engine.setValue("[Sampler" + buttonNumber + "]", "start_play", 1);
+                engine.setValue("[Sampler" + buttonNumber + "]", "cue_gotoandplay", 1);
             } else {
                 engine.setValue("[Sampler" + buttonNumber + "]", "stop", 1);
             }
@@ -469,6 +471,12 @@ VestaxVCI400.Deck.prototype.init = function() {
 // Add buttons to individual decks.  The handlers here are not connected to the Mixxx engine.
 // Another function that takes a standard channel/control/value/status/group argument needs to be
 // created and then hand off to these handlers.
+
+VestaxVCI400.Decks.A.addButton("VINYL", new VestaxVCI400.Button(0x92,0x06), "onVinyl");
+VestaxVCI400.Decks.B.addButton("VINYL", new VestaxVCI400.Button(0x93,0x06), "onVinyl");
+VestaxVCI400.Decks.C.addButton("VINYL", new VestaxVCI400.Button(0x94,0x06), "onVinyl");
+VestaxVCI400.Decks.D.addButton("VINYL", new VestaxVCI400.Button(0x95,0x06), "onVinyl");
+
 VestaxVCI400.Decks.A.addButton("WHEEL", new VestaxVCI400.Button(0xB2,0x27), "onWheelTouch");
 VestaxVCI400.Decks.B.addButton("WHEEL", new VestaxVCI400.Button(0xB3,0x27), "onWheelTouch");
 VestaxVCI400.Decks.C.addButton("WHEEL", new VestaxVCI400.Button(0xB4,0x27), "onWheelTouch");
@@ -568,11 +576,46 @@ VestaxVCI400.wheelTouch = function (channel, control, value, status, group) {
    }
 };
 VestaxVCI400.Deck.prototype.onWheelTouch = function(value) {
+    if (this.wheelTouchInertiaTimer != 0) {
+        // The wheel was touched again, reset the timer.
+        engine.stopTimer(this.wheelTouchInertiaTimer);
+        this.wheelTouchInertiaTimer = 0;
+    }
     if(value == VestaxVCI400.ButtonState.pressed) {
         engine.scratchEnable(this.deckNumber, 4096, 33.3333, 0.125, 0.125/32, true);
     } else {
-        // Ramp goes directly to zero so we don't want that.
-        engine.scratchDisable(this.deckNumber, false);
+        // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
+        // Depending on how fast the platter was moving, lengthen the time we'll wait.
+        var scratchRate = Math.abs(engine.getValue(this.group, "scratch2"));
+        var inertiaTime = Math.pow(1.8, scratchRate) * 50;
+        if (inertiaTime < 100) {
+            // Just do it now.
+            this.finishWheelTouch();
+        } else {
+            this.wheelTouchInertiaTimer = engine.beginTimer(
+                    inertiaTime, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+        }
+    }
+};
+
+VestaxVCI400.Deck.prototype.finishWheelTouch = function() {
+    this.wheelTouchInertiaTimer = 0;
+    var play = engine.getValue(this.group, "play");
+    if (play != 0) {
+        // If we are playing, just hand off to the engine.
+        engine.scratchDisable(this.deckNumber, true);
+    } else {
+        // If things are paused, there will be a non-smooth handoff between scratching and jogging.
+        // Instead, keep scratch on until the platter is not moving.
+        var scratchRate = Math.abs(engine.getValue(this.group, "scratch2"));
+        if (scratchRate < 0.01) {
+            // The platter is basically stopped, now we can disable scratch and hand off to jogging.
+            engine.scratchDisable(this.deckNumber, false);
+        } else {
+            // Check again soon.
+            this.wheelTouchInertiaTimer = engine.beginTimer(
+                    100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+        }
     }
 };
 
@@ -581,7 +624,6 @@ VestaxVCI400.wheelMove = function (channel, control, value, status, group) {
     try{
         var deck = VestaxVCI400.GetDeck(group);
         deck.onWheelMove(value);
-
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -614,6 +656,27 @@ VestaxVCI400.brake = function (channel, control, value, status, group) {
         VestaxVCI400.printError(ex);
    }
 };
+
+VestaxVCI400.vinylButton = function (channel, control, value, status, group) {
+    try{
+        var deck = VestaxVCI400.GetDeck(group);
+        deck.Buttons.VINYL.handleEvent(value);
+    }
+    catch(ex) {
+        VestaxVCI400.printError(ex);
+   }
+};
+
+// The Vinyl button acts the same as a wheel touch, allowing the DJ to fling the platter and
+// let go of the platter without worrying that the track will start playing again.
+VestaxVCI400.Deck.prototype.onVinyl = function(value) {
+    this.vinylActive = (value != 0);
+    if (value > 0) {
+        this.onWheelTouch(value);
+    } else {
+        this.finishWheelTouch();
+    }
+}
 
 /*
  * Pad Buttons
