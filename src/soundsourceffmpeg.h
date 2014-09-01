@@ -52,6 +52,12 @@ extern "C" {
 
 class TrackInfoObject;
 
+struct ffmpegLocationObject {
+  uint64_t pos;
+  int64_t pts;
+  uint64_t startByte;
+};
+
 struct ffmpegCacheObject {
     uint64_t startByte;
     uint32_t length;
@@ -115,7 +121,9 @@ private:
     uint32_t m_lCacheLastPos;
     //QContiguousCache<struct ffmpegCacheObject  *> m_SCache;
     QVector<struct ffmpegCacheObject  *> m_SCache;
-
+    QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
+    uint64_t m_lLastStoredPos;
+    int64_t m_lStoredSeekPoint;
 };
 
 #endif

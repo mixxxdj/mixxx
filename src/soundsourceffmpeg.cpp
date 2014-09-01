@@ -36,6 +36,7 @@
 static QMutex ffmpegmutex;
 
 #define SOUNDSOURCEFFMPEG_CACHESIZE 1000
+#define SOUNDSOURCEFFMPEG_POSDISTANCE ((1024 * 1000) / 4)
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
     : Mixxx::SoundSource(filename)
@@ -59,12 +60,15 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
     m_lCacheStartByte = 0;
     m_lCacheEndByte = 0;
     m_lCacheLastPos = 0;
+    m_lLastStoredPos = 0;
+    m_lStoredSeekPoint = -1;
     m_SCache.clear();
 
     this->setType(filename.section(".",-1).toLower());
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
+    struct ffmpegLocationObject *l_SRmJmp = NULL;
     clearCache();
 
     if (m_pCodecCtx != NULL) {
@@ -75,6 +79,13 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     if (m_pResample != NULL) {
         delete m_pResample;
     }
+
+    while (m_SJumpPoints.size() > 0) {
+        l_SRmJmp = m_SJumpPoints[0];
+        m_SJumpPoints.remove(0);
+        free(l_SRmJmp);
+    }
+
 }
 
 AVCodecContext *SoundSourceFFmpeg::getCodecContext() {
@@ -107,7 +118,6 @@ bool SoundSourceFFmpeg::clearCache() {
         free(l_SRmObj);
     }
 
-
     return true;
 }
 
@@ -120,6 +130,8 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
     int l_iFrameFinished = 0;
     struct ffmpegCacheObject *l_SObj = NULL;
     struct ffmpegCacheObject *l_SRmObj = NULL;
+    bool m_bUnique = false;
+    int64_t l_lLastPacketPos = -1;
     int l_iError = 0;
 
     l_iCount = count;
@@ -133,6 +145,19 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
 
         if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
             if (l_SPacket.stream_index==m_iAudioStream) {
+                if( m_lStoredSeekPoint > 0) {
+                    // Seek for correct jump point
+                    if(m_lStoredSeekPoint > l_SPacket.pos && m_lStoredSeekPoint >= SOUNDSOURCEFFMPEG_POSDISTANCE ) {
+                      if (l_SPacket.data != NULL) {
+                          av_free(l_SPacket.data);
+                      }
+                      l_SPacket.data = NULL;
+                      l_SPacket.size = 0;
+                      continue;
+                    }
+                    m_lStoredSeekPoint = -1;
+                }
+
                 l_iRet = avcodec_decode_audio4(m_pCodecCtx,l_pFrame,&l_iFrameFinished,
                                                &l_SPacket);
 
@@ -152,18 +177,38 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                     l_iRet = m_pResample->reSample(l_pFrame, &l_SObj->bytes);
 
                     if (l_iRet > 0) {
+                        // Remove from cache
                         if (m_SCache.size() >= (SOUNDSOURCEFFMPEG_CACHESIZE - 10)) {
-                            //l_SRmObj = m_SCache.takeFirst();
                             l_SRmObj = m_SCache[0];
                             m_SCache.remove(0);
                             free(l_SRmObj->bytes);
                             free(l_SRmObj);
                         }
 
+                        // Add to cache and store byte place to memory
                         m_SCache.append(l_SObj);
                         l_SObj->startByte = m_lCacheBytePos / 2;
                         l_SObj->length = l_iRet / 2;
                         m_lCacheBytePos += l_iRet;
+
+                        // Ogg/Opus have packages pos that have many
+                        // audio frames so seek next unique pos..
+                        if (l_SPacket.pos != l_lLastPacketPos) {
+                          m_bUnique = true;
+                          l_lLastPacketPos = l_SPacket.pos;
+                        }
+
+                        // If we are over last storepos and we have read more than jump point need is and pos is unique we store it to memory
+                        if( m_lCacheBytePos > m_lLastStoredPos && m_lCacheBytePos > (SOUNDSOURCEFFMPEG_POSDISTANCE + m_lLastStoredPos) && m_bUnique == true)
+                        {
+                           struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(sizeof(struct ffmpegLocationObject));
+                           m_lLastStoredPos = m_lCacheBytePos;
+                           l_SJmp->startByte = m_lCacheBytePos / 2;
+                           l_SJmp->pos = l_SPacket.pos;
+                           l_SJmp->pts = l_SPacket.pts;
+                           m_SJumpPoints.append(l_SJmp);
+                           m_bUnique = false;
+                        }
 
                         if (offset < 0 || (uint64_t) offset <= (m_lCacheBytePos / 2)) {
                             l_iCount --;
@@ -175,11 +220,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                     }
                 }
 
-#if LIBAVCODEC_VERSION_INT > 3544932
                 if (l_SPacket.data != NULL) {
                     av_free(l_SPacket.data);
                 }
-#endif
                 l_SPacket.data = NULL;
                 l_SPacket.size = 0;
 
@@ -424,14 +467,16 @@ Result SoundSourceFFmpeg::open() {
 
 long SoundSourceFFmpeg::seek(long filepos) {
     int ret = 0;
+    int64_t i = 0;
 
-    if (filepos == 0 || (unsigned long) filepos < m_lCacheStartByte) {
+    if (filepos < 0 || (unsigned long) filepos < m_lCacheStartByte) {
         ret = avformat_seek_file(m_pFormatCtx,
                                  m_iAudioStream,
                                  0,
                                  32767 * 2,
                                  32767 * 2,
                                  AVSEEK_FLAG_BACKWARD);
+
 
         if (ret < 0) {
             qDebug() << "SoundSourceFFmpeg::seek: Can't seek to 0 byte!";
@@ -444,12 +489,29 @@ long SoundSourceFFmpeg::seek(long filepos) {
         m_lCacheEndByte = 0;
         m_lCacheLastPos = 0;
         m_lCacheBytePos = 0;
+        m_lStoredSeekPoint = -1;
+
+
+        // Try to find some jump point near to
+        // where we are located so we don't needed
+        // to try guess it
+        if(filepos >= SOUNDSOURCEFFMPEG_POSDISTANCE) {
+          for(i = 0; i < m_SJumpPoints.size(); i ++) {
+              if(m_SJumpPoints[i]->startByte >= filepos && i > 2) {
+                  m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte;
+                  m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
+                  break;
+              }
+          }
+        }
+
         if (filepos == 0) {
             readFramesToCache((SOUNDSOURCEFFMPEG_CACHESIZE - 50), -1);
         } else {
             readFramesToCache((SOUNDSOURCEFFMPEG_CACHESIZE / 2), filepos);
         }
     }
+
 
     if (m_lCacheEndByte <= (unsigned long) filepos) {
         readFramesToCache(100, filepos);
