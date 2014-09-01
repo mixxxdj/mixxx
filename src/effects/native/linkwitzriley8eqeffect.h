@@ -33,6 +33,10 @@ class LinkwitzRiley8EQEffectGroupState {
     CSAMPLE* m_pLowBuf;
     CSAMPLE* m_pBandBuf;
     CSAMPLE* m_pHighBuf;
+
+    unsigned int m_oldSampleRate;
+    int m_loFreq;
+    int m_hiFreq;
 };
 
 class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
@@ -62,10 +66,6 @@ class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffec
 
     ControlObjectSlave* m_pLoFreqCorner;
     ControlObjectSlave* m_pHiFreqCorner;
-
-    unsigned int m_oldSampleRate;
-    int m_loFreq;
-    int m_hiFreq;
 
     DISALLOW_COPY_AND_ASSIGN(LinkwitzRiley8EQEffect);
 };

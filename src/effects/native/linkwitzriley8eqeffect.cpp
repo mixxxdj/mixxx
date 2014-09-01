@@ -1,6 +1,10 @@
 #include "effects/native/linkwitzriley8eqeffect.h"
 #include "util/math.h"
 
+static const unsigned int kStartupSamplerate = 44100;
+static const unsigned int kStartupLoFreq = 246;
+static const unsigned int kStartupHiFreq = 2484;
+
 // static
 QString LinkwitzRiley8EQEffect::getId() {
     return "org.mixxx.effects.linkwitzrileyeq";
@@ -59,17 +63,19 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
 LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState()
         : old_low(1.0),
           old_mid(1.0),
-          old_high(1.0) {
+          old_high(1.0),
+          m_oldSampleRate(kStartupSamplerate),
+          m_loFreq(kStartupLoFreq),
+          m_hiFreq(kStartupHiFreq) {
+
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    // Initialize filters with the default values
-    // TODO(rryan): use the real samplerate
-    m_low1 = new EngineFilterLinkwtzRiley8Low(44100, 246);
-    m_high1 = new EngineFilterLinkwtzRiley8High(44100, 246);
-    m_low2 = new EngineFilterLinkwtzRiley8Low(44100, 2484);
-    m_high2 = new EngineFilterLinkwtzRiley8High(44100, 2484);
+    m_low1 = new EngineFilterLinkwtzRiley8Low(kStartupSamplerate, kStartupLoFreq);
+    m_high1 = new EngineFilterLinkwtzRiley8High(kStartupSamplerate, kStartupLoFreq);
+    m_low2 = new EngineFilterLinkwtzRiley8Low(kStartupSamplerate, kStartupHiFreq);
+    m_high2 = new EngineFilterLinkwtzRiley8High(kStartupSamplerate, kStartupHiFreq);
 }
 
 LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
@@ -94,8 +100,7 @@ LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect,
                                          const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")),
-          m_oldSampleRate(0), m_loFreq(0), m_hiFreq(0) {
+          m_pPotHigh(pEffect->getParameterById("high")) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
@@ -120,13 +125,13 @@ void LinkwitzRiley8EQEffect::processGroup(const QString& group,
     fMid = m_pPotMid->value().toDouble();
     fHigh = m_pPotHigh->value().toDouble();
 
-    if (m_oldSampleRate != sampleRate ||
-            (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
-            (m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
-        m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
-        m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
-        m_oldSampleRate = sampleRate;
-        pState->setFilters(sampleRate, m_loFreq, m_hiFreq);
+    if (pState->m_oldSampleRate != sampleRate ||
+            (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
+            (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
+        pState->m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
+        pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
+        pState->m_oldSampleRate = sampleRate;
+        pState->setFilters(sampleRate, pState->m_loFreq, pState->m_hiFreq);
     }
 
     pState->m_high2->process(pInput, pState->m_pHighBuf, numSamples); // HighPass first run
