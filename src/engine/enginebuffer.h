@@ -303,10 +303,10 @@ class EngineBuffer : public EngineObject {
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // Slip Status
-    bool m_bSlipEnabled;
-    bool m_bSlipToggled;
-
+    // m_slipEnabled is a boolean accessed from multiple threads, so we use an atomic int.
+    QAtomicInt m_slipEnabled;
+    // m_bSlipEnabledProcessing is only used by the engine processing thread.
+    bool m_bSlipEnabledProcessing;
     bool m_bWasKeylocked;
 
 

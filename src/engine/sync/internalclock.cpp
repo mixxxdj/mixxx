@@ -4,7 +4,7 @@
 
 #include "engine/sync/enginesync.h"
 #include "controlobject.h"
-#include "controlpotmeter.h"
+#include "controllinpotmeter.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
 
@@ -19,13 +19,10 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the master BPM. This also creates bpm_up
     // and bpm_down controls.
-    m_pClockBpm.reset(new ControlPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, true));
     // bpm_up / bpm_down steps by 1
-    m_pClockBpm->setStep(1);
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pClockBpm->setSmallStep(0.1);
-
+    m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
+                                          1, 200, 1, 0.1, true));
     connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);

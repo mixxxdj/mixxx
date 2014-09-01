@@ -21,7 +21,7 @@
 #include "controlobject.h"
 #include "util/performancetimer.h"
 
-class ControlLogpotmeter;
+class ControlAudioTaperPot;
 class ControlPotmeter;
 class ControlObject;
 
@@ -34,7 +34,7 @@ class EnginePregain : public EngineObject {
 
   private:
     float m_fPrevGain;
-    ControlLogpotmeter* potmeterPregain;
+    ControlAudioTaperPot* potmeterPregain;
     ControlObject* m_pTotalGain;
     ControlObject* m_pControlReplayGain;
     ControlObject* m_pPassthroughEnabled;

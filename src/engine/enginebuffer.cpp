@@ -82,8 +82,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_iUiSlowTick(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
-          m_bSlipEnabled(false),
-          m_bSlipToggled(false),
+          m_slipEnabled(0),
+          m_bSlipEnabledProcessing(false),
           m_bWasKeylocked(false),
           m_pRepeat(NULL),
           m_startButton(NULL),
@@ -400,7 +400,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // Write the position before the seek type, to reduce a possible race
     // condition effect
     m_queuedPosition.setValue(newpos);
-    m_iSeekQueued.fetchAndStoreRelease(seekType);
+    m_iSeekQueued = load_atomic(seekType);
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -417,8 +417,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(
-                    m_iEnableSyncQueued.fetchAndAddRelease(0));
+            static_cast<SyncRequestQueued>(load_atomic(m_iEnableSyncQueued));
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
@@ -633,8 +632,9 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    if ((!m_pCurrentTrack && deref(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && m_filepos_play >= m_file_length_old && !m_iSeekQueued)) {
+    if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
+            (m_pCurrentTrack && m_filepos_play >= m_file_length_old &&
+                    load_atomic(!m_iSeekQueued))) {
         // play not possible
         playPossible = false;
     }
@@ -695,13 +695,7 @@ void EngineBuffer::slotControlStop(double v)
 
 void EngineBuffer::slotControlSlip(double v)
 {
-    bool enabled = v > 0.0;
-    if (enabled == m_bSlipEnabled) {
-        return;
-    }
-
-    m_bSlipEnabled = enabled;
-    m_bSlipToggled = true;
+    m_slipEnabled = static_cast<int>(v > 0.0);
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double d_index) {
@@ -733,7 +727,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
     bool bCurBufferPaused = false;
     double rate = 0;
 
-    bool bTrackLoading = deref(m_iTrackLoading) != 0;
+    bool bTrackLoading = load_atomic(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
@@ -1033,8 +1027,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 }
 
 void EngineBuffer::processSlip(int iBufferSize) {
-    if (m_bSlipToggled) {
-        if (m_bSlipEnabled) {
+    // Do a single read from m_bSlipEnabled so we don't run in to race conditions.
+    bool enabled = static_cast<bool>(load_atomic(m_slipEnabled));
+    if (enabled != m_bSlipEnabledProcessing) {
+        m_bSlipEnabledProcessing = enabled;
+        if (enabled) {
             m_dSlipPosition = m_filepos_play;
             m_dSlipRate = m_rate_old;
         } else {
@@ -1042,11 +1039,10 @@ void EngineBuffer::processSlip(int iBufferSize) {
             slotControlSeekExact(m_dSlipPosition);
             m_dSlipPosition = 0;
         }
-        m_bSlipToggled = false;
     }
 
     // Increment slip position even if it was just toggled -- this ensures the position is correct.
-    if (m_bSlipEnabled) {
+    if (enabled) {
         m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
     }
 }
@@ -1187,7 +1183,7 @@ void EngineBuffer::hintReader(const double dRate) {
     m_pReadAheadManager->hintReader(dRate, &m_hintList);
 
     //if slipping, hint about virtual position so we're ready for it
-    if (m_bSlipEnabled) {
+    if (m_bSlipEnabledProcessing) {
         Hint hint;
         hint.length = 2048; //default length please
         hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
