@@ -461,7 +461,7 @@ long SoundSourceFFmpeg::seek(long filepos) {
         if (filepos >= SOUNDSOURCEFFMPEG_POSDISTANCE) {
             for (i = 0; i < m_SJumpPoints.size(); i ++) {
                 if (m_SJumpPoints[i]->startByte >= (unsigned long) filepos && i > 2) {
-                    m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte;
+                    m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte * 2;
                     m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
                     break;
                 }
