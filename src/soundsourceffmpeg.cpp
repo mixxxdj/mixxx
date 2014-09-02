@@ -134,7 +134,11 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
 
     while (l_iCount > 0) {
         av_init_packet(&l_SPacket);
+#if LIBAVCODEC_VERSION_INT < 3617792
         l_pFrame = avcodec_alloc_frame();
+#else
+        l_pFrame = av_frame_alloc();
+#endif
 
         if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
             if (l_SPacket.stream_index==m_iAudioStream) {
