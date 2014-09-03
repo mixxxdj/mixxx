@@ -193,6 +193,9 @@ LoopingControl::~LoopingControl() {
 }
 
 void LoopingControl::slotLoopScale(double scale) {
+    if (m_iLoopStartSample == kNoTrigger || m_iLoopEndSample == kNoTrigger) {
+        return;
+    }
     int loop_length = m_iLoopEndSample - m_iLoopStartSample;
     int old_loop_end = m_iLoopEndSample;
     int samples = m_pTrackSamples->get();
@@ -238,6 +241,9 @@ void LoopingControl::slotLoopScale(double scale) {
 }
 
 void LoopingControl::slotLoopHalve(double v) {
+    if (m_iLoopStartSample == kNoTrigger || m_iLoopEndSample == kNoTrigger) {
+        return;
+    }
     if (v > 0.0) {
         // If a beatloop is active then halve should deactive the current
         // beatloop and activate the previous one.
@@ -267,6 +273,9 @@ void LoopingControl::slotLoopHalve(double v) {
 }
 
 void LoopingControl::slotLoopDouble(double v) {
+    if (m_iLoopStartSample == kNoTrigger || m_iLoopEndSample == kNoTrigger) {
+        return;
+    }
     if (v > 0.0) {
         // If a beatloop is active then double should deactive the current
         // beatloop and activate the next one.
@@ -437,7 +446,7 @@ void LoopingControl::slotLoopOut(double val) {
 
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
-        if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {
+        if (m_iLoopStartSample == kNoTrigger || pos < m_iLoopStartSample) {
             return;
         }
 
@@ -679,7 +688,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         return;
     }
 
-
     if (!m_pBeats) {
         clearActiveBeatLoop();
         return;
@@ -819,6 +827,9 @@ void LoopingControl::slotBeatJump(double beats) {
 
 void LoopingControl::slotLoopMove(double beats) {
     if (!m_pTrack || !m_pBeats) {
+        return;
+    }
+    if (m_iLoopStartSample == kNoTrigger || m_iLoopEndSample == kNoTrigger) {
         return;
     }
 

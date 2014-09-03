@@ -115,13 +115,13 @@ void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double b
 
 void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_distance) {
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setBeatDistance(beat_distance);
+        m_pInternalClock->setMasterBeatDistance(beat_distance);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 pSyncable->getSyncMode() == SYNC_NONE) {
             continue;
         }
-        pSyncable->setBeatDistance(beat_distance);
+        pSyncable->setMasterBeatDistance(beat_distance);
     }
 }

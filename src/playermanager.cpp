@@ -172,6 +172,11 @@ unsigned int PlayerManager::numPreviewDecks() {
 void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
+
+    // Update the soundmanager config even if the number of decks has been
+    // reduced.
+    m_pSoundManager->setConfiguredDeckCount(num);
+
     if (num < m_decks.size()) {
         // The request was invalid -- reset the value.
         m_pCONumDecks->set(m_decks.size());
@@ -218,6 +223,14 @@ void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
     addDeckInner();
     m_pCONumDecks->set((double)m_decks.count());
+}
+
+void PlayerManager::addConfiguredDecks() {
+    // Cache this value in case it changes out from under us.
+    int deck_count = m_pSoundManager->getConfiguredDeckCount();
+    for (int i = 0; i < deck_count; ++i) {
+        addDeck();
+    }
 }
 
 void PlayerManager::addDeckInner() {
@@ -389,7 +402,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
             pDeck->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
+        ++it;
     }
 }
 
@@ -405,6 +418,6 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
             pSampler->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
+        ++it;
     }
 }

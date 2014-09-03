@@ -11,7 +11,7 @@
 #include "tapfilter.h"
 
 class ControlObject;
-class ControlPotmeter;
+class ControlLinPotmeter;
 class ControlObjectSlave;
 class ControlPushButton;
 class EngineBuffer;
@@ -30,6 +30,8 @@ class BpmControl : public EngineControl {
     double getSyncedRate() const;
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
+    double getBeatDistance(double dThisPosition) const;
+    double getPreviousSample() const { return m_dPreviousSample; }
 
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double process(const double dRate,
@@ -38,6 +40,7 @@ class BpmControl : public EngineControl {
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
+    double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
@@ -66,6 +69,10 @@ class BpmControl : public EngineControl {
   private slots:
     void slotSetEngineBpm(double);
     void slotFileBpmChanged(double);
+    void slotAdjustBeatsFaster(double);
+    void slotAdjustBeatsSlower(double);
+    void slotTranslateBeatsEarlier(double);
+    void slotTranslateBeatsLater(double);
     void slotControlPlay(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
@@ -80,9 +87,7 @@ class BpmControl : public EngineControl {
     SyncMode getSyncMode() const {
         return syncModeFromDouble(m_pSyncMode->get());
     }
-    double getBeatDistance(double dThisPosition) const;
     bool syncTempo();
-    bool syncPhase();
 
     friend class SyncControl;
 
@@ -101,9 +106,13 @@ class BpmControl : public EngineControl {
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
+    ControlPushButton* m_pAdjustBeatsFaster;
+    ControlPushButton* m_pAdjustBeatsSlower;
+    ControlPushButton* m_pTranslateBeatsEarlier;
+    ControlPushButton* m_pTranslateBeatsLater;
 
     // The current effective BPM of the engine
-    ControlPotmeter* m_pEngineBpm;
+    ControlLinPotmeter* m_pEngineBpm;
 
     // Used for bpm tapping from GUI and MIDI
     ControlPushButton* m_pButtonTap;

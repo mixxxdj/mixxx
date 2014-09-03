@@ -11,9 +11,15 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2014-07-14
+// Revision: 2014-08-20
 //
 // Changelog:
+// 2014-08-20 Sync mapping with push-and-hold
+//    - Use MIDI mapping for "sync_enabled" to support push-and-hold
+//    - Change sync mode indicator LED:
+//      MASTER=blinking, FOLLOWER=on, NONE=off
+//    - Use setParameter() instead of setValue() for effect parameters
+//    - Fix right effect unit enabled LED
 // 2014-07-14 Simplify sync logic
 //    - Control sync mainly through "sync_enabled" instead of trying
 //      to select a specific "sync_mode". Mixxx already handles this
@@ -158,6 +164,9 @@ DenonMC6000MK2.MIXXX_JOG_RANGE = 3.0;
 DenonMC6000MK2.MIXXX_SYNC_NONE = 0;
 DenonMC6000MK2.MIXXX_SYNC_FOLLOWER = 1;
 DenonMC6000MK2.MIXXX_SYNC_MASTER = 2;
+DenonMC6000MK2.MIXXX_XFADER_LEFT = 0;
+DenonMC6000MK2.MIXXX_XFADER_CENTER = 1;
+DenonMC6000MK2.MIXXX_XFADER_RIGHT = 2;
 DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED = -1;
 
 // MIDI constants
@@ -588,7 +597,7 @@ DenonMC6000MK2.Deck.prototype.getShiftState = function (group) {
 	return this.side.getShiftState();
 };
 
-/* Values */
+/* Values & Parameters */
 
 DenonMC6000MK2.Deck.prototype.getValue = function (key) {
 	return engine.getValue(this.group, key);
@@ -602,6 +611,10 @@ DenonMC6000MK2.Deck.prototype.toggleValue = function (key) {
 	this.setValue(key, !this.getValue(key));
 };
 
+DenonMC6000MK2.Deck.prototype.setParameter = function (key, param) {
+	engine.setParameter(this.group, key, param);
+};
+
 DenonMC6000MK2.Deck.prototype.triggerValue = function (key) {
 	engine.trigger(this.group, key);
 };
@@ -609,15 +622,15 @@ DenonMC6000MK2.Deck.prototype.triggerValue = function (key) {
 /* Xfader */
 
 DenonMC6000MK2.Deck.prototype.assignXfaderLeft = function () {
-	this.setValue("orientation", 0);
+	this.setValue("orientation", DenonMC6000MK2.MIXXX_XFADER_LEFT);
 };
 
 DenonMC6000MK2.Deck.prototype.assignXfaderCenter = function () {
-	this.setValue("orientation", 1);
+	this.setValue("orientation", DenonMC6000MK2.MIXXX_XFADER_CENTER);
 };
 
 DenonMC6000MK2.Deck.prototype.assignXfaderRight = function () {
-	this.setValue("orientation", 2);
+	this.setValue("orientation", DenonMC6000MK2.MIXXX_XFADER_RIGHT);
 };
 
 /* Tracks */
@@ -651,21 +664,8 @@ DenonMC6000MK2.Deck.prototype.onKeyLockValue = function (value) {
 
 /* Sync Mode */
 
-DenonMC6000MK2.Deck.prototype.onSyncButtonPressed = function () {
-	var syncMode;
-	if (this.getShiftState()) {
-		this.disableSyncMode();
-	} else {
-		if (this.getValue("sync_enabled")) {
-			this.setValue("sync_mode", DenonMC6000MK2.MIXXX_SYNC_MASTER);
-		} else {
-			this.setValue("sync_enabled", true);
-		}
-	}
-};
-
 DenonMC6000MK2.Deck.prototype.disableSyncMode = function () {
-	this.setValue("sync_enabled", false);
+	this.setValue("sync_mode", DenonMC6000MK2.MIXXX_SYNC_NONE);
 };
 
 DenonMC6000MK2.Deck.prototype.onSyncModeValue = function (value) {
@@ -674,10 +674,10 @@ DenonMC6000MK2.Deck.prototype.onSyncModeValue = function (value) {
 		this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_OFF);
 		break;
 	case DenonMC6000MK2.MIXXX_SYNC_FOLLOWER:
-		this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_BLINK);
+		this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_ON);
 		break;
 	case DenonMC6000MK2.MIXXX_SYNC_MASTER:
-		this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_ON);
+		this.syncModeLed.setTriState(DenonMC6000MK2.TRI_LED_BLINK);
 		break;
 	default:
 		DenonMC6000MK2.logError("Unknown sync_mode value: " + value);
@@ -944,11 +944,11 @@ DenonMC6000MK2.Deck.prototype.spinJogVinyl = function (jogDelta) {
 /* Loops */
 
 DenonMC6000MK2.Deck.prototype.hasLoopStart = function () {
-	return DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_start_position");
+	return DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED !== this.getValue("loop_start_position");
 };
 
 DenonMC6000MK2.Deck.prototype.hasLoopEnd = function () {
-	return DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED != this.getValue("loop_end_position");
+	return DenonMC6000MK2.MIXXX_LOOP_POSITION_UNDEFINED !== this.getValue("loop_end_position");
 };
 
 DenonMC6000MK2.Deck.prototype.hasLoop = function () {
@@ -1189,8 +1189,8 @@ DenonMC6000MK2.Side.prototype.loadFilterPreset = function () {
 };
 
 DenonMC6000MK2.Side.prototype.initFilterParameters = function () {
-	engine.setValue(this.filterGroup, "mix", 1.0); // wet
-	engine.setValue(this.filterGroup, "parameter", 0.5); // centered
+	engine.setParameter(this.filterGroup, "mix", 1.0); // wet
+	engine.setParameter(this.filterGroup, "parameter", 0.5); // centered
 	for (var deckGroup in this.decksByGroup) {
 		engine.setValue(this.filterGroup, "group_" + deckGroup + "_enable", true);
 	}
@@ -1227,10 +1227,10 @@ DenonMC6000MK2.Side.prototype.onEfxKnobValue = function (index, value) {
 			// TODO
 			break;
 		case 2:
-			engine.setValue(this.efxGroup, "parameter", script.absoluteLin(value, 0.0, 1.0));
+			engine.setParameter(this.efxGroup, "parameter", script.absoluteLin(value, 0.0, 1.0));
 			break;
 		case 3:
-			engine.setValue(this.efxGroup, "mix", script.absoluteLin(value, 0.0, 1.0));
+			engine.setParameter(this.efxGroup, "mix", script.absoluteLin(value, 0.0, 1.0));
 			break;
 	}
 };
@@ -1276,10 +1276,6 @@ DenonMC6000MK2.getValue = function (key) {
 
 DenonMC6000MK2.setValue = function (key, value) {
 	engine.setValue(DenonMC6000MK2.group, key, value);
-};
-
-DenonMC6000MK2.triggerValue = function (key) {
-	engine.trigger(DenonMC6000MK2.group, key);
 };
 
 DenonMC6000MK2.getJogDeltaValue = function (value) {
@@ -1339,7 +1335,7 @@ DenonMC6000MK2.connectControls = function () {
 	DenonMC6000MK2.rightSide.connectControls();
 	//DenonMC6000MK2.connectControl("", "", DenonMC6000MK2.rightSide.onEfx1EnabledValueCB);
 	//DenonMC6000MK2.connectControl("", "", DenonMC6000MK2.rightSide.onEfx2EnabledValueCB);
-	DenonMC6000MK2.connectControl(DenonMC6000MK2.rightSide.efxGroup, DenonMC6000MK2.rightSide.onEfx3EnabledValueCB);
+	DenonMC6000MK2.connectControl(DenonMC6000MK2.rightSide.efxGroup, "enabled", DenonMC6000MK2.rightSide.onEfx3EnabledValueCB);
 	DenonMC6000MK2.connectControl(DenonMC6000MK2.rightSide.filterGroup, "enabled", DenonMC6000MK2.rightSide.onFilterEnabledValueCB);
 };
 
@@ -1487,14 +1483,6 @@ DenonMC6000MK2.onBendMinusButton = function (channel, control, value, status, gr
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
 	var deck = DenonMC6000MK2.getDeckByGroup(group);
 	deck.onBendMinusButton(isButtonPressed);
-};
-
-DenonMC6000MK2.onSyncButton = function (channel, control, value, status, group) {
-	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
-	if (isButtonPressed) {
-		var deck = DenonMC6000MK2.getDeckByGroup(group);
-		deck.onSyncButtonPressed();
-	}
 };
 
 DenonMC6000MK2.onJogTouch = function (channel, control, value, status, group) {

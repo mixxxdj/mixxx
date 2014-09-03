@@ -171,11 +171,11 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 case ControlPushButton::PUSH:
                 case ControlPushButton::LONGPRESSLATCHING:
                 case ControlPushButton::POWERWINDOW:
-                    leftConnection->setEmitOption(
+                    rightConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
                     break;
                 default:
-                    leftConnection->setEmitOption(
+                    rightConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS);
                     break;
             }
