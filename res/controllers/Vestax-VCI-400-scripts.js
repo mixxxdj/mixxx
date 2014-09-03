@@ -134,7 +134,6 @@ VestaxVCI400.Button = function (statusByte, midiNo) {
    this.state = VestaxVCI400.ButtonState.released;
    this.illuminated = false;
    this.group; //this will be set when by the addButton method
-
 };
 
 /*
@@ -635,7 +634,7 @@ VestaxVCI400.Deck.prototype.onWheelMove = function(value) {
     // Note that we always set the jog value even if scratching is active.  This seems
     // to create a better handoff between scratching and not-scratching.
     if (engine.getValue(this.group, "play")) {
-        engine.setValue(this.group, "jog", jogValue / 30);
+        engine.setValue(this.group, "jog", jogValue / 50);
     } else {
         engine.setValue(this.group, "jog", jogValue / 10);
     }
