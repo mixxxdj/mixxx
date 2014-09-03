@@ -308,11 +308,11 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, uint64_t offset,
                 continue;
             }
 
-            if (l_SObj->startByte < offset) {
+            if (l_SObj->startByte <= offset) {
                 l_lOffset = (offset - l_SObj->startByte) * 2;
             }
 
-            if (l_lOffset > (l_SObj->length * 2)) {
+            if (l_lOffset >= (l_SObj->length * 2)) {
                 l_SObj = m_SCache[++ l_lPos];
                 continue;
             }
