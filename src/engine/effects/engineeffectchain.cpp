@@ -163,6 +163,7 @@ bool EngineEffectChain::disableForGroup(const QString& group) {
 void EngineEffectChain::process(const QString& group,
                                 CSAMPLE* pInOut,
                                 const unsigned int numSamples,
+                                const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
     GroupStatus& group_info = m_groupStatus[group];
     bool bEnabled = m_bEnabled && group_info.enabled;
@@ -188,7 +189,7 @@ void EngineEffectChain::process(const QString& group,
                     continue;
                 }
                 pEffect->process(group, pInOut, pInOut,
-                                 numSamples, groupFeatures);
+                                 numSamples, sampleRate, groupFeatures);
             }
         } else if (wet_gain_old == 0.0 && wet_gain == 0.0) {
             // Fully dry, no ramp, insert optimization. No action is needed
@@ -206,7 +207,7 @@ void EngineEffectChain::process(const QString& group,
                 const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
                 pEffect->process(group, pIntermediateInput, pIntermediateOutput,
-                                 numSamples, groupFeatures);
+                                 numSamples, sampleRate, groupFeatures);
                 anyProcessed = true;
             }
 
@@ -233,7 +234,8 @@ void EngineEffectChain::process(const QString& group,
             const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
             CSAMPLE* pIntermediateOutput = m_pBuffer;
             pEffect->process(group, pIntermediateInput,
-                             pIntermediateOutput, numSamples, groupFeatures);
+                             pIntermediateOutput, numSamples, sampleRate,
+                             groupFeatures);
             anyProcessed = true;
         }
 

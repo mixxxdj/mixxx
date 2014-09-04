@@ -773,7 +773,7 @@ void TrackInfoObject::waveformSummaryNew() {
 
 void TrackInfoObject::setAnalyserProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    if (progress != deref(m_analyserProgress)) {
+    if (progress != load_atomic(m_analyserProgress)) {
         m_analyserProgress = progress;
         emit(analyserProgress(progress));
     }
@@ -781,7 +781,7 @@ void TrackInfoObject::setAnalyserProgress(int progress) {
 
 int TrackInfoObject::getAnalyserProgress() const {
     // QAtomicInt so no need for lock.
-    return deref(m_analyserProgress);
+    return load_atomic(m_analyserProgress);
 }
 
 void TrackInfoObject::setCuePoint(float cue) {

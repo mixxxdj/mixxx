@@ -31,7 +31,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
-    m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
+    m_pTrackInfo = new DlgTrackInfo(NULL, m_DlgTagFetcher);
     connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
     connect(m_pTrackInfo, SIGNAL(previous()),
@@ -40,7 +40,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotNextDlgTagFetcher()));
     connect(&m_DlgTagFetcher, SIGNAL(previous()),
             this, SLOT(slotPrevDlgTagFetcher()));
-
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
@@ -433,22 +432,34 @@ void WTrackTableView::slotOpenInFileBrowser() {
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
-    QSet<QString> dirs;
+    QSet<QString> sDirs;
     foreach (QModelIndex index, indices) {
-        if (!index.isValid())
-            continue;
-
-        QFileInfo file(trackModel->getTrackLocation(index));
-
-        QDir directory = file.dir();
-        if (!directory.exists()) {
-            directory = QDir::home();
-        }
-        if (dirs.contains(directory.absolutePath())) {
+        if (!index.isValid()) {
             continue;
         }
-        dirs.insert(directory.absolutePath());
-        QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
+
+        QDir dir;
+        QStringList splittedPath = trackModel->getTrackLocation(index).split("/");
+        do {
+            dir = QDir(splittedPath.join("/"));
+            splittedPath.removeLast();
+        } while (!dir.exists() && splittedPath.size());
+
+        // This function does not work for a non-existent directory!
+        // so it is essential that in the worst case it try opening
+        // a valid directory, in this case, 'QDir::home()'.
+        // Otherwise nothing would happen...
+        if (!dir.exists()) {
+            // it ensures a valid dir for any OS (Windows)
+            dir = QDir::home();
+        }
+
+        // not open the same dir twice
+        QString dirPath = dir.absolutePath();
+        if (!sDirs.contains(dirPath)) {
+            sDirs.insert(dirPath);
+            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
+        }
     }
 }
 
@@ -548,7 +559,7 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine
-    m_DlgTagFetcher.init(pTrack);
+    m_DlgTagFetcher.loadTrack(pTrack);
     currentTrackInfoIndex = index;
     m_DlgTagFetcher.show();
 }

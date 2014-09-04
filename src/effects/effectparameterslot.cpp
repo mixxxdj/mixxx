@@ -14,31 +14,31 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
                                   iParameterNumber) {
     QString itemPrefix = formatItemPrefix(iParameterNumber);
     m_pControlLoaded = new ControlObject(
-        ConfigKey(m_group, itemPrefix + QString("_loaded")));
+            ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
-        ConfigKey(m_group, itemPrefix + QString("_link_type")));
+            ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlLinkInverse = new ControlPushButton(
-        ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
+            ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlValue = new ControlEffectKnob(
-        ConfigKey(m_group, itemPrefix));
+            ConfigKey(m_group, itemPrefix));
     m_pControlType = new ControlObject(
-        ConfigKey(m_group, itemPrefix + QString("_type")));
+            ConfigKey(m_group, itemPrefix + QString("_type")));
 
     m_pControlLinkType->connectValueChangeRequest(
-                this, SLOT(slotLinkTypeChanged(double)));
+            this, SLOT(slotLinkTypeChanged(double)));
     connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
-                this, SLOT(slotLinkInverseChanged(double)));
+            this, SLOT(slotLinkInverseChanged(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-        this, SLOT(slotValueType(double)));
+            this, SLOT(slotValueType(double)));
     m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)));
+            this, SLOT(slotLoaded(double)));
 
 
     m_pSoftTakeover = new SoftTakeover();

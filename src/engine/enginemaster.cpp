@@ -21,8 +21,9 @@
 
 #include "controlpushbutton.h"
 #include "configobject.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
@@ -97,7 +98,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
     // Master volume
-    m_pMasterVolume = new ControlLogpotmeter(ConfigKey(group, "volume"), 5.);
+    m_pMasterVolume = new ControlAudioTaperPot(ConfigKey(group, "volume"), -14, 14, 0.5);
 
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
@@ -106,7 +107,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
 
     // Headphone volume
-    m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
+    m_pHeadVolume = new ControlAudioTaperPot(ConfigKey(group, "headVolume"), -14, 14, 0.5);
 
     // Headphone mix (left/right)
     m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
@@ -224,65 +225,16 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     ScopedTimer timer("EngineMaster::processChannels");
 
     QList<ChannelInfo*>::iterator it = m_channels.begin();
-    QList<ChannelInfo*>::iterator master_it = NULL;
 
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
 
-    // Find the Sync Master and process it first then process all the slaves
-    // (and skip the master).
-
-    EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
-    if (pMasterChannel != NULL) {
-        for (unsigned int channel_number = 0;
-             it != m_channels.end(); ++it, ++channel_number) {
-            ChannelInfo* pChannelInfo = *it;
-            EngineChannel* pChannel = pChannelInfo->m_pChannel;
-            if (!pChannel || !pChannel->isActive()) {
-               continue;
-            }
-
-            if (pMasterChannel == pChannel) {
-                master_it = it;
-
-                // Proceed with the processing as below.
-                bool needsProcessing = false;
-                if (pChannel->isMaster()) {
-                    busChannelConnectionFlags[pChannel->getOrientation()] |= (1 << channel_number);
-                    needsProcessing = true;
-                }
-
-                // If the channel is enabled for previewing in headphones, copy it
-                // over to the headphone buffer
-                if (pChannel->isPFL()) {
-                    *headphoneOutput |= (1 << channel_number);
-                    needsProcessing = true;
-                }
-
-                // Process the buffer if necessary, which it damn well better be
-                if (needsProcessing) {
-                    pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
-
-                    if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                            pChannel->isTalkover()) {
-                        m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
-                    }
-                }
-                break;
-            }
-        }
-    }
-
+    QSet<EngineChannel*> processed_channels;
     it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-
-        // Skip the master since we already processed it.
-        if (it == master_it) {
-            continue;
-        }
 
         // Skip inactive channels.
         if (!pChannel || !pChannel->isActive()) {
@@ -304,6 +256,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
         // Process the buffer if necessary
         if (needsProcessing) {
+            processed_channels.insert(pChannel);
             pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
             if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
@@ -311,6 +264,14 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                 m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
             }
         }
+    }
+
+    // After all the engines have been processed, trigger post-processing
+    // which ensures that all channels are updating certain values at the
+    // same point in time.  This prevents sync from failing depending on
+    // if the sync target was processed before or after the sync origin.
+    foreach (EngineChannel* channel, processed_channels) {
+        channel->postProcess(iBufferSize);
     }
 }
 
@@ -325,9 +286,7 @@ void EngineMaster::process(const int iBufferSize) {
     bool masterEnabled = m_pMasterEnabled->get();
     bool headphoneEnabled = m_pHeadphoneEnabled->get();
 
-    int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
-    // Update internal master sync.
-    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
+    unsigned int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
@@ -339,6 +298,8 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Prepare each channel for output
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
+    // Update internal master sync.
+    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix
@@ -402,11 +363,11 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->process(getBusLeftGroup(), m_pOutputBusBuffers[0],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusCenterGroup(), m_pOutputBusBuffers[1],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusRightGroup(), m_pOutputBusBuffers[2],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
     }
 
     if (masterEnabled) {
@@ -427,7 +388,8 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
             m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster,
-                                             iBufferSize, masterFeatures);
+                                             iBufferSize, iSampleRate,
+                                             masterFeatures);
         }
 
         // Apply master volume after effects.
@@ -483,7 +445,7 @@ void EngineMaster::process(const int iBufferSize) {
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
             m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead,
-                                             iBufferSize, headphoneFeatures);
+                                             iBufferSize, iSampleRate, headphoneFeatures);
         }
         // Head volume
         CSAMPLE headphoneVolume = m_pHeadVolume->get();
@@ -529,8 +491,8 @@ void EngineMaster::process(const int iBufferSize) {
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
-    pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
-            ConfigKey(pChannel->getGroup(), "volume"), 1.0);
+    pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
+            ConfigKey(pChannel->getGroup(), "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pMuteControl = new ControlPushButton(
