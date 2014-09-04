@@ -152,6 +152,8 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 static_cast<EffectManifestParameter::LinkType>(
                         (int)m_pControlLinkType->get());
 
+        bool inverse = m_pControlLinkInverse->get() ? true : false;
+
         switch (type) {
             case EffectManifestParameter::LINK_LINKED:
                 if (parameter < 0.0 || parameter > 1.0) {
@@ -160,6 +162,10 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 {
                     double neutral = m_pEffectParameter->getNeutralHint();
                     if (neutral > 0.0 && neutral < 1.0) {
+                        if (inverse) {
+                            // the neutral position must stick where it is
+                            neutral = 1.0 - neutral;
+                        }
                         // Button is already a split button
                         // Match to center position of Super button
                         if (parameter <= 0.5) {
@@ -206,9 +212,10 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 return;
         }
 
-        if (m_pControlLinkInverse->get()) {
+        if (inverse) {
             parameter = 1.0 - parameter;
         }
+
         if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
             m_pControlValue->setParameterFrom(parameter, NULL);
         }
