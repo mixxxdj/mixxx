@@ -31,7 +31,6 @@ TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
 TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     // When a new track is loaded, the pitch value should be reset.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(128.0);
-    qDebug() << "set pitch!!!!";
     ControlObject::getControl(ConfigKey(m_sGroup1, "pitch"))->set(0.5);
     ProcessBuffer();
     ASSERT_EQ(0.5, ControlObject::getControl(ConfigKey(m_sGroup1, "pitch"))->get());
