@@ -137,6 +137,10 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
           m_bRangeQuery(false),
           m_dRangeLow(0.0),
           m_dRangeHigh(0.0) {
+    init(argument);
+}
+
+void NumericFilterNode::init(QString argument) {
     QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
     if (operatorMatcher.indexIn(argument) != -1) {
         m_operator = operatorMatcher.cap(1);
@@ -145,7 +149,7 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
 
     bool parsed = false;
     // Try to convert to see if it parses.
-    m_dOperatorArgument = argument.toDouble(&parsed);
+    m_dOperatorArgument = parse(argument, &parsed);
     if (parsed) {
         m_bOperatorQuery = true;
     }
@@ -153,14 +157,18 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
     QStringList rangeArgs = argument.split("-");
     if (rangeArgs.length() == 2) {
         bool lowOk = false;
-        m_dRangeLow = rangeArgs[0].toDouble(&lowOk);
+        m_dRangeLow = parse(rangeArgs[0], &lowOk);
         bool highOk = false;
-        m_dRangeHigh = rangeArgs[1].toDouble(&highOk);
+        m_dRangeHigh = parse(rangeArgs[1], &highOk);
 
         if (lowOk && highOk && m_dRangeLow <= m_dRangeHigh) {
             m_bRangeQuery = true;
         }
     }
+}
+
+double NumericFilterNode::parse(const QString& arg, bool *ok) {
+    return arg.toDouble(ok);
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
@@ -228,35 +236,12 @@ QString NumericFilterNode::toSql() const {
 DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
                                        QString argument)
         : NumericFilterNode(sqlColumns) {
-    QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
-    if (operatorMatcher.indexIn(argument) != -1) {
-        m_operator = operatorMatcher.cap(1);
-        argument = operatorMatcher.cap(2);
-    }
-
-    bool parsed = false;
-    // Try to convert to see if it parses.
-    m_dOperatorArgument = parseTime(argument, &parsed);
-    if (parsed) {
-        m_bOperatorQuery = true;
-    }
-
-    QStringList rangeArgs = argument.split("-");
-    if (rangeArgs.length() == 2) {
-        bool lowOk = false;
-        m_dRangeLow = parseTime(rangeArgs[0], &lowOk);
-        bool highOk = false;
-        m_dRangeHigh = parseTime(rangeArgs[1], &highOk);
-
-        if (lowOk && highOk && m_dRangeLow <= m_dRangeHigh) {
-            m_bRangeQuery = true;
-        }
-    }
+    init(argument);
 }
 
-double DurationFilterNode::parseTime(QString time, bool* ok){
+double DurationFilterNode::parse(const QString& arg, bool* ok){
     QRegExp regex("^(\\d*)(m|:)?([0-6]?\\d)?s?$");
-    if (regex.indexIn(time) == -1) {
+    if (regex.indexIn(arg) == -1) {
         *ok = false;
         return 0;
     }

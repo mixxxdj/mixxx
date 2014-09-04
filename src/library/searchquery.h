@@ -81,6 +81,8 @@ class NumericFilterNode : public QueryNode {
     QString toSql() const;
 
   protected:
+    virtual void init(QString argument);
+    virtual double parse(const QString& arg, bool *ok);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -95,7 +97,7 @@ class DurationFilterNode : public NumericFilterNode {
     DurationFilterNode(const QStringList& sqlColumns, QString argument);
 
   private:
-    double parseTime(QString time, bool* ok);
+    virtual double parse(const QString& arg, bool* ok);
 };
 
 class KeyFilterNode : public QueryNode {
