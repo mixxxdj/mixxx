@@ -54,6 +54,8 @@ EngineDeck::EngineDeck(const char* group,
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
 
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
@@ -106,8 +108,9 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
         m_pVUMeter->collectFeatures(&features);
-        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         features);
+        m_pEngineEffectsManager->process(
+                getGroup(), pOut, iBufferSize,
+                static_cast<unsigned int>(m_pSampleRate->get()), features);
     }
     // Update VU meter
     m_pVUMeter->process(pOut, iBufferSize);

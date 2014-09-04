@@ -21,8 +21,9 @@
 
 #include "controlpushbutton.h"
 #include "configobject.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
@@ -97,7 +98,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
     // Master volume
-    m_pMasterVolume = new ControlLogpotmeter(ConfigKey(group, "volume"), 5.);
+    m_pMasterVolume = new ControlAudioTaperPot(ConfigKey(group, "volume"), -14, 14, 0.5);
 
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
@@ -106,7 +107,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
 
     // Headphone volume
-    m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
+    m_pHeadVolume = new ControlAudioTaperPot(ConfigKey(group, "headVolume"), -14, 14, 0.5);
 
     // Headphone mix (left/right)
     m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
@@ -285,7 +286,7 @@ void EngineMaster::process(const int iBufferSize) {
     bool masterEnabled = m_pMasterEnabled->get();
     bool headphoneEnabled = m_pHeadphoneEnabled->get();
 
-    int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
+    unsigned int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
@@ -362,11 +363,11 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->process(getBusLeftGroup(), m_pOutputBusBuffers[0],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusCenterGroup(), m_pOutputBusBuffers[1],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusRightGroup(), m_pOutputBusBuffers[2],
-                                             iBufferSize, busFeatures);
+                                             iBufferSize, iSampleRate, busFeatures);
     }
 
     if (masterEnabled) {
@@ -387,7 +388,8 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
             m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster,
-                                             iBufferSize, masterFeatures);
+                                             iBufferSize, iSampleRate,
+                                             masterFeatures);
         }
 
         // Apply master volume after effects.
@@ -443,7 +445,7 @@ void EngineMaster::process(const int iBufferSize) {
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
             m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead,
-                                             iBufferSize, headphoneFeatures);
+                                             iBufferSize, iSampleRate, headphoneFeatures);
         }
         // Head volume
         CSAMPLE headphoneVolume = m_pHeadVolume->get();
@@ -489,8 +491,8 @@ void EngineMaster::process(const int iBufferSize) {
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
-    pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
-            ConfigKey(pChannel->getGroup(), "volume"), 1.0);
+    pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
+            ConfigKey(pChannel->getGroup(), "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pMuteControl = new ControlPushButton(

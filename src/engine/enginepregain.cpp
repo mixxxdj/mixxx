@@ -17,7 +17,7 @@
 #include <QtDebug>
 
 #include "engine/enginepregain.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
@@ -33,7 +33,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char* group)
 {
-    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
+    potmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, +12, 0.5);
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));

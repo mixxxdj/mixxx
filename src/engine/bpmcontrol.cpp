@@ -5,7 +5,7 @@
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
-#include "controlpotmeter.h"
+#include "controllinpotmeter.h"
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
@@ -48,15 +48,29 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
+    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(_group, "beats_adjust_faster"), false);
+    connect(m_pAdjustBeatsFaster, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBeatsFaster(double)),
+            Qt::DirectConnection);
+    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(_group, "beats_adjust_slower"), false);
+    connect(m_pAdjustBeatsSlower, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBeatsSlower(double)),
+            Qt::DirectConnection);
+    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(_group, "beats_translate_earlier"), false);
+    connect(m_pTranslateBeatsEarlier, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsEarlier(double)),
+            Qt::DirectConnection);
+    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(_group, "beats_translate_later"), false);
+    connect(m_pTranslateBeatsLater, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsLater(double)),
+            Qt::DirectConnection);
 
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
     // bpm_down controls.
-    m_pEngineBpm = new ControlPotmeter(ConfigKey(_group, "bpm"), 1, 200, true);
     // bpm_up / bpm_down steps by 1
-    m_pEngineBpm->setStep(1);
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm->setSmallStep(0.1);
+    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(_group, "bpm"), 1, 200, 1, 0.1, true);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineBpm(double)),
             Qt::DirectConnection);
@@ -133,6 +147,36 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     }
     m_dUserOffset = 0.0;
     m_dSyncAdjustment = 1.0;
+}
+
+void BpmControl::slotAdjustBeatsFaster(double v) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+        double new_bpm = math_min(200.0, m_pBeats->getBpm() + .01);
+        m_pBeats->setBpm(new_bpm);
+    }
+}
+
+void BpmControl::slotAdjustBeatsSlower(double v) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+        double new_bpm = math_max(10.0, m_pBeats->getBpm() - .01);
+        m_pBeats->setBpm(new_bpm);
+    }
+}
+
+void BpmControl::slotTranslateBeatsEarlier(double v) {
+    if (v > 0 && m_pTrack && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        const int translate_dist = m_pTrack->getSampleRate() * -.01;
+        m_pBeats->translate(translate_dist);
+    }
+}
+
+void BpmControl::slotTranslateBeatsLater(double v) {
+    if (v > 0 && m_pTrack && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        const int translate_dist = m_pTrack->getSampleRate() * .01;
+        m_pBeats->translate(translate_dist);
+    }
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
