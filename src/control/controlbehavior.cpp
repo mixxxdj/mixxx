@@ -121,27 +121,31 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
+    double param;
     if (!m_bTwoState) {
-        return log10((dValue - m_dMinValue) + 1) / m_dB1;
+        param =  log10((dValue - m_dMinValue) + 1) / m_dB1;
     } else {
         if (dValue > 1.0) {
-            return log10(dValue) / m_dB2 + middlePosition;
+            param = log10(dValue) / m_dB2 + middlePosition;
         } else {
-            return log10(dValue + 1.0) / m_dB1;
+            param = log10(dValue + 1.0) / m_dB1;
         }
     }
+    return param;
 }
 
 double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
+    double value;
     if (!m_bTwoState) {
-        return pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
+        value = pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
     } else {
         if (dParam <= middlePosition) {
-            return pow(10.0, m_dB1 * dParam) - 1;
+            value = pow(10.0, m_dB1 * dParam) - 1;
         } else {
-            return pow(10.0, m_dB2 * (dParam - middlePosition));
+            value = pow(10.0, m_dB2 * (dParam - middlePosition));
         }
     }
+    return value;
 }
 
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
