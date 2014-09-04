@@ -22,6 +22,7 @@
 #include "dlgprefeq.h"
 #include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "util/math.h"
 
 #define CONFIG_KEY "[Mixer Profile]"

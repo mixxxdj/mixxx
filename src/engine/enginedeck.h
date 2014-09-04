@@ -18,11 +18,12 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
-#include "util/circularbuffer.h"
+#include "configobject.h"
+#include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
-#include "configobject.h"
+#include "util/circularbuffer.h"
 
 #include "soundmanagerutil.h"
 
@@ -46,6 +47,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual ~EngineDeck();
 
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
+    virtual void postProcess(const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
@@ -81,6 +83,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
     EngineEffectsManager* m_pEngineEffectsManager;
+    ControlObjectSlave* m_pSampleRate;
 
     // Begin vinyl passthrough fields
     ControlPushButton* m_pPassing;

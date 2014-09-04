@@ -35,6 +35,9 @@ class PlayerManager : public QObject {
     // Add a deck to the PlayerManager
     void addDeck();
 
+    // Add number of decks according to configuration.
+    void addConfiguredDecks();
+
     // Add a sampler to the PlayerManager
     void addSampler();
 

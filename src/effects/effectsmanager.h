@@ -89,7 +89,6 @@ class EffectsManager : public QObject {
     // We need to create Control Objects for Equalizers' frequencies
     ControlPotmeter* m_pLoEqFreq;
     ControlPotmeter* m_pHiEqFreq;
-    ControlPushButton* m_pLofiEq;
     ControlPushButton* m_pEnableEq;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
