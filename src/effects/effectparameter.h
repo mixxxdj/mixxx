@@ -67,10 +67,9 @@ class EffectParameter : public QObject {
         return QString("EffectParameter(%1)").arg(m_parameter.name());
     }
 
-    static bool clampValue(EffectManifestParameter::ValueHint valueHint, QVariant& value,
+    static bool clampValue(EffectManifestParameter::ValueHint valueHint, QVariant* pValue,
                            const QVariant& minimum, const QVariant& maximum);
-    bool clampValue();
-    bool clampDefault();
+    bool clampValue(QVariant* pValue);
     bool clampRanges();
     bool checkType(const QVariant& value) const;
 

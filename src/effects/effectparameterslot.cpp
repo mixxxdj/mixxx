@@ -76,9 +76,9 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
                 qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
-            // qDebug() << debugString()
-            //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
-            //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
+            qDebug() << debugString()
+                     << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+                     .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
             EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
             m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
@@ -216,6 +216,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
             parameter = 1.0 - parameter;
         }
 
+        qDebug() << "onChainParameterChanged" << parameter;
         if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
             m_pControlValue->setParameterFrom(parameter, NULL);
         }
