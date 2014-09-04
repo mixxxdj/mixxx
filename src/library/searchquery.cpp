@@ -253,11 +253,12 @@ double DurationFilterNode::parse(const QString& arg, bool* ok){
     QStringList caps = regex.capturedTexts();
     double m = 0;
     double s = 0;
-    if (caps.at(3).isEmpty()) {
+    // if only a number is entered parse as seconds
+    if (caps.at(3).isEmpty() && caps.at(2).isEmpty()) {
         s = caps.at(1).toDouble(ok);
     } else {
         m = caps.at(1).toDouble(ok);
-        s = caps.at(3).toDouble(ok);
+        s = caps.at(3).toDouble();
     }
 
     if (!*ok) {

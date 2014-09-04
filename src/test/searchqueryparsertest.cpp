@@ -457,6 +457,33 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     EXPECT_STREQ(
         qPrintable(QString("(duration <= 150)")),
         qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<=2m", searchColumns, ""));
+    pTrack->setDuration(191);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(110);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration <= 120)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<=2:", searchColumns, ""));
+    pTrack->setDuration(191);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(110);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration <= 120)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:>=1:3", searchColumns, ""));
+    pTrack->setDuration(60);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 63)")),
+        qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
