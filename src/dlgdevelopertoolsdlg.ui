@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="toolTabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="controlsTab">
       <attribute name="title">
@@ -26,6 +26,19 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="1">
         <widget class="WSearchLineEdit" name="controlSearch"/>
+       </item>
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item row="1" column="0" colspan="2">
         <widget class="QTableView" name="controlsTable">
@@ -55,8 +68,18 @@
          </attribute>
         </widget>
        </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="logTab">
+      <attribute name="title">
+       <string>Log</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="logSearch"/>
+       </item>
        <item row="0" column="0">
-        <spacer name="horizontalSpacer">
+        <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -68,14 +91,14 @@
          </property>
         </spacer>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="logTab">
-      <attribute name="title">
-       <string>Log</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="logSearchButton">
+         <property name="text">
+          <string>Search</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3">
         <widget class="QTextEdit" name="logTextView">
          <property name="readOnly">
           <bool>true</bool>
@@ -84,8 +107,8 @@
           <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.Lucida Grande UI'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'.Lucida Grande UI'; font-size:13pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="overwriteMode">
           <bool>true</bool>

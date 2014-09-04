@@ -4,7 +4,7 @@
 
 #include "engine/sync/enginesync.h"
 #include "controlobject.h"
-#include "controlpotmeter.h"
+#include "controllinpotmeter.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
 
@@ -19,13 +19,10 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the master BPM. This also creates bpm_up
     // and bpm_down controls.
-    m_pClockBpm.reset(new ControlPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, true));
     // bpm_up / bpm_down steps by 1
-    m_pClockBpm->setStep(1);
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pClockBpm->setSmallStep(0.1);
-
+    m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
+                                          1, 200, 1, 0.1, true));
     connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);
@@ -84,7 +81,7 @@ double InternalClock::getBeatDistance() const {
     return m_dClockPosition / m_dBeatLength;
 }
 
-void InternalClock::setBeatDistance(double beatDistance) {
+void InternalClock::setMasterBeatDistance(double beatDistance) {
     //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
@@ -115,7 +112,7 @@ void InternalClock::slotBeatDistanceChanged(double beat_distance) {
     if (beat_distance < 0.0 || beat_distance > 1.0) {
         return;
     }
-    setBeatDistance(beat_distance);
+    setMasterBeatDistance(beat_distance);
 }
 
 void InternalClock::updateBeatLength(int sampleRate, double bpm) {
@@ -150,7 +147,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     m_iOldSampleRate = sampleRate;
 
     // Restore the old beat distance.
-    setBeatDistance(oldBeatDistance);
+    setMasterBeatDistance(oldBeatDistance);
 }
 
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {

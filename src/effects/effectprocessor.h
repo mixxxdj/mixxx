@@ -3,8 +3,9 @@
 
 #include <QString>
 #include <QMap>
+#include <QSet>
+#include <QtDebug>
 
-#include "controlobjectslave.h"
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
 
@@ -12,11 +13,7 @@ class EngineEffect;
 
 class EffectProcessor {
   public:
-    EffectProcessor() {
-        m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
-    }
     virtual ~EffectProcessor() {
-        delete m_pSampleRate;
     }
 
     virtual void initialize(const QSet<QString>& registeredGroups) = 0;
@@ -33,13 +30,8 @@ class EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) = 0;
-
-    int getSampleRate() {
-        return static_cast<int>(m_pSampleRate->get());
-    }
-  protected:
-    ControlObjectSlave* m_pSampleRate;
 };
 
 // Helper class for automatically fetching group state parameters upon receipt
@@ -47,7 +39,8 @@ class EffectProcessor {
 template <typename T>
 class GroupEffectProcessor : public EffectProcessor {
   public:
-    GroupEffectProcessor() { }
+    GroupEffectProcessor() {
+    }
     virtual ~GroupEffectProcessor() {
         for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
              it != m_groupState.end();) {
@@ -70,6 +63,7 @@ class GroupEffectProcessor : public EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) {
         T* pState = m_groupState.value(group, NULL);
         if (pState == NULL) {
@@ -77,13 +71,14 @@ class GroupEffectProcessor : public EffectProcessor {
             m_groupState[group] = pState;
             qWarning() << "Allocated group state in the engine for" << group;
         }
-        processGroup(group, pState, pInput, pOutput, numSamples, groupFeatures);
+        processGroup(group, pState, pInput, pOutput, numSamples, sampleRate, groupFeatures);
     }
 
     virtual void processGroup(const QString& group,
                               T* groupState,
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
                               const unsigned int numSamples,
+                              const unsigned int sampleRate,
                               const GroupFeatureState& groupFeatures) = 0;
 
   private:

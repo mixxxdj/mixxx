@@ -1,6 +1,7 @@
 // dlgtrackinfo.cpp
 // Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QDesktopServices>
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
@@ -62,6 +63,8 @@ void DlgTrackInfo::init(){
             this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
+    connect(btnOpenFileBrowser, SIGNAL(clicked()),
+            this, SLOT(slotOpenInFileBrowser()));
     m_bpmTapTimer.start();
     for (int i = 0; i < kFilterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
@@ -131,11 +134,10 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtGrouping->setText(pTrack->getGrouping());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
-    txtComment->setText(pTrack->getComment());
+    txtComment->setPlainText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
-    txtFilepath->setText(pTrack->getFilename());
     txtLocation->setText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
@@ -161,6 +163,33 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+
+    disconnect(this, SLOT(updateTrackMetadata()));
+    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata()));
+}
+
+void DlgTrackInfo::slotOpenInFileBrowser() {
+    if (m_pLoadedTrack == NULL) {
+        return;
+    }
+
+    QDir dir;
+    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    do {
+        dir = QDir(splittedPath.join("/"));
+        splittedPath.removeLast();
+    } while (!dir.exists() && splittedPath.size());
+
+    // This function does not work for a non-existent directory!
+    // so it is essential that in the worst case it try opening
+    // a valid directory, in this case, 'QDir::home()'.
+    // Otherwise nothing would happen...
+    if (!dir.exists()) {
+        // it ensures a valid dir for any OS (Windows)
+        dir = QDir::home();
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
@@ -303,6 +332,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
     }
 
     clear();
+    disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.clear();
 }
 
@@ -317,11 +347,10 @@ void DlgTrackInfo::clear() {
     txtGrouping->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
-    txtComment->setText("");
+    txtComment->setPlainText("");
     spinBpm->setValue(0.0);
 
     txtDuration->setText("");
-    txtFilepath->setText("");
     txtType->setText("");
     txtLocation->setText("");
     txtBitrate->setText("");
@@ -379,7 +408,13 @@ void DlgTrackInfo::reloadTrackMetadata() {
     }
 }
 
+void DlgTrackInfo::updateTrackMetadata() {
+    if (m_pLoadedTrack) {
+        populateFields(m_pLoadedTrack);
+    }
+}
+
 void DlgTrackInfo::fetchTag() {
-    m_DlgTagFetcher.init(m_pLoadedTrack);
+    m_DlgTagFetcher.loadTrack(m_pLoadedTrack);
     m_DlgTagFetcher.show();
 }

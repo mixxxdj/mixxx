@@ -76,7 +76,7 @@ EffectManifest& LV2Backend::getManifestReference(const QString& effectId) {
 }
 
 EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
-                                                const QString& effectId) {
+                                            const QString& effectId) {
     if (!canInstantiateEffect(effectId)) {
         qWarning() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();

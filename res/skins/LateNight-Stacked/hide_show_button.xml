@@ -28,7 +28,6 @@
 	    </State>
 	    <Connection>
 	      <ConfigKey persist="true"><Variable name="control"/></ConfigKey>
-	      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 	      <ButtonState>LeftButton</ButtonState>
 	    </Connection>
 	  </PushButton>

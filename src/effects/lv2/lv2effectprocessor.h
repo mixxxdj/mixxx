@@ -19,6 +19,7 @@ class LV2EffectProcessor : public EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures);
   private:
     QList<EngineEffectParameter*> m_parameters;

@@ -80,6 +80,10 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_file_srate_old(0),
           m_iSamplesCalculated(0),
           m_iUiSlowTick(0),
+          m_dSlipPosition(0.),
+          m_dSlipRate(1.0),
+          m_slipEnabled(0),
+          m_bSlipEnabledProcessing(false),
           m_pRepeat(NULL),
           m_startButton(NULL),
           m_endButton(NULL),
@@ -91,6 +95,8 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
+          m_iEnableSyncQueued(SYNC_REQUEST_NONE),
+          m_iSyncModeQueued(SYNC_INVALID),
           m_bLastBufferPaused(true),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
@@ -223,8 +229,9 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    m_pSyncControl = new SyncControl(_group, _config, pChannel,
-                                     pMixingEngine->getEngineSync());
+    m_pEngineSync = pMixingEngine->getEngineSync();
+
+    m_pSyncControl = new SyncControl(_group, _config, pChannel, m_pEngineSync);
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
@@ -391,13 +398,47 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // Write the position before the seek type, to reduce a possible race
     // condition effect
     m_queuedPosition.setValue(newpos);
-    m_iSeekQueued.fetchAndStoreRelease(seekType);
+    m_iSeekQueued = load_atomic(seekType);
 }
 
 void EngineBuffer::requestSyncPhase() {
     if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
         // Only honor phase syncing if quantize is on and playing.
         m_iSeekQueued = SEEK_PHASE;
+    }
+}
+
+void EngineBuffer::requestEnableSync(bool enabled) {
+    // If we're not playing, the queued event won't get processed so do it now.
+    if (m_playButton->get() == 0.0) {
+        m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
+        return;
+    }
+    SyncRequestQueued enable_request =
+            static_cast<SyncRequestQueued>(load_atomic(m_iEnableSyncQueued));
+    if (enabled) {
+        m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
+    } else {
+        // If sync is enabled and disabled very quickly, it's is a one-shot
+        // sync event and needs to be handled specially. Otherwise the sync
+        // state will get stuck on or won't go on at all.
+        if (enable_request == SYNC_REQUEST_ENABLE) {
+            m_iEnableSyncQueued = SYNC_REQUEST_ENABLEDISABLE;
+        } else {
+            // Note that there is no DISABLEENABLE, because that's an irrelevant
+            // queuing.  Moreover, ENABLEDISABLEENABLE is also redundant, so
+            // we don't have to handle any special cases.
+            m_iEnableSyncQueued = SYNC_REQUEST_DISABLE;
+        }
+    }
+}
+
+void EngineBuffer::requestSyncMode(SyncMode mode) {
+    // If we're not playing, the queued event won't get processed so do it now.
+    if (m_playButton->get() == 0.0) {
+        m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
+    } else {
+        m_iSyncModeQueued = mode;
     }
 }
 
@@ -587,8 +628,9 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    if ((!m_pCurrentTrack && deref(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && m_filepos_play >= m_file_length_old )) {
+    if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
+            (m_pCurrentTrack && m_filepos_play >= m_file_length_old &&
+                    load_atomic(!m_iSeekQueued))) {
         // play not possible
         playPossible = false;
     }
@@ -649,13 +691,7 @@ void EngineBuffer::slotControlStop(double v)
 
 void EngineBuffer::slotControlSlip(double v)
 {
-    bool enabled = v > 0.0;
-    if (enabled == m_bSlipEnabled) {
-        return;
-    }
-
-    m_bSlipEnabled = enabled;
-    m_bSlipToggled = true;
+    m_slipEnabled = static_cast<int>(v > 0.0);
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double d_index) {
@@ -687,7 +723,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
     bool bCurBufferPaused = false;
     double rate = 0;
 
-    bool bTrackLoading = deref(m_iTrackLoading) != 0;
+    bool bTrackLoading = load_atomic(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
@@ -720,6 +756,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
                                           fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
+        processSyncRequests();
         processSeek();
 
         // If the baserate, speed, or pitch has changed, we need to update the
@@ -868,13 +905,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         }
         m_engineLock.unlock();
 
-        // Report our speed to SyncControl. If we are the master then it will
-        // broadcast this update to followers.
-        m_pSyncControl->reportPlayerSpeed(speed, is_scratching);
-
-        // Update all the indicators that EngineBuffer publishes to allow
-        // external parts of Mixxx to observe its status.
-        updateIndicators(speed, iBufferSize);
+        m_scratching_old = is_scratching;
 
         // Handle repeat mode
         at_start = m_filepos_play <= 0;
@@ -986,8 +1017,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 }
 
 void EngineBuffer::processSlip(int iBufferSize) {
-    if (m_bSlipToggled) {
-        if (m_bSlipEnabled) {
+    // Do a single read from m_bSlipEnabled so we don't run in to race conditions.
+    bool enabled = static_cast<bool>(load_atomic(m_slipEnabled));
+    if (enabled != m_bSlipEnabledProcessing) {
+        m_bSlipEnabledProcessing = enabled;
+        if (enabled) {
             m_dSlipPosition = m_filepos_play;
             m_dSlipRate = m_rate_old;
         } else {
@@ -995,19 +1029,44 @@ void EngineBuffer::processSlip(int iBufferSize) {
             slotControlSeekExact(m_dSlipPosition);
             m_dSlipPosition = 0;
         }
-        m_bSlipToggled = false;
     }
 
     // Increment slip position even if it was just toggled -- this ensures the position is correct.
-    if (m_bSlipEnabled) {
+    if (enabled) {
         m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
+    }
+}
+
+void EngineBuffer::processSyncRequests() {
+    SyncRequestQueued enable_request =
+            static_cast<SyncRequestQueued>(
+                    m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
+    SyncMode mode_request =
+            static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
+    switch (enable_request) {
+    case SYNC_REQUEST_ENABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        break;
+    case SYNC_REQUEST_DISABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        break;
+    case SYNC_REQUEST_ENABLEDISABLE:
+        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        break;
+    case SYNC_REQUEST_NONE:
+        break;
+    }
+    if (mode_request != SYNC_INVALID) {
+        m_pEngineSync->requestSyncMode(m_pSyncControl,
+                                       static_cast<SyncMode>(mode_request));
     }
 }
 
 void EngineBuffer::processSeek() {
     // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
-    // the later case is ok, because we will pocess the new seek in the next call anyway.
+    // the later case is ok, because we will process the new seek in the next call anyway.
     SeekRequest seekType =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     double position = m_queuedPosition.getValue();
@@ -1021,7 +1080,7 @@ void EngineBuffer::processSeek() {
             bool paused = m_playButton->get() == 0.0;
             // If we are playing and quantize is on, match phase when seeking.
             if (!paused && m_pQuantize->get() > 0.0) {
-                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(position));
+                int offset = static_cast<int>(round(m_pBpmControl->getPhaseOffset(position)));
                 if (!even(offset)) {
                     offset--;
                 }
@@ -1047,6 +1106,20 @@ void EngineBuffer::processSeek() {
             qWarning() << "Unhandled seek request type: " << seekType;
             return;
     }
+}
+
+void EngineBuffer::postProcess(const int iBufferSize) {
+    double beat_distance = m_pBpmControl->updateBeatDistance();
+    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+        m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
+    }
+    // Report our speed to SyncControl. If we are the master then it will
+    // broadcast this update to followers.
+    m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+
+    // Update all the indicators that EngineBuffer publishes to allow
+    // external parts of Mixxx to observe its status.
+    updateIndicators(m_speed_old, iBufferSize);
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
@@ -1100,7 +1173,7 @@ void EngineBuffer::hintReader(const double dRate) {
     m_pReadAheadManager->hintReader(dRate, &m_hintList);
 
     //if slipping, hint about virtual position so we're ready for it
-    if (m_bSlipEnabled) {
+    if (m_bSlipEnabledProcessing) {
         Hint hint;
         hint.length = 2048; //default length please
         hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;

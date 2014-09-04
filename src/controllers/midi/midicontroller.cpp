@@ -388,10 +388,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     if (mapping.options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(pCO);
-    }
-
-    if (mapping.options.soft_takeover) {
-        if (m_st.ignore(pCO, newValue, true)) {
+        if (m_st.ignore(pCO, pCO->getParameterForMidiValue(newValue))) {
             return;
         }
     }
@@ -483,6 +480,13 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         }
         _newmidivalue += _prevmidivalue;
         //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << _prevmidivalue; }
+    }
+
+    if (options.herc_jog_fast) {
+        if (_newmidivalue > 64.) {
+            _newmidivalue -= 128.;
+        }
+        _newmidivalue = _prevmidivalue + (_newmidivalue * 3);
     }
 
     return _newmidivalue;

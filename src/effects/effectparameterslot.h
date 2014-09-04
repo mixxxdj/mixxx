@@ -13,6 +13,7 @@
 class ControlObject;
 class ControlPushButton;
 class ControlEffectKnob;
+class SoftTakeover;
 
 class EffectParameterSlot;
 typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
@@ -33,6 +34,9 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
 
+    EffectManifestParameter::LinkType getLinkType() const;
+    double getValueParameter() const;
+
     void onChainParameterChanged(double parameter);
 
   private slots:
@@ -47,6 +51,8 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     // Clear the currently loaded effect
     void clear();
+
+    SoftTakeover* m_pSoftTakeover;
 
     // Control exposed to the rest of Mixxx
     ControlEffectKnob* m_pControlValue;

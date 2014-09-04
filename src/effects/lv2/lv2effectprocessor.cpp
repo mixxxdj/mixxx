@@ -8,7 +8,8 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        const LilvPlugin* plugin,
                                        QList<int> audioPortIndices,
                                        QList<int> controlPortIndices) {
-    m_sampleRate = getSampleRate();
+    // TODO: Use the real sample rate
+    m_sampleRate = 44100;
     inputL = new float[MAX_BUFFER_LEN];
     inputR = new float[MAX_BUFFER_LEN];
     outputL = new float[MAX_BUFFER_LEN];
@@ -60,9 +61,11 @@ void LV2EffectProcessor::initialize(const QSet<QString>& registeredGroups) {
 void LV2EffectProcessor::process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
     Q_UNUSED(group);
+    Q_UNUSED(sampleRate);
     for (int i = 0; i < m_parameters.size(); i++) {
         params[i] = m_parameters[i]->value().toFloat();
     }

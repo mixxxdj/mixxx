@@ -236,7 +236,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         //QThread::usleep(10);
 
         //has something new entered the queue?
-        if (deref(m_aiCheckPriorities)) {
+        if (load_atomic(m_aiCheckPriorities)) {
             m_aiCheckPriorities = false;
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";

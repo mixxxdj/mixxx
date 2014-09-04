@@ -10,9 +10,11 @@
 				<Children>
 					<Template src="skin:spinny.xml">
 						<SetVariable name="channum">3</SetVariable>
+                        <SetVariable name="color">2</SetVariable>
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">3</SetVariable>
+                        <SetVariable name="deck_color">#09B2AE</SetVariable>
 					</Template>
 				</Children>
 				<Connection>
@@ -26,9 +28,11 @@
 				<Children>
 					<Template src="skin:spinny.xml">
 						<SetVariable name="channum">1</SetVariable>
+                        <SetVariable name="color">1</SetVariable>
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">1</SetVariable>
+                        <SetVariable name="deck_color">#EECE33</SetVariable>
 					</Template>
 				</Children>
 			</WidgetGroup>
@@ -38,9 +42,11 @@
 				<Children>
 					<Template src="skin:spinny.xml">
 						<SetVariable name="channum">2</SetVariable>
+                        <SetVariable name="color">1</SetVariable>
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">2</SetVariable>
+                        <SetVariable name="deck_color">#EECE33</SetVariable>
 					</Template>
 				</Children>
 			</WidgetGroup>
@@ -50,9 +56,11 @@
 				<Children>
 					<Template src="skin:spinny.xml">
 						<SetVariable name="channum">4</SetVariable>
+                        <SetVariable name="color">2</SetVariable>
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">4</SetVariable>
+                        <SetVariable name="deck_color">#09B2AE</SetVariable>
 					</Template>
 				</Children>
 				<Connection>
