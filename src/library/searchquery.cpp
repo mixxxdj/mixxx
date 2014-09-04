@@ -172,6 +172,7 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
           m_dRangeLow(0.0),
           m_dRangeHigh(0.0) {
 }
+
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     foreach (QString sqlColumn, m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
@@ -255,20 +256,16 @@ DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
 
 double DurationFilterNode::parseTime(QString time, bool* ok){
     QRegExp regex("^(\\d*)(m|:)?([0-6]?\\d)?s?$");
-    if (!regex.exactMatch(time)) {
-        qDebug() << time << " did not match regexp";
+    if (regex.indexIn(time) == -1) {
         *ok = false;
         return 0;
     }
-    // Need to call this function once for Qt to parse the string. I don't
-    // know why they don't call this parse -- (kain88, Aug 2014)
-    regex.indexIn(time);
-    QStringList caps = regex.capturedTexts();
 
     // You can check that the minutes are parsed to entry 2 of the list and the
     // seconds are in the 4th entry. If you don't believe me or this doesn't
     // work anymore because we changed our Qt version just have a look at caps.
     // -- (kain88, Aug 2014)
+    QStringList caps = regex.capturedTexts();
     double m = 0;
     double s = 0;
     if (caps.at(3).isEmpty()) {
