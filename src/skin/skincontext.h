@@ -61,6 +61,7 @@ class SkinContext {
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
     QString getPixmapPath(const QDomNode& pixmapNode) const;
+    QByteArray getPixmapBundle(const QDomNode& pixmapNode) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;

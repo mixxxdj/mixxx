@@ -73,6 +73,8 @@ class WPixmapStore {
   public:
     static PaintablePointer getPaintable(const QString& fileName,
                                          Paintable::DrawMode mode);
+    static PaintablePointer getPaintable(const QByteArray& fileName,
+                                         Paintable::DrawMode mode);
     static QPixmap* getPixmapNoCache(const QString& fileName);
     static void setLoader(QSharedPointer<ImgSource> ld);
 

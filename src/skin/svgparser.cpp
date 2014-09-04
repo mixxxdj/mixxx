@@ -51,7 +51,7 @@ QString SvgParser::parseSvgFile(const QString& svgFileName) const {
     }
 }
 
-QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
+QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
@@ -60,7 +60,8 @@ QString SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     parseScriptElements(svgNode);
     scanTree(svgNode, &SvgParser::parseAttributes);
     
-    return saveToTempFile(svgNode);
+    // return saveToTempFile(svgNode);
+    return svgNode;
 }
 
 QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
@@ -84,6 +85,13 @@ QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
     }
     
     return svgTempFileName;
+}
+
+QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
+    QByteArray out;
+    QTextStream textStream(&out);
+    svgNode.save(textStream, 2);
+    return out;
 }
 
 // replaces Variables nodes in an svg dom tree

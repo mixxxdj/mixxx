@@ -233,3 +233,36 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     return pixmapPath;
 }
 
+
+QByteArray SkinContext::getPixmapBundle(const QDomNode& pixmapNode) const {
+	/**/
+    QString pixmapPath, pixmapName;
+    const SvgParser* pSvgParser = new SvgParser(*this);
+    
+    if (!pixmapNode.isNull()) {
+        QDomNode svgNode = selectNode(pixmapNode, "svg");
+        if (!svgNode.isNull()) {
+            // inline svg
+            pixmapPath = pSvgParser->saveToTempFile(
+				pSvgParser->parseSvgTree(svgNode) );
+        } else {
+            // filename
+            pixmapName = nodeToString(pixmapNode);
+            if (!pixmapName.isEmpty()) {
+                pixmapName = getSkinPath(pixmapName);
+                if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
+                    pixmapPath = pSvgParser->parseAsQByteArray(pixmapName);
+                } else {
+                    pixmapPath = pixmapName;
+                }
+            }
+        }
+    }
+    
+	/**/
+	QByteArray tmp;
+    return tmp;
+}
+
+
+

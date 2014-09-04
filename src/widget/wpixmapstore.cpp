@@ -68,6 +68,32 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
     }
 }
 
+Paintable::Paintable(const QByteArray& pixmapData, DrawMode mode)
+        : m_draw_mode(mode) {
+    if (fileName.endsWith(".svg", Qt::CaseInsensitive)) {
+        if (mode == STRETCH) {
+            m_pSvg.reset(new QSvgRenderer(pixmapData));
+        } else if (mode == TILE) {
+            // The SVG renderer doesn't directly support tiling, so we render
+            // it to a pixmap which will then get tiled.
+            QSvgRenderer renderer(pixmap);
+            QImage copy_buffer(renderer.defaultSize(), QImage::Format_ARGB32);
+            copy_buffer.fill(0x00000000);  // Transparent black.
+            m_pPixmap.reset(new QPixmap(renderer.defaultSize()));
+            QPainter painter(&copy_buffer);
+            renderer.render(&painter);
+            m_pPixmap->convertFromImage(copy_buffer);
+        } else {
+            qWarning() << "Error, unknown drawing mode!";
+        }
+    } else {
+        QPixmap * pPixmap = new QPixmap();
+        pPixmap.loadFromData(pixmapData);
+        m_pPixmap.reset(pPixmap);
+    }
+}
+
+
 bool Paintable::isNull() const {
     if (!m_pPixmap.isNull()) {
         return m_pPixmap->isNull();
