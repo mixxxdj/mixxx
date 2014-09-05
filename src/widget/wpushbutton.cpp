@@ -203,7 +203,8 @@ void WPushButton::setStates(int iStates) {
 }
 
 // void WPushButton::setPixmap(int iState, bool bPressed, const QString& filename) {
-template<typename pixmapBundle> void WPushButton::setPixmap(int iState, bool bPressed, const pixmapBundle sPixmapBundle) {
+template<typename pixmapSource>
+void WPushButton::setPixmap(int iState, bool bPressed, const pixmapSource sPixmapSource) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -211,13 +212,13 @@ template<typename pixmapBundle> void WPushButton::setPixmap(int iState, bool bPr
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(sPixmapBundle,
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(sPixmapSource,
                                                           Paintable::STRETCH);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
-        if (!sPixmapBundle.isEmpty()) {
-            qDebug() << "WPushButton: Error loading pixmap:" << sPixmapBundle;
+        if (!sPixmapSource.isEmpty()) {
+            qDebug() << "WPushButton: Error loading pixmap:" << sPixmapSource;
         }
     } else {
         // Set size of widget equal to pixmap size

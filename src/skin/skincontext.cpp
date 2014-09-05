@@ -215,14 +215,14 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            pixmapPath = pSvgParser->parseSvgTree(svgNode);
+            pixmapPath = pSvgParser->saveToTempFile(pSvgParser->parseSvgTree(svgNode));
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
                 pixmapName = getSkinPath(pixmapName);
                 if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-                    pixmapPath = pSvgParser->parseSvgFile(pixmapName);
+					pixmapPath = pSvgParser->saveToTempFile( pSvgParser->parseSvgFile(pixmapName) );
                 } else {
                     pixmapPath = pixmapName;
                 }
@@ -237,13 +237,14 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
 QByteArray SkinContext::getPixmapBundle(const QDomNode& pixmapNode) const {
 	/**/
     QString pixmapPath, pixmapName;
+	QByteArray out;
     const SvgParser* pSvgParser = new SvgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            pixmapPath = pSvgParser->saveToTempFile(
+            out = pSvgParser->saveToQByteArray(
 				pSvgParser->parseSvgTree(svgNode) );
         } else {
             // filename
@@ -251,7 +252,7 @@ QByteArray SkinContext::getPixmapBundle(const QDomNode& pixmapNode) const {
             if (!pixmapName.isEmpty()) {
                 pixmapName = getSkinPath(pixmapName);
                 if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-                    pixmapPath = pSvgParser->parseAsQByteArray(pixmapName);
+                    pixmapPath = pSvgParser->saveToQByteArray( pSvgParser->parseSvgFile(pixmapName) );
                 } else {
                     pixmapPath = pixmapName;
                 }
@@ -260,8 +261,7 @@ QByteArray SkinContext::getPixmapBundle(const QDomNode& pixmapNode) const {
     }
     
 	/**/
-	QByteArray tmp;
-    return tmp;
+    return out;
 }
 
 

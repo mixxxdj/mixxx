@@ -37,18 +37,19 @@ QDomDocument SvgParser::getDocument(const QDomNode& node) const {
     return document;
 }
 
-QString SvgParser::parseSvgFile(const QString& svgFileName) const {
+QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     QFile* file = new QFile(svgFileName);
+    QDomNode out;
     if (file->open(QIODevice::ReadWrite|QIODevice::Text)) {
         QDomDocument document;
         document.setContent(file);
         QDomNode svgNode = document.elementsByTagName("svg").item(0);
-        QString pixmapPath = parseSvgTree(svgNode);
+        out = parseSvgTree(svgNode);
         file->close();
-        return pixmapPath;
-    } else {
-        return svgFileName;
+        return out;
     }
+    
+    return out;
 }
 
 QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {

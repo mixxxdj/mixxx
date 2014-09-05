@@ -68,6 +68,7 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
     }
 }
 
+/** /
 Paintable::Paintable(const QByteArray& pixmapData, DrawMode mode)
         : m_draw_mode(mode) {
     if (fileName.endsWith(".svg", Qt::CaseInsensitive)) {
@@ -92,6 +93,7 @@ Paintable::Paintable(const QByteArray& pixmapData, DrawMode mode)
         m_pPixmap.reset(pPixmap);
     }
 }
+/**/
 
 
 bool Paintable::isNull() const {
