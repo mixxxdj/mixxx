@@ -9,7 +9,6 @@
 /*
 Owen todo:
 * add no-handler versions of play / pause / etc so we can put out the lights.
-* Better FX handling
 */
 
 /*
@@ -202,33 +201,30 @@ VestaxVCI400.GetDeck = function(group) {
    }
 }
 
-// Currently we reserve the top row of buttons for toggle buttons like keylock and quantize.
 //=========Pad Buttons=========================
-//VestaxVCI400.Deck.prototype.onButton1Activate = function(value){
-//    this.onDynamicButtonPressed(this.Buttons.BUTTON1, 1, value);
-//};
-//VestaxVCI400.Deck.prototype.onButton2Activate = function(value){
-//    this.onDynamicButtonPressed(this.Buttons.BUTTON2, 2, value);
-//};
-//VestaxVCI400.Deck.prototype.onButton3Activate = function(value){
-//    this.onDynamicButtonPressed(this.Buttons.BUTTON3, 3, value);
-//};
-//VestaxVCI400.Deck.prototype.onButton4Activate = function(value){
-//    this.onDynamicButtonPressed(this.Buttons.BUTTON4, 4, value);
-//};
-
-// Button 5 maps to button number "1" so that it gets hotcue 1.
+VestaxVCI400.Deck.prototype.onButton1Activate = function(value){
+    this.onDynamicButtonPressed(this.Buttons.BUTTON1, 1, value);
+};
+VestaxVCI400.Deck.prototype.onButton2Activate = function(value){
+    this.onDynamicButtonPressed(this.Buttons.BUTTON2, 2, value);
+};
+VestaxVCI400.Deck.prototype.onButton3Activate = function(value){
+    this.onDynamicButtonPressed(this.Buttons.BUTTON3, 3, value);
+};
+VestaxVCI400.Deck.prototype.onButton4Activate = function(value){
+    this.onDynamicButtonPressed(this.Buttons.BUTTON4, 4, value);
+};
 VestaxVCI400.Deck.prototype.onButton5Activate = function(value){
-    this.onDynamicButtonPressed(this.Buttons.BUTTON5, 1, value);
+    this.onDynamicButtonPressed(this.Buttons.BUTTON5, 5, value);
 };
 VestaxVCI400.Deck.prototype.onButton6Activate = function(value){
-    this.onDynamicButtonPressed(this.Buttons.BUTTON6, 2, value);
+    this.onDynamicButtonPressed(this.Buttons.BUTTON6, 6, value);
 };
 VestaxVCI400.Deck.prototype.onButton7Activate = function(value){
-    this.onDynamicButtonPressed(this.Buttons.BUTTON7, 3, value);
+    this.onDynamicButtonPressed(this.Buttons.BUTTON7, 7, value);
 };
 VestaxVCI400.Deck.prototype.onButton8Activate = function(value){
-    this.onDynamicButtonPressed(this.Buttons.BUTTON8, 4, value);
+    this.onDynamicButtonPressed(this.Buttons.BUTTON8, 8, value);
 };
 
 // Depending on what mode has been selected, the bottom row of buttons perform different functions.
@@ -249,7 +245,7 @@ VestaxVCI400.Deck.prototype.onDynamicButtonPressed = function(button, buttonNumb
         }
         break;
     case VestaxVCI400.ModeEnum.LOOP:
-        var loop_size = Math.pow(2, buttonNumber);
+        var loop_size = Math.pow(2, buttonNumber-4);
         if(value == VestaxVCI400.ButtonState.pressed) {
             engine.setValue(this.group, "beatloop_" + loop_size.toString() + "_activate", 1);
         }
@@ -263,6 +259,9 @@ VestaxVCI400.Deck.prototype.onDynamicButtonPressed = function(button, buttonNumb
         }
         break;
     case VestaxVCI400.ModeEnum.SAMPLER:
+        if (buttonNumber > 4) {
+            break;
+        }
         if (VestaxVCI400.shiftActive) {
             if (value == VestaxVCI400.ButtonState.pressed) {
                 engine.setValue("[Sampler" + buttonNumber + "]", "eject", 1);
@@ -297,11 +296,10 @@ VestaxVCI400.Deck.prototype.onVuMeterChanged = function(value, group, key) {
  * This is called when Mixxx notifies us that a button state has changed
  * via engine.connect.
  */
-// Note that we've mapped hotcue1 to button5.
 VestaxVCI400.Deck.prototype.onHotCue1Changed = function(value, group, key) {
     try {
         var deck = VestaxVCI400.GetDeck(group);
-        deck.onHotCueChanged(deck.Buttons.BUTTON5, value);
+        deck.onHotCueChanged(deck.Buttons.BUTTON1, value);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -310,7 +308,7 @@ VestaxVCI400.Deck.prototype.onHotCue1Changed = function(value, group, key) {
 VestaxVCI400.Deck.prototype.onHotCue2Changed = function(value, group, key) {
     try {
         var deck = VestaxVCI400.GetDeck(group);
-        deck.onHotCueChanged(deck.Buttons.BUTTON6, value);
+        deck.onHotCueChanged(deck.Buttons.BUTTON2, value);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -319,7 +317,7 @@ VestaxVCI400.Deck.prototype.onHotCue2Changed = function(value, group, key) {
 VestaxVCI400.Deck.prototype.onHotCue3Changed = function(value, group, key) {
     try {
         var deck = VestaxVCI400.GetDeck(group);
-        deck.onHotCueChanged(deck.Buttons.BUTTON7, value);
+        deck.onHotCueChanged(deck.Buttons.BUTTON3, value);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -328,52 +326,52 @@ VestaxVCI400.Deck.prototype.onHotCue3Changed = function(value, group, key) {
 VestaxVCI400.Deck.prototype.onHotCue4Changed = function(value, group, key) {
     try {
         var deck = VestaxVCI400.GetDeck(group);
+        deck.onHotCueChanged(deck.Buttons.BUTTON4, value);
+    }
+    catch(ex) {
+        VestaxVCI400.printError(ex);
+    }
+};
+VestaxVCI400.Deck.prototype.onHotCue5Changed = function(value, group, key) {
+    try {
+        var deck = VestaxVCI400.GetDeck(group);
+        deck.onHotCueChanged(deck.Buttons.BUTTON5, value);
+    }
+    catch(ex) {
+        VestaxVCI400.printError(ex);
+    }
+};
+VestaxVCI400.Deck.prototype.onHotCue6Changed = function(value, group, key) {
+    try {
+        var deck = VestaxVCI400.GetDeck(group);
+        deck.onHotCueChanged(deck.Buttons.BUTTON6, value);
+    }
+    catch(ex) {
+        VestaxVCI400.printError(ex);
+    }
+};
+VestaxVCI400.Deck.prototype.onHotCue7Changed = function(value, group, key) {
+    try {
+        var deck = VestaxVCI400.GetDeck(group);
+        deck.onHotCueChanged(deck.Buttons.BUTTON7, value);
+    }
+    catch(ex) {
+        VestaxVCI400.printError(ex);
+    }
+};
+VestaxVCI400.Deck.prototype.onHotCue8Changed = function(value, group, key) {
+    try {
+        var deck = VestaxVCI400.GetDeck(group);
         deck.onHotCueChanged(deck.Buttons.BUTTON8, value);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
     }
 };
-//VestaxVCI400.Deck.prototype.onHotCue5Changed = function(value, group, key) {
-//    try {
-//        var deck = VestaxVCI400.GetDeck(group);
-//        deck.onHotCueChanged(deck.Buttons.BUTTON5, value);
-//    }
-//    catch(ex) {
-//        VestaxVCI400.printError(ex);
-//    }
-//};
-//VestaxVCI400.Deck.prototype.onHotCue6Changed = function(value, group, key) {
-//    try {
-//        var deck = VestaxVCI400.GetDeck(group);
-//        deck.onHotCueChanged(deck.Buttons.BUTTON6, value);
-//    }
-//    catch(ex) {
-//        VestaxVCI400.printError(ex);
-//    }
-//};
-//VestaxVCI400.Deck.prototype.onHotCue7Changed = function(value, group, key) {
-//    try {
-//        var deck = VestaxVCI400.GetDeck(group);
-//        deck.onHotCueChanged(deck.Buttons.BUTTON7, value);
-//    }
-//    catch(ex) {
-//        VestaxVCI400.printError(ex);
-//    }
-//};
-//VestaxVCI400.Deck.prototype.onHotCue8Changed = function(value, group, key) {
-//    try {
-//        var deck = VestaxVCI400.GetDeck(group);
-//        deck.onHotCueChanged(deck.Buttons.BUTTON4, value);
-//    }
-//    catch(ex) {
-//        VestaxVCI400.printError(ex);
-//    }
-//};
 
 VestaxVCI400.Deck.prototype.onSampler1DurationChanged = function(value, group, key) {
     try {
-        this.onSamplerDurationChanged(this.Buttons.BUTTON5, value);
+        this.onSamplerDurationChanged(this.Buttons.BUTTON1, value);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -381,7 +379,7 @@ VestaxVCI400.Deck.prototype.onSampler1DurationChanged = function(value, group, k
 };
 VestaxVCI400.Deck.prototype.onSampler2DurationChanged = function(value, group, key) {
     try {
-        this.onSamplerDurationChanged(this.Buttons.BUTTON6, value);
+        this.onSamplerDurationChanged(this.Buttons.BUTTON2, value);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -389,7 +387,7 @@ VestaxVCI400.Deck.prototype.onSampler2DurationChanged = function(value, group, k
 };
 VestaxVCI400.Deck.prototype.onSampler3DurationChanged = function(value, group, key) {
     try {
-        this.onSamplerDurationChanged(this.Buttons.BUTTON7, value);
+        this.onSamplerDurationChanged(this.Buttons.BUTTON3, value);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -397,7 +395,16 @@ VestaxVCI400.Deck.prototype.onSampler3DurationChanged = function(value, group, k
 };
 VestaxVCI400.Deck.prototype.onSampler4DurationChanged = function(value, group, key) {
     try {
-        this.onSamplerDurationChanged(this.Buttons.BUTTON8, value);
+        this.onSamplerDurationChanged(this.Buttons.BUTTON4, value);
+    }
+    catch(ex) {
+        VestaxVCI400.printError(ex);
+    }
+};
+
+VestaxVCI400.Deck.prototype.onToggleLightsChanged = function(value, group, key) {
+    try {
+        VestaxVCI400.setToggleLights(group);
     }
     catch(ex) {
         VestaxVCI400.printError(ex);
@@ -456,15 +463,19 @@ VestaxVCI400.Deck.prototype.init = function() {
     engine.connectControl(this.group,"hotcue_2_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue2Changed");
     engine.connectControl(this.group,"hotcue_3_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue3Changed");
     engine.connectControl(this.group,"hotcue_4_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue4Changed");
-//    engine.connectControl(this.group,"hotcue_5_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue5Changed");
-//    engine.connectControl(this.group,"hotcue_6_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue6Changed");
-//    engine.connectControl(this.group,"hotcue_7_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue7Changed");
-//    engine.connectControl(this.group,"hotcue_8_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue8Changed");
+    engine.connectControl(this.group,"hotcue_5_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue5Changed");
+    engine.connectControl(this.group,"hotcue_6_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue6Changed");
+    engine.connectControl(this.group,"hotcue_7_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue7Changed");
+    engine.connectControl(this.group,"hotcue_8_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue8Changed");
 
     engine.connectControl("[Sampler1]","track_samples", "VestaxVCI400.Decks."+this.deckIdentifier+".onSampler1DurationChanged");
     engine.connectControl("[Sampler2]","track_samples", "VestaxVCI400.Decks."+this.deckIdentifier+".onSampler2DurationChanged");
     engine.connectControl("[Sampler3]","track_samples", "VestaxVCI400.Decks."+this.deckIdentifier+".onSampler3DurationChanged");
     engine.connectControl("[Sampler4]","track_samples", "VestaxVCI400.Decks."+this.deckIdentifier+".onSampler4DurationChanged");
+
+    engine.connectControl(this.group, "eject", "VestaxVCI400.Decks."+this.deckIdentifier+".onToggleLightsChanged");
+    engine.connectControl(this.group, "quantize", "VestaxVCI400.Decks."+this.deckIdentifier+".onToggleLightsChanged");
+    engine.connectControl(this.group, "keylock", "VestaxVCI400.Decks."+this.deckIdentifier+".onToggleLightsChanged");
 };
 
 // Add buttons to individual decks.  The handlers here are not connected to the Mixxx engine.
@@ -563,7 +574,27 @@ VestaxVCI400.deckSwitch = function (channel, control, value, status, group) {
     var deck = VestaxVCI400.GetDeck(group);
     deck.isActive = (value == 127)? true: false;
     print("Deck "+deck.deckIdentifier+ " is controlled by VCI-400: "+deck.isActive);
+
+    VestaxVCI400.setToggleLights(deck.group)
 };
+
+VestaxVCI400.setToggleLights = function (group) {
+    var chan;
+
+    if (!VestaxVCI400.GetDeck(group).isActive) {
+        return;
+    }
+
+    if (group == "[Channel1]" || group == "[Channel3]") {
+        chan = "0x9C";
+    } else {
+        chan = "0x9D";
+    }
+    midi.sendShortMsg(chan, "0x01", engine.getValue(group, "eject") > 0.5 ? 0x7F : 0);
+
+    midi.sendShortMsg(chan, "0x03", engine.getValue(group, "quantize") > 0.5 ? 0x7F : 0);
+    midi.sendShortMsg(chan, "0x04", engine.getValue(group, "keylock") > 0.5 ? 0x7F : 0);
+}
 
 VestaxVCI400.wheelTouch = function (channel, control, value, status, group) {
     try{
@@ -675,6 +706,56 @@ VestaxVCI400.Deck.prototype.onVinyl = function(value) {
     } else {
         this.finishWheelTouch();
     }
+}
+
+VestaxVCI400.fx1ToggleButton1 = function (channel, control, value, status, group) {
+    if (VestaxVCI400.Decks.A.isActive) {
+        engine.setValue("[Channel1]", "eject", value);
+    } else {
+        engine.setValue("[Channel3]", "eject", value);
+    }
+}
+
+VestaxVCI400.fx1ToggleButton2 = function (channel, control, value, status, group) {
+}
+
+VestaxVCI400.fx1ToggleButton3 = function (channel, control, value, status, group) {
+    if (value == 0 ) { return; }
+    var group = VestaxVCI400.Decks.A.isActive ? "[Channel1]" : "[Channel3]";
+    var curval = engine.getValue(group, "quantize");
+    engine.setValue(group, "quantize", !curval);
+}
+
+VestaxVCI400.fx1ToggleButton4 = function (channel, control, value, status, group) {
+    if (value == 0 ) { return; }
+    var group = VestaxVCI400.Decks.A.isActive ? "[Channel1]" : "[Channel3]";
+    var curval = engine.getValue(group, "keylock");
+    engine.setValue(group, "keylock", !curval);
+}
+
+VestaxVCI400.fx2ToggleButton1 = function (channel, control, value, status, group) {
+    if (VestaxVCI400.Decks.B.isActive) {
+        engine.setValue("[Channel2]", "eject", value);
+    } else {
+        engine.setValue("[Channel4]", "eject", value);
+    }
+}
+
+VestaxVCI400.fx2ToggleButton2 = function (channel, control, value, status, group) {
+}
+
+VestaxVCI400.fx2ToggleButton3 = function (channel, control, value, status, group) {
+    if (value == 0 ) { return; }
+    var group = VestaxVCI400.Decks.B.isActive ? "[Channel2]" : "[Channel4]";
+    var curval = engine.getValue(group, "quantize");
+    engine.setValue(group, "quantize", !curval);
+}
+
+VestaxVCI400.fx2ToggleButton4 = function (channel, control, value, status, group) {
+    if (value == 0 ) { return; }
+    var group = VestaxVCI400.Decks.B.isActive ? "[Channel2]" : "[Channel4]";
+    var curval = engine.getValue(group, "keylock");
+    engine.setValue(group, "keylock", !curval);
 }
 
 VestaxVCI400.fx1Knob = function (channel, control, value, status, group) {
@@ -881,63 +962,72 @@ VestaxVCI400.Deck.prototype.setButtonMode = function(value) {
     this.Buttons.MODE_LOOP.illuminate(this.buttonMode == VestaxVCI400.ModeEnum.LOOP);
     this.Buttons.MODE_ROLL.illuminate(this.buttonMode == VestaxVCI400.ModeEnum.ROLL);
     this.Buttons.MODE_SAMPLER.illuminate(this.buttonMode == VestaxVCI400.ModeEnum.SAMPLER);
+
+    switch(this.buttonMode) {
+    case VestaxVCI400.ModeEnum.HOTCUE:
+        this.onHotCueChanged(this.Buttons.BUTTON1, engine.getValue(this.group, "hotcue_1_enabled"));
+        this.onHotCueChanged(this.Buttons.BUTTON2, engine.getValue(this.group, "hotcue_2_enabled"));
+        this.onHotCueChanged(this.Buttons.BUTTON3, engine.getValue(this.group, "hotcue_3_enabled"));
+        this.onHotCueChanged(this.Buttons.BUTTON4, engine.getValue(this.group, "hotcue_4_enabled"));
+        this.onHotCueChanged(this.Buttons.BUTTON5, engine.getValue(this.group, "hotcue_5_enabled"));
+        this.onHotCueChanged(this.Buttons.BUTTON6, engine.getValue(this.group, "hotcue_6_enabled"));
+        this.onHotCueChanged(this.Buttons.BUTTON7, engine.getValue(this.group, "hotcue_7_enabled"));
+        this.onHotCueChanged(this.Buttons.BUTTON8, engine.getValue(this.group, "hotcue_8_enabled"));
+        break;
+    case VestaxVCI400.ModeEnum.LOOP:
+        this.Buttons.BUTTON1.illuminate(true);
+        this.Buttons.BUTTON2.illuminate(true);
+        this.Buttons.BUTTON3.illuminate(true);
+        this.Buttons.BUTTON4.illuminate(true);
+        this.Buttons.BUTTON5.illuminate(true);
+        this.Buttons.BUTTON6.illuminate(true);
+        this.Buttons.BUTTON7.illuminate(true);
+        this.Buttons.BUTTON8.illuminate(true);
+        break;
+    case VestaxVCI400.ModeEnum.ROLL:
+        this.Buttons.BUTTON1.illuminate(true);
+        this.Buttons.BUTTON2.illuminate(true);
+        this.Buttons.BUTTON3.illuminate(true);
+        this.Buttons.BUTTON4.illuminate(true);
+        this.Buttons.BUTTON5.illuminate(true);
+        this.Buttons.BUTTON6.illuminate(true);
+        this.Buttons.BUTTON7.illuminate(true);
+        this.Buttons.BUTTON8.illuminate(true);
+        break;
+    case VestaxVCI400.ModeEnum.SAMPLER:
+        this.onSampler1DurationChanged(engine.getValue("[Sampler1]", "track_samples"), this.group);
+        this.onSampler2DurationChanged(engine.getValue("[Sampler2]", "track_samples"), this.group);
+        this.onSampler3DurationChanged(engine.getValue("[Sampler3]", "track_samples"), this.group);
+        this.onSampler4DurationChanged(engine.getValue("[Sampler4]", "track_samples"), this.group);
+        this.Buttons.BUTTON5.illuminate(false);
+        this.Buttons.BUTTON6.illuminate(false);
+        this.Buttons.BUTTON7.illuminate(false);
+        this.Buttons.BUTTON8.illuminate(false);
+        break;
+    }
 }
 
 VestaxVCI400.Deck.prototype.onModeHotcue = function(value) {
     if(value == VestaxVCI400.ButtonState.pressed) {
         this.setButtonMode(VestaxVCI400.ModeEnum.HOTCUE);
-
-        this.onHotCueChanged(this.Buttons.BUTTON5, engine.getValue(this.group, "hotcue_1_enabled"));
-        this.onHotCueChanged(this.Buttons.BUTTON6, engine.getValue(this.group, "hotcue_2_enabled"));
-        this.onHotCueChanged(this.Buttons.BUTTON7, engine.getValue(this.group, "hotcue_3_enabled"));
-        this.onHotCueChanged(this.Buttons.BUTTON8, engine.getValue(this.group, "hotcue_4_enabled"));
-//        this.onHotCueChanged(this.Buttons.BUTTON5, engine.getValue(this.group, "hotcue_5_enabled"));
-//        this.onHotCueChanged(this.Buttons.BUTTON6, engine.getValue(this.group, "hotcue_6_enabled"));
-//        this.onHotCueChanged(this.Buttons.BUTTON7, engine.getValue(this.group, "hotcue_7_enabled"));
-//        this.onHotCueChanged(this.Buttons.BUTTON8, engine.getValue(this.group, "hotcue_8_enabled"));
     }
 }
 
 VestaxVCI400.Deck.prototype.onModeLoop = function(value) {
     if(value == VestaxVCI400.ButtonState.pressed) {
         this.setButtonMode(VestaxVCI400.ModeEnum.LOOP);
-
-        this.Buttons.BUTTON5.illuminate(true);
-        this.Buttons.BUTTON6.illuminate(true);
-        this.Buttons.BUTTON7.illuminate(true);
-        this.Buttons.BUTTON8.illuminate(true);
-//        this.Buttons.BUTTON5.illuminate(true);
-//        this.Buttons.BUTTON6.illuminate(true);
-//        this.Buttons.BUTTON7.illuminate(true);
-//        this.Buttons.BUTTON8.illuminate(true);
     }
 }
 
 VestaxVCI400.Deck.prototype.onModeRoll = function(value) {
     if(value == VestaxVCI400.ButtonState.pressed) {
         this.setButtonMode(VestaxVCI400.ModeEnum.ROLL);
-        this.Buttons.BUTTON5.illuminate(true);
-        this.Buttons.BUTTON6.illuminate(true);
-        this.Buttons.BUTTON7.illuminate(true);
-        this.Buttons.BUTTON8.illuminate(true);
-//        this.Buttons.BUTTON5.illuminate(true);
-//        this.Buttons.BUTTON6.illuminate(true);
-//        this.Buttons.BUTTON7.illuminate(true);
-//        this.Buttons.BUTTON8.illuminate(true);
     }
 }
 
 VestaxVCI400.Deck.prototype.onModeSampler = function(value) {
     if(value == VestaxVCI400.ButtonState.pressed) {
         this.setButtonMode(VestaxVCI400.ModeEnum.SAMPLER);
-        this.onSampler1DurationChanged(engine.getValue("[Sampler1]", "track_samples"), this.group);
-        this.onSampler2DurationChanged(engine.getValue("[Sampler2]", "track_samples"), this.group);
-        this.onSampler3DurationChanged(engine.getValue("[Sampler3]", "track_samples"), this.group);
-        this.onSampler4DurationChanged(engine.getValue("[Sampler4]", "track_samples"), this.group);
-//        this.Buttons.BUTTON5.illuminate(false);
-//        this.Buttons.BUTTON6.illuminate(false);
-//        this.Buttons.BUTTON7.illuminate(false);
-//        this.Buttons.BUTTON8.illuminate(false);
    }
 }
 

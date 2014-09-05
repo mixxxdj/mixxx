@@ -88,6 +88,15 @@
                 </options>
             </control>
             <control>
+                <group>[Channel3]</group>
+                <key>VestaxVCI400.deckSwitch</key>
+                <status>0x92</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel4]</group>
                 <key>vinylcontrol_enabled</key>
                 <description>MIDI Learned from 16 messages.</description>
@@ -109,6 +118,24 @@
             </control>
             <control>
                 <group>[Channel4]</group>
+                <key>VestaxVCI400.deckSwitch</key>
+                <status>0x93</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>VestaxVCI400.deckSwitch</key>
+                <status>0x92</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
                 <key>vinylcontrol_mode</key>
                 <description>MIDI Learned from 8 messages.</description>
                 <status>0x95</status>
@@ -125,6 +152,15 @@
                 <midino>0x23</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>VestaxVCI400.deckSwitch</key>
+                <status>0x93</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -819,12 +855,12 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>keylock</key>
+                <key>VestaxVCI400.button4Activate</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x92</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -848,22 +884,22 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>keylock</key>
+                <key>VestaxVCI400.button4Activate</key>
                 <description>MIDI Learned from 16 messages.</description>
                 <status>0x93</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>quantize</key>
+                <key>VestaxVCI400.button3Activate</key>
                 <description>MIDI Learned from 6 messages.</description>
                 <status>0x92</status>
                 <midino>0x09</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -878,27 +914,27 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>keylock</key>
+                <key>VestaxVCI400.button4Activate</key>
                 <description>MIDI Learned from 12 messages.</description>
                 <status>0x94</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>quantize</key>
+                <key>VestaxVCI400.button3Activate</key>
                 <description>MIDI Learned from 18 messages.</description>
                 <status>0x93</status>
                 <midino>0x09</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.brake</key>
+                <key>VestaxVCI400.button2Activate</key>
                 <status>0x92</status>
                 <midino>0x08</midino>
                 <options>
@@ -907,52 +943,70 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>keylock</key>
+                <key>VestaxVCI400.button4Activate</key>
                 <description>MIDI Learned from 22 messages.</description>
                 <status>0x95</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>quantize</key>
+                <key>VestaxVCI400.button3Activate</key>
                 <description>MIDI Learned from 10 messages.</description>
                 <status>0x94</status>
                 <midino>0x09</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>eject</key>
-                <description>MIDI Learned from 2 messages.</description>
-                <status>0x92</status>
-                <midino>0x07</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>quantize</key>
-                <description>MIDI Learned from 24 messages.</description>
-                <status>0x95</status>
-                <midino>0x09</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>eject</key>
+                <key>VestaxVCI400.button2Activate</key>
+                <status>0x93</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>VestaxVCI400.button1Activate</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x92</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>VestaxVCI400.button3Activate</key>
+                <description>MIDI Learned from 24 messages.</description>
+                <status>0x95</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>VestaxVCI400.button2Activate</key>
+                <status>0x94</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>VestaxVCI400.button1Activate</key>
                 <description>MIDI Learned from 14 messages.</description>
                 <status>0x93</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -966,13 +1020,22 @@
                 </options>
             </control>
             <control>
+                <group>[Channel4]</group>
+                <key>VestaxVCI400.button2Activate</key>
+                <status>0x95</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel3]</group>
-                <key>eject</key>
+                <key>VestaxVCI400.button1Activate</key>
                 <description>MIDI Learned from 26 messages.</description>
                 <status>0x94</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -997,12 +1060,12 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>eject</key>
+                <key>VestaxVCI400.button1Activate</key>
                 <description>MIDI Learned from 20 messages.</description>
                 <status>0x95</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1040,15 +1103,6 @@
                 <key>VestaxVCI400.shiftActivate</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.deckSwitch</key>
-                <status>0xB2</status>
-                <midino>0x23</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1105,24 +1159,6 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.deckSwitch</key>
-                <status>0xB3</status>
-                <midino>0x23</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>VestaxVCI400.deckSwitch</key>
-                <status>0xB2</status>
-                <midino>0x22</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
                 <key>pfl</key>
                 <description>MIDI Learned from 70 messages.</description>
                 <status>0x95</status>
@@ -1169,15 +1205,6 @@
                 <midino>0x01</midino>
                 <options>
                     <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>VestaxVCI400.deckSwitch</key>
-                <status>0xB3</status>
-                <midino>0x22</midino>
-                <options>
-                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1301,7 +1328,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>enabled</key>
+                <key>group_[Master]_enable</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9C</status>
                 <midino>0x08</midino>
@@ -1311,7 +1338,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>enabled</key>
+                <key>group_[Master]_enable</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x9D</status>
                 <midino>0x08</midino>
@@ -1330,23 +1357,75 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>enabled</key>
-                <description>MIDI Learned from 16 messages.</description>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx1ToggleButton4</key>
                 <status>0x9C</status>
-                <midino>0x01</midino>
+                <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>enabled</key>
-                <description>MIDI Learned from 18 messages.</description>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx1ToggleButton3</key>
+                <status>0x9C</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx2ToggleButton4</key>
+                <status>0x9D</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx1ToggleButton2</key>
+                <status>0x9C</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx2ToggleButton3</key>
+                <status>0x9D</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx1ToggleButton1</key>
+                <status>0x9C</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx2ToggleButton2</key>
+                <status>0x9D</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>VestaxVCI400.fx2ToggleButton1</key>
                 <status>0x9D</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1899,83 +1978,146 @@
         </controls>
         <outputs>
             <output>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <status>0x92</status>
-                <midino>0x05</midino>
-                <minimum>0.1</minimum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
-                <key>cue_default</key>
+                <key>play_indicator</key>
                 <status>0x94</status>
-                <midino>0x20</midino>
+                <midino>0x21</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>cue_default</key>
+                <key>play_indicator</key>
                 <status>0x94</status>
-                <midino>0x1C</midino>
+                <midino>0x1D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Master]_enable</key>
+                <status>0x9D</status>
+                <midino>0x08</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>sync_enabled</key>
+                <key>reverse</key>
+                <status>0x95</status>
+                <midino>0x23</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>reverse</key>
+                <status>0x95</status>
+                <midino>0x1F</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>reverse</key>
+                <status>0x95</status>
+                <midino>0x1B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>next_chain</key>
+                <status>0x9C</status>
+                <midino>0x09</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pfl</key>
                 <status>0x93</status>
+                <midino>0x05</midino>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x92</status>
                 <midino>0x01</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>vinylcontrol_enabled</key>
+                <key>vinylcontrol_mode</key>
                 <status>0x92</status>
+                <midino>0x1D</midino>
+                <maximum>0.2</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x93</status>
+                <midino>0x1B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x93</status>
+                <midino>0x19</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>vinylcontrol_enabled</key>
+                <status>0x95</status>
+                <midino>0x25</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x93</status>
+                <midino>0x03</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>play_indicator</key>
+                <status>0x95</status>
+                <midino>0x21</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>play_indicator</key>
+                <status>0x95</status>
+                <midino>0x1D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel4]_enable</key>
+                <status>0x95</status>
+                <midino>0x03</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>reverse</key>
+                <status>0x94</status>
+                <midino>0x26</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>reverse</key>
+                <status>0x94</status>
+                <midino>0x22</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>reverse</key>
+                <status>0x94</status>
                 <midino>0x1E</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <status>0x93</status>
-                <midino>0x05</midino>
-                <minimum>0.1</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>quantize</key>
-                <status>0x92</status>
-                <midino>0x09</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>sync_enabled</key>
-                <status>0x92</status>
-                <midino>0x01</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>keylock</key>
-                <status>0x95</status>
-                <midino>0x0A</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>vinylcontrol_enabled</key>
-                <status>0x95</status>
-                <midino>0x25</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel4]_enable</key>
-                <status>0x95</status>
-                <midino>0x03</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
                 <key>pfl</key>
                 <status>0x94</status>
@@ -1984,37 +2126,30 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>quantize</key>
-                <status>0x93</status>
-                <midino>0x09</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
                 <key>vinylcontrol_mode</key>
-                <status>0x92</status>
+                <status>0x93</status>
                 <midino>0x1D</midino>
                 <maximum>0.2</maximum>
             </output>
             <output>
-                <group>[Channel4]</group>
-                <key>sync_enabled</key>
-                <status>0x95</status>
-                <midino>0x01</midino>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <status>0x92</status>
+                <midino>0x1B</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel3]_enable</key>
-                <status>0x94</status>
-                <midino>0x03</midino>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <status>0x92</status>
+                <midino>0x19</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel3]</group>
-                <key>keylock</key>
-                <status>0x94</status>
-                <midino>0x0A</midino>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x93</status>
+                <midino>0x04</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2025,10 +2160,31 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel3]</group>
-                <key>eject</key>
-                <status>0x94</status>
-                <midino>0x07</midino>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <status>0x92</status>
+                <midino>0x1C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <status>0x92</status>
+                <midino>0x1A</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <status>0x95</status>
+                <midino>0x01</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x92</status>
+                <midino>0x03</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2036,83 +2192,6 @@
                 <key>group_[Channel4]_enable</key>
                 <status>0x95</status>
                 <midino>0x04</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>pfl</key>
-                <status>0x95</status>
-                <midino>0x05</midino>
-                <minimum>0.1</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>play_indicator</key>
-                <status>0x94</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>play_indicator</key>
-                <status>0x94</status>
-                <midino>0x1D</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>vinylcontrol_mode</key>
-                <status>0x93</status>
-                <midino>0x1D</midino>
-                <maximum>0.2</maximum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>keylock</key>
-                <status>0x93</status>
-                <midino>0x0A</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>quantize</key>
-                <status>0x94</status>
-                <midino>0x09</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>sync_enabled</key>
-                <status>0x94</status>
-                <midino>0x01</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel3]_enable</key>
-                <status>0x94</status>
-                <midino>0x04</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>eject</key>
-                <status>0x95</status>
-                <midino>0x07</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>play_indicator</key>
-                <status>0x95</status>
-                <midino>0x21</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>play_indicator</key>
-                <status>0x95</status>
-                <midino>0x1D</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2123,24 +2202,38 @@
                 <maximum>0.2</maximum>
             </output>
             <output>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>next_chain</key>
-                <status>0x9D</status>
-                <midino>0x09</midino>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <status>0x95</status>
+                <midino>0x20</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>quantize</key>
+                <key>cue_default</key>
                 <status>0x95</status>
-                <midino>0x09</midino>
+                <midino>0x1C</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>keylock</key>
-                <status>0x92</status>
-                <midino>0x0A</midino>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x95</status>
+                <midino>0x05</midino>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>vinylcontrol_enabled</key>
+                <status>0x93</status>
+                <midino>0x1E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel3]_enable</key>
+                <status>0x94</status>
+                <midino>0x03</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2165,31 +2258,31 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
+                <group>[Channel2]</group>
                 <key>play_indicator</key>
-                <status>0x92</status>
+                <status>0x93</status>
                 <midino>0x1C</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
+                <group>[Channel2]</group>
                 <key>play_indicator</key>
-                <status>0x92</status>
+                <status>0x93</status>
                 <midino>0x1A</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>next_chain</key>
-                <status>0x9C</status>
-                <midino>0x09</midino>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <status>0x94</status>
+                <midino>0x01</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>eject</key>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
                 <status>0x92</status>
-                <midino>0x07</midino>
+                <midino>0x04</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2200,24 +2293,52 @@
                 <maximum>0.2</maximum>
             </output>
             <output>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>enabled</key>
-                <status>0x9D</status>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x94</status>
+                <midino>0x20</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x94</status>
+                <midino>0x1C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Master]_enable</key>
+                <status>0x9C</status>
                 <midino>0x08</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>cue_default</key>
-                <status>0x93</status>
-                <midino>0x1B</midino>
+                <group>[Channel1]</group>
+                <key>vinylcontrol_enabled</key>
+                <status>0x92</status>
+                <midino>0x1E</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>cue_default</key>
-                <status>0x93</status>
-                <midino>0x19</midino>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>next_chain</key>
+                <status>0x9D</status>
+                <midino>0x09</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x92</status>
+                <midino>0x05</midino>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel3]_enable</key>
+                <status>0x94</status>
+                <midino>0x04</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2243,135 +2364,9 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>play_indicator</key>
+                <key>sync_enabled</key>
                 <status>0x93</status>
-                <midino>0x1C</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>play_indicator</key>
-                <status>0x93</status>
-                <midino>0x1A</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>eject</key>
-                <status>0x93</status>
-                <midino>0x07</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel1]_enable</key>
-                <status>0x92</status>
-                <midino>0x03</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel2]_enable</key>
-                <status>0x93</status>
-                <midino>0x03</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>enabled</key>
-                <status>0x9C</status>
-                <midino>0x08</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>cue_default</key>
-                <status>0x92</status>
-                <midino>0x1B</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>cue_default</key>
-                <status>0x92</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>reverse</key>
-                <status>0x95</status>
-                <midino>0x23</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>reverse</key>
-                <status>0x95</status>
-                <midino>0x1F</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>reverse</key>
-                <status>0x95</status>
-                <midino>0x1B</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel1]_enable</key>
-                <status>0x92</status>
-                <midino>0x04</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>cue_default</key>
-                <status>0x95</status>
-                <midino>0x20</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>cue_default</key>
-                <status>0x95</status>
-                <midino>0x1C</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel2]_enable</key>
-                <status>0x93</status>
-                <midino>0x04</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>reverse</key>
-                <status>0x94</status>
-                <midino>0x26</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>reverse</key>
-                <status>0x94</status>
-                <midino>0x22</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>reverse</key>
-                <status>0x94</status>
-                <midino>0x1E</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>vinylcontrol_enabled</key>
-                <status>0x93</status>
-                <midino>0x1E</midino>
+                <midino>0x01</midino>
                 <minimum>0.5</minimum>
             </output>
         </outputs>
