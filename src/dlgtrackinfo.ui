@@ -574,6 +574,13 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="btnOpenFileBrowser">
+           <property name="text">
+            <string>Open in File Browser</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>

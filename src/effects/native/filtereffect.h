@@ -51,6 +51,7 @@ class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
                       FilterGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatures);
 
   private:
@@ -60,7 +61,8 @@ class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
 
     void applyFilters(FilterGroupState* pState,
                       const CSAMPLE* pIn, CSAMPLE* pOut, CSAMPLE* pTempBuffer,
-                      const int numSamples, double depth, CSAMPLE bandpassGain);
+                      const unsigned int numSamples, const unsigned int sampleRate,
+                      double depth, CSAMPLE bandpassGain);
 
     EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pBandpassWidthParameter;
