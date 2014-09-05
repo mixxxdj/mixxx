@@ -234,10 +234,6 @@ class TrackInfoObject : public QObject {
 
     bool isDirty();
 
-    // Signals to the creator of this TrackInfoObject to save the Track as it
-    // may be deleted.
-    void doSave();
-
     // Returns true if the track location has changed
     bool locationChanged();
 
@@ -276,7 +272,7 @@ class TrackInfoObject : public QObject {
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
     void clean(TrackInfoObject* pTrack);
-    void save(TrackInfoObject* pTrack);
+    void deleted(TrackInfoObject* pTrack);
 
   private slots:
     void slotBeatsUpdated();
