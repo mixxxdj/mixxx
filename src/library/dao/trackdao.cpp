@@ -844,7 +844,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, "
-        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
+        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock, "
         "keys_version, keys_sub_version, keys "
         "FROM Library "
         "INNER JOIN track_locations "
