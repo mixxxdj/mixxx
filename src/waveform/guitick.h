@@ -14,13 +14,14 @@ class GuiTick : public QObject {
     GuiTick(QObject* pParent = NULL);
     ~GuiTick();
     void process();
-    static double cpuTime();
+    static double cpuTimeLastTick();
+    static double cpuTimeNow();
 
   private:
     ControlObject* m_pCOGuiTickTime;
     ControlObject* m_pCOGuiTick50ms;
 
-    PerformanceTimer m_cpuTimer;
+    static PerformanceTimer m_cpuTimer;
 
     double m_lastUpdateTime;
     static double m_cpuTime; // Stream Time in seconds
