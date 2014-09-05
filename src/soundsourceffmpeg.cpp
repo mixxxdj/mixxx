@@ -36,7 +36,7 @@
 static QMutex ffmpegmutex;
 
 #define SOUNDSOURCEFFMPEG_CACHESIZE 1000
-#define SOUNDSOURCEFFMPEG_POSDISTANCE ((1024 * 1000) / 4)
+#define SOUNDSOURCEFFMPEG_POSDISTANCE ((1024 * 1000) / 8)
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
     : Mixxx::SoundSource(filename)
@@ -65,11 +65,14 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     clearCache();
 
     if (m_pCodecCtx != NULL) {
+        qDebug() << "~SoundSourceFFmpeg(): Clear FFMPEG stuff";
         avcodec_close(m_pCodecCtx);
         avformat_close_input(&m_pFormatCtx);
+        av_free(m_pFormatCtx);
     }
 
     if (m_pResample != NULL) {
+        qDebug() << "~SoundSourceFFmpeg(): Delete FFMPEG Resampler";
         delete m_pResample;
     }
 
@@ -126,13 +129,36 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
     bool m_bUnique = false;
     int64_t l_lLastPacketPos = -1;
     int l_iError = 0;
+    int l_iFrameCount = 0;
 
     l_iCount = count;
 
     l_SPacket.data = NULL;
     l_SPacket.size = 0;
 
+
     while (l_iCount > 0) {
+        if (l_pFrame != NULL) {
+          l_iFrameCount --;
+// FFMPEG 2.2 3561060 anb beyond
+#if LIBAVCODEC_VERSION_INT >= 3561060
+            av_frame_unref(l_pFrame);
+            av_frame_free(&l_pFrame);
+// FFMPEG 0.11 and below
+#elif LIBAVCODEC_VERSION_INT <= 3544932
+            av_free(l_pFrame);
+// FFMPEG 1.0 - 2.1
+#else
+            avcodec_free_frame(&l_pFrame);
+#endif
+            l_pFrame = NULL;
+
+        }
+
+        if (l_iStop == true) {
+            break;
+        }
+        l_iFrameCount ++;
         av_init_packet(&l_SPacket);
 #if LIBAVCODEC_VERSION_INT < 3617792
         l_pFrame = avcodec_alloc_frame();
@@ -164,12 +190,14 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                     // we have so far.
                     qDebug() << "EOF!";
                     l_iStop = true;
+                    continue;
                 } else {
                     l_iRet = 0;
                     l_SObj = (struct ffmpegCacheObject *)malloc(sizeof(struct ffmpegCacheObject));
                     if (l_SObj == NULL) {
                         qDebug() << "SoundSourceFFmpeg::readFramesToCache: Not enough memory!";
-                        return false;
+                        l_iStop = true;
+                        continue;
                     }
                     memset(l_SObj, 0x00, sizeof(struct ffmpegCacheObject));
                     l_iRet = m_pResample->reSample(l_pFrame, &l_SObj->bytes);
@@ -234,22 +262,35 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                 }
             }
 
-// FFMPEG 0.11 54.11.100
-#if LIBAVCODEC_VERSION_INT > 3561060
-            av_frame_unref(l_pFrame);
-#else
-            av_free(l_pFrame);
-#endif
-            l_pFrame = NULL;
 
-            if (l_iStop == true) {
-                return false;
-            }
         } else {
             qDebug() << "SoundSourceFFmpeg::readFramesToCache: Packet too big or File end";
-            break;
+            l_iStop = true;
         }
+
     }
+
+    if (l_pFrame != NULL) {
+      l_iFrameCount --;
+// FFMPEG 2.2 3561060 anb beyond
+#if LIBAVCODEC_VERSION_INT >= 3561060
+          av_frame_unref(l_pFrame);
+          av_frame_free(&l_pFrame);
+// FFMPEG 0.11 and below
+#elif LIBAVCODEC_VERSION_INT <= 3544932
+          av_free(l_pFrame);
+// FFMPEG 1.0 - 2.1
+#else
+          avcodec_free_frame(&l_pFrame);
+#endif
+          l_pFrame = NULL;
+
+    }
+
+    if( l_iFrameCount > 0 ) {
+       qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " << l_iFrameCount;
+    }
+
     l_SObj = m_SCache.first();
     m_lCacheStartByte = l_SObj->startByte;
     l_SObj = m_SCache.last();
