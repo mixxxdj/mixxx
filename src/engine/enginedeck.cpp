@@ -98,8 +98,6 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
     // Apply pregain
     m_pPregain->process(pOut, iBufferSize);
-    // Filter the channel with EQs
-//    m_pFilter->process(pOut, iBufferSize);
     // Process effects enabled for this channel
     if (m_pEngineEffectsManager != NULL) {
         // This is out of date by a callback but some effects will want the RMS
