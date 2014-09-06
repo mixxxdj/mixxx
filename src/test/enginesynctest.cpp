@@ -1059,6 +1059,10 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
     ProcessBuffer();
     ProcessBuffer();
 
+    // Make sure we're actually going somewhere!
+    EXPECT_GT(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+              0);
+    // Buffers should be in sync.
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
               ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
 }
