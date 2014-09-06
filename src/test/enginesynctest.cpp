@@ -15,6 +15,7 @@
 #include "controlobject.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
+#include "track/beatfactory.h"
 
 
 class EngineSyncTest : public MockedEngineBackendTest {
@@ -1028,4 +1029,36 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
     EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
                     ControlObject::getControl(
                             ConfigKey(m_sGroup2, "rate"))->get());
+}
+
+TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
+    // Confirm that a rate change in an explicit master is instantly communicated
+    // to followers.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(128.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+    // Make Channel2 master to weed out any channel ordering issues.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_MASTER);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
+    // Exaggerate the effect with a high rate.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(10.0));
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+              ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+
+    ProcessBuffer();
+    ProcessBuffer();
+    ProcessBuffer();
+
+    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
+              ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
 }
