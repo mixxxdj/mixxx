@@ -19,6 +19,7 @@
 #include "playermanager.h"
 #include "util/dnd.h"
 #include "dlgpreflibrary.h"
+#include "waveform/guitick.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -156,20 +157,17 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
 
-    if (m_bLastCoverLoaded) {
-        // load default cover art
-        emit(loadCoverArt("", "", 0));
-        // don't try to load and search covers, drawing only
-        // covers which are already in the QPixmapCache.
-        emit(onlyCachedCoverArt(true));
-    }
-    m_bLastCoverLoaded = false;
-    m_lastSelection = m_pCOTGuiTickTime->get();
-    update();
+    slotLoadCoverArt();
+
+    double currentTime = GuiTick::cpuTimeNow();
+    qDebug() << "WTrackTableView::selectionChanged()" << currentTime - m_lastSelection;
+    m_lastSelection = currentTime;
+
+    QTableView::selectionChanged(selected, deselected);
 }
 
 void WTrackTableView::slotGuiTickTime(double cpuTime) {
-    // if the user is stoped in the same row for more than 0.05s,
+    // if the user is stopped in the same row for more than 0.05s,
     // we load the cover art once.
     if (!m_bLastCoverLoaded) {
         if (cpuTime >= m_lastSelection + 0.05) {
@@ -201,7 +199,6 @@ void WTrackTableView::slotLoadCoverArt() {
     emit(loadCoverArt(coverLocation, md5Hash, trackId));
     // it will allows CoverCache to load and search covers normally
     emit(onlyCachedCoverArt(false));
-    update();
 }
 
 // slot
