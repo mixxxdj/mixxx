@@ -229,7 +229,8 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
 
-    QSet<EngineChannel*> processed_channels;
+    EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
+    QList<ChannelInfo*> processed_channels;
     it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
@@ -254,15 +255,25 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
-        // Process the buffer if necessary
+        // If necessary, add the channel to the list of buffers to process.
         if (needsProcessing) {
-            processed_channels.insert(pChannel);
-            pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
-
-            if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                    pChannel->isTalkover()) {
-                m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+            if (pChannel == pMasterChannel) {
+                // If this is the sync master, it should be processed first.
+                processed_channels.prepend(pChannelInfo);
+            } else {
+                processed_channels.append(pChannelInfo);
             }
+        }
+    }
+
+    // Now that the list is built and ordered, do the processing.
+    foreach (ChannelInfo* pChannelInfo, processed_channels) {
+        EngineChannel* pChannel = pChannelInfo->m_pChannel;
+        pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
+
+        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                pChannel->isTalkover()) {
+            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
     }
 
@@ -270,8 +281,8 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    foreach (EngineChannel* channel, processed_channels) {
-        channel->postProcess(iBufferSize);
+    foreach (ChannelInfo* pChannelInfo, processed_channels) {
+        pChannelInfo->m_pChannel->postProcess(iBufferSize);
     }
 }
 

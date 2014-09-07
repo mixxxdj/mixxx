@@ -381,6 +381,10 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
         // No beat information.
         return 1.0;
     }
+    if (getSyncMode() == SYNC_MASTER) {
+        m_dSyncAdjustment = 1.0;
+        return m_dSyncAdjustment;
+    }
     if (m_pReverseButton->get()) {
         // If we are going backwards, we can't do the math correctly.
         m_dSyncAdjustment = 1.0;
