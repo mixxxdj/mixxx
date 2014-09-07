@@ -25,7 +25,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void slotEnableWidget(bool);
     void slotLoadCoverArt(const QString& coverLocation,
                           const QString& md5Hash,
-                          int trackId);
+                          int trackId, bool cachedOnly);
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);

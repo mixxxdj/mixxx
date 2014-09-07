@@ -172,6 +172,8 @@ void WTrackTableView::slotGuiTickTime(double cpuTime) {
     if (!m_bLastCoverLoaded) {
         if (cpuTime >= m_lastSelection + 0.05) {
             slotLoadCoverArt();
+            // it will allows CoverCache to load and search covers normally
+            emit(onlyCachedCoverArt(false));
             m_bLastCoverLoaded = true;
         }
     }
@@ -196,9 +198,7 @@ void WTrackTableView::slotLoadCoverArt() {
                                 m_iCoverLocationColumn).data().toString();
         }
     }
-    emit(loadCoverArt(coverLocation, md5Hash, trackId));
-    // it will allows CoverCache to load and search covers normally
-    emit(onlyCachedCoverArt(false));
+    emit(loadCoverArt(coverLocation, md5Hash, trackId, false));
 }
 
 // slot

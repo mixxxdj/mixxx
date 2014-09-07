@@ -96,7 +96,7 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
 
 void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
                                  const QString& md5Hash,
-                                 int trackId) {
+                                 int trackId, bool cachedOnly) {
     if (!m_bEnableWidget) {
         return;
     }
@@ -157,7 +157,7 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
         setMinimumSize(0, parentWidget()->height() / 3);
         slotLoadCoverArt(m_lastRequestedCover.first,
                          m_lastRequestedCover.second,
-                         m_lastRequestedTrackId);
+                         m_lastRequestedTrackId, true);
      } else {
         m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
         setMinimumSize(0, 20);
