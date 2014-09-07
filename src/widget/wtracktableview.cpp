@@ -32,7 +32,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_DlgTagFetcher(NULL),
           m_sorting(sorting),
           m_iCoverLocationColumn(-1),
-          m_iMd5Column(-1) {
+          m_iMd5Column(-1),
+          m_lastSelection(0.0),
+          m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
     m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
@@ -90,9 +92,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
 
-    // control the delay to load the next cover art
-    m_lastSelection = 0.0;
-    m_bLastCoverLoaded = true;
     m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTickTime(double)));
@@ -142,44 +141,43 @@ WTrackTableView::~WTrackTableView() {
     delete m_pCOTGuiTickTime;
 }
 
-void WTrackTableView::slotScrollValueChanged(int) {
-    if (m_bLastCoverLoaded) {
+void WTrackTableView::enableCachedOnly() {
+    if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
         emit(onlyCachedCoverArt(true));
+        m_loadCachedOnly = true;
     }
-    m_bLastCoverLoaded = false;
-    m_lastSelection = m_pCOTGuiTickTime->get();
+    double currentTime = GuiTick::cpuTimeNow();
+    qDebug() << "WTrackTableView::enableCachedOnly()" << currentTime - m_lastSelection;
+    m_lastSelection = currentTime;
+}
+
+void WTrackTableView::slotScrollValueChanged(int) {
+    enableCachedOnly();
 }
 
 void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
-    Q_UNUSED(selected);
-    Q_UNUSED(deselected);
-
-    slotLoadCoverArt();
-
-    double currentTime = GuiTick::cpuTimeNow();
-    qDebug() << "WTrackTableView::selectionChanged()" << currentTime - m_lastSelection;
-    m_lastSelection = currentTime;
+    enableCachedOnly();
+    emitLoadCoverArt(true);
 
     QTableView::selectionChanged(selected, deselected);
 }
 
 void WTrackTableView::slotGuiTickTime(double cpuTime) {
-    // if the user is stopped in the same row for more than 0.05s,
-    // we load the cover art once.
-    if (!m_bLastCoverLoaded) {
-        if (cpuTime >= m_lastSelection + 0.05) {
-            slotLoadCoverArt();
-            // it will allows CoverCache to load and search covers normally
-            emit(onlyCachedCoverArt(false));
-            m_bLastCoverLoaded = true;
-        }
+    // if the user is stopped in the same row for more than 0.2 s,
+    // we load uncached cover arts as well.
+    if (m_loadCachedOnly &&
+            cpuTime >= m_lastSelection + 0.2) {
+        emitLoadCoverArt(false);
+        // it will allows CoverCache to load and search covers normally
+        emit(onlyCachedCoverArt(false));
+        m_loadCachedOnly = false;
     }
 }
 
-void WTrackTableView::slotLoadCoverArt() {
+void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
     if (m_iCoverLocationColumn < 0 || m_iMd5Column < 0) {
         return;
     }
@@ -198,7 +196,7 @@ void WTrackTableView::slotLoadCoverArt() {
                                 m_iCoverLocationColumn).data().toString();
         }
     }
-    emit(loadCoverArt(coverLocation, md5Hash, trackId, false));
+    emit(loadCoverArt(coverLocation, md5Hash, trackId, cachedOnly));
 }
 
 // slot

@@ -110,7 +110,9 @@ void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
 
     m_loadedCover = CoverArtCache::instance()->requestPixmap(trackId,
                                                              coverLocation,
-                                                             md5Hash);
+                                                             md5Hash,
+                                                             QSize(0,0),
+                                                             cachedOnly);
     if (m_loadedCover.isNull()) {
         m_loadedCover = CoverArtCache::instance()->getDefaultCoverLocation();
     }

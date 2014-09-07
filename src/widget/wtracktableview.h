@@ -82,7 +82,8 @@ class WTrackTableView : public WLibraryTableView {
     void dropEvent(QDropEvent * event);
     void lockBpm(bool lock);
 
-    void slotLoadCoverArt();
+    void emitLoadCoverArt(bool cachedOnly);
+    void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected);
 
@@ -156,7 +157,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Control the delay to load a cover art.
     double m_lastSelection;
-    bool m_bLastCoverLoaded;
+    bool m_loadCachedOnly;
     ControlObjectThread* m_pCOTGuiTickTime;
 };
 
