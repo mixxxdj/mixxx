@@ -13,6 +13,7 @@
 
 #include "configobject.h"
 #include "controlobject.h"
+#include "engine/sync/synccontrol.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
 #include "track/beatfactory.h"
@@ -1068,6 +1069,7 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
 }
 
 TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
+    qDebug() << "SET FIle BPMSS????";
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(70);
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
@@ -1080,14 +1082,36 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     // Make Channel2 master to weed out any channel ordering issues.
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_MASTER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
-    // Exaggerate the effect with a high rate.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(10.0));
+//    qDebug() << "set rate~~~~~~~~~~~~~~~~~~~~`";
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    qDebug() << "PROCESS~~~~~~~~~~~~~~~~~~~";
+    ProcessBuffer();
 
+    EXPECT_EQ(0.5,
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+    EXPECT_EQ(1.0,
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+    ProcessBuffer();
+    ProcessBuffer();
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
-              ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+              ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get() * 2);
+
+    // Now switch master and slave and check again.
+    qDebug() << "SWITCH";
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ProcessBuffer();
+
+    EXPECT_EQ(1.0,
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+    EXPECT_EQ(2.0,
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+
+    // Exaggerate the effect with a high rate.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(5.0));
 
     ProcessBuffer();
     ProcessBuffer();
@@ -1096,3 +1120,27 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
               ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get() * 2);
 }
+
+TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
+    qDebug() << "SET FIle BPMSS????";
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(70);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+    // Make Channel2 master to weed out any channel ordering issues.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
+//    qDebug() << "set rate~~~~~~~~~~~~~~~~~~~~`";
+
+//    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+//    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    ASSERT_FLOAT_EQ(140.0,
+                ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+}
+

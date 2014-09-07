@@ -196,7 +196,7 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
-    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
 
     SyncMode syncMode = pSyncable->getSyncMode();
     if (syncMode == SYNC_NONE) {

@@ -92,13 +92,13 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setBpm(double bpm) {
-    //qDebug() << "InternalClock::setBpm" << bpm;
+    qDebug() << "InternalClock::setBpm" << bpm;
     m_pClockBpm->set(bpm);
     updateBeatLength(m_iOldSampleRate, bpm);
 }
 
 void InternalClock::setInstantaneousBpm(double bpm) {
-    //qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
+    qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
     // Do nothing.
     Q_UNUSED(bpm);
 }

@@ -98,6 +98,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     // When syncing, sometimes it's better to match half or double the
     // master bpm.
+    FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     double m_syncBpmMultiplier;
 
 

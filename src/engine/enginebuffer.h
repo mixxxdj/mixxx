@@ -246,6 +246,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
+    FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;

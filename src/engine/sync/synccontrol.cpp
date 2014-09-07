@@ -111,6 +111,8 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
+    qDebug() << getGroup() << "RESET TO UNITY!";
+    m_syncBpmMultiplier = kBpmUnity;
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
@@ -127,6 +129,13 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
                       "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
+    if (mode == SYNC_MASTER) {
+        // Make sure all the slaves update based on our current rate.
+        slotRateChanged();
+        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
+        qDebug() << getGroup() << " setting2222 rate slider / bpm!! " << m_pFileBpm->get() << " " << dRate;
+        m_pBpm->set(m_pFileBpm->get() * dRate);
+    }
 }
 
 void SyncControl::requestSyncPhase() {
@@ -140,23 +149,26 @@ double SyncControl::getBeatDistance() const {
 void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.
-    qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
-    double myDistance = m_pSyncBeatDistance->get();
+    //qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
+//    double myDistance = m_pSyncBeatDistance->get();
     if (m_syncBpmMultiplier == kBpmDouble) {
-        beatDistance -= 0.5;
+        if (beatDistance >= 0.5) {
+            beatDistance -= 0.5;
+        }
         beatDistance *= 2.0;
-        qDebug() << "ADJUST DISTANCE " << beatDistance;
+//        qDebug() << getGroup() << "ADJUST DISTANCE x2 " << beatDistance;
     } else if (m_syncBpmMultiplier == kBpmHalf) {
         beatDistance /= 2.0;
-        if (myDistance >= 0.5) {
-            beatDistance += 0.5;
-        }
-        qDebug() << "ADJUST DISTANCE " << beatDistance;
+//        if (myDistance >= 0.5) {
+//            beatDistance += 0.5;
+//        }
+//        qDebug() << getGroup() << "ADJUST DISTANCE /2 " << beatDistance;
     }
     m_pBpmControl->setTargetBeatDistance(beatDistance);
 }
 
 double SyncControl::getBpm() const {
+    qDebug() << getGroup() << " asked for bpm " << m_pBpm->get();
     return m_pBpm->get();
 }
 
@@ -178,7 +190,7 @@ double SyncControl::determineBpmMultiplier(double targetBpm) const {
 }
 
 void SyncControl::setBpm(double bpm) {
-    //qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
+    qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -193,6 +205,7 @@ void SyncControl::setBpm(double bpm) {
     double fileBpm = m_pFileBpm->get();
     if (fileBpm > 0.0) {
         m_syncBpmMultiplier = determineBpmMultiplier(bpm);
+        qDebug() << getGroup() << "SET MULTIPLIER " << m_syncBpmMultiplier;
         double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
                 / m_pRateDirection->get() / m_pRateRange->get();
         m_pBpmControl->setSyncBpmMultiplier(m_syncBpmMultiplier);
@@ -221,6 +234,7 @@ bool SyncControl::isPlaying() const {
 
 void SyncControl::trackLoaded(TrackPointer pTrack) {
     Q_UNUSED(pTrack);
+    m_syncBpmMultiplier = kBpmUnity;
     if (getSyncMode() == SYNC_MASTER) {
         // If we loaded a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);

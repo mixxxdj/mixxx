@@ -135,6 +135,7 @@ double BpmControl::getBpm() const {
 }
 
 void BpmControl::slotFileBpmChanged(double bpm) {
+    qDebug() << "FILE BPM NOW " << bpm;
     Q_UNUSED(bpm);
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
@@ -686,6 +687,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    qDebug() << getGroup() << " setting rate slider / bpm!! " << m_pFileBpm->get() << " " << dRate;
     m_pEngineBpm->set(m_pFileBpm->get() * dRate);
 }
 
