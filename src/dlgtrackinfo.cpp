@@ -212,8 +212,10 @@ void DlgTrackInfo::setCoverArt(QPixmap original)
 {
     QPixmap scaled = scaledCoverArt(original);
     coverArt->setPixmap(scaled);
-    coverArt->setMinimumSize(scaled.size());
-    coverArt->setMaximumSize(scaled.size());
+    QSize frameSize = scaled.size();
+    frameSize += QSize(2,2); // margin
+    coverArt->setMinimumSize(frameSize);
+    coverArt->setMaximumSize(frameSize);
 }
 
 QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
