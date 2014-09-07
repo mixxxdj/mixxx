@@ -40,6 +40,7 @@ class BpmControl : public EngineControl {
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
+    void setSyncBpmMultiplier(double multiplier);
     double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
@@ -134,6 +135,7 @@ class BpmControl : public EngineControl {
     double m_dSyncTargetBeatDistance;
     double m_dSyncInstantaneousBpm;
     double m_dSyncAdjustment;
+    double m_dSyncBpmMultiplier;
     double m_dUserOffset;
 
     TapFilter m_tapFilter;

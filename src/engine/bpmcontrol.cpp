@@ -9,6 +9,7 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
+#include "engine/sync/synccontrol.h"
 #include "visualplayposition.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
@@ -26,6 +27,7 @@ BpmControl::BpmControl(const char* _group,
         m_dSyncTargetBeatDistance(0.0),
         m_dSyncInstantaneousBpm(0.0),
         m_dSyncAdjustment(1.0),
+        m_dSyncBpmMultiplier(1.0),
         m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
@@ -328,8 +330,6 @@ bool BpmControl::syncTempo() {
 }
 
 double BpmControl::getSyncedRate() const {
-    // TODO: let's ignore x2, /2 issues for now
-    // This is reproduced from bpmcontrol::syncTempo -- should break this out
     if (m_pFileBpm->get() == 0.0) {
         // XXX TODO: what to do about this case
         return 1.0;
@@ -412,6 +412,15 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     }
 
     double master_percentage = m_dSyncTargetBeatDistance;
+//    if (m_dSyncBpmMultiplier == SyncControl::kBpmDouble) {
+//        master_percentage -= 0.5;
+//        master_percentage *= 2.0;
+//    } else if (m_dSyncBpmMultiplier == SyncControl::kBpmHalf) {
+//        master_percentage /= 2.0;
+//        if (my_percentage >= 0.5) {
+//            master_percentage += 0.5;
+//        }
+//    }
 
     // Either shortest distance is directly to the master or backwards.
 
@@ -556,6 +565,16 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     if (getSyncMode() == SYNC_FOLLOWER) {
         // If we're a slave, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance;
+//        if (m_dSyncBpmMultiplier == SyncControl::kBpmDouble) {
+//            dOtherBeatFraction -= 0.5;
+//            dOtherBeatFraction *= 2.0;
+//        } else if (m_dSyncBpmMultiplier == SyncControl::kBpmHalf) {
+//            dOtherBeatFraction /= 2.0;
+//            // ????
+////            if (my_percentage >= 0.5) {
+////                dOtherBeatFraction += 0.5;
+////            }
+//        }
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
@@ -744,6 +763,10 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
+}
+
+void BpmControl::setSyncBpmMultiplier(double multiplier) {
+    m_dSyncBpmMultiplier = multiplier;
 }
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {

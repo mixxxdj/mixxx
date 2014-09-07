@@ -7,8 +7,13 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/ratecontrol.h"
+#include "util/math.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
+
+const double SyncControl::kBpmUnity = 1.0;
+const double SyncControl::kBpmHalf = 0.5;
+const double SyncControl::kBpmDouble = 2.0;
 
 SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
                          EngineChannel* pChannel, SyncableListener* pEngineSync)
@@ -18,7 +23,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
           m_pEngineSync(pEngineSync),
           m_pBpmControl(NULL),
           m_pRateControl(NULL),
-          m_bOldScratching(false) {
+          m_bOldScratching(false),
+          m_syncBpmMultiplier(kBpmUnity) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(pGroup, "play", this));
@@ -132,13 +138,43 @@ double SyncControl::getBeatDistance() const {
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
-    //qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
-    // Set the BpmControl target beat distance to beatDistance.
+    // Set the BpmControl target beat distance to beatDistance, adjusted by
+    // the multiplier if in effect.
+    qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
+    double myDistance = m_pSyncBeatDistance->get();
+    if (m_syncBpmMultiplier == kBpmDouble) {
+        beatDistance -= 0.5;
+        beatDistance *= 2.0;
+        qDebug() << "ADJUST DISTANCE " << beatDistance;
+    } else if (m_syncBpmMultiplier == kBpmHalf) {
+        beatDistance /= 2.0;
+        if (myDistance >= 0.5) {
+            beatDistance += 0.5;
+        }
+        qDebug() << "ADJUST DISTANCE " << beatDistance;
+    }
     m_pBpmControl->setTargetBeatDistance(beatDistance);
 }
 
 double SyncControl::getBpm() const {
     return m_pBpm->get();
+}
+
+double SyncControl::determineBpmMultiplier(double targetBpm) const {
+    double multiplier = kBpmUnity;
+    double best_margin = fabs((targetBpm / m_pFileBpm->get()) - 1.0);
+
+    double try_margin = fabs((targetBpm * kBpmHalf / m_pFileBpm->get()) - 1.0);
+    if (try_margin < best_margin) {
+        multiplier = kBpmHalf;
+        best_margin = try_margin;
+    }
+
+    try_margin = fabs((targetBpm * kBpmDouble / m_pFileBpm->get()) - 1.0);
+    if (try_margin < best_margin) {
+        multiplier = kBpmDouble;
+    }
+    return multiplier;
 }
 
 void SyncControl::setBpm(double bpm) {
@@ -156,8 +192,10 @@ void SyncControl::setBpm(double bpm) {
 
     double fileBpm = m_pFileBpm->get();
     if (fileBpm > 0.0) {
-        double newRate = (bpm / m_pFileBpm->get() - 1.0)
+        m_syncBpmMultiplier = determineBpmMultiplier(bpm);
+        double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
                 / m_pRateDirection->get() / m_pRateRange->get();
+        m_pBpmControl->setSyncBpmMultiplier(m_syncBpmMultiplier);
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);
@@ -165,7 +203,7 @@ void SyncControl::setBpm(double bpm) {
 }
 
 void SyncControl::setInstantaneousBpm(double bpm) {
-    m_pBpmControl->setInstantaneousBpm(bpm);
+    m_pBpmControl->setInstantaneousBpm(bpm * m_syncBpmMultiplier);
 }
 
 void SyncControl::reportTrackPosition(double fractionalPlaypos) {

@@ -2,6 +2,7 @@
 #define SYNCCONTROL_H
 
 #include <QScopedPointer>
+#include <gtest/gtest_prod.h>
 
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
@@ -16,6 +17,9 @@ class ControlPushButton;
 class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
+    static const double kBpmUnity;
+    static const double kBpmHalf;
+    static const double kBpmDouble;
     SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
@@ -77,6 +81,11 @@ class SyncControl : public EngineControl, public Syncable {
     void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
+    FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
+    // Sometimes it's best to match bpms based on half or double the target
+    // bpm.  e.g. 70 matches better with 140/2.
+    double determineBpmMultiplier(double targetBpm) const;
+
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
     // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
@@ -86,6 +95,11 @@ class SyncControl : public EngineControl, public Syncable {
     BpmControl* m_pBpmControl;
     RateControl* m_pRateControl;
     bool m_bOldScratching;
+
+    // When syncing, sometimes it's better to match half or double the
+    // master bpm.
+    double m_syncBpmMultiplier;
+
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
