@@ -166,14 +166,25 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
 }
 
 void WTrackTableView::slotGuiTickTime(double cpuTime) {
-    // if the user is stopped in the same row for more than 0.2 s,
-    // we load uncached cover arts as well.
+    // if the user is stopped in the same row for more than 0.1 s,
+    // we load un-cached cover arts as well.
     if (m_loadCachedOnly &&
-            cpuTime >= m_lastSelection + 0.2) {
+            cpuTime >= m_lastSelection + 0.1) {
         emitLoadCoverArt(false);
         // it will allows CoverCache to load and search covers normally
         emit(onlyCachedCoverArt(false));
         m_loadCachedOnly = false;
+
+        // Invalidate cover column
+        TrackModel* trackModel = getTrackModel();
+        int coverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
+        if (coverColumn > 0) {
+            QModelIndex top = indexAt(QPoint(0, 0));
+            top = top.sibling(top.row(), coverColumn);
+            QModelIndex bottom = indexAt(QPoint(0, height()));
+            bottom = bottom.sibling(bottom.row(), coverColumn);
+            dataChanged(top, bottom);
+        }
     }
 }
 

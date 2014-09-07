@@ -49,7 +49,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void stopAnalysis();
     void loadCoverArt(const QString& coverLocation,
                       const QString& md5Hash,
-                      int trackId);
+                      int trackId, bool cachedOnly);
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
