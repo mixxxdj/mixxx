@@ -1100,15 +1100,18 @@ void EngineBuffer::processSeek() {
                 if (!even(offset)) {
                     offset--;
                 }
+                qDebug() << getGroup() << "offset is " << offset;
                 position += offset;
             }
             setNewPlaypos(position);
             break;
         }
         case SEEK_PHASE: {
+            qDebug() << getGroup() << "PHASE SYNC";
             // XXX: syncPhase is private in bpmcontrol, so we seek directly.
             double dThisPosition = m_pBpmControl->getCurrentSample();
             double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
+            qDebug() << getGroup() << "offset is " << offset;
             if (offset != 0.0) {
                 double dNewPlaypos = round(dThisPosition + offset);
                 if (!even(static_cast<int>(dNewPlaypos))) {
@@ -1126,11 +1129,14 @@ void EngineBuffer::processSeek() {
 
 void EngineBuffer::postProcess(const int iBufferSize) {
     double beat_distance = m_pBpmControl->updateBeatDistance();
-    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+    qDebug() <<getGroup() << " POST PROCESS beat dist " << beat_distance;
+    SyncMode mode = m_pSyncControl->getSyncMode();
+    if (mode == SYNC_MASTER) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
-    } else {
+    } else if (mode == SYNC_FOLLOWER) {
         // Report our speed to SyncControl.  If we are master, we already did this.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+        m_pSyncControl->setBeatDistance(beat_distance);
     }
 
     // Update all the indicators that EngineBuffer publishes to allow

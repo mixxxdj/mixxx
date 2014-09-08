@@ -33,6 +33,7 @@ class SyncControl : public EngineControl, public Syncable {
     bool isPlaying() const;
 
     double getBeatDistance() const;
+    void setBeatDistance(double beatDistance);
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance);
@@ -102,6 +103,7 @@ class SyncControl : public EngineControl, public Syncable {
     // master bpm.
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     double m_syncBpmMultiplier;
+    double m_syncUnmultipliedTargetDistance;
 
 
     QScopedPointer<ControlPushButton> m_pSyncMode;

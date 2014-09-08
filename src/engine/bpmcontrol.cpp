@@ -430,10 +430,10 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*double sample_offset = dBeatLength * shortest_distance;
+    double sample_offset = dBeatLength * shortest_distance;
+    qDebug() << m_sGroup << sample_offset << m_dUserOffset;
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
-    qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
 
     if (userTweakingSync) {
         // Don't do anything else, leave it
@@ -543,6 +543,10 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     if (!m_pBeats) {
         return 0;
     }
+    // Master buffer is always in sync!
+    if (getSyncMode() == SYNC_MASTER) {
+        return 0;
+    }
 
     // Get the current position of this deck.
     double dThisPrevBeat;
@@ -557,6 +561,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     double dOtherBeatFraction;
     if (getSyncMode() == SYNC_FOLLOWER) {
         // If we're a slave, it's easy to get the other beat fraction
+        qDebug() << getGroup() << "phase sync beat dist is " << m_dSyncTargetBeatDistance;
         dOtherBeatFraction = m_dSyncTargetBeatDistance;
     } else {
         // If not, we have to figure it out
@@ -736,6 +741,7 @@ double BpmControl::process(const double dRate,
 
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(m_dPreviousSample);
+    qDebug() << getGroup() << "beat distance now " << beat_distance;
     m_pThisBeatDistance->set(beat_distance);
     return beat_distance;
 }

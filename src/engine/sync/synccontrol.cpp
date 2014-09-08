@@ -24,7 +24,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
           m_pBpmControl(NULL),
           m_pRateControl(NULL),
           m_bOldScratching(false),
-          m_syncBpmMultiplier(kBpmUnity) {
+          m_syncBpmMultiplier(kBpmUnity),
+          m_syncUnmultipliedTargetDistance(0.0) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(pGroup, "play", this));
@@ -130,8 +131,10 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
     if (mode == SYNC_MASTER) {
         // Make sure all the slaves update based on our current rate.
+        qDebug() << getGroup() << " we are master now";
         slotRateChanged();
         double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
         m_pBpm->set(m_pFileBpm->get() * dRate);
     }
 }
@@ -144,32 +147,57 @@ double SyncControl::getBeatDistance() const {
     double beatDistance = m_pSyncBeatDistance->get();
     if (m_syncBpmMultiplier == kBpmDouble) {
         beatDistance /= 2.0;
+        if (m_syncUnmultipliedTargetDistance >= 0.5) {
+            beatDistance += 0.5;
+        }
+        qDebug() << getGroup() << "double-mode, dividing by two " << beatDistance;
     } else if (m_syncBpmMultiplier == kBpmHalf) {
         if (beatDistance >= 0.5) {
             beatDistance -= 0.5;
         }
         beatDistance *= 2.0;
+        qDebug() << getGroup() << "half-mode, mult by two";
     }
     return beatDistance;
+}
+
+void SyncControl::setBeatDistance(double beatDistance) {
+////     When this is called, my sync beat distance is out of date compared to
+////     the master sync beat distance.  Reversing processing order just gets
+////     it backward -- mydist is up to date, but target isn't.
+    if (m_syncBpmMultiplier == kBpmUnity) {
+        return;
+    }
+//    Q_ASSERT(getGroup() != "[Test2]" || m_syncUnmultipliedTargetDistance != 0);
+    qDebug() << getGroup() << " my beat dist " << beatDistance << " target " <<
+            m_syncUnmultipliedTargetDistance;
+    double targetDistance = m_syncUnmultipliedTargetDistance;
+    if (m_syncBpmMultiplier == kBpmDouble) {
+        if (targetDistance >= 0.5) {
+            targetDistance -= 0.5;
+        }
+        targetDistance *= 2.0;
+        qDebug() << getGroup() << " set double-mode " << targetDistance;
+    } else if (m_syncBpmMultiplier == kBpmHalf) {
+        targetDistance /= 2.0;
+        if (beatDistance >= 0.5) {
+            targetDistance += 0.5;
+        }
+        qDebug() << getGroup() << " set half-mode " << targetDistance;
+    }
+    m_pBpmControl->setTargetBeatDistance(targetDistance);
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
-    double myDistance = m_pSyncBeatDistance->get();
-    if (m_syncBpmMultiplier == kBpmDouble) {
-        if (beatDistance >= 0.5) {
-            beatDistance -= 0.5;
-        }
-        beatDistance *= 2.0;
-    } else if (m_syncBpmMultiplier == kBpmHalf) {
-        beatDistance /= 2.0;
-        if (myDistance >= 0.5) {
-            beatDistance += 0.5;
-        }
+    qDebug() << getGroup() << "update unmultiplied dist " << beatDistance;
+    m_syncUnmultipliedTargetDistance = beatDistance;
+    if (m_syncBpmMultiplier == kBpmUnity) {
+        qDebug() << getGroup() << "update unity beat dist: " << beatDistance;
+        m_pBpmControl->setTargetBeatDistance(beatDistance);
     }
-    m_pBpmControl->setTargetBeatDistance(beatDistance);
 }
 
 double SyncControl::getBaseBpm() const {
@@ -196,11 +224,12 @@ double SyncControl::determineBpmMultiplier(double targetBpm) const {
     if (best_margin - try_margin > .0001) {
         multiplier = kBpmDouble;
     }
+    qDebug() << getGroup() << "determined multiplier " << multiplier;
     return multiplier;
 }
 
 void SyncControl::setBpm(double bpm) {
-    //qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
+    qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -227,7 +256,10 @@ void SyncControl::setBaseBpm(double bpm) {
     // changed also?  Right now we have a crappy requirement that the
     // base bpm be set before the actual BPM, or else the actual bpm
     // won't have the correct multiplier applied.
+    qDebug() << getGroup() << "SET BASE BPM " << bpm;
     m_syncBpmMultiplier = determineBpmMultiplier(bpm);
+    // Update the target beat distance in case the multiplier changed.
+    setBeatDistance(m_pSyncBeatDistance->get());
 }
 
 void SyncControl::setInstantaneousBpm(double bpm) {

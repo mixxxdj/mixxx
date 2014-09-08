@@ -82,7 +82,9 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
+    qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
+    // this is needed so the oldbeatdistance works, but setting it here causes
+    // things to be off in other tests because we've advanced an extra buffer.
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.
@@ -157,6 +159,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     m_iOldSampleRate = sampleRate;
 
     // Restore the old beat distance.
+    qDebug() << "RESTORE BEAT DISTANCE!";
     setMasterBeatDistance(oldBeatDistance);
 }
 
@@ -184,6 +187,7 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     }
 
     double beat_distance = getBeatDistance();
+    qDebug() << "[InternalClock] beat dist " << beat_distance;
     m_pClockBeatDistance->set(beat_distance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
