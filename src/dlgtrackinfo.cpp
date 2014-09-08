@@ -81,9 +81,9 @@ void DlgTrackInfo::init(){
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
     connect(m_pCoverMenu,
-            SIGNAL(coverLocationUpdated(const QString&, const QString&)),
+            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
-            SLOT(slotCoverLocationUpdated(const QString&, const QString&)));
+            SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
 }
 
 void DlgTrackInfo::closeEvent(QCloseEvent*) {
@@ -229,9 +229,13 @@ QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
 }
 
 void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
-                                            const QString& oldLoc) {
+                                            const QString& oldLoc,
+                                            QPixmap px) {
     if (isVisible() && m_loadedCover.first == oldLoc) {
         m_loadedCover.first = newLoc;
+        px = scaledCoverArt(px);
+        coverArt->setPixmap(px);
+        update();
     }
 }
 
@@ -397,6 +401,14 @@ void DlgTrackInfo::saveTrack() {
         it.remove();
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
         m_pLoadedTrack->removeCue(pCue);
+    }
+
+    bool res = CoverArtCache::instance()->changeCoverArt(m_pLoadedTrack->getId(),
+                                              m_loadedCover.first);
+
+    if (!res) {
+        QMessageBox::warning(this, tr("Change Cover Art"),
+                             tr("Could not change the cover art."));
     }
 }
 

@@ -961,7 +961,8 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
-    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig);
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig,
+                                         m_pLibrary->getTrackCollection());
     setupConnections(node, pCoverArt);
     setupBaseWidget(node, pCoverArt);
     setupWidget(node, pCoverArt);

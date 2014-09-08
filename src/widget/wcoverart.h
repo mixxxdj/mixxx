@@ -9,13 +9,15 @@
 #include "configobject.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
+#include "library/trackcollection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig);
+    WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+              TrackCollection* pTrackCollection);
     virtual ~WCoverArt();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -29,6 +31,9 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);
+    void slotCoverLocationUpdated(const QString& newLoc,
+                                  const QString& oldLoc,
+                                  QPixmap px);
 
   protected:
     void paintEvent(QPaintEvent*);
@@ -54,6 +59,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_iconShow;
 
     int m_lastRequestedTrackId;
+    TrackDAO& m_trackDAO;
     QPair<QString, QString> m_lastRequestedCover;
 };
 

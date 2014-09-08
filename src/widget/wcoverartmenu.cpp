@@ -5,6 +5,7 @@
 #include "dlgcoverartfullsize.h"
 #include "wcoverartmenu.h"
 #include "library/coverartcache.h"
+#include "library/dao/coverartdao.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent),
@@ -114,24 +115,25 @@ void WCoverArtMenu::slotChange() {
         newCover = selectedCover;
     }
 
-    bool res = CoverArtCache::instance()->changeCoverArt(m_pTrack->getId(),
-                                                         newCover);
-    if (!res) {
-        QMessageBox::warning(this, tr("Change Cover Art"),
-                             tr("Could not change the cover art!"));
-        return;
-    }
-
-    emit(coverLocationUpdated(newCover, m_sCoverLocation));
-    m_sCoverLocation = newCover;
+    QPixmap px(newCover);
+    emit(coverLocationUpdated(newCover, m_sCoverLocation, px));
 }
 
 void WCoverArtMenu::slotReload() {
     if (m_iTrackId < 1) {
         return;
     }
-    CoverArtCache::instance()->changeCoverArt(m_iTrackId);
-    CoverArtCache::instance()->requestPixmap(m_iTrackId);
+    CoverArtDAO::CoverArtInfo info;
+    info.trackId = m_iTrackId;
+    info.album = m_pTrack->getAlbum();
+    info.trackDirectory = m_pTrack->getDirectory();
+    info.trackLocation = m_pTrack->getLocation();
+    info.trackBaseName = QFileInfo(m_pTrack->getFilename()).baseName();
+    CoverArtCache::FutureResult res =
+            CoverArtCache::instance()->searchImage(info, QSize(0,0), false);
+    QPixmap px;
+    px.convertFromImage(res.img);
+    emit(coverLocationUpdated(res.coverLocation, m_sCoverLocation, px));
 }
 
 void WCoverArtMenu::slotUnset() {
@@ -139,11 +141,6 @@ void WCoverArtMenu::slotUnset() {
         return;
     }
     QString newLoc = CoverArtCache::instance()->getDefaultCoverLocation();
-    if (!CoverArtCache::instance()->changeCoverArt(m_iTrackId, newLoc)) {
-        QMessageBox::warning(this, tr("Unset Cover Art"),
-                             tr("Could not unset the cover art!"));
-        return;
-    }
-    emit(coverLocationUpdated(newLoc, m_sCoverLocation));
-    m_sCoverLocation = newLoc;
+    QPixmap px = CoverArtCache::instance()->getDefaultCoverArt();
+    emit(coverLocationUpdated(newLoc, m_sCoverLocation, px));
 }

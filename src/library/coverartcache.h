@@ -43,6 +43,20 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
 
+
+    struct FutureResult {
+        int trackId;
+        QString coverLocation;
+        QString md5Hash;
+        QImage img;
+        QSize croppedSize;
+        bool issueRepaint;
+        bool newImgFound;
+    };
+
+    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
+                             const QSize& croppedSize,
+                             const bool emitSignals);
   public slots:
     void imageFound();
     void imageLoaded();
@@ -59,18 +73,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     virtual ~CoverArtCache();
     friend class Singleton<CoverArtCache>;
 
-    struct FutureResult {
-        int trackId;
-        QString coverLocation;
-        QString md5Hash;
-        QImage img;
-        QSize croppedSize;
-        bool issueRepaint;
-    };
 
-    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
-                             const QSize& croppedSize,
-                             const bool emitSignals);
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
                            const QString& md5Hash,

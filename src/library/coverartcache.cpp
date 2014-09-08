@@ -55,7 +55,7 @@ bool CoverArtCache::changeCoverArt(int trackId,
     }
 
     QImage img = rescaleBigImage(QImage(newCoverLocation));
-    QString md5Hash = calculateMD5(img); // NULL is fine
+    QString md5Hash = calculateMD5(img);
     if (md5Hash.isEmpty()) {
         return false;
     }

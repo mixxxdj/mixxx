@@ -11,7 +11,8 @@
 #include "library/coverartcache.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig)
+                     ConfigObject<ConfigValue>* pConfig,
+                     TrackCollection* pTrackCollection)
         : QWidget(parent),
           WBaseWidget(this),
           m_pConfig(pConfig),
@@ -20,7 +21,8 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bCoverIsVisible(false),
           m_pMenu(new WCoverArtMenu(this)),
           m_loadedCover(CoverArtCache::instance()->getDefaultCoverArt()),
-          m_lastRequestedTrackId(-1) {
+          m_lastRequestedTrackId(-1),
+          m_trackDAO(pTrackCollection->getTrackDAO()) {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
     m_iconHide = m_iconHide.scaled(20,
@@ -37,10 +39,27 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+    connect(m_pMenu,
+            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
+            this,
+            SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
 }
 
 WCoverArt::~WCoverArt() {
     delete m_pMenu;
+}
+
+void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
+                                         const QString& oldLoc,
+                                         QPixmap px) {
+    Q_UNUSED(oldLoc);
+    Q_UNUSED(px);
+    bool res = CoverArtCache::instance()->changeCoverArt(m_lastRequestedTrackId,
+                                                         newLoc);
+    if (!res) {
+        QMessageBox::warning(this, tr("Change Cover Art"),
+                             tr("Could not change the cover art."));
+    }
 }
 
 void WCoverArt::setup(QDomNode node, const SkinContext& context) {
@@ -175,9 +194,11 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         m_bCoverIsVisible = false;
         resize(sizeHint());
     } else if (event->button() == Qt::RightButton) { // show context-menu
+        TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedTrackId);
         m_pMenu->show(event->globalPos(),
                       m_lastRequestedCover,
-                      m_lastRequestedTrackId);
+                      m_lastRequestedTrackId,
+                      pTrack);
     }
 }
 
