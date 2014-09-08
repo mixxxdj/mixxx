@@ -21,27 +21,28 @@ WCoverArtMenu::~WCoverArtMenu() {
 }
 
 void WCoverArtMenu::createActions() {
-    char* title;
-    char* context; // to help translators
-
-    context = (char*) "change cover art location";
-    title =  (char*) "&Choose new cover";
-    m_pChange = new QAction(tr(title, context), this);
+    m_pChange = new QAction(QIcon(":/images/library/ic_cover_change.png"),
+                            tr("Choose new cover",
+                               "change cover art location"),
+                            this);
     connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
 
-    context = (char*) "show full size cover in a new window";
-    title = (char*) "&Show Full Size";
-    m_pFullSize = new QAction(tr(title, context), this);
+    m_pFullSize = new QAction(QIcon(":/images/library/ic_cover_fullsize.png"),
+                              tr("Show Full Size",
+                                 "show full size cover in a new window"),
+                              this);
     connect(m_pFullSize, SIGNAL(triggered()), this, SLOT(slotShowFullSize()));
 
-    context = (char*) "unset cover art - load default";
-    title = (char*) "Unset cover";
-    m_pUnset = new QAction(tr(title, context), this);
+    m_pUnset = new QAction(QIcon(":/images/library/ic_cover_unset.png"),
+                           tr("Unset cover",
+                              "unset cover art - load default"),
+                           this);
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
 
-    context = (char*) "reload just cover art, using the search algorithm";
-    title = (char*) "&Reload from track/folder";
-    m_pReload = new QAction(tr(title, context), this);
+    m_pReload = new QAction(QIcon(":/images/library/ic_cover_reload.png"),
+                            tr("Reload from track/folder",
+                               "reload just cover art, using the search algorithm"),
+                            this);
     connect(m_pReload, SIGNAL(triggered()), this, SLOT(slotReload()));
 }
 
