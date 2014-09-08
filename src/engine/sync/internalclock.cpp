@@ -161,6 +161,8 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
 }
 
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
+    Q_UNUSED(sampleRate)
+    Q_UNUSED(bufferSize)
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
