@@ -90,7 +90,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
+    //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
@@ -135,16 +135,14 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 }
             }
 
-            qDebug() << "activate internal clock";
             activateMaster(m_pInternalClock);
 
             if (foundTargetBpm) {
-                qDebug() << "found a target";
+                setMasterBaseBpm(NULL, targetBaseBpm);
                 setMasterBpm(NULL, targetBpm);
                 setMasterBeatDistance(NULL, targetBeatDistance);
-                setMasterBaseBpm(NULL, targetBaseBpm);
+
             } else if (pSyncable->getBaseBpm() > 0) {
-                qDebug() << "didn't find a target, use ourselves";
                 setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
@@ -195,9 +193,6 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         }
         if (playing_sync_decks == 1) {
             m_pInternalClock->setMasterBeatDistance(uniqueSyncable->getBeatDistance());
-            // yeah I think this stuff is wrong:
-//            m_pInternalClock->setBpm(uniqueSyncable->getBpm());
-//            m_pInternalClock->setBaseBpm(uniqueSyncable->getBaseBpm());
         }
     }
 }
@@ -209,7 +204,7 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
-    qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
 
     SyncMode syncMode = pSyncable->getSyncMode();
     if (syncMode == SYNC_NONE) {

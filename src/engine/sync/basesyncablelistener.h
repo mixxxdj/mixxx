@@ -59,7 +59,7 @@ class BaseSyncableListener : public SyncableListener {
     // Syncable is set, then returns the beat distance of the internal clock.
     double masterBeatDistance() const;
 
-    // Returns the current BPM of the master Syncable, if it were playing
+    // Returns the current BPM of the master Syncable if it were playing
     // at 1.0 rate.
     double masterBaseBpm() const;
 

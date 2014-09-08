@@ -307,10 +307,11 @@ void EngineMaster::process(const int iBufferSize) {
     unsigned int busChannelConnectionFlags[3] = { 0, 0, 0 };
     unsigned int headphoneOutput = 0;
 
-    // Update internal master sync.
+    // Update internal master sync rate.
     m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
     // Prepare each channel for output
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
+    // Do internal master sync post-processing;
     m_pMasterSync->onCallbackEnd(iSampleRate, iBufferSize);
 
     // Compute headphone mix

@@ -111,7 +111,6 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
-    qDebug() << getGroup() << "RESET TO UNITY!";
     m_syncBpmMultiplier = kBpmUnity;
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
@@ -131,10 +130,8 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
     if (mode == SYNC_MASTER) {
         // Make sure all the slaves update based on our current rate.
-        qDebug() << getGroup() << " we are master";
         slotRateChanged();
         double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
-        qDebug() << getGroup() << " setting2222 rate slider / bpm!! " << m_pFileBpm->get() << " " << dRate;
         m_pBpm->set(m_pFileBpm->get() * dRate);
     }
 }
@@ -145,16 +142,13 @@ void SyncControl::requestSyncPhase() {
 
 double SyncControl::getBeatDistance() const {
     double beatDistance = m_pSyncBeatDistance->get();
-    qDebug() << getGroup() << " raw beat dist " << beatDistance;
     if (m_syncBpmMultiplier == kBpmDouble) {
         beatDistance /= 2.0;
-        qDebug() << getGroup() << "adjust reported distance /2 to " << beatDistance;
     } else if (m_syncBpmMultiplier == kBpmHalf) {
         if (beatDistance >= 0.5) {
             beatDistance -= 0.5;
         }
         beatDistance *= 2.0;
-        qDebug() << getGroup() << "adjust reported distance x2 to " << beatDistance;
     }
     return beatDistance;
 }
@@ -163,20 +157,17 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
-//    qDebug() << "SyncControl::setMasterBeatDistance" << getGroup() << beatDistance;
     double myDistance = m_pSyncBeatDistance->get();
     if (m_syncBpmMultiplier == kBpmDouble) {
         if (beatDistance >= 0.5) {
             beatDistance -= 0.5;
         }
         beatDistance *= 2.0;
-//        qDebug() << getGroup() << "ADJUST DISTANCE x2 " << beatDistance;
     } else if (m_syncBpmMultiplier == kBpmHalf) {
         beatDistance /= 2.0;
         if (myDistance >= 0.5) {
             beatDistance += 0.5;
         }
-//        qDebug() << getGroup() << "ADJUST DISTANCE /2 " << beatDistance;
     }
     m_pBpmControl->setTargetBeatDistance(beatDistance);
 }
@@ -186,7 +177,6 @@ double SyncControl::getBaseBpm() const {
 }
 
 double SyncControl::getBpm() const {
-    qDebug() << getGroup() << " wanted my bpm " << m_pBpm->get();
     return m_pBpm->get();
 }
 
@@ -194,31 +184,23 @@ double SyncControl::determineBpmMultiplier(double targetBpm) const {
     double multiplier = kBpmUnity;
     double myBpm = m_pFileBpm->get();
     double best_margin = fabs((targetBpm / myBpm) - 1.0);
-    qDebug() << "best rate match for " << myBpm << " vs " <<
-            targetBpm;
-    qDebug() << "margin unity " << best_margin;
 
     double try_margin = fabs((targetBpm * kBpmHalf / myBpm) - 1.0);
-    qDebug() << "margin half " << try_margin;
     // We really want to prefer unity, so use a float compare with high tolerance.
     if (best_margin - try_margin > .0001) {
-        qDebug() << "half is better" << try_margin << " " << best_margin;
         multiplier = kBpmHalf;
         best_margin = try_margin;
     }
 
     try_margin = fabs((targetBpm * kBpmDouble / myBpm) - 1.0);
-    qDebug() << "margin double " << try_margin;
     if (best_margin - try_margin > .0001) {
-        qDebug() << "double is better " << try_margin << " " << best_margin <<
-                 " " << try_margin - best_margin;
         multiplier = kBpmDouble;
     }
     return multiplier;
 }
 
 void SyncControl::setBpm(double bpm) {
-    qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
+    //qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -232,8 +214,6 @@ void SyncControl::setBpm(double bpm) {
 
     double fileBpm = m_pFileBpm->get();
     if (fileBpm > 0.0) {
-        qDebug() << getGroup() << " match rate slider based on " << bpm << " "
-                << m_syncBpmMultiplier;
         double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
                 / m_pRateDirection->get() / m_pRateRange->get();
         m_pRateSlider->set(newRate);
@@ -243,16 +223,11 @@ void SyncControl::setBpm(double bpm) {
 }
 
 void SyncControl::setBaseBpm(double bpm) {
-    // take the current rate and alter it based on the new multiplier.
-//    const double rate = m_pFileBpm->get() * (1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get());
+    // TODO(owilliams): if this is changed, should the rate slider be
+    // changed also?  Right now we have a crappy requirement that the
+    // base bpm be set before the actual BPM, or else the actual bpm
+    // won't have the correct multiplier applied.
     m_syncBpmMultiplier = determineBpmMultiplier(bpm);
-//    //double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
-//
-    qDebug() << getGroup() << "SET MULTIPLIER " << m_syncBpmMultiplier;
-//    double newRate = (rate * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
-//           / m_pRateDirection->get() / m_pRateRange->get();
-//    qDebug() << getGroup() << " new rate" << rate;
-//    m_pRateSlider->set(newRate);
 }
 
 void SyncControl::setInstantaneousBpm(double bpm) {
@@ -388,7 +363,6 @@ void SyncControl::slotRateChanged() {
     // This slot is fired by rate, rate_dir, and rateRange changes.
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
-    qDebug() << getGroup() << "rate changed "<< rate << " " << bpm;
     if (bpm > 0) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.

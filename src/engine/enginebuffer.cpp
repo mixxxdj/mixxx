@@ -751,7 +751,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         double speed = m_pRateControl->calculateRate(
             baserate, paused, iBufferSize, &is_scratching);
         double pitch = m_pKeyControl->getPitchAdjustOctaves();
-        //qDebug() << getGroup() << " final calculatedrate " << speed;
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
@@ -875,9 +874,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
             if (m_bScalerOverride) {
                 // If testing, we don't have a real log so we fake the position.
-                qDebug() << getGroup() << "OVERRIDE " << samplesRead;
                 m_filepos_play += samplesRead;
-                qDebug() << getGroup() << " now " << m_filepos_play;
             } else {
                 // Adjust filepos_play by the amount we processed. TODO(XXX) what
                 // happens if samplesRead is a fraction?

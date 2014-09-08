@@ -106,7 +106,6 @@ void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
                 pSyncable->getSyncMode() == SYNC_NONE) {
             continue;
         }
-        qDebug() << "set it bub " << bpm;
         pSyncable->setBpm(bpm);
     }
 }

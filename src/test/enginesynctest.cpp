@@ -1068,7 +1068,6 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
 }
 
 TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
-    qDebug() << "SET FIle BPMSS????";
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(70);
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
@@ -1081,11 +1080,9 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     // Make Channel2 master to weed out any channel ordering issues.
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_MASTER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
-//    qDebug() << "set rate~~~~~~~~~~~~~~~~~~~~`";
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
-    qDebug() << "PROCESS~~~~~~~~~~~~~~~~~~~";
     ProcessBuffer();
 
     EXPECT_EQ(0.5,
@@ -1098,7 +1095,6 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
               ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get() * 2);
 
     // Now switch master and slave and check again.
-    qDebug() << "\n\nSWITCH";
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
@@ -1110,14 +1106,10 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
               m_pChannel2->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
 
     // Exaggerate the effect with a high rate.
-    qDebug() << "\n\nSET THE RATE!";
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(5.0));
 
-    qDebug() << "\n\nPROCESS1";
     ProcessBuffer();
-    qDebug() << "\n\nPROCESS2";
     ProcessBuffer();
-    qDebug() << "\n\nPROCESS3";
     ProcessBuffer();
 
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
@@ -1157,37 +1149,25 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     EXPECT_FLOAT_EQ(175.0,
                 ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
-    qDebug() << "\n\nPROCESS1";
     ProcessBuffer();
-    qDebug() << "\n\nPROCESS2";
     ProcessBuffer();
-    qDebug() << "\n\nPROCESS3";
     ProcessBuffer();
 
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
           ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get() * 2);
 
-
-    // Now switch.
-    qDebug() << "\n\nswitch!\n\n";
+    // Now enable the other deck first.
     // Unset Play so that EngineBuffer immediately responds to the sync_enabled
     // changes rather than waiting for the buffer processing.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
     pButtonSyncEnabled1->slotSet(0.0);
     pButtonSyncEnabled2->slotSet(0.0);
-//    // Have to process a buffer or EngineBuffer will consider the off-on switch
-//    // to be a no-op.
-//    qDebug() << "\n\nPROCESS3.5";
-//    ProcessBuffer();
     pButtonSyncEnabled2->slotSet(1.0);
     pButtonSyncEnabled1->slotSet(1.0);
 
-    qDebug() << "\n\n\n\nPROCESS4";
     ProcessBuffer();
-    qDebug() << "\n\nPROCESS5";
     ProcessBuffer();
-    qDebug() << "\n\nPROCESS6";
     ProcessBuffer();
 
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get(),
@@ -1206,18 +1186,12 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
     m_pTrack1->setBeats(pBeats1);
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
-//    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-//    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
     // Make Channel2 master to weed out any channel ordering issues.
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
-//    qDebug() << "set rate~~~~~~~~~~~~~~~~~~~~`";
-
-//    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-//    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     EXPECT_FLOAT_EQ(140.0,
                 ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());

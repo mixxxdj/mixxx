@@ -82,9 +82,10 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
+    //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
+    // Make sure followers have an up-to-date beat distance.
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
 }
 
@@ -93,8 +94,7 @@ double InternalClock::getBaseBpm() const {
 }
 
 void InternalClock::setBaseBpm(double bpm) {
-    qDebug() << "internal clock ignore bpm???? " << bpm;
-   // m_dOldBpm = bpm;
+    Q_UNUSED(bpm)
 }
 
 double InternalClock::getBpm() const {
@@ -102,13 +102,13 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setBpm(double bpm) {
-    qDebug() << "InternalClock::setBpm" << bpm;
+    //qDebug() << "InternalClock::setBpm" << bpm;
     m_pClockBpm->set(bpm);
     updateBeatLength(m_iOldSampleRate, bpm);
 }
 
 void InternalClock::setInstantaneousBpm(double bpm) {
-    qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
+    //qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
     // Do nothing.
     Q_UNUSED(bpm);
 }
@@ -161,7 +161,6 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
 }
 
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
-    //qDebug() << "internal clock update rate " << getBpm();
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
@@ -175,7 +174,7 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     if (m_dBeatLength <= 0) {
         qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
                  << "setting to about 124 bpm at 44.1Khz.";
-        m_dBeatLength = 21338.0;
+        m_dBeatLength = 21338;
     }
 
     while (m_dClockPosition >= m_dBeatLength) {
@@ -184,6 +183,5 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
 
     double beat_distance = getBeatDistance();
     m_pClockBeatDistance->set(beat_distance);
-    //qDebug() << "INTERNAL CLOCK beat dist " << beat_distance << " bpm " << m_dOldBpm;
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
