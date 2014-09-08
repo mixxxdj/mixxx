@@ -66,7 +66,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QImage img;
         QSize croppedSize;
         bool issueRepaint;
-        bool newImgFound;
     };
 
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,

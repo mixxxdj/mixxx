@@ -155,7 +155,6 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(int trackId,
     res.md5Hash = md5Hash;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
-    res.newImgFound = true;
 
     if (res.croppedSize.isNull()) {
         res.img = rescaleBigImage(res.img);
@@ -206,43 +205,33 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
                                            const bool issueRepaint) {
     FutureResult res;
     res.trackId = coverInfo.trackId;
-    res.md5Hash = coverInfo.md5Hash;
+    res.md5Hash = QString();
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
-    res.newImgFound = false;
+    bool imgFound = false;
 
     // Looking for embedded cover art.
-    //
     res.img = extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.img = rescaleBigImage(res.img);
-        if (res.md5Hash.isEmpty()) {
-            // it is the first time that we are loading the embedded cover,
-            // so we need to recalculate the md5 hash.
-            res.md5Hash = calculateMD5(res.img);
-        }
-        res.newImgFound = true;
+        res.md5Hash = calculateMD5(res.img);
+        imgFound = true;
     }
 
     // Looking for cover stored in track diretory.
-    //
-    if (!res.newImgFound) {
+    if (!imgFound) {
         res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
                                                    coverInfo.trackBaseName,
                                                    coverInfo.album);
         res.img = rescaleBigImage(QImage(res.coverLocation));
         res.md5Hash = calculateMD5(res.img);
-        res.newImgFound = true;
+        imgFound = true;
     }
 
     // adjusting the cover size according to the final purpose
-    if (res.newImgFound && !res.croppedSize.isNull()) {
+    if (!imgFound && !res.croppedSize.isNull()) {
         res.img = cropImage(res.img, res.croppedSize);
     }
-
-    // check if this image is really a new one
-    // (different from the one that we have in db)
-    res.newImgFound = coverInfo.md5Hash != res.md5Hash;
 
     return res;
 }
@@ -349,7 +338,7 @@ void CoverArtCache::imageFound() {
     }
 
     // update DB
-    if (res.newImgFound && !m_queueOfUpdates.contains(res.trackId)) {
+    if (!m_queueOfUpdates.contains(res.trackId)) {
         m_queueOfUpdates.insert(res.trackId,
                                 qMakePair(res.coverLocation, res.md5Hash));
         updateDB();

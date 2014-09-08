@@ -34,7 +34,6 @@ TEST_F(CoverArtCacheTest, searchImage) {
     const CoverArtDAO::CoverArtInfo cInfo = {
         1,                                             // cInfo.trackId
         "",                                            // cInfo.coverLocation
-        "",                                            // cInfo.md5Hash
         "album_name",                                  // cInfo.album
         "track",                                       // cInfo.trackBaseName
         trackdir,                                      // cInfo.trackDirectory
@@ -141,7 +140,6 @@ TEST_F(CoverArtCacheTest, searchImage) {
     const CoverArtDAO::CoverArtInfo cInfoUtf8 = {
         2,                                             // cInfo.trackId
         "",                                            // cInfo.coverLocation
-        "",                                            // cInfo.md5Hash
         QString::fromUtf8("öæäîðÑ_album"),             // cInfo.album
         QString::fromUtf8("track_ðÑöæäî"),             // cInfo.trackBaseName
         trackdir,                                      // cInfo.trackDirectory
