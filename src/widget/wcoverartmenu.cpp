@@ -15,7 +15,6 @@ WCoverArtMenu::WCoverArtMenu(QWidget *parent)
 
 WCoverArtMenu::~WCoverArtMenu() {
     delete m_pChange;
-    delete m_pFullSize;
     delete m_pReload;
     delete m_pUnset;
 }
@@ -26,12 +25,6 @@ void WCoverArtMenu::createActions() {
                                "change cover art location"),
                             this);
     connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
-
-    m_pFullSize = new QAction(QIcon(":/images/library/ic_cover_fullsize.png"),
-                              tr("Show Full Size",
-                                 "show full size cover in a new window"),
-                              this);
-    connect(m_pFullSize, SIGNAL(triggered()), this, SLOT(slotShowFullSize()));
 
     m_pUnset = new QAction(QIcon(":/images/library/ic_cover_unset.png"),
                            tr("Unset cover",
@@ -50,7 +43,6 @@ void WCoverArtMenu::addActions() {
     addAction(m_pChange);
     addAction(m_pUnset);
     addAction(m_pReload);
-    addAction(m_pFullSize);
 }
 
 void WCoverArtMenu::show(QPoint pos, QPair<QString, QString> cover,
@@ -62,13 +54,6 @@ void WCoverArtMenu::show(QPoint pos, QPair<QString, QString> cover,
 
     if (trackId < 1) {
         return;
-    }
-
-    QString defaultLoc = CoverArtCache::instance()->getDefaultCoverLocation();
-    if (m_sCoverLocation == defaultLoc || m_sMd5.isEmpty()) {
-        m_pFullSize->setEnabled(false);
-    } else {
-        m_pFullSize->setEnabled(true);
     }
 
     popup(pos);
@@ -139,10 +124,6 @@ void WCoverArtMenu::slotChange() {
 
     emit(coverLocationUpdated(newCover, m_sCoverLocation));
     m_sCoverLocation = newCover;
-}
-
-void WCoverArtMenu::slotShowFullSize() {
-    DlgCoverArtFullSize::instance()->init();
 }
 
 void WCoverArtMenu::slotReload() {

@@ -25,7 +25,6 @@ class WCoverArtMenu : public QMenu {
 
   private slots:
     void slotChange();
-    void slotShowFullSize();
     void slotReload();
     void slotUnset();
 
@@ -34,7 +33,6 @@ class WCoverArtMenu : public QMenu {
     void addActions();
 
     QAction* m_pChange;
-    QAction* m_pFullSize;
     QAction* m_pReload;
     QAction* m_pUnset;
 
