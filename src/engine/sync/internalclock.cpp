@@ -187,7 +187,7 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     }
 
     double beat_distance = getBeatDistance();
-    qDebug() << "[InternalClock] beat dist " << beat_distance;
+    //qDebug() << "[InternalClock] beat dist " << beat_distance;
     m_pClockBeatDistance->set(beat_distance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }

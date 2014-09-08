@@ -313,7 +313,7 @@ void EngineMaster::process(const int iBufferSize) {
     unsigned int headphoneOutput = 0;
 
     // Update internal master sync rate.
-    qDebug() << "\n\nenginemaster top";
+    //qDebug() << "\n\nenginemaster top";
     m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
     // Prepare each channel for output
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);

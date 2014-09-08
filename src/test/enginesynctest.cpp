@@ -1174,24 +1174,24 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
               m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
 
-//    // Now enable the other deck first.
-//    // Unset Play so that EngineBuffer immediately responds to the sync_enabled
-//    // changes rather than waiting for the buffer processing.
-//    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
-//    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
-//    pButtonSyncEnabled1->slotSet(0.0);
-//    pButtonSyncEnabled2->slotSet(0.0);
-//    pButtonSyncEnabled2->slotSet(1.0);
-//    pButtonSyncEnabled1->slotSet(1.0);
-//    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-//    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
-//
-//    ProcessBuffer();
-//    ProcessBuffer();
-//    ProcessBuffer();
-//
-//    EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
-//              m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
+    // Now enable the other deck first.
+    // Unset Play so that EngineBuffer immediately responds to the sync_enabled
+    // changes rather than waiting for the buffer processing.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled2->slotSet(0.0);
+    pButtonSyncEnabled2->slotSet(1.0);
+    pButtonSyncEnabled1->slotSet(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    ProcessBuffer();
+    ProcessBuffer();
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
 }
 
 TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {

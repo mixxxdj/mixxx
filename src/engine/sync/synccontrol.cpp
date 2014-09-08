@@ -192,10 +192,10 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
-    qDebug() << getGroup() << "update unmultiplied dist " << beatDistance;
+    //qDebug() << getGroup() << "update unmultiplied dist " << beatDistance;
     m_syncUnmultipliedTargetDistance = beatDistance;
     if (m_syncBpmMultiplier == kBpmUnity) {
-        qDebug() << getGroup() << "update unity beat dist: " << beatDistance;
+        //qDebug() << getGroup() << "update unity beat dist: " << beatDistance;
         m_pBpmControl->setTargetBeatDistance(beatDistance);
     }
 }
