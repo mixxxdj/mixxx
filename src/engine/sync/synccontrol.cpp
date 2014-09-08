@@ -131,6 +131,7 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
     if (mode == SYNC_MASTER) {
         // Make sure all the slaves update based on our current rate.
+        qDebug() << getGroup() << " we are master";
         slotRateChanged();
         double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
         qDebug() << getGroup() << " setting2222 rate slider / bpm!! " << m_pFileBpm->get() << " " << dRate;
@@ -165,6 +166,10 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
 //        qDebug() << getGroup() << "ADJUST DISTANCE /2 " << beatDistance;
     }
     m_pBpmControl->setTargetBeatDistance(beatDistance);
+}
+
+double SyncControl::getBaseBpm() const {
+    return m_pFileBpm->get();
 }
 
 double SyncControl::getBpm() const {
@@ -214,14 +219,20 @@ void SyncControl::setBpm(double bpm) {
 
     double fileBpm = m_pFileBpm->get();
     if (fileBpm > 0.0) {
-        m_syncBpmMultiplier = determineBpmMultiplier(bpm);
-        qDebug() << getGroup() << "SET MULTIPLIER " << m_syncBpmMultiplier;
         double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
                 / m_pRateDirection->get() / m_pRateRange->get();
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);
     }
+}
+
+void SyncControl::setBaseBpm(double bpm) {
+    m_syncBpmMultiplier = determineBpmMultiplier(bpm);
+    qDebug() << getGroup() << "SET MULTIPLIER " << m_syncBpmMultiplier;
+    double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
+            / m_pRateDirection->get() / m_pRateRange->get();
+    m_pRateSlider->set(newRate);
 }
 
 void SyncControl::setInstantaneousBpm(double bpm) {

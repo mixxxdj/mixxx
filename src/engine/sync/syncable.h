@@ -47,6 +47,12 @@ class Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     virtual void setMasterBeatDistance(double beatDistance) = 0;
+    // Gets the speed of the syncable if it was playing at 1.0 rate.
+    virtual double getBaseBpm() const = 0;
+    // Sets the master base bpm.
+    virtual void setBaseBpm(double) = 0;
+    // Gets the current speed of the syncable in bpm (bpm * rate slider), doesn't
+    // include scratch or FF/REW values.
     virtual double getBpm() const = 0;
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.

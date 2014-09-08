@@ -58,12 +58,20 @@ class BaseSyncableListener : public SyncableListener {
     // Syncable is set, then returns the beat distance of the internal clock.
     double masterBeatDistance() const;
 
+    // Returns the current BPM of the master Syncable, if it were playing
+    // at 1.0 rate.
+    double masterBaseBpm() const;
+
     // Set the BPM on every sync-enabled Syncable except pSource.
     void setMasterBpm(Syncable* pSource, double bpm);
 
     // Set the master instantaneous BPM on every sync-enabled Syncable except
     // pSource.
     void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
+
+    // Set the master base bpm, which is what the bpm would be if the syncable
+    // were playing at 1.0x speed
+    void setMasterBaseBpm(Syncable* pSource, double bpm);
 
     // Set the master beat distance on every sync-enabled Syncable except
     // pSource.

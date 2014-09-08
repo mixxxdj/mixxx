@@ -87,14 +87,23 @@ void InternalClock::setMasterBeatDistance(double beatDistance) {
     m_pClockBeatDistance->set(beatDistance);
 }
 
+double InternalClock::getBaseBpm() const {
+    return m_dOldBpm;
+}
+
+void InternalClock::setBaseBpm(double bpm) {
+    qDebug() << "internal clock ignore bpm???? " << bpm;
+    m_dOldBpm = bpm;
+    m_pClockBpm->set(bpm);
+    updateBeatLength(m_iOldSampleRate, bpm);
+}
+
 double InternalClock::getBpm() const {
     return m_pClockBpm->get();
 }
 
 void InternalClock::setBpm(double bpm) {
     qDebug() << "InternalClock::setBpm" << bpm;
-    m_pClockBpm->set(bpm);
-    updateBeatLength(m_iOldSampleRate, bpm);
 }
 
 void InternalClock::setInstantaneousBpm(double bpm) {

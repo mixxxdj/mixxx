@@ -37,6 +37,8 @@ class SyncControl : public EngineControl, public Syncable {
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance);
 
+    double getBaseBpm() const;
+    void setBaseBpm(double);
     double getBpm() const;
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.

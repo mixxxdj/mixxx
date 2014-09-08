@@ -48,7 +48,7 @@ Syncable* BaseSyncableListener::getSyncableForGroup(const QString& group) {
 
 bool BaseSyncableListener::syncDeckExists() const {
     foreach (const Syncable* pSyncable, m_syncables) {
-        if (pSyncable->getSyncMode() != SYNC_NONE && pSyncable->getBpm() > 0) {
+        if (pSyncable->getSyncMode() != SYNC_NONE && pSyncable->getBaseBpm() > 0) {
             return true;
         }
     }
@@ -86,6 +86,13 @@ double BaseSyncableListener::masterBeatDistance() const {
     return m_pInternalClock->getBeatDistance();
 }
 
+double BaseSyncableListener::masterBaseBpm() const {
+    if (m_pMasterSyncable) {
+        return m_pMasterSyncable->getBaseBpm();
+    }
+    return m_pInternalClock->getBaseBpm();
+}
+
 void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setBpm(bpm);
@@ -111,6 +118,20 @@ void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double b
         }
         pSyncable->setInstantaneousBpm(bpm);
     }
+}
+
+void BaseSyncableListener::setMasterBaseBpm(Syncable* pSource, double bpm) {
+    if (pSource != m_pInternalClock) {
+        m_pInternalClock->setBaseBpm(bpm);
+    }
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable == pSource ||
+                pSyncable->getSyncMode() == SYNC_NONE) {
+            continue;
+        }
+        pSyncable->setBaseBpm(bpm);
+    }
+
 }
 
 void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_distance) {
