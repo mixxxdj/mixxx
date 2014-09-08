@@ -352,6 +352,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         m_pCOPlayPos2->disconnect(this);
         m_pCOPlay1->disconnect(this);
         m_pCOPlay2->disconnect(this);
+        m_pCOCrossfader->set(0);
     }
 }
 

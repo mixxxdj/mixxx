@@ -9,7 +9,7 @@
 #include "sampleutil.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 
 
 EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsManager)
@@ -17,7 +17,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsM
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
-          m_pPregain(new ControlLogpotmeter(ConfigKey(pGroup, "pregain"), 4)),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(pGroup, "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
@@ -29,6 +29,9 @@ EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsM
     // "master" controls.
     setMaster(true);
     setPFL(false);
+
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -100,7 +103,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_vuMeter.collectFeatures(&features);
         m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
-                                         features);
+                                         m_pSampleRate->get(), features);
     }
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);

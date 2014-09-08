@@ -24,6 +24,7 @@
 
 #include "util/types.h"
 #include "engine/engineobject.h"
+#include "engine/sync/syncable.h"
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "rotary.h"
@@ -96,6 +97,13 @@ const int ENGINE_RAMP_UP = 1;
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
+  private:
+    enum SyncRequestQueued {
+        SYNC_REQUEST_NONE,
+        SYNC_REQUEST_ENABLE,
+        SYNC_REQUEST_DISABLE,
+        SYNC_REQUEST_ENABLEDISABLE,
+    };
   public:
     enum SeekRequest {
         NO_SEEK,
@@ -131,10 +139,13 @@ class EngineBuffer : public EngineObject {
 
     void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
+    void requestEnableSync(bool enabled);
+    void requestSyncMode(SyncMode mode);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
+    void postProcess(const int iBufferSize);
 
     const char* getGroup();
     bool isTrackLoaded();
@@ -217,6 +228,7 @@ class EngineBuffer : public EngineObject {
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos);
 
+    void processSyncRequests();
     void processSeek();
 
     double updateIndicatorsAndModifyPlay(double v);
@@ -260,6 +272,9 @@ class EngineBuffer : public EngineObject {
     // need updating.
     double m_speed_old;
 
+    // True if the previous callback was scratching.
+    bool m_scratching_old;
+
     // The previous callback's pitch. Used to check if the scaler parameters
     // need updating.
     double m_pitch_old;
@@ -288,9 +303,11 @@ class EngineBuffer : public EngineObject {
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // Slip Status
-    bool m_bSlipEnabled;
-    bool m_bSlipToggled;
+    // m_slipEnabled is a boolean accessed from multiple threads, so we use an atomic int.
+    QAtomicInt m_slipEnabled;
+    // m_bSlipEnabledProcessing is only used by the engine processing thread.
+    bool m_bSlipEnabledProcessing;
+    bool m_bWasKeylocked;
 
 
     ControlObject* m_pTrackSamples;
@@ -313,6 +330,7 @@ class EngineBuffer : public EngineObject {
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
     ControlObjectSlave* m_pKeylockEngine;
+    ControlObjectSlave* m_pPitchControl;
     ControlPushButton* m_pKeylock;
     QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 
@@ -342,6 +360,8 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
+    QAtomicInt m_iEnableSyncQueued;
+    QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to

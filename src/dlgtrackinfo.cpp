@@ -186,6 +186,10 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack,
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
 
+    disconnect(this, SLOT(updateTrackMetadata()));
+    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata()));
+
     QPixmap pixmap = CoverArtCache::instance()->requestPixmap(pTrack->getId(),
                                                               coverLocation,
                                                               md5);
@@ -246,11 +250,22 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
         return;
     }
 
-    QDir directory(m_pLoadedTrack->getDirectory());
-    if (!directory.exists()) {
-        directory = QDir::home();
+    QDir dir;
+    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    do {
+        dir = QDir(splittedPath.join("/"));
+        splittedPath.removeLast();
+    } while (!dir.exists() && splittedPath.size());
+
+    // This function does not work for a non-existent directory!
+    // so it is essential that in the worst case it try opening
+    // a valid directory, in this case, 'QDir::home()'.
+    // Otherwise nothing would happen...
+    if (!dir.exists()) {
+        // it ensures a valid dir for any OS (Windows)
+        dir = QDir::home();
     }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
@@ -397,6 +412,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
     }
 
     clear();
+    disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.clear();
     m_loadedCover = qMakePair(QString(), QString());
     m_firstCoverLoc.clear();
@@ -474,7 +490,13 @@ void DlgTrackInfo::reloadTrackMetadata() {
     }
 }
 
+void DlgTrackInfo::updateTrackMetadata() {
+    if (m_pLoadedTrack) {
+        populateFields(m_pLoadedTrack);
+    }
+}
+
 void DlgTrackInfo::fetchTag() {
-    m_DlgTagFetcher.init(m_pLoadedTrack);
+    m_DlgTagFetcher.loadTrack(m_pLoadedTrack);
     m_DlgTagFetcher.show();
 }

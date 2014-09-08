@@ -1,4 +1,3 @@
-
 #ifndef DLGTRACKINFO_H
 #define DLGTRACKINFO_H
 
@@ -54,6 +53,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmTap();
 
     void reloadTrackMetadata();
+    void updateTrackMetadata();
     void slotOpenInFileBrowser();
 
     void slotPixmapFound(int trackId, QPixmap pixmap);

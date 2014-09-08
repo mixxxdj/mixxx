@@ -20,9 +20,9 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlValue = new ControlEffectKnob(
-        ConfigKey(m_group, itemPrefix));
+            ConfigKey(m_group, itemPrefix));
     m_pControlType = new ControlObject(
-        ConfigKey(m_group, itemPrefix + QString("_type")));
+            ConfigKey(m_group, itemPrefix + QString("_type")));
 
     connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
             this, SLOT(slotLinkType(double)));
@@ -31,9 +31,9 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-        this, SLOT(slotValueType(double)), Qt::AutoConnection);
+            this, SLOT(slotValueType(double)), Qt::AutoConnection);
     m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
+            this, SLOT(slotLoaded(double)), Qt::AutoConnection);
 
 
     m_pSoftTakeover = new SoftTakeover();
@@ -73,9 +73,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
             //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
-            m_pControlValue->setRange(dMinimum, dMaximum, false);
             EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
-            m_pControlValue->setType(type);
+            m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
             // TODO(rryan) expose this from EffectParameter

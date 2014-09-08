@@ -5,7 +5,7 @@
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
-#include "controlpotmeter.h"
+#include "controllinpotmeter.h"
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
@@ -48,15 +48,29 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
+    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(_group, "beats_adjust_faster"), false);
+    connect(m_pAdjustBeatsFaster, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBeatsFaster(double)),
+            Qt::DirectConnection);
+    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(_group, "beats_adjust_slower"), false);
+    connect(m_pAdjustBeatsSlower, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBeatsSlower(double)),
+            Qt::DirectConnection);
+    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(_group, "beats_translate_earlier"), false);
+    connect(m_pTranslateBeatsEarlier, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsEarlier(double)),
+            Qt::DirectConnection);
+    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(_group, "beats_translate_later"), false);
+    connect(m_pTranslateBeatsLater, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTranslateBeatsLater(double)),
+            Qt::DirectConnection);
 
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
     // bpm_down controls.
-    m_pEngineBpm = new ControlPotmeter(ConfigKey(_group, "bpm"), 1, 200, true);
     // bpm_up / bpm_down steps by 1
-    m_pEngineBpm->setStep(1);
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm->setSmallStep(0.1);
+    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(_group, "bpm"), 1, 200, 1, 0.1, true);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineBpm(double)),
             Qt::DirectConnection);
@@ -130,6 +144,36 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     m_dSyncAdjustment = 1.0;
 }
 
+void BpmControl::slotAdjustBeatsFaster(double v) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+        double new_bpm = math_min(200.0, m_pBeats->getBpm() + .01);
+        m_pBeats->setBpm(new_bpm);
+    }
+}
+
+void BpmControl::slotAdjustBeatsSlower(double v) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_SET)) {
+        double new_bpm = math_max(10.0, m_pBeats->getBpm() - .01);
+        m_pBeats->setBpm(new_bpm);
+    }
+}
+
+void BpmControl::slotTranslateBeatsEarlier(double v) {
+    if (v > 0 && m_pTrack && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        const int translate_dist = m_pTrack->getSampleRate() * -.01;
+        m_pBeats->translate(translate_dist);
+    }
+}
+
+void BpmControl::slotTranslateBeatsLater(double v) {
+    if (v > 0 && m_pTrack && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        const int translate_dist = m_pTrack->getSampleRate() * .01;
+        m_pBeats->translate(translate_dist);
+    }
+}
+
 void BpmControl::slotSetEngineBpm(double bpm) {
     double filebpm = m_pFileBpm->get();
     double ratedir = m_pRateDir->get();
@@ -168,16 +212,14 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 void BpmControl::slotControlPlay(double v) {
     if (v > 0.0) {
         if (m_pQuantize->get() > 0.0) {
-            // Since Quantize is on we can directly seek
-            // SEEK_STANDARD will do the sync job in this case
-            seekAbs(getCurrentSample());
+            getEngineBuffer()->requestSyncPhase();
         }
     }
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
     if (!v) return;
-    syncPhase();
+    getEngineBuffer()->requestSyncPhase();
 }
 
 void BpmControl::slotControlBeatSyncTempo(double v) {
@@ -191,7 +233,7 @@ void BpmControl::slotControlBeatSync(double v) {
     // If the player is playing, and adjusting its tempo succeeded, adjust its
     // phase so that it plays in sync.
     if (syncTempo() && m_pPlayButton->get() > 0) {
-        syncPhase();
+        getEngineBuffer()->requestSyncPhase();
     }
 }
 
@@ -446,21 +488,6 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     return 0.0;
 }
 
-bool BpmControl::syncPhase() {
-    if (getSyncMode() == SYNC_MASTER) {
-        return true;
-    }
-    double dThisPosition = getCurrentSample();
-    double offset = getPhaseOffset(dThisPosition);
-    if (offset == 0.0) {
-        return false;
-    }
-
-    double dNewPlaypos = dThisPosition + offset;
-    seekAbs(dNewPlaypos);
-    return true;
-}
-
 // static
 bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
                                 const double dPosition,
@@ -690,7 +717,7 @@ void BpmControl::slotBeatsTranslate(double v) {
 }
 
 void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
-    m_dPreviousSample = getCurrentSample();
+    m_dPreviousSample = dCurrentSample;
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
 
@@ -702,10 +729,13 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(dCurrentSample);
     Q_UNUSED(dTotalSamples);
     Q_UNUSED(iBufferSize);
-    // It doesn't make sense to me to use the position before update, but this
-    // results in better sync.
-    m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     return kNoTrigger;
+}
+
+double BpmControl::updateBeatDistance() {
+    double beat_distance = getBeatDistance(m_dPreviousSample);
+    m_pThisBeatDistance->set(beat_distance);
+    return beat_distance;
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {

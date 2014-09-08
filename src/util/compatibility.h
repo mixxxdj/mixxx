@@ -12,7 +12,7 @@
 #include <QInputMethod>
 #endif
 
-inline int deref(const QAtomicInt& value) {
+inline int load_atomic(const QAtomicInt& value) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     return value;
 #else
