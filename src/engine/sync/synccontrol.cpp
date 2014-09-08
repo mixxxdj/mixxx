@@ -174,16 +174,26 @@ double SyncControl::getBpm() const {
 
 double SyncControl::determineBpmMultiplier(double targetBpm) const {
     double multiplier = kBpmUnity;
-    double best_margin = fabs((targetBpm / m_pFileBpm->get()) - 1.0);
+    double myBpm = m_pFileBpm->get();
+    double best_margin = fabs((targetBpm / myBpm) - 1.0);
+    qDebug() << "best rate match for " << myBpm << " vs " <<
+            targetBpm;
+    qDebug() << "margin unity " << best_margin;
 
-    double try_margin = fabs((targetBpm * kBpmHalf / m_pFileBpm->get()) - 1.0);
-    if (try_margin < best_margin) {
+    double try_margin = fabs((targetBpm * kBpmHalf / myBpm) - 1.0);
+    qDebug() << "margin half " << try_margin;
+    // We really want to prefer unity, so use a float compare with high tolerance.
+    if (best_margin - try_margin > .0001) {
+        qDebug() << "half is better" << try_margin << " " << best_margin;
         multiplier = kBpmHalf;
         best_margin = try_margin;
     }
 
-    try_margin = fabs((targetBpm * kBpmDouble / m_pFileBpm->get()) - 1.0);
-    if (try_margin < best_margin) {
+    try_margin = fabs((targetBpm * kBpmDouble / myBpm) - 1.0);
+    qDebug() << "margin double " << try_margin;
+    if (best_margin - try_margin > .0001) {
+        qDebug() << "double is better " << try_margin << " " << best_margin <<
+                 " " << try_margin - best_margin;
         multiplier = kBpmDouble;
     }
     return multiplier;
@@ -208,7 +218,6 @@ void SyncControl::setBpm(double bpm) {
         qDebug() << getGroup() << "SET MULTIPLIER " << m_syncBpmMultiplier;
         double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
                 / m_pRateDirection->get() / m_pRateRange->get();
-        m_pBpmControl->setSyncBpmMultiplier(m_syncBpmMultiplier);
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);
@@ -347,6 +356,7 @@ void SyncControl::slotRateChanged() {
     // This slot is fired by rate, rate_dir, and rateRange changes.
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
+    qDebug() << getGroup() << "rate changed "<< rate << " " << bpm;
     if (bpm > 0) {
         m_pEngineSync->notifyBpmChanged(this, bpm, false);
     }
