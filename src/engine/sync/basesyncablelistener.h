@@ -15,6 +15,7 @@ class BaseSyncableListener : public SyncableListener {
     void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getMaster() const;
     void onCallbackStart(int sampleRate, int bufferSize);
+    void onCallbackEnd(int sampleRate, int bufferSize);
 
     // Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);

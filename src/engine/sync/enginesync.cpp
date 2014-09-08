@@ -39,9 +39,9 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     if (mode == SYNC_MASTER) {
         activateMaster(pSyncable);
         if (pSyncable->getBaseBpm() > 0) {
+            setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
             setMasterBpm(pSyncable, pSyncable->getBpm());
             setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
-            setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
         }
     } else if (mode == SYNC_FOLLOWER) {
         if (pSyncable == m_pInternalClock && channelIsMaster) {
@@ -69,9 +69,9 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             // If no master active, activate the internal clock.
             activateMaster(m_pInternalClock);
             if (pSyncable->getBaseBpm() > 0) {
+                setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
-                setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
             }
             activateFollower(pSyncable);
         } else {
@@ -145,17 +145,17 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 setMasterBaseBpm(NULL, targetBaseBpm);
             } else if (pSyncable->getBaseBpm() > 0) {
                 qDebug() << "didn't find a target, use ourselves";
+                setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
-                setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
             }
         } else if (m_pMasterSyncable == m_pInternalClock) {
             if (!syncDeckExists() && pSyncable->getBaseBpm() > 0) {
                 // If there are no active sync decks, reset the internal clock bpm
                 // and beat distance.
+                setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
-                setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
             }
             if (playingSyncDeckCount() > 0) {
                 foundPlayingDeck = true;
@@ -195,6 +195,9 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         }
         if (playing_sync_decks == 1) {
             m_pInternalClock->setMasterBeatDistance(uniqueSyncable->getBeatDistance());
+            // yeah I think this stuff is wrong:
+//            m_pInternalClock->setBpm(uniqueSyncable->getBpm());
+//            m_pInternalClock->setBaseBpm(uniqueSyncable->getBaseBpm());
         }
     }
 }
@@ -217,12 +220,14 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
     if (syncMode == SYNC_FOLLOWER && fileChanged) {
+        pSyncable->setBaseBpm(masterBaseBpm());
         pSyncable->setBpm(masterBpm());
         return;
     }
 
+    // Master Base BPM shouldn't be updated for every random deck that twiddles
+    // the rate.
     setMasterBpm(pSyncable, bpm);
-    setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
 }
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
@@ -252,9 +257,9 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
     }
 
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
+    pSyncable->setBaseBpm(masterBaseBpm());
     pSyncable->setBpm(masterBpm());
     pSyncable->setMasterBeatDistance(masterBeatDistance());
-    pSyncable->setBaseBpm(masterBaseBpm());
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable) {

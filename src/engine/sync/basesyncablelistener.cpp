@@ -33,6 +33,10 @@ void BaseSyncableListener::onCallbackStart(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
 }
 
+void BaseSyncableListener::onCallbackEnd(int sampleRate, int bufferSize) {
+    m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
+}
+
 EngineChannel* BaseSyncableListener::getMaster() const {
     return m_pMasterSyncable ? m_pMasterSyncable->getChannel() : NULL;
 }

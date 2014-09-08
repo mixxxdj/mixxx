@@ -144,14 +144,27 @@ void SyncControl::requestSyncPhase() {
 }
 
 double SyncControl::getBeatDistance() const {
-    return m_pSyncBeatDistance->get();
+    double beatDistance = m_pSyncBeatDistance->get();
+    qDebug() << getGroup() << " raw beat dist " << beatDistance;
+    if (m_syncBpmMultiplier == kBpmDouble) {
+        beatDistance /= 2.0;
+        qDebug() << getGroup() << "adjust reported distance /2 to " << beatDistance;
+    } else if (m_syncBpmMultiplier == kBpmHalf) {
+        if (beatDistance >= 0.5) {
+            beatDistance -= 0.5;
+        }
+        beatDistance *= 2.0;
+        qDebug() << getGroup() << "adjust reported distance x2 to " << beatDistance;
+    }
+    return beatDistance;
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
-    // the multiplier if in effect.
-    //qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
-//    double myDistance = m_pSyncBeatDistance->get();
+    // the multiplier if in effect.  This way all of the multiplier logic
+    // is contained in this single class.
+//    qDebug() << "SyncControl::setMasterBeatDistance" << getGroup() << beatDistance;
+    double myDistance = m_pSyncBeatDistance->get();
     if (m_syncBpmMultiplier == kBpmDouble) {
         if (beatDistance >= 0.5) {
             beatDistance -= 0.5;
@@ -160,9 +173,9 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
 //        qDebug() << getGroup() << "ADJUST DISTANCE x2 " << beatDistance;
     } else if (m_syncBpmMultiplier == kBpmHalf) {
         beatDistance /= 2.0;
-//        if (myDistance >= 0.5) {
-//            beatDistance += 0.5;
-//        }
+        if (myDistance >= 0.5) {
+            beatDistance += 0.5;
+        }
 //        qDebug() << getGroup() << "ADJUST DISTANCE /2 " << beatDistance;
     }
     m_pBpmControl->setTargetBeatDistance(beatDistance);
@@ -173,7 +186,7 @@ double SyncControl::getBaseBpm() const {
 }
 
 double SyncControl::getBpm() const {
-    qDebug() << getGroup() << " asked for bpm " << m_pBpm->get();
+    qDebug() << getGroup() << " wanted my bpm " << m_pBpm->get();
     return m_pBpm->get();
 }
 
@@ -219,6 +232,8 @@ void SyncControl::setBpm(double bpm) {
 
     double fileBpm = m_pFileBpm->get();
     if (fileBpm > 0.0) {
+        qDebug() << getGroup() << " match rate slider based on " << bpm << " "
+                << m_syncBpmMultiplier;
         double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
                 / m_pRateDirection->get() / m_pRateRange->get();
         m_pRateSlider->set(newRate);
@@ -228,14 +243,20 @@ void SyncControl::setBpm(double bpm) {
 }
 
 void SyncControl::setBaseBpm(double bpm) {
+    // take the current rate and alter it based on the new multiplier.
+//    const double rate = m_pFileBpm->get() * (1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get());
     m_syncBpmMultiplier = determineBpmMultiplier(bpm);
+//    //double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
+//
     qDebug() << getGroup() << "SET MULTIPLIER " << m_syncBpmMultiplier;
-    double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
-            / m_pRateDirection->get() / m_pRateRange->get();
-    m_pRateSlider->set(newRate);
+//    double newRate = (rate * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
+//           / m_pRateDirection->get() / m_pRateRange->get();
+//    qDebug() << getGroup() << " new rate" << rate;
+//    m_pRateSlider->set(newRate);
 }
 
 void SyncControl::setInstantaneousBpm(double bpm) {
+    // Adjust the incoming bpm by the multiplier.
     m_pBpmControl->setInstantaneousBpm(bpm * m_syncBpmMultiplier);
 }
 
@@ -369,7 +390,9 @@ void SyncControl::slotRateChanged() {
     double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
     qDebug() << getGroup() << "rate changed "<< rate << " " << bpm;
     if (bpm > 0) {
-        m_pEngineSync->notifyBpmChanged(this, bpm, false);
+        // When reporting our bpm, remove the multiplier so the masters all
+        // think the followers have the same bpm.
+        m_pEngineSync->notifyBpmChanged(this, bpm / m_syncBpmMultiplier, false);
     }
 }
 
@@ -378,6 +401,8 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
         m_pEngineSync->notifyScratching(this, scratching);
         m_bOldScratching = scratching;
     }
-    double instantaneous_bpm = m_pFileBpm->get() * speed;
+    // When reporting our speed, remove the multiplier so the masters all
+    // think the followers have the same bpm.
+    double instantaneous_bpm = m_pFileBpm->get() * speed / m_syncBpmMultiplier;
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
 }

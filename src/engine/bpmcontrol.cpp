@@ -376,17 +376,21 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
 double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     // This runs when ratecontrol wants to know what rate to use.
 
+    qDebug() << getGroup() << " get sync adj";
     if (m_pBeats == NULL) {
         // No beat information.
+        qDebug() << "out1";
         return 1.0;
     }
     if (getSyncMode() == SYNC_MASTER) {
         m_dSyncAdjustment = 1.0;
+        qDebug() << "out2";
         return m_dSyncAdjustment;
     }
     if (m_pReverseButton->get()) {
         // If we are going backwards, we can't do the math correctly.
         m_dSyncAdjustment = 1.0;
+        qDebug() << "out3";
         return m_dSyncAdjustment;
     }
 
@@ -400,6 +404,7 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     if (!BpmControl::getBeatContext(m_pBeats, dThisPosition,
                                     &dPrevBeat, &dNextBeat,
                                     &dBeatLength, &my_percentage, 0.01)) {
+        qDebug() << "out4";
         return 1.0;
     }
 
@@ -411,6 +416,7 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
                               dBeatLength;
     if (!m_pQuantize->get() || (loop_enabled && loop_size < 1.0 && loop_size > 0)) {
         m_dSyncAdjustment = 1.0;
+        qDebug() << "out3";
         return m_dSyncAdjustment;
     }
 
@@ -431,10 +437,10 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*double sample_offset = dBeatLength * shortest_distance;
-    qDebug() << "master beat distance:" << master_percentage;
-    qDebug() << "my     beat distance:" << my_percentage;
-    qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
+    double sample_offset = dBeatLength * shortest_distance;
+    qDebug() << m_sGroup << sample_offset << m_dUserOffset
+     << " master beat distance:" << master_percentage
+     << " my     beat distance:" << my_percentage;
 
     if (userTweakingSync) {
         // Don't do anything else, leave it
@@ -721,6 +727,7 @@ void BpmControl::slotBeatsTranslate(double v) {
 }
 
 void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
+    //qDebug() << getGroup() << " set current sample " << dCurrentSample;
     m_dPreviousSample = dCurrentSample;
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
@@ -739,6 +746,7 @@ double BpmControl::process(const double dRate,
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(m_dPreviousSample);
     m_pThisBeatDistance->set(beat_distance);
+    //qDebug() << getGroup() << " update beat dist " << m_dPreviousSample << " " << beat_distance;
     return beat_distance;
 }
 
@@ -747,6 +755,7 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
 }
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
+    //qDebug() << getGroup() << " instant bpm! " << instantaneousBpm;
     m_dSyncInstantaneousBpm = instantaneousBpm;
 }
 
