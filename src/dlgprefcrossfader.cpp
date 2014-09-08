@@ -34,7 +34,9 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
           m_COTMode(CONFIG_KEY, "xFaderMode"),
           m_COTCurve(CONFIG_KEY, "xFaderCurve"),
           m_COTCalibration(CONFIG_KEY, "xFaderCalibration"),
-          m_COTReverse(CONFIG_KEY, "xFaderReverse") {
+          m_COTReverse(CONFIG_KEY, "xFaderReverse"),
+          m_COTCrossfader("[Master]", "crossfader"),
+          m_xFaderReverse(false) {
     setupUi(this);
 
     QButtonGroup crossfaderModes;
@@ -74,8 +76,8 @@ void DlgPrefCrossfader::loadSettings() {
         //SliderXFader->setEnabled(false);
     }
 
-    bool xFaderReverse = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderReverse")).toInt() == 1;
-    checkBoxReverse->setChecked(xFaderReverse);
+    m_xFaderReverse = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderReverse")).toInt() == 1;
+    checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
     slotApply();
@@ -97,7 +99,13 @@ void DlgPrefCrossfader::slotApply() {
     m_COTMode.slotSet(m_xFaderMode);
     m_COTCurve.slotSet(m_transform);
     m_COTCalibration.slotSet(m_cal);
-    m_COTReverse.slotSet(checkBoxReverse->isChecked());
+    if (checkBoxReverse->isChecked() != m_xFaderReverse) {
+        m_COTReverse.slotSet(checkBoxReverse->isChecked());
+        double position = m_COTCrossfader.get();
+        m_COTCrossfader.slotSet(0.0 - position);
+        m_xFaderReverse = checkBoxReverse->isChecked();
+    }
+    slotUpdateXFader();
 }
 
 /** Update the dialog when the crossfader mode is changed */
