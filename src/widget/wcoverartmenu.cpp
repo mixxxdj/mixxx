@@ -75,15 +75,8 @@ void WCoverArtMenu::show(QPoint pos, QPair<QString, QString> cover,
 }
 
 void WCoverArtMenu::slotChange() {
-    if (m_iTrackId < 1) {
+    if (m_iTrackId < 1 || !m_pTrack) {
         return;
-    }
-
-    if (!m_pTrack) {
-        m_pTrack = CoverArtCache::instance()->getTrack(m_iTrackId);
-        if (!m_pTrack) {
-            return;
-        }
     }
 
     // get initial directory (trackdir or coverdir)

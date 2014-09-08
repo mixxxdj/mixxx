@@ -411,7 +411,3 @@ QString CoverArtCache::calculateMD5(QImage img) {
     md5.addData(arr);
     return md5.result().toHex();
 }
-
-TrackPointer CoverArtCache::getTrack(int trackId) {
-    return m_pTrackDAO->getTrack(trackId);
-}
