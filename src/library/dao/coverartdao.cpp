@@ -110,7 +110,7 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
     return res;
 }
 
-void CoverArtDAO::deleteUnusedCoverArts() {    
+void CoverArtDAO::deleteUnusedCoverArts() {
     QString covers = "SELECT " % LIBRARYTABLE_COVERART_LOCATION %
                      " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
                      " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART_LOCATION %
