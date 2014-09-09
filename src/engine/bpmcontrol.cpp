@@ -328,6 +328,8 @@ bool BpmControl::syncTempo() {
 }
 
 double BpmControl::getSyncedRate() const {
+    // x2, /2 sync ratios are all handled in synccontrol.cpp and are transparent
+    // in this class.
     if (m_pFileBpm->get() == 0.0) {
         // XXX TODO: what to do about this case
         return 1.0;
@@ -430,12 +432,10 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    if (SYNC_DEBUG) {
-        double sample_offset = dBeatLength * shortest_distance;
-        qDebug() << m_sGroup << sample_offset << m_dUserOffset;
-        qDebug() << "master beat distance:" << master_percentage;
-        qDebug() << "my     beat distance:" << my_percentage;
-    }
+    /*double sample_offset = dBeatLength * shortest_distance;
+    qDebug() << m_sGroup << sample_offset << m_dUserOffset;
+    qDebug() << "master beat distance:" << master_percentage;
+    qDebug() << "my     beat distance:" << my_percentage;*/
 
     if (userTweakingSync) {
         // Don't do anything else, leave it
@@ -535,10 +535,10 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
     if (dpBeatPercentage != NULL) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
+        // Because findNext and findPrev have an epsilon built in, sometimes
+        // the beat percentage is out of range.  Fix it.
         if (*dpBeatPercentage < 0) ++*dpBeatPercentage;
         if (*dpBeatPercentage > 1) --*dpBeatPercentage;
-        if (SYNC_DEBUG) qDebug() << "percentage??  " << dPosition << " "
-                << dPrevBeat << " " << *dpBeatPercentage;
     }
 
     return true;
@@ -567,7 +567,6 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     double dOtherBeatFraction;
     if (getSyncMode() == SYNC_FOLLOWER) {
         // If we're a slave, it's easy to get the other beat fraction
-        if (SYNC_DEBUG) qDebug() << getGroup() << "phase sync beat dist is " << m_dSyncTargetBeatDistance;
         dOtherBeatFraction = m_dSyncTargetBeatDistance;
     } else {
         // If not, we have to figure it out
@@ -747,7 +746,6 @@ double BpmControl::process(const double dRate,
 
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(m_dPreviousSample);
-    if (SYNC_DEBUG) qDebug() << getGroup() << "beat distance now " << beat_distance << " " << m_dPreviousSample;
     m_pThisBeatDistance->set(beat_distance);
     return beat_distance;
 }

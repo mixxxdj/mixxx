@@ -1100,18 +1100,15 @@ void EngineBuffer::processSeek() {
                 if (!even(offset)) {
                     offset--;
                 }
-                qDebug() << getGroup() << "offset is " << offset;
                 position += offset;
             }
             setNewPlaypos(position);
             break;
         }
         case SEEK_PHASE: {
-            qDebug() << getGroup() << "PHASE SYNC";
             // XXX: syncPhase is private in bpmcontrol, so we seek directly.
             double dThisPosition = m_pBpmControl->getCurrentSample();
             double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
-            qDebug() << getGroup() << "offset is " << offset;
             if (offset != 0.0) {
                 double dNewPlaypos = round(dThisPosition + offset);
                 if (!even(static_cast<int>(dNewPlaypos))) {
@@ -1128,8 +1125,10 @@ void EngineBuffer::processSeek() {
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
+    // The order of events here is very delicate.  It's necessary to update
+    // some values before others, because the later updates may require
+    // values from the first update.
     double beat_distance = m_pBpmControl->updateBeatDistance();
-    if (SYNC_DEBUG) qDebug() <<getGroup() << " POST PROCESS beat dist " << beat_distance;
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (mode == SYNC_MASTER) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
@@ -1138,7 +1137,6 @@ void EngineBuffer::postProcess(const int iBufferSize) {
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
         m_pSyncControl->setBeatDistance(beat_distance);
     }
-    if (SYNC_DEBUG) qDebug() <<getGroup() << "END POST PROC";
 
     // Update all the indicators that EngineBuffer publishes to allow
     // external parts of Mixxx to observe its status.

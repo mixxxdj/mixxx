@@ -110,8 +110,7 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
 }
 
 void SyncControl::notifySyncModeChanged(SyncMode mode) {
-    if (SYNC_DEBUG)
-        qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
+    //qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_syncBpmMultiplier = kBpmUnity;
@@ -133,8 +132,6 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
     if (mode == SYNC_MASTER) {
         // Make sure all the slaves update based on our current rate.
-        if (SYNC_DEBUG)
-            qDebug() << getGroup() << " we are master now";
         slotRateChanged();
         double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
         m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
@@ -153,14 +150,11 @@ double SyncControl::getBeatDistance() const {
         if (m_syncUnmultipliedTargetDistance >= 0.5) {
             beatDistance += 0.5;
         }
-        if (SYNC_DEBUG)
-            qDebug() << getGroup() << "double-mode, dividing by two " << beatDistance;
     } else if (m_syncBpmMultiplier == kBpmHalf) {
         if (beatDistance >= 0.5) {
             beatDistance -= 0.5;
         }
         beatDistance *= 2.0;
-        if (SYNC_DEBUG) qDebug() << getGroup() << "half-mode, mult by two" << beatDistance;
     }
     return beatDistance;
 }
@@ -168,27 +162,17 @@ double SyncControl::getBeatDistance() const {
 void SyncControl::setBeatDistance(double beatDistance) {
     m_beatDistance = beatDistance;
     updateTargetBeatDistance();
-    if (SYNC_DEBUG) qDebug() << getGroup() << " my beat dist " << beatDistance << " target " <<
-            m_syncUnmultipliedTargetDistance;
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
-    if (SYNC_DEBUG)
-        qDebug() << getGroup() << "update unmultiplied master dist " << beatDistance;
     m_syncUnmultipliedTargetDistance = beatDistance;
     updateTargetBeatDistance();
 }
 
 void SyncControl::setBaseBpm(double bpm) {
-    // TODO(owilliams): if this is changed, should the rate slider be
-    // changed also?  Right now we have a crappy requirement that the
-    // base bpm be set before the actual BPM, or else the actual bpm
-    // won't have the correct multiplier applied.
-    if (SYNC_DEBUG)
-        qDebug() << getGroup() << "SET BASE BPM " << bpm;
     m_syncBpmMultiplier = determineBpmMultiplier(bpm);
     // Update the target beat distance in case the multiplier changed.
     updateTargetBeatDistance();
@@ -217,7 +201,6 @@ double SyncControl::determineBpmMultiplier(double targetBpm) const {
     if (best_margin - try_margin > .0001) {
         multiplier = kBpmDouble;
     }
-    if (SYNC_DEBUG) qDebug() << getGroup() << "determined multiplier " << multiplier;
     return multiplier;
 }
 
@@ -228,15 +211,12 @@ void SyncControl::updateTargetBeatDistance() {
             targetDistance -= 0.5;
         }
         targetDistance *= 2.0;
-        if (SYNC_DEBUG) qDebug() << getGroup() << " set double-mode " << targetDistance;
     } else if (m_syncBpmMultiplier == kBpmHalf) {
         targetDistance /= 2.0;
         if (m_beatDistance >= 0.5) {
             targetDistance += 0.5;
         }
-        if (SYNC_DEBUG) qDebug() << getGroup() << " set half-mode " << targetDistance;
     }
-    if (SYNC_DEBUG) qDebug() << getGroup() << "target distance now " << targetDistance;
     m_pBpmControl->setTargetBeatDistance(targetDistance);
 }
 
@@ -249,7 +229,7 @@ double SyncControl::getBpm() const {
 }
 
 void SyncControl::setBpm(double bpm) {
-    qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
+    //qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";

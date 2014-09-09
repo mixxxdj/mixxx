@@ -282,11 +282,6 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
     foreach (ChannelInfo* pChannelInfo, processed_channels) {
-//    QListIterator<ChannelInfo*> pChannelInfo(processed_channels);
-//    pChannelInfo.toBack();
-//    qDebug() << "\n\n Post!!";
-//    while (pChannelInfo.hasPrevious()) {
-//        pChannelInfo.previous()->m_pChannel->postProcess(iBufferSize);
         pChannelInfo->m_pChannel->postProcess(iBufferSize);
     }
 }
@@ -313,13 +308,11 @@ void EngineMaster::process(const int iBufferSize) {
     unsigned int headphoneOutput = 0;
 
     // Update internal master sync rate.
-    if(SYNC_DEBUG) qDebug() << "\n\nenginemaster top";
     m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
     // Prepare each channel for output
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
+    // Do internal master sync post-processing
     m_pMasterSync->onCallbackEnd(iSampleRate, iBufferSize);
-    if(SYNC_DEBUG) qDebug() << "enginemaster bottom";
-    // Do internal master sync post-processing;
 
     // Compute headphone mix
     // Head phone left/right mix

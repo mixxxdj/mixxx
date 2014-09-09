@@ -109,7 +109,6 @@ class SyncControl : public EngineControl, public Syncable {
     double m_syncUnmultipliedTargetDistance;
     double m_beatDistance;
 
-
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;

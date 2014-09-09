@@ -674,7 +674,6 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     pFileBpm1->set(130.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
-    qDebug() << "\n\nset to play";
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
     // Set the deck to follower.  We have to call requestEnableSync directly
@@ -1100,8 +1099,6 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
                   m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
     }
 
-
-    qDebug() << "\n\n that went well!! try something new: \n\n";
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
 
@@ -1113,16 +1110,12 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
-    qDebug() << "\n\nOK let's go!\n\n";
-
     ProcessBuffer();
 
     EXPECT_EQ(1.0,
               m_pChannel1->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
     EXPECT_EQ(2.0,
               m_pChannel2->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
-
-    qDebug() << "\n\nand now a rate change\n\n";
 
     // Exaggerate the effect with a high rate.
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(2.0));
@@ -1222,4 +1215,3 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
                     ControlObject::getControl(
                             ConfigKey(m_sGroup2, "rate"))->get());
 }
-

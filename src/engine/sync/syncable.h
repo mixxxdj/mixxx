@@ -5,8 +5,6 @@
 
 class EngineChannel;
 
-#define SYNC_DEBUG 0
-
 enum SyncMode {
     SYNC_INVALID = -1,
     SYNC_NONE = 0,
