@@ -84,17 +84,6 @@ void WVuMeter::resetPositions() {
     m_pPixmapVu.clear();
 }
 
-void WVuMeter::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename,
-                                               Paintable::TILE);
-    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
-        qDebug() << metaObject()->className()
-                 << "Error loading background pixmap:" << filename;
-    } else {
-        setFixedSize(m_pPixmapBack->size());
-    }
-}
-
 void WVuMeter::setPixmapBackground(PixmapSource* source) {
     m_pPixmapBack = WPixmapStore::getPaintable(source,
                                                Paintable::TILE);
@@ -103,22 +92,6 @@ void WVuMeter::setPixmapBackground(PixmapSource* source) {
                  << "Error loading background pixmap:" << source->getPath();
     } else {
         setFixedSize(m_pPixmapBack->size());
-    }
-}
-
-void WVuMeter::setPixmaps(const QString &vuFilename,
-                          bool bHorizontal) {
-    m_pPixmapVu = WPixmapStore::getPaintable(vuFilename,
-                                             Paintable::STRETCH);
-    if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
-        qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
-    } else {
-        m_bHorizontal = bHorizontal;
-        if (m_bHorizontal) {
-            m_iNoPos = m_pPixmapVu->width();
-        } else {
-            m_iNoPos = m_pPixmapVu->height();
-        }
     }
 }
 

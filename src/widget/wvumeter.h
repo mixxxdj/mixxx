@@ -36,11 +36,8 @@ class WVuMeter : public WWidget  {
     virtual ~WVuMeter();
 
     void setup(QDomNode node, const SkinContext& context);
-    void setPixmapBackground(const QString& filename);
     void setPixmapBackground(PixmapSource* source);
     void setPixmaps(PixmapSource* vuSource,
-                    bool bHorizontal=false);
-    void setPixmaps(const QString &vuFilename,
                     bool bHorizontal=false);
     void onConnectedControlChanged(double dParameter, double dValue);
 
