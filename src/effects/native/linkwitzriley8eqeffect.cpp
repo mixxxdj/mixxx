@@ -140,8 +140,8 @@ void LinkwitzRiley8EQEffect::processGroup(const QString& group,
     if (fMid != pState->old_mid ||
             fHigh != pState->old_high) {
         SampleUtil::copy2WithRampingGain(pState->m_pHighBuf,
-                pState->m_pHighBuf, fHigh, pState->old_high,
-                pState->m_pLowBuf, fMid, pState->old_mid,
+                pState->m_pHighBuf, pState->old_high, fHigh,
+                pState->m_pLowBuf, pState->old_mid, fMid,
                 numSamples);
     } else {
         SampleUtil::copy2WithGain(pState->m_pHighBuf,
@@ -155,7 +155,7 @@ void LinkwitzRiley8EQEffect::processGroup(const QString& group,
 
     if (fLow != pState->old_low) {
         SampleUtil::copy2WithRampingGain(pOutput,
-                pState->m_pLowBuf, fLow, pState->old_low,
+                pState->m_pLowBuf, pState->old_low, fLow,
                 pState->m_pBandBuf, 1, 1,
                 numSamples);
     } else {
