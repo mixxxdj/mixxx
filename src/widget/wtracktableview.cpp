@@ -168,8 +168,7 @@ void WTrackTableView::selectionChanged(const QItemSelection &selected,
 void WTrackTableView::slotGuiTickTime(double cpuTime) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    if (m_loadCachedOnly &&
-            cpuTime >= m_lastSelection + 0.1) {
+    if (m_loadCachedOnly && cpuTime >= m_lastSelection + 0.1) {
         emitLoadCoverArt(false);
         // it will allows CoverCache to load and search covers normally
         emit(onlyCachedCoverArt(false));
