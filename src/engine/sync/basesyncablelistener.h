@@ -78,6 +78,9 @@ class BaseSyncableListener : public SyncableListener {
     // pSource.
     void setMasterBeatDistance(Syncable* pSource, double beat_distance);
 
+    void setMasterParams(Syncable* pSource, double beat_distance,
+                         double base_bpm, double bpm);
+
     ConfigObject<ConfigValue>* m_pConfig;
     // The InternalClock syncable.
     InternalClock* m_pInternalClock;

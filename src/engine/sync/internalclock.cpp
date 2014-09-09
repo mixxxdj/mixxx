@@ -113,6 +113,12 @@ void InternalClock::setInstantaneousBpm(double bpm) {
     Q_UNUSED(bpm);
 }
 
+void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+    Q_UNUSED(baseBpm)
+    setBpm(bpm);
+    setMasterBeatDistance(beatDistance);
+}
+
 void InternalClock::slotBpmChanged(double bpm) {
     updateBeatLength(m_iOldSampleRate, bpm);
     m_pEngineSync->notifyBpmChanged(this, bpm);

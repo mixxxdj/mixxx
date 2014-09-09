@@ -5,7 +5,7 @@
 
 class EngineChannel;
 
-#define SYNC_DEBUG 1
+#define SYNC_DEBUG 0
 
 enum SyncMode {
     SYNC_INVALID = -1,
@@ -59,6 +59,8 @@ class Syncable {
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
     virtual void setBpm(double bpm) = 0;
+
+    virtual void setMasterParams(double beatDistance, double baseBpm, double bpm) = 0;
 
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could

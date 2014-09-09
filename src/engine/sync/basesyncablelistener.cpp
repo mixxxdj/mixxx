@@ -148,3 +148,17 @@ void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_
         pSyncable->setMasterBeatDistance(beat_distance);
     }
 }
+
+void BaseSyncableListener::setMasterParams(Syncable* pSource, double beat_distance,
+                         double base_bpm, double bpm) {
+    if (pSource != m_pInternalClock) {
+        m_pInternalClock->setMasterParams(beat_distance, base_bpm, bpm);
+    }
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable == pSource ||
+                pSyncable->getSyncMode() == SYNC_NONE) {
+            continue;
+        }
+        pSyncable->setMasterParams(beat_distance, base_bpm, bpm);
+    }
+}

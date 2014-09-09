@@ -194,6 +194,13 @@ void SyncControl::setBaseBpm(double bpm) {
     updateTargetBeatDistance();
 }
 
+void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+    m_syncUnmultipliedTargetDistance = beatDistance;
+    m_syncBpmMultiplier = determineBpmMultiplier(baseBpm);
+    setBpm(bpm);
+    updateTargetBeatDistance();
+}
+
 double SyncControl::determineBpmMultiplier(double targetBpm) const {
     double multiplier = kBpmUnity;
     double myBpm = m_pFileBpm->get();

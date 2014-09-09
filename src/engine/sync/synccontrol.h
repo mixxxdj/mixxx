@@ -45,6 +45,8 @@ class SyncControl : public EngineControl, public Syncable {
     // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setBpm(double bpm);
 
+    void setMasterParams(double beatDistance, double baseBpm, double bpm);
+
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
