@@ -7,6 +7,10 @@
 #define MIXXX
 #include <fidlib.h>
 
+// set to 1 to print some analysis data using qDebug()
+// It prints the resulting delay after 50 % of impulse have passed
+// and the gain and phase shift at some sample frequencies
+// You may also use the app fiview for analysis
 #define IIR_ANALYSIS 0
 
 enum IIRPass {
