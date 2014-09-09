@@ -142,7 +142,6 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
           l_iFrameCount --;
 // FFMPEG 2.2 3561060 anb beyond
 #if LIBAVCODEC_VERSION_INT >= 3561060
-            av_frame_unref(l_pFrame);
             av_frame_free(&l_pFrame);
 // FFMPEG 0.11 and below
 #elif LIBAVCODEC_VERSION_INT <= 3544932
@@ -167,14 +166,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
 #endif
 
         if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
-            if (l_SPacket.stream_index==m_iAudioStream) {
+            if (l_SPacket.stream_index == m_iAudioStream) {
                 if (m_lStoredSeekPoint > 0) {
                     // Seek for correct jump point
                     if (m_lStoredSeekPoint > l_SPacket.pos &&
                             m_lStoredSeekPoint >= SOUNDSOURCEFFMPEG_POSDISTANCE) {
-                        if (l_SPacket.data != NULL) {
-                            av_free(l_SPacket.data);
-                        }
+                        av_free_packet(&l_SPacket);
                         l_SPacket.data = NULL;
                         l_SPacket.size = 0;
                         continue;
@@ -248,9 +245,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                     }
                 }
 
-                if (l_SPacket.data != NULL) {
-                    av_free(l_SPacket.data);
-                }
+                av_free_packet(&l_SPacket);
                 l_SPacket.data = NULL;
                 l_SPacket.size = 0;
 
