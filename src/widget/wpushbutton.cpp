@@ -203,33 +203,6 @@ void WPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-
-
-
-void WPushButton::setPixmap(int iState, bool bPressed, const QString& filename) {
-    QVector<PaintablePointer>& pixmaps = bPressed ?
-            m_pressedPixmaps : m_unpressedPixmaps;
-
-    if (iState < 0 || iState >= pixmaps.size()) {
-        return;
-    }
-
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
-                                                          Paintable::STRETCH);
-
-    if (pPixmap.isNull() || pPixmap->isNull()) {
-        // Only log if it looks like the user tried to specify a pixmap.
-        if (!filename.isEmpty()) {
-            qDebug() << "WPushButton: Error loading pixmap:" << filename;
-        }
-    } else {
-        // Set size of widget equal to pixmap size
-        setFixedSize(pPixmap->size());
-    }
-    pixmaps.replace(iState, pPixmap);
-}
-
-
 void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource* source) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
@@ -253,20 +226,6 @@ void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource* source) {
     pixmaps.replace(iState, pPixmap);
 }
 
-
-
-
-void WPushButton::setPixmapBackground(const QString &filename,
-                                      Paintable::DrawMode mode) {
-    // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
-    if (!filename.isEmpty() &&
-            (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
-        // Only log if it looks like the user tried to specify a pixmap.
-        qDebug() << "WPushButton: Error loading background pixmap:" << filename;
-    }
-}
-
 void WPushButton::setPixmapBackground(PixmapSource* source,
                                       Paintable::DrawMode mode) {
     // Load background pixmap
@@ -277,8 +236,6 @@ void WPushButton::setPixmapBackground(PixmapSource* source,
         qDebug() << "WPushButton: Error loading background pixmap:" << source->getPath();
     }
 }
-
-
 
 void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dParameter);
