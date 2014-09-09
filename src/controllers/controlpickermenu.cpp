@@ -89,8 +89,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("beats_translate_later", tr("Move Beatgrid Later"), tr("Adjust the beatgrid to the right"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust Beatgrid"),
                    tr("Align beatgrid to current position"), bpmMenu);
-    addDeckControl("beats_translate_to_sync", tr("Adjust Beatgrid to Sync"),
-                   tr("Align beatgrid to sync with other deck."), bpmMenu);
+    addDeckControl("beats_translate_match_alignment", tr("Adjust Beatgrid - Match Alignment"),
+                   tr("Adjust beatgrid to match another playing deck."), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), bpmMenu);
 
     QMenu* syncMenu = addSubmenu(tr("Sync"));

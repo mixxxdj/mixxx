@@ -101,9 +101,9 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotBeatsTranslate(double)),
             Qt::DirectConnection);
 
-    m_pTranslateBeatsToSync = new ControlPushButton(ConfigKey(_group, "beats_translate_to_sync"));
-    connect(m_pTranslateBeatsToSync, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatsTranslateToSync(double)),
+    m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(_group, "beats_translate_match_alignment"));
+    connect(m_pBeatsTranslateMatchAlignment, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatsTranslateMatchAlignment(double)),
             Qt::DirectConnection);
 
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
@@ -721,12 +721,10 @@ void BpmControl::slotBeatsTranslate(double v) {
     }
 }
 
-void BpmControl::slotBeatsTranslateToSync(double v) {
+void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        //qDebug() << "before: " << m_pBeats->findNthBeat(0, 1);
         double offset = getPhaseOffset(getCurrentSample());
         m_pBeats->translate(-offset);
-        //qDebug() << "after : " << m_pBeats->findNthBeat(0, 1);
     }
 }
 

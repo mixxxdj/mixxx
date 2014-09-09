@@ -5295,7 +5295,7 @@
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
 				<Connection>
-					<ConfigKey>[Channel1],beats_translate_to_sync</ConfigKey>
+					<ConfigKey>[Channel1],beats_translate_match_alignment</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>RightButton</ButtonState>
 				</Connection>
@@ -6410,7 +6410,7 @@
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
 				<Connection>
-					<ConfigKey>[Channel2],beats_translate_to_sync</ConfigKey>
+					<ConfigKey>[Channel2],beats_translate_match_alignment</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>RightButton</ButtonState>
 				</Connection>
