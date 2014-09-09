@@ -107,9 +107,5 @@
         <file>images/library/ic_library_cover_hide.png</file>
         <file>images/library/ic_library_cover_show.png</file>
         <file>images/library/default_cover.png</file>
-        <file>images/library/ic_cover_change.png</file>
-        <file>images/library/ic_cover_reload.png</file>
-        <file>images/library/ic_cover_unset.png</file>
-        <file>images/library/ic_cover_fullsize.png</file>
     </qresource>
 </RCC>
