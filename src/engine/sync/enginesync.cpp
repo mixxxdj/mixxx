@@ -208,8 +208,8 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
     if (syncMode == SYNC_FOLLOWER && fileChanged) {
-        pSyncable->setBaseBpm(masterBaseBpm());
-        pSyncable->setBpm(masterBpm());
+        pSyncable->setMasterBaseBpm(masterBaseBpm());
+        pSyncable->setMasterBpm(masterBpm());
         return;
     }
 

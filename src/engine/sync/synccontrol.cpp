@@ -109,6 +109,10 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
 #endif
 }
 
+SyncMode SyncControl::getSyncMode() const {
+    return syncModeFromDouble(m_pSyncMode->get());
+}
+
 void SyncControl::notifySyncModeChanged(SyncMode mode) {
     //qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
@@ -143,6 +147,10 @@ void SyncControl::requestSyncPhase() {
     m_pChannel->getEngineBuffer()->requestSyncPhase();
 }
 
+bool SyncControl::isPlaying() const {
+    return m_pPlayButton->get() > 0.0;
+}
+
 double SyncControl::getBeatDistance() const {
     double beatDistance = m_pSyncBeatDistance->get();
     if (m_syncBpmMultiplier == kBpmDouble) {
@@ -159,8 +167,13 @@ double SyncControl::getBeatDistance() const {
     return beatDistance;
 }
 
+double SyncControl::getBaseBpm() const {
+    return m_pFileBpm->get();
+}
+
 void SyncControl::setBeatDistance(double beatDistance) {
     m_beatDistance = beatDistance;
+    // The target distance may change based on our beat distance.
     updateTargetBeatDistance();
 }
 
@@ -169,67 +182,18 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
     m_syncUnmultipliedTargetDistance = beatDistance;
+    // Update the target beat distance based on the multiplier.
     updateTargetBeatDistance();
 }
 
-void SyncControl::setBaseBpm(double bpm) {
-    m_syncBpmMultiplier = determineBpmMultiplier(bpm);
+void SyncControl::setMasterBaseBpm(double bpm) {
+    m_syncBpmMultiplier = determineBpmMultiplier(m_pFileBpm->get(), bpm);
     // Update the target beat distance in case the multiplier changed.
     updateTargetBeatDistance();
 }
 
-void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bpm) {
-    m_syncUnmultipliedTargetDistance = beatDistance;
-    m_syncBpmMultiplier = determineBpmMultiplier(baseBpm);
-    setBpm(bpm);
-    updateTargetBeatDistance();
-}
-
-double SyncControl::determineBpmMultiplier(double targetBpm) const {
-    double multiplier = kBpmUnity;
-    double myBpm = m_pFileBpm->get();
-    double best_margin = fabs((targetBpm / myBpm) - 1.0);
-
-    double try_margin = fabs((targetBpm * kBpmHalf / myBpm) - 1.0);
-    // We really want to prefer unity, so use a float compare with high tolerance.
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmHalf;
-        best_margin = try_margin;
-    }
-
-    try_margin = fabs((targetBpm * kBpmDouble / myBpm) - 1.0);
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmDouble;
-    }
-    return multiplier;
-}
-
-void SyncControl::updateTargetBeatDistance() {
-    double targetDistance = m_syncUnmultipliedTargetDistance;
-    if (m_syncBpmMultiplier == kBpmDouble) {
-        if (targetDistance >= 0.5) {
-            targetDistance -= 0.5;
-        }
-        targetDistance *= 2.0;
-    } else if (m_syncBpmMultiplier == kBpmHalf) {
-        targetDistance /= 2.0;
-        if (m_beatDistance >= 0.5) {
-            targetDistance += 0.5;
-        }
-    }
-    m_pBpmControl->setTargetBeatDistance(targetDistance);
-}
-
-double SyncControl::getBaseBpm() const {
-    return m_pFileBpm->get();
-}
-
-double SyncControl::getBpm() const {
-    return m_pBpm->get();
-}
-
-void SyncControl::setBpm(double bpm) {
-    //qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
+void SyncControl::setMasterBpm(double bpm) {
+    //qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -251,6 +215,53 @@ void SyncControl::setBpm(double bpm) {
     }
 }
 
+void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+    m_syncUnmultipliedTargetDistance = beatDistance;
+    m_syncBpmMultiplier = determineBpmMultiplier(m_pFileBpm->get(), baseBpm);
+    setMasterBpm(bpm);
+    updateTargetBeatDistance();
+}
+
+double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
+    double multiplier = kBpmUnity;
+    double best_margin = fabs((targetBpm / myBpm) - 1.0);
+
+    double try_margin = fabs((targetBpm * kBpmHalf / myBpm) - 1.0);
+    // We really want to prefer unity, so use a float compare with high tolerance.
+    if (best_margin - try_margin > .0001) {
+        multiplier = kBpmHalf;
+        best_margin = try_margin;
+    }
+
+    try_margin = fabs((targetBpm * kBpmDouble / myBpm) - 1.0);
+    if (best_margin - try_margin > .0001) {
+        multiplier = kBpmDouble;
+    }
+    return multiplier;
+}
+
+void SyncControl::updateTargetBeatDistance() {
+    double targetDistance = m_syncUnmultipliedTargetDistance;
+
+    // Determining the target distance is not as simple as x2 or /2.
+    if (m_syncBpmMultiplier == kBpmDouble) {
+        if (targetDistance >= 0.5) {
+            targetDistance -= 0.5;
+        }
+        targetDistance *= 2.0;
+    } else if (m_syncBpmMultiplier == kBpmHalf) {
+        targetDistance /= 2.0;
+        if (m_beatDistance >= 0.5) {
+            targetDistance += 0.5;
+        }
+    }
+    m_pBpmControl->setTargetBeatDistance(targetDistance);
+}
+
+double SyncControl::getBpm() const {
+    return m_pBpm->get();
+}
+
 void SyncControl::setInstantaneousBpm(double bpm) {
     // Adjust the incoming bpm by the multiplier.
     m_pBpmControl->setInstantaneousBpm(bpm * m_syncBpmMultiplier);
@@ -263,10 +274,6 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
             fractionalPlaypos > kTrackPositionMasterHandoff) {
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-}
-
-bool SyncControl::isPlaying() const {
-    return m_pPlayButton->get() > 0.0;
 }
 
 void SyncControl::trackLoaded(TrackPointer pTrack) {
@@ -354,10 +361,6 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
         return;
     }
     m_pChannel->getEngineBuffer()->requestEnableSync(bEnabled);
-}
-
-SyncMode SyncControl::getSyncMode() const {
-    return syncModeFromDouble(m_pSyncMode->get());
 }
 
 void SyncControl::slotFileBpmChanged() {

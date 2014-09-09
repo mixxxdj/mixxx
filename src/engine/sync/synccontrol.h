@@ -26,6 +26,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     const QString& getGroup() const { return m_sGroup; }
     EngineChannel* getChannel() const { return m_pChannel; }
+    double getBpm() const;
 
     SyncMode getSyncMode() const;
     void notifySyncModeChanged(SyncMode mode);
@@ -34,17 +35,15 @@ class SyncControl : public EngineControl, public Syncable {
 
     double getBeatDistance() const;
     void setBeatDistance(double beatDistance);
+    double getBaseBpm() const;
+
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance);
-
-    double getBaseBpm() const;
-    void setBaseBpm(double);
-    double getBpm() const;
+    void setMasterBaseBpm(double);
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
-    void setBpm(double bpm);
-
+    void setMasterBpm(double bpm);
     void setMasterParams(double beatDistance, double baseBpm, double bpm);
 
     // Must never result in a call to
@@ -89,7 +88,7 @@ class SyncControl : public EngineControl, public Syncable {
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     // Sometimes it's best to match bpms based on half or double the target
     // bpm.  e.g. 70 matches better with 140/2.
-    double determineBpmMultiplier(double targetBpm) const;
+    double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
 
     QString m_sGroup;
@@ -105,7 +104,11 @@ class SyncControl : public EngineControl, public Syncable {
     // When syncing, sometimes it's better to match half or double the
     // master bpm.
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
+    // The amount we should multiply the target BPM to find a good sync match.
+    // Sometimes this is 2 or 0.5.
     double m_syncBpmMultiplier;
+    // It is handy to store the raw reported master beat distance in case the
+    // multiplier changes and we need to recalculate the target distance.
     double m_syncUnmultipliedTargetDistance;
     double m_beatDistance;
 

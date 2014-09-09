@@ -92,7 +92,7 @@ double InternalClock::getBaseBpm() const {
     return m_dOldBpm;
 }
 
-void InternalClock::setBaseBpm(double bpm) {
+void InternalClock::setMasterBaseBpm(double bpm) {
     Q_UNUSED(bpm)
 }
 
@@ -100,7 +100,7 @@ double InternalClock::getBpm() const {
     return m_pClockBpm->get();
 }
 
-void InternalClock::setBpm(double bpm) {
+void InternalClock::setMasterBpm(double bpm) {
     m_pClockBpm->set(bpm);
     updateBeatLength(m_iOldSampleRate, bpm);
 }
@@ -112,7 +112,7 @@ void InternalClock::setInstantaneousBpm(double bpm) {
 
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
     Q_UNUSED(baseBpm)
-    setBpm(bpm);
+    setMasterBpm(bpm);
     setMasterBeatDistance(beatDistance);
 }
 

@@ -18,12 +18,11 @@ class SyncControlTest : public MockedEngineBackendTest {
 };
 
 TEST_F(SyncControlTest, TestDetermineBpmMultiplier) {
-    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(70);
     EXPECT_EQ(SyncControl::kBpmUnity,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(80));
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(70, 80));
     EXPECT_EQ(SyncControl::kBpmHalf,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(160));
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(70, 160));
     EXPECT_EQ(SyncControl::kBpmDouble,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(40));
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(70, 40));
 
 }

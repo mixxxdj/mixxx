@@ -11,7 +11,7 @@ BaseSyncableListener::BaseSyncableListener(ConfigObject<ConfigValue>* pConfig)
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
           m_pMasterSyncable(NULL) {
     qRegisterMetaType<SyncMode>("SyncMode");
-    m_pInternalClock->setBpm(124.0);
+    m_pInternalClock->setMasterBpm(124.0);
 }
 
 BaseSyncableListener::~BaseSyncableListener() {
@@ -99,14 +99,14 @@ double BaseSyncableListener::masterBaseBpm() const {
 
 void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setBpm(bpm);
+        m_pInternalClock->setMasterBpm(bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 pSyncable->getSyncMode() == SYNC_NONE) {
             continue;
         }
-        pSyncable->setBpm(bpm);
+        pSyncable->setMasterBpm(bpm);
     }
 }
 
@@ -125,14 +125,14 @@ void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double b
 
 void BaseSyncableListener::setMasterBaseBpm(Syncable* pSource, double bpm) {
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setBaseBpm(bpm);
+        m_pInternalClock->setMasterBaseBpm(bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 pSyncable->getSyncMode() == SYNC_NONE) {
             continue;
         }
-        pSyncable->setBaseBpm(bpm);
+        pSyncable->setMasterBaseBpm(bpm);
     }
 }
 
