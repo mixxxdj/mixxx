@@ -53,6 +53,7 @@ class WStatusLight : public WWidget  {
 
   private:
     void setPixmap(int iState, const QString &filename, SizeMode mode);
+    void setPixmap(int iState, PixmapSource* source, SizeMode mode);
     void setNoPos(int iNoPos);
 
     // Current position

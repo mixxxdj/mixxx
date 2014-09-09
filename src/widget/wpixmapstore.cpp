@@ -73,42 +73,20 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
 Paintable::Paintable(PixmapSource* source, DrawMode mode)
         : m_draw_mode(mode) {
     if (source->getType() == "svg") {
+        QSvgRenderer* pSvgRenderer = new QSvgRenderer();
+        if( source->getData().isEmpty() ){
+            // qWarning() << "Paintable stretch path" << source->getPath();
+            pSvgRenderer->load(source->getPath());
+        } else {
+            // qWarning() << "Paintable stretch data" << source->getData();
+            pSvgRenderer->load(source->getData());
+        }
+        
         if (mode == STRETCH) {
-            QSvgRenderer* pSvgRenderer;
-            if( source->getData().isEmpty() ){
-                qWarning() << "Paintable stretch path" << source->getPath();
-                pSvgRenderer = new QSvgRenderer(source->getPath());
-            } else {
-                qWarning() << "Paintable stretch data" << source->getData();
-                pSvgRenderer = new QSvgRenderer(source->getData());
-            }
             m_pSvg.reset(pSvgRenderer);
         } else if (mode == TILE) {
-            // qWarning() << "Paintable tile" << source->getPath();
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-            // QSvgRenderer renderer(!source->getData().isEmpty()
-                    // ? source->getData() : source->getPath());
-            // QSvgRenderer renderer();
-            
-            QSvgRenderer* pSvgRenderer;
-            if( source->getData().isEmpty() ){
-                qWarning() << "Paintable tile path" << source->getPath();
-                pSvgRenderer = new QSvgRenderer(source->getPath());
-                // renderer.load(source->getPath());
-            } else {
-                qWarning() << "Paintable tile data" << source->getData();
-                // renderer.load(source->getData());
-                pSvgRenderer = new QSvgRenderer(source->getData());
-            }
-            // m_pSvg.reset(pSvgRenderer);
-            // QSvgRenderer renderer = (*pSvgRenderer);
-            
-            // QImage copy_buffer(renderer.defaultSize(), QImage::Format_ARGB32);
-            // copy_buffer.fill(0x00000000);  // Transparent black.
-            // m_pPixmap.reset(new QPixmap(renderer.defaultSize()));
-            // QPainter painter(&copy_buffer);
-            // renderer.render(&painter);
             QImage copy_buffer(pSvgRenderer->defaultSize(), QImage::Format_ARGB32);
             copy_buffer.fill(0x00000000);  // Transparent black.
             m_pPixmap.reset(new QPixmap(pSvgRenderer->defaultSize()));
@@ -285,11 +263,9 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource* source,
     qDebug() << "WPixmapStore Loading pixmap from file" << source->getPath();
 
     if (m_loader) {
-        qDebug() << "WPixmapStore::getPaintable loader" << source->getPath();
         QImage* pImage = m_loader->getImage(source->getPath());
         pPaintable = PaintablePointer(new Paintable(pImage, mode));
     } else {
-        qDebug() << "WPixmapStore::getPaintable no loader" << source->getPath();
         pPaintable = PaintablePointer(new Paintable(source, mode));
     }
 

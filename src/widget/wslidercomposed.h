@@ -45,6 +45,8 @@ class WSliderComposed : public WWidget  {
     void setup(QDomNode node, const SkinContext& context);
     void setSliderPixmap(const QString& filenameSlider);
     void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
+    void setSliderPixmap(PixmapSource* pSourceSlider);
+    void setHandlePixmap(bool bHorizontal, PixmapSource* pSourceHandle);
     inline bool isHorizontal() const { return m_bHorizontal; };
 
   public slots:

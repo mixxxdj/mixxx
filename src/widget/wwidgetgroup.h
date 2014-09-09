@@ -44,6 +44,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
 
     void setup(QDomNode node, const SkinContext& context);
     void setPixmapBackground(const QString &filename, Paintable::DrawMode mode);
+    void setPixmapBackground(PixmapSource* pSource, Paintable::DrawMode mode);
     void addWidget(QWidget* pChild);
 
   protected:

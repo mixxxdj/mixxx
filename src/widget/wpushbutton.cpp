@@ -59,7 +59,6 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        // QString backPath = context.getPixmapPath(context.selectNode(node, "BackPath"));
         PixmapSource* backgroundSource = context.getPixmapSource(context.selectNode(node, "BackPath"));
         if (!backgroundSource->isEmpty()) {
             setPixmapBackground(backgroundSource, Paintable::DrawModeFromString(mode_str));
@@ -79,13 +78,11 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 QString pixmapPath;
                 PixmapSource* pixmapSource;
                 
-                // pixmapPath = stateContext->getPixmapPath(stateContext->selectNode(state, "Unpressed"));
                 pixmapSource = stateContext->getPixmapSource(stateContext->selectNode(state, "Unpressed"));
                 if (!pixmapSource->isEmpty()) {
                     setPixmap(iState, false, pixmapSource);
                 }
                 
-                // pixmapPath = stateContext->getPixmapPath(stateContext->selectNode(state, "Pressed"));
                 pixmapSource = stateContext->getPixmapSource(stateContext->selectNode(state, "Pressed"));
                 if (!pixmapSource->isEmpty()) {
                     setPixmap(iState, true, pixmapSource);
