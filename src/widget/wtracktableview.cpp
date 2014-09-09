@@ -149,7 +149,7 @@ void WTrackTableView::enableCachedOnly() {
         m_loadCachedOnly = true;
     }
     double currentTime = GuiTick::cpuTimeNow();
-    qDebug() << "WTrackTableView::enableCachedOnly()" << currentTime - m_lastSelection;
+    //qDebug() << "WTrackTableView::enableCachedOnly()" << currentTime - m_lastSelection;
     m_lastSelection = currentTime;
 }
 
@@ -936,7 +936,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
-    // qDebug() << "MouseMoveEvent";
+    //qDebug() << "MouseMoveEvent";
     // Iterate over selected rows and append each item's location url to a list.
     QList<QString> locations;
     QModelIndexList indices = selectionModel()->selectedRows();
