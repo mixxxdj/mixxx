@@ -207,6 +207,8 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
     return result.join("");
 }
 
+
+
 QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
     const SvgParser* pSvgParser = new SvgParser(*this);
@@ -215,14 +217,16 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            pixmapPath = pSvgParser->saveToTempFile(pSvgParser->parseSvgTree(svgNode));
+            pixmapPath = pSvgParser->saveToTempFile(
+				pSvgParser->parseSvgTree(svgNode) );
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
                 pixmapName = getSkinPath(pixmapName);
                 if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-					pixmapPath = pSvgParser->saveToTempFile( pSvgParser->parseSvgFile(pixmapName) );
+					pixmapPath = pSvgParser->saveToTempFile(
+						pSvgParser->parseSvgFile(pixmapName) );
                 } else {
                     pixmapPath = pixmapName;
                 }
@@ -234,34 +238,40 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
 }
 
 
-QByteArray SkinContext::getPixmapBundle(const QDomNode& pixmapNode) const {
-	/**/
+// template<typename pixmapSource>
+PixmapSource* SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
-	QByteArray out;
+	PixmapSource* source = new PixmapSource();
+	
     const SvgParser* pSvgParser = new SvgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            out = pSvgParser->saveToQByteArray(
-				pSvgParser->parseSvgTree(svgNode) );
+            const QByteArray rslt = pSvgParser->saveToQByteArray(
+					pSvgParser->parseSvgTree(svgNode) );
+			source->setSVG( rslt );
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
-                pixmapName = getSkinPath(pixmapName);
+				source->setPath( getSkinPath(pixmapName) );
                 if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-                    pixmapPath = pSvgParser->saveToQByteArray( pSvgParser->parseSvgFile(pixmapName) );
+                    const QByteArray rslt = pSvgParser->saveToQByteArray(
+							pSvgParser->parseSvgFile(source->getPath()) );
+					source->setSVG( rslt );
                 } else {
-                    pixmapPath = pixmapName;
+                    source->setBitmap(getSkinPath(pixmapName));
                 }
             }
         }
     }
     
-	/**/
-    return out;
+    qDebug() << "getPixmapSource out path" << source->getPath();
+    
+    // return out;
+    return source;
 }
 
 

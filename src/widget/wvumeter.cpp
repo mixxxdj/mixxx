@@ -57,10 +57,10 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
-        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "PathBack")));
+        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "PathBack")));
     }
 
-    setPixmaps(context.getPixmapPath(context.selectNode(node, "PathVu")), bHorizontal);
+    setPixmaps(context.getPixmapSource(context.selectNode(node, "PathVu")), bHorizontal);
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
@@ -95,12 +95,39 @@ void WVuMeter::setPixmapBackground(const QString& filename) {
     }
 }
 
+void WVuMeter::setPixmapBackground(PixmapSource* source) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source,
+                                               Paintable::TILE);
+    if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
+        qDebug() << metaObject()->className()
+                 << "Error loading background pixmap:" << source->getPath();
+    } else {
+        setFixedSize(m_pPixmapBack->size());
+    }
+}
+
 void WVuMeter::setPixmaps(const QString &vuFilename,
                           bool bHorizontal) {
     m_pPixmapVu = WPixmapStore::getPaintable(vuFilename,
                                              Paintable::STRETCH);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
+    } else {
+        m_bHorizontal = bHorizontal;
+        if (m_bHorizontal) {
+            m_iNoPos = m_pPixmapVu->width();
+        } else {
+            m_iNoPos = m_pPixmapVu->height();
+        }
+    }
+}
+
+void WVuMeter::setPixmaps(PixmapSource* vuSource,
+                          bool bHorizontal) {
+    m_pPixmapVu = WPixmapStore::getPaintable(vuSource,
+                                             Paintable::STRETCH);
+    if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
+        qDebug() << "WVuMeter: Error loading vu pixmap" << vuSource->getPath();
     } else {
         m_bHorizontal = bHorizontal;
         if (m_bHorizontal) {
