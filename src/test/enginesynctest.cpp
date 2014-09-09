@@ -1092,7 +1092,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
               m_pChannel2->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
 
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
-    for (int i=0; i<20; ++i) {
+    for (int i=0; i<50; ++i) {
         ProcessBuffer();
         // The beat distances are NOT as simple as x2 or /2.  Use the built-in functions
         // to do the proper conversion.
@@ -1127,7 +1127,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     // Exaggerate the effect with a high rate.
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(2.0));
 
-    for (int i=0; i<20; ++i) {
+    for (int i=0; i<50; ++i) {
         ProcessBuffer();
         EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
                   m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());

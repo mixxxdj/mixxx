@@ -495,8 +495,8 @@ double RateControl::calculateRate(double baserate, bool paused,
                 rate += userTweak;
 
                 double adjust = m_pBpmControl->getSyncAdjustment(userTweakingSync);
-                if (adjust!= 1.0) {qDebug() << getGroup() << "SYNC ADJUSTED " << adjust;}
-                rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
+                if (adjust!= 1.0 && SYNC_DEBUG) {qDebug() << getGroup() << "SYNC ADJUSTED " << adjust;}
+                rate *= adjust;
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.

@@ -64,16 +64,16 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             activateFollower(pSyncable);
             // Hand off to the internal clock and keep the current BPM and beat
             // distance.
-            qDebug() << "activate internal clock!";
+            if (SYNC_DEBUG) qDebug() << "activate internal clock!";
             activateMaster(m_pInternalClock);
             //qDebug() << "activate follower again????";
             //activateFollower(pSyncable);
         } else if (m_pMasterSyncable == NULL) {
             // If no master active, activate the internal clock.
-            qDebug() << "NO CURRENT MASTER";
+            if (SYNC_DEBUG) qDebug() << "NO CURRENT MASTER";
             activateMaster(m_pInternalClock);
             if (pSyncable->getBaseBpm() > 0) {
-                qDebug() << "USING OURSELVES";
+                if (SYNC_DEBUG) qDebug() << "USING OURSELVES";
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
                 setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
                 setMasterBpm(pSyncable, pSyncable->getBpm());
@@ -95,14 +95,14 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
+    if (SYNC_DEBUG) qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
             // There is no master. If any other deck is playing we will match
             // the first available bpm -- sync won't be enabled on these decks,
             // otherwise there would have been a master.
-            qDebug() << "starting with no master";
+            if (SYNC_DEBUG) qDebug() << "starting with no master";
 
             bool foundTargetBpm = false;
             double targetBpm = 0.0;
@@ -144,27 +144,27 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             activateMaster(m_pInternalClock);
 
             if (foundTargetBpm) {
-                qDebug() << "found something";
+                if (SYNC_DEBUG) qDebug() << "found something";
                 setMasterBeatDistance(NULL, targetBeatDistance);
                 setMasterBaseBpm(NULL, targetBaseBpm);
                 setMasterBpm(NULL, targetBpm);
             } else if (pSyncable->getBaseBpm() > 0) {
-                qDebug() << "using ourselves";
+                if (SYNC_DEBUG) qDebug() << "using ourselves";
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
                 setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
                 setMasterBpm(pSyncable, pSyncable->getBpm());
-                qDebug() << "ok done using ourselves";
+                if (SYNC_DEBUG) qDebug() << "ok done using ourselves";
             }
         } else if (m_pMasterSyncable == m_pInternalClock) {
-            qDebug() << "internal clock is master";
+            if (SYNC_DEBUG) qDebug() << "internal clock is master";
             if (!syncDeckExists() && pSyncable->getBaseBpm() > 0) {
                 // If there are no active sync decks, reset the internal clock bpm
                 // and beat distance.
-                qDebug() << "nothing exists, reset with us " << pSyncable->getBeatDistance();
+                if (SYNC_DEBUG) qDebug() << "nothing exists, reset with us " << pSyncable->getBeatDistance();
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
                 setMasterBaseBpm(pSyncable, pSyncable->getBaseBpm());
                 setMasterBpm(pSyncable, pSyncable->getBpm());
-                qDebug() << "ok done with that";
+                if (SYNC_DEBUG) qDebug() << "ok done with that";
             }
             if (playingSyncDeckCount() > 0) {
                 foundPlayingDeck = true;
@@ -172,7 +172,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         } else if (m_pMasterSyncable != NULL) {
             foundPlayingDeck = true;
         }
-        qDebug() << "now activating the follower";
+        if (SYNC_DEBUG) qDebug() << "now activating the follower";
         activateFollower(pSyncable);
         if (foundPlayingDeck) {
             // Users also expect phase to be aligned when they press the sync button.
@@ -185,13 +185,15 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
     if (pSyncable->getSyncMode() == SYNC_NONE) {
+        if (SYNC_DEBUG) qDebug() << "irrelevent";
         return;
     }
 
     if (m_pMasterSyncable == m_pInternalClock) {
+        if (SYNC_DEBUG) qDebug() << "clock is master";
         // If there is only one deck playing, set internal clock beat distance
         // to match it.
         const Syncable* uniqueSyncable = NULL;
@@ -204,9 +206,9 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
             }
         }
         if (playing_sync_decks == 1) {
-            qDebug() << "setting beat distance based on me!";
+            if (SYNC_DEBUG) qDebug() << "setting beat distance based on me!";
             m_pInternalClock->setMasterBeatDistance(uniqueSyncable->getBeatDistance());
-        }
+        } else { qDebug() << "how many? " <<playing_sync_decks;}
     }
 }
 
@@ -250,14 +252,15 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
-    //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
+        if (SYNC_DEBUG) qDebug() << "rejected";
         return;
     }
 
-//    qDebug() << "setting master beat distance " << beat_distance;
+//    if (SYNC_DEBUG) qDebug() << "setting master beat distance " << beat_distance;
     setMasterBeatDistance(pSyncable, beat_distance);
-//    qDebug() << "done setting master distance";
+//    if (SYNC_DEBUG) qDebug() << "done setting master distance";
 }
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
@@ -266,15 +269,15 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
         return;
     }
 
-    qDebug() << "activating follower mode";
+    if (SYNC_DEBUG) qDebug() << "activating follower mode";
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
-    qDebug() << "setting master distance " << masterBeatDistance();
+    if (SYNC_DEBUG) qDebug() << "setting master distance " << masterBeatDistance();
     pSyncable->setMasterBeatDistance(masterBeatDistance());
-    qDebug() << "setting base bpm " << masterBaseBpm();
+    if (SYNC_DEBUG) qDebug() << "setting base bpm " << masterBaseBpm();
     pSyncable->setBaseBpm(masterBaseBpm());
-    qDebug() << "setting master bpm " << masterBpm();
+    if (SYNC_DEBUG) qDebug() << "setting master bpm " << masterBpm();
     pSyncable->setBpm(masterBpm());
-    qDebug() << "done activating follower";
+    if (SYNC_DEBUG) qDebug() << "done activating follower";
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable) {

@@ -88,6 +88,7 @@ class SyncControl : public EngineControl, public Syncable {
     // Sometimes it's best to match bpms based on half or double the target
     // bpm.  e.g. 70 matches better with 140/2.
     double determineBpmMultiplier(double targetBpm) const;
+    void updateTargetBeatDistance();
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -104,6 +105,7 @@ class SyncControl : public EngineControl, public Syncable {
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     double m_syncBpmMultiplier;
     double m_syncUnmultipliedTargetDistance;
+    double m_beatDistance;
 
 
     QScopedPointer<ControlPushButton> m_pSyncMode;

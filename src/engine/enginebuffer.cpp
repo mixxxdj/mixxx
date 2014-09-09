@@ -1129,7 +1129,7 @@ void EngineBuffer::processSeek() {
 
 void EngineBuffer::postProcess(const int iBufferSize) {
     double beat_distance = m_pBpmControl->updateBeatDistance();
-    //qDebug() <<getGroup() << " POST PROCESS beat dist " << beat_distance;
+    if (SYNC_DEBUG) qDebug() <<getGroup() << " POST PROCESS beat dist " << beat_distance;
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (mode == SYNC_MASTER) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
@@ -1138,6 +1138,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
         m_pSyncControl->setBeatDistance(beat_distance);
     }
+    if (SYNC_DEBUG) qDebug() <<getGroup() << "END POST PROC";
 
     // Update all the indicators that EngineBuffer publishes to allow
     // external parts of Mixxx to observe its status.

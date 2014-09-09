@@ -75,14 +75,14 @@ void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
 
 double InternalClock::getBeatDistance() const {
     if (m_dBeatLength <= 0) {
-        qDebug() << "ERROR: InternalClock beat length should never be less than zero";
+        if (SYNC_DEBUG) qDebug() << "ERROR: InternalClock beat length should never be less than zero";
         return 0.0;
     }
     return m_dClockPosition / m_dBeatLength;
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
+    if (SYNC_DEBUG) qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
     // this is needed so the oldbeatdistance works, but setting it here causes
     // things to be off in other tests because we've advanced an extra buffer.
     m_dClockPosition = beatDistance * m_dBeatLength;
@@ -104,13 +104,13 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setBpm(double bpm) {
-    //qDebug() << "InternalClock::setBpm" << bpm;
+    if (SYNC_DEBUG) qDebug() << "InternalClock::setBpm" << bpm;
     m_pClockBpm->set(bpm);
     updateBeatLength(m_iOldSampleRate, bpm);
 }
 
 void InternalClock::setInstantaneousBpm(double bpm) {
-    //qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
+    if (SYNC_DEBUG) qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
     // Do nothing.
     Q_UNUSED(bpm);
 }
@@ -145,12 +145,12 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     // that last term is 1 over bpm.
 
     if (qFuzzyCompare(bpm, 0)) {
-        qDebug() << "WARNING: Master bpm reported to be zero, internal clock guessing 60bpm";
+        if (SYNC_DEBUG) qDebug() << "WARNING: Master bpm reported to be zero, internal clock guessing 60bpm";
         m_dBeatLength = sampleRate;
     } else {
         m_dBeatLength = (sampleRate * 60.0) / bpm;
         if (m_dBeatLength <= 0) {
-            qDebug() << "WARNING: Tried to set samples per beat <=0";
+            if (SYNC_DEBUG) qDebug() << "WARNING: Tried to set samples per beat <=0";
             m_dBeatLength = sampleRate;
         }
     }
@@ -159,7 +159,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     m_iOldSampleRate = sampleRate;
 
     // Restore the old beat distance.
-    qDebug() << "RESTORE BEAT DISTANCE!";
+    if (SYNC_DEBUG) qDebug() << "RESTORE BEAT DISTANCE!";
     setMasterBeatDistance(oldBeatDistance);
 }
 
@@ -177,7 +177,7 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
 
     // Can't use mod because we're in double land.
     if (m_dBeatLength <= 0) {
-        qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
+        if (SYNC_DEBUG) qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
                  << "setting to about 124 bpm at 44.1Khz.";
         m_dBeatLength = 21338;
     }
@@ -187,7 +187,7 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     }
 
     double beat_distance = getBeatDistance();
-    //qDebug() << "[InternalClock] beat dist " << beat_distance;
+    if (SYNC_DEBUG) qDebug() << "[InternalClock] beat dist " << beat_distance;
     m_pClockBeatDistance->set(beat_distance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
