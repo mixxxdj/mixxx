@@ -166,9 +166,6 @@ double SyncControl::getBeatDistance() const {
 }
 
 void SyncControl::setBeatDistance(double beatDistance) {
-////     When this is called, my sync beat distance is out of date compared to
-////     the master sync beat distance.  Reversing processing order just gets
-////     it backward -- mydist is up to date, but target isn't.
     m_beatDistance = beatDistance;
     updateTargetBeatDistance();
     if (SYNC_DEBUG) qDebug() << getGroup() << " my beat dist " << beatDistance << " target " <<

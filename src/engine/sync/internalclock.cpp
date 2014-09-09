@@ -75,7 +75,7 @@ void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
 
 double InternalClock::getBeatDistance() const {
     if (m_dBeatLength <= 0) {
-        if (SYNC_DEBUG) qDebug() << "ERROR: InternalClock beat length should never be less than zero";
+        qDebug() << "ERROR: InternalClock beat length should never be less than zero";
         return 0.0;
     }
     return m_dClockPosition / m_dBeatLength;
@@ -83,8 +83,6 @@ double InternalClock::getBeatDistance() const {
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
     if (SYNC_DEBUG) qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
-    // this is needed so the oldbeatdistance works, but setting it here causes
-    // things to be off in other tests because we've advanced an extra buffer.
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.

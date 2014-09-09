@@ -289,7 +289,6 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 //        pChannelInfo.previous()->m_pChannel->postProcess(iBufferSize);
         pChannelInfo->m_pChannel->postProcess(iBufferSize);
     }
-    m_pMasterSync->onCallbackEnd(static_cast<int>(m_pMasterSampleRate->get()), iBufferSize);
 }
 
 void EngineMaster::process(const int iBufferSize) {
@@ -318,6 +317,7 @@ void EngineMaster::process(const int iBufferSize) {
     m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
     // Prepare each channel for output
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
+    m_pMasterSync->onCallbackEnd(iSampleRate, iBufferSize);
     if(SYNC_DEBUG) qDebug() << "enginemaster bottom";
     // Do internal master sync post-processing;
 

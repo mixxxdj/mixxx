@@ -60,14 +60,11 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         } else if (channelIsMaster) {
             // Was this deck master before? If so do a handoff.
             m_pMasterSyncable = NULL;
-            //qDebug() << "was master, activate follower";
             activateFollower(pSyncable);
             // Hand off to the internal clock and keep the current BPM and beat
             // distance.
             if (SYNC_DEBUG) qDebug() << "activate internal clock!";
             activateMaster(m_pInternalClock);
-            //qDebug() << "activate follower again????";
-            //activateFollower(pSyncable);
         } else if (m_pMasterSyncable == NULL) {
             // If no master active, activate the internal clock.
             if (SYNC_DEBUG) qDebug() << "NO CURRENT MASTER";
@@ -95,7 +92,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    if (SYNC_DEBUG) qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
+    //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
@@ -185,10 +182,9 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
     if (pSyncable->getSyncMode() == SYNC_NONE) {
-        if (SYNC_DEBUG) qDebug() << "irrelevent";
         return;
     }
 
@@ -208,7 +204,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         if (playing_sync_decks == 1) {
             if (SYNC_DEBUG) qDebug() << "setting beat distance based on me!";
             m_pInternalClock->setMasterBeatDistance(uniqueSyncable->getBeatDistance());
-        } else { qDebug() << "how many? " <<playing_sync_decks;}
+        }
     }
 }
 
@@ -252,9 +248,8 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
-    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+    //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
-        if (SYNC_DEBUG) qDebug() << "rejected";
         return;
     }
 
