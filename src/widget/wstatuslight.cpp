@@ -86,36 +86,6 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WStatusLight::setPixmap(int iState, const QString& filename, SizeMode mode) {
-    if (iState < 0 || iState >= m_pixmaps.size()) {
-        return;
-    }
-
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
-                                                          Paintable::STRETCH);
-
-    if (!pPixmap.isNull() && !pPixmap->isNull()) {
-        m_pixmaps[iState] = pPixmap;
-
-        switch (mode) {
-            case RESIZE:
-                // Allow the pixmap to stretch or tile.
-                setBaseSize(pPixmap->size());
-                break;
-            case FIXED:
-                // Set size of widget equal to pixmap size
-                setFixedSize(pPixmap->size());
-                break;
-            default:
-                setFixedSize(pPixmap->size());
-                break;
-        }
-    } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << filename << iState;
-        m_pixmaps[iState].clear();
-    }
-}
-
 void WStatusLight::setPixmap(int iState, PixmapSource* source, SizeMode mode) {
     if (iState < 0 || iState >= m_pixmaps.size()) {
         return;

@@ -52,7 +52,6 @@ class WStatusLight : public WWidget  {
     void paintEvent(QPaintEvent *);
 
   private:
-    void setPixmap(int iState, const QString &filename, SizeMode mode);
     void setPixmap(int iState, PixmapSource* source, SizeMode mode);
     void setNoPos(int iNoPos);
 
