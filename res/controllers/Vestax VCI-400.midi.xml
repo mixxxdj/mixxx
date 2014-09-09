@@ -728,7 +728,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button8Activate</key>
+                <key>VestaxVCI400.padbutton8Activate</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x92</status>
                 <midino>0x0E</midino>
@@ -738,7 +738,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button8Activate</key>
+                <key>VestaxVCI400.padbutton8Activate</key>
                 <description>MIDI Learned from 18 messages.</description>
                 <status>0x93</status>
                 <midino>0x0E</midino>
@@ -748,7 +748,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button7Activate</key>
+                <key>VestaxVCI400.padbutton7Activate</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x92</status>
                 <midino>0x0D</midino>
@@ -758,7 +758,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button8Activate</key>
+                <key>VestaxVCI400.padbutton8Activate</key>
                 <description>MIDI Learned from 10 messages.</description>
                 <status>0x94</status>
                 <midino>0x0E</midino>
@@ -768,7 +768,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button7Activate</key>
+                <key>VestaxVCI400.padbutton7Activate</key>
                 <description>MIDI Learned from 20 messages.</description>
                 <status>0x93</status>
                 <midino>0x0D</midino>
@@ -778,7 +778,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button6Activate</key>
+                <key>VestaxVCI400.padbutton6Activate</key>
                 <status>0x92</status>
                 <midino>0x0C</midino>
                 <options>
@@ -787,7 +787,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button8Activate</key>
+                <key>VestaxVCI400.padbutton8Activate</key>
                 <description>MIDI Learned from 26 messages.</description>
                 <status>0x95</status>
                 <midino>0x0E</midino>
@@ -797,7 +797,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button7Activate</key>
+                <key>VestaxVCI400.padbutton7Activate</key>
                 <description>MIDI Learned from 12 messages.</description>
                 <status>0x94</status>
                 <midino>0x0D</midino>
@@ -807,7 +807,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button6Activate</key>
+                <key>VestaxVCI400.padbutton6Activate</key>
                 <status>0x93</status>
                 <midino>0x0C</midino>
                 <options>
@@ -816,7 +816,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button5Activate</key>
+                <key>VestaxVCI400.padbutton5Activate</key>
                 <description>MIDI Learned from 8 messages.</description>
                 <status>0x92</status>
                 <midino>0x0B</midino>
@@ -826,7 +826,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button7Activate</key>
+                <key>VestaxVCI400.padbutton7Activate</key>
                 <description>MIDI Learned from 28 messages.</description>
                 <status>0x95</status>
                 <midino>0x0D</midino>
@@ -836,7 +836,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button6Activate</key>
+                <key>VestaxVCI400.padbutton6Activate</key>
                 <status>0x94</status>
                 <midino>0x0C</midino>
                 <options>
@@ -845,7 +845,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button5Activate</key>
+                <key>VestaxVCI400.padbutton5Activate</key>
                 <description>MIDI Learned from 24 messages.</description>
                 <status>0x93</status>
                 <midino>0x0B</midino>
@@ -855,7 +855,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button4Activate</key>
+                <key>VestaxVCI400.padbutton4Activate</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x92</status>
                 <midino>0x0A</midino>
@@ -865,7 +865,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button6Activate</key>
+                <key>VestaxVCI400.padbutton6Activate</key>
                 <status>0x95</status>
                 <midino>0x0C</midino>
                 <options>
@@ -874,7 +874,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button5Activate</key>
+                <key>VestaxVCI400.padbutton5Activate</key>
                 <description>MIDI Learned from 16 messages.</description>
                 <status>0x94</status>
                 <midino>0x0B</midino>
@@ -884,7 +884,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button4Activate</key>
+                <key>VestaxVCI400.padbutton4Activate</key>
                 <description>MIDI Learned from 16 messages.</description>
                 <status>0x93</status>
                 <midino>0x0A</midino>
@@ -894,7 +894,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button3Activate</key>
+                <key>VestaxVCI400.padbutton3Activate</key>
                 <description>MIDI Learned from 6 messages.</description>
                 <status>0x92</status>
                 <midino>0x09</midino>
@@ -904,7 +904,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button5Activate</key>
+                <key>VestaxVCI400.padbutton5Activate</key>
                 <description>MIDI Learned from 32 messages.</description>
                 <status>0x95</status>
                 <midino>0x0B</midino>
@@ -914,7 +914,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button4Activate</key>
+                <key>VestaxVCI400.padbutton4Activate</key>
                 <description>MIDI Learned from 12 messages.</description>
                 <status>0x94</status>
                 <midino>0x0A</midino>
@@ -924,7 +924,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button3Activate</key>
+                <key>VestaxVCI400.padbutton3Activate</key>
                 <description>MIDI Learned from 18 messages.</description>
                 <status>0x93</status>
                 <midino>0x09</midino>
@@ -934,7 +934,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button2Activate</key>
+                <key>VestaxVCI400.padbutton2Activate</key>
                 <status>0x92</status>
                 <midino>0x08</midino>
                 <options>
@@ -943,7 +943,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button4Activate</key>
+                <key>VestaxVCI400.padbutton4Activate</key>
                 <description>MIDI Learned from 22 messages.</description>
                 <status>0x95</status>
                 <midino>0x0A</midino>
@@ -953,7 +953,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button3Activate</key>
+                <key>VestaxVCI400.padbutton3Activate</key>
                 <description>MIDI Learned from 10 messages.</description>
                 <status>0x94</status>
                 <midino>0x09</midino>
@@ -963,7 +963,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button2Activate</key>
+                <key>VestaxVCI400.padbutton2Activate</key>
                 <status>0x93</status>
                 <midino>0x08</midino>
                 <options>
@@ -972,7 +972,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.button1Activate</key>
+                <key>VestaxVCI400.padbutton1Activate</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x92</status>
                 <midino>0x07</midino>
@@ -982,7 +982,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button3Activate</key>
+                <key>VestaxVCI400.padbutton3Activate</key>
                 <description>MIDI Learned from 24 messages.</description>
                 <status>0x95</status>
                 <midino>0x09</midino>
@@ -992,7 +992,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button2Activate</key>
+                <key>VestaxVCI400.padbutton2Activate</key>
                 <status>0x94</status>
                 <midino>0x08</midino>
                 <options>
@@ -1001,7 +1001,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>VestaxVCI400.button1Activate</key>
+                <key>VestaxVCI400.padbutton1Activate</key>
                 <description>MIDI Learned from 14 messages.</description>
                 <status>0x93</status>
                 <midino>0x07</midino>
@@ -1021,7 +1021,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button2Activate</key>
+                <key>VestaxVCI400.padbutton2Activate</key>
                 <status>0x95</status>
                 <midino>0x08</midino>
                 <options>
@@ -1030,7 +1030,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.button1Activate</key>
+                <key>VestaxVCI400.padbutton1Activate</key>
                 <description>MIDI Learned from 26 messages.</description>
                 <status>0x94</status>
                 <midino>0x07</midino>
@@ -1060,7 +1060,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>VestaxVCI400.button1Activate</key>
+                <key>VestaxVCI400.padbutton1Activate</key>
                 <description>MIDI Learned from 20 messages.</description>
                 <status>0x95</status>
                 <midino>0x07</midino>
