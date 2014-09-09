@@ -616,6 +616,7 @@
                 <midino>0x32</midino>
                 <options>
                     <fourteen-bit-lsb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -645,6 +646,7 @@
                 <midino>0x32</midino>
                 <options>
                     <fourteen-bit-lsb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -685,6 +687,7 @@
                 <midino>0x32</midino>
                 <options>
                     <fourteen-bit-lsb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -704,6 +707,7 @@
                 <midino>0x32</midino>
                 <options>
                     <fourteen-bit-lsb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1472,6 +1476,7 @@
                 <midino>0x12</midino>
                 <options>
                     <fourteen-bit-msb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1491,6 +1496,7 @@
                 <midino>0x12</midino>
                 <options>
                     <fourteen-bit-msb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1520,6 +1526,7 @@
                 <midino>0x12</midino>
                 <options>
                     <fourteen-bit-msb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1558,6 +1565,7 @@
                 <midino>0x12</midino>
                 <options>
                     <fourteen-bit-msb/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
