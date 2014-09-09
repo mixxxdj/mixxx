@@ -76,17 +76,6 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
-    m_pSlider = WPixmapStore::getPaintable(filenameSlider,
-                                           Paintable::STRETCH);
-    if (!m_pSlider) {
-        qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
-    } else {
-        // Set size of widget, using size of slider pixmap
-        setFixedSize(m_pSlider->size());
-    }
-}
-
 void WSliderComposed::setSliderPixmap(PixmapSource* pSourceSlider) {
     m_pSlider = WPixmapStore::getPaintable(pSourceSlider,
                                            Paintable::STRETCH);
@@ -95,22 +84,6 @@ void WSliderComposed::setSliderPixmap(PixmapSource* pSourceSlider) {
     } else {
         // Set size of widget, using size of slider pixmap
         setFixedSize(m_pSlider->size());
-    }
-}
-
-void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameHandle) {
-    m_bHorizontal = bHorizontal;
-    m_pHandle = WPixmapStore::getPaintable(filenameHandle,
-                                           Paintable::STRETCH);
-    if (!m_pHandle) {
-        qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
-    } else {
-        m_iHandleLength = m_bHorizontal ?
-                m_pHandle->width() : m_pHandle->height();
-
-        // Value is unused in WSliderComposed.
-        onConnectedControlChanged(getControlParameter(), 0);
-        update();
     }
 }
 
