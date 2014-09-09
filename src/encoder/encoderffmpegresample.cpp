@@ -28,8 +28,7 @@ EncoderFfmpegResample::~EncoderFfmpegResample() {
 #ifndef __FFMPEGOLDAPI__
 
 #ifdef __LIBAVRESAMPLE__
-        avresample_close(m_pSwrCtx);
-        av_free(m_pSwrCtx);
+        avresample_free(&m_pSwrCtx);
 #else
         swr_free(&m_pSwrCtx);
 #endif // __LIBAVRESAMPLE__
