@@ -18,7 +18,8 @@ Waveform::Waveform(const QByteArray data)
     readByteArray(data);
 }
 
-Waveform::~Waveform() {
+Waveform::~Waveform() { 
+    m_data.resize(0);
     delete m_mutex;
 }
 
