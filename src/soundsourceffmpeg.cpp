@@ -672,33 +672,23 @@ QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {
             break;
         }
 
-        // qDebug() << l_SInputFmt->name;
-
         if (!strcmp(l_SInputFmt->name, "flac")) {
-            list.push_back("flac");
-            qDebug() << "FFPEG Decode: FLAC";
+            list.append("flac");
         } else if (!strcmp(l_SInputFmt->name, "ogg")) {
-            list.push_back("ogg");
-            qDebug() << "FFMPEG Decode: Ogg/Vorbis";
+            list.append("ogg");
         } else if (!strcmp(l_SInputFmt->name, "mov,mp4,m4a,3gp,3g2,mj2")) {
-            list.push_back("m4a");
-            qDebug() << "FFMPEG Decode: Apple m4a";
+            list.append("m4a");
         } else if (!strcmp(l_SInputFmt->name, "mp4")) {
-            list.push_back("mp4");
-            qDebug() << "FFMPEG Decode: Mp4";
+            list.append("mp4");
         } else if (!strcmp(l_SInputFmt->name, "mp3")) {
-            list.push_back("mp3");
-            qDebug() << "FFMPEG Decode: Mp3";
+            list.append("mp3");
         } else if (!strcmp(l_SInputFmt->name, "aac")) {
-            list.push_back("aac");
-            qDebug() << "FFMPEG Decode: Apple AAC";
+            list.append("aac");
         } else if (!strcmp(l_SInputFmt->name, "opus") ||
                    !strcmp(l_SInputFmt->name, "libopus")) {
-            list.push_back("opus");
-            qDebug() << "FFMPEG Decode: Opus";
+            list.append("opus");
         } else if (!strcmp(l_SInputFmt->name, "wma")) {
-            list.push_back("xwma");
-            qDebug() << "FFMPEG Decode: WMA";
+            list.append("wma");
         }
     }
 
