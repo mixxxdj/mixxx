@@ -19,6 +19,7 @@
 #include "playermanager.h"
 #include "util/dnd.h"
 #include "dlgpreflibrary.h"
+#include "waveform/guitick.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -31,7 +32,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_DlgTagFetcher(NULL),
           m_sorting(sorting),
           m_iCoverLocationColumn(-1),
-          m_iMd5Column(-1) {
+          m_iMd5Column(-1),
+          m_iCoverColumn(-1),
+          m_lastSelection(0.0),
+          m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
     m_pTrackInfo = new DlgTrackInfo(NULL, m_DlgTagFetcher);
@@ -88,9 +92,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
 
-    // control the delay to load the next cover art
-    m_lastSelection = 0.0;
-    m_bLastCoverLoaded = true;
     m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTickTime(double)));
@@ -140,45 +141,51 @@ WTrackTableView::~WTrackTableView() {
     delete m_pCOTGuiTickTime;
 }
 
-void WTrackTableView::slotScrollValueChanged(int) {
-    if (m_bLastCoverLoaded) {
+void WTrackTableView::enableCachedOnly() {
+    if (!m_loadCachedOnly) {
         // don't try to load and search covers, drawing only
         // covers which are already in the QPixmapCache.
         emit(onlyCachedCoverArt(true));
+        m_loadCachedOnly = true;
     }
-    m_bLastCoverLoaded = false;
-    m_lastSelection = m_pCOTGuiTickTime->get();
+    double currentTime = GuiTick::cpuTimeNow();
+    //qDebug() << "WTrackTableView::enableCachedOnly()" << currentTime - m_lastSelection;
+    m_lastSelection = currentTime;
+}
+
+void WTrackTableView::slotScrollValueChanged(int) {
+    enableCachedOnly();
 }
 
 void WTrackTableView::selectionChanged(const QItemSelection &selected,
                                        const QItemSelection &deselected) {
-    Q_UNUSED(selected);
-    Q_UNUSED(deselected);
+    enableCachedOnly();
+    emitLoadCoverArt(true);
 
-    if (m_bLastCoverLoaded) {
-        // load default cover art
-        emit(loadCoverArt("", "", 0));
-        // don't try to load and search covers, drawing only
-        // covers which are already in the QPixmapCache.
-        emit(onlyCachedCoverArt(true));
-    }
-    m_bLastCoverLoaded = false;
-    m_lastSelection = m_pCOTGuiTickTime->get();
-    update();
+    QTableView::selectionChanged(selected, deselected);
 }
 
 void WTrackTableView::slotGuiTickTime(double cpuTime) {
-    // if the user is stoped in the same row for more than 0.05s,
-    // we load the cover art once.
-    if (!m_bLastCoverLoaded) {
-        if (cpuTime >= m_lastSelection + 0.05) {
-            slotLoadCoverArt();
-            m_bLastCoverLoaded = true;
+    // if the user is stopped in the same row for more than 0.1 s,
+    // we load un-cached cover arts as well.
+    if (m_loadCachedOnly && cpuTime >= m_lastSelection + 0.1) {
+        emitLoadCoverArt(false);
+        // it will allows CoverCache to load and search covers normally
+        emit(onlyCachedCoverArt(false));
+        m_loadCachedOnly = false;
+
+        // Invalidate (refresh) cover column
+        if (m_iCoverColumn > 0) {
+            QModelIndex top = indexAt(QPoint(0, 0));
+            top = top.sibling(top.row(), m_iCoverColumn);
+            QModelIndex bottom = indexAt(QPoint(0, height()));
+            bottom = bottom.sibling(bottom.row(), m_iCoverColumn);
+            dataChanged(top, bottom);
         }
     }
 }
 
-void WTrackTableView::slotLoadCoverArt() {
+void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
     if (m_iCoverLocationColumn < 0 || m_iMd5Column < 0) {
         return;
     }
@@ -197,26 +204,23 @@ void WTrackTableView::slotLoadCoverArt() {
                                 m_iCoverLocationColumn).data().toString();
         }
     }
-    emit(loadCoverArt(coverLocation, md5Hash, trackId));
-    // it will allows CoverCache to load and search covers normally
-    emit(onlyCachedCoverArt(false));
-    update();
+    emit(loadCoverArt(coverLocation, md5Hash, trackId, cachedOnly));
 }
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
-    TrackModel* track_model = dynamic_cast<TrackModel*>(model);
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
     Q_ASSERT(model);
-    Q_ASSERT(track_model);
+    Q_ASSERT(trackModel);
 
     /* If the model has not changed
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
      */
-    if (getTrackModel() == track_model) {
+    if (getTrackModel() == trackModel) {
         // Re-sort the table even if the track model is the same. This triggers
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection());
@@ -227,8 +231,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // by slotLoadCoverArt(). As this value will not change when the model
     // still the same, we must avoid doing hundreds of "fieldIndex" calls
     // when it is completely unnecessary...
-    m_iCoverLocationColumn = track_model->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
-    m_iMd5Column = track_model->fieldIndex(LIBRARYTABLE_COVERART_MD5);
+    m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
+    m_iMd5Column = trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
+    m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
 
     setVisible(false);
 
@@ -281,7 +286,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        QAbstractItemDelegate* delegate = track_model->delegateForColumn(i, this);
+        QAbstractItemDelegate* delegate = trackModel->delegateForColumn(i, this);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
@@ -290,7 +295,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         delete old_delegate;
 
         // Show or hide the column based on whether it should be shown or not.
-        if (track_model->isColumnInternal(i)) {
+        if (trackModel->isColumnInternal(i)) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
@@ -299,7 +304,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
          * contain a potential large number of NULL values.  This will hide the
          * key colum by default unless the user brings it to front
          */
-        if (track_model->isColumnHiddenByDefault(i) &&
+        if (trackModel->isColumnHiddenByDefault(i) &&
             !header->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
@@ -320,12 +325,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
                                                  horizontalHeader()->sortIndicatorOrder());
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
-            int sortColumn = track_model->defaultSortColumn();
-            Qt::SortOrder sortOrder = track_model->defaultSortOrder();
+            int sortColumn = trackModel->defaultSortColumn();
+            Qt::SortOrder sortOrder = trackModel->defaultSortOrder();
 
             // If the TrackModel has an invalid or internal column as its default
             // sort, find the first non-internal column and sort by that.
-            while (sortColumn < 0 || track_model->isColumnInternal(sortColumn)) {
+            while (sortColumn < 0 || trackModel->isColumnInternal(sortColumn)) {
                 sortColumn++;
             }
             // This line sorts the TrackModel and in turn generates a select()
@@ -941,7 +946,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
-    // qDebug() << "MouseMoveEvent";
+    //qDebug() << "MouseMoveEvent";
     // Iterate over selected rows and append each item's location url to a list.
     QList<QString> locations;
     QModelIndexList indices = selectionModel()->selectedRows();

@@ -6,6 +6,8 @@
 
 // static
 double GuiTick::m_cpuTime = 0.0;
+// static
+PerformanceTimer GuiTick::m_cpuTimer;
 
 GuiTick::GuiTick(QObject* pParent)
         : QObject(pParent),
@@ -34,7 +36,16 @@ void GuiTick::process() {
     }
 }
 
+// Must called from the GUI thread only
 // static
-double GuiTick::cpuTime() {
+double GuiTick::cpuTimeLastTick() {
     return m_cpuTime;
+}
+
+// Must called from the GUI thread only
+// static
+double GuiTick::cpuTimeNow() {
+    qint64 elapsedNs = m_cpuTimer.elapsed();
+    double elapsedS = elapsedNs / 1000000000.0;
+    return m_cpuTime + elapsedS;
 }

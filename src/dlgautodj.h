@@ -52,7 +52,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void loadTrackToPlayer(TrackPointer tio, QString group, bool);
     void loadCoverArt(const QString& coverLocation,
                       const QString& md5Hash,
-                      int trackId);
+                      int trackId, bool cachedOnly);
 
   private:
     enum ADJstates {

@@ -29,7 +29,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
   signals:
     void loadCoverArt(const QString& coverLocation,
                       const QString& md5Hash,
-                      int trackId);
+                      int trackId, bool cachedOnly);
 
   private:
     void activateButtons(bool enable);
