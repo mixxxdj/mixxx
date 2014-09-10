@@ -43,9 +43,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_pEffectsManager(pEffectsManager) {
 
     // Get the EQ Effect Rack
-    int iEqRackNumber = m_pEffectsManager->getEffectChainManager()
-                                                   ->getEffectRacksSize();
-    m_pEQEffectRack = m_pEffectsManager->getEffectRack(iEqRackNumber - 1).data();
+    m_pEQEffectRack = m_pEffectsManager->getEQEffectRack().data();
 
     setupUi(this);
 
