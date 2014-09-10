@@ -239,6 +239,8 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                             l_iCount --;
                         }
                     } else {
+                        free(l_SObj);
+                        l_SObj = NULL;
                         qDebug() <<
                                  "SoundSourceFFmpeg::readFramesToCache: General error in audio decode:" <<
                                  l_iRet;
@@ -388,10 +390,10 @@ Result SoundSourceFFmpeg::open() {
     m_pFormatCtx = avformat_alloc_context();
 
 // Enable this to use old slow MP3 Xing TOC
-#if LIBAVCODEC_VERSION_INT > 3544932
-    qDebug() << "Using MP3 Xing TOC if needed";
-    av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
-#endif
+//#if LIBAVCODEC_VERSION_INT > 3544932
+//    qDebug() << "Using MP3 Xing TOC if needed";
+//    av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
+//#endif
 
     m_pFormatCtx->max_analyze_duration = 999999999;
     // lock();
@@ -556,18 +558,18 @@ Result SoundSourceFFmpeg::parseHeader() {
     qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << m_qFilename;
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 
-    AVFormatContext * FmtCtx = avformat_alloc_context();
-    AVCodecContext * CodecCtx;
+    AVFormatContext *FmtCtx = avformat_alloc_context();
+    AVCodecContext *CodecCtx;
     AVDictionaryEntry *FmtTag = NULL;
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
     // Enable this to use old slow MP3 Xing TOC
-#ifndef CODEC_ID_MP3
-    if (LIBAVFORMAT_VERSION_INT > 3540580) {
-        av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
-    }
-#endif
+// #ifndef CODEC_ID_MP3
+//    if (LIBAVFORMAT_VERSION_INT > 3540580) {
+//        av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
+//    }
+// #endif
     lock();
     if (avformat_open_input(&FmtCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts) !=0) {
@@ -654,7 +656,9 @@ Result SoundSourceFFmpeg::parseHeader() {
     this->setSampleRate(CodecCtx->sample_rate);
     this->setChannels(CodecCtx->channels);
     lock();
+    avcodec_close(m_pCodecCtx);
     avformat_close_input(&FmtCtx);
+    av_free(FmtCtx);
     unlock();
     return OK;
 }
