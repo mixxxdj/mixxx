@@ -183,6 +183,12 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
     return m_pEffectChainManager->getEffectRack(i);
 }
 
+EffectRackPointer EffectsManager::getEQEffectRack() {
+    // The EQ Rack is the last one
+    int eqRackNumber = m_pEffectChainManager->getEffectRacksSize();
+    return m_pEffectChainManager->getEffectRack(eqRackNumber - 1);
+}
+
 void EffectsManager::addEqualizer(int channelNumber) {
     int rackNum = getEffectChainManager()->getEffectRacksSize();
     EffectRackPointer pRack = getEffectRack(rackNum - 1);
