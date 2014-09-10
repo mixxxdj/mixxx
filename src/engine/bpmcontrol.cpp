@@ -25,7 +25,8 @@ BpmControl::BpmControl(const char* _group,
         m_dPreviousSample(0),
         m_dSyncTargetBeatDistance(0.0),
         m_dSyncInstantaneousBpm(0.0),
-        m_dSyncAdjustment(1.0),
+        m_dLastSyncAdjustment(1.0),
+        m_resetSyncAdjustment(false),
         m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
@@ -141,7 +142,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
         slotAdjustRateSlider();
     }
     m_dUserOffset = 0.0;
-    m_dSyncAdjustment = 1.0;
+    m_resetSyncAdjustment = true;
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
@@ -327,17 +328,6 @@ bool BpmControl::syncTempo() {
     return false;
 }
 
-double BpmControl::getSyncedRate() const {
-    // x2, /2 sync ratios are all handled in synccontrol.cpp and are transparent
-    // in this class.
-    if (m_pFileBpm->get() == 0.0) {
-        // XXX TODO: what to do about this case
-        return 1.0;
-    } else {
-        return m_dSyncInstantaneousBpm / m_pFileBpm->get();
-    }
-}
-
 // static
 double BpmControl::shortestPercentageChange(const double& current_percentage,
                                             const double& target_percentage) {
@@ -374,48 +364,57 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
     }
 }
 
-double BpmControl::getSyncAdjustment(bool userTweakingSync) {
-    // This runs when ratecontrol wants to know what rate to use.
-
-    if (m_pBeats == NULL) {
-        // No beat information.
-        return 1.0;
-    }
-    if (getSyncMode() == SYNC_MASTER) {
-        m_dSyncAdjustment = 1.0;
-        return m_dSyncAdjustment;
-    }
-    if (m_pReverseButton->get()) {
-        // If we are going backwards, we can't do the math correctly.
-        m_dSyncAdjustment = 1.0;
-        return m_dSyncAdjustment;
+double BpmControl::calcSyncedRate(double userTweak) {
+    double rate = 1.0;
+    // Don't know what to do if there's no bpm.
+    if (m_pFileBpm->get() != 0.0) {
+        rate = m_dSyncInstantaneousBpm / m_pFileBpm->get();
     }
 
-    // This is the deck position at the start of the callback.
+    // If we are not quantized, or there are no beats, or we're master,
+    // or we're in reverse, just return the rate as-is.
+    if (!m_pQuantize->get() ||
+        getSyncMode() == SYNC_MASTER ||
+        m_pBeats == NULL ||
+        m_pReverseButton->get()) {
+        m_resetSyncAdjustment = true;
+        return rate;
+    }
+
+    // Now we need to get our beat distance so we can figure out how
+    // out of phase we are.
     double dThisPosition = getCurrentSample();
-    double dPrevBeat;
-    double dNextBeat;
     double dBeatLength;
     double my_percentage;
 
     if (!BpmControl::getBeatContext(m_pBeats, dThisPosition,
-                                    &dPrevBeat, &dNextBeat,
+                                    NULL, NULL,
                                     &dBeatLength, &my_percentage, 0.01)) {
-        return 1.0;
+        m_resetSyncAdjustment = true;
+        return rate;
     }
 
-    // If we aren't quantized or we are in a <1 beat loop, don't worry about
-    // offset.
+    // Now that we have our beat distance we can also check how large the
+    // current loop is.  If we are in a <1 beat loop, don't worry about offset.
     const bool loop_enabled = m_pLoopEnabled->get() > 0.0;
     const double loop_size = (m_pLoopEndPosition->get() -
                               m_pLoopStartPosition->get()) /
                               dBeatLength;
-    if (!m_pQuantize->get() || (loop_enabled && loop_size < 1.0 && loop_size > 0)) {
-        m_dSyncAdjustment = 1.0;
-        return m_dSyncAdjustment;
+    if (loop_enabled && loop_size < 1.0 && loop_size > 0) {
+        m_resetSyncAdjustment = true;
+        return rate;
     }
 
-    double master_percentage = m_dSyncTargetBeatDistance;
+    // Now we have all we need to calculate the sync adjustment if any.
+    double adjustment = calcSyncAdjustment(my_percentage, userTweak != 0.0);
+    return (rate + userTweak) * adjustment;
+}
+
+double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSync) {
+    if (m_resetSyncAdjustment) {
+        m_resetSyncAdjustment = false;
+        m_dLastSyncAdjustment = 1.0;
+    }
 
     // Either shortest distance is directly to the master or backwards.
 
@@ -429,6 +428,8 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     // setpoint should be tracking the true offset in "samples traveled" rather
     // than modular 1.0 beat fractions. This will allow sync to work across loop
     // boundaries too.
+
+    double master_percentage = m_dSyncTargetBeatDistance;
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
@@ -437,9 +438,11 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;*/
 
+    double adjustment = 1.0;
+
     if (userTweakingSync) {
         // Don't do anything else, leave it
-        m_dSyncAdjustment = 1.0;
+        adjustment = 1.0;
         m_dUserOffset = shortest_distance;
     } else {
         double error = shortest_distance - m_dUserOffset;
@@ -452,7 +455,7 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
         const double kSyncAdjustmentCap = 0.05;
         if (fabs(error) > kTrainWreckThreshold) {
             // Assume poor reflexes (late button push) -- speed up to catch the other track.
-            m_dSyncAdjustment = 1.0 + kSyncAdjustmentCap;
+            adjustment = 1.0 + kSyncAdjustmentCap;
         } else if (fabs(error) > kErrorThreshold) {
             // Proportional control constant. The higher this is, the more we
             // influence sync.
@@ -462,19 +465,20 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
             // TODO(owilliams): There are a lot of "1.0"s in this code -- can we eliminate them?
             const double adjust = 1.0 + (-error * kSyncAdjustmentProportional);
             // Cap the difference between the last adjustment and this one.
-            double delta = adjust - m_dSyncAdjustment;
+            double delta = adjust - m_dLastSyncAdjustment;
             delta = math_clamp(delta, -kSyncDeltaCap, kSyncDeltaCap);
 
             // Cap the adjustment between -kSyncAdjustmentCap and +kSyncAdjustmentCap
-            m_dSyncAdjustment = 1.0 + math_clamp(
-                    m_dSyncAdjustment - 1.0 + delta,
+            adjustment = 1.0 + math_clamp(
+                    m_dLastSyncAdjustment - 1.0 + delta,
                     -kSyncAdjustmentCap, kSyncAdjustmentCap);
         } else {
             // We are in sync, no adjustment needed.
-            m_dSyncAdjustment = 1.0;
+            adjustment = 1.0;
         }
     }
-    return m_dSyncAdjustment;
+    m_dLastSyncAdjustment = adjustment;
+    return adjustment;
 }
 
 double BpmControl::getBeatDistance(double dThisPosition) const {
@@ -685,7 +689,7 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
 
     // reset for new track
     m_dUserOffset = 0.0;
-    m_dSyncAdjustment = 1.0;
+    m_resetSyncAdjustment = true;
 
     if (pTrack) {
         m_pTrack = pTrack;
@@ -704,14 +708,14 @@ void BpmControl::trackUnloaded(TrackPointer pTrack) {
         m_pBeats.clear();
     }
     m_dUserOffset = 0.0;
-    m_dSyncAdjustment = 1.0;
+    m_dLastSyncAdjustment = 1.0;
 }
 
 void BpmControl::slotUpdatedTrackBeats()
 {
     if (m_pTrack) {
         m_dUserOffset = 0.0;
-        m_dSyncAdjustment = 1.0;
+        m_resetSyncAdjustment = true;
         m_pBeats = m_pTrack->getBeats();
     }
 }

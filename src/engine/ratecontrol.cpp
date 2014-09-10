@@ -489,12 +489,8 @@ double RateControl::calculateRate(double baserate, bool paused,
                     return 1.0;
                 }
 
-                rate = m_pBpmControl->getSyncedRate();
                 double userTweak = getTempRate() + wheelFactor + jogFactor;
-                bool userTweakingSync = userTweak != 0.0;
-                rate += userTweak;
-
-                rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
+                rate = m_pBpmControl->calcSyncedRate(userTweak);
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.
