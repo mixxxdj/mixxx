@@ -230,7 +230,8 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     m_pTalkoverDucking->clearKeys();
 
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
-    QList<ChannelInfo*> processed_channels;
+    QList<ChannelInfo*> activeChannels;
+    activeChannels.reserve(m_channels.size());
     it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
@@ -259,15 +260,15 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         if (needsProcessing) {
             if (pChannel == pMasterChannel) {
                 // If this is the sync master, it should be processed first.
-                processed_channels.prepend(pChannelInfo);
+                activeChannels.prepend(pChannelInfo);
             } else {
-                processed_channels.append(pChannelInfo);
+                activeChannels.append(pChannelInfo);
             }
         }
     }
 
     // Now that the list is built and ordered, do the processing.
-    foreach (ChannelInfo* pChannelInfo, processed_channels) {
+    foreach (ChannelInfo* pChannelInfo, activeChannels) {
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
@@ -281,7 +282,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    foreach (ChannelInfo* pChannelInfo, processed_channels) {
+    foreach (ChannelInfo* pChannelInfo, activeChannels) {
         pChannelInfo->m_pChannel->postProcess(iBufferSize);
     }
 }
