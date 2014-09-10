@@ -90,7 +90,7 @@ void EffectRack::slotLoadEffectOnChainSlot(const unsigned int iChainSlotNumber,
     if (!pChain) {
         pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
                                                     EffectChainPointer()));
-        pChain->setName("Empty Chain");
+        pChain->setName(QObject::tr("Empty Chain"));
         pChainSlot->loadEffectChain(pChain);
     }
     pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
@@ -132,7 +132,7 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
     // effect slots on the fly without having to load a chain.
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
                                               EffectChainPointer()));
-    pChain->setName("Empty Chain");
+    pChain->setName(QObject::tr("Empty Chain"));
     pChainSlotPointer->loadEffectChain(pChain);
 
     return pChainSlotPointer;

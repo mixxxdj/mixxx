@@ -42,7 +42,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager) {
 
-    // Initialize the EQ Effect Rack
+    // Get the EQ Effect Rack
     int iEqRackNumber = m_pEffectsManager->getEffectChainManager()
                                                    ->getEffectRacksSize();
     m_pEQEffectRack = m_pEffectsManager->getEffectRack(iEqRackNumber - 1).data();
@@ -63,10 +63,10 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
             this, SLOT(slotShowAllEffects()));
 
-    connect(this, SIGNAL(effectOnChainSlot(const unsigned int,
-                                           const unsigned int, QString)),
-            m_pEQEffectRack, SLOT(slotLoadEffectOnChainSlot(const unsigned int,
-                                           const unsigned int, QString)));
+    connect(this,
+            SIGNAL(effectOnChainSlot(const unsigned int, const unsigned int, QString)),
+            m_pEQEffectRack,
+            SLOT(slotLoadEffectOnChainSlot(const unsigned int, const unsigned int, QString)));
 
     // Set to basic view if a previous configuration is missing
     CheckBoxShowAllEffects->setChecked(m_pConfig->getValueString(
@@ -91,7 +91,7 @@ DlgPrefEQ::~DlgPrefEQ() {
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
     while (m_deckEffectSelectors.size() < static_cast<int>(numDecks)) {
         QHBoxLayout* innerHLayout = new QHBoxLayout();
-        QLabel* label = new QLabel(QString("Deck %1").
+        QLabel* label = new QLabel(QObject::tr("Deck %1").
                             arg(m_deckEffectSelectors.size() + 1), this);
 
         // Create the drop down list and populate it with the available effects
@@ -103,7 +103,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             box->setItemData(i, QVariant(availableEffectNames[i].first));
         }
         // Add an empty effect entry
-        box->addItem("None");
+        box->addItem(QObject::tr("None"));
         box->setItemData(availableEffectNames.size(), "none");
         m_deckEffectSelectors.append(box);
         connect(box, SIGNAL(currentIndexChanged(int)),
@@ -119,7 +119,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             simpleBox->setItemData(i, QVariant(availableEQEffectNames[i].first));
         }
         // Add an empty effect entry
-        simpleBox->addItem("None");
+        simpleBox->addItem(QObject::tr("None"));
         simpleBox->setItemData(availableEQEffectNames.size(), "none");
         m_deckBasicEffectSelectors.append(simpleBox);
         connect(simpleBox, SIGNAL(currentIndexChanged(int)),
