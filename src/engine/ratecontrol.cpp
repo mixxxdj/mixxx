@@ -425,7 +425,7 @@ double RateControl::calculateRate(double baserate, bool paused,
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
         bool useScratch2Value = m_pScratch2Enable->get() != 0;
 
-        // By default scratch2_enable enough to determine if the user is
+        // By default scratch2_enable is enough to determine if the user is
         // scratching or not. Moving platter controllers have to disable
         // "scratch2_indicates_scratching" if they are not scratching,
         // to allow things like key-lock.

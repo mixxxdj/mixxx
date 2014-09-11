@@ -404,10 +404,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
 }
 
 void EngineBuffer::requestSyncPhase() {
-    if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
-        // Only honor phase syncing if quantize is on and playing.
-        m_iSeekQueued = SEEK_PHASE;
-    }
+    m_iSeekQueued = SEEK_PHASE;
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {

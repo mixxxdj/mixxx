@@ -749,6 +749,9 @@ double BpmControl::process(const double dRate,
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(m_dPreviousSample);
     m_pThisBeatDistance->set(beat_distance);
+    if (getSyncMode() == SYNC_NONE) {
+        m_dUserOffset = 0.0;
+    }
     return beat_distance;
 }
 

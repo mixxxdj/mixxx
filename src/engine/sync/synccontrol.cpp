@@ -409,6 +409,11 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
     if (m_bOldScratching ^ scratching) {
         m_pEngineSync->notifyScratching(this, scratching);
         m_bOldScratching = scratching;
+        // When scratching as follower, disable sync.  SYNC_MASTERS are allowed
+        // to scratch :).
+        if (scratching && getSyncMode() == SYNC_FOLLOWER) {
+            m_pEngineSync->requestEnableSync(this, false);
+        }
     }
     // When reporting our speed, remove the multiplier so the masters all
     // think the followers have the same bpm.
