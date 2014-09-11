@@ -12,7 +12,7 @@
 const double kTrackPositionMasterHandoff = 0.99;
 
 const double SyncControl::kBpmUnity = 1.0;
-const double SyncControl::kBpmHalf = 0.5;
+const double SyncControl::kBpmHalve = 0.5;
 const double SyncControl::kBpmDouble = 2.0;
 
 SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
@@ -24,8 +24,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
           m_pBpmControl(NULL),
           m_pRateControl(NULL),
           m_bOldScratching(false),
-          m_syncBpmMultiplier(kBpmUnity),
-          m_syncUnmultipliedTargetDistance(0.0),
+          m_masterBpmAdjustFactor(kBpmUnity),
+          m_unmultipliedTargetBeatDistance(0.0),
           m_beatDistance(0.0) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
@@ -117,7 +117,7 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     //qDebug() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
-    m_syncBpmMultiplier = kBpmUnity;
+    m_masterBpmAdjustFactor = kBpmUnity;
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
@@ -153,16 +153,23 @@ bool SyncControl::isPlaying() const {
 
 double SyncControl::getBeatDistance() const {
     double beatDistance = m_pSyncBeatDistance->get();
-    if (m_syncBpmMultiplier == kBpmDouble) {
-        beatDistance /= 2.0;
-        if (m_syncUnmultipliedTargetDistance >= 0.5) {
+    // Similar to adjusting the target beat distance, when we report our beat
+    // distance we need to adjust it by the master bpm adjustment factor.  If
+    // we've been doubling the master bpm, we need to divide it in half.  If
+    // we'be been halving the master bpm, we need to double it.  Both operations
+    // also need to account for if the longer beat is past its halfway point.
+    //
+    // This is the inverse of the updateTargetBeatDistance function below.
+    if (m_masterBpmAdjustFactor == kBpmDouble) {
+        beatDistance /= kBpmDouble;
+        if (m_unmultipliedTargetBeatDistance >= 0.5) {
             beatDistance += 0.5;
         }
-    } else if (m_syncBpmMultiplier == kBpmHalf) {
+    } else if (m_masterBpmAdjustFactor == kBpmHalve) {
         if (beatDistance >= 0.5) {
             beatDistance -= 0.5;
         }
-        beatDistance *= 2.0;
+        beatDistance /= kBpmHalve;
     }
     return beatDistance;
 }
@@ -181,13 +188,13 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
-    m_syncUnmultipliedTargetDistance = beatDistance;
+    m_unmultipliedTargetBeatDistance = beatDistance;
     // Update the target beat distance based on the multiplier.
     updateTargetBeatDistance();
 }
 
 void SyncControl::setMasterBaseBpm(double bpm) {
-    m_syncBpmMultiplier = determineBpmMultiplier(m_pFileBpm->get(), bpm);
+    m_masterBpmAdjustFactor = determineBpmMultiplier(m_pFileBpm->get(), bpm);
     // Update the target beat distance in case the multiplier changed.
     updateTargetBeatDistance();
 }
@@ -207,7 +214,7 @@ void SyncControl::setMasterBpm(double bpm) {
 
     double fileBpm = m_pFileBpm->get();
     if (fileBpm > 0.0) {
-        double newRate = (bpm * m_syncBpmMultiplier / m_pFileBpm->get() - 1.0)
+        double newRate = (bpm * m_masterBpmAdjustFactor / m_pFileBpm->get() - 1.0)
                 / m_pRateDirection->get() / m_pRateRange->get();
         m_pRateSlider->set(newRate);
     } else {
@@ -216,8 +223,8 @@ void SyncControl::setMasterBpm(double bpm) {
 }
 
 void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bpm) {
-    m_syncUnmultipliedTargetDistance = beatDistance;
-    m_syncBpmMultiplier = determineBpmMultiplier(m_pFileBpm->get(), baseBpm);
+    m_unmultipliedTargetBeatDistance = beatDistance;
+    m_masterBpmAdjustFactor = determineBpmMultiplier(m_pFileBpm->get(), baseBpm);
     setMasterBpm(bpm);
     updateTargetBeatDistance();
 }
@@ -226,10 +233,10 @@ double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const
     double multiplier = kBpmUnity;
     double best_margin = fabs((targetBpm / myBpm) - 1.0);
 
-    double try_margin = fabs((targetBpm * kBpmHalf / myBpm) - 1.0);
+    double try_margin = fabs((targetBpm * kBpmHalve / myBpm) - 1.0);
     // We really want to prefer unity, so use a float compare with high tolerance.
     if (best_margin - try_margin > .0001) {
-        multiplier = kBpmHalf;
+        multiplier = kBpmHalve;
         best_margin = try_margin;
     }
 
@@ -241,16 +248,20 @@ double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const
 }
 
 void SyncControl::updateTargetBeatDistance() {
-    double targetDistance = m_syncUnmultipliedTargetDistance;
+    double targetDistance = m_unmultipliedTargetBeatDistance;
 
-    // Determining the target distance is not as simple as x2 or /2.
-    if (m_syncBpmMultiplier == kBpmDouble) {
+    // Determining the target distance is not as simple as x2 or /2.  Since one
+    // of the beats is twice the length of the other, we need to know if the
+    // position of the longer beat is past its halfway point.  e.g. 0.0 for the
+    // long beat is 0.0 of the short beat, but 0.5 for the long beat is also
+    // 0.0 for the short beat.
+    if (m_masterBpmAdjustFactor == kBpmDouble) {
         if (targetDistance >= 0.5) {
             targetDistance -= 0.5;
         }
-        targetDistance *= 2.0;
-    } else if (m_syncBpmMultiplier == kBpmHalf) {
-        targetDistance /= 2.0;
+        targetDistance *= kBpmDouble;
+    } else if (m_masterBpmAdjustFactor == kBpmHalve) {
+        targetDistance *= kBpmHalve;
         if (m_beatDistance >= 0.5) {
             targetDistance += 0.5;
         }
@@ -264,7 +275,7 @@ double SyncControl::getBpm() const {
 
 void SyncControl::setInstantaneousBpm(double bpm) {
     // Adjust the incoming bpm by the multiplier.
-    m_pBpmControl->setInstantaneousBpm(bpm * m_syncBpmMultiplier);
+    m_pBpmControl->setInstantaneousBpm(bpm * m_masterBpmAdjustFactor);
 }
 
 void SyncControl::reportTrackPosition(double fractionalPlaypos) {
@@ -278,7 +289,7 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
 
 void SyncControl::trackLoaded(TrackPointer pTrack) {
     Q_UNUSED(pTrack);
-    m_syncBpmMultiplier = kBpmUnity;
+    m_masterBpmAdjustFactor = kBpmUnity;
     if (getSyncMode() == SYNC_MASTER) {
         // If we loaded a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
@@ -390,7 +401,7 @@ void SyncControl::slotRateChanged() {
     if (bpm > 0) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
-        m_pEngineSync->notifyBpmChanged(this, bpm / m_syncBpmMultiplier, false);
+        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor, false);
     }
 }
 
@@ -401,6 +412,6 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
     }
     // When reporting our speed, remove the multiplier so the masters all
     // think the followers have the same bpm.
-    double instantaneous_bpm = m_pFileBpm->get() * speed / m_syncBpmMultiplier;
+    double instantaneous_bpm = m_pFileBpm->get() * speed / m_masterBpmAdjustFactor;
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
 }

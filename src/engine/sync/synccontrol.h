@@ -18,7 +18,7 @@ class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
     static const double kBpmUnity;
-    static const double kBpmHalf;
+    static const double kBpmHalve;
     static const double kBpmDouble;
     SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
@@ -87,7 +87,9 @@ class SyncControl : public EngineControl, public Syncable {
   private:
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     // Sometimes it's best to match bpms based on half or double the target
-    // bpm.  e.g. 70 matches better with 140/2.
+    // bpm.  e.g. 70 matches better with 140/2.  This function returns the
+    // best factor for multiplying the master bpm to get a bpm this syncable
+    // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
 
@@ -104,12 +106,12 @@ class SyncControl : public EngineControl, public Syncable {
     // When syncing, sometimes it's better to match half or double the
     // master bpm.
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
-    // The amount we should multiply the target BPM to find a good sync match.
+    // The amount we should multiply the master BPM to find a good sync match.
     // Sometimes this is 2 or 0.5.
-    double m_syncBpmMultiplier;
-    // It is handy to store the raw reported master beat distance in case the
+    double m_masterBpmAdjustFactor;
+    // It is handy to store the raw reported target beat distance in case the
     // multiplier changes and we need to recalculate the target distance.
-    double m_syncUnmultipliedTargetDistance;
+    double m_unmultipliedTargetBeatDistance;
     double m_beatDistance;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;

@@ -1086,9 +1086,9 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ProcessBuffer();
 
     EXPECT_EQ(0.5,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
     EXPECT_EQ(1.0,
-              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
 
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
     for (int i=0; i<50; ++i) {
@@ -1113,9 +1113,9 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ProcessBuffer();
 
     EXPECT_EQ(1.0,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
     EXPECT_EQ(2.0,
-              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_syncBpmMultiplier);
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
 
     // Exaggerate the effect with a high rate.
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(2.0));
