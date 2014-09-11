@@ -38,8 +38,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 
     if (mode == SYNC_MASTER) {
         activateMaster(pSyncable);
-        setMasterBpm(pSyncable, pSyncable->getBpm());
-        setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+        if (pSyncable->getBpm() > 0) {
+            setMasterBpm(pSyncable, pSyncable->getBpm());
+            setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+        }
     } else if (mode == SYNC_FOLLOWER) {
         if (pSyncable == m_pInternalClock && channelIsMaster) {
             if (syncDeckExists()) {
@@ -65,8 +67,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         } else if (m_pMasterSyncable == NULL) {
             // If no master active, activate the internal clock.
             activateMaster(m_pInternalClock);
-            setMasterBpm(pSyncable, pSyncable->getBpm());
-            setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+            if (pSyncable->getBpm() > 0) {
+                setMasterBpm(pSyncable, pSyncable->getBpm());
+                setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+            }
             activateFollower(pSyncable);
         } else {
             activateFollower(pSyncable);
@@ -132,12 +136,12 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             if (foundTargetBpm) {
                 setMasterBpm(NULL, targetBpm);
                 setMasterBeatDistance(NULL, targetBeatDistance);
-            } else {
+            } else if (pSyncable->getBpm() > 0) {
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
             }
         } else if (m_pMasterSyncable == m_pInternalClock) {
-            if (!syncDeckExists()) {
+            if (!syncDeckExists() && pSyncable->getBpm() > 0) {
                 // If there are no active sync decks, reset the internal clock bpm
                 // and beat distance.
                 setMasterBpm(pSyncable, pSyncable->getBpm());

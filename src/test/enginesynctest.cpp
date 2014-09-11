@@ -1,5 +1,4 @@
 // Tests for Master Sync.
-// There are no tests for actual deck playback, since I don't know how to mock that out yet.
 // The following manual tests should probably be performed:
 // * Quantize mode nudges tracks in sync, whether internal or deck master.
 // * Flinging tracks with the waveform should work.
@@ -949,7 +948,7 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
 TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
     // If filebpm changes, don't treat it like a rate change.
     QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
-        ConfigKey(m_sGroup2, "file_bpm")));
+        ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(100.0);
     QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_enabled")));
@@ -984,4 +983,48 @@ TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {
     ProcessBuffer();
 
     EXPECT_FLOAT_EQ(0.0046439911, m_pChannel1->getEngineBuffer()->getVisualPlayPos());
+}
+
+TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
+    // If a track isn't loaded (0 bpm), but the deck has sync enabled,
+    // don't pay attention to rate changes.
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(0.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ProcessBuffer();
+
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(120.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+    pButtonSyncEnabled2->set(1.0);
+    ProcessBuffer();
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.3));
+
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+                    ControlObject::getControl(
+                            ConfigKey(m_sGroup2, "rate"))->get());
+
+    // Also try with explicit master/follower setting
+    pButtonSyncEnabled1->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.4));
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+                    ControlObject::getControl(
+                            ConfigKey(m_sGroup2, "rate"))->get());
+
+    pButtonSyncEnabled1->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(0.9));
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
+                    ControlObject::getControl(
+                            ConfigKey(m_sGroup2, "rate"))->get());
 }

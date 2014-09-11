@@ -188,7 +188,10 @@
                 <MinimumSize>100,220</MinimumSize>
                 <Layout>vertical</Layout>
                 <Children>
-
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,me</SizePolicy>
+                    </WidgetGroup>
                     <WidgetGroup>
                         <Size>100,100</Size>
                         <Children>
@@ -310,6 +313,16 @@
                               <Text>Pre/Main</Text>
                           </Label>
                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>max,me</SizePolicy>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>f,f</SizePolicy>
+                        <Size>103,40</Size>
+                        <BackPath>style/mixxx_logo.png</BackPath>
                     </WidgetGroup>
                 </Children>
             </WidgetGroup>
