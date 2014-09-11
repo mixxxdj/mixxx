@@ -54,11 +54,12 @@ bool CoverArtCache::changeCoverArt(int trackId,
         return true;
     }
 
-    QImage img = rescaleBigImage(QImage(newCoverLocation));
-    QString md5Hash = calculateMD5(img);
-    if (md5Hash.isEmpty()) {
+    QImage img(newCoverLocation);
+    if (img.isNull()) {
         return false;
     }
+    img = rescaleBigImage(img);
+    QString md5Hash = calculateMD5(img);
 
     // Update DB
     int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, md5Hash);
