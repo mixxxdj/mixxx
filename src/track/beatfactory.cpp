@@ -130,6 +130,6 @@ void BeatFactory::deleteBeats(Beats* pBeats) {
     QObject* pObject = dynamic_cast<QObject*>(pBeats);
 
     if (pObject != NULL) {
-        pObject->deleteLater();
+        delete pObject;
     }
 }
