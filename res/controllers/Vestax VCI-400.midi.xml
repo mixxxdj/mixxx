@@ -615,8 +615,8 @@
                 <status>0xB2</status>
                 <midino>0x32</midino>
                 <options>
-                    <fourteen-bit-lsb/>
                     <soft-takeover/>
+                    <fourteen-bit-lsb/>
                 </options>
             </control>
             <control>
@@ -645,8 +645,8 @@
                 <status>0xB3</status>
                 <midino>0x32</midino>
                 <options>
-                    <fourteen-bit-lsb/>
                     <soft-takeover/>
+                    <fourteen-bit-lsb/>
                 </options>
             </control>
             <control>
@@ -686,8 +686,8 @@
                 <status>0xB4</status>
                 <midino>0x32</midino>
                 <options>
-                    <fourteen-bit-lsb/>
                     <soft-takeover/>
+                    <fourteen-bit-lsb/>
                 </options>
             </control>
             <control>
@@ -706,8 +706,8 @@
                 <status>0xB5</status>
                 <midino>0x32</midino>
                 <options>
-                    <fourteen-bit-lsb/>
                     <soft-takeover/>
+                    <fourteen-bit-lsb/>
                 </options>
             </control>
             <control>
@@ -1024,6 +1024,16 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>VestaxVCI400.loopKnob</key>
+                <description>MIDI Learned from 3 messages.</description>
+                <status>0xB2</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel4]</group>
                 <key>VestaxVCI400.padbutton2Activate</key>
                 <status>0x95</status>
@@ -1047,6 +1057,15 @@
                 <key>VestaxVCI400.vinylButton</key>
                 <description>MIDI Learned from 6 messages.</description>
                 <status>0x93</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>VestaxVCI400.loopKnob</key>
+                <status>0xB3</status>
                 <midino>0x06</midino>
                 <options>
                     <script-binding/>
@@ -1077,6 +1096,15 @@
                 <key>VestaxVCI400.vinylButton</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x94</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>VestaxVCI400.loopKnob</key>
+                <status>0xB4</status>
                 <midino>0x06</midino>
                 <options>
                     <script-binding/>
@@ -1116,6 +1144,15 @@
                 <key>VestaxVCI400.vinylButton</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x95</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>VestaxVCI400.loopKnob</key>
+                <status>0xB5</status>
                 <midino>0x06</midino>
                 <options>
                     <script-binding/>
@@ -1475,8 +1512,8 @@
                 <status>0xB2</status>
                 <midino>0x12</midino>
                 <options>
-                    <fourteen-bit-msb/>
                     <soft-takeover/>
+                    <fourteen-bit-msb/>
                 </options>
             </control>
             <control>
@@ -1495,8 +1532,8 @@
                 <status>0xB3</status>
                 <midino>0x12</midino>
                 <options>
-                    <fourteen-bit-msb/>
                     <soft-takeover/>
+                    <fourteen-bit-msb/>
                 </options>
             </control>
             <control>
@@ -1525,8 +1562,8 @@
                 <status>0xB4</status>
                 <midino>0x12</midino>
                 <options>
-                    <fourteen-bit-msb/>
                     <soft-takeover/>
+                    <fourteen-bit-msb/>
                 </options>
             </control>
             <control>
@@ -1564,8 +1601,8 @@
                 <status>0xB5</status>
                 <midino>0x12</midino>
                 <options>
-                    <fourteen-bit-msb/>
                     <soft-takeover/>
+                    <fourteen-bit-msb/>
                 </options>
             </control>
             <control>
@@ -1768,34 +1805,6 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>VestaxVCI400.loopKnob</key>
-                <description>MIDI Learned from 3 messages.</description>
-                <status>0xB2</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>VestaxVCI400.loopKnob</key>
-                <status>0xB3</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>VestaxVCI400.vinyl</key>
-                <status>0xB3</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>VestaxVCI400.pitchKnob</key>
                 <description>MIDI Learned from 35 messages.</description>
                 <status>0xB2</status>
@@ -1815,45 +1824,9 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>VestaxVCI400.loopKnob</key>
-                <status>0xB4</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.vinyl</key>
-                <status>0xB4</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
                 <key>VestaxVCI400.pitchKnob</key>
                 <status>0xB4</status>
                 <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.loopKnob</key>
-                <status>0xB5</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.vinyl</key>
-                <status>0xB5</status>
-                <midino>0x06</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1989,14 +1962,14 @@
                 <group>[Channel3]</group>
                 <key>play_indicator</key>
                 <status>0x94</status>
-                <midino>0x21</midino>
+                <midino>0x1D</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
                 <key>play_indicator</key>
                 <status>0x94</status>
-                <midino>0x1D</midino>
+                <midino>0x21</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2010,7 +1983,7 @@
                 <group>[Channel2]</group>
                 <key>reverse</key>
                 <status>0x95</status>
-                <midino>0x23</midino>
+                <midino>0x1B</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2024,7 +1997,7 @@
                 <group>[Channel2]</group>
                 <key>reverse</key>
                 <status>0x95</status>
-                <midino>0x1B</midino>
+                <midino>0x23</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2059,14 +2032,14 @@
                 <group>[Channel2]</group>
                 <key>cue_default</key>
                 <status>0x93</status>
-                <midino>0x1B</midino>
+                <midino>0x19</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
                 <key>cue_default</key>
                 <status>0x93</status>
-                <midino>0x19</midino>
+                <midino>0x1B</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2087,14 +2060,14 @@
                 <group>[Channel4]</group>
                 <key>play_indicator</key>
                 <status>0x95</status>
-                <midino>0x21</midino>
+                <midino>0x1D</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel4]</group>
                 <key>play_indicator</key>
                 <status>0x95</status>
-                <midino>0x1D</midino>
+                <midino>0x21</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2108,7 +2081,7 @@
                 <group>[Channel1]</group>
                 <key>reverse</key>
                 <status>0x94</status>
-                <midino>0x26</midino>
+                <midino>0x1E</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2122,7 +2095,7 @@
                 <group>[Channel1]</group>
                 <key>reverse</key>
                 <status>0x94</status>
-                <midino>0x1E</midino>
+                <midino>0x26</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2143,14 +2116,14 @@
                 <group>[Channel1]</group>
                 <key>cue_default</key>
                 <status>0x92</status>
-                <midino>0x1B</midino>
+                <midino>0x19</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
                 <key>cue_default</key>
                 <status>0x92</status>
-                <midino>0x19</midino>
+                <midino>0x1B</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2171,14 +2144,14 @@
                 <group>[Channel1]</group>
                 <key>play_indicator</key>
                 <status>0x92</status>
-                <midino>0x1C</midino>
+                <midino>0x1A</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
                 <key>play_indicator</key>
                 <status>0x92</status>
-                <midino>0x1A</midino>
+                <midino>0x1C</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2213,14 +2186,14 @@
                 <group>[Channel4]</group>
                 <key>cue_default</key>
                 <status>0x95</status>
-                <midino>0x20</midino>
+                <midino>0x1C</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel4]</group>
                 <key>cue_default</key>
                 <status>0x95</status>
-                <midino>0x1C</midino>
+                <midino>0x20</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2248,7 +2221,7 @@
                 <group>[Channel4]</group>
                 <key>reverse</key>
                 <status>0x95</status>
-                <midino>0x26</midino>
+                <midino>0x1E</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2262,14 +2235,7 @@
                 <group>[Channel4]</group>
                 <key>reverse</key>
                 <status>0x95</status>
-                <midino>0x1E</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>play_indicator</key>
-                <status>0x93</status>
-                <midino>0x1C</midino>
+                <midino>0x26</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2277,6 +2243,13 @@
                 <key>play_indicator</key>
                 <status>0x93</status>
                 <midino>0x1A</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>play_indicator</key>
+                <status>0x93</status>
+                <midino>0x1C</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2304,14 +2277,14 @@
                 <group>[Channel3]</group>
                 <key>cue_default</key>
                 <status>0x94</status>
-                <midino>0x20</midino>
+                <midino>0x1C</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
                 <key>cue_default</key>
                 <status>0x94</status>
-                <midino>0x1C</midino>
+                <midino>0x20</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2353,7 +2326,7 @@
                 <group>[Channel3]</group>
                 <key>reverse</key>
                 <status>0x94</status>
-                <midino>0x23</midino>
+                <midino>0x1B</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2367,7 +2340,7 @@
                 <group>[Channel3]</group>
                 <key>reverse</key>
                 <status>0x94</status>
-                <midino>0x1B</midino>
+                <midino>0x23</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
