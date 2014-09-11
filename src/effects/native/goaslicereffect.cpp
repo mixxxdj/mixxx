@@ -72,6 +72,7 @@ void GoaSlicerEffect::processGroup(const QString& group,
                                 GoaSlicerGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples,
+                                const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     unsigned int length = m_pLengthParameter ?
@@ -89,6 +90,7 @@ void GoaSlicerEffect::processGroup(const QString& group,
     double tickses[] = {2,4,8,16};
     double ticks = tickses[period-1];
     double slope_amount = slope * 44100.f/(8192.f*44100.f);
+    double slope_amount = slope * ((double)sampleRate)/(8192.0*((double)sampleRate));
     
     if (groupFeatures.has_beat_length && groupFeatures.has_beat_fraction) {
         for (unsigned int i=0;i < numSamples;i+=2) {
