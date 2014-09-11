@@ -174,18 +174,29 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 
     if (m_pMasterSyncable == m_pInternalClock) {
         // If there is only one deck playing, set internal clock beat distance
-        // to match it.
+        // to match it, unless there is a single other playing deck, in which
+        // case we should match that.
         const Syncable* uniqueSyncable = NULL;
+        const Syncable* uniqueNonSync = NULL;
         int playing_sync_decks = 0;
+        int playing_nonsync_decks = 0;
         foreach (const Syncable* pOtherSyncable, m_syncables) {
-            if (pOtherSyncable->getSyncMode() != SYNC_NONE &&
-                    pOtherSyncable->isPlaying()) {
-                uniqueSyncable = pOtherSyncable;
-                ++playing_sync_decks;
+            if (pOtherSyncable->isPlaying()) {
+                if (pOtherSyncable->getSyncMode() != SYNC_NONE) {
+                    uniqueSyncable = pOtherSyncable;
+                    ++playing_sync_decks;
+                } else {
+                    uniqueNonSync = pOtherSyncable;
+                    ++playing_nonsync_decks;
+                }
             }
         }
         if (playing_sync_decks == 1) {
-            m_pInternalClock->setMasterBeatDistance(uniqueSyncable->getBeatDistance());
+            if (playing_nonsync_decks == 1) {
+                m_pInternalClock->setMasterBeatDistance(uniqueNonSync->getBeatDistance());
+            } else {
+                m_pInternalClock->setMasterBeatDistance(uniqueSyncable->getBeatDistance());
+            }
         }
     }
 }

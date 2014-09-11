@@ -1215,3 +1215,85 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
                     ControlObject::getControl(
                             ConfigKey(m_sGroup2, "rate"))->get());
 }
+
+TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
+    // If we press play on a sync deck, we will only sync phase to a non-sync
+    // deck if there are no sync decks and the non-sync deck is playing.
+
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
+    pFileBpm1->set(130.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 130, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 130, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+    pFileBpm2->set(100.0);
+
+    // Set the sync deck playing with nothing else active.
+    pButtonSyncEnabled1->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+
+    // Internal clock rate should be set but beat distances not changed.
+    EXPECT_FLOAT_EQ(100.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    EXPECT_FLOAT_EQ(0.2,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                        "beat_distance"))->get());
+
+    // Now make the second deck playing and see if it works.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+
+    ProcessBuffer();
+
+    // The exact beat distance will be one buffer past .8, but this is good
+    // enough to confirm that it worked.
+    EXPECT_LT(0.8, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    EXPECT_LT(0.8, ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                       "beat_distance"))->get());
+
+    // But if there is a third deck that is sync-enabled, we match that.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled3(getControlObjectThread(
+            ConfigKey(m_sGroup3, "sync_enabled")));
+    QScopedPointer<ControlObjectThread> pFileBpm3(getControlObjectThread(
+        ConfigKey(m_sGroup3, "file_bpm")));
+    ControlObject::getControl(ConfigKey(m_sGroup3, "beat_distance"))->set(0.6);
+    ControlObject::getControl(ConfigKey(m_sGroup3, "rate"))->set(getRateSliderValue(1.0));
+    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(m_pTrack3.data(), 140, 0.0);
+    m_pTrack3->setBeats(pBeats3);
+    pFileBpm3->set(140.0);
+    pButtonSyncEnabled1->set(0.0);
+    ProcessBuffer();
+    pButtonSyncEnabled1->set(1.0);
+    pButtonSyncEnabled3->set(1.0);
+
+    ControlObject::getControl(ConfigKey(m_sGroup3, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    // The exact beat distance will be one buffer past .6, but this is good
+    // enough to confirm that it worked.
+    EXPECT_GT(0.7, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    EXPECT_GT(0.7, ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                       "beat_distance"))->get());
+}
