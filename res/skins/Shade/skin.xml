@@ -68,6 +68,7 @@
 			<attribute config_key="[EffectRack1],show">0</attribute>
 			<attribute config_key="[Microphone],show_microphone">0</attribute>
 			<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
+			<attribute config_key="[CoverArt],show_coverart">0</attribute>
 		</attributes>
 	</manifest>
 
@@ -538,7 +539,12 @@
 										<!--Library Tree View-->
 										<LibrarySidebar></LibrarySidebar>
 										<!--Cover Art-->
-										<CoverArt></CoverArt>
+										<CoverArt>
+											<Connection>
+												<ConfigKey>[CoverArt],show_coverart</ConfigKey>
+												<BindProperty>visible</BindProperty>
+											</Connection>
+										</CoverArt>
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>
