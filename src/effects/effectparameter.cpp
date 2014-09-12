@@ -109,6 +109,9 @@ const QString EffectParameter::description() const {
 // static
 bool EffectParameter::clampValue(EffectManifestParameter::ValueHint valueHint, QVariant* pValue,
                                  const QVariant& minimum, const QVariant& maximum) {
+    if (!pValue) {
+        return true;
+    }
     switch (valueHint) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             break;
