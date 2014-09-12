@@ -121,17 +121,15 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
-    double param;
     if (!m_bTwoState) {
-        param =  log10((dValue - m_dMinValue) + 1) / m_dB1;
+        return log10((dValue - m_dMinValue) + 1) / m_dB1;
     } else {
         if (dValue > 1.0) {
-            param = log10(dValue) / m_dB2 + middlePosition;
+            return log10(dValue) / m_dB2 + middlePosition;
         } else {
-            param = log10(dValue + 1.0) / m_dB1;
+            return log10(dValue + 1.0) / m_dB1;
         }
     }
-    return param;
 }
 
 double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
