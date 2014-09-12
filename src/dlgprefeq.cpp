@@ -134,14 +134,14 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         int selectedEffectIndex;
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("EffectForDeck%1").arg(m_deckEffectSelectors.size())),
-                QString("Butterworth8 EQ"));
-        selectedEffectIndex = box->findText(configuredEffect);
+                QString("butterwortheq"));
+        selectedEffectIndex = box->findData(configuredEffect);
         box->setCurrentIndex(selectedEffectIndex);
 
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("BasicEffectForDeck%1").arg(m_deckBasicEffectSelectors.size())),
-                QString("Butterworth8 EQ"));
-        selectedEffectIndex = simpleBox->findText(configuredEffect);
+                QString("butterwortheq"));
+        selectedEffectIndex = simpleBox->findData(configuredEffect);
         simpleBox->setCurrentIndex(selectedEffectIndex);
 
         // Force the selected effect on the Effect Rack based on user's preference
@@ -250,7 +250,7 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
-                       arg(deckNumber + 1)), ConfigValue(c->currentText()));
+                       arg(deckNumber + 1)), ConfigValue(effectId));
     }
 }
 
@@ -264,7 +264,7 @@ void DlgPrefEQ::slotBasicEffectChangedOnDeck(int effectIndex) {
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("BasicEffectForDeck%1").
-                       arg(deckNumber + 1)), ConfigValue(c->currentText()));
+                       arg(deckNumber + 1)), ConfigValue(effectId));
     }
 }
 
