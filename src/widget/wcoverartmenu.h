@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "trackinfoobject.h"
+#include "library/coverartcache.h"
 
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
@@ -19,8 +20,7 @@ class WCoverArtMenu : public QMenu {
     WCoverArtMenu(QWidget *parent = 0);
     virtual ~WCoverArtMenu();
 
-    void show(QPoint pos, QPair<QString, QString> cover,
-              int trackId, TrackPointer pTrack);
+    void show(QPoint pos, CoverInfo info, TrackPointer pTrack);
 
   signals:
     void coverLocationUpdated(const QString& newLocation,
@@ -40,10 +40,8 @@ class WCoverArtMenu : public QMenu {
     QAction* m_pReload;
     QAction* m_pUnset;
 
-    int m_iTrackId;
     TrackPointer m_pTrack;
-    QString m_sCoverLocation;
-    QString m_sMd5;
+    CoverInfo m_coverInfo;
 };
 
 #endif // WCOVERARTMENU_H

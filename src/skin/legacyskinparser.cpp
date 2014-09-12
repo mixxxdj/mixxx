@@ -973,8 +973,8 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
             pCoverArt, SLOT(slotResetWidget()));
     connect(m_pLibrary, SIGNAL(enableCoverArtDisplay(bool)),
             pCoverArt, SLOT(slotEnableWidget(bool)));
-    connect(m_pLibrary, SIGNAL(loadCoverArt(const QString&, const QString&, int, bool)),
-            pCoverArt, SLOT(slotLoadCoverArt(const QString&, const QString&, int, bool)));
+    connect(m_pLibrary, SIGNAL(loadCoverArt(CoverInfo, bool)),
+            pCoverArt, SLOT(slotLoadCoverArt(CoverInfo, bool)));
 
     return pCoverArt;
 }

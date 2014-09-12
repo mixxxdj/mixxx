@@ -11,6 +11,7 @@
 #include "library/trackcollection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
+#include "library/coverartcache.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
@@ -23,9 +24,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
   public slots:
     void slotResetWidget();
     void slotEnableWidget(bool);
-    void slotLoadCoverArt(const QString& coverLocation,
-                          const QString& md5Hash,
-                          int trackId, bool cachedOnly);
+    void slotLoadCoverArt(CoverInfo info, bool cachedOnly);
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);
@@ -54,9 +53,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_iconHide;
     QPixmap m_iconShow;
 
-    int m_lastRequestedTrackId;
     TrackDAO& m_trackDAO;
-    QPair<QString, QString> m_lastRequestedCover;
+    CoverInfo m_lastRequestedCover;
 };
 
 #endif // WCOVERART_H

@@ -8,8 +8,7 @@
 #include "library/dao/coverartdao.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
-        : QMenu(parent),
-          m_iTrackId(-1) {
+        : QMenu(parent) {
     createActions();
     addActions();
 }
@@ -46,40 +45,35 @@ void WCoverArtMenu::addActions() {
     addAction(m_pReload);
 }
 
-void WCoverArtMenu::show(QPoint pos, QPair<QString, QString> cover,
-                         int trackId, TrackPointer pTrack) {
-    m_iTrackId = trackId;
-    m_sCoverLocation = cover.first;
-    m_sMd5 = cover.second;
-    m_pTrack = pTrack;
-
-    if (trackId < 1) {
+void WCoverArtMenu::show(QPoint pos, CoverInfo info, TrackPointer pTrack) {
+    if (info.trackId < 1) {
         return;
     }
-
+    m_coverInfo = info;
+    m_pTrack = pTrack;
     popup(pos);
 }
 
 void WCoverArtMenu::slotChange() {
-    if (m_iTrackId < 1 || !m_pTrack) {
+    if (m_coverInfo.trackId < 1 || !m_pTrack) {
         return;
     }
 
     // get initial directory (trackdir or coverdir)
     QString initialDir;
     QString trackPath = m_pTrack->getDirectory();
-    if (m_sCoverLocation.isEmpty() ||
-        m_sCoverLocation == CoverArtCache::instance()
-                                ->getDefaultCoverLocation()) {
+    if (m_coverInfo.coverLocation.isEmpty() ||
+        m_coverInfo.coverLocation == CoverArtCache::instance()
+            ->getDefaultCoverLocation()) {
         initialDir = trackPath;
     } else {
-        initialDir = m_sCoverLocation;
+        initialDir = m_coverInfo.coverLocation;
     }
 
     // open file dialog
     QString selectedCover = QFileDialog::getOpenFileName(
-                this, tr("Change Cover Art"), initialDir,
-                tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
+        this, tr("Change Cover Art"), initialDir,
+        tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
 
     if (selectedCover.isEmpty()) {
         return;
@@ -88,10 +82,10 @@ void WCoverArtMenu::slotChange() {
     // if the cover comes from an external dir,
     // we copy it to the track directory.
     QString newCover;
-    QFileInfo coverInfo(selectedCover);
-    QString coverPath = coverInfo.absolutePath();
+    QFileInfo FileInfo(selectedCover);
+    QString coverPath = FileInfo.absolutePath();
     if (trackPath != coverPath) {
-        QString ext = coverInfo.suffix();
+        QString ext = FileInfo.suffix();
         QStringList filepaths;
         filepaths << trackPath % "/cover." % ext
                   << trackPath % "/album." % ext
@@ -116,15 +110,15 @@ void WCoverArtMenu::slotChange() {
     }
 
     QPixmap px(newCover);
-    emit(coverLocationUpdated(newCover, m_sCoverLocation, px));
+    emit(coverLocationUpdated(newCover, m_coverInfo.coverLocation, px));
 }
 
 void WCoverArtMenu::slotReload() {
-    if (m_iTrackId < 1) {
+    if (m_coverInfo.trackId < 1) {
         return;
     }
     CoverArtDAO::CoverArtInfo info;
-    info.trackId = m_iTrackId;
+    info.trackId = m_pTrack->getId();
     info.album = m_pTrack->getAlbum();
     info.trackDirectory = m_pTrack->getDirectory();
     info.trackLocation = m_pTrack->getLocation();
@@ -133,14 +127,14 @@ void WCoverArtMenu::slotReload() {
             CoverArtCache::instance()->searchImage(info, QSize(0,0), false);
     QPixmap px;
     px.convertFromImage(res.img);
-    emit(coverLocationUpdated(res.coverLocation, m_sCoverLocation, px));
+    emit(coverLocationUpdated(res.coverLocation, m_coverInfo.coverLocation, px));
 }
 
 void WCoverArtMenu::slotUnset() {
-    if (m_iTrackId < 1) {
+    if (m_coverInfo.trackId < 1) {
         return;
     }
     QString newLoc = CoverArtCache::instance()->getDefaultCoverLocation();
     QPixmap px = CoverArtCache::instance()->getDefaultCoverArt();
-    emit(coverLocationUpdated(newLoc, m_sCoverLocation, px));
+    emit(coverLocationUpdated(newLoc, m_coverInfo.coverLocation, px));
 }
