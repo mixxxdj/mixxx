@@ -131,6 +131,11 @@ class ControlObject : public QObject {
 
     // Connects a Qt slot to a signal that is delivered when a new value change
     // request arrives for this control.
+    // Qt::AutoConnection: Qt ensures that the signal slot is called from the
+    // thread where the receiving object was created
+    // You need to use Qt::DirectConnection for the engine objects, since the
+    // audio thread has no Qt event queue. But be a ware of race conditions in this case.
+    // ref: http://qt-project.org/doc/qt-4.8/qt.html#ConnectionType-enum
     bool connectValueChangeRequest(const QObject* receiver,
                                    const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
