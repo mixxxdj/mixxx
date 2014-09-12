@@ -44,6 +44,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 
     // Get the EQ Effect Rack
     m_pEQEffectRack = m_pEffectsManager->getEQEffectRack().data();
+    m_eqRackGroup = QString("[EffectRack%1_EffectUnit%2_Effect1]").
+            arg(m_pEffectsManager->getEQEffectRackNumber());
 
     setupUi(this);
 
@@ -56,7 +58,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-    connect(checkBox_bypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
+    connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
 
     connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
             this, SLOT(slotShowAllEffects()));
@@ -75,6 +77,15 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotAddComboBox(double)));
     slotAddComboBox(m_pNumDecks->get());
+
+    // Restore the state of Bypass check box
+    CheckBoxBypass->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no")) == QString("no"));
+    if (CheckBoxBypass->isChecked()) {
+        slotBypass(Qt::Checked);
+    } else {
+        slotBypass(Qt::Unchecked);
+    }
 
     loadSettings();
     slotUpdate();
@@ -100,9 +111,6 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             box->addItem(availableEffectNames[i].second);
             box->setItemData(i, QVariant(availableEffectNames[i].first));
         }
-        // Add an empty effect entry
-        box->addItem(QObject::tr("None"));
-        box->setItemData(availableEffectNames.size(), "none");
         m_deckEffectSelectors.append(box);
         connect(box, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotEffectChangedOnDeck(int)));
@@ -116,9 +124,6 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             simpleBox->addItem(availableEQEffectNames[i].second);
             simpleBox->setItemData(i, QVariant(availableEQEffectNames[i].first));
         }
-        // Add an empty effect entry
-        simpleBox->addItem(QObject::tr("None"));
-        simpleBox->setItemData(availableEQEffectNames.size(), "none");
         m_deckBasicEffectSelectors.append(simpleBox);
         connect(simpleBox, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotBasicEffectChangedOnDeck(int)));
@@ -216,7 +221,7 @@ void DlgPrefEQ::loadSettings() {
 
     if (m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes")) {
-        checkBox_bypass->setChecked(false);
+        CheckBoxBypass->setChecked(false);
     }
 }
 
@@ -337,30 +342,35 @@ void DlgPrefEQ::slotUpdate() {
 void DlgPrefEQ::slotBypass(int state) {
     if (state) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no"));
-        // Load none on each deck
-        int noneIndex;
+        // Disable effect processing for all decks by setting the appropriate
+        // controls to 0 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
+        int deck = 1;
+        ControlObjectSlave disableControl;
         foreach(QComboBox* box, m_deckEffectSelectors) {
-            noneIndex = box->findText(QString("None"));
-            box->setCurrentIndex(noneIndex);
+            disableControl.initialize(ConfigKey(m_eqRackGroup.arg(deck), "enabled"));
+            disableControl.set(0);
+            deck++;
             box->setEnabled(false);
         }
+
         foreach(QComboBox* box, m_deckBasicEffectSelectors) {
-            noneIndex = box->findText(QString("None"));
-            box->setCurrentIndex(noneIndex);
             box->setEnabled(false);
         }
+
     } else {
         m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("yes"));
-        // Load Butterworth8 EQ on each slot after enabling the EQ
-        int defaultEqIndex;
+        // Enable effect processing for all decks by setting the appropriate
+        // controls to 1 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
+        int deck = 1;
+        ControlObjectSlave enableControl;
         foreach(QComboBox* box, m_deckEffectSelectors) {
-            defaultEqIndex = box->findText(QString("Butterworth8 EQ"));
-            box->setCurrentIndex(defaultEqIndex);
+            enableControl.initialize(ConfigKey(m_eqRackGroup.arg(deck), "enabled"));
+            enableControl.set(1);
+            deck++;
             box->setEnabled(true);
         }
+
         foreach(QComboBox* box, m_deckBasicEffectSelectors) {
-            defaultEqIndex = box->findText(QString("Butterworth8 EQ"));
-            box->setCurrentIndex(defaultEqIndex);
             box->setEnabled(true);
         }
     }
