@@ -124,16 +124,18 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
 
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
+    CoverArtDAO::CoverArtInfo coverInfo;
     if (coverLocation.isEmpty() || !QFile::exists(coverLocation)) {
-        CoverArtDAO::CoverArtInfo coverInfo;
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
                                    coverInfo, croppedSize, issueRepaint);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
+        coverInfo.trackId = trackId;
+        coverInfo.coverLocation = coverLocation;
+        coverInfo.md5Hash = md5Hash;
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
-                                   trackId, coverLocation, md5Hash,
-                                   croppedSize, issueRepaint);
+                                   coverInfo, croppedSize, issueRepaint);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
     m_runningIds.insert(trackId);
@@ -144,16 +146,14 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
 
 // Load cover from path stored in DB.
 // It is executed in a separate thread via QtConcurrent::run
-CoverArtCache::FutureResult CoverArtCache::loadImage(int trackId,
-                                                     const QString& coverLocation,
-                                                     const QString& md5Hash,
+CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo coverInfo,
                                                      const QSize& croppedSize,
                                                      const bool issueRepaint) {
     FutureResult res;
-    res.trackId = trackId;
-    res.coverLocation = coverLocation;
-    res.img = QImage(coverLocation);
-    res.md5Hash = md5Hash;
+    res.trackId = coverInfo.trackId;
+    res.coverLocation = coverInfo.coverLocation;
+    res.img = QImage(res.coverLocation);
+    res.md5Hash = coverInfo.md5Hash;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
     res.newImgFound = true;
