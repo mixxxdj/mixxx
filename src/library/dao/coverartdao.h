@@ -31,6 +31,7 @@ class CoverArtDAO : public DAO {
     struct CoverArtInfo {
         int trackId;
         QString coverLocation;
+        QString md5Hash;
         QString album;
         QString trackBaseName;
         QString trackDirectory;

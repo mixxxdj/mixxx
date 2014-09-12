@@ -73,7 +73,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     virtual ~CoverArtCache();
     friend class Singleton<CoverArtCache>;
 
-
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
                            const QString& md5Hash,

@@ -261,6 +261,7 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
     coverInfo = m_CoverArtDAO.getCoverArtInfo(trackId);
     ASSERT_EQ(trackId, coverInfo.trackId);
     EXPECT_QSTRING_EQ(coverLocation, coverInfo.coverLocation);
+    EXPECT_QSTRING_EQ(coverMd5, coverInfo.md5Hash);
     EXPECT_QSTRING_EQ(album, coverInfo.album);
     EXPECT_QSTRING_EQ(file.baseName(), coverInfo.trackBaseName);
     EXPECT_QSTRING_EQ(file.absolutePath(), coverInfo.trackDirectory);

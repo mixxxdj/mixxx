@@ -162,9 +162,10 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     // performance issues...
     QString columns = "album,"                         //0
                       "cover_art.location AS cover,"   //1
-                      "track_locations.directory,"     //2
-                      "track_locations.filename,"      //3
-                      "track_locations.location";      //4
+                      "cover_art.md5,"                 //2
+                      "track_locations.directory,"     //3
+                      "track_locations.filename,"      //4
+                      "track_locations.location";      //5
 
     QString sQuery = QString(
          "SELECT " % columns % " FROM Library "
@@ -183,9 +184,10 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         coverInfo.trackId = trackId;
         coverInfo.album = query.value(0).toString();
         coverInfo.coverLocation = query.value(1).toString();
-        coverInfo.trackDirectory = query.value(2).toString();
-        QString filename = query.value(3).toString();
-        coverInfo.trackLocation = query.value(4).toString();
+        coverInfo.md5Hash = query.value(2).toString();
+        coverInfo.trackDirectory = query.value(3).toString();
+        QString filename = query.value(4).toString();
+        coverInfo.trackLocation = query.value(5).toString();
         coverInfo.trackBaseName = QFileInfo(filename).baseName();
         return coverInfo;
     }
