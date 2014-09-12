@@ -6,7 +6,6 @@
 #include <QMouseEvent>
 #include <QWidget>
 
-#include "configobject.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "library/trackcollection.h"
@@ -16,8 +15,7 @@
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-              TrackCollection* pTrackCollection);
+    WCoverArt(QWidget* parent, TrackCollection* pTrackCollection);
     virtual ~WCoverArt();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -44,8 +42,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   private:
     QPixmap scaledCoverArt(QPixmap normal);
-
-    ConfigObject<ConfigValue>* m_pConfig;
 
     bool m_bEnableWidget;
     bool m_bCoverIsHovered;

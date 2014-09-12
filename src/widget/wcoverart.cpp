@@ -11,11 +11,9 @@
 #include "library/coverartcache.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection)
         : QWidget(parent),
           WBaseWidget(this),
-          m_pConfig(pConfig),
           m_bEnableWidget(true),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
