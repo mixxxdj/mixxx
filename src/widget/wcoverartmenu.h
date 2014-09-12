@@ -20,7 +20,7 @@ class WCoverArtMenu : public QMenu {
     virtual ~WCoverArtMenu();
 
     void show(QPoint pos, QPair<QString, QString> cover,
-              int trackId, TrackPointer pTrack=TrackPointer());
+              int trackId, TrackPointer pTrack);
 
   signals:
     void coverLocationUpdated(const QString& newLocation,
