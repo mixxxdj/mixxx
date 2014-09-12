@@ -207,7 +207,6 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
                                            const bool issueRepaint) {
     FutureResult res;
     res.trackId = coverInfo.trackId;
-    res.md5Hash = coverInfo.md5Hash;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
     res.newImgFound = false;
@@ -217,11 +216,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.img = extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.img = rescaleBigImage(res.img);
-        if (res.md5Hash.isEmpty()) {
-            // it is the first time that we are loading the embedded cover,
-            // so we need to recalculate the md5 hash.
-            res.md5Hash = calculateMD5(res.img);
-        }
+        res.md5Hash = calculateMD5(res.img);
         res.newImgFound = true;
     }
 
