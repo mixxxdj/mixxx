@@ -80,26 +80,24 @@ bool CoverArtCache::changeCoverArt(int trackId,
     return true;
 }
 
-QPixmap CoverArtCache::requestPixmap(int trackId,
-                                     const QString& coverLocation,
-                                     QString md5Hash,
+QPixmap CoverArtCache::requestPixmap(CoverInfo info,
                                      const QSize& croppedSize,
                                      const bool onlyCached,
                                      const bool issueRepaint) {
-    if (trackId < 1) {
+    if (info.trackId < 1) {
         return QPixmap();
     }
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    if (m_runningIds.contains(trackId)) {
+    if (m_runningIds.contains(info.trackId)) {
         return QPixmap();
     }
 
     // check if we have already found a cover for this track
     // and if it is just waiting to be inserted/updated in the DB.
-    if (m_queueOfUpdates.contains(trackId)) {
-        md5Hash = m_queueOfUpdates[trackId].second;
+    if (m_queueOfUpdates.contains(info.trackId)) {
+        info.md5Hash = m_queueOfUpdates[info.trackId].second;
     }
 
     // If this request comes from CoverDelegate (table view),
@@ -107,13 +105,13 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
     // in the table view (cover art column).
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
-    QString cacheKey = QString("%1_%2x%3").arg(md5Hash)
+    QString cacheKey = QString("%1_%2x%3").arg(info.md5Hash)
                                           .arg(croppedSize.width())
                                           .arg(croppedSize.height());
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         if (!issueRepaint) {
-            emit(pixmapFound(trackId, pixmap));
+            emit(pixmapFound(info.trackId, pixmap));
         }
         return pixmap;
     }
@@ -125,20 +123,20 @@ QPixmap CoverArtCache::requestPixmap(int trackId,
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     CoverArtDAO::CoverArtInfo coverInfo;
-    if (coverLocation.isEmpty() || !QFile::exists(coverLocation)) {
-        coverInfo = m_pCoverArtDAO->getCoverArtInfo(trackId);
+    if (info.coverLocation.isEmpty() || !QFile::exists(info.coverLocation)) {
+        coverInfo = m_pCoverArtDAO->getCoverArtInfo(info.trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
                                    coverInfo, croppedSize, issueRepaint);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
-        coverInfo.trackId = trackId;
-        coverInfo.coverLocation = coverLocation;
-        coverInfo.md5Hash = md5Hash;
+        coverInfo.trackId = info.trackId;
+        coverInfo.coverLocation = info.coverLocation;
+        coverInfo.md5Hash = info.md5Hash;
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
                                    coverInfo, croppedSize, issueRepaint);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
-    m_runningIds.insert(trackId);
+    m_runningIds.insert(info.trackId);
     watcher->setFuture(future);
 
     return QPixmap();

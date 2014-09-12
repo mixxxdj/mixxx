@@ -190,9 +190,11 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack,
     connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
             this, SLOT(updateTrackMetadata()));
 
-    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(pTrack->getId(),
-                                                              coverLocation,
-                                                              md5);
+    CoverInfo info;
+    info.trackId = pTrack->getId();
+    info.coverLocation = coverLocation;
+    info.md5Hash = md5;
+    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info);
     if (pixmap.isNull()) { // use default cover art
         pixmap = CoverArtCache::instance()->getDefaultCoverArt();
     }

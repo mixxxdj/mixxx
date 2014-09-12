@@ -10,6 +10,14 @@
 #include "library/dao/trackdao.h"
 #include "util/singleton.h"
 
+struct CoverInfo {
+  CoverInfo() : trackId(-1), coverLocation(QString()),
+        md5Hash(QString()) {}
+    int trackId;
+    QString coverLocation;
+    QString md5Hash;
+};
+
 class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
@@ -29,9 +37,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
      *      In this way, the method will just look into CoverCache and return
      *      a Pixmap if it is already loaded in the QPixmapCache.
      */
-    QPixmap requestPixmap(int trackId,
-                          const QString& coverLocation = QString(),
-                          QString md5Hash = QString(),
+    QPixmap requestPixmap(CoverInfo info,
                           const QSize& croppedSize = QSize(0,0),
                           const bool onlyCached = false,
                           const bool issueRepaint = false);
