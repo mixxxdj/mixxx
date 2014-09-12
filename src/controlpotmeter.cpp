@@ -26,6 +26,7 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
                                  bool bPersist)
         : ControlObject(key, bIgnoreNops, bTrack, bPersist),
           m_controls(key) {
+    setRange(dMinValue, dMaxValue, allowOutOfBounds);
     double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);
     setDefaultValue(default_value);
     if (!bPersist) {
