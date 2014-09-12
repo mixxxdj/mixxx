@@ -133,17 +133,15 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
 }
 
 double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
-    double value;
     if (!m_bTwoState) {
-        value = pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
+        return pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
     } else {
         if (dParam <= middlePosition) {
-            value = pow(10.0, m_dB1 * dParam) - 1;
+            return pow(10.0, m_dB1 * dParam) - 1;
         } else {
-            value = pow(10.0, m_dB2 * (dParam - middlePosition));
+            return pow(10.0, m_dB2 * (dParam - middlePosition));
         }
     }
-    return value;
 }
 
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
