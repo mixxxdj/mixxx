@@ -217,19 +217,27 @@ void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
     QDomElement svgElement = svgSkinNode.toElement();
     QDomNodeList scriptElements = svgElement.elementsByTagName("script");
     int i = 0;
-    QString expression;
+    QString expression, scriptPath;
     QDomNode scriptNode;
+    QScriptValue result;
     
     while (!(scriptNode = scriptElements.item(i)).isNull() && ++i) {
-        if (scriptNode.toElement().hasAttribute("src")) {
-            QFile scriptFile(m_pContext->getSkinPath(scriptNode.toElement().attribute("src")));
+        if (!(scriptPath = scriptNode.toElement().attribute("src")).isNull()) {
+            QFile scriptFile(m_pContext->getSkinPath(scriptPath));
             scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
             QTextStream in(&scriptFile);
-            m_scriptEngine.evaluate(in.readAll());
+            result = m_scriptEngine.evaluate(in.readAll());
+            if (m_scriptEngine.hasUncaughtException()) {
+                qDebug() << "SVG script exception : " << result.toString()
+                        << "in" << scriptPath;
+            }
         }
         
         expression = m_pContext->nodeToString(scriptNode);
-        m_scriptEngine.evaluate(expression);
+        result = m_scriptEngine.evaluate(expression);
+        if (m_scriptEngine.hasUncaughtException()) {
+            qDebug() << "SVG script exception : " << result.toString();
+        }
     }
     
 }

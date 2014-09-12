@@ -268,9 +268,7 @@ PixmapSource* SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
         }
     }
     
-    qDebug() << "getPixmapSource out path" << source->getPath();
-    
-    // return out;
+    // qDebug() << "getPixmapSource out path" << source->getPath();
     return source;
 }
 
