@@ -137,6 +137,10 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
           m_bRangeQuery(false),
           m_dRangeLow(0.0),
           m_dRangeHigh(0.0) {
+    init(argument);
+}
+
+void NumericFilterNode::init(QString argument) {
     QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
     if (operatorMatcher.indexIn(argument) != -1) {
         m_operator = operatorMatcher.cap(1);
@@ -145,7 +149,7 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
 
     bool parsed = false;
     // Try to convert to see if it parses.
-    m_dOperatorArgument = argument.toDouble(&parsed);
+    m_dOperatorArgument = parse(argument, &parsed);
     if (parsed) {
         m_bOperatorQuery = true;
     }
@@ -153,15 +157,28 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
     QStringList rangeArgs = argument.split("-");
     if (rangeArgs.length() == 2) {
         bool lowOk = false;
-        m_dRangeLow = rangeArgs[0].toDouble(&lowOk);
+        m_dRangeLow = parse(rangeArgs[0], &lowOk);
         bool highOk = false;
-        m_dRangeHigh = rangeArgs[1].toDouble(&highOk);
+        m_dRangeHigh = parse(rangeArgs[1], &highOk);
 
         if (lowOk && highOk && m_dRangeLow <= m_dRangeHigh) {
             m_bRangeQuery = true;
         }
     }
+}
 
+double NumericFilterNode::parse(const QString& arg, bool *ok) {
+    return arg.toDouble(ok);
+}
+
+NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
+        : m_sqlColumns(sqlColumns),
+          m_bOperatorQuery(false),
+          m_operator("="),
+          m_dOperatorArgument(0.0),
+          m_bRangeQuery(false),
+          m_dRangeLow(0.0),
+          m_dRangeHigh(0.0) {
 }
 
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
@@ -214,6 +231,42 @@ QString NumericFilterNode::toSql() const {
     }
 
     return QString();
+}
+
+DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
+                                       QString argument)
+        : NumericFilterNode(sqlColumns) {
+    init(argument);
+}
+
+double DurationFilterNode::parse(const QString& arg, bool* ok){
+    QRegExp regex("^(\\d*)(m|:)?([0-6]?\\d)?s?$");
+    if (regex.indexIn(arg) == -1) {
+        *ok = false;
+        return 0;
+    }
+
+    // You can check that the minutes are parsed to entry 2 of the list and the
+    // seconds are in the 4th entry. If you don't believe me or this doesn't
+    // work anymore because we changed our Qt version just have a look at caps.
+    // -- (kain88, Aug 2014)
+    QStringList caps = regex.capturedTexts();
+    double m = 0;
+    double s = 0;
+    // if only a number is entered parse as seconds
+    if (caps.at(3).isEmpty() && caps.at(2).isEmpty()) {
+        s = caps.at(1).toDouble(ok);
+    } else {
+        m = caps.at(1).toDouble(ok);
+        s = caps.at(3).toDouble();
+    }
+
+    if (!*ok) {
+        return 0;
+    }
+
+    *ok = true;
+    return 60 * m + s;
 }
 
 KeyFilterNode::KeyFilterNode(mixxx::track::io::key::ChromaticKey key,

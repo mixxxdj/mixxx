@@ -4,7 +4,6 @@
 #include <QString>
 #include <QMap>
 
-#include "controlobjectslave.h"
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
 
@@ -28,6 +27,7 @@ class EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) = 0;
 };
 
@@ -37,7 +37,6 @@ template <typename T>
 class GroupEffectProcessor : public EffectProcessor {
   public:
     GroupEffectProcessor() {
-        m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
     }
     virtual ~GroupEffectProcessor() {
         for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
@@ -46,7 +45,6 @@ class GroupEffectProcessor : public EffectProcessor {
             it = m_groupState.erase(it);
             delete pState;
         }
-        delete m_pSampleRate;
     }
 
     virtual void initialize(const QSet<QString>& registeredGroups) {
@@ -62,6 +60,7 @@ class GroupEffectProcessor : public EffectProcessor {
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures) {
         T* pState = m_groupState.value(group, NULL);
         if (pState == NULL) {
@@ -69,21 +68,18 @@ class GroupEffectProcessor : public EffectProcessor {
             m_groupState[group] = pState;
             qWarning() << "Allocated group state in the engine for" << group;
         }
-        processGroup(group, pState, pInput, pOutput, numSamples, groupFeatures);
+        processGroup(group, pState, pInput, pOutput, numSamples, sampleRate, groupFeatures);
     }
 
     virtual void processGroup(const QString& group,
                               T* groupState,
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
                               const unsigned int numSamples,
+                              const unsigned int sampleRate,
                               const GroupFeatureState& groupFeatures) = 0;
-    int getSampleRate() {
-        return static_cast<int>(m_pSampleRate->get());
-    }
 
   private:
     QMap<QString, T*> m_groupState;
-    ControlObjectSlave* m_pSampleRate;
 };
 
 #endif /* EFFECTPROCESSOR_H */

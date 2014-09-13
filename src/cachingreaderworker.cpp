@@ -112,7 +112,7 @@ void CachingReaderWorker::run() {
     ReaderStatusUpdate status;
 
     Event::start(m_tag);
-    while (!deref(m_stop)) {
+    while (!load_atomic(m_stop)) {
         if (m_newTrack) {
             m_newTrackMutex.lock();
             pLoadTrack = m_newTrack;

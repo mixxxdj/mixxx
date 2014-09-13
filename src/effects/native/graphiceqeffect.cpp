@@ -90,7 +90,6 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     m_centerFrequencies[6] = 5416;
     m_centerFrequencies[7] = 9828;
 
-    // TODO(rryan): use the real samplerate
     // Initialize the filters with default parameters
     m_low = new EngineFilterBiquad1LowShelving(44100, m_centerFrequencies[0], Q);
     m_high = new EngineFilterBiquad1HighShelving(44100, m_centerFrequencies[7], Q);
@@ -140,13 +139,13 @@ void GraphicEQEffect::processGroup(const QString& group,
                                    GraphicEQEffectGroupState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
                                    const unsigned int numSamples,
+                                   const unsigned int sampleRate,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    int sampleRate = getSampleRate();
     if (m_oldSampleRate != sampleRate) {
         m_oldSampleRate = sampleRate;
         pState->setFilters(sampleRate);
