@@ -156,7 +156,6 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo c
     res.md5Hash = coverInfo.md5Hash;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
-    res.newImgFound = true;
 
     if (res.coverLocation == "ID3TAG") {
         res.img = extractEmbeddedCover(coverInfo.trackLocation);
@@ -215,7 +214,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.trackId = coverInfo.trackId;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
-    res.newImgFound = false;
+    bool newImgFound = false;
 
     // Looking for embedded cover art.
     //
@@ -224,28 +223,24 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         res.img = rescaleBigImage(res.img);
         res.md5Hash = calculateMD5(res.img);
         res.coverLocation = "ID3TAG";
-        res.newImgFound = true;
+        newImgFound = true;
     }
 
     // Looking for cover stored in track diretory.
     //
-    if (!res.newImgFound) {
+    if (!newImgFound) {
         res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
                                                    coverInfo.trackBaseName,
                                                    coverInfo.album);
         res.img = rescaleBigImage(QImage(res.coverLocation));
         res.md5Hash = calculateMD5(res.img);
-        res.newImgFound = true;
+        newImgFound = true;
     }
 
     // adjusting the cover size according to the final purpose
-    if (res.newImgFound && !res.croppedSize.isNull()) {
+    if (newImgFound && !res.croppedSize.isNull()) {
         res.img = cropImage(res.img, res.croppedSize);
     }
-
-    // check if this image is really a new one
-    // (different from the one that we have in db)
-    res.newImgFound = coverInfo.md5Hash != res.md5Hash;
 
     return res;
 }
@@ -352,7 +347,7 @@ void CoverArtCache::imageFound() {
     }
 
     // update DB
-    if (res.newImgFound && !m_queueOfUpdates.contains(res.trackId)) {
+    if (!m_queueOfUpdates.contains(res.trackId)) {
         m_queueOfUpdates.insert(res.trackId,
                                 qMakePair(res.coverLocation, res.md5Hash));
         updateDB();
