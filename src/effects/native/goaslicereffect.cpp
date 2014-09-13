@@ -19,38 +19,38 @@ EffectManifest GoaSlicerEffect::getManifest() {
     length->setName(QObject::tr("Length"));
     length->setDescription("TODO");
     length->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    length->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+    length->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     length->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     length->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     length->setLinkHint(EffectManifestParameter::LINK_LINKED);
-    length->setDefault(2048);
-    length->setMinimum(1);
-    length->setMaximum(8192);
+    length->setDefault(0.25);
+    length->setMinimum(0.0);
+    length->setMaximum(1.0);
 
     EffectManifestParameter* slope = manifest.addParameter();
     slope->setId("slope");
     slope->setName(QObject::tr("Slope"));
     slope->setDescription("TODO");
     slope->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    slope->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+    slope->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     slope->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     slope->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    slope->setDefault(256);
-    slope->setMinimum(1);
-    slope->setMaximum(1024);
+    slope->setDefault(0.25);
+    slope->setMinimum(0.0);
+    slope->setMaximum(1.0);
 
-    // 2,4,8,16 ... 
+    // 2,4,8,16 ...
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription("TODO");
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    period->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+    period->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefault(2);
-    period->setMinimum(1);
-    period->setMaximum(16);
+    period->setDefault(0.25);
+    period->setMinimum(0.0);
+    period->setMaximum(1.0);
     
     return manifest;
 }
@@ -75,32 +75,26 @@ void GoaSlicerEffect::processGroup(const QString& group,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
-    unsigned int length = m_pLengthParameter ?
-            m_pLengthParameter->value().toInt() : 0;
-    unsigned int slope = m_pSlopeParameter ?
-            m_pSlopeParameter->value().toInt() : 0;
-    unsigned int period = m_pPeriodParameter ? 
-            m_pPeriodParameter->value().toInt() : 2;
-    if ( period > 4) {
-        period = 4;
-    }
-    if ( period < 1) {
-        period = 1;
-    }
-    double tickses[] = {2,4,8,16};
-    double ticks = tickses[period-1];
-    double slope_amount = slope * 44100.f/(8192.f*44100.f);
+    unsigned int length = (int)(m_pLengthParameter ?
+        m_pLengthParameter->value().toFloat() * 8192.0 : 0.0);
+    unsigned int slope = (int)(m_pSlopeParameter ?
+        m_pSlopeParameter->value().toFloat() * 1024.0 : 256.0);
+    unsigned int period = m_pPeriodParameter ?
+        m_pPeriodParameter->value().toFloat: 0.25;
+    
+    unsigned int tick_periods[] = {2,4,8,16};
+    int ticks_per_beat = tick_periods[(period * (sizeof(tick_periods)/sizeof(unsigned int)))-1];
     double slope_amount = slope * ((double)sampleRate)/(8192.0*((double)sampleRate));
     
     if (groupFeatures.has_beat_length && groupFeatures.has_beat_fraction) {
         for (unsigned int i=0;i < numSamples;i+=2) {
-            double beat_pos = (i + 
+            double beat_pos = (i +
                 (groupFeatures.beat_length * groupFeatures.beat_fraction));
-            double tick_length = groupFeatures.beat_length / ticks;
+            double tick_length = groupFeatures.beat_length / (double)ticks_per_beat;
             double tick_pos = fmod(beat_pos, tick_length);
-            double slope_pos = (length*2.0f) - tick_pos;
-            bool muted = slope_pos <= 0.0f ? true : false;
-            double current_volume = 1.0f - (((slope_pos/tick_length) * slope_amount) / 2);
+            double slope_pos = (length*2.0) - tick_pos;
+            bool muted = slope_pos <= 0.0 ? true : false;
+            double current_volume = 1.0 - (((slope_pos/tick_length) * slope_amount) / 2.0);
             
             if (muted) {
                 pOutput[i] = 0.0;
@@ -111,8 +105,8 @@ void GoaSlicerEffect::processGroup(const QString& group,
                 pOutput[i+1] = pInput[i] * current_volume;
             }
             /*
-            qDebug() 
-                << "Muted:" << muted 
+            qDebug()
+                << "Muted:" << muted
                 << "Volume:" << current_volume
                 << "Beat Length:" << groupFeatures.beat_length
                 << "Tick Length:" << tick_length
@@ -131,15 +125,16 @@ void GoaSlicerEffect::processGroup(const QString& group,
             pOutput[i+1] = pInput[i];
         }
     }
+    //qDebug() << "Ticks:" << ticks << "Tick Length:" << tick_length;
     /*
-    qDebug() 
-        << "Has beat length: " 
-        << groupFeatures.has_beat_length 
-        << " fraction:" 
+    qDebug()
+        << "Has beat length: "
+        << groupFeatures.has_beat_length
+        << " fraction:"
         << groupFeatures.has_beat_fraction
-        << "pos / length = " 
-        << groupFeatures.beat_fraction 
-        << " " 
+        << "pos / length = "
+        << groupFeatures.beat_fraction
+        << " "
         << groupFeatures.beat_length
         << "slope:" << slope << "amount:" << slope_amount;
     */
