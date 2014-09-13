@@ -6,7 +6,9 @@
 #include "test/mixxxtest.h"
 #include "soundsourceproxy.h"
 
-class CoverArtCacheTest : public CoverArtCache, public MixxxTest {
+// first inherit from MixxxTest to construct a QApplication to be able to
+// construct the default QPixmap in CoverArtCache
+class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
 };
 
 const QString& kCoverLocationTest = "res/images/library/default_cover.png";
