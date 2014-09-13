@@ -12,7 +12,8 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
 };
 
 const QString& kCoverLocationTest = "res/images/library/default_cover.png";
-const QString& kTestTrackLocation = "/src/test/cover-test.mp3";
+const QString kTestTrackLocation =
+        QDir::currentPath().append("/src/test/soundFileFormats/cover-test.mp3");
 
 TEST_F(CoverArtCacheTest, loadImage) {
     QImage img = QImage(kCoverLocationTest);
@@ -23,16 +24,16 @@ TEST_F(CoverArtCacheTest, loadImage) {
 
     CoverArtCache::FutureResult res;
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
-    ASSERT_EQ(info.trackId, res.trackId);
+    EXPECT_EQ(info.trackId, res.trackId);
     EXPECT_QSTRING_EQ(kCoverLocationTest, res.coverLocation);
     EXPECT_QSTRING_EQ(info.md5Hash, res.md5Hash);
-    ASSERT_TRUE(img.operator==(res.img));
+    EXPECT_TRUE(img.operator==(res.img));
 
     info.trackId = 1;
     info.coverLocation = "";
     info.trackLocation = kTestTrackLocation;
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
-    ASSERT_EQ(info.trackId, res.trackId);
+    EXPECT_EQ(info.trackId, res.trackId);
     EXPECT_QSTRING_EQ("", res.coverLocation);
     EXPECT_QSTRING_EQ(info.md5Hash, res.md5Hash);
 
@@ -40,9 +41,10 @@ TEST_F(CoverArtCacheTest, loadImage) {
         QDir(kTestTrackLocation), true);
     SoundSourceProxy proxy(kTestTrackLocation, securityToken);
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+    ASSERT_TRUE(pProxiedSoundSource != NULL && proxy.parseHeader() == OK);
     img = pProxiedSoundSource->getCoverArt();
 
-    ASSERT_TRUE(img.operator==(res.img));
+    EXPECT_TRUE(img.operator==(res.img));
 }
 
 TEST_F(CoverArtCacheTest, searchImage) {
@@ -65,24 +67,25 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    ASSERT_TRUE(res.coverLocation.isEmpty());
+    EXPECT_TRUE(res.coverLocation.isEmpty());
 
     // looking for a track with embedded cover
     cInfo.trackLocation = kTestTrackLocation;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    ASSERT_EQ(cInfo.trackId, res.trackId);
-    EXPECT_QSTRING_EQ("", res.coverLocation);
+    EXPECT_EQ(cInfo.trackId, res.trackId);
+    EXPECT_QSTRING_EQ("ID3TAG", res.coverLocation);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
         QDir(kTestTrackLocation), true);
     SoundSourceProxy proxy(kTestTrackLocation, securityToken);
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+    ASSERT_TRUE(pProxiedSoundSource != NULL && proxy.parseHeader() == OK);
     QImage img = pProxiedSoundSource->getCoverArt();
 
-    ASSERT_TRUE(img.operator==(res.img));
-    cInfo.trackLocation = trackdir % "/" % cInfo.trackBaseName % ".mp3";
+    EXPECT_TRUE(img.operator==(res.img));
 
     // setting image source and default format
+    cInfo.trackLocation = trackdir % "/" % cInfo.trackBaseName % ".mp3";
     img = QImage(kCoverLocationTest);
     const char* format("jpg");
 
@@ -151,7 +154,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     prefCovers << cLoc_lighter;
 
     // we must find covers in the right order
-    ASSERT_EQ(7, prefCovers.size());
+    EXPECT_EQ(7, prefCovers.size());
     for (int coverNameId = 0; coverNameId < prefCovers.size(); coverNameId++) {
         res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
         EXPECT_QSTRING_EQ(prefCovers[coverNameId], res.coverLocation);

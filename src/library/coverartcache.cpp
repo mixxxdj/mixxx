@@ -125,7 +125,7 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
     CoverArtDAO::CoverArtInfo coverInfo;
     // (bool != bool) is equivalent to a logical XOR
     if (info.md5Hash.isEmpty() ||
-            (info.coverLocation.isEmpty() != !QFile::exists(info.coverLocation))) {
+           ((info.coverLocation == "ID3TAG") != !QFile::exists(info.coverLocation))) {
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(info.trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
                                    coverInfo, croppedSize, issueRepaint);
@@ -158,7 +158,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo c
     res.issueRepaint = issueRepaint;
     res.newImgFound = true;
 
-    if (res.coverLocation.isEmpty()) {
+    if (res.coverLocation == "ID3TAG") {
         res.img = extractEmbeddedCover(coverInfo.trackLocation);
     } else {
         res.img = QImage(res.coverLocation);
@@ -223,6 +223,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     if (!res.img.isNull()) {
         res.img = rescaleBigImage(res.img);
         res.md5Hash = calculateMD5(res.img);
+        res.coverLocation = "ID3TAG";
         res.newImgFound = true;
     }
 
