@@ -11,16 +11,17 @@ class CoverArtCacheTest : public CoverArtCache, public MixxxTest {
 const QString& kCoverLocationTest = "res/images/library/default_cover.png";
 
 TEST_F(CoverArtCacheTest, loadImage) {
-    int trackId = 1;
     QImage img = QImage(kCoverLocationTest);
-    QString md5hash = "md5hash"; // fake md5 hash
+    CoverArtDAO::CoverArtInfo info;
+    info.trackId = 1;
+    info.coverLocation = kCoverLocationTest;
+    info.md5Hash = "md5hash"; // fake md5 hash
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadImage(trackId, kCoverLocationTest,
-                                   md5hash, QSize(0,0), false);
-    ASSERT_EQ(trackId, res.trackId);
+    res = CoverArtCache::loadImage(info, QSize(0,0), false);
+    ASSERT_EQ(info.trackId, res.trackId);
     EXPECT_QSTRING_EQ(kCoverLocationTest, res.coverLocation);
-    EXPECT_QSTRING_EQ(md5hash, res.md5Hash);
+    EXPECT_QSTRING_EQ(info.md5Hash, res.md5Hash);
     ASSERT_TRUE(img.operator==(res.img));
 }
 
