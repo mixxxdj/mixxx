@@ -80,7 +80,7 @@ void GoaSlicerEffect::processGroup(const QString& group,
     unsigned int slope = (int)(m_pSlopeParameter ?
         m_pSlopeParameter->value().toFloat() * 1024.0 : 256.0);
     unsigned int period = m_pPeriodParameter ?
-        m_pPeriodParameter->value().toFloat: 0.25;
+        m_pPeriodParameter->value().toFloat(): 0.25;
     
     unsigned int tick_periods[] = {2,4,8,16};
     int ticks_per_beat = tick_periods[(period * (sizeof(tick_periods)/sizeof(unsigned int)))-1];
