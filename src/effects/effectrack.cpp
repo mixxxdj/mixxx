@@ -23,6 +23,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
 
 EffectRack::~EffectRack() {
     removeFromEngine();
+    delete m_pEngineEffectRack;
 }
 
 EngineEffectRack* EffectRack::getEngineEffectRack() {
