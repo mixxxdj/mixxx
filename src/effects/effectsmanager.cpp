@@ -32,6 +32,7 @@ EffectsManager::~EffectsManager() {
         delete it.value();
         it = m_activeRequests.erase(it);
     }
+    delete m_pEngineEffectsManager;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
