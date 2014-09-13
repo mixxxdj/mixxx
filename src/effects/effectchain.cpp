@@ -23,6 +23,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
 
 EffectChain::~EffectChain() {
     //qDebug() << debugString() << "destroyed";
+    delete m_pEngineEffectChain;
 }
 
 void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {

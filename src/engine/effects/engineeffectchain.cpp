@@ -15,6 +15,7 @@ EngineEffectChain::EngineEffectChain(const QString& id)
 }
 
 EngineEffectChain::~EngineEffectChain() {
+    SampleUtil::free(m_pBuffer);
 }
 
 bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
