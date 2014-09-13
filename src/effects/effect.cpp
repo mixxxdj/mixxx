@@ -42,6 +42,7 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
 Effect::~Effect() {
     //qDebug() << debugString() << "destroyed";
     m_parametersById.clear();
+    m_buttonParametersById.clear();
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
         m_parameters[i] = NULL;
@@ -52,6 +53,7 @@ Effect::~Effect() {
         m_buttonParameters[i] = NULL;
         delete pParameter;
     }
+    delete m_pEngineEffect;
 }
 
 void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
