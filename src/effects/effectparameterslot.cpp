@@ -150,7 +150,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
         // Intermediate cast to integer is needed for VC++.
         EffectManifestParameter::LinkType type =
                 static_cast<EffectManifestParameter::LinkType>(
-                        (int)m_pControlLinkType->get());
+                        static_cast<int>(m_pControlLinkType->get()));
 
         bool inverse = m_pControlLinkInverse->get() ? true : false;
 
