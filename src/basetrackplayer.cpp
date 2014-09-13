@@ -251,12 +251,7 @@ TrackPointer BaseTrackPlayer::getLoadedTrack() const {
 }
 
 void BaseTrackPlayer::slotSetReplayGain(double replayGain) {
-
-    // Do not change replay gain when track is playing because
-    // this may lead to an unexpected volume change
-    if (m_pPlay->get() == 0.0) {
-        m_pReplayGain->slotSet(replayGain);
-    }
+    m_pReplayGain->slotSet(replayGain);
 }
 
 EngineDeck* BaseTrackPlayer::getEngineDeck() const {
