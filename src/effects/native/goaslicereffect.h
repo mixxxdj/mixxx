@@ -12,15 +12,8 @@
 
 struct GoaSlicerGroupState {
     GoaSlicerGroupState()
-            // TODO(XXX) 44100 should be changed to real sample rate
-            // https://bugs.launchpad.net/mixxx/+bug/1208816.
-            : length(2048),
-              slope(512) {
+    {
     }
-
-    unsigned int length;
-    unsigned int slope;
-    unsigned int period;
 };
 
 class GoaSlicerEffect : public GroupEffectProcessor<GoaSlicerGroupState> {
