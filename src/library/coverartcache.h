@@ -11,10 +11,11 @@
 #include "util/singleton.h"
 
 struct CoverInfo {
-  CoverInfo() : trackId(-1), coverLocation(QString()),
+  CoverInfo() : trackId(-1), coverLocation(QString()), trackLocation(QString()),
         md5Hash(QString()) {}
     int trackId;
     QString coverLocation;
+    QString trackLocation;
     QString md5Hash;
 };
 

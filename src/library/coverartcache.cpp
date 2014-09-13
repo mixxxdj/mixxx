@@ -123,7 +123,9 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     CoverArtDAO::CoverArtInfo coverInfo;
-    if (info.coverLocation.isEmpty() || !QFile::exists(info.coverLocation)) {
+    // (bool != bool) is equivalent to a logical XOR
+    if (info.md5Hash.isEmpty() ||
+            (info.coverLocation.isEmpty() != !QFile::exists(info.coverLocation))) {
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(info.trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
                                    coverInfo, croppedSize, issueRepaint);
@@ -132,6 +134,7 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
         coverInfo.trackId = info.trackId;
         coverInfo.coverLocation = info.coverLocation;
         coverInfo.md5Hash = info.md5Hash;
+        coverInfo.trackLocation = info.trackLocation;
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
                                    coverInfo, croppedSize, issueRepaint);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
@@ -150,11 +153,16 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo c
     FutureResult res;
     res.trackId = coverInfo.trackId;
     res.coverLocation = coverInfo.coverLocation;
-    res.img = QImage(res.coverLocation);
     res.md5Hash = coverInfo.md5Hash;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
     res.newImgFound = true;
+
+    if (res.coverLocation.isEmpty()) {
+        res.img = extractEmbeddedCover(coverInfo.trackLocation);
+    } else {
+        res.img = QImage(res.coverLocation);
+    }
 
     if (res.croppedSize.isNull()) {
         res.img = rescaleBigImage(res.img);

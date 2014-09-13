@@ -200,6 +200,8 @@ void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
             info.trackId = trackModel->getTrackId(idx);
             info.coverLocation = idx.sibling(
                 idx.row(), m_iCoverLocationColumn).data().toString();
+            info.trackLocation = idx.sibling(
+                idx.row(), m_iTrackLocationColumn).data().toString();
             emit(loadCoverArt(info, cachedOnly));
         }
     }
@@ -232,6 +234,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
     m_iMd5Column = trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
     m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
+    m_iTrackLocationColumn = trackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION);
 
     setVisible(false);
 

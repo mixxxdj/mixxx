@@ -24,7 +24,9 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
     if (m_pTrackModel) {
         m_iMd5Column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
         m_iCoverLocationColumn = m_pTrackModel->fieldIndex(
-                                    LIBRARYTABLE_COVERART_LOCATION);
+            LIBRARYTABLE_COVERART_LOCATION);
+        m_iTrackLocationColumn = m_pTrackModel->fieldIndex(
+            TRACKLOCATIONSTABLE_LOCATION);
 
         int coverColumn = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART);
         m_pTableView->setColumnWidth(coverColumn, 100);
@@ -65,6 +67,8 @@ void CoverArtDelegate::paint(QPainter *painter,
         info.coverLocation = coverLocation;
         info.md5Hash = index.sibling(
             index.row(), m_iMd5Column).data().toString();
+        info.trackLocation = index.sibling(
+            index.row(), m_iTrackLocationColumn).data().toString();
         QSize coverSize(100, option.rect.height());
 
         // If the CoverDelegate is locked, it must not try

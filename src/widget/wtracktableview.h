@@ -67,7 +67,7 @@ class WTrackTableView : public WLibraryTableView {
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();
-    void slotScaleBpm(int); 
+    void slotScaleBpm(int);
     void slotClearBeats();
     void slotGuiTickTime(double);
     void slotScrollValueChanged(int);
@@ -155,6 +155,7 @@ class WTrackTableView : public WLibraryTableView {
     int m_iCoverLocationColumn; // cover art location
     int m_iMd5Column;           // cover art md5 hash
     int m_iCoverColumn;         // visible cover art
+    int m_iTrackLocationColumn;
 
     // Control the delay to load a cover art.
     double m_lastSelection;
