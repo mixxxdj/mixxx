@@ -186,12 +186,12 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
         qWarning() << "TrackDAO::saveTrack() was given NULL track.";
         return;
     }
-    qDebug() << "TrackDAO::saveTrack" << pTrack->getId() << pTrack->getInfo();
+    //qDebug() << "TrackDAO::saveTrack" << pTrack->getId() << pTrack->getInfo();
     // If track's id is not -1, then update, otherwise add.
     int trackId = pTrack->getId();
     if (trackId != -1) {
         if (pTrack->isDirty()) {
-            qDebug() << this << "Dirty tracks before clean save:" << m_dirtyTracks.size();
+            //qDebug() << this << "Dirty tracks before clean save:" << m_dirtyTracks.size();
             //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
             updateTrack(pTrack);
 
@@ -803,13 +803,12 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
 
 void TrackDAO::slotTrackDeleted(TrackInfoObject* pTrack) {
     Q_ASSERT(pTrack);
-    qDebug() << "Garbage Collecting" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
+    //qDebug() << "Garbage Collecting" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
 
     // Save the track if it is dirty.
     if (pTrack->isDirty()) {
-        qDebug() << "track is dirty";
         saveTrack(pTrack);
-    } else {qDebug() << "track not dirty";}
+    }
 
     // Delete Track from weak reference cache
     m_sTracksMutex.lock();
