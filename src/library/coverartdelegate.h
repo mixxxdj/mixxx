@@ -31,13 +31,12 @@ class CoverArtDelegate : public QStyledItemDelegate {
     void slotOnlyCachedCoverArt(bool b);
 
   private:
-    QTableView* m_pTableView;
-    TrackModel* m_pTrackModel;
     bool m_bOnlyCachedCover;
     QString m_sDefaultCover;
     int m_iCoverLocationColumn;
     int m_iMd5Column;
     int m_iTrackLocationColumn;
+    int m_iIdColumn;
 };
 
 #endif // COVERARTDELEGATE_H

@@ -6,30 +6,33 @@
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
-          m_pTableView(NULL),
-          m_pTrackModel(NULL),
           m_bOnlyCachedCover(false),
           m_sDefaultCover(CoverArtCache::instance()->getDefaultCoverLocation()),
           m_iCoverLocationColumn(-1),
-          m_iMd5Column(-1) {
+          m_iMd5Column(-1),
+          m_iIdColumn(-1) {
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
             this, SLOT(slotOnlyCachedCoverArt(bool)));
 
+    TrackModel* pTrackModel = NULL;
+    QTableView* pTableView = NULL;
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
-        m_pTableView = tableView;
-        m_pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+        pTableView = tableView;
+        pTrackModel = dynamic_cast<TrackModel*>(pTableView->model());
     }
 
-    if (m_pTrackModel) {
-        m_iMd5Column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
-        m_iCoverLocationColumn = m_pTrackModel->fieldIndex(
+    if (pTrackModel) {
+        m_iMd5Column = pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
+        m_iCoverLocationColumn = pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_LOCATION);
-        m_iTrackLocationColumn = m_pTrackModel->fieldIndex(
+        m_iTrackLocationColumn = pTrackModel->fieldIndex(
             TRACKLOCATIONSTABLE_LOCATION);
+        m_iIdColumn = pTrackModel->fieldIndex(
+            LIBRARYTABLE_ID);
 
-        int coverColumn = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART);
-        m_pTableView->setColumnWidth(coverColumn, 100);
+        int coverColumn = pTrackModel->fieldIndex(LIBRARYTABLE_COVERART);
+        pTableView->setColumnWidth(coverColumn, 100);
     }
 }
 
@@ -47,11 +50,12 @@ void CoverArtDelegate::paint(QPainter *painter,
         painter->fillRect(option.rect, option.palette.highlight());
     }
 
-    if (!m_pTrackModel || m_iCoverLocationColumn == -1 || m_iMd5Column == -1) {
+    if (m_iIdColumn == -1 || m_iCoverLocationColumn == -1 || m_iMd5Column == -1) {
         return;
     }
 
-    int trackId = m_pTrackModel->getTrackId(index);
+    int trackId = index.sibling(
+        index.row(), m_iIdColumn).data().toInt();
     if (trackId < 1) {
         return;
     }
