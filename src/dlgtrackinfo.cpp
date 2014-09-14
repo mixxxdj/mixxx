@@ -173,9 +173,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 }
 
-void DlgTrackInfo::loadTrack(TrackPointer pTrack,
-                             QString coverLocation,
-                             QString md5) {
+void DlgTrackInfo::loadTrack(TrackPointer pTrack, CoverInfo info) {
     m_pLoadedTrack = pTrack;
     clear();
 
@@ -190,19 +188,13 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack,
     connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
             this, SLOT(updateTrackMetadata()));
 
-    CoverInfo info;
-    info.trackId = pTrack->getId();
-    info.coverLocation = coverLocation;
-    info.md5Hash = md5;
     QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info);
     if (pixmap.isNull()) { // use default cover art
         pixmap = CoverArtCache::instance()->getDefaultCoverArt();
     }
     setCoverArt(pixmap);
-    m_loadedCover.trackId = pTrack->getId();
-    m_loadedCover.coverLocation = coverLocation;
-    m_loadedCover.md5Hash = md5;
-    m_firstCoverLoc = coverLocation;
+    m_loadedCover = info;
+    m_firstCoverLoc = info.coverLocation;
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
