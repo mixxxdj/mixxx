@@ -6,12 +6,12 @@
 #include <QMouseEvent>
 #include <QWidget>
 
-#include "skin/skincontext.h"
 #include "trackinfoobject.h"
+#include "library/coverartcache.h"
 #include "library/trackcollection.h"
+#include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
-#include "library/coverartcache.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT

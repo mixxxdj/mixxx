@@ -1,23 +1,24 @@
 #include <QDesktopWidget>
 
 #include "dlgcoverartfullsize.h"
-#include "library/coverartcache.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize() {
     setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
-    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
-            this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 }
 
 DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 }
 
-void DlgCoverArtFullSize::slotPixmapFound(int trackId, QPixmap pixmap) {
-    Q_UNUSED(trackId);
-    m_cover = pixmap;
-
-    if (!QApplication::activeWindow()) {
+void DlgCoverArtFullSize::init(CoverInfo info) {
+    // As this dialog box will always be opened from a
+    // cover widget (with a loaded cover), consequently the
+    // target pixmap will already be in the QPixmapCache.
+    // So, it just have to request the cached pixmap.
+    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info,
+                                                              QSize(0,0),
+                                                              true, true);
+    if (pixmap.isNull())  {
         return;
     }
 
@@ -25,22 +26,13 @@ void DlgCoverArtFullSize::slotPixmapFound(int trackId, QPixmap pixmap) {
     // In this case, it need to do a small adjust to make
     // this dlg a bit smaller than the Mixxx window.
     QSize mixxxSize = QApplication::activeWindow()->size() / qreal(1.2);
-    if (m_cover.height() > mixxxSize.height()
-            || m_cover.width() > mixxxSize.width()) {
-        m_cover.scaled(mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    if (pixmap.height() > mixxxSize.height()
+            || pixmap.width() > mixxxSize.width()) {
+        pixmap.scaled(mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+    resize(pixmap.size());
+    coverArt->setPixmap(pixmap);
 
-    if (isVisible()) {
-        init();
-    }
-}
-
-void DlgCoverArtFullSize::init() {
-    if (m_cover.isNull())  {
-        return;
-    }
-    resize(m_cover.size());
-    coverArt->setPixmap(m_cover);
     show();
     move(QApplication::desktop()->screenGeometry().center() - rect().center());
 }

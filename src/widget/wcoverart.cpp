@@ -140,8 +140,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if (event->HoverEnter)
-        DlgCoverArtFullSize::instance()->init();
+    if (event->HoverEnter) {
+        DlgCoverArtFullSize::instance()->init(m_lastRequestedCover);
+    }
 }
 
 void WCoverArt::leaveEvent(QEvent*) {
