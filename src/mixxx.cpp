@@ -526,6 +526,12 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
+    // As CoverArtCache needs to have an available CoverArtDAO/TrackDAO,
+    // it must be destroyed BEFORE them (before the library is destroyed).
+    // During the CoverArtCache destruction, some covers and tracks
+    // might be updated (queued).
+    CoverArtCache::destroy();
+
     // Delete the library after the view so there are no dangling pointers to
     // Depends on RecordingManager
     // the data models.

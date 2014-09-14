@@ -173,9 +173,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 }
 
-void DlgTrackInfo::loadTrack(TrackPointer pTrack,
-                             QString coverLocation,
-                             QString md5) {
+void DlgTrackInfo::loadTrack(TrackPointer pTrack, CoverInfo info) {
     m_pLoadedTrack = pTrack;
     clear();
 
@@ -190,19 +188,8 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack,
     connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
             this, SLOT(updateTrackMetadata()));
 
-    CoverInfo info;
-    info.trackId = pTrack->getId();
-    info.coverLocation = coverLocation;
-    info.md5Hash = md5;
-    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info);
-    if (pixmap.isNull()) { // use default cover art
-        pixmap = CoverArtCache::instance()->getDefaultCoverArt();
-    }
-    setCoverArt(pixmap);
-    m_loadedCover.trackId = pTrack->getId();
-    m_loadedCover.coverLocation = coverLocation;
-    m_loadedCover.md5Hash = md5;
-    m_firstCoverLoc = coverLocation;
+    CoverArtCache::instance()->requestPixmap(info);
+    m_loadedCover = info;
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -406,8 +393,8 @@ void DlgTrackInfo::saveTrack() {
         m_pLoadedTrack->removeCue(pCue);
     }
 
-    bool res = CoverArtCache::instance()->changeCoverArt(m_pLoadedTrack->getId(),
-                                              m_loadedCover.coverLocation);
+    bool res = CoverArtCache::instance()->changeCoverArt(
+        m_pLoadedTrack->getId(), m_loadedCover.coverLocation);
 
     if (!res) {
         QMessageBox::warning(this, tr("Change Cover Art"),
@@ -421,16 +408,12 @@ void DlgTrackInfo::unloadTrack(bool save) {
 
     if (save) {
         saveTrack();
-    } else if (m_firstCoverLoc != m_loadedCover.coverLocation){ // revert cover art
-        CoverArtCache::instance()->changeCoverArt(m_pLoadedTrack->getId(),
-                                                  m_firstCoverLoc);
     }
 
     clear();
     disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.clear();
     m_loadedCover = CoverInfo();
-    m_firstCoverLoc.clear();
 }
 
 void DlgTrackInfo::clear() {

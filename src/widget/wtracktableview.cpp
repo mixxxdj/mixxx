@@ -614,12 +614,16 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     }
 
     TrackPointer pTrack = trackModel->getTrack(index);
-    QString coverLocation = index.sibling(index.row(),
-        trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION)).data().toString();
-    QString md5Hash = index.sibling(index.row(),
-        trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5)).data().toString();
+    CoverInfo info;
+    info.trackId = trackModel->getTrackId(index);
+    info.coverLocation = index.sibling(
+        index.row(), m_iCoverLocationColumn).data().toString();
+    info.md5Hash = index.sibling(
+        index.row(), m_iMd5Column).data().toString();
+    info.trackLocation = index.sibling(
+        index.row(), m_iTrackLocationColumn).data().toString();
 
-    m_pTrackInfo->loadTrack(pTrack, coverLocation, md5Hash); // NULL is fine.
+    m_pTrackInfo->loadTrack(pTrack, info); // NULL is fine.
     currentTrackInfoIndex = index;
 
     m_pTrackInfo->show();
