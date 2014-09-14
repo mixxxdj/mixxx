@@ -1,10 +1,11 @@
-#include <QtDebug>
+#include <QDesktopWidget>
+
 #include "dlgcoverartfullsize.h"
 #include "library/coverartcache.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize() {
     setupUi(this);
-    setWindowTitle(tr("Cover Art"));
+    setWindowFlags(Qt::FramelessWindowHint);
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 }
@@ -41,4 +42,5 @@ void DlgCoverArtFullSize::init() {
     resize(m_cover.size());
     coverArt->setPixmap(m_cover);
     show();
+    move(QApplication::desktop()->screenGeometry().center() - rect().center());
 }
