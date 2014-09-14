@@ -20,22 +20,16 @@ WCoverArtMenu::~WCoverArtMenu() {
 }
 
 void WCoverArtMenu::createActions() {
-    m_pChange = new QAction(QIcon(":/images/library/ic_cover_change.png"),
-                            tr("Choose new cover",
-                               "change cover art location"),
-                            this);
+    m_pChange = new QAction(tr("Choose new cover",
+            "change cover art location"), this);
     connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
 
-    m_pUnset = new QAction(QIcon(":/images/library/ic_cover_unset.png"),
-                           tr("Unset cover",
-                              "unset cover art - load default"),
-                           this);
+    m_pUnset = new QAction(tr("Unset cover",
+            "unset cover art - load default"), this);
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
 
-    m_pReload = new QAction(QIcon(":/images/library/ic_cover_reload.png"),
-                            tr("Reload from track/folder",
-                               "reload just cover art, using the search algorithm"),
-                            this);
+    m_pReload = new QAction(tr("Reload from track/folder",
+            "reload just cover art, using the search algorithm"), this);
     connect(m_pReload, SIGNAL(triggered()), this, SLOT(slotReload()));
 }
 
