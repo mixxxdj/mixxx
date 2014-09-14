@@ -88,7 +88,7 @@ Bessel8LVMixEQEffectGroupState::~Bessel8LVMixEQEffectGroupState() {
 }
 
 void Bessel8LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
-                                               int highFreq) {
+                                                int highFreq) {
     double delayLow1 = sampleRate * kGroupDelay1Hz / lowFreq + kDelayOffset;
     double delayLow2 = sampleRate * kGroupDelay1Hz / highFreq + kDelayOffset;
     // Since we delay only full samples, we can only allow frequencies
@@ -117,7 +117,7 @@ void Bessel8LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
 }
 
 Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
-                                         const EffectManifest& manifest)
+                                           const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")) {
