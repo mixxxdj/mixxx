@@ -14,7 +14,7 @@ class DlgCoverArtFullSize
 {
     Q_OBJECT
   public:
-    void init(CoverInfo info);
+    void init(QPixmap pixmap);
 
   protected:
     DlgCoverArtFullSize();

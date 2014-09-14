@@ -2,7 +2,9 @@
 
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
+          m_pTrack(TrackPointer()),
           m_coverInfo(CoverInfo()),
+          m_pixmap(QPixmap()),
           m_pCoverMenu(new WCoverArtMenu(this)) {
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
@@ -22,6 +24,7 @@ void WCoverArtLabel::setCoverArt(TrackPointer track,
                                  QPixmap pixmap) {
     m_pTrack = track;
     m_coverInfo = info;
+    m_pixmap = pixmap;
     QPixmap scaled = pixmap.scaled(100, 100,
                                    Qt::KeepAspectRatio,
                                    Qt::SmoothTransformation);
@@ -41,7 +44,7 @@ void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
 
 void WCoverArtLabel::enterEvent(QEvent*) {
     if (!m_pCoverMenu->isVisible()) {
-        DlgCoverArtFullSize::instance()->init(m_coverInfo);
+        DlgCoverArtFullSize::instance()->init(m_pixmap);
     }
 }
 

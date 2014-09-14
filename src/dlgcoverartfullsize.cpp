@@ -10,14 +10,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize() {
 DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 }
 
-void DlgCoverArtFullSize::init(CoverInfo info) {
-    // As this dialog box will always be opened from a
-    // cover widget (with a loaded cover), consequently the
-    // target pixmap will already be in the QPixmapCache.
-    // So, it just have to request the cached pixmap.
-    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info,
-                                                              QSize(0,0),
-                                                              true, true);
+void DlgCoverArtFullSize::init(QPixmap pixmap) {
     if (pixmap.isNull())  {
         return;
     }

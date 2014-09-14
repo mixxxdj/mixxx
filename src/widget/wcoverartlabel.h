@@ -28,6 +28,7 @@ class WCoverArtLabel : public QLabel {
   private:
     TrackPointer m_pTrack;
     CoverInfo m_coverInfo;
+    QPixmap m_pixmap;
     WCoverArtMenu* m_pCoverMenu;
 };
 
