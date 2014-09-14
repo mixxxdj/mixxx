@@ -45,6 +45,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bEnableWidget;
     WCoverArtMenu* m_pMenu;
     QPixmap m_loadedCover;
+    QPixmap m_loadedCoverScaled;
     TrackDAO& m_trackDAO;
     CoverInfo m_lastRequestedCover;
 };
