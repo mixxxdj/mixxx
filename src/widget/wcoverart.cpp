@@ -71,7 +71,7 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
 
 void WCoverArt::slotEnableWidget(bool enable) {
     m_bEnableWidget = enable;
-    setMaximumHeight(enable ? 999 : 0);
+    setMaximumHeight(m_bEnableWidget ? parentWidget()->height() / 3 : 0);
     update();
 }
 
@@ -109,7 +109,6 @@ QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
 
 void WCoverArt::paintEvent(QPaintEvent*) {
     if (!m_bEnableWidget) {
-        setMaximumHeight(0);
         return;
     }
     QPainter painter(this);
@@ -117,6 +116,16 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     int x = width() / 2 - height() / 2 + 4;
     int y = 6;
     painter.drawPixmap(x, y, m_loadedCover);
+}
+
+void WCoverArt::resizeEvent(QResizeEvent*) {
+    if (height() && height() != parentWidget()->height() / 3) {
+        setMaximumHeight(parentWidget()->height() / 3);
+    }
+    if (m_lastRequestedCover.trackId < 1) {
+        m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
+        m_loadedCover = scaledCoverArt(m_loadedCover);
+    }
 }
 
 void WCoverArt::mousePressEvent(QMouseEvent* event) {
