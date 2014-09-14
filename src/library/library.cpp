@@ -181,8 +181,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotRestoreSearch(const QString&)));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
             this, SIGNAL(enableCoverArtDisplay(bool)));
-    connect(feature, SIGNAL(loadCoverArt(const QString&, const QString&, int, bool)),
-            this, SIGNAL(loadCoverArt(const QString&, const QString&, int, bool)));
+    connect(feature, SIGNAL(loadCoverArt(CoverInfo, bool)),
+            this, SIGNAL(loadCoverArt(CoverInfo, bool)));
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {

@@ -38,8 +38,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    connect(m_pTrackTableView, SIGNAL(loadCoverArt(const QString&, const QString&, int, bool)),
-            this, SIGNAL(loadCoverArt(const QString&, const QString&, int, bool)));
+    connect(m_pTrackTableView, SIGNAL(loadCoverArt(CoverInfo, bool)),
+            this, SIGNAL(loadCoverArt(CoverInfo, bool)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!

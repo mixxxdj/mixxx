@@ -4,6 +4,7 @@
 #include <QItemSelection>
 #include "ui_dlganalysis.h"
 #include "configobject.h"
+#include "library/coverartcache.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "library/analysislibrarytablemodel.h"
@@ -47,9 +48,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
     void analyzeTracks(QList<int> trackIds);
     void stopAnalysis();
-    void loadCoverArt(const QString& coverLocation,
-                      const QString& md5Hash,
-                      int trackId, bool cachedOnly);
+    void loadCoverArt(CoverInfo info, bool cachedOnly);
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file

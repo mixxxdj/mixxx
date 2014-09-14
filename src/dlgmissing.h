@@ -3,6 +3,7 @@
 
 #include "ui_dlgmissing.h"
 #include "configobject.h"
+#include "library/coverartcache.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
@@ -26,9 +27,7 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
   signals:
-    void loadCoverArt(const QString& coverLocation,
-                      const QString& md5Hash,
-                      int trackId, bool cachedOnly);
+    void loadCoverArt(CoverInfo info, bool cachedOnly);
 
   private:
     void activateButtons(bool enable);
