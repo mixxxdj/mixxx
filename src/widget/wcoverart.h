@@ -34,25 +34,14 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   protected:
     void paintEvent(QPaintEvent*);
-    void resizeEvent(QResizeEvent*);
     void mousePressEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent*);
-    void leaveEvent(QEvent*);
 
   private:
     QPixmap scaledCoverArt(QPixmap normal);
 
     bool m_bEnableWidget;
-    bool m_bCoverIsHovered;
-    bool m_bCoverIsVisible;
-
     WCoverArtMenu* m_pMenu;
-
     QPixmap m_loadedCover;
-
-    QPixmap m_iconHide;
-    QPixmap m_iconShow;
-
     TrackDAO& m_trackDAO;
     CoverInfo m_lastRequestedCover;
 };
