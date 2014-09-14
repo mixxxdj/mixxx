@@ -1115,7 +1115,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":rating", pTrack->getRating());
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
-    query.bindValue(":played", pTrack->getPlayed());
+    query.bindValue(":played", pTrack->getPlayed() ? 1 : 0);
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());

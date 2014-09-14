@@ -154,11 +154,15 @@ void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
         // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
         if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
                 m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
-            event->acceptProposedAction();
-        } else {
-            event->ignore();
+            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+            if (!files.isEmpty()) {
+                event->acceptProposedAction();
+                return;
+            }
         }
     }
+    event->ignore();
 }
 
 void WWaveformViewer::dropEvent(QDropEvent * event) {
