@@ -16,12 +16,6 @@ CoverArtDAO::~CoverArtDAO() {
 }
 
 void CoverArtDAO::finish() {
-    // As CoverArtCache needs to have an available CoverArtDAO/TrackDAO,
-    // it must be destroyed BEFORE them.
-    // During the CoverArtCache destruction, some covers and tracks
-    // might be updated (queued).
-    CoverArtCache::destroy();
-
     deleteUnusedCoverArts();
 }
 
