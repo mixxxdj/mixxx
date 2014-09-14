@@ -154,9 +154,9 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
         pState->m_oldSampleRate = sampleRate;
         // Clamp frequency corners to the border, defined by the maximum delay.
         int minFreq = sampleRate / (kMaxDelay - 1) * kGroupDelay1Hz * 2;
-        pState->m_loFreq = math_max(pState->m_loFreq, minFreq);
-        pState->m_hiFreq = math_max(pState->m_hiFreq, minFreq);
-        pState->setFilters(sampleRate, pState->m_loFreq, pState->m_hiFreq);
+        pState->setFilters(sampleRate,
+                math_max(pState->m_loFreq, minFreq),
+                math_max(pState->m_hiFreq, minFreq));
     }
 
     // Since a Bessel Low pass Filter has a constant group delay in the pass band,
