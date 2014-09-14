@@ -82,10 +82,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     WCoverArtMenu* m_pCoverMenu;
     CoverInfo m_loadedCover;
-
-    // Useful to handle cases when the user cancel the changes.
-    // In this case DlgTrackInfo must revert the cover
-    QString m_firstCoverLoc;
 };
 
 #endif /* DLGTRACKINFO_H */
