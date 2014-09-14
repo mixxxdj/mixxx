@@ -42,7 +42,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     qDebug() << "~TrackCollection()";
-    m_coverArtDao.finish();
+    m_coverArtDao.deleteUnusedCoverArts();
     m_trackDao.finish();
 
     if (m_db.isOpen()) {

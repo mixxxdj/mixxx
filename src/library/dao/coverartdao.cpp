@@ -15,10 +15,6 @@ CoverArtDAO::~CoverArtDAO() {
     qDebug() << "~CoverArtDAO()";
 }
 
-void CoverArtDAO::finish() {
-    deleteUnusedCoverArts();
-}
-
 void CoverArtDAO::initialize() {
     qDebug() << "CoverArtDAO::initialize"
              << QThread::currentThread()

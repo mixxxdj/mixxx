@@ -16,7 +16,6 @@ class CoverArtDAO : public DAO {
     CoverArtDAO(QSqlDatabase& database);
     virtual ~CoverArtDAO();
 
-    void finish();
     void setDatabase(QSqlDatabase& database) { m_database = database; }
     void initialize();
 
