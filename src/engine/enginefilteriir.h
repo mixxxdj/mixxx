@@ -123,6 +123,22 @@ class EngineFilterIIR : public EngineObjectConstIn {
         }
     }
 
+    virtual void processForwardAndReverse(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                                     const int iBufferSize) {
+        memset(m_buf1, 0, sizeof(m_buf1));
+        memset(m_buf2, 0, sizeof(m_buf2));
+        for (int i = 0; i < iBufferSize; i += 2) {
+            pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
+            pOutput[i + 1] = processSample(m_coef, m_buf2, pIn[i + 1]);
+        }
+        memset(m_buf1, 0, sizeof(m_buf1));
+        memset(m_buf2, 0, sizeof(m_buf2));
+        for (int i = iBufferSize - 2; i >= 0; i -= 2) {
+            pOutput[i] = processSample(m_coef, m_buf1, pOutput[i]);
+            pOutput[i + 1] = processSample(m_coef, m_buf2, pOutput[i + 1]);
+        }
+    }
+
   protected:
     inline double processSample(double* coef, double* buf, register double val);
 
