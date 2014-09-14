@@ -190,21 +190,21 @@ void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
         return;
     }
 
+    CoverInfo info;
     const QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0 && indices.last().isValid()) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             QModelIndex idx = indices.last();
-            CoverInfo info;
             info.md5Hash = idx.sibling(idx.row(), m_iMd5Column).data().toString();
             info.trackId = trackModel->getTrackId(idx);
             info.coverLocation = idx.sibling(
                 idx.row(), m_iCoverLocationColumn).data().toString();
             info.trackLocation = idx.sibling(
                 idx.row(), m_iTrackLocationColumn).data().toString();
-            emit(loadCoverArt(info, cachedOnly));
         }
     }
+    emit(loadCoverArt(info, cachedOnly));
 }
 
 // slot
