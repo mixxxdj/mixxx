@@ -1,4 +1,4 @@
-#include "effects/native/bessel8lvmixeqeffect.h"
+#include "effects/native/bessel4lvmixeqeffect.h"
 #include "util/math.h"
 
 static const unsigned int kStartupSamplerate = 44100;
@@ -14,19 +14,19 @@ static const double kMaxCornerFreq = 14212;
 static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 
 // static
-QString Bessel8LVMixEQEffect::getId() {
-    return "org.mixxx.effects.bessel8lvmixeq";
+QString Bessel4LVMixEQEffect::getId() {
+    return "org.mixxx.effects.bessel4lvmixeq";
 }
 
 // static
-EffectManifest Bessel8LVMixEQEffect::getManifest() {
+EffectManifest Bessel4LVMixEQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Bessel8 LV-Mix EQ"));
+    manifest.setName(QObject::tr("Bessel4 LV-Mix EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Bessel 8th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -48 db/Oct). "
+        "A Bessel 4th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
 
     EffectManifestParameter* low = manifest.addParameter();
@@ -68,7 +68,7 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     return manifest;
 }
 
-Bessel8LVMixEQEffectGroupState::Bessel8LVMixEQEffectGroupState()
+Bessel4LVMixEQEffectGroupState::Bessel4LVMixEQEffectGroupState()
         : old_low(1.0),
           old_mid(1.0),
           old_high(1.0),
@@ -79,14 +79,14 @@ Bessel8LVMixEQEffectGroupState::Bessel8LVMixEQEffectGroupState()
     m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    m_low1 = new EngineFilterBessel8Low(kStartupSamplerate, kStartupLoFreq);
-    m_low2 = new EngineFilterBessel8Low(kStartupSamplerate, kStartupHiFreq);
+    m_low1 = new EngineFilterBessel4Low(kStartupSamplerate, kStartupLoFreq);
+    m_low2 = new EngineFilterBessel4Low(kStartupSamplerate, kStartupHiFreq);
     m_delay2 = new EngineFilterDelay<kMaxDelay>();
     m_delay3 = new EngineFilterDelay<kMaxDelay>();
     setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
 }
 
-Bessel8LVMixEQEffectGroupState::~Bessel8LVMixEQEffectGroupState() {
+Bessel4LVMixEQEffectGroupState::~Bessel4LVMixEQEffectGroupState() {
     delete m_low1;
     delete m_low2;
     delete m_delay2;
@@ -96,10 +96,12 @@ Bessel8LVMixEQEffectGroupState::~Bessel8LVMixEQEffectGroupState() {
     SampleUtil::free(m_pHighBuf);
 }
 
-void Bessel8LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
+void Bessel4LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
                                                 int highFreq) {
     double delayLow1 = sampleRate * kGroupDelay1Hz / lowFreq + kDelayOffset;
+    delayLow1 = delayLow1 / 3 * 2;
     double delayLow2 = sampleRate * kGroupDelay1Hz / highFreq + kDelayOffset;
+    delayLow2 = delayLow2 / 3 * 2;
     // Since we delay only full samples, we can only allow frequencies
     // producing such delays
     unsigned int iDelayLow1 = (unsigned int)delayLow1;
@@ -125,7 +127,7 @@ void Bessel8LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
     m_delay3->setDelay(iDelayLow1 * 2);
 }
 
-Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
+Bessel4LVMixEQEffect::Bessel4LVMixEQEffect(EngineEffect* pEffect,
                                            const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
@@ -135,13 +137,13 @@ Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
 }
 
-Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
+Bessel4LVMixEQEffect::~Bessel4LVMixEQEffect() {
     delete m_pLoFreqCorner;
     delete m_pHiFreqCorner;
 }
 
-void Bessel8LVMixEQEffect::processGroup(const QString& group,
-                                        Bessel8LVMixEQEffectGroupState* pState,
+void Bessel4LVMixEQEffect::processGroup(const QString& group,
+                                        Bessel4LVMixEQEffectGroupState* pState,
                                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                                         const unsigned int numSamples,
                                         const unsigned int sampleRate,

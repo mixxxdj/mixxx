@@ -1,5 +1,5 @@
-#ifndef BESSEL8LVMIXEQEFFECT_H
-#define BESSEL8LVMIXEQEFFECT_H
+#ifndef BESSEL4LVMIXEQEFFECT_H
+#define BESSEL4LVMIXEQEFFECT_H
 
 #include <QMap>
 
@@ -8,26 +8,26 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbessel8.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginefilterdelay.h"
 #include "util.h"
 #include "util/types.h"
 #include "util/defs.h"
 #include "sampleutil.h"
 
-const int kMaxDelay8 = 3300; // allows a 30 Hz filter at 97346;
+const int kMaxDelay4 = 3300; // allows a 30 Hz filter at 97346;
 
-class Bessel8LVMixEQEffectGroupState {
+class Bessel4LVMixEQEffectGroupState {
   public:
-    Bessel8LVMixEQEffectGroupState();
-    virtual ~Bessel8LVMixEQEffectGroupState();
+    Bessel4LVMixEQEffectGroupState();
+    virtual ~Bessel4LVMixEQEffectGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
 
-    EngineFilterBessel8Low* m_low1;
-    EngineFilterBessel8Low* m_low2;
-    EngineFilterDelay<kMaxDelay8>* m_delay2;
-    EngineFilterDelay<kMaxDelay8>* m_delay3;
+    EngineFilterBessel4Low* m_low1;
+    EngineFilterBessel4Low* m_low2;
+    EngineFilterDelay<kMaxDelay4>* m_delay2;
+    EngineFilterDelay<kMaxDelay4>* m_delay3;
 
     double old_low;
     double old_mid;
@@ -42,17 +42,17 @@ class Bessel8LVMixEQEffectGroupState {
     CSAMPLE* m_pHighBuf;
 };
 
-class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGroupState> {
+class Bessel4LVMixEQEffect : public GroupEffectProcessor<Bessel4LVMixEQEffectGroupState> {
   public:
-    Bessel8LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~Bessel8LVMixEQEffect();
+    Bessel4LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~Bessel4LVMixEQEffect();
 
     static QString getId();
     static EffectManifest getManifest();
 
     // See effectprocessor.h
     void processGroup(const QString& group,
-                      Bessel8LVMixEQEffectGroupState* pState,
+                      Bessel4LVMixEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
@@ -70,7 +70,7 @@ class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGro
     ControlObjectSlave* m_pLoFreqCorner;
     ControlObjectSlave* m_pHiFreqCorner;
 
-    DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
+    DISALLOW_COPY_AND_ASSIGN(Bessel4LVMixEQEffect);
 };
 
-#endif /* BESSEL8LVMIXEQEFFECT_H */
+#endif /* BESSEL4LVMIXEQEFFECT_H */
