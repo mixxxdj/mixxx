@@ -86,10 +86,6 @@ void DlgTrackInfo::init(){
             SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
 }
 
-void DlgTrackInfo::closeEvent(QCloseEvent*) {
-    DlgCoverArtFullSize::instance()->close();
-}
-
 void DlgTrackInfo::OK() {
     unloadTrack(true);
     accept();
