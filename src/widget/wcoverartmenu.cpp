@@ -82,10 +82,10 @@ void WCoverArtMenu::slotChange() {
     // if the cover comes from an external dir,
     // we copy it to the track directory.
     QString newCover;
-    QFileInfo FileInfo(selectedCover);
-    QString coverPath = FileInfo.absolutePath();
+    QFileInfo fileInfo(selectedCover);
+    QString coverPath = fileInfo.absolutePath();
     if (trackPath != coverPath) {
-        QString ext = FileInfo.suffix();
+        QString ext = fileInfo.suffix();
         QStringList filepaths;
         filepaths << trackPath % "/cover." % ext
                   << trackPath % "/album." % ext
