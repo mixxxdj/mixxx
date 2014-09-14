@@ -20,13 +20,11 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
-              m_DlgTagFetcher(DlgTagFetcher),
-              m_pCoverMenu(new WCoverArtMenu(this)) {
+              m_DlgTagFetcher(DlgTagFetcher) {
     init();
 }
 
 DlgTrackInfo::~DlgTrackInfo() {
-    delete m_pCoverMenu;
     unloadTrack(false);
     qDebug() << "~DlgTrackInfo()";
 }
@@ -75,12 +73,9 @@ void DlgTrackInfo::init(){
         m_bpmTapFilter[i] = 0.0f;
     }
 
-    coverArt->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(coverArt, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(slotCoverMenu(QPoint)));
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
-    connect(m_pCoverMenu,
+    connect(coverArt,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
             SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
@@ -194,7 +189,7 @@ void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
     }
 
     if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setCoverArt(m_loadedCover, pixmap);
+        coverArt->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
         update();
     }
 }
@@ -204,18 +199,9 @@ void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
                                             QPixmap pixmap) {
     if (isVisible() && m_loadedCover.coverLocation == oldLoc) {
         m_loadedCover.coverLocation = newLoc;
-        coverArt->setCoverArt(m_loadedCover, pixmap);
+        coverArt->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
         update();
     }
-}
-
-void DlgTrackInfo::slotCoverMenu(const QPoint& pos) {
-    if (m_pLoadedTrack == NULL) {
-        return;
-    }
-    m_pCoverMenu->show(coverArt->mapToGlobal(pos),
-                       m_loadedCover,
-                       m_pLoadedTrack);
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {

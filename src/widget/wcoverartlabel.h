@@ -5,20 +5,30 @@
 #include <QWidget>
 
 #include "dlgcoverartfullsize.h"
+#include "wcoverartmenu.h"
 
 class WCoverArtLabel : public QLabel {
+    Q_OBJECT
   public:
     WCoverArtLabel(QWidget* parent = 0);
     virtual ~WCoverArtLabel();
 
-    void setCoverArt(CoverInfo info, QPixmap pixmap);
+    void setCoverArt(TrackPointer track, CoverInfo info, QPixmap pixmap);
+
+  signals:
+    void coverLocationUpdated(const QString&, const QString&, QPixmap);
 
   protected:
     void enterEvent(QEvent*);
     void leaveEvent(QEvent*);
 
+  private slots:
+      void slotCoverMenu(const QPoint& pos);
+
   private:
+    TrackPointer m_pTrack;
     CoverInfo m_coverInfo;
+    WCoverArtMenu* m_pCoverMenu;
 };
 
 #endif // WCOVERARTLABEL_H
