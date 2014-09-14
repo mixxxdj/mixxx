@@ -524,9 +524,15 @@ void WSpinny::dragEnterEvent(QDragEnterEvent * event)
         if (m_pPlay && m_pPlay->get()) {
             event->ignore();
         } else {
-            event->acceptProposedAction();
+            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+            if (!files.isEmpty()) {
+                event->acceptProposedAction();
+                return;
+            }
         }
     }
+    event->ignore();
 }
 
 void WSpinny::dropEvent(QDropEvent * event) {
