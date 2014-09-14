@@ -6,16 +6,17 @@
 #include <QMouseEvent>
 #include <QWidget>
 
-#include "configobject.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
+#include "library/trackcollection.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
+#include "library/coverartcache.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig);
+    WCoverArt(QWidget* parent, TrackCollection* pTrackCollection);
     virtual ~WCoverArt();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -23,12 +24,13 @@ class WCoverArt : public QWidget, public WBaseWidget {
   public slots:
     void slotResetWidget();
     void slotEnableWidget(bool);
-    void slotLoadCoverArt(const QString& coverLocation,
-                          const QString& md5Hash,
-                          int trackId, bool cachedOnly);
+    void slotLoadCoverArt(CoverInfo info, bool cachedOnly);
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);
+    void slotCoverLocationUpdated(const QString& newLoc,
+                                  const QString& oldLoc,
+                                  QPixmap px);
 
   protected:
     void paintEvent(QPaintEvent*);
@@ -39,8 +41,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   private:
     QPixmap scaledCoverArt(QPixmap normal);
-
-    ConfigObject<ConfigValue>* m_pConfig;
 
     bool m_bEnableWidget;
     bool m_bCoverIsHovered;
@@ -53,8 +53,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_iconHide;
     QPixmap m_iconShow;
 
-    int m_lastRequestedTrackId;
-    QPair<QString, QString> m_lastRequestedCover;
+    TrackDAO& m_trackDAO;
+    CoverInfo m_lastRequestedCover;
 };
 
 #endif // WCOVERART_H

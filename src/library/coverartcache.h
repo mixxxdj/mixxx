@@ -10,6 +10,15 @@
 #include "library/dao/trackdao.h"
 #include "util/singleton.h"
 
+struct CoverInfo {
+  CoverInfo() : trackId(-1), coverLocation(QString()), trackLocation(QString()),
+        md5Hash(QString()) {}
+    int trackId;
+    QString coverLocation;
+    QString trackLocation;
+    QString md5Hash;
+};
+
 class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
@@ -29,9 +38,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
      *      In this way, the method will just look into CoverCache and return
      *      a Pixmap if it is already loaded in the QPixmapCache.
      */
-    QPixmap requestPixmap(int trackId,
-                          const QString& coverLocation = QString(),
-                          QString md5Hash = QString(),
+    QPixmap requestPixmap(CoverInfo info,
                           const QSize& croppedSize = QSize(0,0),
                           const bool onlyCached = false,
                           const bool issueRepaint = false);
@@ -39,11 +46,23 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     bool changeCoverArt(int trackId, const QString& newCoverLocation="");
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
-    TrackPointer getTrack(int trackId);
 
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
 
+
+    struct FutureResult {
+        int trackId;
+        QString coverLocation;
+        QString md5Hash;
+        QImage img;
+        QSize croppedSize;
+        bool issueRepaint;
+    };
+
+    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
+                             const QSize& croppedSize,
+                             const bool emitSignals);
   public slots:
     void imageFound();
     void imageLoaded();
@@ -60,22 +79,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     virtual ~CoverArtCache();
     friend class Singleton<CoverArtCache>;
 
-    struct FutureResult {
-        int trackId;
-        QString coverLocation;
-        QString md5Hash;
-        QImage img;
-        QSize croppedSize;
-        bool issueRepaint;
-        bool newImgFound;
-    };
-
-    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
-                             const QSize& croppedSize,
-                             const bool emitSignals);
-    FutureResult loadImage(int trackId,
-                           const QString& coverLocation,
-                           const QString& md5Hash,
+    FutureResult loadImage(CoverArtDAO::CoverArtInfo coverInfo,
                            const QSize &croppedSize,
                            const bool emitSignals);
 

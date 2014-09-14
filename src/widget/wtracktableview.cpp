@@ -190,23 +190,21 @@ void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
         return;
     }
 
-    QString coverLocation;
-    QString md5Hash;
-    int trackId = 0;
     const QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
-        QModelIndex idx = indices.last();
-        if (idx.isValid()) {
-            TrackModel* trackModel = getTrackModel();
-            if (trackModel) {
-                md5Hash = idx.sibling(idx.row(), m_iMd5Column).data().toString();
-                trackId = trackModel->getTrackId(idx);
-                coverLocation = idx.sibling(idx.row(),
-                                            m_iCoverLocationColumn).data().toString();
-            }
+    if (indices.size() > 0 && indices.last().isValid()) {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            QModelIndex idx = indices.last();
+            CoverInfo info;
+            info.md5Hash = idx.sibling(idx.row(), m_iMd5Column).data().toString();
+            info.trackId = trackModel->getTrackId(idx);
+            info.coverLocation = idx.sibling(
+                idx.row(), m_iCoverLocationColumn).data().toString();
+            info.trackLocation = idx.sibling(
+                idx.row(), m_iTrackLocationColumn).data().toString();
+            emit(loadCoverArt(info, cachedOnly));
         }
     }
-    emit(loadCoverArt(coverLocation, md5Hash, trackId, cachedOnly));
 }
 
 // slot
@@ -236,6 +234,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
     m_iMd5Column = trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
     m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
+    m_iTrackLocationColumn = trackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION);
 
     setVisible(false);
 

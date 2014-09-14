@@ -24,7 +24,9 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
     if (m_pTrackModel) {
         m_iMd5Column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
         m_iCoverLocationColumn = m_pTrackModel->fieldIndex(
-                                    LIBRARYTABLE_COVERART_LOCATION);
+            LIBRARYTABLE_COVERART_LOCATION);
+        m_iTrackLocationColumn = m_pTrackModel->fieldIndex(
+            TRACKLOCATIONSTABLE_LOCATION);
 
         int coverColumn = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART);
         m_pTableView->setColumnWidth(coverColumn, 100);
@@ -54,26 +56,26 @@ void CoverArtDelegate::paint(QPainter *painter,
         return;
     }
 
-    QString coverLocation = index.sibling(index.row(),
-                                          m_iCoverLocationColumn
-                                          ).data().toString();
+    QString coverLocation = index.sibling(
+        index.row(), m_iCoverLocationColumn).data().toString();
 
     // drawing only an existing cover_art,
     // otherwise leave it blank...
     if (coverLocation != m_sDefaultCover) {
-
-        QString md5Hash = index.sibling(index.row(),
-                                        m_iMd5Column
-                                        ).data().toString();
-
+        CoverInfo info;
+        info.trackId = trackId;
+        info.coverLocation = coverLocation;
+        info.md5Hash = index.sibling(
+            index.row(), m_iMd5Column).data().toString();
+        info.trackLocation = index.sibling(
+            index.row(), m_iTrackLocationColumn).data().toString();
         QSize coverSize(100, option.rect.height());
 
         // If the CoverDelegate is locked, it must not try
         // to load (from coverLocation) and search covers.
         // It means that in this cases it will just draw
         // covers which are already in the pixmapcache.
-        QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
-                                        trackId, coverLocation, md5Hash,
+        QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info,
                                         coverSize, m_bOnlyCachedCover, true);
         if (!pixmap.isNull()) {
             // It already got a cropped pixmap (from covercache)

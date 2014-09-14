@@ -11,16 +11,15 @@
 #include "library/coverartcache.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig)
+                     TrackCollection* pTrackCollection)
         : QWidget(parent),
           WBaseWidget(this),
-          m_pConfig(pConfig),
           m_bEnableWidget(true),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
           m_pMenu(new WCoverArtMenu(this)),
           m_loadedCover(CoverArtCache::instance()->getDefaultCoverArt()),
-          m_lastRequestedTrackId(-1) {
+          m_trackDAO(pTrackCollection->getTrackDAO()) {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
     m_iconHide = m_iconHide.scaled(20,
@@ -37,10 +36,27 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+    connect(m_pMenu,
+            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
+            this,
+            SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
 }
 
 WCoverArt::~WCoverArt() {
     delete m_pMenu;
+}
+
+void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
+                                         const QString& oldLoc,
+                                         QPixmap px) {
+    Q_UNUSED(oldLoc);
+    Q_UNUSED(px);
+    bool res = CoverArtCache::instance()->changeCoverArt(m_lastRequestedCover.trackId,
+                                                         newLoc);
+    if (!res) {
+        QMessageBox::warning(this, tr("Change Cover Art"),
+                             tr("Could not change the cover art."));
+    }
 }
 
 void WCoverArt::setup(QDomNode node, const SkinContext& context) {
@@ -74,8 +90,7 @@ void WCoverArt::slotEnableWidget(bool enable) {
 }
 
 void WCoverArt::slotResetWidget() {
-    m_lastRequestedTrackId = -1;
-    m_lastRequestedCover = qMakePair(QString(), QString());
+    m_lastRequestedCover = CoverInfo();
     m_bCoverIsVisible = false;
     m_bCoverIsHovered = false;
     m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
@@ -88,36 +103,19 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     if (!m_bEnableWidget) {
         return;
     }
-    if (m_lastRequestedTrackId == trackId) {
+    if (m_lastRequestedCover.trackId == trackId) {
         m_loadedCover = scaledCoverArt(pixmap);
         update();
     }
 }
 
-void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
-                                 const QString& md5Hash,
-                                 int trackId, bool cachedOnly) {
-    if (!m_bEnableWidget) {
+void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
+    if (!m_bEnableWidget || !m_bCoverIsVisible) {
         return;
     }
 
-    m_lastRequestedTrackId = trackId;
-    m_lastRequestedCover = qMakePair(coverLocation, md5Hash);
-
-    if (!m_bCoverIsVisible) {
-        return;
-    }
-
-    m_loadedCover = CoverArtCache::instance()->requestPixmap(trackId,
-                                                             coverLocation,
-                                                             md5Hash,
-                                                             QSize(0,0),
-                                                             cachedOnly);
-    if (m_loadedCover.isNull()) {
-        m_loadedCover = CoverArtCache::instance()->getDefaultCoverLocation();
-    }
-    m_loadedCover = scaledCoverArt(m_loadedCover);
-    update();
+    m_lastRequestedCover = info;
+    CoverArtCache::instance()->requestPixmap(info, QSize(0,0), cachedOnly);
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
@@ -157,9 +155,7 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
 
     if (m_bCoverIsVisible) {
         setMinimumSize(0, parentWidget()->height() / 3);
-        slotLoadCoverArt(m_lastRequestedCover.first,
-                         m_lastRequestedCover.second,
-                         m_lastRequestedTrackId, true);
+        slotLoadCoverArt(m_lastRequestedCover, true);
      } else {
         m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
         setMinimumSize(0, 20);
@@ -184,9 +180,8 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         m_bCoverIsVisible = false;
         resize(sizeHint());
     } else if (event->button() == Qt::RightButton) { // show context-menu
-        m_pMenu->show(event->globalPos(),
-                      m_lastRequestedCover,
-                      m_lastRequestedTrackId);
+        TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedCover.trackId);
+        m_pMenu->show(event->globalPos(), m_lastRequestedCover, pTrack);
     }
 }
 

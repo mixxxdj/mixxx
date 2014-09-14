@@ -81,9 +81,9 @@ void DlgTrackInfo::init(){
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
     connect(m_pCoverMenu,
-            SIGNAL(coverLocationUpdated(const QString&, const QString&)),
+            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
-            SLOT(slotCoverLocationUpdated(const QString&, const QString&)));
+            SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
 }
 
 void DlgTrackInfo::closeEvent(QCloseEvent*) {
@@ -190,14 +190,18 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack,
     connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
             this, SLOT(updateTrackMetadata()));
 
-    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(pTrack->getId(),
-                                                              coverLocation,
-                                                              md5);
+    CoverInfo info;
+    info.trackId = pTrack->getId();
+    info.coverLocation = coverLocation;
+    info.md5Hash = md5;
+    QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info);
     if (pixmap.isNull()) { // use default cover art
         pixmap = CoverArtCache::instance()->getDefaultCoverArt();
     }
     setCoverArt(pixmap);
-    m_loadedCover = qMakePair(coverLocation, md5);
+    m_loadedCover.trackId = pTrack->getId();
+    m_loadedCover.coverLocation = coverLocation;
+    m_loadedCover.md5Hash = md5;
     m_firstCoverLoc = coverLocation;
 }
 
@@ -229,9 +233,13 @@ QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
 }
 
 void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
-                                            const QString& oldLoc) {
-    if (isVisible() && m_loadedCover.first == oldLoc) {
-        m_loadedCover.first = newLoc;
+                                            const QString& oldLoc,
+                                            QPixmap px) {
+    if (isVisible() && m_loadedCover.coverLocation == oldLoc) {
+        m_loadedCover.coverLocation = newLoc;
+        px = scaledCoverArt(px);
+        coverArt->setPixmap(px);
+        update();
     }
 }
 
@@ -241,7 +249,6 @@ void DlgTrackInfo::slotCoverMenu(const QPoint& pos) {
     }
     m_pCoverMenu->show(coverArt->mapToGlobal(pos),
                        m_loadedCover,
-                       m_pLoadedTrack->getId(),
                        m_pLoadedTrack);
 }
 
@@ -398,6 +405,14 @@ void DlgTrackInfo::saveTrack() {
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
         m_pLoadedTrack->removeCue(pCue);
     }
+
+    bool res = CoverArtCache::instance()->changeCoverArt(m_pLoadedTrack->getId(),
+                                              m_loadedCover.coverLocation);
+
+    if (!res) {
+        QMessageBox::warning(this, tr("Change Cover Art"),
+                             tr("Could not change the cover art."));
+    }
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -406,7 +421,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
 
     if (save) {
         saveTrack();
-    } else if (m_firstCoverLoc != m_loadedCover.first){ // revert cover art
+    } else if (m_firstCoverLoc != m_loadedCover.coverLocation){ // revert cover art
         CoverArtCache::instance()->changeCoverArt(m_pLoadedTrack->getId(),
                                                   m_firstCoverLoc);
     }
@@ -414,7 +429,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
     clear();
     disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.clear();
-    m_loadedCover = qMakePair(QString(), QString());
+    m_loadedCover = CoverInfo();
     m_firstCoverLoc.clear();
 }
 

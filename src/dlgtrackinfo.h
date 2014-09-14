@@ -11,6 +11,7 @@
 #include "dlgtagfetcher.h"
 #include "util/types.h"
 #include "widget/wcoverartmenu.h"
+#include "library/coverartcache.h"
 
 const int kFilterLength = 5;
 
@@ -57,7 +58,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotOpenInFileBrowser();
 
     void slotPixmapFound(int trackId, QPixmap pixmap);
-    void slotCoverLocationUpdated(const QString& newLoc, const QString& oldLoc);
+    void slotCoverLocationUpdated(const QString& newLoc, const QString& oldLoc,
+                                  QPixmap px);
     void slotCoverMenu(const QPoint& pos);
 
   private:
@@ -79,7 +81,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     DlgTagFetcher& m_DlgTagFetcher;
 
     WCoverArtMenu* m_pCoverMenu;
-    QPair<QString, QString> m_loadedCover;
+    CoverInfo m_loadedCover;
 
     // Useful to handle cases when the user cancel the changes.
     // In this case DlgTrackInfo must revert the cover

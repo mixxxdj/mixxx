@@ -37,6 +37,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
     QString m_sDefaultCover;
     int m_iCoverLocationColumn;
     int m_iMd5Column;
+    int m_iTrackLocationColumn;
 };
 
 #endif // COVERARTDELEGATE_H
