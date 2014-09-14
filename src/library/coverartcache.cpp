@@ -123,9 +123,8 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     CoverArtDAO::CoverArtInfo coverInfo;
-    // (bool != bool) is equivalent to a logical XOR
     if (info.md5Hash.isEmpty() ||
-           ((info.coverLocation == "ID3TAG") != !QFile::exists(info.coverLocation))) {
+           (info.coverLocation != "ID3TAG" && !QFile::exists(info.coverLocation))) {
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(info.trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
                                    coverInfo, croppedSize, issueRepaint);
