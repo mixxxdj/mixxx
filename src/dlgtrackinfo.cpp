@@ -221,11 +221,10 @@ QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
 
 void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
                                             const QString& oldLoc,
-                                            QPixmap px) {
+                                            QPixmap pixmap) {
     if (isVisible() && m_loadedCover.coverLocation == oldLoc) {
         m_loadedCover.coverLocation = newLoc;
-        px = scaledCoverArt(px);
-        coverArt->setPixmap(px);
+        setCoverArt(pixmap);
         update();
     }
 }
