@@ -444,7 +444,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QLabel" name="coverArt">
+             <widget class="WCoverArtLabel" name="coverArt">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                 <horstretch>0</horstretch>
@@ -1062,6 +1062,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>WCoverArtLabel</class>
+   <extends>QLabel</extends>
+   <header>wcoverartlabel.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>btnPrev</tabstop>

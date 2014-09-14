@@ -171,6 +171,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack, CoverInfo info) {
     m_pLoadedTrack = pTrack;
+    m_loadedCover = info;
     clear();
 
     if (m_pLoadedTrack == NULL) {
@@ -185,7 +186,6 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack, CoverInfo info) {
             this, SLOT(updateTrackMetadata()));
 
     CoverArtCache::instance()->requestPixmap(info);
-    m_loadedCover = info;
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -194,25 +194,9 @@ void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
     }
 
     if (m_pLoadedTrack->getId() == trackId) {
-        setCoverArt(pixmap);
+        coverArt->setCoverArt(m_loadedCover, pixmap);
         update();
     }
-}
-
-void DlgTrackInfo::setCoverArt(QPixmap original)
-{
-    QPixmap scaled = scaledCoverArt(original);
-    coverArt->setPixmap(scaled);
-    QSize frameSize = scaled.size();
-    frameSize += QSize(2,2); // margin
-    coverArt->setMinimumSize(frameSize);
-    coverArt->setMaximumSize(frameSize);
-}
-
-QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
-    return original.scaled(100, 100,
-                           Qt::KeepAspectRatio,
-                           Qt::SmoothTransformation);
 }
 
 void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
@@ -220,7 +204,7 @@ void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
                                             QPixmap pixmap) {
     if (isVisible() && m_loadedCover.coverLocation == oldLoc) {
         m_loadedCover.coverLocation = newLoc;
-        setCoverArt(pixmap);
+        coverArt->setCoverArt(m_loadedCover, pixmap);
         update();
     }
 }
