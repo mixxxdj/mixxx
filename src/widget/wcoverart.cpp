@@ -138,3 +138,12 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         m_pMenu->show(event->globalPos(), m_lastRequestedCover, pTrack);
     }
 }
+
+void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
+    if (event->HoverEnter)
+        DlgCoverArtFullSize::instance()->init();
+}
+
+void WCoverArt::leaveEvent(QEvent*) {
+        DlgCoverArtFullSize::instance()->close();
+}
