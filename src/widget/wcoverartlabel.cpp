@@ -40,7 +40,9 @@ void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
 }
 
 void WCoverArtLabel::enterEvent(QEvent*) {
-    DlgCoverArtFullSize::instance()->init(m_coverInfo);
+    if (!m_pCoverMenu->isVisible()) {
+        DlgCoverArtFullSize::instance()->init(m_coverInfo);
+    }
 }
 
 void WCoverArtLabel::leaveEvent(QEvent*) {
