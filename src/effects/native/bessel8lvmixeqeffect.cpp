@@ -75,6 +75,7 @@ Bessel8LVMixEQEffectGroupState::Bessel8LVMixEQEffectGroupState()
     m_low2 = new EngineFilterBessel8Low(kStartupSamplerate, kStartupHiFreq);
     m_delay2 = new EngineFilterDelay<kMaxDelay>();
     m_delay3 = new EngineFilterDelay<kMaxDelay>();
+    setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
 }
 
 Bessel8LVMixEQEffectGroupState::~Bessel8LVMixEQEffectGroupState() {
