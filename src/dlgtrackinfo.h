@@ -9,9 +9,10 @@
 #include "ui_dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
-#include "util/types.h"
-#include "widget/wcoverartmenu.h"
 #include "library/coverartcache.h"
+#include "util/types.h"
+#include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 
 const int kFilterLength = 5;
 
@@ -76,6 +77,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     DlgTagFetcher& m_DlgTagFetcher;
 
     CoverInfo m_loadedCover;
+    WCoverArtLabel* m_pWCoverArtLabel;
 };
 
 #endif /* DLGTRACKINFO_H */

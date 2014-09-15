@@ -20,7 +20,8 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
-              m_DlgTagFetcher(DlgTagFetcher) {
+              m_DlgTagFetcher(DlgTagFetcher),
+              m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
 }
 
@@ -34,6 +35,7 @@ void DlgTrackInfo::init(){
 
     cueTable->hideColumn(0);
     txtLocation->viewport()->setAutoFillBackground(false);
+    coverBox->insertWidget(1, m_pWCoverArtLabel);
 
     connect(btnNext, SIGNAL(clicked()),
             this, SLOT(slotNext()));
@@ -75,7 +77,7 @@ void DlgTrackInfo::init(){
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
-    connect(coverArt,
+    connect(m_pWCoverArtLabel,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
             SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
@@ -189,7 +191,7 @@ void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
     }
 
     if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
         update();
     }
 }
@@ -199,7 +201,7 @@ void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
                                             QPixmap pixmap) {
     if (isVisible() && m_loadedCover.coverLocation == oldLoc) {
         m_loadedCover.coverLocation = newLoc;
-        coverArt->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
         update();
     }
 }

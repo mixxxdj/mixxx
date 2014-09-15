@@ -6,6 +6,9 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
           m_coverInfo(CoverInfo()),
           m_pixmap(QPixmap()),
           m_pCoverMenu(new WCoverArtMenu(this)) {
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    setFrameShape(QFrame::Box);
+    setAlignment(Qt::AlignCenter);
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(slotCoverMenu(QPoint)));
