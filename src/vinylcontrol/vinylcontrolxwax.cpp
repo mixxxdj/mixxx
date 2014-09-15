@@ -197,7 +197,7 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 }
 
 
-void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
+void VinylControlXwax::analyzeSamples(const CSAMPLE* pSamples, size_t nFrames) {
     ScopedTimer t("VinylControlXwax::analyzeSamples");
     CSAMPLE gain = m_pVinylControlInputGain->get();
     const int kChannels = 2;
