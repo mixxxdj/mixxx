@@ -28,9 +28,6 @@ class VinylControlProcessor : public QObject, public AudioDestination {
     // Called from main thread. Must only touch m_bReportSignalQuality.
     void setSignalQualityReporting(bool enable);
 
-    // Called from the main thread. Must only touch m_bQuit;
-    void shutdown();
-
     // Called from the main thread. Must only touch m_bReload;
     void requestReloadConfig();
 
@@ -56,9 +53,6 @@ class VinylControlProcessor : public QObject, public AudioDestination {
     void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                        unsigned int iNumFrames);
 
-  protected:
-    void run();
-
   private slots:
     void toggleDeck(double value);
 
@@ -67,18 +61,11 @@ class VinylControlProcessor : public QObject, public AudioDestination {
 
     ConfigObject<ConfigValue>* m_pConfig;
     ControlPushButton* m_pToggle;
-    // A pre-allocated array of FIFOs for writing samples from the engine
-    // callback to the processor thread. There is a maximum of
-    // kMaximumVinylControlInputs pipes.
-    FIFO<CSAMPLE>* m_samplePipes[kMaximumVinylControlInputs];
     CSAMPLE* m_pWorkBuffer;
-    QWaitCondition m_samplesAvailableSignal;
-    QMutex m_waitForSampleMutex;
     QMutex m_processorsLock;
     QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;
-    volatile bool m_bQuit;
     volatile bool m_bReloadConfig;
 };
 

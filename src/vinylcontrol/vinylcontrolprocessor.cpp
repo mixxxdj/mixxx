@@ -23,20 +23,13 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
           m_processors(kMaximumVinylControlInputs, NULL),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
           m_bReportSignalQuality(false),
-          m_bQuit(false),
           m_bReloadConfig(false) {
     connect(m_pToggle, SIGNAL(valueChanged(double)),
             this, SLOT(toggleDeck(double)),
             Qt::DirectConnection);
-
-    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        m_samplePipes[i] = new FIFO<CSAMPLE>(SAMPLE_PIPE_FIFO_SIZE);
-    }
 }
 
 VinylControlProcessor::~VinylControlProcessor() {
-    m_bQuit = true;
-    m_samplesAvailableSignal.wakeAll();
     wait();
 
     delete m_pToggle;
@@ -48,9 +41,6 @@ VinylControlProcessor::~VinylControlProcessor() {
             VinylControl* pProcessor = m_processors.at(i);
             m_processors[i] = NULL;
             delete pProcessor;
-
-            delete m_samplePipes[i];
-            m_samplePipes[i] = NULL;
         }
     }
 
@@ -63,75 +53,10 @@ void VinylControlProcessor::setSignalQualityReporting(bool enable) {
     m_bReportSignalQuality = enable;
 }
 
-void VinylControlProcessor::shutdown() {
-    m_bQuit = true;
-    m_samplesAvailableSignal.wakeAll();
-}
-
 void VinylControlProcessor::requestReloadConfig() {
+    QMutexLocker locker(&m_processorsLock);
     m_bReloadConfig = true;
-    m_samplesAvailableSignal.wakeAll();
 }
-
-//void VinylControlProcessor::run() {
-//    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
-//    QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
-//
-//    while (!m_bQuit) {
-//        Event::start("VinylControlProcessor");
-//        if (m_bReloadConfig) {
-//            reloadConfig();
-//            m_bReloadConfig = false;
-//        }
-//
-//        for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-//            QMutexLocker locker(&m_processorsLock);
-//            VinylControl* pProcessor = m_processors[i];
-//            locker.unlock();
-//            FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[i];
-//
-//            if (pSamplePipe->readAvailable() > 0) {
-//                int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
-//
-//                if (samplesRead % 2 != 0) {
-//                    qWarning() << "VinylControlProcessor received non-even number of samples via sample FIFO.";
-//                    samplesRead--;
-//                }
-//                int framesRead = samplesRead / 2;
-//
-//                if (pProcessor) {
-//                    pProcessor->analyzeSamples(m_pWorkBuffer, framesRead);
-//                } else {
-//                    // Samples are being written to a non-existent processor. Warning?
-//                    qWarning() << "Samples written to non-existent VinylControl processor:" << i;
-//                }
-//            }
-//
-//            // TODO(rryan) define a time-based update rate. This will update way
-//            // too quickly.
-//            if (pProcessor && m_bReportSignalQuality) {
-//                VinylSignalQualityReport report;
-//                if (pProcessor->writeQualityReport(&report)) {
-//                    report.processor = i;
-//                    if (m_signalQualityFifo.write(&report, 1) != 1) {
-//                        qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (m_bQuit) {
-//            break;
-//        }
-//
-//        // Wait for a signal from the main thread or engine thread that we
-//        // should wake up and process input.
-//        Event::end("VinylControlProcessor");
-//        m_waitForSampleMutex.lock();
-//        m_samplesAvailableSignal.wait(&m_waitForSampleMutex);
-//        m_waitForSampleMutex.unlock();
-//    }
-//}
 
 void VinylControlProcessor::reloadConfig() {
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -142,8 +67,7 @@ void VinylControlProcessor::reloadConfig() {
             continue;
         }
 
-        VinylControl *pNew = new VinylControlXwax(
-            m_pConfig, kVCGroup.arg(i + 1));
+        VinylControl *pNew = new VinylControlXwax(m_pConfig, kVCGroup.arg(i + 1));
         m_processors.replace(i, pNew);
         locker.unlock();
         // Delete outside of the critical section to avoid deadlocks.
@@ -164,8 +88,7 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
         return;
     }
 
-    VinylControl *pNew = new VinylControlXwax(
-        m_pConfig, kVCGroup.arg(index + 1));
+    VinylControl *pNew = new VinylControlXwax(m_pConfig, kVCGroup.arg(index + 1));
 
     QMutexLocker locker(&m_processorsLock);
     VinylControl* pCurrent = m_processors.at(index);
@@ -217,61 +140,40 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
         return;
     }
 
-//    FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[vcIndex];
-
-//    if (pSamplePipe == NULL) {
-//        // Should not be possible.
-//        return;
-//    }
-
     const int kChannels = 2;
     const int nSamples = nFrames * kChannels;
-//    int samplesWritten = pSamplePipe->write(pBuffer, nSamples);
-//
-//    if (samplesWritten < nSamples) {
-//        qWarning() << "ERROR: Buffer overflow in VinylControlProcessor. Dropping samples on the floor."
-//                   << "VCIndex:" << vcIndex;
-//    }
-//
-//    m_samplesAvailableSignal.wakeAll();
+
     if (m_bReloadConfig) {
-        qDebug() << "~~~~~~~~~~~~~~~~~~~VINYL reload config";
         reloadConfig();
         m_bReloadConfig = false;
     }
 
-    qDebug() << "vinyl .?";
-    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        QMutexLocker locker(&m_processorsLock);
-        VinylControl* pProcessor = m_processors[i];
-        locker.unlock();
-        //FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[i];
+    if (!m_processorsLock.tryLock()) {
+        qWarning() << "VinylControlProcessor thread locked, skipping processing this buffer";
+        return;
+    }
+    VinylControl* pProcessor = m_processors[vcIndex];
 
-        //if (pSamplePipe->readAvailable() > 0) {
-            //int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
+    int framesRead = nSamples / 2;
+    if (pProcessor) {
+        pProcessor->analyzeSamples(pBuffer, framesRead);
+    } else {
+        // Samples are being written to a non-existent processor. Warning?
+        qWarning() << "Samples written to non-existent VinylControl processor:" << vcIndex;
+    }
 
-        int framesRead = nSamples / 2;
-
-        if (pProcessor) {
-            qDebug() << "~~~~~~~~~~~~~~~~~~~VINYL analyze!";
-            pProcessor->analyzeSamples(pBuffer, framesRead);
-        } else {
-            // Samples are being written to a non-existent processor. Warning?
-            qWarning() << "Samples written to non-existent VinylControl processor:" << i;
-        }
-
-        // TODO(rryan) define a time-based update rate. This will update way
-        // too quickly.
-        if (pProcessor && m_bReportSignalQuality) {
-            VinylSignalQualityReport report;
-            if (pProcessor->writeQualityReport(&report)) {
-                report.processor = i;
-                if (m_signalQualityFifo.write(&report, 1) != 1) {
-                    qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
-                }
+    // TODO(rryan) define a time-based update rate. This will update way
+    // too quickly.
+    if (pProcessor && m_bReportSignalQuality) {
+        VinylSignalQualityReport report;
+        if (pProcessor->writeQualityReport(&report)) {
+            report.processor = vcIndex;
+            if (m_signalQualityFifo.write(&report, 1) != 1) {
+                qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << vcIndex;
             }
         }
     }
+    m_processorsLock.unlock();
 }
 
 void VinylControlProcessor::toggleDeck(double value) {
