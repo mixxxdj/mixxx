@@ -11,7 +11,8 @@ DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 }
 
 void DlgCoverArtFullSize::init(QPixmap pixmap) {
-    if (pixmap.isNull())  {
+    if (pixmap.isNull() || CoverArtCache::instance()->getDefaultCoverArt()
+            .toImage() == pixmap.toImage())  {
         return;
     }
 

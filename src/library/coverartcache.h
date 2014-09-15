@@ -50,7 +50,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
 
-
     struct FutureResult {
         int trackId;
         QString coverLocation;
