@@ -126,7 +126,7 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
     }
     if (m_lastRequestedCover.trackId < 1) {
         m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
-        m_loadedCover = scaledCoverArt(m_loadedCover);
+        m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     }
 }
 
