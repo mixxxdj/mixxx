@@ -16,7 +16,7 @@ class VinylControl : public QObject {
 
     virtual void toggleVinylControl(bool enable);
     virtual bool isEnabled();
-    virtual void analyzeSamples(CSAMPLE* pSamples, size_t nFrames) = 0;
+    virtual void analyzeSamples(const CSAMPLE* pSamples, size_t nFrames) = 0;
     virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo) = 0;
 
   protected:

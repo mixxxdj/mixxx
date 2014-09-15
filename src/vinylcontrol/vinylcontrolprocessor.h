@@ -19,7 +19,7 @@ class ControlPushButton;
 // the engine callback and feeding those samples to the VinylControl
 // classes. The most important thing is that the connection between the engine
 // callback and VinylControlProcessor (the receiveBuffer method) is lock-free.
-class VinylControlProcessor : public QThread, public AudioDestination {
+class VinylControlProcessor : public QObject, public AudioDestination {
     Q_OBJECT
   public:
     VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
