@@ -128,9 +128,9 @@ if 'test' in BUILD_TARGETS:
         run_tests()
 
 def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version.
+        # In release mode, we only use the version and revision number.
         if build.build_is_release:
-                return mixxx_version
+                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         elif branch_name.startswith('release-'):
                 return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
@@ -151,9 +151,9 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                                    branch_name, vcs_name, vcs_revision)
 
 def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version
+        # In release mode, we only use the version and revision number
         if build.build_is_release:
-                return mixxx_version
+                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         elif branch_name.startswith('release-'):
                 return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
