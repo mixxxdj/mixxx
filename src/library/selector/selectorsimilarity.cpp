@@ -55,8 +55,7 @@ QList<SelectorSimilarity::ScorePair> SelectorSimilarity::calculateSimilarities(i
 QHash<QString, double> SelectorSimilarity::compareTracks(TrackPointer pTrack1,
         TrackPointer pTrack2) {
     QHash<QString, double> scores;
-    // TODO (kain88) also add contributions scheck here. maybe call this method
-    // in the one above
+    // this function is only needed to benchmark our similarity scoring
     foreach (QString key, m_similarityFunctions.keys()) {
         SimilarityFunc simFunc = m_similarityFunctions[key];
         scores.insert(key, simFunc(pTrack1, pTrack2));
