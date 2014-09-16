@@ -32,6 +32,8 @@ class VinylControlProcessor : public QObject, public AudioDestination {
     // Called from the main thread. Must only touch m_bReload;
     void requestReloadConfig();
 
+    void deckAdded(QString group);
+
     bool deckConfigured(int index) const;
 
     FIFO<VinylSignalQualityReport>* getSignalQualityFifo() {
@@ -56,15 +58,22 @@ class VinylControlProcessor : public QObject, public AudioDestination {
 
   private slots:
     void slotGuiTick(double);
+    void slotVinylEnabled(double);
     void toggleDeck(double value);
 
   private:
+    // Returns the number of decks that are enabled. Does not hold the lock,
+    // so should only be used where the lock is already being held.
+    bool enabledDeckExists() const;
+
     ConfigObject<ConfigValue>* m_pConfig;
     ControlPushButton* m_pToggle;
+    QList<ControlObjectSlave*> m_VCEnableds;
     ControlObjectSlave* m_pGuiTick;
     CSAMPLE* m_pWorkBuffer;
     QMutex m_processorsLock;
     QVector<VinylControl*> m_processors;
+    bool m_processingActive;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;
 };
