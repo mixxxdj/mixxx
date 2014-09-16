@@ -533,43 +533,16 @@ def BuildRelease(target, source, env):
     print
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
+        # TODO(XXX): Installing a runtime isn't specific to MSVS?
         if build.toolchain_is_msvs:
             redist_file = 'vcredist_%s.exe' % arch
-            print "Searching for the Visual C++ DLL installer package",redist_file
+            print "Searching for the Visual C++ DLL installer package", redist_file
+            # Check for the runtime installer in the winlib root.
+            redist_path = '%s' % os.path.join(mixxx_winlib_path, redist_file)
+            print "   ", redist_path,
+-           if not os.path.isfile(redist_path):
+                raise Exception('Could not find the MSVC++ runtime installer.') 
 
-            # First check one level above the winlib directory
-            redist_path = '%s' % os.path.join(os.path.dirname(mixxx_winlib_path), redist_file)
-            print "   ",redist_path,
-            if not os.path.isfile(redist_path):
-                print "not found"
-                # If it's not there, look in the MS SDK directory
-                mssdk_path = util.get_mssdk_path()
-                #print "   Detected MS SDK path:", mssdk_path
-                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
-                print "   ",redist_path,
-                if not os.path.isfile(redist_path):
-                    print "not found"
-                    raise Exception('Cannot find the Visual C++ DLL installer.')
-
-            print "Extracting needed files..."
-            szip_path = None
-            try:
-                szip_directory = win32_find_program_via_registry("7-Zip")
-                szip_path = '%s' % os.path.join(szip_directory, "7z.exe")
-            except Exception, e:
-                pass
-            if szip_path is None:
-                print "Cannot find 7-Zip. Do you have it installed?"
-                raise Exception('Cannot find 7-Zip. Do you have it installed?')
-            else:
-                output_path = '%s' % os.path.join(mixxx_winlib_path,'VC_redist')
-                args = [szip_path,"x","-y","-ir!vc_red.*","-ir!*.msp",redist_path,"-o"+output_path]
-                print "Executing:", ' '.join(args)
-                proc = subprocess.Popen(args)
-                data, err = proc.communicate()
-                rv = proc.wait()
-                if rv:
-                    raise Exception('There was a problem extracting the installer files. See above for details.')
         print "Now building installation package..."
         command_flag = None
         nsis_path = None
