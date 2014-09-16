@@ -22,8 +22,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
           m_processorsLock(QMutex::Recursive),
           m_processors(kMaximumVinylControlInputs, NULL),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
-          m_bReportSignalQuality(false),
-          m_bReloadConfig(false) {
+          m_bReportSignalQuality(false) {
     connect(m_pToggle, SIGNAL(valueChanged(double)),
             this, SLOT(toggleDeck(double)),
             Qt::DirectConnection);
@@ -54,11 +53,6 @@ void VinylControlProcessor::setSignalQualityReporting(bool enable) {
 }
 
 void VinylControlProcessor::requestReloadConfig() {
-    QMutexLocker locker(&m_processorsLock);
-    m_bReloadConfig = true;
-}
-
-void VinylControlProcessor::reloadConfig() {
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         QMutexLocker locker(&m_processorsLock);
         VinylControl* pCurrent = m_processors[i];
@@ -143,13 +137,10 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
     const int kChannels = 2;
     const int nSamples = nFrames * kChannels;
 
-    if (m_bReloadConfig) {
-        reloadConfig();
-        m_bReloadConfig = false;
-    }
-
+    // The consequences for not processing samples are low, so just don't even
+    // risk causing dropouts.
     if (!m_processorsLock.tryLock()) {
-        qWarning() << "VinylControlProcessor thread locked, skipping processing this buffer";
+        qWarning() << "VinylControlProcessor thread locked, skipping processing.";
         return;
     }
     VinylControl* pProcessor = m_processors[vcIndex];
@@ -157,22 +148,22 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
     int framesRead = nSamples / 2;
     if (pProcessor) {
         pProcessor->analyzeSamples(pBuffer, framesRead);
+        // TODO(rryan) define a time-based update rate. This will update way
+        // too quickly.
+        if (m_bReportSignalQuality) {
+            VinylSignalQualityReport report;
+            if (pProcessor->writeQualityReport(&report)) {
+                report.processor = vcIndex;
+                if (m_signalQualityFifo.write(&report, 1) != 1) {
+                    qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << vcIndex;
+                }
+            }
+        }
     } else {
         // Samples are being written to a non-existent processor. Warning?
         qWarning() << "Samples written to non-existent VinylControl processor:" << vcIndex;
     }
 
-    // TODO(rryan) define a time-based update rate. This will update way
-    // too quickly.
-    if (pProcessor && m_bReportSignalQuality) {
-        VinylSignalQualityReport report;
-        if (pProcessor->writeQualityReport(&report)) {
-            report.processor = vcIndex;
-            if (m_signalQualityFifo.write(&report, 1) != 1) {
-                qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << vcIndex;
-            }
-        }
-    }
     m_processorsLock.unlock();
 }
 
