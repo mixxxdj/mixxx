@@ -392,5 +392,5 @@ METADATA
       ALTER TABLE Library ADD COLUMN timbre_version TEXT;
       ALTER TABLE Library ADD COLUMN timbre_sub_version TEXT;
     </sql>
-
+  </revision>
 </schema>
