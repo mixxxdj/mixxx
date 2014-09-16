@@ -132,14 +132,14 @@ void SelectorLibraryTableModel::calculateSimilarity() {
             trackIds << index(i, fieldIndex(LIBRARYTABLE_ID)).data().toInt();
         }
 
-        QList<ScorePair> results =
+        QList<SelectorSimilarity::ScorePair> results =
             m_selectorSimilarity.calculateSimilarities(m_pSeedTrack->getId(),
                                                        trackIds);
 
         QVariantList queryTrackIds;
         QVariantList queryScores;
-        foreach (ScorePair pair, results) {
-            queryTrackIds << pair.id;
+        foreach (SelectorSimilarity::ScorePair pair, results) {
+            queryTrackIds << pair.trackId;
             queryScores << pair.score;
         }
 

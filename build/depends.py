@@ -775,7 +775,6 @@ class MixxxCore(Feature):
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
 
-                   "library/selector/scorepair.cpp",
                    "library/selector/selectorfeature.cpp",
                    "library/selector/selectorfilters.cpp",
                    "library/selector/selectorlibrarytablemodel.cpp",

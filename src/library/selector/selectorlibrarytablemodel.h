@@ -6,9 +6,7 @@
 #include <QHash>
 #include <QModelIndexList>
 
-// #include "controlobjectthreadmain.h"
 #include "library/librarytablemodel.h"
-#include "library/selector/scorepair.h"
 #include "library/selector/selectorfilters.h"
 #include "library/selector/selectorsimilarity.h"
 #include "track/timbre.h"

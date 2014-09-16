@@ -25,13 +25,13 @@ SelectorSimilarity::SelectorSimilarity(QObject* parent,
 SelectorSimilarity::~SelectorSimilarity() {
 }
 
-QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
+QList<SelectorSimilarity::ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
         QList<int> trackIds) {
     QTime timer;
     timer.start();
 
     loadStoredSimilarityContributions();
-    QList<ScorePair> scores;
+    QList<SelectorSimilarity::ScorePair> scores;
     TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
     QHash<QString, double> contributions = normalizeContributions(pSeedTrack);
 
@@ -45,7 +45,7 @@ QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
                 score += simFunc(pSeedTrack, pTrack) * contribution;
             }
         }
-        scores << ScorePair(trackId, score);
+        scores << SelectorSimilarity::ScorePair(trackId, score);
     }
 
     qDebug() << "calculateSimilarities:" << timer.elapsed() << "ms";
@@ -95,7 +95,7 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
         }
     }
 
-    QList<ScorePair> ranks =
+    QList<SelectorSimilarity::ScorePair> ranks =
             calculateSimilarities(iSeedTrackId, unrankedResults);
 
     int resultsSize = ranks.size();
@@ -106,7 +106,7 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
     qSort(ranks.begin(), ranks.end(), similaritySort);
 
     for (int i = 0; i < n; i++) {
-        results << ranks.at(i).id;
+        results << ranks.at(i).trackId;
     }
     return results;
 }
@@ -158,8 +158,8 @@ QHash<QString, double> SelectorSimilarity::normalizeContributions(
     return contributions;
 }
 
-bool SelectorSimilarity::similaritySort(const ScorePair s1,
-                                        const ScorePair s2) {
+bool SelectorSimilarity::similaritySort(const SelectorSimilarity::ScorePair s1,
+                                        const SelectorSimilarity::ScorePair s2) {
     return s1.score >= s2.score;
 }
 

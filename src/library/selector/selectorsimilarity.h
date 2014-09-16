@@ -7,7 +7,6 @@
 
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
-#include "library/selector/scorepair.h"
 #include "library/selector/selectorfilters.h"
 
 class SelectorSimilarity : public QObject {
@@ -18,6 +17,13 @@ class SelectorSimilarity : public QObject {
                        ConfigObject<ConfigValue>* pConfig,
                        SelectorFilters& selectorFilters);
     ~SelectorSimilarity();
+
+    struct ScorePair {
+        ScorePair (int id, double similarityScore)
+        : trackId(id), score(similarityScore) {}
+        int trackId;
+        double score;
+    };
 
     QList<ScorePair> calculateSimilarities(int iSeedTrackId,
                                            QList<int> trackIds);
