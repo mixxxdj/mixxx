@@ -790,20 +790,17 @@ class Opus(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-
-        # Supported for Opus (RFC 6716)
+        # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
+        if not conf.CheckLib(['opus', 'libopus']):
+            raise Exception('Could not find libopus.')
+        if not conf.CheckLib(['opusfile', 'libopusfile']):
+            raise Exception('Could not find libopusfile.')
+        build.env.Append(CPPDEFINES='__OPUS__')
+        
         if build.platform_is_linux or build.platform_is_osx \
                 or build.platform_is_bsd:
-            # Check for libopusfile
-            # I just randomly picked version numbers lower than mine for this
-            if not conf.CheckForPKG('opusfile', '0.2'):
-                raise Exception('Missing libopusfile (needs at least 0.2)')
-
-            build.env.Append(CPPDEFINES='__OPUS__')
-
-	    build.env.ParseConfig('pkg-config opusfile opus --silence-errors \
-                                  --cflags --libs')
+            build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
     def sources(self, build):
         return ['soundsourceopus.cpp']
