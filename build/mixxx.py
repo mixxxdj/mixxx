@@ -171,10 +171,15 @@ class MixxxBuild(object):
             tools.append('OSConsX')
             toolpath.append('#/build/osx/')
         if self.platform_is_windows and self.toolchain_is_msvs:
-            toolpath.append('msvs')
+            # NOTE(rryan): Don't use the SCons mssdk tool since it does not
+            # support x64.
+            tools.extend(['msvs'])
             extra_arguments['VCINSTALLDIR'] = os.getenv(
                 'VCInstallDir')  # TODO(XXX) Why?
             extra_arguments['QT_LIB'] = ''  # TODO(XXX) Why?
+            # Causes SCons to bypass MSVC environment detection altogether 
+            # and depend on environment variables.
+            extra_arguments['MSVC_USE_SCRIPT'] = None
 
         # Setup the appropriate toolchains for cross-compiling
         if self.crosscompile:
@@ -200,7 +205,7 @@ class MixxxBuild(object):
             elif flags_force64:
                 self.env.Append(CCFLAGS='-m64')
 
-        self.setup_sysroot()
+        self.setup_platform_sdk()
 
         if self.platform_is_osx:
             if self.architecture_is_powerpc:
@@ -244,11 +249,55 @@ class MixxxBuild(object):
 
     def detect_machine(self):
         return platform.machine()
-
-    def setup_sysroot(self):
+        
+    def setup_platform_sdk(self):
+        if self.platform_is_windows:
+            self.setup_windows_platform_sdk()
+        elif self.platform_is_osx:
+            self.setup_osx_platform_sdk()
+            
+    def setup_windows_platform_sdk(self):            
+        mssdk_dir = Script.ARGUMENTS.get('mssdk_dir', None)
+        if mssdk_dir is None:
+            print 'Skipping Windows SDK setup because no SDK path was specified.'
+            print 'Specify the path to your platform SDK with mssdk_dir.'
+            return
+        env_update_tuples = []
+        include_path = os.path.join(mssdk_dir, 'Include')
+        
+        if not os.path.exists(include_path):
+            raise Exception('No "Include" subfolder exists in the specified mssdk_dir.')
+        env_update_tuples.append(('INCLUDE', include_path))
+        mfc_path = os.path.join(include_path, 'mfc')
+        if os.path.exists(mfc_path):
+            env_update_tuples.append(('INCLUDE', mfc_path))
+        atl_path = os.path.join(include_path, 'atl')
+        if os.path.exists(atl_path):
+            env_update_tuples.append(('INCLUDE', atl_path))
+          
+        bin_path = os.path.join(mssdk_dir, 'Bin')
+        if self.machine_is_64bit:
+            bin_path = os.path.join(bin_path, 'x64')
+        if not os.path.exists(bin_path):
+            raise Exception('No "Bin" subfolder exists in the specified mssdk_dir.')
+        env_update_tuples.append(('PATH', bin_path))
+        
+        lib_path = os.path.join(mssdk_dir, 'Lib')
+        if self.machine_is_64bit:
+            lib_path = os.path.join(lib_path, 'x64')
+        if not os.path.exists(lib_path):
+            raise Exception('No "Lib" subfolder exists in the specified mssdk_dir.')
+        env_update_tuples.append(('LIB', lib_path))
+        env_update_tuples.append(('LIBPATH', lib_path))
+        
+        for variable, directory in env_update_tuples:
+            self.env.PrependENVPath(variable, directory)
+            
+            
+    def setup_osx_platform_sdk(self):
         sysroot = Script.ARGUMENTS.get('sysroot', '')
         if sysroot:
-            env.Append(CCFLAGS=['-isysroot', sysroot])
+            self.env.Append(CCFLAGS=['-isysroot', sysroot])
 
         # If no sysroot was specified, pick one automatically. The only platform
         # we pick one automatically on is OS X.
