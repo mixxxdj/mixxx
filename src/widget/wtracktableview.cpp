@@ -85,24 +85,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
-
-    // TODO (kain88) check if I can make these connections somewhre else
-    WLibrary* pLibraryWidget;
-    if (WLibrary* pLW = qobject_cast<WLibrary*>(parentWidget())) {
-        pLibraryWidget = pLW;
-    } else if (WLibrary* pLW = qobject_cast<WLibrary*>(
-                parentWidget()->parentWidget())) {
-        pLibraryWidget = pLW;
-    } else {
-        qDebug() << "WTrackTableView could not obtain library widget.";
-    }
-    if (pLibraryWidget) {
-        connect(this, SIGNAL(switchToSelector()),
-                pLibraryWidget, SIGNAL(switchToSelector()));
-        connect(this, SIGNAL(setSeedTrack(TrackPointer)),
-                pLibraryWidget, SIGNAL(setSeedTrack(TrackPointer)));
-    }
-
 }
 
 WTrackTableView::~WTrackTableView() {

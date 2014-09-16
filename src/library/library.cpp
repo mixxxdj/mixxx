@@ -144,11 +144,6 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
                          MixxxKeyboard* pKeyboard) {
-    // TODO (kain88) do we really want all widgets connected to this
-    connect(pLibraryWidget, SIGNAL(switchToSelector()),
-            this, SLOT(slotSwitchToSelector()));
-    connect(pLibraryWidget, SIGNAL(setSeedTrack(TrackPointer)),
-            this, SLOT(slotSetSeedTrack(TrackPointer)));
 
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
@@ -159,6 +154,10 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pTrackTableView, SIGNAL(switchToSelector()),
+            this, SLOT(slotSwitchToSelector()));
+    connect(pTrackTableView, SIGNAL(setSeedTrack(TrackPointer)),
+            this, SLOT(slotSetSeedTrack(TrackPointer)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
