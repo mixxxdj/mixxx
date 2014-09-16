@@ -4,7 +4,7 @@
 
 DlgCoverArtFullSize::DlgCoverArtFullSize() {
     setupUi(this);
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 }
 
 DlgCoverArtFullSize::~DlgCoverArtFullSize() {
