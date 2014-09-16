@@ -57,8 +57,6 @@ class VinylControlProcessor : public QObject, public AudioDestination {
     void toggleDeck(double value);
 
   private:
-    void reloadConfig();
-
     ConfigObject<ConfigValue>* m_pConfig;
     ControlPushButton* m_pToggle;
     CSAMPLE* m_pWorkBuffer;
@@ -66,7 +64,6 @@ class VinylControlProcessor : public QObject, public AudioDestination {
     QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;
-    volatile bool m_bReloadConfig;
 };
 
 
