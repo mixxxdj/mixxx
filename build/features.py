@@ -726,30 +726,6 @@ class Verbose(Feature):
             build.env['QT5_MOCCOMSTR'] = '[MOC] $SOURCE'
 
 
-class MSVSHacks(Feature):
-    """Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable
-    this)"""
-
-    def description(self):
-        return "MSVS 2005 hacks"
-
-    def enabled(self, build):
-        build.flags['msvshacks'] = util.get_flags(build.env, 'msvshacks', 0)
-        if int(build.flags['msvshacks']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        if build.toolchain_is_msvs:
-            vars.Add(
-                'msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES='__MSVS2005__')
-
-
 class Profiling(Feature):
     def description(self):
         return "gprof/Saturn profiling support"
