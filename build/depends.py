@@ -1031,6 +1031,9 @@ class MixxxCore(Feature):
 
         if build.platform_is_windows:
             build.env.Append(CPPDEFINES='__WINDOWS__')
+            # Restrict ATL to XP-compatible SDK functions.
+            # TODO(rryan): Remove once we ditch XP support.
+            build.env.Append(CPPDEFINES='_ATL_XP_TARGETING')
             build.env.Append(
                 CPPDEFINES='_ATL_MIN_CRT')  # Helps prevent duplicate symbols
             # Need this on Windows until we have UTF16 support in Mixxx
