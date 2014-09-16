@@ -1266,8 +1266,7 @@ void WTrackTableView::slotSetSeedTrack() {
         return;
     }
 
-    // TODO(kain88) only allow this for one selected track
-    if (indices.at(0).isValid()) {
+    if (indices.size() > 0) {
         TrackPointer pTrack = trackModel->getTrack(indices.at(0));
         if (pTrack) {
             emit(setSeedTrack(pTrack));
