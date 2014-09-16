@@ -14,7 +14,7 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
 
 const QString& kCoverLocationTest = "res/images/library/default_cover.png";
 const QString kTestTrackLocation =
-        QDir::currentPath().append("/src/test/soundFileFormats/cover-test.mp3");
+        QDir::currentPath().append("/src/test/id3-test-data/cover-test.mp3");
 
 TEST_F(CoverArtCacheTest, loadImage) {
     QImage img = QImage(kCoverLocationTest);
