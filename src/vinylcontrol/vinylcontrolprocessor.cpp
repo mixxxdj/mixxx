@@ -26,6 +26,8 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
     connect(m_pToggle, SIGNAL(valueChanged(double)),
             this, SLOT(toggleDeck(double)),
             Qt::DirectConnection);
+    m_pGuiTick = new ControlObjectSlave("[Master]", "guiTickTime");
+    m_pGuiTick->connectValueChanged(this, SLOT(slotGuiTick(double)));
 }
 
 VinylControlProcessor::~VinylControlProcessor() {
@@ -54,18 +56,20 @@ void VinylControlProcessor::setSignalQualityReporting(bool enable) {
 
 void VinylControlProcessor::requestReloadConfig() {
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        QMutexLocker locker(&m_processorsLock);
-        VinylControl* pCurrent = m_processors[i];
+        VinylControl* pCurrent = NULL;
+        {
+            QMutexLocker locker(&m_processorsLock);
+            pCurrent = m_processors[i];
 
-        if (pCurrent == NULL) {
-            continue;
+            if (pCurrent == NULL) {
+                continue;
+            }
+
+            VinylControl *pNew = new VinylControlXwax(m_pConfig, kVCGroup.arg(i + 1));
+            m_processors.replace(i, pNew);
+            // Delete outside of the critical section to avoid deadlocks.
+            delete pCurrent;
         }
-
-        VinylControl *pNew = new VinylControlXwax(m_pConfig, kVCGroup.arg(i + 1));
-        m_processors.replace(i, pNew);
-        locker.unlock();
-        // Delete outside of the critical section to avoid deadlocks.
-        delete pCurrent;
     }
 }
 
@@ -84,10 +88,10 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
 
     VinylControl *pNew = new VinylControlXwax(m_pConfig, kVCGroup.arg(index + 1));
 
-    QMutexLocker locker(&m_processorsLock);
+    m_processorsLock.lock();
     VinylControl* pCurrent = m_processors.at(index);
     m_processors.replace(index, pNew);
-    locker.unlock();
+    m_processorsLock.unlock();
     // Delete outside of the critical section to avoid deadlocks.
     delete pCurrent;
 }
@@ -106,10 +110,10 @@ void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
         return;
     }
 
-    QMutexLocker locker(&m_processorsLock);
+    m_processorsLock.lock();
     VinylControl* pVC = m_processors.at(index);
     m_processors.replace(index, NULL);
-    locker.unlock();
+    m_processorsLock.unlock();
     // Delete outside of the critical section to avoid deadlocks.
     delete pVC;
 }
@@ -148,23 +152,34 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
     int framesRead = nSamples / 2;
     if (pProcessor) {
         pProcessor->analyzeSamples(pBuffer, framesRead);
-        // TODO(rryan) define a time-based update rate. This will update way
-        // too quickly.
-        if (m_bReportSignalQuality) {
-            VinylSignalQualityReport report;
-            if (pProcessor->writeQualityReport(&report)) {
-                report.processor = vcIndex;
-                if (m_signalQualityFifo.write(&report, 1) != 1) {
-                    qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << vcIndex;
-                }
-            }
-        }
     } else {
         // Samples are being written to a non-existent processor. Warning?
         qWarning() << "Samples written to non-existent VinylControl processor:" << vcIndex;
     }
 
     m_processorsLock.unlock();
+}
+
+void VinylControlProcessor::slotGuiTick(double v) {
+    Q_UNUSED(v)
+
+    if (m_bReportSignalQuality) {
+        for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+            VinylControl* pProcessor = m_processors[i];
+            if (!pProcessor) {
+                continue;
+            }
+            VinylSignalQualityReport report;
+            // It's not really a big deal if the quality report bitmap is being
+            // written while we're reading it, so no need to hold the lock.
+            if (pProcessor->writeQualityReport(&report)) {
+                report.processor = i;
+                if (m_signalQualityFifo.write(&report, 1) != 1) {
+                    qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
+                }
+            }
+        }
+    }
 }
 
 void VinylControlProcessor::toggleDeck(double value) {
