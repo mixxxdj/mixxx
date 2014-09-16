@@ -11,5 +11,6 @@
 #define TIMBRE_CONFIG_KEY "[Timbre]"
 
 #define TIMBRE_ANALYSIS_ENABLED "TimbreAnalysisEnabled"
+#define TIMBRE_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
 
 #endif // TIMBRE_PREFERENCES_H

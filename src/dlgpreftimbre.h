@@ -21,6 +21,7 @@ class DlgPrefTimbre : public DlgPreferencePage, public Ui::DlgPrefTimbreDlg {
   private slots:
     void pluginSelected(int i);
     void analyserEnabled(int i);
+    void reanalyzeEnabled(int i);
     void setDefaults();
 
   signals:
@@ -35,6 +36,7 @@ class DlgPrefTimbre : public DlgPreferencePage, public Ui::DlgPrefTimbreDlg {
     QList<QString> m_listLibrary, m_listIdentifier;
     QString m_selectedAnalyser;
     bool m_bAnalyserEnabled;
+    bool m_bReanalyzeEnabled;
 };
 
 #endif // DLGPREFTIMBRE_H

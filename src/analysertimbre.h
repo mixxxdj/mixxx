@@ -28,6 +28,7 @@ class AnalyserTimbre : public Analyser {
     int m_iTotalSamples;
     bool m_bShouldAnalyze;
     bool m_bPreferencesFastAnalysis;
+    bool m_bPreferencesReanalyzeEnabled;
 };
 
 #endif // ANALYSERTIMBRE_H

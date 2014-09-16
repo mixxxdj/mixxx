@@ -14,9 +14,10 @@ using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefTimbre::DlgPrefTimbre(QWidget *parent, ConfigObject<ConfigValue> *pConfig)
         : DlgPreferencePage(parent),
-        Ui::DlgPrefTimbreDlg(),
-        m_pConfig(pConfig),
-        m_bAnalyserEnabled(false) {
+          Ui::DlgPrefTimbreDlg(),
+          m_pConfig(pConfig),
+          m_bAnalyserEnabled(false),
+          m_bReanalyzeEnabled(false) {
     setupUi(this);
 
     populate();
@@ -26,6 +27,8 @@ DlgPrefTimbre::DlgPrefTimbre(QWidget *parent, ConfigObject<ConfigValue> *pConfig
             this, SLOT(pluginSelected(int)));
     connect(checkBoxAnalyserEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(analyserEnabled(int)));
+    connect(bReanalyse, SIGNAL(stateChanged(int)),
+            this, SLOT(reanalyzeEnabled(int)));
 }
 
 DlgPrefTimbre::~DlgPrefTimbre() {
@@ -45,12 +48,16 @@ void DlgPrefTimbre::slotApply() {
     m_pConfig->set(
         ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_ANALYSIS_ENABLED),
         ConfigValue(m_bAnalyserEnabled ? 1 : 0));
+    m_pConfig->set(
+        ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_REANALYZE_WHEN_SETTINGS_CHANGE),
+        ConfigValue(m_bReanalyzeEnabled ? 1 : 0));
     m_pConfig->Save();
 }
 
 void DlgPrefTimbre::slotUpdate() {
     comboBoxPlugin->setEnabled(m_bAnalyserEnabled);
     checkBoxAnalyserEnabled->setChecked(m_bAnalyserEnabled);
+    bReanalyse->setChecked(m_bReanalyzeEnabled);
     slotApply();
     if (!m_bAnalyserEnabled) {
         return;
@@ -77,9 +84,15 @@ void DlgPrefTimbre::analyserEnabled(int i) {
     slotUpdate();
 }
 
+void DlgPrefTimbre::reanalyzeEnabled(int i){
+    m_bReanalyzeEnabled = static_cast<bool>(i);
+    slotUpdate();
+}
+
 void DlgPrefTimbre::setDefaults() {
     qDebug() << "DlgPrefTimbre::setDefaults";
     m_bAnalyserEnabled = true;
+    m_bReanalyzeEnabled = false;
     m_selectedAnalyser = VAMP_ANALYSER_TIMBRE_DEFAULT_PLUGIN_ID;
     if (!m_listIdentifier.contains(m_selectedAnalyser)) {
         qDebug() << "DlgPrefTimbre: qm-similarity Vamp plugin not found";
@@ -138,6 +151,9 @@ void DlgPrefTimbre::loadSettings() {
 
     m_bAnalyserEnabled = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_ANALYSIS_ENABLED)).toInt());
+
+    m_bReanalyzeEnabled = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
 
     if (!m_listIdentifier.contains(pluginid)) {
         setDefaults();

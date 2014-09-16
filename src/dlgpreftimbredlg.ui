@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>471</width>
+    <width>492</width>
     <height>300</height>
    </rect>
   </property>
@@ -53,16 +53,6 @@
       <string>Analyser Settings</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="bFastAnalysis">
-        <property name="toolTip">
-         <string>Enable fast timbre analysis. If activated Mixxx only analyzes the first minute of a track for timbral information. This can speed up timbral analysis on slower computers but may result in lower quality models.</string>
-        </property>
-        <property name="text">
-         <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QCheckBox" name="bReanalyse">
         <property name="toolTip">

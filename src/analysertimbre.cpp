@@ -13,7 +13,8 @@ AnalyserTimbre::AnalyserTimbre(ConfigObject<ConfigValue> *pConfig)
       m_iSampleRate(0),
       m_iTotalSamples(0),
       m_bShouldAnalyze(false),
-      m_bPreferencesFastAnalysis(false) {
+      m_bPreferencesFastAnalysis(false),
+      m_bPreferencesReanalyzeEnabled(false) {
 }
 
 AnalyserTimbre::~AnalyserTimbre() {
@@ -27,6 +28,10 @@ bool AnalyserTimbre::initialise(TrackPointer tio, int sampleRate, int totalSampl
     bool bPreferencesTimbreAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_ANALYSIS_ENABLED)).toInt());
+    m_bPreferencesReanalyzeEnabled = static_cast<bool>(
+        m_pConfig->getValueString(
+            ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
+
     if (!bPreferencesTimbreAnalysisEnabled) {
         qDebug() << "Timbre analysis is deactivated";
         m_bShouldAnalyze = false;
@@ -132,8 +137,9 @@ bool AnalyserTimbre::checkStoredTimbre(TrackPointer tio) const {
             qDebug() << "Timbre version/sub-version unchanged since previous"
                         "analysis. Not analyzing.";
             isStored = true;
+        } else if (m_bPreferencesReanalyzeEnabled) {
+            isStored = true;
         } else {
-            // TODO(kain88) check if we really have these user settings in place
             qDebug() << "Track has previous timbre model that is not up"
                      << "to date with latest settings, but user preferences"
                      << "indicate we should not re-analyze it.";
