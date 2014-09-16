@@ -542,7 +542,7 @@ def BuildRelease(target, source, env):
             # Check for the runtime installer in the winlib root.
             redist_path = '%s' % os.path.join(mixxx_winlib_path, redist_file)
             print "   ", redist_path,
--           if not os.path.isfile(redist_path):
+            if not os.path.isfile(redist_path):
                 raise Exception('Could not find the MSVC++ runtime installer.') 
 
         print "Now building installation package..."
