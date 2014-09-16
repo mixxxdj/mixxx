@@ -984,11 +984,13 @@ class MixxxCore(Feature):
                 Script.Exit(1)
 
             # Set include and library paths to work with this
-            build.env.Append(CPPPATH=mixxx_lib_path)
-            build.env.Append(LIBPATH=mixxx_lib_path)
+            build.env.Append(CPPPATH=[mixxx_lib_path,
+                                      os.path.join(mixxx_lib_path, 'include')])
+            build.env.Append(LIBPATH=[mixxx_lib_path, os.path.join(mixxx_lib_path, 'lib')])
 
             # Find executables (e.g. protoc) in the winlib path
             build.env.AppendENVPath('PATH', mixxx_lib_path)
+            build.env.AppendENVPath('PATH', os.path.join(mixxx_lib_path, 'bin'))
             # Valid values of /MACHINE are: {ARM|EBC|X64|X86}
             # http://msdn.microsoft.com/en-us/library/5wy54dk2.aspx
             if build.architecture_is_x86:
