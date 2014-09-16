@@ -1,6 +1,8 @@
 #ifndef BESSEL8LVMIXEQEFFECT_H
 #define BESSEL8LVMIXEQEFFECT_H
 
+#include "lvmixeqbase.h"
+
 #include <QMap>
 
 #include "controlobjectslave.h"
@@ -15,31 +17,9 @@
 #include "util/defs.h"
 #include "sampleutil.h"
 
-const int kMaxDelay8 = 3300; // allows a 30 Hz filter at 97346;
 
-class Bessel8LVMixEQEffectGroupState {
-  public:
-    Bessel8LVMixEQEffectGroupState();
-    virtual ~Bessel8LVMixEQEffectGroupState();
-
-    void setFilters(int sampleRate, int lowFreq, int highFreq);
-
-    EngineFilterBessel8Low* m_low1;
-    EngineFilterBessel8Low* m_low2;
-    EngineFilterDelay<kMaxDelay8>* m_delay2;
-    EngineFilterDelay<kMaxDelay8>* m_delay3;
-
-    double old_low;
-    double old_mid;
-    double old_high;
-
-    unsigned int m_oldSampleRate;
-    int m_loFreq;
-    int m_hiFreq;
-
-    CSAMPLE* m_pLowBuf;
-    CSAMPLE* m_pBandBuf;
-    CSAMPLE* m_pHighBuf;
+class Bessel8LVMixEQEffectGroupState :
+        public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
 };
 
 class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGroupState> {

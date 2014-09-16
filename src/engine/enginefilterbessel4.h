@@ -8,6 +8,10 @@ class EngineFilterBessel4Low : public EngineFilterIIR<4, IIR_LP> {
   public:
     EngineFilterBessel4Low(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
+    inline double delayFactor() {
+        // group delay at 1 Hz freqCorner1 and 1 Hz Samplerate
+        return 0.332811791;
+    }
 };
 
 class EngineFilterBessel4Band : public EngineFilterIIR<8, IIR_BP> {

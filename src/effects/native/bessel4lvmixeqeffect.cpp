@@ -1,18 +1,6 @@
 #include "effects/native/bessel4lvmixeqeffect.h"
 #include "util/math.h"
 
-static const unsigned int kStartupSamplerate = 44100;
-static const unsigned int kStartupLoFreq = 246;
-static const unsigned int kStartupHiFreq = 2484;
-
-// constant to calculate the group delay from the low pass corner
-// mean value of a set of fid_calc_delay() calls for different corners
-static const double kGroupDelay1Hz = 0.5067964223;
-// kDelayOffset is required to match short delays.
-static const double kDelayOffset = 0.2;
-static const double kMaxCornerFreq = 14212;
-static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
-
 // static
 QString Bessel4LVMixEQEffect::getId() {
     return "org.mixxx.effects.bessel4lvmixeq";
@@ -68,65 +56,6 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     return manifest;
 }
 
-Bessel4LVMixEQEffectGroupState::Bessel4LVMixEQEffectGroupState()
-        : old_low(1.0),
-          old_mid(1.0),
-          old_high(1.0),
-          m_oldSampleRate(kStartupSamplerate),
-          m_loFreq(kStartupLoFreq), 
-          m_hiFreq(kStartupHiFreq) {
-    m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-
-    m_low1 = new EngineFilterBessel4Low(kStartupSamplerate, kStartupLoFreq);
-    m_low2 = new EngineFilterBessel4Low(kStartupSamplerate, kStartupHiFreq);
-    m_delay2 = new EngineFilterDelay<kMaxDelay>();
-    m_delay3 = new EngineFilterDelay<kMaxDelay>();
-    setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
-}
-
-Bessel4LVMixEQEffectGroupState::~Bessel4LVMixEQEffectGroupState() {
-    delete m_low1;
-    delete m_low2;
-    delete m_delay2;
-    delete m_delay3;
-    SampleUtil::free(m_pLowBuf);
-    SampleUtil::free(m_pBandBuf);
-    SampleUtil::free(m_pHighBuf);
-}
-
-void Bessel4LVMixEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
-                                                int highFreq) {
-    double delayLow1 = sampleRate * kGroupDelay1Hz / lowFreq + kDelayOffset;
-    delayLow1 = delayLow1 / 3 * 2;
-    double delayLow2 = sampleRate * kGroupDelay1Hz / highFreq + kDelayOffset;
-    delayLow2 = delayLow2 / 3 * 2;
-    // Since we delay only full samples, we can only allow frequencies
-    // producing such delays
-    unsigned int iDelayLow1 = (unsigned int)delayLow1;
-    unsigned int iDelayLow2 = (unsigned int)delayLow2;
-    int stepLowFreq;
-    if (iDelayLow1 > 1) {
-        stepLowFreq = sampleRate * kGroupDelay1Hz / (iDelayLow1 - kDelayOffset + 0.5);
-    } else {
-        iDelayLow1 = 1;
-        stepLowFreq = kMaxCornerFreq;
-    }
-    int stepHighFreq;
-    if (iDelayLow1 > 1) {
-        stepHighFreq = sampleRate * kGroupDelay1Hz / (iDelayLow2 - kDelayOffset + 0.5);
-    } else {
-        iDelayLow2 = 1;
-        stepHighFreq = kMaxCornerFreq;
-    }
-
-    m_low1->setFrequencyCorners(sampleRate, stepLowFreq);
-    m_low2->setFrequencyCorners(sampleRate, stepHighFreq);
-    m_delay2->setDelay((iDelayLow1 - iDelayLow2) * 2);
-    m_delay3->setDelay(iDelayLow1 * 2);
-}
-
 Bessel4LVMixEQEffect::Bessel4LVMixEQEffect(EngineEffect* pEffect,
                                            const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
@@ -162,11 +91,7 @@ void Bessel4LVMixEQEffect::processGroup(const QString& group,
         pState->m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
         pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
         pState->m_oldSampleRate = sampleRate;
-        // Clamp frequency corners to the border, defined by the maximum delay.
-        int minFreq = sampleRate / (kMaxDelay - 1) * kGroupDelay1Hz * 2;
-        pState->setFilters(sampleRate,
-                math_max(pState->m_loFreq, minFreq),
-                math_max(pState->m_hiFreq, minFreq));
+        pState->setFilters(sampleRate, pState->m_loFreq, pState->m_hiFreq);
     }
 
     // Since a Bessel Low pass Filter has a constant group delay in the pass band,

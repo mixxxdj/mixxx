@@ -14,32 +14,10 @@
 #include "util/types.h"
 #include "util/defs.h"
 #include "sampleutil.h"
+#include "lvmixeqbase.h"
 
-const int kMaxDelay4 = 3300; // allows a 30 Hz filter at 97346;
-
-class Bessel4LVMixEQEffectGroupState {
-  public:
-    Bessel4LVMixEQEffectGroupState();
-    virtual ~Bessel4LVMixEQEffectGroupState();
-
-    void setFilters(int sampleRate, int lowFreq, int highFreq);
-
-    EngineFilterBessel4Low* m_low1;
-    EngineFilterBessel4Low* m_low2;
-    EngineFilterDelay<kMaxDelay4>* m_delay2;
-    EngineFilterDelay<kMaxDelay4>* m_delay3;
-
-    double old_low;
-    double old_mid;
-    double old_high;
-
-    unsigned int m_oldSampleRate;
-    int m_loFreq;
-    int m_hiFreq;
-
-    CSAMPLE* m_pLowBuf;
-    CSAMPLE* m_pBandBuf;
-    CSAMPLE* m_pHighBuf;
+class Bessel4LVMixEQEffectGroupState :
+        public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
 };
 
 class Bessel4LVMixEQEffect : public GroupEffectProcessor<Bessel4LVMixEQEffectGroupState> {
