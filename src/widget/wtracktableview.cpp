@@ -1266,8 +1266,9 @@ void WTrackTableView::slotSetSeedTrack() {
         return;
     }
 
-    foreach (QModelIndex index, indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
+    // TODO(kain88) only allow this for one selected track
+    if (indices.at(0).isValid()) {
+        TrackPointer pTrack = trackModel->getTrack(indices.at(0));
         if (pTrack) {
             emit(setSeedTrack(pTrack));
             emit(switchToSelector());
