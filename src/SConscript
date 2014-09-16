@@ -54,7 +54,7 @@ if build.platform_is_windows:
         now = datetime.datetime.now()
         str_list.append('#define CUR_YEAR                    "'+str(now.year)+'"\n\n')
 
-        if build.msvcdebug:
+        if build.build_is_debug:
             str_list.append('#define DEBUG                       1\n')
         if 'pre' in mixxx_version.lower():
             str_list.append('#define PRERELEASE                  1\n')
@@ -232,12 +232,12 @@ qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
 
 if qt5:
-        suffix = 'd.dll' if build.msvcdebug else '.dll'
+        suffix = 'd.dll' if build.build_is_debug else '.dll'
         qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
         dll_files.extend(qt_modules)
 else:
-        suffix = 'd4.dll' if build.msvcdebug else '4.dll'
+        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         # TODO(rryan): Is this needed? We don't use phonon.
         qt_modules.append('$QTDIR/lib/phonon' + suffix)
@@ -248,7 +248,7 @@ if int(flags.get('sqlitedll', 0)):
                 # TODO(rryan): Add the SQLite DLL For Qt5.
                 pass
         else:
-                suffix = 'd4.dll' if build.msvcdebug else '4.dll'
+                suffix = 'd4.dll' if build.build_is_debug else '4.dll'
                 # Qt SQLite plugin
                 sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
 
@@ -501,7 +501,7 @@ def BuildRelease(target, source, env):
     print
     print "You have built version %s" % mixxx_version
     print
-    if int(flags['msvcdebug']):
+    if build.build_is_debug:
         print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
         print
     print "Binary has size ",

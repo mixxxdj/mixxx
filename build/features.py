@@ -31,16 +31,7 @@ class HSS1394(Feature):
         if build.platform_is_windows or build.platform_is_osx:
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
-#            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
-            libs = ['libhss1394', 'hss1394']
-            if build.platform_is_windows:
-                if build.msvcdebug:
-                    libs = ['libhss1394-debug', 'hss1394-debug',
-                            'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']
-                else:
-                    libs = ['libhss1394', 'hss1394',
-                            'libHSS1394_x64_Release', 'libHSS1394_x86_Release']
-            if not conf.CheckLib(libs):
+            if not conf.CheckLib(['libhss1394', 'hss1394']):
                 raise Exception('Did not find HSS1394 development library')
 
         build.env.Append(CPPDEFINES='__HSS1394__')
@@ -309,51 +300,6 @@ class IPod(Feature):
 
     def sources(self, build):
         return ['wipodtracksmodel.cpp']
-
-
-class MSVCDebug(Feature):
-    # FIXME: this flag is also detected in mixxx.py at line 100 because it's needed sooner than this is processed
-    # I don't know the best way to fix this and still have it show up with
-    # scons -h. - Sean, Aug 2012
-    def description(self):
-        return "MSVC Debugging"
-
-    def enabled(self, build):
-        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
-        if int(build.flags['msvcdebug']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        if build.toolchain_is_msvs:
-            vars.Add('msvcdebug',
-                     'Set to 1 to link against MS libraries with debugging info (implies debug=1)', 0)
-
-    def configure(self, build, conf):
-        if self.enabled(build):
-            if not build.toolchain_is_msvs:
-                raise Exception(
-                    "Error, msvcdebug flag set when toolchain is not MSVS.")
-
-            # if build.static_dependencies:
-            #    build.env.Append(CCFLAGS = '/MTd')
-            # else:
-            #    build.env.Append(CCFLAGS = '/MDd')
-            build.env.Append(CCFLAGS='/MDd')
-
-            build.env.Append(LINKFLAGS='/DEBUG')
-            build.env.Append(CPPDEFINES='DEBUGCONSOLE')
-            if build.machine_is_64bit:
-                build.env.Append(CCFLAGS='/Zi')
-                build.env.Append(LINKFLAGS='/NODEFAULTLIB:MSVCRT')
-            else:
-                build.env.Append(CCFLAGS='/ZI')
-        elif build.toolchain_is_msvs:
-            # if build.static_dependencies:
-            #    build.env.Append(CCFLAGS = '/MT')
-            # else:
-            #    build.env.Append(CCFLAGS = '/MD')
-            build.env.Append(CCFLAGS='/MD')
 
 
 class VinylControl(Feature):
@@ -630,7 +576,7 @@ class AsmLib(Feature):
         return "Agner Fog\'s ASMLIB"
 
     def enabled(self, build):
-        if build.msvcdebug:
+        if build.build_is_debug:
             return False
         build.flags['asmlib'] = util.get_flags(build.env, 'asmlib', 0)
         if int(build.flags['asmlib']):
@@ -642,8 +588,8 @@ class AsmLib(Feature):
             'asmlib', 'Set to 1 to enable linking against Agner Fog\'s hand-optimized asmlib, found at http://www.agner.org/optimize/', 0)
 
     def configure(self, build, conf):
-        if build.msvcdebug:
-            self.status = "Disabled (due to MSVC debug mode)"
+        if build.build_is_debug:
+            self.status = "Disabled (due to debug build)"
             return
         if not self.enabled(build):
             return
@@ -668,13 +614,10 @@ class QDebug(Feature):
         return "Debugging message output"
 
     def enabled(self, build):
-        # Meh, repeating this can't hurt, and we require knowing the status of
-        # msvcdebug.
-        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
         build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 0)
         if build.platform_is_windows:
-            if int(build.flags['msvcdebug']):
-                # Turn general debugging flag on too if msvcdebug is specified
+            if build.build_is_debug:
+                # Turn general debugging flag on too if debug build is specified
                 build.flags['qdebug'] = 1
         if int(build.flags['qdebug']):
             return True
@@ -1011,9 +954,6 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     def enabled(self, build):
-        # Meh, repeating this can't hurt, and we require knowing the status of
-        # msvcdebug.
-        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
         build.flags['optimize'] = util.get_flags(build.env, 'optimize', 1)
         if int(build.flags['optimize']):
             return True
@@ -1039,22 +979,13 @@ class Optimize(Feature):
         optimize_level = int(build.flags['optimize'])
 
         if build.toolchain_is_msvs:
-            if int(build.flags['msvcdebug']):
-                self.status = "Disabled (due to msvcdebug mode)"
+            if build.build_is_debug:
+                self.status = "Disabled (debug build)"
                 return
-            # Valid values of /MACHINE are:
-            # {AM33|ARM|EBC|IA64|M32R|MIPS|MIPS16|MIPSFPU|MIPSFPU16|MIPSR41XX|SH3|SH3DSP|SH4|SH5|THUMB|X86}
-            # http://msdn.microsoft.com/en-us/library/5wy54dk2(v=VS.71).aspx
-            if build.machine_is_64bit:
-                build.env.Append(LINKFLAGS='/MACHINE:X64')
-            else:
-                build.env.Append(LINKFLAGS='/MACHINE:' + build.machine)
 
             # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
-            # /MP : http://msdn.microsoft.com/en-us/library/bb385193.aspx
-            # /MP has little to do with optimization so why is it here?
             # !!! /GL is incompatible with /ZI, which is set by mscvdebug
-            build.env.Append(CCFLAGS='/GL /MP')
+            build.env.Append(CCFLAGS='/GL')
 
             # Use the fastest floating point math library
             # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
@@ -1062,7 +993,7 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS='/fp:fast')
 
             # Do link-time code generation (and don't show a progress indicator
-            # -- this relies on aNSI control characters and tends to overwhelm
+            # -- this relies on ANSI control characters and tends to overwhelm
             # Jenkins logs) Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
             build.env.Append(LINKFLAGS='/LTCG:NOSTATUS')
@@ -1075,7 +1006,7 @@ class Optimize(Feature):
             build.env.Append(LINKFLAGS='/OPT:REF')
             build.env.Append(LINKFLAGS='/OPT:ICF')
 
-            # Don't worry about alining code on 4KB boundaries
+            # Don't worry about aligning code on 4KB boundaries
             # build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
             # ALBERT: NOWIN98 is not supported in MSVC 2010.
 
