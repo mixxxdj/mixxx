@@ -28,15 +28,14 @@ TimbrePointer TimbreFactory::makeTimbreModel(std::vector<double> mean,
                                              std::vector<double> beatSpectrum) {
     TimbreModel timbre_model;
     BeatSpectrum* beat_spectrum = timbre_model.mutable_beat_spectrum();
-    // TODO (kain88) use foreach
-    for (std::vector<double>::iterator it = mean.begin(); it != mean.end(); ++it) {
-        timbre_model.add_mean(*it);
+    foreach (double d, mean) {
+        timbre_model.add_mean(d);
     }
-    for (std::vector<double>::iterator it = variance.begin(); it != variance.end(); ++it) {
-        timbre_model.add_variance(*it);
+    foreach (double d, variance) {
+        timbre_model.add_variance(d);
     }
-    for (std::vector<double>::iterator it = beatSpectrum.begin(); it != beatSpectrum.end(); ++it) {
-        beat_spectrum->add_feature(*it);
+    foreach (double d, beatSpectrum) {
+        beat_spectrum->add_feature(d);
     }
     Timbre* pTimbre = new Timbre(timbre_model);
     return TimbrePointer(pTimbre, &TimbreFactory::deleteTimbre);
