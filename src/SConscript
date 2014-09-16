@@ -243,8 +243,6 @@ if qt5:
 else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
-        # TODO(rryan): Is this needed? We don't use phonon.
-        qt_modules.append('$QTDIR/lib/phonon' + suffix)
         dll_files.extend(qt_modules)
 
 if int(flags.get('sqlitedll', 0)):
