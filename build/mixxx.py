@@ -174,8 +174,6 @@ class MixxxBuild(object):
             # NOTE(rryan): Don't use the SCons mssdk tool since it does not
             # support x64.
             tools.extend(['msvs'])
-            extra_arguments['VCINSTALLDIR'] = os.getenv(
-                'VCInstallDir')  # TODO(XXX) Why?
             extra_arguments['QT_LIB'] = ''  # TODO(XXX) Why?
             # Causes SCons to bypass MSVC environment detection altogether 
             # and depend on environment variables.

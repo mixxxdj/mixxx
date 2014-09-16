@@ -991,6 +991,7 @@ class MixxxCore(Feature):
             # Find executables (e.g. protoc) in the winlib path
             build.env.AppendENVPath('PATH', mixxx_lib_path)
             build.env.AppendENVPath('PATH', os.path.join(mixxx_lib_path, 'bin'))
+            
             # Valid values of /MACHINE are: {ARM|EBC|X64|X86}
             # http://msdn.microsoft.com/en-us/library/5wy54dk2.aspx
             if build.architecture_is_x86:
@@ -1011,11 +1012,6 @@ class MixxxCore(Feature):
             # Build with multiple processes. TODO(XXX) make this configurable.
             # http://msdn.microsoft.com/en-us/library/bb385193.aspx
             build.env.Append(CCFLAGS='/MP')
-
-            # Still needed?
-            build.env.Append(CPPPATH=[
-                "$VCINSTALLDIR/include/atl",
-                "C:/Program Files/Microsoft Platform SDK/Include/atl"])
 
             if build.build_is_debug:
                 # Important: We always build Mixxx with the Multi-Threaded DLL
