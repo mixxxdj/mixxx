@@ -133,8 +133,9 @@ def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
                 return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         elif branch_name.startswith('release-'):
                 return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number
-        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
+        # In a debug build, include the branch name and revision number and
+        # don't include the Mixxx version.
+        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
@@ -146,9 +147,11 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
                 return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number
-        return "%s-%s~%s~%s%s" % (mixxx_version, ubuntu_version,
-                                   branch_name, vcs_name, vcs_revision)
+        # In a debug build, include the branch name and revision number and
+        # don't include the Mixxx version.
+        return "%s~%s~%s%s" % (ubuntu_version, branch_name, vcs_name,
+                               vcs_revision)
+
 
 def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
         # In release mode, we only use the version and revision number
@@ -156,8 +159,9 @@ def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
                 return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         elif branch_name.startswith('release-'):
                 return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number
-        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
+        # In a debug build, include the branch name and revision number and
+        # don't include the Mixxx version.
+        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
 
 #Set up the install target
 #=========================
@@ -543,7 +547,7 @@ def BuildRelease(target, source, env):
             redist_path = '%s' % os.path.join(mixxx_winlib_path, redist_file)
             print "   ", redist_path,
             if not os.path.isfile(redist_path):
-                raise Exception('Could not find the MSVC++ runtime installer.') 
+                raise Exception('Could not find the MSVC++ runtime installer.')
 
         print "Now building installation package..."
         command_flag = None
