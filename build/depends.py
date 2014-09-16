@@ -473,6 +473,9 @@ class Chromaprint(Dependence):
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
         libs = ['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']
+        if build.platform_is_windows:
+            if not build.static_dependencies:
+                build.env.Append(CPPDEFINES='PROTOBUF_USE_DLLS')
         if not conf.CheckLib(libs):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
