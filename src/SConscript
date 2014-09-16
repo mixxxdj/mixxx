@@ -276,7 +276,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 binary = env.Install(unix_bin_path, binary_files)
                 resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
-		vamp_plugin =  env.Install(
+                vamp_plugin =  env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
 
@@ -303,7 +303,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', dotdesktop)
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
-		env.Alias('install', vamp_plugin)
+                env.Alias('install', vamp_plugin)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
                 #if 'install' in COMMAND_LINE_TARGETS:
@@ -461,7 +461,7 @@ if build.platform_is_windows:
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
         env.Alias('mixxx', soundsource_plugins)
-	env.Alias('mixxx', vamp_plugins)
+        env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
