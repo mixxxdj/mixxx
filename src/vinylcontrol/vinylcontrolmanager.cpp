@@ -74,6 +74,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         QString group = PlayerManager::groupForDeck(i);
         m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
         m_pVcEnabled.back()->set(0);
+        m_pProcessor->deckAdded(group);
 
         ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
                            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());

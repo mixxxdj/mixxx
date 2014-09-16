@@ -21,6 +21,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_processorsLock(QMutex::Recursive),
           m_processors(kMaximumVinylControlInputs, NULL),
+          m_processingActive(false),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
           m_bReportSignalQuality(false) {
     connect(m_pToggle, SIGNAL(valueChanged(double)),
@@ -31,8 +32,6 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
 }
 
 VinylControlProcessor::~VinylControlProcessor() {
-    wait();
-
     delete m_pToggle;
     SampleUtil::free(m_pWorkBuffer);
 
@@ -48,6 +47,11 @@ VinylControlProcessor::~VinylControlProcessor() {
     // xwax has a global LUT that we need to free after we've shut down our
     // vinyl control threads because it's not thread-safe.
     VinylControlXwax::freeLUTs();
+}
+
+void VinylControlProcessor::deckAdded(QString group) {
+    m_VCEnableds.push_back(new ControlObjectSlave(group, "vinylcontrol_enabled"));
+    m_VCEnableds.back()->connectValueChanged(this, SLOT(slotVinylEnabled(double)));
 }
 
 void VinylControlProcessor::setSignalQualityReporting(bool enable) {
@@ -126,6 +130,9 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
                                           const CSAMPLE* pBuffer,
                                           unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
+    if (!m_processingActive) {
+        return;
+    }
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
         return;
@@ -157,6 +164,8 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
         qWarning() << "Samples written to non-existent VinylControl processor:" << vcIndex;
     }
 
+    // The isEnabled state might have changed after processing.
+    m_processingActive = enabledDeckExists();
     m_processorsLock.unlock();
 }
 
@@ -182,9 +191,35 @@ void VinylControlProcessor::slotGuiTick(double v) {
     }
 }
 
+void VinylControlProcessor::slotVinylEnabled(double v) {
+    Q_UNUSED(v)
+    QMutexLocker locker(&m_processorsLock);
+    m_processingActive = enabledDeckExists();
+}
+
+bool VinylControlProcessor::enabledDeckExists() const {
+    // The internal enabled state of a vinylcontrol only gets
+    // updated when it gets a processing signal, so the
+    // vinylcontrol_enabled signal gets toggled before the isEnabled state
+    // changes.  We have to check both.
+
+    foreach (ControlObjectSlave* vc_enabled, m_VCEnableds) {
+        if (vc_enabled->get()) {
+            return true;
+        }
+    }
+    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+        VinylControl* pProcessor = m_processors[i];
+        if (pProcessor && pProcessor->isEnabled()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void VinylControlProcessor::toggleDeck(double value) {
     if (!value)
-        return;
+        goto update_enabled;
 
     /** few different cases here:
      * 1. No decks have vinyl control enabled.
@@ -207,7 +242,7 @@ void VinylControlProcessor::toggleDeck(double value) {
         VinylControl* pProcessor = m_processors.at(i);
         if (pProcessor && pProcessor->isEnabled()) {
             if (enabled > -1) {
-                return; // case 3
+                goto update_enabled; // case 3
             }
             enabled = i;
         }
@@ -222,7 +257,7 @@ void VinylControlProcessor::toggleDeck(double value) {
         } // guaranteed to terminate as there's at least 1 non-null proxy
 
         if (nextProxy == enabled) {
-            return;
+            goto update_enabled;
         }
 
         VinylControl* pEnabled = m_processors[enabled];
@@ -236,8 +271,10 @@ void VinylControlProcessor::toggleDeck(double value) {
             if (pProcessor) {
                 locker.unlock();
                 pProcessor->toggleVinylControl(true);
-                return;
+                goto update_enabled;
             }
         }
     }
+update_enabled:
+    m_processingActive = enabledDeckExists();
 }
