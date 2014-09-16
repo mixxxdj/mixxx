@@ -30,9 +30,7 @@ DlgSelector::DlgSelector(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    // TODO (kain88) is this really needed here? the dynamic cast should do that
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
-    // TODO (kain88) I think we solved this better in the other library views
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(2, m_pTrackTableView);
@@ -76,7 +74,6 @@ void DlgSelector::onHide() {
     m_pSelectorLibraryTableModel->active(false);
 }
 
-// TODO (kain88) that smells like highly duplicated code
 void DlgSelector::onSearch(const QString& text) {
     m_pSelectorLibraryTableModel->search(text);
 }
