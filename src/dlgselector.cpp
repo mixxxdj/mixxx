@@ -163,8 +163,6 @@ void DlgSelector::slotFiltersChanged() {
     int count = m_pSelectorLibraryTableModel->rowCount();
     QString pluralize = ((count > 1 || count == 0) ? QString("s") : QString(""));
     QString labelMatchText =
-        // TODO(kain88) I think Qt strings have something better then two times
-        // calling arg
         QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
     labelMatchCount->setText(labelMatchText);
 }

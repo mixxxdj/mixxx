@@ -196,9 +196,8 @@ void DlgPrefSelector::displayLastFmDescription() {
 }
 
 void DlgPrefSelector::loadSettings() {
-    if (m_pConfig->
-            getValueString(ConfigKey(SELECTOR_CONFIG_KEY, HAS_RUN)).toInt()
-            == 0) {
+    if (m_pConfig->getValueString(
+            ConfigKey(SELECTOR_CONFIG_KEY, HAS_RUN)).toInt() == 0) {
         setDefaults();
         slotApply();
         return;

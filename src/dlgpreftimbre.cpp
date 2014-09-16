@@ -52,11 +52,12 @@ void DlgPrefTimbre::slotUpdate() {
     comboBoxPlugin->setEnabled(m_bAnalyserEnabled);
     checkBoxAnalyserEnabled->setChecked(m_bAnalyserEnabled);
     slotApply();
-    if (!m_bAnalyserEnabled)
+    if (!m_bAnalyserEnabled) {
         return;
+    }
 
     int comboSelected = m_listIdentifier.indexOf(m_selectedAnalyser);
-    if (comboSelected == -1){
+    if (comboSelected == -1) {
         qDebug() << "DlgPrefTimbre: Plugin not found in slotUpdate()";
         return;
     }
@@ -64,8 +65,9 @@ void DlgPrefTimbre::slotUpdate() {
 }
 
 void DlgPrefTimbre::pluginSelected(int i) {
-    if (i==-1)
+    if (i==-1) {
         return;
+    }
     m_selectedAnalyser = m_listIdentifier[i];
     slotUpdate();
 }
@@ -142,4 +144,3 @@ void DlgPrefTimbre::loadSettings() {
     }
     slotUpdate();
 }
-

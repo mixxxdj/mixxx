@@ -125,7 +125,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotDeveloperToolsClosed();
 
     // Perform genre classification task to test similarity calculations
-    // void slotDeveloperCalculateSimilarities(bool toggle);
+    void slotDeveloperCalculateSimilarities(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
 

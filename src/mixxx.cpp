@@ -1479,18 +1479,19 @@ void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
     Q_UNUSED(toggle);
     rebootMixxxView();
 }
-// void MixxxApp::slotDeveloperCalculateSimilarities(bool toggle) {
-//     Q_UNUSED(toggle);
-//     // QString filename =
-//     //     // TODO (kain88) change this to home as default
-//     //     QFileDialog::getSaveFileName(this,
-//     //                                  tr("Save Comparison CSV File"),
-//     //                                  "/Users/chrisjr/ismir04/comparisons.csv",
-//     //                                  tr("CSV (*.csv)"));
-//     // if (!filename.isNull()) {
-//     //     m_pLibrary->slotCalculateAllSimilarities(filename);
-//     // }
-// }
+
+void MixxxMainWindow::slotDeveloperCalculateSimilarities(bool toggle) {
+    Q_UNUSED(toggle);
+    QString filename =
+        // TODO (kain88) change this to the current path as default
+        QFileDialog::getSaveFileName(this,
+                                     ("Save Comparison CSV File"),
+                                     "/tmp/comparisons.csv",
+                                     ("CSV (*.csv)"));
+    if (!filename.isNull()) {
+        m_pLibrary->slotCalculateAllSimilarities(filename);
+    }
+}
 
 void MixxxMainWindow::slotDeveloperTools() {
     if (m_pDeveloperToolsDlg == NULL) {

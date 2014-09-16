@@ -897,6 +897,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int timbreColumn = queryRecord.indexOf("timbre");
 
         while (query.next()) {
+            bool shouldDirty = false;
 
             QString artist = query.value(artistColumn).toString();
             QString title = query.value(titleColumn).toString();
@@ -983,6 +984,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
                 pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
                 // The in-database data would change because of this. Mark the
                 // track dirty so we save it when it is deleted.
+                shouldDirty = true;
                 pTrack->setDirty(true);
             }
 
@@ -1009,7 +1011,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             // Normally we will set the track as clean but sometimes when
             // loading from the database we need to perform upkeep that ought to
             // be written back to the database when the track is deleted.
-            pTrack->setDirty(false);
+            pTrack->setDirty(shouldDirty);
 
             // Listen to dirty and changed signals
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
