@@ -8,6 +8,7 @@
 #include <QWaitCondition>
 
 #include "configobject.h"
+#include "controlobjectslave.h"
 #include "util/fifo.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "soundmanagerutil.h"
@@ -54,11 +55,13 @@ class VinylControlProcessor : public QObject, public AudioDestination {
                        unsigned int iNumFrames);
 
   private slots:
+    void slotGuiTick(double);
     void toggleDeck(double value);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     ControlPushButton* m_pToggle;
+    ControlObjectSlave* m_pGuiTick;
     CSAMPLE* m_pWorkBuffer;
     QMutex m_processorsLock;
     QVector<VinylControl*> m_processors;
