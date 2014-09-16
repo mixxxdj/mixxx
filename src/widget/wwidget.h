@@ -45,8 +45,6 @@ class WWidget : public QWidget, public WBaseWidget {
 
     Q_PROPERTY(double value READ getControlParameterDisplay);
 
-    virtual void onConnectedControlValueChanged(double value);
-
   protected:
     bool touchIsRightButton();
     bool event(QEvent* e);

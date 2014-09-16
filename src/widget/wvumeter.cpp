@@ -33,11 +33,17 @@
 
 WVuMeter::WVuMeter(QWidget* parent) :
         WWidget(parent),
+        m_iPos(0),
         m_iNoPos(0),
         m_bHorizontal(false),
         m_iPeakHoldSize(0),
+        m_iPeakFallStep(0),
+        m_iPeakHoldTime(0),
+        m_iPeakFallTime(0),
         m_iPeakPos(0),
-        m_iPeakHoldCountdown(0) {
+        m_iPeakHoldCountdown(0),
+        m_iLastPos(0),
+        m_iLastPeakPos(0) {
 }
 
 WVuMeter::~WVuMeter() {
@@ -51,10 +57,10 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "PathBack")));
+        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "PathBack")));
     }
 
-    setPixmaps(context.getSkinPath(context.selectString(node, "PathVu")), bHorizontal);
+    setPixmaps(context.getPixmapPath(context.selectNode(node, "PathVu")), bHorizontal);
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
@@ -105,22 +111,24 @@ void WVuMeter::setPixmaps(const QString &vuFilename,
     }
 }
 
-void WVuMeter::onConnectedControlValueChanged(double dValue) {
-    int idx = static_cast<int>(dValue * m_iNoPos);
+void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    m_iPos = static_cast<int>(dParameter * m_iNoPos);
     // Range check
-    if (idx > m_iNoPos)
-        idx = m_iNoPos;
-    else if (idx < 0)
-        idx = 0;
+    if (m_iPos > m_iNoPos) {
+        m_iPos = m_iNoPos;
+    } else if (m_iPos < 0) {
+        m_iPos = 0;
+    }
 
-    if (dValue > 0.) {
-        setPeak(idx);
+    if (dParameter > 0.) {
+        setPeak(m_iPos);
     } else {
         // A 0.0 value is very unlikely except when the VU Meter is disabled
         m_iPeakPos = 0;
     }
 
-
+    // TODO: use something much more lightweight than currentTime.
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
     m_lastUpdate = currentTime;
@@ -152,6 +160,12 @@ void WVuMeter::updateState(int msecsElapsed) {
         m_iPeakPos = 0;
 }
 
+void WVuMeter::maybeUpdate() {
+    if (m_iPos != m_iLastPos || m_iPeakPos != m_iLastPeakPos) {
+        repaint();
+    }
+}
+
 void WVuMeter::paintEvent(QPaintEvent *) {
     ScopedTimer t("WVuMeter::paintEvent");
 
@@ -166,23 +180,14 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
-        int idx = static_cast<int>(getControlParameterDisplay() * m_iNoPos);
-
-        // Range check
-        if (idx > m_iNoPos)
-            idx = m_iNoPos;
-        else if (idx < 0)
-            idx = 0;
-
-
         // Draw (part of) vu
         if (m_bHorizontal) {
             // This is a hack to fix something weird with horizontal VU meters:
-            if (idx == 0)
-                idx = 1;
+            if (m_iPos == 0)
+                m_iPos = 1;
 
             QPointF targetPoint(0, 0);
-            QRectF sourceRect(0, 0, idx, m_pPixmapVu->height());
+            QRectF sourceRect(0, 0, m_iPos, m_pPixmapVu->height());
             m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
@@ -192,8 +197,8 @@ void WVuMeter::paintEvent(QPaintEvent *) {
                 m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         } else {
-            QPointF targetPoint(0, m_iNoPos - idx);
-            QRectF sourceRect(0, m_iNoPos - idx, m_pPixmapVu->width(), idx);
+            QPointF targetPoint(0, m_iNoPos - m_iPos);
+            QRectF sourceRect(0, m_iNoPos - m_iPos, m_pPixmapVu->width(), m_iPos);
             m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if (m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
@@ -204,4 +209,6 @@ void WVuMeter::paintEvent(QPaintEvent *) {
             }
         }
     }
+    m_iLastPos = m_iPos;
+    m_iLastPeakPos = m_iPeakPos;
 }

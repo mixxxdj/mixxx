@@ -59,7 +59,7 @@
 		<attribute config_key="[Spinny1],show_spinny">1</attribute>
 		<attribute config_key="[Spinny2],show_spinny">1</attribute>
 		<attribute config_key="[Samplers],show_samplers">0</attribute>
-		<attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+		<attribute config_key="[VinylControl],show_vinylcontrol">0</attribute>
 		<attribute config_key="[Microphone],show_microphone">0</attribute>
 		<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 	</attributes>
@@ -554,7 +554,7 @@
 					</PushButton>
 				</Children>
 				<Connection>
-					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -820,7 +820,7 @@
 					</PushButton>
 				</Children>
 				<Connection>
-					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -898,7 +898,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1431,7 +1431,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1964,7 +1964,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -2602,7 +2602,7 @@
 		</State>
 		<Pos>371,100</Pos>
 		<Connection>
-			<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+			<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 		</Connection>
 	</PushButton>
 

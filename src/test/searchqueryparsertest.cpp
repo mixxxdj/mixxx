@@ -328,7 +328,6 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
         qPrintable(pQuery->toSql()));
 }
 
-
 TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     QStringList searchColumns;
     searchColumns << "artist";
@@ -344,5 +343,206 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
 
     EXPECT_STREQ(
         qPrintable(QString("(1 > 2) AND (artist LIKE '%asdf%')")),
+        qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    QScopedPointer<QueryNode> pQuery(
+        m_parser.parseQuery("duration:1:30", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setDuration(91);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(90);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(duration = 90)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:1m30s", searchColumns, ""));
+    pTrack->setDuration(91);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(90);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(duration = 90)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:90", searchColumns, ""));
+    pTrack->setDuration(91);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(90);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(duration = 90)")),
+        qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    QScopedPointer<QueryNode> pQuery(
+        m_parser.parseQuery("duration:>1:30", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setDuration(89);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(91);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration > 90)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:>=90", searchColumns, ""));
+    pTrack->setDuration(89);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(90);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 90)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:>=1:30", searchColumns, ""));
+    pTrack->setDuration(89);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(90);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 90)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<2:30", searchColumns, ""));
+    pTrack->setDuration(151);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(89);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration < 150)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<=2:30", searchColumns, ""));
+    pTrack->setDuration(191);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration <= 150)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<=150", searchColumns, ""));
+    pTrack->setDuration(191);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration <= 150)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<=2m30s", searchColumns, ""));
+    pTrack->setDuration(191);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration <= 150)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<=2m", searchColumns, ""));
+    pTrack->setDuration(191);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(110);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration <= 120)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:<=2:", searchColumns, ""));
+    pTrack->setDuration(191);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(110);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration <= 120)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:>=1:3", searchColumns, ""));
+    pTrack->setDuration(60);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 63)")),
+        qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    QScopedPointer<QueryNode> pQuery(
+        m_parser.parseQuery("duration:2:30-3:20", searchColumns, ""));
+
+    TrackPointer pTrack(new TrackInfoObject());
+    pTrack->setSampleRate(44100);
+    pTrack->setDuration(80);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setDuration(199);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:2:30-200", searchColumns, ""));
+    pTrack->setSampleRate(44100);
+    pTrack->setDuration(80);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setDuration(199);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:150-200", searchColumns, ""));
+    pTrack->setSampleRate(44100);
+    pTrack->setDuration(80);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setDuration(199);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
+        qPrintable(pQuery->toSql()));
+
+    pQuery.reset(m_parser.parseQuery("duration:2m30s-3m20s", searchColumns, ""));
+    pTrack->setSampleRate(44100);
+    pTrack->setDuration(80);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setDuration(150);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setDuration(199);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
         qPrintable(pQuery->toSql()));
 }

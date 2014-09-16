@@ -1,11 +1,18 @@
 // dlgtrackinfo.cpp
 // Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QDesktopServices>
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
 #include "library/dao/cue.h"
 #include "trackinfoobject.h"
+
+const int kMinBPM = 30;
+const int kMaxBPM = 240;
+// Maximum allowed interval between beats in milli seconds (calculated from
+// minBPM)
+const int kMaxInterval = static_cast<int>(1000.0 * (60.0 / kMinBPM));
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
@@ -56,8 +63,10 @@ void DlgTrackInfo::init(){
             this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
+    connect(btnOpenFileBrowser, SIGNAL(clicked()),
+            this, SLOT(slotOpenInFileBrowser()));
     m_bpmTapTimer.start();
-    for (int i = 0; i < filterLength; ++i) {
+    for (int i = 0; i < kFilterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
     }
 }
@@ -125,11 +134,10 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtGrouping->setText(pTrack->getGrouping());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
-    txtComment->setText(pTrack->getComment());
+    txtComment->setPlainText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
-    txtFilepath->setText(pTrack->getFilename());
     txtLocation->setText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
@@ -155,6 +163,33 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+
+    disconnect(this, SLOT(updateTrackMetadata()));
+    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata()));
+}
+
+void DlgTrackInfo::slotOpenInFileBrowser() {
+    if (m_pLoadedTrack == NULL) {
+        return;
+    }
+
+    QDir dir;
+    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    do {
+        dir = QDir(splittedPath.join("/"));
+        splittedPath.removeLast();
+    } while (!dir.exists() && splittedPath.size());
+
+    // This function does not work for a non-existent directory!
+    // so it is essential that in the worst case it try opening
+    // a valid directory, in this case, 'QDir::home()'.
+    // Otherwise nothing would happen...
+    if (!dir.exists()) {
+        // it ensures a valid dir for any OS (Windows)
+        dir = QDir::home();
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
@@ -297,6 +332,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
     }
 
     clear();
+    disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.clear();
 }
 
@@ -311,11 +347,10 @@ void DlgTrackInfo::clear() {
     txtGrouping->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
-    txtComment->setText("");
+    txtComment->setPlainText("");
     spinBpm->setValue(0.0);
 
     txtDuration->setText("");
-    txtFilepath->setText("");
     txtType->setText("");
     txtLocation->setText("");
     txtBitrate->setText("");
@@ -346,21 +381,21 @@ void DlgTrackInfo::slotBpmTap() {
     int elapsed = m_bpmTapTimer.elapsed();
     m_bpmTapTimer.restart();
 
-    if (elapsed <= maxInterval) {
+    if (elapsed <= kMaxInterval) {
         // Move back in filter one sample
-        for (int i = 1; i < filterLength; ++i) {
+        for (int i = 1; i < kFilterLength; ++i) {
             m_bpmTapFilter[i-1] = m_bpmTapFilter[i];
         }
 
-        m_bpmTapFilter[filterLength-1] = 60000.0f/elapsed;
-        if (m_bpmTapFilter[filterLength-1] > maxBPM)
-            m_bpmTapFilter[filterLength-1] = maxBPM;
+        m_bpmTapFilter[kFilterLength-1] = 60000.0f/elapsed;
+        if (m_bpmTapFilter[kFilterLength-1] > kMaxBPM)
+            m_bpmTapFilter[kFilterLength-1] = kMaxBPM;
 
         double temp = 0.;
-        for (int i = 0; i < filterLength; ++i) {
+        for (int i = 0; i < kFilterLength; ++i) {
             temp += m_bpmTapFilter[i];
         }
-        temp /= filterLength;
+        temp /= kFilterLength;
         spinBpm->setValue(temp);
     }
 }
@@ -373,7 +408,13 @@ void DlgTrackInfo::reloadTrackMetadata() {
     }
 }
 
+void DlgTrackInfo::updateTrackMetadata() {
+    if (m_pLoadedTrack) {
+        populateFields(m_pLoadedTrack);
+    }
+}
+
 void DlgTrackInfo::fetchTag() {
-    m_DlgTagFetcher.init(m_pLoadedTrack);
+    m_DlgTagFetcher.loadTrack(m_pLoadedTrack);
     m_DlgTagFetcher.show();
 }

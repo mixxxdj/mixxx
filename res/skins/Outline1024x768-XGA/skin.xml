@@ -59,7 +59,7 @@
 		<attribute config_key="[Spinny1],show_spinny">1</attribute>
 		<attribute config_key="[Spinny2],show_spinny">1</attribute>
 		<attribute config_key="[Samplers],show_samplers">0</attribute>
-		<attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+		<attribute config_key="[VinylControl],show_vinylcontrol">0</attribute>
 		<attribute config_key="[Microphone],show_microphone">0</attribute>
 		<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 	</attributes>
@@ -91,6 +91,10 @@
 	**********************************************
 	-->
 	<Schemes>
+		<Scheme>
+			<Name>5pm (Classic Mixxx)</Name>
+			<Filters/>
+		</Scheme>
 		<Scheme>
 			<Name>11pm (Dark Mixxx)</Name>
 			<Filters>
@@ -138,10 +142,7 @@
 				</Add>
 			</Filters>
 		</Scheme>
-		<Scheme>
-			<Name>5pm (Classic Mixxx)</Name>
-			<Filters/>
-		</Scheme>
+
 		<Scheme>
 			<Name>8pm (Summer Sunset Mixxx)</Name>
 			<Filters>
@@ -554,7 +555,7 @@
 					</PushButton>
 				</Children>
 				<Connection>
-					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -820,7 +821,7 @@
 					</PushButton>
 				</Children>
 				<Connection>
-					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -901,7 +902,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<!--
@@ -1438,7 +1439,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<!--
@@ -1975,7 +1976,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<!--
@@ -2469,7 +2470,7 @@
 					<WidgetGroup>
 						<Size>194,100</Size>
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-						<BackPath>style/style_bg_sampler.png</BackPath>	
+						<BackPath>style/style_bg_sampler.png</BackPath>
 						<Children>
 							<!--
 							**********************************************
@@ -2512,7 +2513,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<!--
-								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
 								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
 								-->
 								<!--
@@ -3026,7 +3027,7 @@
 					<TableView>
 						<Style>
 						<!-- No use of colour CSS colour propertys here, this breaks the colour schemes as of QT 4.7.1-->
-				
+
 						QTableView, QTextBrowser, QTreeView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 						QTableView::indicator { width: 12px; height: 12px;}
 						QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
@@ -3123,7 +3124,7 @@
 		</State>
 		<Pos>470,145</Pos>
 		<Connection>
-			<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+			<ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
 		</Connection>
 	</PushButton>
 

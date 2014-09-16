@@ -237,7 +237,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         //QThread::usleep(10);
 
         //has something new entered the queue?
-        if (deref(m_aiCheckPriorities)) {
+        if (load_atomic(m_aiCheckPriorities)) {
             m_aiCheckPriorities = false;
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";
@@ -292,6 +292,12 @@ void AnalyserQueue::run() {
         // Could happen if the track was queued but then deleted.
         // Or if dequeueNextBlocking is unblocked by exit == true
         if (!nextTrack) {
+            m_qm.lock();
+            m_queue_size = m_tioq.size();
+            m_qm.unlock();
+            if (m_queue_size == 0) {
+                emit(queueEmpty()); // emit asynchrony for no deadlock
+            }
             continue;
         }
 
@@ -432,7 +438,6 @@ AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
         ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(pConfig));
     ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));

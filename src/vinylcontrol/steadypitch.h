@@ -1,13 +1,11 @@
-#ifndef __STEADYPITCH_H__
-#define __STEADYPITCH_H__
+#ifndef STEADYPITCH_H
+#define STEADYPITCH_H
 
-#include "vinylcontrol.h"
-#include <time.h>
 #include <QTime>
 
+#include "vinylcontrol.h"
 
-class SteadyPitch
-{
+class SteadyPitch {
     public:
         SteadyPitch(double threshold);
         void reset(double pitch, double time);

@@ -34,12 +34,12 @@ class PotmeterControls : public QObject {
     PotmeterControls(const ConfigKey& key);
     virtual ~PotmeterControls();
 
-    void setStep(double dStep) {
-        m_dStep = dStep;
+    void setStepCount(int count) {
+        m_stepCount = count;
     }
 
-    void setSmallStep(double dSmallStep) {
-        m_dSmallStep = dSmallStep;
+    void setSmallStepCount(int count) {
+        m_smallStepCount = count;
     }
 
   public slots:
@@ -66,33 +66,39 @@ class PotmeterControls : public QObject {
 
   private:
     ControlObjectThread* m_pControl;
-    double m_dStep;
-    double m_dSmallStep;
+    int m_stepCount;
+    double m_smallStepCount;
 };
 
 class ControlPotmeter : public ControlObject {
     Q_OBJECT
   public:
-    ControlPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0);
+    ControlPotmeter(ConfigKey key, double dMinValue = 0.0, double dMaxValue = 1.0,
+                    bool allowOutOfBounds = false,
+                    bool bIgnoreNops = true,
+                    bool bTrack = false,
+                    bool bPersist = false);
     virtual ~ControlPotmeter();
 
     // Returns the minimum allowed value.
     double getMin() const;
     // Returns the maximum allowed value.
     double getMax() const;
-    // Sets the step size of the associated PushButtons.
-    void setStep(double);
-    // Sets the small step size of the associated PushButtons.
-    void setSmallStep(double);
+    // Sets the step count of the associated PushButtons.
+    void setStepCount(int count);
 
-  protected:
+    // Sets the small step count of the associated PushButtons.
+    void setSmallStepCount(int count);
+
     // Sets the minimum and maximum allowed value. The control value is reset
     // when calling this method
-    void setRange(double dMinValue, double dMaxValue);
+    void setRange(double dMinValue, double dMaxValue, bool allowOutOfBounds);
 
+  protected:
     double m_dMaxValue;
     double m_dMinValue;
     double m_dValueRange;
+    bool m_bAllowOutOfBounds;
     PotmeterControls m_controls;
 };
 

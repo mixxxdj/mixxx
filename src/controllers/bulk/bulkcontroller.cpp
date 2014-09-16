@@ -5,8 +5,7 @@
   * @brief USB Bulk controller backend
   *
   */
-#include <time.h>
-#include <stdio.h>
+#include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
@@ -32,7 +31,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (deref(m_stop) == 0) {
+    while (load_atomic(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data

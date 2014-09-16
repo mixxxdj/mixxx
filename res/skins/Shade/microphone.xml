@@ -1,0 +1,125 @@
+<Template>
+		<WidgetGroup>
+			<Pos>6,206</Pos>
+			<Size>80,50</Size>
+			<Style>QGroupBox { border: 0px solid yellow; border-right: 1px solid #565E6B; background: url(skin:/style/style_bg_microphone.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
+			<!--<Layout>horizontal</Layout>-->
+			<Children>
+				<!--
+				**********************************************
+				Visual- Volume peak indicator
+				**********************************************
+				-->
+				<StatusLight>
+					<TooltipId>PeakIndicator</TooltipId>
+					<Style></Style>
+					<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
+					<PathBack>btn_clipping_microphone.png</PathBack>
+					<Pos>64,11</Pos>
+					<Connection>
+						<ConfigKey>[Microphone],PeakIndicator</ConfigKey>
+					</Connection>
+				</StatusLight>
+	
+				<!--
+				**********************************************
+				Visual - Volume level display
+				**********************************************
+				-->
+				<VuMeter>
+					<TooltipId>microphone_VuMeter</TooltipId>
+					<Style></Style>
+					<PathVu>btn_volume_display_microphone_over.png</PathVu>
+					<PathBack>btn_volume_display_microphone.png</PathBack>
+					<Pos>24,11</Pos>
+					<Horizontal>true</Horizontal>
+					<PeakHoldSize>5</PeakHoldSize>
+					<PeakHoldTime>500</PeakHoldTime>
+					<PeakFallTime>50</PeakFallTime>
+					<PeakFallStep>2</PeakFallStep>
+					<Connection>
+						<ConfigKey>[Microphone],VuMeter</ConfigKey>
+					</Connection>
+				</VuMeter>
+	
+				<!--
+				**********************************************
+				Button- Mix Orientation (Routing)
+				**********************************************
+				-->
+				<PushButton>
+					<TooltipId>orientation</TooltipId>
+					<Style></Style>
+					<NumberStates>3</NumberStates>
+					<State>
+						<Number>0</Number>
+						<Pressed>btn_orientation_microphone_left_over.png</Pressed>
+						<Unpressed>btn_orientation_microphone_left_over.png</Unpressed>
+					</State>
+					<State>
+						<Number>1</Number>
+						<Pressed>btn_orientation_microphone_master.png</Pressed>
+						<Unpressed>btn_orientation_microphone_master.png</Unpressed>
+					</State>
+					<State>
+						<Number>2</Number>
+						<Pressed>btn_orientation_microphone_right_over.png</Pressed>
+						<Unpressed>btn_orientation_microphone_right_over.png</Unpressed>
+					</State>
+					<Pos>4,4</Pos>
+					<Connection>
+						<ConfigKey>[Microphone],orientation</ConfigKey>
+						<EmitOnDownPress>true</EmitOnDownPress>
+						<ButtonState>LeftButton</ButtonState>
+					</Connection>
+				</PushButton>
+	
+				<!--
+				**********************************************
+				Knob- Channel Volume
+				**********************************************
+				-->
+				<Knob>
+					<TooltipId>microphone_volume</TooltipId>
+					<Style></Style>
+					<NumberStates>64</NumberStates>
+					<Path>knobs/knob_rotary_s%1.png</Path>
+					<Pos>49,24</Pos>
+					<Connection>
+						<ConfigKey>[Microphone],volume</ConfigKey>
+					</Connection>
+				</Knob>
+	
+				<!--
+				****************************************
+				Button- Talkover
+				****************************************
+				-->
+				<PushButton>
+					<TooltipId>microphone_talkover</TooltipId>
+					<Style></Style>
+					<NumberStates>2</NumberStates>
+					<State>
+						<Number>0</Number>
+						<Pressed>btn_microphone_talkover_over.png</Pressed>
+						<Unpressed>btn_microphone_talkover.png</Unpressed>
+					</State>
+					<State>
+						<Number>1</Number>
+						<Pressed>btn_microphone_talkover_over.png</Pressed>
+						<Unpressed>btn_microphone_talkover_over.png</Unpressed>
+					</State>
+					<Pos>4,27</Pos>
+					<Connection>
+						<ConfigKey>[Microphone],talkover</ConfigKey>
+						<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+						<ButtonState>LeftButton</ButtonState>
+					</Connection>
+				</PushButton>
+			</Children>
+			<Connection>
+				<ConfigKey>[Microphone],show_microphone</ConfigKey>
+				<BindProperty>visible</BindProperty>
+			</Connection>
+		</WidgetGroup>
+</Template>

@@ -37,7 +37,7 @@ try:
             MASTER_SYNC_LAYOUT = True
         elif o == "--4decks":
             MAX_DECKS = 4
-            DECK_ORDER = (0, 1, 2, 3)
+            DECK_ORDER = (2, 0, 1, 3)
     if len(args) > 0:
         fname = args[0]
 except Exception, e:
@@ -148,7 +148,7 @@ for cc in cc_controls:
 ########### Actual stuff you can edit! ###########
 ##################################################
 
-cc_mapping = {#'spinknob':['StantonSCS1m.encoderJog1','<Script-Binding/>'], (script stuff is custom, below)
+cc_mapping = {'spinknob':['XoneK2.encoderJog','<Script-Binding/>'],
               'eq1':['filterHigh','<normal/>'],
               'eq2':['filterMid','<normal/>'],
               'eq3':['filterLow','<normal/>'],
@@ -163,11 +163,11 @@ button_mapping = {'spinknob':['beatsync','<button/>'],
 
 if MASTER_SYNC_LAYOUT:
     button_mapping = {'spinknob':['XoneK2.encoderButton','<Script-Binding/>'],
-           'knoblight1':['pfl','<button/>'], 'knoblight2':['quantize','<normal/>'], 'knoblight3':['filterLowKill','<normal/>'],
-           'button1':{'red':['sync_master','<button/>'], 'orange':['beatloop_4','<button/>'],  'green':['hotcue_1_activate','<button/>']},
+           'knoblight1':['keylock','<button/>'], 'knoblight2':['quantize','<normal/>'], 'knoblight3':['filterLowKill','<normal/>'],
+           'button1':{'red':['pfl','<button/>'], 'orange':['beatloop_4','<button/>'],  'green':['hotcue_1_activate','<button/>']},
            'button2':{'red':['sync_enabled','<button/>'],  'orange':['loop_double','<button/>'], 'green':['hotcue_2_activate','<button/>']},
            'button3':{'red':['cue_default','<button/>'], 'orange':['loop_halve','<button/>'],  'green':['hotcue_3_activate','<button/>']},
-           'button4':{'red':['play','<normal/>'],        'orange':['reloop_exit','<button/>'], 'green':['hotcue_4_activate','<button/>']}}
+           'button4':{'red':['play','<button/>'],        'orange':['reloop_exit','<button/>'], 'green':['hotcue_4_activate','<button/>']}}
 
 
 light_mapping = {#'spinknob':'jog',
@@ -179,8 +179,8 @@ light_mapping = {#'spinknob':'jog',
 
 if MASTER_SYNC_LAYOUT:
     light_mapping = {#'spinknob':'jog',
-           'knoblight1':'pfl', 'knoblight2':'quantize', 'knoblight3':'filterLowKill',
-           'button1':{'red':'sync_master', 'orange':'beatloop_4',   'green':'hotcue_1_enabled'},
+           'knoblight1':'keylock', 'knoblight2':'quantize', 'knoblight3':'filterLowKill',
+           'button1':{'red':'pfl', 'orange':'beatloop_4',   'green':'hotcue_1_enabled'},
            'button2':{'red':'sync_enabled',  'orange':'loop_double',  'green':'hotcue_2_enabled'},
            'button3':{'red':'cue_default', 'orange':'loop_halve',   'green':'hotcue_3_enabled'},
            'button4':{'red':'play',        'orange':'loop_enabled', 'green':'hotcue_4_enabled'}}
@@ -310,16 +310,16 @@ xml.append("""<?xml version='1.0' encoding='utf-8'?>
 
 xml.append("<!-- CC Controls (knobs and sliders) -->")
 
-for i, deck in enumerate(DECK_ORDER):
-    xml.append("""            <control>
-                <group>[Channel%i]</group>
-                <key>XoneK2.encoderJog%i</key>
-                <status>0xBF</status>
-                <midino>%s</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>""" % (deck+1, deck+1, midi_cc['spinknob'][i]))
+#for i, deck in enumerate(DECK_ORDER):
+#    xml.append("""            <control>
+#                <group>[Channel%i]</group>
+#                <key>XoneK2.encoderJog%i</key>
+#                <status>0xBF</status>
+#                <midino>%s</midino>
+#                <options>
+#                    <Script-Binding/>
+#                </options>
+#            </control>""" % (deck+1, deck+1, midi_cc['spinknob'][i]))
 
 
 ########################################
@@ -344,22 +344,22 @@ for i, channel in enumerate(DECK_ORDER):
 for i, channel in enumerate(DECK_ORDER):
     xml.append("""            <control>
                 <group>[Channel%i]</group>
-                <key>%s%i</key>
+                <key>%s</key>
                 <status>0x9F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping['spinknob'][0], channel+1, midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
+            </control>""" % (channel+1, button_mapping['spinknob'][0], midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
     xml.append("""            <control>
                 <group>[Channel%i]</group>
-                <key>%s%i</key>
+                <key>%s</key>
                 <status>0x8F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping['spinknob'][0], channel+1, midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
+            </control>""" % (channel+1, button_mapping['spinknob'][0], midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
 
 xml.append("<!-- Upper Buttons -->")
 #knoblight buttons (no latching)

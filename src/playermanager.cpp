@@ -16,15 +16,18 @@
 #include "library/trackcollection.h"
 #include "engine/enginemaster.h"
 #include "soundmanager.h"
+#include "effects/effectsmanager.h"
 #include "util/stat.h"
 #include "engine/enginedeck.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
+                             EffectsManager* pEffectsManager,
                              EngineMaster* pEngine) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
+        m_pEffectsManager(pEffectsManager),
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being COs and
         // not COTMs listening to a CO.
@@ -169,6 +172,11 @@ unsigned int PlayerManager::numPreviewDecks() {
 void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
+
+    // Update the soundmanager config even if the number of decks has been
+    // reduced.
+    m_pSoundManager->setConfiguredDeckCount(num);
+
     if (num < m_decks.size()) {
         // The request was invalid -- reset the value.
         m_pCONumDecks->set(m_decks.size());
@@ -217,6 +225,14 @@ void PlayerManager::addDeck() {
     m_pCONumDecks->set((double)m_decks.count());
 }
 
+void PlayerManager::addConfiguredDecks() {
+    // Cache this value in case it changes out from under us.
+    int deck_count = m_pSoundManager->getConfiguredDeckCount();
+    for (int i = 0; i < deck_count; ++i) {
+        addDeck();
+    }
+}
+
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForDeck(m_decks.count());
@@ -227,7 +243,8 @@ void PlayerManager::addDeckInner() {
         orientation = EngineChannel::RIGHT;
     }
 
-    Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, group);
+    Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
+                           orientation, group);
     if (m_pAnalyserQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
@@ -260,7 +277,8 @@ void PlayerManager::addSamplerInner() {
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
-    Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine, orientation, group);
+    Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
+                                    m_pEffectsManager, orientation, group);
     if (m_pAnalyserQueue) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
@@ -284,7 +302,9 @@ void PlayerManager::addPreviewDeckInner() {
     // All preview decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
-    PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine, orientation, group);
+    PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
+                                                m_pEffectsManager, orientation,
+                                                group);
     if (m_pAnalyserQueue) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
@@ -335,7 +355,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 }
 
 bool PlayerManager::hasVinylInput(int inputnum) const {
-    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, inputnum);
+    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, 0, inputnum);
     return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
 }
 
@@ -382,7 +402,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
             pDeck->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
+        ++it;
     }
 }
 
@@ -398,6 +418,6 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
             pSampler->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
+        ++it;
     }
 }

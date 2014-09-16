@@ -18,6 +18,7 @@
 #include "soundsourceproxy.h"
 #include "playermanager.h"
 #include "util/dnd.h"
+#include "dlgpreflibrary.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -31,7 +32,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
-    m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
+    m_pTrackInfo = new DlgTrackInfo(NULL, m_DlgTagFetcher);
     connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
     connect(m_pTrackInfo, SIGNAL(previous()),
@@ -40,7 +41,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotNextDlgTagFetcher()));
     connect(&m_DlgTagFetcher, SIGNAL(previous()),
             this, SLOT(slotPrevDlgTagFetcher()));
-
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
@@ -210,6 +210,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
+    header->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -383,11 +384,25 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         return;
     }
-
-    TrackModel* trackModel = getTrackModel();
-    TrackPointer pTrack;
-    if (trackModel && (pTrack = trackModel->getTrack(index))) {
-        emit(loadTrack(pTrack));
+    // Read the current TrackLoadAction settings
+    int action = DlgPrefLibrary::LOAD_TRACK_DECK; // default action
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+        action = m_pConfig->getValueString(ConfigKey("[Library]","TrackLoadAction")).toInt();
+    }
+    switch (action) {
+    case DlgPrefLibrary::ADD_TRACK_BOTTOM:
+            sendToAutoDJ(false); // add track to Auto-DJ Queue (bottom)
+            break;
+    case DlgPrefLibrary::ADD_TRACK_TOP:
+            sendToAutoDJ(true); // add track to Auto-DJ Queue (top)
+            break;
+    default: // load track to next available deck
+            TrackModel* trackModel = getTrackModel();
+            TrackPointer pTrack;
+            if (trackModel && (pTrack = trackModel->getTrack(index))) {
+                emit(loadTrack(pTrack));
+            }
+            break;
     }
 }
 
@@ -441,22 +456,34 @@ void WTrackTableView::slotOpenInFileBrowser() {
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
-    QSet<QString> dirs;
+    QSet<QString> sDirs;
     foreach (QModelIndex index, indices) {
-        if (!index.isValid())
-            continue;
-
-        QFileInfo file(trackModel->getTrackLocation(index));
-
-        QDir directory = file.dir();
-        if (!directory.exists()) {
-            directory = QDir::home();
-        }
-        if (dirs.contains(directory.absolutePath())) {
+        if (!index.isValid()) {
             continue;
         }
-        dirs.insert(directory.absolutePath());
-        QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
+
+        QDir dir;
+        QStringList splittedPath = trackModel->getTrackLocation(index).split("/");
+        do {
+            dir = QDir(splittedPath.join("/"));
+            splittedPath.removeLast();
+        } while (!dir.exists() && splittedPath.size());
+
+        // This function does not work for a non-existent directory!
+        // so it is essential that in the worst case it try opening
+        // a valid directory, in this case, 'QDir::home()'.
+        // Otherwise nothing would happen...
+        if (!dir.exists()) {
+            // it ensures a valid dir for any OS (Windows)
+            dir = QDir::home();
+        }
+
+        // not open the same dir twice
+        QString dirPath = dir.absolutePath();
+        if (!sDirs.contains(dirPath)) {
+            sDirs.insert(dirPath);
+            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
+        }
     }
 }
 
@@ -492,22 +519,31 @@ void WTrackTableView::slotShowTrackInfo() {
 void WTrackTableView::slotNextTrackInfo() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showTrackInfo(nextRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevTrackInfo() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showTrackInfo(prevRow);
+        if (m_DlgTagFetcher.isVisible()) {
+            showDlgTagFetcher(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showTrackInfo(QModelIndex index) {
     TrackModel* trackModel = getTrackModel();
 
-    if (!trackModel)
+    if (!trackModel) {
         return;
+    }
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
@@ -519,15 +555,23 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 void WTrackTableView::slotNextDlgTagFetcher() {
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
-    if (nextRow.isValid())
+    if (nextRow.isValid()) {
         showDlgTagFetcher(nextRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(nextRow);
+        }
+    }
 }
 
 void WTrackTableView::slotPrevDlgTagFetcher() {
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
-    if (prevRow.isValid())
+    if (prevRow.isValid()) {
         showDlgTagFetcher(prevRow);
+        if (m_pTrackInfo->isVisible()) {
+            showTrackInfo(prevRow);
+        }
+    }
 }
 
 void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
@@ -539,7 +583,7 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine
-    m_DlgTagFetcher.init(pTrack);
+    m_DlgTagFetcher.loadTrack(pTrack);
     currentTrackInfoIndex = index;
     m_DlgTagFetcher.show();
 }
@@ -1170,6 +1214,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
                                              iAutoDJPlaylistId, 2);
     } else {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(
                 trackIds, iAutoDJPlaylistId);
     }
@@ -1287,6 +1332,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
    }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }
@@ -1349,6 +1395,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         }
     }
     if (trackIds.size() > 0) {
+        m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
         crateDao.addTracksToCrate(iCrateId, &trackIds);
     }
 }

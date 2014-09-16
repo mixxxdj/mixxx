@@ -41,6 +41,7 @@ public:
     static QStringList getPlaylistControlValues() { return m_playlistControlValues; };
     static QStringList getFlangerControlValues() { return m_flangerControlValues; };
     static QStringList getMicrophoneControlValues() { return m_microphoneControlValues; };
+
 private:
     static QStringList m_channelControlValues;
     static QStringList m_masterControlValues;

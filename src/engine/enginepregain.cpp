@@ -17,12 +17,12 @@
 #include <QtDebug>
 
 #include "engine/enginepregain.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
 #include "controlobject.h"
-
+#include "util/math.h"
 #include "sampleutil.h"
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
@@ -33,14 +33,14 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char* group)
 {
-    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
+    potmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, +12, 0.5);
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
     m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
-        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
+        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), 1, 6);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
@@ -60,13 +60,13 @@ EnginePregain::~EnginePregain()
     s_pReplayGainBoost = NULL;
 }
 
-void EnginePregain::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     float fEnableReplayGain = s_pEnableReplayGain->get();
-    float fReplayGainBoost = s_pReplayGainBoost->get();
+    const float fReplayGainBoost = s_pReplayGainBoost->get();
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
-    float fReplayGainCorrection=1;
+    float fReplayGainCorrection = 1;
     float fPassing = m_pPassthroughEnabled->get();
     // TODO(XXX) Why do we do this? Removing it results in clipping at unity
     // gain so I think it was trying to compensate for some issue when we added
@@ -76,13 +76,13 @@ void EnginePregain::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBuf
     // Override replaygain value if passing through
     if (fPassing > 0) {
         fReplayGain = 1.0;
-    } else if (fReplayGain*fEnableReplayGain != 0) {
+    } else if (fReplayGain * fEnableReplayGain != 0) {
         // Here is the point, when ReplayGain Analyser takes its action, suggested gain changes from 0 to a nonzero value
         // We want to smoothly fade to this last.
         // Anyway we have some the problem that code cannot block the full process for one second.
         // So we need to alter gain each time ::process is called.
 
-        const float fullReplayGainBoost = fReplayGain*pow(10, fReplayGainBoost/20);
+        const float fullReplayGainBoost = fReplayGain * fReplayGainBoost;
 
         // This means that a ReplayGain value has been calculated after the track has been loaded
         const double kFadeSeconds = 1.0;
@@ -92,7 +92,7 @@ void EnginePregain::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBuf
             if (seconds < kFadeSeconds) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;
-                fReplayGainCorrection=(1.0-fadeFrac)+fadeFrac*fullReplayGainBoost;
+                fReplayGainCorrection = (1.0 - fadeFrac) + fadeFrac * fullReplayGainBoost;
             } else {
                 m_bSmoothFade = false;
                 fReplayGainCorrection = fullReplayGainBoost;
@@ -111,16 +111,16 @@ void EnginePregain::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBuf
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    fGain = fGain * math_max(0.0, math_min(10.0, fReplayGainCorrection));
+    fGain = fGain * math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(fGain);
 
     if (fGain != m_fPrevGain) {
         // Prevent soundwave discontinuities by interpolating from old to new gain.
-        SampleUtil::copyWithRampingGain(pOutput, pIn, m_fPrevGain, fGain, iBufferSize);
+        SampleUtil::applyRampingGain(pInOut, m_fPrevGain, fGain, iBufferSize);
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
-        SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
+        SampleUtil::applyGain(pInOut, fGain, iBufferSize);
     }
     m_fPrevGain = fGain;
 }

@@ -21,7 +21,7 @@
 #include <QDomElement>
 #include <QList>
 
-#include "defs.h" // for CSAMPLE (???)
+#include "util/types.h"
 #include "util/fifo.h"
 
 /**
@@ -115,18 +115,14 @@ class AudioOutput : public AudioPath {
 // This class is required to add the buffer, without changing the hash used as ID
 class AudioOutputBuffer : public AudioOutput {
   public:
-    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer,
-                      FIFO<CSAMPLE>* pFifo)
-            : AudioOutput(out),
-              m_pBuffer(pBuffer),
-              m_pFifo(pFifo) {
+    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer)
+           : AudioOutput(out),
+             m_pBuffer(pBuffer) {
 
     };
     inline const CSAMPLE* getBuffer() const { return m_pBuffer; }
-    inline FIFO<CSAMPLE>* getFifo() const { return m_pFifo; }
   private:
     const CSAMPLE* m_pBuffer;
-    FIFO<CSAMPLE>* m_pFifo;
 };
 
 /**
@@ -180,11 +176,8 @@ public:
 class AudioDestination {
 public:
     // This is called by SoundManager whenever there are new samples from the
-    // configured input to be processed. This is run in the callback thread of
-    // the soundcard this AudioDestination was registered for! Beware, in the
-    // case of multiple soundcards, this method is not re-entrant (unless this
-    // AudioDestination is registered for multiple AudioInputs) but it may be
-    // concurrent with EngineMaster processing.
+    // configured input to be processed. This is run in the clock reference
+    // callback thread
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int iNumFrames) = 0;
 

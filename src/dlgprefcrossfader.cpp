@@ -18,7 +18,7 @@
 #include <QtDebug>
 
 #include "dlgprefcrossfader.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "engine/enginexfader.h"
 
@@ -34,10 +34,10 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
           m_COTMode(CONFIG_KEY, "xFaderMode"),
           m_COTCurve(CONFIG_KEY, "xFaderCurve"),
           m_COTCalibration(CONFIG_KEY, "xFaderCalibration"),
-          m_COTReverse(CONFIG_KEY, "xFaderReverse") {
+          m_COTReverse(CONFIG_KEY, "xFaderReverse"),
+          m_COTCrossfader("[Master]", "crossfader"),
+          m_xFaderReverse(false) {
     setupUi(this);
-
-    connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
 
     QButtonGroup crossfaderModes;
     crossfaderModes.addButton(radioButtonAdditive);
@@ -76,15 +76,15 @@ void DlgPrefCrossfader::loadSettings() {
         //SliderXFader->setEnabled(false);
     }
 
-    bool xFaderReverse = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderReverse")).toInt() == 1;
-    checkBoxReverse->setChecked(xFaderReverse);
+    m_xFaderReverse = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderReverse")).toInt() == 1;
+    checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
     slotApply();
 }
 
 /** Set the default values for all the widgets */
-void DlgPrefCrossfader::setDefaults() {
+void DlgPrefCrossfader::slotResetToDefaults() {
     SliderXFader->setValue(0);
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);
@@ -99,7 +99,13 @@ void DlgPrefCrossfader::slotApply() {
     m_COTMode.slotSet(m_xFaderMode);
     m_COTCurve.slotSet(m_transform);
     m_COTCalibration.slotSet(m_cal);
-    m_COTReverse.slotSet(checkBoxReverse->isChecked());
+    if (checkBoxReverse->isChecked() != m_xFaderReverse) {
+        m_COTReverse.slotSet(checkBoxReverse->isChecked());
+        double position = m_COTCrossfader.get();
+        m_COTCrossfader.slotSet(0.0 - position);
+        m_xFaderReverse = checkBoxReverse->isChecked();
+    }
+    slotUpdateXFader();
 }
 
 /** Update the dialog when the crossfader mode is changed */

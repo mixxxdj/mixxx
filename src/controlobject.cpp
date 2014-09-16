@@ -80,31 +80,33 @@ double ControlObject::getMidiParameter() const {
     return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 
-double ControlObject::get() const {
-    return m_pControl ? m_pControl->get() : 0.0;
-}
-
 // static
 double ControlObject::get(const ConfigKey& key) {
     QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
     return pCop ? pCop->get() : 0.0;
 }
 
-void ControlObject::reset() {
+double ControlObject::getParameter() const {
+    return m_pControl ? m_pControl->getParameter() : 0.0;
+}
+
+double ControlObject::getParameterForValue(double value) const {
+    return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
+}
+
+double ControlObject::getParameterForMidiValue(double midiValue) const {
+    return m_pControl ? m_pControl->getParameterForMidiValue(midiValue) : 0.0;
+}
+
+void ControlObject::setParameter(double v) {
     if (m_pControl) {
-        m_pControl->reset();
+        m_pControl->setParameter(v, this);
     }
 }
 
-void ControlObject::set(double value) {
+void ControlObject::setParameterFrom(double v, QObject* pSender) {
     if (m_pControl) {
-        m_pControl->set(value, this);
-    }
-}
-
-void ControlObject::setAndConfirm(double value) {
-    if (m_pControl) {
-        m_pControl->setAndConfirm(value, this);
+        m_pControl->setParameter(v, pSender);
     }
 }
 

@@ -23,7 +23,7 @@ TerminalMix.traxKnobMode = "tracks";
 
 TerminalMix.init = function (id,debug) {
     TerminalMix.id = id;
-    
+
     // Extinguish all LEDs
     for (var i=0; i<=3; i++) {  // 4 decks
         for (var j=1; j<=120; j++) {
@@ -33,7 +33,7 @@ TerminalMix.init = function (id,debug) {
 
     // Enable four decks in v1.11.x
     engine.setValue("[Master]", "num_decks", 4);
-    
+
     // Set soft-takeover for all Sampler volumes
     for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
         engine.softTakeover("[Sampler"+i+"]","pregain",true);
@@ -77,7 +77,7 @@ TerminalMix.shutdown = function () {
 }
 
 TerminalMix.qtrSec = function () {
-    
+
 }
 
 TerminalMix.halfSec = function () {
@@ -124,7 +124,7 @@ TerminalMix.samplerVolume = function (channel, control, value) {
 TerminalMix.pitchRange = function (channel, control, value, status, group) {
     midi.sendShortMsg(status,control,value); // Make button light or extinguish
     if (value<=0) return;
-    
+
     var set = false;
     // Round to two decimal places to avoid double-precision comparison problems
     var currentRange = Math.round(engine.getValue(group,"rateRange")*100)/100;
@@ -229,7 +229,7 @@ TerminalMix.samplerPlayFlash = function () {
 
 TerminalMix.activeLoopFlash = function () {
     TerminalMix.state["loopFlash"]=!TerminalMix.state["loopFlash"];
-    
+
     var value, group;
     for (var i=1; i<=4; i++) { // 4 decks
         value = 0x00;
@@ -251,13 +251,13 @@ TerminalMix.channelFader = function (channel, control, value, status, group) {
     // Fader start logic
     if (!TerminalMix.faderStart[group]) return;
     if (TerminalMix.lastFader[group]==value) return;
-    
+
     if (value==0 && engine.getValue(group,"play")==1) {
         engine.setValue(group,"cue_default",1);
         engine.setValue(group,"cue_default",0);
     }
     if (TerminalMix.lastFader[group]==0) engine.setValue(group,"play",1);
-    
+
     TerminalMix.lastFader[group]=value;
 }
 
@@ -351,7 +351,7 @@ TerminalMix.filterTurn = function (channel, control, value, status, group) {
     if (TerminalMix.lastEQs[index] == undefined) return;
     index = group+"mid";
     if (TerminalMix.lastEQs[index] == undefined) return;
-    
+
     if (value < 0x40) {
         engine.setValue(group,"filterMid",script.absoluteLin(value,0,TerminalMix.lastEQs[index],0x00,0x1F));
         index = group+"high";
@@ -366,10 +366,9 @@ TerminalMix.filterTurn = function (channel, control, value, status, group) {
 TerminalMix.traxKnobTurn = function (channel, control, value, status, group) {
     var newValue = (value-64);
     if (TerminalMix.traxKnobMode == "tracks") {
-        engine.setValue(group,"SelectTrackKnob",newValue);
+        engine.setValue(group,"SelectTrackKnob", newValue);
     } else {
-        if (newValue>0) engine.setValue(group,"SelectNextPlaylist",newValue);
-        if (newValue<0) engine.setValue(group,"SelectPrevPlaylist",newValue);
+        engine.setValue(group, "SelectPlaylist", newValue);
     }
 }
 

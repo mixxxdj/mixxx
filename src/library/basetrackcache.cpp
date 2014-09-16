@@ -563,16 +563,18 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
                                            Qt::SortOrder sortOrder,
                                            const QVector<int> trackIds) const {
     QVariant trackValue;
-    getTrackValueForColumn(pTrack, sortColumn,trackValue);
+    getTrackValueForColumn(pTrack, sortColumn, trackValue);
 
     int min = 0;
-    int max = trackIds.size()-1;
+    int max = trackIds.size() - 1;
 
     if (sDebug) {
         qDebug() << this << "Trying to insertion sort:"
                  << trackValue << "min" << min << "max" << max;
     }
 
+    // If trackIds is empty, min is 0 and max is -1 so findSortInsertionPoint
+    // returns 0.
     while (min <= max) {
         int mid = min + (max - min) / 2;
         int otherTrackId = trackIds[mid];

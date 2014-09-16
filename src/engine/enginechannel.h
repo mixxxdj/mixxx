@@ -25,12 +25,9 @@ class ControlObject;
 class EngineBuffer;
 class EnginePregain;
 class EngineFilterBlock;
-class EngineClipping;
-class EngineFlanger;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
-class ControlObject;
 
 class EngineChannel : public EngineObject {
     Q_OBJECT
@@ -55,7 +52,8 @@ class EngineChannel : public EngineObject {
     void setTalkover(bool enabled);
     virtual bool isTalkover() const;
 
-    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize) = 0;
+    virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
+    virtual void postProcess(const int iBuffersize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer() {

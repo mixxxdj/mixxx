@@ -196,8 +196,13 @@ PaintablePointer WPixmapStore::getPaintable(const QString& fileName,
     }
 
     if (pPaintable.isNull() || pPaintable->isNull()) {
-        qDebug() << "WPixmapStore couldn't load:" << fileName
-                 << pPaintable.isNull();
+        // Only log if it looks like the user tried to specify a
+        // pixmap. Otherwise we probably just have a widget that is calling
+        // getPaintable without checking that the skinner actually wanted one.
+        if (!fileName.isEmpty()) {
+            qDebug() << "WPixmapStore couldn't load:" << fileName
+                     << pPaintable.isNull();
+        }
         return PaintablePointer();
     }
     m_paintableCache[fileName] = pPaintable;

@@ -1,7 +1,6 @@
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "mathstuff.h"
 #include "track/keys.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -73,4 +72,3 @@ void Keys::readByteArray(const QByteArray* pByteArray) {
         return;
     }
 }
-

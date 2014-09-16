@@ -24,9 +24,6 @@ class ControlPushButton;
 class ControlObjectSlave;
 class EngineChannel;
 class PositionScratchController;
-#ifdef __VINYLCONTROL__
-class VinylControlControl;
-#endif
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from
@@ -44,8 +41,11 @@ public:
                    const double currentSample,
                    const double totalSamples,
                    const int bufferSamples);
-    // Returns the current engine rate.
-    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
+    // Returns the current engine rate.  "reportScratching" is used to tell
+    // the caller that the user is currently scratching, and this is used to
+    // disable keylock.
+    double calculateRate(double baserate, bool paused,
+                         int iSamplesPerBuffer, bool* reportScratching);
     double getRawRate() const;
 
     // Set rate change when temp rate button is pressed
@@ -109,15 +109,16 @@ public:
     ControlObject* m_pForwardButton;
 
     ControlTTRotary* m_pWheel;
-    ControlTTRotary* m_pScratch;
-    ControlTTRotary* m_pOldScratch;
+    ControlObject* m_pScratch2;
     PositionScratchController* m_pScratchController;
 
-    ControlPushButton* m_pScratchToggle;
+    ControlPushButton* m_pScratch2Enable;
     ControlObject* m_pJog;
+    ControlObject* m_pVCRate;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
     ControlObject* m_pVCMode;
+    ControlObject* m_pScratch2Scratching;
     Rotary* m_pJogFilter;
 
     ControlObject* m_pSampleRate;
@@ -127,7 +128,6 @@ public:
     // For Master Sync
     BpmControl* m_pBpmControl;
 
-    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncEnabled;
     ControlObjectSlave* m_pSyncMode;
     ControlObjectSlave* m_pSlipEnabled;
 
@@ -172,6 +172,10 @@ public:
     static enum RATERAMP_MODE m_eRateRampMode;
     // The Rate Temp Sensitivity, the higher it is the slower it gets
     static int m_iRateRampSensitivity;
+    // Factor applied to the deprecated "wheel" rate value.
+    static const double kWheelMultiplier;
+    // Factor applied to jogwheels when the track is paused to speed up seeking.
+    static const double kPausedJogMultiplier;
     // Temporary pitchrate, added to the permanent rate for calculateRate
     double m_dRateTemp;
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;

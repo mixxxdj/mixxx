@@ -6,408 +6,479 @@
 *
 */
 
+#include <QCompleter>
+
+#include "controlobject.h"
 #include "controllers/dlgcontrollerlearning.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
-#include "engine/cuecontrol.h"
-#include "playermanager.h"
+#include "controllers/learningutils.h"
+#include "controllers/midi/midiutils.h"
+
+
+namespace {
+typedef QPair<QString, ConfigKey> NamedControl;
+bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
+    return l1.first < l2.first;
+}
+}
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
         : QDialog(parent),
           m_pController(controller),
-          m_controlPickerMenu(this) {
-    qRegisterMetaType<MixxxControl>("MixxxControl");
+          m_pMidiController(NULL),
+          m_controlPickerMenu(this),
+          m_messagesLearned(false) {
+    qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
 
     setupUi(this);
     labelMappedTo->setText("");
+
+    QString helpTitle(tr("Click anywhere in Mixxx or choose a control to learn"));
+    QString helpBody(tr("You can click on any button, slider, or knob in Mixxx "
+                        "to teach it that control.  You can also type in the "
+                        "box to search for a control by name, or click the "
+                        "Choose Control button to select from a list."));
+    labelMappingHelp->setTextFormat(Qt::RichText);
+    labelMappingHelp->setText(QString(
+            "<p><span style=\"font-weight:600;\">%1</span></p>"
+            "<p>%2</p>").arg(
+                    helpTitle, helpBody));
+
+
+    QString nextTitle(tr("Now test it out!"));
+    QString nextInstructionBody(tr(
+            "If you manipulate the control, you should see the Mixxx user interface "
+            "respond the way you expect."));
+    QString nextTroubleshootTitle(tr("Not quite right?"));
+    QString nextTroubleshootBody(tr(
+            "If the mapping is not working try enabling an advanced option "
+            "below and then try the control again. Or click Retry to redetect "
+            "the midi control."));
+
+    labelNextHelp->setTextFormat(Qt::RichText);
+    labelNextHelp->setText(QString(
+            "<p><span style=\"font-weight:600;\">%1</span></p>"
+            "<p>%2</p><p><span style=\"font-weight:600;\">%3</span></p>"
+            "<p>%4</p>").arg(
+                    nextTitle, nextInstructionBody,
+                    nextTroubleshootTitle, nextTroubleshootBody));
+
     // Ensure the first page is always shown regardless of the last page shown
     // when the .ui file was saved.
-    stackedWidget->setCurrentIndex(0);
+    stackedWidget->setCurrentWidget(page1Choose);
 
     // Delete this dialog when its closed. We don't want any persistence.
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
+    connect(&m_controlPickerMenu, SIGNAL(controlPicked(ConfigKey)),
+            this, SLOT(controlPicked(ConfigKey)));
+
+    comboBoxChosenControl->completer()->setCompletionMode(
+        QCompleter::PopupCompletion);
+    populateComboBox();
+    connect(comboBoxChosenControl, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(comboboxIndexChanged(int)));
+
     connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
-    connect(pushButtonDone, SIGNAL(clicked()), this, SLOT(close()));
-    connect(&m_actionMapper, SIGNAL(mapped(int)), this, SLOT(controlChosen(int)));
+    connect(pushButtonClose, SIGNAL(clicked()), this, SLOT(close()));
+    connect(pushButtonClose_2, SIGNAL(clicked()), this, SLOT(close()));
+    connect(pushButtonCancelLearn, SIGNAL(clicked()), this, SLOT(slotCancelLearn()));
+    connect(pushButtonRetry, SIGNAL(clicked()), this, SLOT(slotRetry()));
+    connect(pushButtonStartLearn, SIGNAL(clicked()), this, SLOT(slotStartLearningPressed()));
+    connect(pushButtonLearnAnother, SIGNAL(clicked()), this, SLOT(slotChooseControlPressed()));
+#ifdef CONTROLLERLESSTESTING
+    connect(pushButtonFakeControl, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage()));
+    connect(pushButtonFakeControl2, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage2()));
+#else
+    pushButtonFakeControl->hide();
+    pushButtonFakeControl2->hide();
+#endif
 
-    connect(m_pController, SIGNAL(learnedMessage(QString)), this, SLOT(controlMapped(QString)));
+    // We only want to listen to clicked() so we don't fire
+    // slotMidiOptionsChanged when we change the checkboxes programmatically.
+    connect(midiOptionSwitchMode, SIGNAL(clicked()),
+            this, SLOT(slotMidiOptionsChanged()));
+    connect(midiOptionSoftTakeover, SIGNAL(clicked()),
+            this, SLOT(slotMidiOptionsChanged()));
+    connect(midiOptionInvert, SIGNAL(clicked()),
+            this, SLOT(slotMidiOptionsChanged()));
+    connect(midiOptionSelectKnob, SIGNAL(clicked()),
+            this, SLOT(slotMidiOptionsChanged()));
 
-    connect(this, SIGNAL(cancelLearning()), m_pController, SLOT(cancelLearn()));
-    connect(this, SIGNAL(learn(MixxxControl)), m_pController, SLOT(learn(MixxxControl)));
+    slotChooseControlPressed();
 
-    m_deckStr = tr("Deck %1");
-    m_samplerStr = tr("Sampler %1");
-    m_previewdeckStr = tr("Preview Deck %1");
-    m_resetStr = tr("Reset to default");
+    // Wait 1 second until we detect the control the user moved.
+    m_lastMessageTimer.setInterval(1500);
+    m_lastMessageTimer.setSingleShot(true);
+    connect(&m_lastMessageTimer, SIGNAL(timeout()),
+            this, SLOT(slotTimerExpired()));
 
-    // Master Controls
-    QMenu* mixerMenu = addSubmenu(tr("Mixer"));
-    addControl("[Master]", "crossfader", tr("Crossfader"), mixerMenu, true);
-    addControl("[Master]", "volume", tr("Master volume"), mixerMenu, true);
-    addControl("[Master]", "balance", tr("Master balance"), mixerMenu, true);
-    addControl("[Master]", "headVolume", tr("Headphone volume"), mixerMenu, true);
-    addControl("[Master]", "headMix", tr("Headphone mix (pre/main)"), mixerMenu, true);
+    m_firstMessageTimer.setInterval(7000);
+    m_firstMessageTimer.setSingleShot(true);
+    connect(&m_firstMessageTimer, SIGNAL(timeout()),
+            this, SLOT(slotFirstMessageTimeout()));
+}
 
-    // Transport
-    QMenu* transportMenu = addSubmenu(tr("Transport"));
-    addDeckAndPreviewDeckControl("playposition", tr("Strip-search through track"), transportMenu);
-    addDeckAndSamplerAndPreviewDeckControl("play", tr("Play button"), transportMenu);
-    addDeckControl("volume", tr("Volume fader"), transportMenu, true);
-    addDeckControl("back", tr("Fast rewind button"), transportMenu);
-    addDeckControl("fwd", tr("Fast forward button"), transportMenu);
-    addDeckAndSamplerAndPreviewDeckControl("start", tr("Jump to start of track"), transportMenu);
-    addDeckControl("end", tr("Jump to end of track"), transportMenu);
-    addDeckControl("reverse", tr("Play reverse button"), transportMenu);
-    addDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
-    addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Gain knob"), transportMenu, true);
-    addDeckAndSamplerControl("pfl", tr("Headphone listen button"), transportMenu);
-    addDeckAndSamplerControl("mute", tr("Mute button"), transportMenu);
-    addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
-    addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject track"), transportMenu);
-    addSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
-    addDeckAndSamplerControl("slip_enabled", tr("Toggle slip mode"), transportMenu);
-
-    // BPM & Sync
-    QMenu* bpmMenu = addSubmenu(tr("BPM and Sync"));
-    addDeckAndSamplerControl("bpm_tap", tr("BPM tap button"), bpmMenu);
-    addDeckControl("beats_translate_curpos", tr("Adjust beatgrid"), bpmMenu);
-    addDeckAndSamplerControl("quantize", tr("Toggle quantize mode"), bpmMenu);
-    addDeckAndSamplerControl("beatsync", tr("Beat sync (tempo and phase)"), bpmMenu);
-    addDeckAndSamplerControl("beatsync_tempo", tr("Beat sync (tempo only)"), bpmMenu);
-    addDeckAndSamplerControl("beatsync_phase", tr("Beat sync (phase only)"), bpmMenu);
-
-    // Rate
-    QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
-    addDeckAndSamplerControl("keylock", tr("Toggle keylock mode"), rateMenu);
-    addDeckAndSamplerControl("rate", tr("Speed control slider"), rateMenu, true);
-    addDeckAndSamplerControl("pitch", tr("Pitch control slider"), rateMenu, true);
-    addDeckControl("rate_perm_up", tr("Adjust rate up (coarse)"), rateMenu);
-    addDeckControl("rate_perm_up_small", tr("Adjust rate up (fine)"), rateMenu);
-    addDeckControl("rate_perm_down", tr("Adjust rate down (coarse)"), rateMenu);
-    addDeckControl("rate_perm_down_small", tr("Adjust rate down (fine)"), rateMenu);
-    addDeckControl("rate_temp_up", tr("Pitch-bend rate up (coarse)"), rateMenu);
-    addDeckControl("rate_temp_up_small", tr("Pitch-bend rate up (fine)"), rateMenu);
-    addDeckControl("rate_temp_down", tr("Pitch-bend rate down (coarse)"), rateMenu);
-    addDeckControl("rate_temp_down_small", tr("Pitch-bend rate down (fine)"), rateMenu);
-
-    // EQs
-    QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    addDeckControl("filterHigh", tr("High EQ knob"), eqMenu, true);
-    addDeckControl("filterMid", tr("Mid EQ knob"), eqMenu, true);
-    addDeckControl("filterLow", tr("Low EQ knob"), eqMenu, true);
-    addDeckControl("filterHighKill", tr("High EQ kill"), eqMenu);
-    addDeckControl("filterMidKill", tr("Mid EQ kill"), eqMenu);
-    addDeckControl("filterLowKill", tr("Low EQ kill"), eqMenu);
-
-    // Vinyl Control
-    QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
-    addDeckControl("vinylcontrol_enabled", tr("Toggle vinyl-control (ON/OFF)"), vinylControlMenu);
-    addDeckControl("vinylcontrol_cueing", tr("Toggle vinyl-control cueing mode (OFF/ONE/HOT)"), vinylControlMenu);
-    addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
-    addDeckControl("passthrough", tr("Pass through external audio into the internal mixer"), vinylControlMenu);
-    addControl(VINYL_PREF_KEY, "Toggle", tr("Single deck mode - Toggle vinyl control to next deck"), vinylControlMenu);
-
-    // Cues
-    QMenu* cueMenu = addSubmenu(tr("Cues"));
-    addDeckControl("cue_default", tr("Cue button"), cueMenu);
-    addDeckControl("cue_set", tr("Set cue point"), cueMenu);
-    addDeckControl("cue_gotoandstop", tr("Go to cue point and stop"), cueMenu);
-
-    // Hotcues
-    QMenu* hotcueMenu = addSubmenu(tr("Hotcues"));
-    QString hotcueActivate = tr("Set or jump to hotcue %1");
-    QString hotcueClear = tr("Clear hotcue %1");
-    QString hotcueGoto = tr("Jump to hotcue %1");
-    QString hotcueGotoAndStop = tr("Jump to hotcue %1 and stop");
-    for (int i = 1; i <= NUM_HOT_CUES; ++i) {
-        QMenu* hotcueSubMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)), hotcueMenu);
-        addDeckAndSamplerControl(QString("hotcue_%1_activate").arg(i),
-                                 hotcueActivate.arg(QString::number(i)), hotcueSubMenu);
-        addDeckAndSamplerControl(QString("hotcue_%1_clear").arg(i),
-                                 hotcueClear.arg(QString::number(i)), hotcueSubMenu);
-        addDeckAndSamplerControl(QString("hotcue_%1_goto").arg(i),
-                                 hotcueGoto.arg(QString::number(i)), hotcueSubMenu);
-        addDeckAndSamplerControl(QString("hotcue_%1_gotoandstop").arg(i),
-                                 hotcueGotoAndStop.arg(QString::number(i)), hotcueSubMenu);
+void DlgControllerLearning::populateComboBox() {
+    // Sort all of the controls and add them to the combo box
+    comboBoxChosenControl->clear();
+    comboBoxChosenControl->addItem("", QVariant::fromValue(ConfigKey()));
+    QList<NamedControl> sorted_controls;
+    foreach(ConfigKey key, m_controlPickerMenu.controlsAvailable())
+    {
+        sorted_controls.push_back(
+                NamedControl(m_controlPickerMenu.controlTitleForConfigKey(key),
+                             key));
     }
-
-    // Loops
-    QMenu* loopMenu = addSubmenu(tr("Looping"));
-    addDeckControl("loop_in", tr("Loop In button"), loopMenu);
-    addDeckControl("loop_out", tr("Loop Out button"), loopMenu);
-    addDeckControl("loop_exit", tr("Loop Exit button"), loopMenu);
-    addDeckControl("reloop_exit", tr("Reloop / Exit button"), loopMenu);
-    addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
-    addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);
-
-    // Beatloops
-    QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
-    QString beatLoop = tr("Create %1-beat loop");
-    QString beatLoopRoll = tr("Create temporary %1-beat loop roll");
-    addDeckControl("beatloop_0.03125_toggle",  beatLoop.arg(tr("1/32th")), beatLoopMenu);
-    addDeckControl("beatloop_0.0625_toggle",  beatLoop.arg(tr("1/16th")), beatLoopMenu);
-    addDeckControl("beatloop_0.125_toggle", beatLoop.arg(tr("1/8th")), beatLoopMenu);
-    addDeckControl("beatloop_0.25_toggle", beatLoop.arg(tr("1/4th")), beatLoopMenu);
-    addDeckControl("beatloop_0.5_toggle", beatLoop.arg("1/2"), beatLoopMenu);
-    addDeckControl("beatloop_1_toggle", beatLoop.arg("1"), beatLoopMenu);
-    addDeckControl("beatloop_2_toggle", beatLoop.arg("2"), beatLoopMenu);
-    addDeckControl("beatloop_4_toggle", beatLoop.arg("4"), beatLoopMenu);
-    addDeckControl("beatloop_8_toggle", beatLoop.arg("8"), beatLoopMenu);
-    addDeckControl("beatloop_16_toggle", beatLoop.arg("16"), beatLoopMenu);
-    addDeckControl("beatloop_32_toggle", beatLoop.arg("32"), beatLoopMenu);
-    addDeckControl("beatloop_64_toggle", beatLoop.arg("64"), beatLoopMenu);
-    addDeckControl("beatlooproll_0.03125_activate",  beatLoopRoll.arg(tr("1/32th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.0625_activate",  beatLoopRoll.arg(tr("1/16th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.125_activate", beatLoopRoll.arg(tr("1/8th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.25_activate", beatLoopRoll.arg(tr("1/4th")), beatLoopMenu);
-    addDeckControl("beatlooproll_0.5_activate", beatLoopRoll.arg("1/2"), beatLoopMenu);
-    addDeckControl("beatlooproll_1_activate", beatLoopRoll.arg("1"), beatLoopMenu);
-    addDeckControl("beatlooproll_2_activate", beatLoopRoll.arg("2"), beatLoopMenu);
-    addDeckControl("beatlooproll_4_activate", beatLoopRoll.arg("4"), beatLoopMenu);
-    addDeckControl("beatlooproll_8_activate", beatLoopRoll.arg("8"), beatLoopMenu);
-    addDeckControl("beatlooproll_16_activate", beatLoopRoll.arg("16"), beatLoopMenu);
-    addDeckControl("beatlooproll_32_activate", beatLoopRoll.arg("32"), beatLoopMenu);
-    addDeckControl("beatlooproll_64_activate", beatLoopRoll.arg("64"), beatLoopMenu);
-
-    // Library Controls
-    QMenu* libraryMenu = addSubmenu(tr("Library"));
-    addControl("[Playlist]", "ToggleSelectedSidebarItem", tr("Expand/collapse the selected view (library, playlist..)"),
-               libraryMenu);
-    addControl("[Playlist]", "SelectNextPlaylist", tr("Switch to the next view (library, playlist..)"),
-               libraryMenu);
-    addControl("[Playlist]", "SelectPrevPlaylist", tr("Switch to the previous view (library, playlist..)"),
-               libraryMenu);
-    addControl("[Playlist]", "SelectNextTrack", tr("Scroll to next track in library/playlist"),
-               libraryMenu);
-    addControl("[Playlist]", "SelectPrevTrack", tr("Scroll to previous track in library/playlist"),
-               libraryMenu);
-    addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped deck"),
-               libraryMenu);
-    addDeckAndSamplerControl("LoadSelectedTrack", tr("Load selected track"), libraryMenu);
-    addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Load selected track and play"), libraryMenu);
-
-    // Effect Controls
-    QMenu* effectsMenu = addSubmenu(tr("Effects"));
-    addDeckControl("flanger", tr("Toggle flange effect"), effectsMenu);
-    addControl("[Flanger]", "lfoPeriod", tr("Flange effect: Wavelength/period"), effectsMenu, true);
-    addControl("[Flanger]", "lfoDepth", tr("Flange effect: Intensity"), effectsMenu, true);
-    addControl("[Flanger]", "lfoDelay", tr("Flange effect: Phase delay"), effectsMenu, true);
-    addDeckControl("filter", tr("Toggle filter effect"), effectsMenu);
-    addDeckControl("filterDepth", tr("Filter effect: Intensity"), effectsMenu, true);
-
-    // Microphone Controls
-    QMenu* microphoneMenu = addSubmenu(tr("Microphone"));
-    addControl("[Microphone]", "talkover", tr("Microphone on/off"), microphoneMenu);
-    addControl("[Microphone]", "volume", tr("Microphone volume"), microphoneMenu, true);
-    addControl("[Microphone]", "orientation", tr("Microphone channel orientation (e.g. left, right, center)"), microphoneMenu);
-
-    // AutoDJ Controls
-    QMenu* autodjMenu = addSubmenu(tr("Auto DJ"));
-    addControl("[AutoDJ]", "shuffle_playlist", tr("Shuffle the content of the Auto DJ playlist"), autodjMenu);
-    addControl("[AutoDJ]", "skip_next", tr("Skip the next track in the Auto DJ playlist"), autodjMenu);
-    addControl("[AutoDJ]", "fade_now", tr("Trigger the transition to the next track"), autodjMenu);
-    addControl("[AutoDJ]", "enabled", tr("Toggle Auto DJ (ON/OFF)"), autodjMenu);
-
-    // Skin Controls
-    QMenu* guiMenu = addSubmenu(tr("User Interface"));
-    addControl("[Samplers]", "show_samplers", tr("Show/hide the sampler section"), guiMenu);
-    addControl("[Microphone]", "show_microphone", tr("Show/hide the microphone section"), guiMenu);
-    addControl("[Vinylcontrol]", "show_vinylcontrol", tr("Show/hide the vinyl control section"), guiMenu);
-    addControl("[PreviewDeck]", "show_previewdeck", tr("Show/hide the preview deck"), guiMenu);
-
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
-    QString spinnyText = tr("Show/hide spinning vinyl widget");
-    for (int i = 1; i <= iNumDecks; ++i) {
-        addControl(QString("[Spinny%1]").arg(i), "show_spinny",
-                   QString("%1: %2").arg(m_deckStr.arg(i), spinnyText), guiMenu);
-
+    qSort(sorted_controls.begin(), sorted_controls.end(),
+          namedControlComparator);
+    foreach(NamedControl control, sorted_controls)
+    {
+        comboBoxChosenControl->addItem(control.first,
+                                       QVariant::fromValue(control.second));
     }
+}
 
-    emit(listenForClicks());
+void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
+    m_firstMessageTimer.stop();
+    m_lastMessageTimer.stop();
+    emit(clearTemporaryInputMappings());
+
+    if (!keepCurrentControl) {
+        m_currentControl = ConfigKey();
+        comboBoxChosenControl->setCurrentIndex(0);
+        labelDescription->setText("");
+        pushButtonStartLearn->setDisabled(true);
+    }
+    m_messagesLearned = false;
+    m_messages.clear();
+    m_mappings.clear();
+    midiOptionInvert->setChecked(false);
+    midiOptionSelectKnob->setChecked(false);
+    midiOptionSoftTakeover->setChecked(false);
+    midiOptionSwitchMode->setChecked(false);
+
+    progressBarWiggleFeedback->setValue(0);
+    progressBarWiggleFeedback->setMinimum(0);
+    progressBarWiggleFeedback->setMaximum(200);
+    progressBarWiggleFeedback->hide();
+
     labelMappedTo->setText("");
-    labelNextHelp->hide();
-    controlToMapMessage->setText("");
-    stackedWidget->setCurrentIndex(0);
-    m_currentControl = MixxxControl();
+    labelErrorText->setText("");
+}
+
+void DlgControllerLearning::slotChooseControlPressed() {
+    // If we learned messages, commit them.
+    if (m_messagesLearned) {
+        commitMapping();
+    }
+    resetWizard();
+    stackedWidget->setCurrentWidget(page1Choose);
+    startListening();
+}
+
+void DlgControllerLearning::startListening() {
+    // Start listening as soon as we're on this page -- that way advanced
+    // users don't have to specifically click the "Learn" button.
+    // Get the underlying type of the Controller. This will call
+    // one of the visit() methods below immediately.
+    m_pController->accept(this);
+    emit(listenForClicks());
+}
+
+void DlgControllerLearning::slotStartLearningPressed() {
+    if (m_currentControl.isNull()) {
+        return;
+    }
+    m_firstMessageTimer.start();
+    stackedWidget->setCurrentWidget(page2Learn);
+}
+
+#ifdef CONTROLLERLESSTESTING
+void DlgControllerLearning::DEBUGFakeMidiMessage() {
+    slotMessageReceived(MIDI_CC, 0x20, 0x41);
+}
+
+void DlgControllerLearning::DEBUGFakeMidiMessage2() {
+    slotMessageReceived(MIDI_CC, 0x20, 0x3F);
+}
+#endif
+
+void DlgControllerLearning::slotMessageReceived(unsigned char status,
+                                                unsigned char control,
+                                                unsigned char value) {
+    // Ignore message since we don't have a control yet.
+    if (m_currentControl.isNull()) {
+        return;
+    }
+
+    // Ignore message since we already learned a mapping for this control.
+    if (m_messagesLearned) {
+        return;
+    }
+
+    MidiKey key;
+    key.status = status;
+    key.control = control;
+
+    // Ignore all standard MIDI System Real-Time Messages because they
+    // are continuously sent and prevent mapping of the pressed key.
+    if (MidiUtils::isClockSignal(key)) {
+        return;
+    }
+
+    if (m_messages.length() == 0) {
+        // If an advanced user started wiggling a control without bothering to
+        // click the Learn button, take them to the learning screen.
+        stackedWidget->setCurrentWidget(page2Learn);
+    }
+
+    // If we get a few messages, it's probably a rotation control so let's give
+    // feedback.  If we only get one or two messages, it's probably a button
+    // and we shouldn't show the progress bar.
+    if (m_messages.length() > 10) {
+        if (progressBarWiggleFeedback->isVisible()) {
+            progressBarWiggleFeedback->setValue(
+                    progressBarWiggleFeedback->value() + 1);
+        } else {
+            progressBarWiggleFeedback->show();
+        }
+    }
+
+    m_messages.append(QPair<MidiKey, unsigned char>(key, value));
+    // We got a message, so we can cancel the taking-too-long timeout.
+    m_firstMessageTimer.stop();
+
+    // Unless this is a MIDI_CC and the progress bar is full, restart the
+    // timer.  That way the user won't just push buttons forever and wonder
+    // why the wizard never advances.
+    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
+    if (opCode != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
+        m_lastMessageTimer.start();
+    }
+}
+
+void DlgControllerLearning::slotCancelLearn() {
+    resetWizard(true);
+    stackedWidget->setCurrentWidget(page1Choose);
+    startListening();
+}
+
+void DlgControllerLearning::slotFirstMessageTimeout() {
+    resetWizard(true);
+    if (m_messages.length() == 0) {
+        labelErrorText->setText(tr("Didn't get any midi messages.  Please try again."));
+    } else {
+        qWarning() << "we shouldn't time out if we got something";
+        m_messages.clear();
+    }
+    stackedWidget->setCurrentWidget(page1Choose);
+    startListening();
+}
+
+void DlgControllerLearning::slotTimerExpired() {
+    // It's been a timer interval since we last got a message. Let's try to
+    // detect mappings.
+    MidiInputMappings mappings =
+            LearningUtils::guessMidiInputMappings(m_currentControl, m_messages);
+
+    if (mappings.isEmpty()) {
+        labelErrorText->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
+        m_messages.clear();
+        // Don't reset the wizard.
+        stackedWidget->setCurrentWidget(page1Choose);
+        startListening();
+        return;
+    }
+
+    m_messagesLearned = true;
+    m_mappings = mappings;
+    pushButtonRetry->setEnabled(true);
+    emit(learnTemporaryInputMappings(m_mappings));
+
+    QString midiControl = "";
+    bool first = true;
+    foreach (const MidiInputMapping& mapping, m_mappings) {
+        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
+        bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
+        QString mappingStr = twoBytes ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
+                .arg(QString::number(mapping.key.status, 16).toUpper(),
+                     QString::number(mapping.key.control, 16).toUpper()
+                     .rightJustified(2, '0'),
+                     QString::number(mapping.options.all, 16).toUpper()
+                     .rightJustified(2, '0')) :
+                QString("0x%1 0x%2")
+                .arg(QString::number(mapping.key.status, 16).toUpper(),
+                     QString::number(mapping.options.all, 16).toUpper()
+                     .rightJustified(2, '0'));
+
+        // Set the debug string and "Advanced MIDI Options" group using the
+        // first mapping.
+        if (first) {
+            midiControl = mappingStr;
+            MidiOptions options = mapping.options;
+            midiOptionInvert->setChecked(options.invert);
+            midiOptionSelectKnob->setChecked(options.selectknob);
+            midiOptionSoftTakeover->setChecked(options.soft_takeover);
+            midiOptionSwitchMode->setChecked(options.sw);
+            first = false;
+        }
+
+        qDebug() << "DlgControllerLearning learned input mapping:" << mappingStr;
+    }
+
+    QString mapMessage = QString("<i>%1 %2</i>").arg(
+            tr("Successfully mapped control:"), midiControl);
+    labelMappedTo->setText(mapMessage);
+    stackedWidget->setCurrentWidget(page3Confirm);
+}
+
+void DlgControllerLearning::slotRetry() {
+    // If the user hit undo, instruct the controller to forget the mapping we
+    // just added. So reset, but keep the control currently being learned.
+    resetWizard(true);
+    slotStartLearningPressed();
+}
+
+void DlgControllerLearning::slotMidiOptionsChanged() {
+    if (!m_messagesLearned) {
+        // This shouldn't happen because we disable the MIDI options when a
+        // message has not been learned.
+        return;
+    }
+
+    emit(clearTemporaryInputMappings());
+
+    // Go over every mapping and set its MIDI options to match the user's
+    // choices.
+    for (MidiInputMappings::iterator it = m_mappings.begin();
+         it != m_mappings.end(); ++it) {
+        MidiOptions& options = it->options;
+        options.sw = midiOptionSwitchMode->isChecked();
+        options.soft_takeover = midiOptionSoftTakeover->isChecked();
+        options.invert = midiOptionInvert->isChecked();
+        options.selectknob = midiOptionSelectKnob->isChecked();
+    }
+
+    emit(learnTemporaryInputMappings(m_mappings));
+}
+
+void DlgControllerLearning::commitMapping() {
+    emit(commitTemporaryInputMappings());
+    emit(inputMappingsLearned(m_mappings));
+}
+
+void DlgControllerLearning::visit(MidiController* pMidiController) {
+    m_pMidiController = pMidiController;
+
+    connect(m_pMidiController, SIGNAL(messageReceived(unsigned char, unsigned char, unsigned char)),
+            this, SLOT(slotMessageReceived(unsigned char, unsigned char, unsigned char)));
+
+    connect(this, SIGNAL(learnTemporaryInputMappings(MidiInputMappings)),
+            m_pMidiController, SLOT(learnTemporaryInputMappings(MidiInputMappings)));
+    connect(this, SIGNAL(clearTemporaryInputMappings()),
+            m_pMidiController, SLOT(clearTemporaryInputMappings()));
+
+    connect(this, SIGNAL(commitTemporaryInputMappings()),
+            m_pMidiController, SLOT(commitTemporaryInputMappings()));
+    connect(this, SIGNAL(startLearning()),
+            m_pMidiController, SLOT(startLearning()));
+    connect(this, SIGNAL(stopLearning()),
+            m_pMidiController, SLOT(stopLearning()));
+
+    emit(startLearning());
+}
+
+void DlgControllerLearning::visit(HidController* pHidController) {
+    qDebug() << "ERROR: DlgControllerLearning does not support HID devices.";
+    Q_UNUSED(pHidController);
+}
+
+void DlgControllerLearning::visit(BulkController* pBulkController) {
+    qDebug() << "ERROR: DlgControllerLearning does not support Bulk devices.";
+    Q_UNUSED(pBulkController);
 }
 
 DlgControllerLearning::~DlgControllerLearning() {
+    // If the user hit done, we should save any pending mappings.
+    if (m_messagesLearned) {
+        commitMapping();
+        resetWizard();
+        stackedWidget->setCurrentWidget(page1Choose);
+    }
+
     //If there was any ongoing learning, cancel it (benign if there wasn't).
-    emit(cancelLearning());
+    emit(stopLearning());
     emit(stopListeningForClicks());
-}
-
-void DlgControllerLearning::addControl(QString group, QString control, QString description,
-                                       QMenu* pMenu,
-                                       bool addReset) {
-    QAction* pAction = pMenu->addAction(description, &m_actionMapper, SLOT(map()));
-    m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-    m_controlsAvailable.append(MixxxControl(group, control, description));
-
-    if (addReset) {
-        QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-        QString resetControl = QString("%1_set_default").arg(control);
-        QAction* pResetAction = pMenu->addAction(resetDescription, &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-        m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
-    }
-}
-
-void DlgControllerLearning::addPlayerControl(
-    QString control, QString controlDescription, QMenu* pMenu,
-    bool deckControls, bool samplerControls, bool previewdeckControls, bool addReset) {
-    const int iNumSamplers = ControlObject::get(ConfigKey("[Master]", "num_samplers"));
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
-    const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
-
-    QMenu* controlMenu = new QMenu(controlDescription, pMenu);
-    pMenu->addMenu(controlMenu);
-
-    QMenu* resetControlMenu = NULL;
-    QString resetControl = QString("%1_set_default").arg(control);
-    if (addReset) {
-        QString resetHelpText = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-        resetControlMenu = new QMenu(resetHelpText, pMenu);
-        pMenu->addMenu(resetControlMenu);
-    }
-
-    for (int i = 1; deckControls && i <= iNumDecks; ++i) {
-        // PlayerManager::groupForDeck is 0-indexed.
-        QString group = PlayerManager::groupForDeck(i - 1);
-        QString description = QString("%1: %2").arg(
-            m_deckStr.arg(QString::number(i)), controlDescription);
-        QAction* pAction = controlMenu->addAction(m_deckStr.arg(i), &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-        m_controlsAvailable.append(MixxxControl(group, control, description));
-
-        if (resetControlMenu) {
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-            QAction* pResetAction = resetControlMenu->addAction(m_deckStr.arg(i), &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-            m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
-        }
-    }
-
-    for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
-        // PlayerManager::groupForPreviewDeck is 0-indexed.
-        QString group = PlayerManager::groupForPreviewDeck(i - 1);
-        QString description = QString("%1: %2").arg(
-            m_previewdeckStr.arg(QString::number(i)), controlDescription);
-        QAction* pAction = controlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-        m_controlsAvailable.append(MixxxControl(group, control, description));
-
-        if (resetControlMenu) {
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-            QAction* pResetAction = resetControlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-            m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
-        }
-    }
-
-    for (int i = 1; samplerControls && i <= iNumSamplers; ++i) {
-        // PlayerManager::groupForSampler is 0-indexed.
-        QString group = PlayerManager::groupForSampler(i - 1);
-        QString description = QString("%1: %2").arg(
-            m_samplerStr.arg(QString::number(i)), controlDescription);
-        QAction* pAction = controlMenu->addAction(m_samplerStr.arg(i), &m_actionMapper, SLOT(map()));
-        m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
-        m_controlsAvailable.append(MixxxControl(group, control, description));
-
-        if (resetControlMenu) {
-            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
-            QAction* pResetAction = resetControlMenu->addAction(m_samplerStr.arg(i), &m_actionMapper, SLOT(map()));
-            m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
-            m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
-        }
-    }
-}
-
-void DlgControllerLearning::addDeckAndSamplerControl(QString control, QString controlDescription,
-                                                     QMenu* pMenu,
-                                                     bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, true, true, false, addReset);
-}
-
-void DlgControllerLearning::addDeckAndPreviewDeckControl(QString control, QString controlDescription,
-                                                     QMenu* pMenu,
-                                                     bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, true, false, true, addReset);
-}
-
-void DlgControllerLearning::addDeckAndSamplerAndPreviewDeckControl(QString control, QString controlDescription,
-                                                                   QMenu* pMenu,
-                                                         bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, true, true, true, addReset);
-}
-
-void DlgControllerLearning::addDeckControl(QString control, QString controlDescription,
-                                           QMenu* pMenu,
-                                           bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, true, false, false, addReset);
-}
-
-void DlgControllerLearning::addSamplerControl(QString control, QString controlDescription,
-                                              QMenu* pMenu,
-                                              bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, false, true, false, addReset);
-}
-
-void DlgControllerLearning::addPreviewDeckControl(QString control, QString controlDescription,
-                                              QMenu* pMenu,
-                                              bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, false, false, true, addReset);
 }
 
 void DlgControllerLearning::showControlMenu() {
     m_controlPickerMenu.exec(pushButtonChooseControl->mapToGlobal(QPoint(0,0)));
 }
 
-void DlgControllerLearning::loadControl(const MixxxControl& control) {
-    m_currentControl = control;
-    QString message = tr("Ready to map: %1. Now move a control on your controller.")
-            .arg(m_currentControl.description());
-    controlToMapMessage->setText(message);
+void DlgControllerLearning::loadControl(const ConfigKey& key,
+                                        QString title,
+                                        QString description) {
+    // If we have learned a mapping and the user picked a new control then we
+    // should tell the controller to commit the existing ones.
+    if (m_messagesLearned) {
+        commitMapping();
+        resetWizard();
+        stackedWidget->setCurrentWidget(page1Choose);
+        startListening();
+    }
+    m_currentControl = key;
+
+    if (description.isEmpty()) {
+        description = key.group + "," + key.item;
+    }
+    comboBoxChosenControl->setEditText(title);
+
+    labelDescription->setText(tr("<i>Ready to learn %1</i>").arg(description));
+    QString learnmessage = tr("Learning: %1. Now move a control on your controller.")
+            .arg(title);
+    controlToMapMessage->setText(learnmessage);
     labelMappedTo->setText("");
-    labelNextHelp->hide();
-    emit(learn(m_currentControl));
+    pushButtonStartLearn->setDisabled(false);
+    pushButtonStartLearn->setFocus();
 }
 
-void DlgControllerLearning::controlChosen(int controlIndex) {
-    if (controlIndex < 0 || controlIndex >= m_controlsAvailable.size()) {
-        return;
-    }
-    loadControl(m_controlsAvailable[controlIndex]);
+void DlgControllerLearning::controlPicked(ConfigKey control) {
+    QString title = m_controlPickerMenu.controlTitleForConfigKey(control);
+    QString description = m_controlPickerMenu.descriptionForConfigKey(control);
+    loadControl(control, title, description);
 }
 
 void DlgControllerLearning::controlClicked(ControlObject* pControl) {
     if (!pControl) {
         return;
     }
+
     ConfigKey key = pControl->getKey();
-    // Lookup MixxxControl
-    for (int i = 0; i < m_controlsAvailable.size(); ++i) {
-        const MixxxControl& control = m_controlsAvailable[i];
-        if (control.group() == key.group && control.item() == key.item) {
-            loadControl(control);
-            return;
-        }
+    if (!m_controlPickerMenu.controlExists(key)) {
+        qWarning() << "Mixxx UI element clicked for which there is no "
+                      "learnable control " << key.group << " " << key.item;
+        QMessageBox::warning(
+                    this,
+                    tr("Mixxx"),
+                    tr("The control you clicked in Mixxx is not learnable.\n"
+                       "This could be because you are using an old skin"
+                       " and this control is no longer supported.\n"
+                       "\nYou tried to learn: %1,%2").arg(key.group, key.item),
+                    QMessageBox::Ok, QMessageBox::Ok);
+        return;
     }
+    controlPicked(key);
 }
 
-void DlgControllerLearning::controlMapped(QString message) {
-    QString mapMessage = tr("Successfully mapped to:") + " " + message;
-    labelMappedTo->setText(mapMessage);
-    labelNextHelp->show();
-}
-
-QMenu* DlgControllerLearning::addSubmenu(QString title, QMenu* pParent) {
-    if (pParent == NULL) {
-        pParent = &m_controlPickerMenu;
+void DlgControllerLearning::comboboxIndexChanged(int index) {
+    ConfigKey control =
+            comboBoxChosenControl->itemData(index).value<ConfigKey>();
+    if (control.isNull()) {
+        labelDescription->setText(tr(""));
+        pushButtonStartLearn->setDisabled(true);
+        return;
     }
-    QMenu* subMenu = new QMenu(title, pParent);
-    pParent->addMenu(subMenu);
-    return subMenu;
+    controlPicked(control);
 }

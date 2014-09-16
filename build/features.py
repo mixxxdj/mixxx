@@ -88,6 +88,10 @@ class HID(Feature):
             conf.CheckLib(['pthread', 'libpthread'])
             conf.CheckLib(['rt', 'librt'])
 
+            # -pthread tells GCC to do the right thing regardless of system
+            build.env.Append(CCFLAGS='-pthread')
+            build.env.Append(LINKFLAGS='-pthread')
+
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
         elif build.platform_is_osx:
@@ -359,6 +363,10 @@ class VinylControl(Feature):
     def enabled(self, build):
         build.flags['vinylcontrol'] = util.get_flags(build.env,
                                                      'vinylcontrol', 0)
+        # Existence of the macappstore option forces vinylcontrol off due to
+        # licensing issues.
+        if build.flags.has_key('macappstore') and int(build.flags['macappstore']):
+            return False
         if int(build.flags['vinylcontrol']):
             return True
         return False
@@ -384,7 +392,7 @@ class VinylControl(Feature):
                    'engine/vinylcontrolcontrol.cpp', ]
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.cpp")
-            sources.append("#lib/xwax/lut.cpp")
+            sources.append("#lib/xwax/lut_win32.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
             sources.append("#lib/xwax/lut.c")
@@ -644,15 +652,15 @@ class AsmLib(Feature):
         if build.platform_is_linux:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-            build.env.Prepend(LIBS='":alibelf%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS='":libaelf%so.a"' % build.bitwidth)
         elif build.platform_is_osx:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-            build.env.Prepend(LIBS='":alibmac%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS='":libamac%so.a"' % build.bitwidth)
         elif build.platform_is_windows:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='/Oi-')
-            build.env.Prepend(LIBS='alibcof%so' % build.bitwidth)
+            build.env.Prepend(LIBS='libacof%so' % build.bitwidth)
 
 
 class QDebug(Feature):
@@ -798,22 +806,22 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS='-pthread')
         test_env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
-        gtest_dir = test_env.Dir("#lib/gtest-1.5.0")
+        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
         # gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.5.0'))
         # build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example,
         # optional
-        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.7.0/lib'
 
         env = test_env
         SCons.Export('env')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
-        gmock_dir = test_env.Dir("#lib/gmock-1.5.0")
+        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
+        gmock_dir = test_env.Dir("#lib/gmock-1.7.0")
         # gmock_dir.addRepository(build.env.Dir('#lib/gmock-1.5.0'))
-        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.5.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
 
@@ -852,6 +860,42 @@ class Shoutcast(Feature):
         return ['dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
+
+
+class Opus(Feature):
+    def description(self):
+        return "Opus (RFC 6716) support"
+
+    def enabled(self, build):
+        build.flags['opus'] = util.get_flags(build.env, 'opus', 0)
+        if int(build.flags['opus']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('opus', 'Set to 1 to enable Opus (RFC 6716) support \
+                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        # Supported for Opus (RFC 6716)
+        # More info http://http://www.opus-codec.org/
+        if build.platform_is_linux or build.platform_is_osx \
+                or build.platform_is_bsd:
+            # Check for libopusfile
+            # I just randomly picked version numbers lower than mine for this
+            if not conf.CheckForPKG('opusfile', '0.2'):
+                raise Exception('Missing libopusfile (needs at least 0.2)')
+
+            build.env.Append(CPPDEFINES='__OPUS__')
+
+	    build.env.ParseConfig('pkg-config opusfile opus --silence-errors \
+                                  --cflags --libs')
+
+    def sources(self, build):
+        return ['soundsourceopus.cpp']
 
 
 class FFMPEG(Feature):
@@ -1090,7 +1134,9 @@ class Optimize(Feature):
             # -funroll-loops. We need to justify our use of these aggressive
             # optimizations with data.
             build.env.Append(
-                CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
+                CCFLAGS='-O3 -ffast-math -funroll-loops')
+            if not int(build.flags['profiling']):
+                build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
             if optimize_level == 1:
                 # only includes what we already applied
@@ -1243,3 +1289,25 @@ class AutoDjCrates(Feature):
 
     def sources(self, build):
         return ['library/dao/autodjcratesdao.cpp']
+
+class MacAppStoreException(Feature):
+    def description(self):
+        return "Build for Mac App Store"
+
+    def enabled(self, build):
+        build.flags['macappstore'] = util.get_flags(build.env,
+                                                    'macappstore', 0)
+        if int(build.flags['macappstore']):
+            # Existence of the macappstore option forces vinylcontrol off due to
+            # licensing issues.
+            build.flags['vinylcontrol'] = 0
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('macappstore', 'Set to 1 to indicate the build is for the Mac App Store', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES='__MACAPPSTORE__')

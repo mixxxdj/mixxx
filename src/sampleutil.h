@@ -4,7 +4,8 @@
 #ifndef SAMPLEUTIL_H
 #define SAMPLEUTIL_H
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/math.h"
 
 // MSVC does this
 // __declspec(align(16))
@@ -96,7 +97,8 @@ class SampleUtil {
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
-    static void sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+    // returns true in case of clipping > +-1
+    static bool sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
                                  const CSAMPLE* pBuffer, int iNumSamples);
 
     // Returns true if the buffer contains any samples outside of the range
@@ -108,9 +110,19 @@ class SampleUtil {
     // range [fMin, fMax]. If pDest and pSrc are aliases, will not copy -- will
     // only clamp. Returns true if any samples in pSrc were outside the range
     // [fMin, fMax].
-    static bool copyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
-                                CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                 int iNumSamples);
+
+    // returns a SAMPLE that is between -1 and +1
+    inline static CSAMPLE clampSample(CSAMPLE in) {
+        if (in > 1.0f) {
+            return 1.0f;
+        }
+        if (in < -1.0f) {
+            return -1.0f;
+        }
+        return in;
+    }
 
     // Interleave the samples in pSrc1 and pSrc2 into pDest. iNumSamples must be
     // the number of samples in pSrc1 and pSrc2, and pDest must have at least
@@ -141,13 +153,6 @@ class SampleUtil {
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                 int iNumSamples);
-
-    // Convert 0-1.0 range gain from linear to log value.
-    static CSAMPLE linearToLog(CSAMPLE linear) {
-        linear = math_max(0.0, math_min(1.0, linear));
-        static const CSAMPLE dB = log10(2.0) / 1.0;
-        return log10(linear + 1.0) / dB;
-    }
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)

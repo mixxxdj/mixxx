@@ -21,8 +21,7 @@
 #include <QObject>
 
 #include "configobject.h"
-
-class ControlDoublePrivate;
+#include "control/control.h"
 
 class ControlObjectThread : public QObject {
     Q_OBJECT
@@ -43,21 +42,63 @@ class ControlObjectThread : public QObject {
     QString description() const;
 
     /** Called from update(); */
-    void emitValueChanged();
+    inline void emitValueChanged() {
+        emit(valueChanged(get()));
+    }
 
     inline ConfigKey getKey() const { return m_key; }
     inline bool valid() const { return m_pControl != NULL; }
 
     // Returns the value of the object. Thread safe, non-blocking.
-    virtual double get();
+    inline double get() {
+        return m_pControl ? m_pControl->get() : 0.0;
+    }
+
+    // Returns the normalized parameter of the object. Thread safe, non-blocking.
+    inline double getParameter() const {
+        return m_pControl ? m_pControl->getParameter() : 0.0;
+    }
+
+    // Set the normalized parameter of the object. Thread safe, non-blocking.
+    inline void setParameter(double p) {
+        if (m_pControl) {
+            m_pControl->setParameter(p, this);
+        }
+    }
+
+    inline double getParameterForValue(double value) const {
+        return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
+    }
+
+    // Returns the normalized parameter of the object. Thread safe, non-blocking.
+    inline double getDefault() const {
+        return m_pControl ? m_pControl->defaultValue() : 0.0;
+    }
 
   public slots:
     // Set the control to a new value. Non-blocking.
-    virtual void slotSet(double v);
+    inline void slotSet(double v) {
+        set(v);
+    }
+
     // Sets the control value to v. Thread safe, non-blocking.
-    virtual void set(double v);
+    inline void set(double v) {
+        if (m_pControl) {
+            m_pControl->set(v, this);
+        }
+    }
+
     // Resets the control to its default value. Thread safe, non-blocking.
-    virtual void reset();
+    inline void reset() {
+        if (m_pControl) {
+            // NOTE(rryan): This is important. The originator of this action does
+            // not know the resulting value so it makes sense that we should emit a
+            // general valueChanged() signal even though the change originated from
+            // us. For this reason, we provide NULL here so that the change is
+            // broadcast as valueChanged() and not valueChangedByThis().
+            m_pControl->reset();
+        }
+    }
 
   signals:
     void valueChanged(double);
@@ -68,7 +109,14 @@ class ControlObjectThread : public QObject {
   protected slots:
     // Receives the value from the master control and re-emits either
     // valueChanged(double) or valueChangedByThis(double) based on pSetter.
-    virtual void slotValueChanged(double v, QObject* pSetter);
+    inline void slotValueChanged(double v, QObject* pSetter) {
+        if (pSetter != this) {
+            // This is base implementation of this function without scaling
+            emit(valueChanged(v));
+        } else {
+            emit(valueChangedByThis(v));
+        }
+    }
 
   protected:
     ConfigKey m_key;

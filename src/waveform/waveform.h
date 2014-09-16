@@ -10,6 +10,9 @@
 #include "util.h"
 #include "util/compatibility.h"
 
+enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
+enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
+
 union WaveformData {
     struct {
         unsigned char low;
@@ -63,14 +66,14 @@ class Waveform {
 
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
-    int getCompletion() const { return deref(m_completion); }
+    int getCompletion() const { return load_atomic(m_completion); }
     int getTextureStride() const { return m_textureStride; }
     int getTextureSize() const { return m_data.size(); }
 
     // Atomically get the number of data elements in this Waveform. You do not
     // need to lock the Waveform's mutex before calling this method.
-    int getDataSize() const { return deref(m_dataSize); }
-    int getNumChannels() const { return deref(m_numChannels); }
+    int getDataSize() const { return load_atomic(m_dataSize); }
+    int getNumChannels() const { return load_atomic(m_numChannels); }
 
     const std::vector<WaveformData>& getConstData() const { return m_data;}
 

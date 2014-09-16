@@ -1,7 +1,3 @@
-
-#include <math.h>
-#include <limits.h>
-
 #include <QtDebug>
 #include <QFileInfo>
 
@@ -14,6 +10,7 @@
 #include "sampleutil.h"
 #include "util/compatibility.h"
 #include "util/event.h"
+#include "util/math.h"
 
 // There's a little math to this, but not much: 48khz stereo audio is 384kb/sec
 // if using float samples. We want the chunk size to be a power of 2 so it's
@@ -107,12 +104,15 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 }
 
 void CachingReaderWorker::run() {
+    unsigned static id = 0; //the id of this thread, for debugging purposes
+    QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
+
     TrackPointer pLoadTrack;
     ChunkReadRequest request;
     ReaderStatusUpdate status;
 
     Event::start(m_tag);
-    while (!deref(m_stop)) {
+    while (!load_atomic(m_stop)) {
         if (m_newTrack) {
             m_newTrackMutex.lock();
             pLoadTrack = m_newTrack;

@@ -55,10 +55,10 @@ class SoundSourceFFmpeg : public Mixxx::SoundSource {
 public:
     SoundSourceFFmpeg(QString qFilename);
     ~SoundSourceFFmpeg();
-    int open();
+    Result open();
     long seek(long);
     unsigned int read(unsigned long size, const SAMPLE*);
-    int parseHeader();
+    Result parseHeader();
     inline long unsigned length();
     bool readInput();
     static QList<QString> supportedFileExtensions();

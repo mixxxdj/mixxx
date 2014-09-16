@@ -12,7 +12,7 @@
 
 #include "ui_dlgprefreplaygaindlg.h"
 #include "configobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
 class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainDlg  {
@@ -29,7 +29,7 @@ class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainD
 
     void slotApply();
     void slotUpdate();
-    void setDefaults();
+    void slotResetToDefaults();
 
   signals:
     void apply(const QString &);
@@ -41,8 +41,8 @@ class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainD
     // Pointer to config object
     ConfigObject<ConfigValue>* config;
 
-    ControlObjectThread m_COTInitialBoost;
-    ControlObjectThread m_COTEnabled;
+    ControlObjectSlave m_COTReplayGainBoost;
+    ControlObjectSlave m_COTEnabled;
 };
 
 

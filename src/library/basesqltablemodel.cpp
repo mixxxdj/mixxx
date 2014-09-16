@@ -120,12 +120,9 @@ bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
 
 QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
                                        int role) const {
-    if (role != Qt::DisplayRole)
-        return QAbstractTableModel::headerData(section, orientation, role);
-
-    if (orientation == Qt::Horizontal) {
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         QVariant headerValue = m_headerInfo.value(section).value(role);
-        if (!headerValue.isValid() && role == Qt::DisplayRole) {
+        if (!headerValue.isValid()) {
             // Try EditRole if DisplayRole wasn't present
             headerValue = m_headerInfo.value(section).value(Qt::EditRole);
         }
@@ -204,8 +201,8 @@ void BaseSqlTableModel::select() {
     // Remove all the rows from the table. We wait to do this until after the
     // table query has succeeded. See Bug #1090888.
     // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+    if (!m_rowInfo.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
         m_rowInfo.clear();
         m_trackIdToRows.clear();
         endRemoveRows();
@@ -300,9 +297,11 @@ void BaseSqlTableModel::select() {
     }
 
     // We're done! Issue the update signals and replace the master maps.
-    beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
-    m_rowInfo = rowInfo;
-    endInsertRows();
+    if (!rowInfo.isEmpty()) {
+        beginInsertRows(QModelIndex(), 0, rowInfo.size() - 1);
+        m_rowInfo = rowInfo;
+        endInsertRows();
+    }
 
     int elapsed = time.elapsed();
     qDebug() << this << "select() took" << elapsed << "ms" << rowInfo.size();
@@ -326,8 +325,15 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
+        // It's important that this not be a direct connection, or else the UI
+        // might try to update while a cache operation is in progress, and that
+        // will hit the cache again and cause dangerous reentry cycles
+        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // TODO: A better fix is to have cache and trackpointers defer saving
+        // and deleting, so those operations only take place at the top of
+        // the call stack.
         connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
-                this, SLOT(tracksChanged(QSet<int>)));
+                this, SLOT(tracksChanged(QSet<int>)), Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()

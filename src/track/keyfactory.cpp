@@ -92,7 +92,7 @@ Keys KeyFactory::makePreferredKeys(
         for (KeyChangeList::const_iterator it = key_changes.begin();
              it != key_changes.end(); ++it) {
             // Key position is in frames. Do not accept fractional frames.
-            double frame = floorf(it->second);
+            double frame = floor(it->second);
 
             KeyMap::KeyChange* pChange = key_map.add_key_change();
             pChange->set_key(it->first);
