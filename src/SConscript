@@ -95,8 +95,12 @@ def build_tests():
 
         if build.platform_is_windows:
                 # We want a terminal for tests.
-                env['LINKFLAGS'].remove('/subsystem:windows')
-                env['LINKFLAGS'].append('/subsystem:console')
+                if build.machine_is_64bit:
+                    env['LINKFLAGS'].remove('/subsystem:windows,5.02')
+                    env['LINKFLAGS'].append('/subsystem:console,5.02')
+                else:
+                    env['LINKFLAGS'].remove('/subsystem:windows,5.01')
+                    env['LINKFLAGS'].append('/subsystem:console,5.01')
 
                 test_bin = env.Program(
                         'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],

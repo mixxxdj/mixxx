@@ -1139,10 +1139,14 @@ class MixxxCore(Feature):
                                                 '/nodefaultlib:LIBCMTd.lib'])
 
                 build.env.Append(LINKFLAGS='/entry:mainCRTStartup')
-                # Makes the program not launch a shell first
-                build.env.Append(LINKFLAGS='/subsystem:windows')
+                # Makes the program not launch a shell first.
+                # Minimum platform version 5.01 for XP x86 and 5.02 for XP x64.
+                if build.machine_is_64bit:
+                    build.env.Append(LINKFLAGS='/subsystem:windows,5.02')
+                else:
+                    build.env.Append(LINKFLAGS='/subsystem:windows,5.01')
+                # Force MSVS to generate a manifest (MSVC2010)
                 build.env.Append(LINKFLAGS='/manifest')
-                                 #Force MSVS to generate a manifest (MSVC2010)
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS='--subsystem,windows')
