@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <QStringBuilder>
+#include <QFileInfo>
 
 #include "library/coverartcache.h"
 #include "library/dao/coverartdao.h"
@@ -30,11 +31,11 @@ TEST_F(CoverArtCacheTest, loadImage) {
     EXPECT_TRUE(img.operator==(res.img));
 
     info.trackId = 1;
-    info.coverLocation = "";
+    info.coverLocation = "ID3TAG";
     info.trackLocation = kTestTrackLocation;
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
     EXPECT_EQ(info.trackId, res.trackId);
-    EXPECT_QSTRING_EQ("", res.coverLocation);
+    EXPECT_QSTRING_EQ("ID3TAG", res.coverLocation);
     EXPECT_QSTRING_EQ(info.md5Hash, res.md5Hash);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
