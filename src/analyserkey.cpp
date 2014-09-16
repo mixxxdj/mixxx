@@ -23,8 +23,6 @@ AnalyserKey::~AnalyserKey(){
     delete m_pVamp;
 }
 
-// TODO(XXX): Get rid of the horrible duplication here between initialise and
-// loadStored.
 bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     if (totalSamples == 0) {
         return false;
@@ -41,10 +39,6 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     m_bPreferencesFastAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
-    m_bPreferencesReanalyzeEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-
     QString library = m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
         // TODO(rryan) this default really doesn't belong here.
@@ -58,34 +52,8 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
-    bool bShouldAnalyze = false;
-    const Keys& keys = tio->getKeys();
-    if (keys.isValid()) {
-        QString version = keys.getVersion();
-        QString subVersion = keys.getSubVersion();
-
-        QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            m_pluginId, m_bPreferencesFastAnalysisEnabled);
-        QString newVersion = KeyFactory::getPreferredVersion();
-        QString newSubVersion = KeyFactory::getPreferredSubVersion(extraVersionInfo);
-
-        if (version == newVersion && subVersion == newSubVersion) {
-            // If the version and settings have not changed then if the world is
-            // sane, re-analyzing will do nothing.
-            bShouldAnalyze = false;
-            qDebug() << "Keys version/sub-version unchanged since previous analysis. Not analyzing.";
-        } else if (m_bPreferencesReanalyzeEnabled) {
-            bShouldAnalyze = true;
-        } else {
-            bShouldAnalyze = false;
-            qDebug() << "Track has previous key detection result that is not up"
-                     << "to date with latest settings but user preferences"
-                     << "indicate we should not re-analyze it.";
-        }
-    } else {
-        // No valid keys stored so we want to analyze this track.
-        bShouldAnalyze = true;
-    }
+    // if we can't load a stored track reanalyze it
+    bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
         m_pVamp = new VampAnalyser(m_pConfig);
@@ -107,8 +75,6 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     return bShouldAnalyze;
 }
 
-// TODO(XXX): Get rid of the horrible duplication here between initialise and
-// loadStored.
 bool AnalyserKey::loadStored(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
