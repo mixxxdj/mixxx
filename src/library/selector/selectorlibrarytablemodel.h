@@ -26,7 +26,6 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     ~SelectorLibraryTableModel();
 
     void setTableModel(int id = -1);
-    void search(const QString& searchText);
     void active(bool value);
     void setSeedTrack(TrackPointer pSeedTrack);
     // The following functions are called by DlgSelector to update the UI

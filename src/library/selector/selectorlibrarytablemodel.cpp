@@ -253,12 +253,6 @@ void SelectorLibraryTableModel::slotFiltersChanged() {
     search("");
 }
 
-// TODO (kain88) I thought I got rid of this stuff
-void SelectorLibraryTableModel::search(const QString& text) {
-    setSearch(text, m_filterString);
-    select();
-}
-
 // PRIVATE METHODS
 void SelectorLibraryTableModel::initHeaderData() {
     // call the base class method first
