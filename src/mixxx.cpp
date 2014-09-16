@@ -1483,11 +1483,11 @@ void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
 void MixxxMainWindow::slotDeveloperCalculateSimilarities(bool toggle) {
     Q_UNUSED(toggle);
     QString filename =
-        // TODO (kain88) change this to the current path as default
-        QFileDialog::getSaveFileName(this,
-                                     ("Save Comparison CSV File"),
-                                     "/tmp/comparisons.csv",
-                                     ("CSV (*.csv)"));
+            QFileDialog::getSaveFileName(
+                this,
+                ("Save Comparison CSV File"),
+                QDir::currentPath().append("/comparisons.csv"),
+                ("CSV (*.csv)"));
     if (!filename.isNull()) {
         m_pLibrary->slotCalculateAllSimilarities(filename);
     }
