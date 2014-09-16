@@ -565,7 +565,7 @@ def BuildRelease(target, source, env):
                 {'path': nsis_path,
                  'package_name': exe_name,
                  'version': mixxx_version,
-                 'qtpath': os.environ['QTDIR'],
+                 'qtpath': build.env['QTDIR'],
                  'winlibpath': mixxx_winlib_path,
                  '64bit': buildwin64}
             print "Using command: " + command
