@@ -94,10 +94,11 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wsound);
     m_wlibrary = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_wlibrary);
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager,
+                                      m_pConfig);
+    addPageWidget(m_wcontrols);
     m_wselector = new DlgPrefSelector(this, pConfig);
     addPageWidget(m_wselector);
-    addPageWidget(m_wcontrols);
     m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig);
     addPageWidget(m_wwaveform);
     m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
@@ -106,15 +107,14 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_weq);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
-
     m_wbeats = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_wbeats);
     m_wkey = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_wkey);
     m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
+    addPageWidget(m_wreplaygain);
     m_wtimbre = new DlgPrefTimbre(this, pConfig);
     addPageWidget(m_wtimbre);
-    addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
 #ifdef __SHOUTCAST__
@@ -135,12 +135,6 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     // If we don't call this explicitly, then we default to showing the sound
     // hardware page but the tree item is not selected.
     showSoundHardwarePage();
-    //TODO (kain88) check where the other pref widgets have this
-    connect(this, SIGNAL(showDlg()), m_wselector,  SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()),
-            m_wtimbre, SLOT(slotUpdate()));
-    connect(buttonBox, SIGNAL(accepted()), m_wselector,   SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_wtimbre,    SLOT(slotApply()));
 }
 
 DlgPreferences::~DlgPreferences() {
