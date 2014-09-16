@@ -289,8 +289,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
     } else if (current == m_pLibraryButton) {
         switchToPage(m_wlibrary);
     } else if (current == m_pSelectorButton) {
-        //TODO (kain88) also use `switchToPage` here
-        pagesWidget->setCurrentWidget(m_wselector->parentWidget()->parentWidget());
+        switchToPage(m_wselector);
     } else if (current == m_pControlsButton) {
         switchToPage(m_wcontrols);
     } else if (current == m_pWaveformButton) {
@@ -308,8 +307,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
     } else if (current == m_pKeyDetectionButton) {
         switchToPage(m_wkey);
     } else if (current == m_pTimbreAnalysisButton) {
-        //TODO (kain88) also use `switchToPage` here
-        pagesWidget->setCurrentWidget(m_wtimbre->parentWidget()->parentWidget());
+        switchToPage(m_wtimbre);
     } else if (current == m_pReplayGainButton) {
         switchToPage(m_wreplaygain);
 #ifdef __VINYLCONTROL__
