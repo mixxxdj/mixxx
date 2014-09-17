@@ -71,7 +71,7 @@ inline int roundUpToPowerOf2(int v) {
 }
 
 // MSVS 2013 (_MSC_VER 1800) introduced C99 support.
-#if _MSC_VER < 1800 
+#if defined(__WINDOWS__) &&  _MSC_VER < 1800
 inline int round(double x){
     return x < 0.0 ? ceil(x - 0.5) : floor(x + 0.5);
 }
