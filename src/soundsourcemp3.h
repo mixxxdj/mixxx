@@ -20,8 +20,11 @@
 
 #include <errno.h>
 #include <id3tag.h>
-#ifdef WIN64
-  #define FPM_64BIT // So mad.h doesn't try to use inline assembly which MSVC-x64 doesn't support
+#ifdef _MSC_VER
+  // So mad.h doesn't try to use inline assembly which MSVC doesn't support. 
+  // Notably, FPM_64BIT does not require a 64-bit machine. It merely requires a 
+  // compiler that supports 64-bit types.
+  #define FPM_64BIT 
 #endif
 #include <mad.h>
 #include <stdio.h>
