@@ -114,11 +114,11 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
     }
 
     if (fMid || pState->old_mid) {
-        pState->m_low2->process(pInput, pState->m_pBandBuf, numSamples);
-        pState->m_delay2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
+        pState->m_delay2->process(pInput, pState->m_pBandBuf, numSamples);
+        pState->m_low2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
     } else {
-        pState->m_low2->pauseFilter();
         pState->m_delay2->pauseFilter();
+        pState->m_low2->pauseFilter();
     }
 
     if (fLow || pState->old_low) {
