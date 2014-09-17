@@ -376,7 +376,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
     if (!m_pQuantize->get() || getSyncMode() == SYNC_MASTER ||
             m_pBeats == NULL || m_pReverseButton->get()) {
         m_resetSyncAdjustment = true;
-        return rate;
+        return rate + userTweak;
     }
 
     // Now we need to get our beat distance so we can figure out how
@@ -389,7 +389,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
                                     NULL, NULL,
                                     &dBeatLength, &my_percentage, 0.01)) {
         m_resetSyncAdjustment = true;
-        return rate;
+        return rate + userTweak;
     }
 
     // Now that we have our beat distance we can also check how large the
@@ -400,7 +400,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
                               dBeatLength;
     if (loop_enabled && loop_size < 1.0 && loop_size > 0) {
         m_resetSyncAdjustment = true;
-        return rate;
+        return rate + userTweak;
     }
 
     // Now we have all we need to calculate the sync adjustment if any.
