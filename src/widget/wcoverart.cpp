@@ -65,7 +65,8 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
     bool res = CoverArtCache::instance()->changeCoverArt(
                     m_lastRequestedCover.trackId, newLoc);
     if (!res) {
-        QMessageBox::warning(this, tr("Change Cover Art"),
+        // parent must be NULL - it ensures the use of the default style.
+        QMessageBox::warning(NULL, tr("Change Cover Art"),
                              tr("Could not change the cover art."));
     }
 }
