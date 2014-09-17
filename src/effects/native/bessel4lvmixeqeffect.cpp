@@ -80,16 +80,15 @@ void Bessel4LVMixEQEffect::processGroup(const QString& group,
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
-    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
-    fLow = m_pPotLow->value().toDouble();
-    fMid = m_pPotMid->value().toDouble();
-    fHigh = m_pPotHigh->value().toDouble();
+    double fLow = m_pPotLow->value().toDouble();
+    double fMid = m_pPotMid->value().toDouble();
+    double fHigh = m_pPotHigh->value().toDouble();
 
     if (pState->m_oldSampleRate != sampleRate ||
-            (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
-            (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
-        pState->m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
-        pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
+            (pState->m_loFreq != m_pLoFreqCorner->get()) ||
+            (pState->m_hiFreq != m_pHiFreqCorner->get())) {
+        pState->m_loFreq = m_pLoFreqCorner->get();
+        pState->m_hiFreq = m_pHiFreqCorner->get();
         pState->m_oldSampleRate = sampleRate;
         pState->setFilters(sampleRate, pState->m_loFreq, pState->m_hiFreq);
     }

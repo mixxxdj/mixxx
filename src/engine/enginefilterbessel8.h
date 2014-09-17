@@ -8,10 +8,11 @@ class EngineFilterBessel8Low : public EngineFilterIIR<8, IIR_LP> {
   public:
     EngineFilterBessel8Low(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
-    inline double delayFactor() {
-        // group delay at 1 Hz freqCorner1 and 1 Hz Samplerate
-        return 0.5067709751;
-    }
+    // This function selects a corner frequency near the
+    // desiredCorner1Ratio freqCorner / sampleRate
+    // the produces an integer group delay at the passband
+    // Optimized for freqCorner / 20
+    int setFrequencyCornersForIntDelay(double desiredCorner1Ratio, int maxDelay);
 };
 
 class EngineFilterBessel8Band : public EngineFilterIIR<16, IIR_BP> {
