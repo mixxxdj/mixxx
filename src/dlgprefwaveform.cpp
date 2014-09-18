@@ -183,6 +183,5 @@ void DlgPrefWaveform::slotSetNormalizeOverview( bool normalize) {
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
     frameRateAverage->setText(
             QString::number((double)frameRate, 'f', 2) + " : " +
-            tr(" dropped frames ", "please leave a space before and after the translation") +
-            QString::number(droppedFrames));
+            tr("dropped frames ") + " " + QString::number(droppedFrames));
 }
