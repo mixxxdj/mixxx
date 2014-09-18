@@ -102,7 +102,7 @@ ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double 
         : ControlPotmeterBehavior(dMinValue, dMaxValue, false),
           m_dB1(0.0),
           m_dB2(0.0) {
-    if (dMaxValue == 1.0 || dMinValue != 0.0 ) {
+    if (dMaxValue <= 1.0 || dMinValue != 0.0 ) {
         m_bTwoState = false;
         m_dB1 = log10((dMaxValue - dMinValue) + 1.0) / maxPosition;
     } else {
