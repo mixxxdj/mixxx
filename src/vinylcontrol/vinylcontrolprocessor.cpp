@@ -218,6 +218,8 @@ bool VinylControlProcessor::enabledDeckExists() const {
 }
 
 void VinylControlProcessor::toggleDeck(double value) {
+    QMutexLocker locker(&m_processorsLock);
+    int enabled = -1;
     if (!value)
         goto update_enabled;
 
@@ -234,9 +236,6 @@ void VinylControlProcessor::toggleDeck(double value) {
      */
 
     // -1 means we haven't found a proxy that's enabled
-    int enabled = -1;
-
-    QMutexLocker locker(&m_processorsLock);
 
     for (int i = 0; i < m_processors.size(); ++i) {
         VinylControl* pProcessor = m_processors.at(i);
