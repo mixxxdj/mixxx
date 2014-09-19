@@ -38,8 +38,10 @@ DenonDNSC2000.getDeckByGroup = function(group) {
 
 DenonDNSC2000.shift = function(midino, control, value, status, group) {
 	shiftPressed = ((status & 0xF0) == 0x90);
-	if(!shiftPressed)
+	if(!shiftPressed) {
 		engine.setValue(group, 'reverse', 0);
+		engine.setValue('[PreviewDeck1]', 'cue_gotoandstop', 1);
+	}
 }
 
 DenonDNSC2000.changeDeck = function(midino, control, value, status, group) {
@@ -93,8 +95,13 @@ DenonDNSC2000.selectTrack = function (midino, control, value, status, group) {
 }
 
 DenonDNSC2000.loadSelectedTrack = function (midino, control, value, status, group) {
-	engine.setValue(group, 'LoadSelectedTrack', 1);
-	engine.beginTimer(1500, 'DenonDNSC2000.handleLeds("'+group+'")', true);
+	if(shiftPressed) {
+		engine.setValue('[PreviewDeck1]', 'LoadSelectedTrackAndPlay', 1);
+	}
+	else {
+		engine.setValue(group, 'LoadSelectedTrack', 1);
+		engine.beginTimer(1500, 'DenonDNSC2000.handleLeds("'+group+'")', true);
+	}
 }
 
 DenonDNSC2000.loopOrHotcues = function (midino, control, value, status, group) {
@@ -352,11 +359,19 @@ DenonDNSC2000.pitchBend = function (midino, control, value, status, group) {
 }
 
 DenonDNSC2000.jog = function (midino, control, value, status, group) {
-	var deck = DenonDNSC2000.getDeckByGroup(group);
-	if(!deck.scratchMode)
-		deck.picthJog(value);
-	else
-		deck.scratchJog(value);
+	if(shiftPressed) {
+		if(!(engine.getValue('[PreviewDeck1]', 'play') == 0)) {
+			var currentPosition = engine.getValue('[PreviewDeck1]', 'playposition');
+			engine.setValue('[PreviewDeck1]', 'playposition', currentPosition + (value - 64) * 0.0001);
+		}
+	}
+	else {
+		var deck = DenonDNSC2000.getDeckByGroup(group);
+		if(!deck.scratchMode)
+			deck.picthJog(value);
+		else
+			deck.scratchJog(value);
+	}
 }
 
 DenonDNSC2000.jogTouch = function (midino, control, value, status, group) {

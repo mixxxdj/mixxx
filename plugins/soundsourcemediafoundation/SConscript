@@ -12,7 +12,11 @@ if int(build.flags['mediafoundation']):
     conf = Configure(env)
     env = conf.Finish()
     env["LINKFLAGS"].remove("/entry:mainCRTStartup")
-    env["LINKFLAGS"].remove("/subsystem:windows")
+    # TODO(rryan): Why do we do this?
+    if build.machine_is_64bit:
+        env["LINKFLAGS"].remove("/subsystem:windows,5.02")
+    else:
+        env["LINKFLAGS"].remove("/subsystem:windows,5.01")
     ssmediafoundation_bin = env.SharedLibrary('soundsourcemediafoundation',
         ['soundsource.cpp', 'soundsourcemediafoundation.cpp'],
         LINKCOM  = [env['LINKCOM'],

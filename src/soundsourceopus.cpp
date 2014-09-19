@@ -78,7 +78,7 @@ Result SoundSourceOpus::open() {
     // the file is m_iChannels * ov_pcm_total. rryan 7/2009 I verified this by
     // hand. a 30 second long 48khz mono ogg and a 48khz stereo ogg both report
     // 1440000 for op_pcm_total.
-    int64_t ret = op_pcm_total(m_ptrOpusFile, -1) * 2;
+    qint64 ret = op_pcm_total(m_ptrOpusFile, -1) * 2;
 
     // qDebug() << m_qFilename << "chan:" << m_iChannels << "sample:" << m_iSampleRate << "LEN:" << ret;
 
@@ -182,7 +182,7 @@ Result SoundSourceOpus::parseHeader() {
     this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
     this->setSampleRate(48000);
     this->setChannels(2);
-    int64_t l_lLength = op_pcm_total(l_ptrOpusFile, -1) * 2;
+    qint64 l_lLength = op_pcm_total(l_ptrOpusFile, -1) * 2;
     this->setDuration(l_lLength / (48000 * 2));
     this->setType("opus");
 
