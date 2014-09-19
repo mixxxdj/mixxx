@@ -57,26 +57,28 @@ class BeatMapIterator : public BeatIterator {
     BeatList::const_iterator m_endBeat;
 };
 
-BeatMap::BeatMap(TrackPointer pTrack, const QByteArray* pByteArray)
+BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
+                 const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive) {
-    initialize(pTrack);
+    initialize(pTrack, iSampleRate);
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }
 }
 
-BeatMap::BeatMap(TrackPointer pTrack, const QVector<double> beats)
+BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
+                 const QVector<double> beats)
         : QObject(),
           m_mutex(QMutex::Recursive) {
-    initialize(pTrack);
+    initialize(pTrack, iSampleRate);
     if (beats.size() > 0) {
         createFromBeatVector(beats);
     }
 }
 
-void BeatMap::initialize(TrackPointer pTrack) {
-    m_iSampleRate = pTrack->getSampleRate();
+void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
+    m_iSampleRate = m_iSampleRate > 0 ? iSampleRate : pTrack->getSampleRate();
     m_dCachedBpm = 0;
     m_dLastFrame = 0;
 }
