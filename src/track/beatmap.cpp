@@ -78,7 +78,7 @@ BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
 }
 
 void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
-    m_iSampleRate = m_iSampleRate > 0 ? iSampleRate : pTrack->getSampleRate();
+    m_iSampleRate = iSampleRate > 0 ? iSampleRate : pTrack->getSampleRate();
     m_dCachedBpm = 0;
     m_dLastFrame = 0;
 }
