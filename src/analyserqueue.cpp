@@ -14,6 +14,7 @@
 #include "analyserrg.h"
 #include "analyserbeats.h"
 #include "analyserkey.h"
+#include "analysertimbre.h"
 #include "vamp/vampanalyser.h"
 #include "util/compatibility.h"
 #include "util/event.h"
@@ -426,6 +427,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
+    ret->addAnalyser(new AnalyserTimbre(pConfig));
 
     ret->start(QThread::LowPriority);
     return ret;
@@ -440,6 +442,7 @@ AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
+    ret->addAnalyser(new AnalyserTimbre(pConfig));
 
     ret->start(QThread::LowPriority);
     return ret;

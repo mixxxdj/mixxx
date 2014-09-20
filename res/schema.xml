@@ -383,4 +383,14 @@ METADATA
       );
     </sql>
   </revision>
+   <revision version="24" min_compatible="3">
+    <description>
+            Add timbre column
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN timbre BLOB;
+      ALTER TABLE Library ADD COLUMN timbre_version TEXT;
+      ALTER TABLE Library ADD COLUMN timbre_sub_version TEXT;
+    </sql>
+  </revision>
 </schema>

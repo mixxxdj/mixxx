@@ -7,6 +7,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
+#include "widget/wlibrary.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
@@ -27,7 +28,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_DlgTagFetcher(NULL) ,
+          m_DlgTagFetcher(NULL),
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
@@ -94,6 +95,7 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 
+    delete m_pSetSeedTrack;
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
@@ -311,6 +313,10 @@ void WTrackTableView::createActions() {
     m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
+
+    m_pSetSeedTrack = new QAction(tr("Get Follow-up Tracks"), this);
+    connect(m_pSetSeedTrack, SIGNAL(triggered()),
+            this, SLOT(slotSetSeedTrack()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -782,6 +788,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pReloadMetadataAct);
         m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
+
+        m_pSetSeedTrack->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pSetSeedTrack);
+
     }
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
@@ -1226,6 +1236,23 @@ void WTrackTableView::slotResetPlayed() {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             pTrack->setTimesPlayed(0);
+        }
+    }
+}
+
+void WTrackTableView::slotSetSeedTrack() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    if (indices.size() > 0) {
+        TrackPointer pTrack = trackModel->getTrack(indices.at(0));
+        if (pTrack) {
+            emit(setSeedTrack(pTrack));
+            emit(switchToSelector());
         }
     }
 }

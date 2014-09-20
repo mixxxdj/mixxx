@@ -10,6 +10,8 @@
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/keyfactory.h"
+#include "track/timbre.h"
+#include "track/timbrefactory.h"
 #include "trackinfoobject.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -357,6 +359,20 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":key", keyText);
     m_pQueryLibraryInsert->bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
+
+    TimbrePointer pTimbre = pTrack->getTimbre();
+    QByteArray* pTimbreBlob = NULL;
+    QString timbreVersion = "";
+    QString timbreSubVersion = "";
+    if (pTimbre) {
+        pTimbreBlob = pTimbre->toByteArray();
+        timbreVersion = pTimbre->getVersion();
+        timbreSubVersion = pTimbre->getSubVersion();
+    }
+    m_pQueryLibraryInsert->bindValue(":timbre", pTimbreBlob ? *pTimbreBlob : QVariant(QVariant::ByteArray));
+    m_pQueryLibraryInsert->bindValue(":timbre_version", timbreVersion);
+    m_pQueryLibraryInsert->bindValue(":timbre_sub_version", timbreSubVersion);
+    delete pTimbreBlob;
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -389,14 +405,16 @@ void TrackDAO::addTracksPrepare() {
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
-            "keys_version, keys_sub_version, keys) "
+            "keys_version, keys_sub_version, keys, "
+            "timbre_version, timbre_sub_version, timbre) "
             "VALUES ("
             ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
             ":beats_version, :beats_sub_version, :beats, :bpm_lock, "
-            ":keys_version, :keys_sub_version, :keys)");
+            ":keys_version, :keys_sub_version, :keys, "
+            ":timbre_version, :timbre_sub_version, :timbre)");
 
     m_pQueryLibraryUpdate->prepare("UPDATE library SET mixxx_deleted = 0 "
             "WHERE id = :id");
@@ -828,7 +846,8 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, "
         "beats_version, beats_sub_version, beats, datetime_added, bpm_lock, "
-        "keys_version, keys_sub_version, keys "
+        "keys_version, keys_sub_version, keys, "
+        "timbre_version, timbre_sub_version, timbre "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -868,6 +887,14 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int beatsVersionColumn = queryRecord.indexOf("beats_version");
         const int beatsSubVersionColumn = queryRecord.indexOf("beats_sub_version");
         const int beatsColumn = queryRecord.indexOf("beats");
+
+        const int keysVersionColumn = queryRecord.indexOf("keys_version");
+        const int keysSubVersionColumn = queryRecord.indexOf("keys_sub_version");
+        const int keysColumn = queryRecord.indexOf("keys");
+
+        const int timbreVersionColumn = queryRecord.indexOf("timbre_version");
+        const int timbreSubVersionColumn = queryRecord.indexOf("timbre_sub_version");
+        const int timbreColumn = queryRecord.indexOf("timbre");
 
         while (query.next()) {
             bool shouldDirty = false;
@@ -931,6 +958,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString beatsVersion = query.value(beatsVersionColumn).toString();
             QString beatsSubVersion = query.value(beatsSubVersionColumn).toString();
             QByteArray beatsBlob = query.value(beatsColumn).toByteArray();
+
             BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
             if (pBeats) {
                 pTrack->setBeats(pBeats);
@@ -939,15 +967,16 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             }
             pTrack->setBpmLock(has_bpm_lock);
 
-            QString keysVersion = query.value(query.record().indexOf("keys_version")).toString();
-            QString keysSubVersion = query.value(query.record().indexOf("keys_sub_version")).toString();
-            QByteArray keysBlob = query.value(query.record().indexOf("keys")).toByteArray();
+            QString keysVersion = query.value(keysVersionColumn).toString();
+            QString keysSubVersion = query.value(keysSubVersionColumn).toString();
+            QByteArray keysBlob = query.value(keysColumn).toByteArray();
             Keys keys = KeyFactory::loadKeysFromByteArray(
                 keysVersion, keysSubVersion, &keysBlob);
 
             if (keys.isValid()) {
                 pTrack->setKeys(keys);
             } else {
+                QString keyText = pTrack->getKeyText();
                 // Typically this happens if we are upgrading from an older
                 // (<1.12.0) version of Mixxx that didn't support Keys. We treat
                 // all legacy data as user-generated because that way it will be
@@ -956,6 +985,18 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
                 // The in-database data would change because of this. Mark the
                 // track dirty so we save it when it is deleted.
                 shouldDirty = true;
+                pTrack->setDirty(true);
+            }
+
+            QString timbreVersion = query.value(timbreVersionColumn).toString();
+            QString timbreSubVersion = query.value(timbreSubVersionColumn).toString();
+            QByteArray timbreBlob = query.value(timbreColumn).toByteArray();
+
+            TimbrePointer pTimbre = TimbreFactory::loadTimbreFromByteArray(
+                pTrack, timbreVersion, timbreSubVersion, &timbreBlob);
+
+            if (pTimbre) {
+                pTrack->setTimbre(pTimbre);
             }
 
             pTrack->setTimesPlayed(timesplayed);
@@ -1089,7 +1130,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats_sub_version=:beats_sub_version, beats=:beats, "
                   "bpm_lock=:bpm_lock, "
-                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys "
+                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys, "
+                  "timbre_version=:timbre_version, timbre_sub_version=:timbre_sub_version, timbre=:timbre "
                   "WHERE id=:track_id");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -1159,6 +1201,20 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":key", keyText);
     query.bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
+
+    TimbrePointer pTimbre = pTrack->getTimbre();
+    QByteArray* pTimbreBlob = NULL;
+    QString timbreVersion = "";
+    QString timbreSubVersion = "";
+    if (pTimbre) {
+        pTimbreBlob = pTimbre->toByteArray();
+        timbreVersion = pTimbre->getVersion();
+        timbreSubVersion = pTimbre->getSubVersion();
+    }
+    query.bindValue(":timbre", pTimbreBlob ? *pTimbreBlob : QVariant(QVariant::ByteArray));
+    query.bindValue(":timbre_version", timbreVersion);
+    query.bindValue(":timbre_sub_version", timbreSubVersion);
+    delete pTimbreBlob;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

@@ -27,6 +27,7 @@ class WSearchLineEdit;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
+class SelectorFeature;
 class LibraryControl;
 class MixxxKeyboard;
 
@@ -74,6 +75,9 @@ public:
     void slotRequestAddDir(QString directory);
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
+    void slotSetSeedTrack(TrackPointer pTrack);
+    void slotSwitchToSelector();
+    void slotCalculateAllSimilarities(const QString& filename);
     void onSkinLoadFinished();
 
   signals:
@@ -96,6 +100,7 @@ public:
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+    SelectorFeature* m_pSelectorFeature;
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;

@@ -22,6 +22,7 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
+#include "library/selector/selectorfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
@@ -59,6 +60,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
+    m_pSelectorFeature = new SelectorFeature(this, pConfig, m_pTrackCollection);
+    addFeature(m_pSelectorFeature);
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
@@ -112,11 +115,13 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
-    //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
-    //           Qt does it for us due to the way RJ wrote all this stuff.
-    //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
-    // we never see the TrackCollection's destructor being called... - Albert
-    // Has to be deleted at last because the features holds references of it.
+    // IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy
+    //            somehow. Qt does it for us due to the way RJ wrote all this
+    //            stuff.
+    // Update: -  OR NOT! As of Dec 8, 2009, this pointer must
+    //            be destroyed manually otherwise we never see the
+    //            TrackCollection's destructor bein called... - Albert Has to be
+    //            deleted at last because the features holds references of it.
     delete m_pTrackCollection;
 }
 
@@ -139,6 +144,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
                          MixxxKeyboard* pKeyboard) {
+
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
@@ -148,6 +154,10 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             this, SLOT(slotLoadTrack(TrackPointer)));
     connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pTrackTableView, SIGNAL(switchToSelector()),
+            this, SLOT(slotSwitchToSelector()));
+    connect(pTrackTableView, SIGNAL(setSeedTrack(TrackPointer)),
+            this, SLOT(slotSetSeedTrack(TrackPointer)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -234,6 +244,21 @@ void Library::slotCreatePlaylist() {
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
+
+void Library::slotSetSeedTrack(TrackPointer pTrack) {
+    m_pSelectorFeature->setSeedTrack(pTrack);
+}
+
+void Library::slotSwitchToSelector() {
+    qDebug() << "switch to Selector";
+    m_pSidebarModel->slotFeatureSelect(m_pSelectorFeature);
+    emit(switchToView("Selector"));
+}
+
+void Library::slotCalculateAllSimilarities(const QString& filename) {
+    m_pSelectorFeature->calculateAllSimilarities(filename);
+}
+
 
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.

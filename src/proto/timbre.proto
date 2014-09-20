@@ -1,0 +1,13 @@
+package mixxx.track.io.timbre;
+
+option optimize_for = LITE_RUNTIME;
+
+message BeatSpectrum {
+    repeated double feature = 1 [packed=true];
+}
+
+message TimbreModel {
+    repeated double mean = 1 [packed=true];
+    repeated double variance = 2 [packed=true];
+    optional BeatSpectrum beat_spectrum = 3;
+}

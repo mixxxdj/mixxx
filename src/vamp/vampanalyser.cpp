@@ -380,6 +380,20 @@ QVector<QString> VampAnalyser::GetLabelsVector() {
     return vectout;
 }
 
+QVector<double> VampAnalyser::GetValuesVector() {
+    QVector<double> vectout;
+    for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
+         fli != m_Results.end(); ++fli) {
+        std::vector<float> vec = fli->values;
+        if (!vec.empty()) {
+            foreach(float f, vec) {
+                vectout << f;
+            }
+        }
+    }
+    return vectout;
+}
+
 QVector<double> VampAnalyser::GetFirstValuesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();

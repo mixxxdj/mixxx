@@ -520,6 +520,8 @@ class MixxxCore(Feature):
                    "dlgprefwaveform.cpp",
                    "dlgprefautodj.cpp",
                    "dlgprefkey.cpp",
+                   "dlgprefselector.cpp",
+                   "dlgpreftimbre.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
                    "dlgabout.cpp",
@@ -527,6 +529,7 @@ class MixxxCore(Feature):
                    "dlgprefcrossfader.cpp",
                    "dlgtagfetcher.cpp",
                    "dlgtrackinfo.cpp",
+                   "dlgselector.cpp",
                    "dlganalysis.cpp",
                    "dlgautodj.cpp",
                    "dlghidden.cpp",
@@ -616,6 +619,7 @@ class MixxxCore(Feature):
                    "analyserqueue.cpp",
                    "analyserwaveform.cpp",
                    "analyserkey.cpp",
+                   "analysertimbre.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -740,6 +744,11 @@ class MixxxCore(Feature):
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
 
+                   "library/selector/selectorfeature.cpp",
+                   "library/selector/selectorfilters.cpp",
+                   "library/selector/selectorlibrarytablemodel.cpp",
+                   "library/selector/selectorsimilarity.cpp",
+
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",
                    "library/baseexternaltrackmodel.cpp",
@@ -859,6 +868,9 @@ class MixxxCore(Feature):
                    "track/keys.cpp",
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
+                   "track/timbre.cpp",
+                   "track/timbrefactory.cpp",
+                   "track/timbreutils.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -942,6 +954,9 @@ class MixxxCore(Feature):
             'dlgrecording.ui',
             'dlgtagfetcher.ui',
             'dlgtrackinfo.ui',
+            'dlgpreftimbredlg.ui',
+            'dlgprefselectordlg.ui',
+            'dlgselector.ui'
         ]
         map(Qt.uic(build), ui_files)
 

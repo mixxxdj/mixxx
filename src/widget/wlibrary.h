@@ -10,6 +10,7 @@
 #include <QString>
 #include <QEvent>
 
+#include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "widget/wbasewidget.h"
 
@@ -39,8 +40,12 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
 
     void search(const QString&);
 
+  signals:
+    void switchToSelector();
+    void setSeedTrack(TrackPointer pTrack);
   protected:
     bool event(QEvent* pEvent);
+
 
   private:
     QMutex m_mutex;

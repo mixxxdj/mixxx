@@ -895,6 +895,16 @@ void TrackInfoObject::setRating (int rating) {
         setDirty(true);
     }
 }
+TimbrePointer TrackInfoObject::getTimbre() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_pTimbre;
+}
+
+void TrackInfoObject::setTimbre(TimbrePointer pTimbre) {
+    QMutexLocker lock(&m_qMutex);
+    m_pTimbre = pTimbre;
+    setDirty(true);
+}
 
 void TrackInfoObject::setKeys(Keys keys) {
     QMutexLocker lock(&m_qMutex);

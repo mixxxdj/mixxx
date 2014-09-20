@@ -19,6 +19,7 @@
         <file>images/preferences/ic_preferences_recording.png</file>
         <file>images/preferences/ic_preferences_replaygain.png</file>
         <file>images/preferences/ic_preferences_sampler.png</file>
+        <file>images/preferences/ic_preferences_selector.png</file>
         <file>images/preferences/ic_preferences_soundhardware.png</file>
         <file>images/preferences/ic_preferences_vinyl.png</file>
         <file>images/preferences/ic_preferences_warning.png</file>
@@ -41,6 +42,7 @@
         <file>images/library/ic_library_promotracks.png</file>
         <file>images/library/ic_library_recordings.png</file>
         <file>images/library/ic_library_rhythmbox.png</file>
+        <file>images/library/ic_library_selector.png</file>
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_checked.png</file>
         <file>images/library/ic_library_unchecked.png</file>

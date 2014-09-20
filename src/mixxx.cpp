@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QTranslator>
 #include <QMenu>
+#include <QFileDialog>
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QDesktopWidget>
@@ -1285,6 +1286,16 @@ void MixxxMainWindow::initActions()
     connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
 
+    QString calcSimilaritiesTitle = tr("&Calculate similarities");
+    QString calcSimilaritiesText = tr("Calculate similarities");
+    m_pDeveloperCalculateSimilarities = new QAction(calcSimilaritiesText, this);
+    m_pDeveloperCalculateSimilarities->setCheckable(true);
+    m_pDeveloperCalculateSimilarities->setChecked(false);
+    m_pDeveloperCalculateSimilarities->setStatusTip(calcSimilaritiesText);
+    m_pDeveloperCalculateSimilarities->setWhatsThis(
+        buildWhatsThis(calcSimilaritiesTitle, calcSimilaritiesText));
+    connect(m_pDeveloperCalculateSimilarities, SIGNAL(toggled(bool)),
+            this, SLOT(slotDeveloperCalculateSimilarities(bool)));
     QString developerToolsTitle = tr("Developer Tools");
     QString developerToolsText = tr("Opens the developer tools dialog");
     m_pDeveloperTools = new QAction(developerToolsTitle, this);
@@ -1371,6 +1382,7 @@ void MixxxMainWindow::initMenuBar()
 
     // Developer Menu
     m_pDeveloperMenu->addAction(m_pDeveloperReloadSkin);
+    m_pDeveloperMenu->addAction(m_pDeveloperCalculateSimilarities);
     m_pDeveloperMenu->addAction(m_pDeveloperTools);
 
     // menuBar entry helpMenu
@@ -1466,6 +1478,19 @@ void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
 void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
     Q_UNUSED(toggle);
     rebootMixxxView();
+}
+
+void MixxxMainWindow::slotDeveloperCalculateSimilarities(bool toggle) {
+    Q_UNUSED(toggle);
+    QString filename =
+            QFileDialog::getSaveFileName(
+                this,
+                ("Save Comparison CSV File"),
+                QDir::currentPath().append("/comparisons.csv"),
+                ("CSV (*.csv)"));
+    if (!filename.isNull()) {
+        m_pLibrary->slotCalculateAllSimilarities(filename);
+    }
 }
 
 void MixxxMainWindow::slotDeveloperTools() {

@@ -50,6 +50,8 @@
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
 #include "dlgprefreplaygain.h"
+#include "dlgpreftimbre.h"
+#include "dlgprefselector.h"
 #include "mixxx.h"
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
@@ -92,8 +94,11 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wsound);
     m_wlibrary = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_wlibrary);
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager,
+                                      m_pConfig);
     addPageWidget(m_wcontrols);
+    m_wselector = new DlgPrefSelector(this, pConfig);
+    addPageWidget(m_wselector);
     m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig);
     addPageWidget(m_wwaveform);
     m_wautodj = new DlgPrefAutoDJ(this, m_pConfig);
@@ -102,13 +107,14 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_weq);
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
-
     m_wbeats = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_wbeats);
     m_wkey = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_wkey);
     m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
     addPageWidget(m_wreplaygain);
+    m_wtimbre = new DlgPrefTimbre(this, pConfig);
+    addPageWidget(m_wtimbre);
     m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
 #ifdef __SHOUTCAST__
@@ -162,6 +168,15 @@ void DlgPreferences::createIcons() {
     m_pLibraryButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pLibraryButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+    m_pSelectorButton = new QTreeWidgetItem(contentsTreeWidget,
+        QTreeWidgetItem::Type);
+    m_pSelectorButton->setIcon(0,
+        QIcon(":/images/preferences/ic_preferences_selector.png"));
+    m_pSelectorButton->setText(0, tr("Selector"));
+    m_pSelectorButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pSelectorButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+
     m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
     m_pControlsButton->setText(0, tr("Interface"));
@@ -210,6 +225,14 @@ void DlgPreferences::createIcons() {
     m_pKeyDetectionButton->setText(0, tr("Key Detection"));
     m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pTimbreAnalysisButton = new QTreeWidgetItem(contentsTreeWidget,
+        QTreeWidgetItem::Type);
+    m_pTimbreAnalysisButton->setIcon(0,
+        QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pTimbreAnalysisButton->setText(0, tr("Timbre Analysis"));
+    m_pTimbreAnalysisButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pTimbreAnalysisButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
@@ -265,6 +288,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
       switchToPage(m_wsound);
     } else if (current == m_pLibraryButton) {
         switchToPage(m_wlibrary);
+    } else if (current == m_pSelectorButton) {
+        switchToPage(m_wselector);
     } else if (current == m_pControlsButton) {
         switchToPage(m_wcontrols);
     } else if (current == m_pWaveformButton) {
@@ -281,6 +306,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wbeats);
     } else if (current == m_pKeyDetectionButton) {
         switchToPage(m_wkey);
+    } else if (current == m_pTimbreAnalysisButton) {
+        switchToPage(m_wtimbre);
     } else if (current == m_pReplayGainButton) {
         switchToPage(m_wreplaygain);
 #ifdef __VINYLCONTROL__

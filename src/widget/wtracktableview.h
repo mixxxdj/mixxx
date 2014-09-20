@@ -8,6 +8,7 @@
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
+#include "dlgtagfetcher.h"
 #include "widget/wlibrarytableview.h"
 #include "dlgtagfetcher.h"
 
@@ -47,6 +48,10 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnhide();
     void slotPurge();
 
+  signals:
+    void setSeedTrack(TrackPointer pTrack);
+    void switchToSelector();
+
   private slots:
     void slotRemove();
     void slotHide();
@@ -61,6 +66,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void slotResetPlayed();
+    void slotSetSeedTrack();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group, bool play = false);
@@ -109,6 +115,9 @@ class WTrackTableView : public WLibraryTableView {
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
     QAction *m_pReloadMetadataFromMusicBrainzAct;
+
+    // Use as seed track for selector
+    QAction *m_pSetSeedTrack;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;
