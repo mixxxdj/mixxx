@@ -140,7 +140,12 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedCover.trackId);
         m_pMenu->show(event->globalPos(), m_lastRequestedCover, pTrack);
     } else if (event->button() == Qt::LeftButton) {
-        DlgCoverArtFullSize::instance()->init(m_loadedCover);
+        DlgCoverArtFullSize* dlgFullSize = DlgCoverArtFullSize::instance();
+        if (dlgFullSize->isVisible()) {
+            dlgFullSize->close();
+        } else {
+            dlgFullSize->init(m_loadedCover);
+        }
     }
 }
 
