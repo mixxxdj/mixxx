@@ -6,6 +6,7 @@
  */
 
 #include <QtDebug>
+#include <QtGlobal>
 #include <QMutexLocker>
 
 #include "track/beatmap.h"
@@ -203,7 +204,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     BeatList::const_iterator previous_beat = m_beats.end();
     BeatList::const_iterator next_beat = m_beats.end();
     for (; it != m_beats.end(); ++it) {
-        int32_t delta = it->frame_position() - beat.frame_position();
+        qint32 delta = it->frame_position() - beat.frame_position();
 
         // We are "on" this beat.
         if (abs(delta) < kFrameEpsilon) {
