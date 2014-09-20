@@ -94,6 +94,34 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     }
 }
 
+TEST_F(BeatMapTest, TestNthBeatWhenCloseToBeat) {
+    const double bpm = 60.0;
+    m_pTrack->setBpm(bpm);
+    m_pTrack->setSampleRate(m_iSampleRate);
+    double beatLengthFrames = getBeatLengthFrames(bpm);
+    double startOffsetFrames = 7;
+    double beatLengthSamples = getBeatLengthSamples(bpm);
+    double startOffsetSamples = startOffsetFrames * 2;
+    const int numBeats = 100;
+    // Note beats must be in frames, not samples.
+    QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+
+    // Pretend we're sitting a frame before the 20th beat;
+    const int curBeat = 20;
+    double position = startOffsetSamples + beatLengthSamples * curBeat - 2;
+
+    // The spec dictates that a value of 0 is always invalid and returns -1
+    EXPECT_EQ(-1, pMap->findNthBeat(position, 0));
+
+    // findNthBeat should return exactly the current beat if we ask for 1 or
+    // -1. For all other values, it should return n times the beat length.
+    for (int i = 1; i < curBeat; ++i) {
+        EXPECT_DOUBLE_EQ(position + 2 + beatLengthSamples*(i-1), pMap->findNthBeat(position, i));
+        EXPECT_DOUBLE_EQ(position + 2 + beatLengthSamples*(-i+1), pMap->findNthBeat(position, -i));
+    }
+}
+
 TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     const double bpm = 60.0;
     m_pTrack->setBpm(bpm);
@@ -118,8 +146,10 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     // findNthBeat should return multiples of beats starting from the next or
     // previous beat, depending on whether N is positive or negative.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_DOUBLE_EQ(nextBeat + beatLengthSamples*(i-1), pMap->findNthBeat(position, i));
-        EXPECT_DOUBLE_EQ(previousBeat + beatLengthSamples*(-i+1), pMap->findNthBeat(position, -i));
+        EXPECT_DOUBLE_EQ(nextBeat + beatLengthSamples*(i-1),
+                         pMap->findNthBeat(position, i));
+        EXPECT_DOUBLE_EQ(previousBeat - beatLengthSamples*(i-1),
+                         pMap->findNthBeat(position, -i));
     }
 }
 
