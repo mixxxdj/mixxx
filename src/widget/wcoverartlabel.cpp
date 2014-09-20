@@ -45,9 +45,18 @@ void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
     m_pCoverMenu->show(mapToGlobal(pos), m_coverInfo, m_pTrack);
 }
 
-void WCoverArtLabel::enterEvent(QEvent*) {
-    if (!m_pCoverMenu->isVisible()) {
-        DlgCoverArtFullSize::instance()->init(m_pixmap);
+void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
+    if (m_pCoverMenu->isVisible()) {
+        return;
+    }
+
+    if (event->button() == Qt::LeftButton) {
+        DlgCoverArtFullSize* dlgFullSize = DlgCoverArtFullSize::instance();
+        if (dlgFullSize->isVisible()) {
+            dlgFullSize->close();
+        } else {
+            dlgFullSize->init(m_pixmap);
+        }
     }
 }
 

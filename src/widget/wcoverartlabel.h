@@ -2,6 +2,7 @@
 #define WCOVERARTLABEL_H
 
 #include <QLabel>
+#include <QMouseEvent>
 #include <QWidget>
 
 #include "dlgcoverartfullsize.h"
@@ -19,8 +20,8 @@ class WCoverArtLabel : public QLabel {
     void coverLocationUpdated(const QString&, const QString&, QPixmap);
 
   protected:
-    void enterEvent(QEvent*);
     void leaveEvent(QEvent*);
+    void mousePressEvent(QMouseEvent* event);
 
   private slots:
       void slotCoverMenu(const QPoint& pos);
