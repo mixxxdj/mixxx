@@ -207,7 +207,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
         int32_t delta = it->frame_position() - beat.frame_position();
 
         // We are "on" this beat.
-        if (fabs(delta) < kFrameEpsilon) {
+        if (abs(delta) < kFrameEpsilon) {
             on_beat = it;
             break;
         }
