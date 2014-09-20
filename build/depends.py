@@ -1056,8 +1056,6 @@ class MixxxCore(Feature):
                 raise Exception('pkg-config >= 0.15.0 not found.')
 
         elif build.platform_is_osx:
-            # force usage of llvm C++ library
-            build.env.Append(CCFLAGS='-stdlib=libc++')
             # Stuff you may have compiled by hand
             if os.path.isdir('/usr/local/include'):
                 build.env.Append(LIBPATH=['/usr/local/lib'])
