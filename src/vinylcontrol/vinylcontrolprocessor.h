@@ -1,6 +1,7 @@
 #ifndef VINYLCONTROLPROCESSOR_H
 #define VINYLCONTROLPROCESSOR_H
 
+#include <QAtomicPointer>
 #include <QObject>
 #include <QThread>
 #include <QVector>
@@ -40,6 +41,7 @@ class VinylControlProcessor : public QObject, public AudioDestination {
         return &m_signalQualityFifo;
     }
 
+    typedef QSharedPointer<VinylControl> SharedVC;
   public slots:
     virtual void onInputConfigured(AudioInput input);
     virtual void onInputUnconfigured(AudioInput input);
@@ -71,8 +73,7 @@ class VinylControlProcessor : public QObject, public AudioDestination {
     QList<ControlObjectSlave*> m_VCEnableds;
     ControlObjectSlave* m_pGuiTick;
     CSAMPLE* m_pWorkBuffer;
-    QMutex m_processorsLock;
-    QVector<VinylControl*> m_processors;
+    QVector<SharedVC> m_processors;
     bool m_processingActive;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;
