@@ -135,11 +135,11 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     if (!m_bEnableWidget) {
         return;
     }
-    // show context-menu
-    if (event->button() == Qt::RightButton) {
+
+    if (event->button() == Qt::RightButton) { // show context-menu
         TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedCover.trackId);
         m_pMenu->show(event->globalPos(), m_lastRequestedCover, pTrack);
-    } else if (event->button() == Qt::LeftButton) {
+    } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
         DlgCoverArtFullSize* dlgFullSize = DlgCoverArtFullSize::instance();
         if (dlgFullSize->isVisible()) {
             dlgFullSize->close();
