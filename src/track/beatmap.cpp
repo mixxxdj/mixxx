@@ -185,45 +185,79 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     // Reduce sample offset to a frame offset.
     beat.set_frame_position(samplesToFrames(dSamples));
 
-    if (n > 0) {
-        BeatList::const_iterator it =
-                qLowerBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
+    // it points at the first occurence of beat or the next largest beat
+    BeatList::const_iterator it =
+            qLowerBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
-        // Count down until n=1
-        while (it != m_beats.end()) {
-            if (!it->enabled()) {
-                ++it;
+    // If the position is within 1/10th of a second of the next or previous
+    // beat, pretend we are on that beat.
+    const double kFrameEpsilon = 0.1 * m_iSampleRate;
+
+    // Back-up by one.
+    if (it != m_beats.begin()) {
+        it--;
+    }
+
+    // Scan forward to find whether we are on a beat.
+    BeatList::const_iterator on_beat = m_beats.end();
+    BeatList::const_iterator previous_beat = m_beats.end();
+    BeatList::const_iterator next_beat = m_beats.end();
+    for (; it != m_beats.end(); ++it) {
+        int32_t delta = it->frame_position() - beat.frame_position();
+
+        // We are "on" this beat.
+        if (fabs(delta) < kFrameEpsilon) {
+            on_beat = it;
+            break;
+        }
+
+        if (delta < 0) {
+            // If we are not on the beat and delta < 0 then this beat comes
+            // before our current position.
+            previous_beat = it;
+        } else {
+            // If we are past the beat and we aren't on it then this beat comes
+            // after our current position.
+            next_beat = it;
+            // Stop because we have everything we need now.
+            break;
+        }
+    }
+
+    // If we are within epsilon samples of a beat then the immediately next and
+    // previous beats are the beat we are on.
+    if (on_beat != m_beats.end()) {
+        next_beat = on_beat;
+        previous_beat = on_beat;
+    }
+
+    if (n > 0) {
+        for (; next_beat != m_beats.end(); ++next_beat) {
+            if (!next_beat->enabled()) {
                 continue;
             }
             if (n == 1) {
                 // Return a sample offset
-                return framesToSamples(it->frame_position());
+                return framesToSamples(next_beat->frame_position());
             }
-            ++it;
             --n;
         }
     } else if (n < 0) {
-        BeatList::const_iterator it =
-                qUpperBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
-
-
-        // Count up until n=-1
-        while (it != m_beats.begin()) {
-            // qUpperBound starts us off at the position just-one-past the last
-            // occurence of dSamples-or-smaller in the list. In order to get the
-            // last instance of dSamples-or-smaller, we decrement it by 1 before
-            // touching it. The guard of this while loop guarantees this does
-            // not put us before the start of the loop.
-            --it;
-            if (!it->enabled()) {
-                continue;
+        for (; true; --previous_beat) {
+            if (previous_beat->enabled()) {
+                if (n == -1) {
+                    // Return a sample offset
+                    return framesToSamples(previous_beat->frame_position());
+                }
+                ++n;
             }
-            if (n == -1) {
-                // Return a Sample Offset
-                return framesToSamples(it->frame_position());
+
+            // Don't step before the start of the list.
+            if (previous_beat == m_beats.begin()) {
+                break;
             }
-            n++;
         }
+
     }
     return -1;
 }
