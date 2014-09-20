@@ -36,7 +36,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void paintEvent(QPaintEvent*);
     void resizeEvent(QResizeEvent*);
     void mousePressEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent* event);
     void leaveEvent(QEvent*);
 
   private:
