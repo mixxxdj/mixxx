@@ -38,6 +38,11 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     void onChainParameterChanged(double parameter);
 
+    // Syncs the Super button with the parameter, that the following
+    // super button change will be passed to the effect parameter
+    // used during test
+    void syncSofttakeover();
+
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);

@@ -79,8 +79,9 @@ class SuperLinkTest : public BaseEffectTest {
 
 TEST_F(SuperLinkTest, LinkDefault) {
     // default is not Linked, value must be unchanged
+    m_pEffectSlot->syncSofttakeover();
     EXPECT_EQ(1.0, m_pControlValue->get());
-    m_pEffectSlot->onChainParameterChanged(1.0); // Required to catch sottakeover
+    m_pEffectSlot->onChainParameterChanged(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pEffectSlot->onChainParameterChanged(0.5);
     EXPECT_EQ(1.0, m_pControlValue->get());
@@ -89,17 +90,19 @@ TEST_F(SuperLinkTest, LinkDefault) {
 }
 
 TEST_F(SuperLinkTest, LinkLinked) {
+    m_pEffectSlot->syncSofttakeover();
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
-    m_pEffectSlot->onChainParameterChanged(1.0); // Required to catch sottakeover
+    m_pEffectSlot->onChainParameterChanged(1.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pEffectSlot->onChainParameterChanged(0.5);
     EXPECT_EQ(0.25, m_pControlValue->get());
 }
 
 TEST_F(SuperLinkTest, LinkLinkedInverse) {
+    m_pEffectSlot->syncSofttakeover();
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
     m_pControlLinkInverse->set(1.0);
-    m_pEffectSlot->onChainParameterChanged(0.0); // Required to catch sottakeover
+    m_pEffectSlot->onChainParameterChanged(0.0);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pEffectSlot->onChainParameterChanged(0.5);
     EXPECT_EQ(0.25, m_pControlValue->get());

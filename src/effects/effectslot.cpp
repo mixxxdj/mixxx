@@ -259,3 +259,9 @@ void EffectSlot::onChainParameterChanged(double parameter) {
         m_parameters[i]->onChainParameterChanged(parameter);
     }
 }
+
+void EffectSlot::syncSofttakeover() {
+    for (int i = 0; i < m_parameters.size(); ++i) {
+        m_parameters[i]->syncSofttakeover();
+    }
+}
