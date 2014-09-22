@@ -23,7 +23,7 @@ EffectManifest FilterEffect::getManifest() {
     depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setLinkHint(EffectManifestParameter::LINK_LINKED);
+    depth->setDefaultLinkHint(EffectManifestParameter::LINK_LINKED);
     depth->setNeutralHint(0.5);
     depth->setDefault(0.0);
     depth->setMinimum(-1.0);

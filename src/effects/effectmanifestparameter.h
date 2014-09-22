@@ -49,7 +49,7 @@ class EffectManifestParameter {
               m_valueHint(VALUE_UNKNOWN),
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
-              m_linkHint(LINK_NONE),
+              m_defaultLinkType(LINK_NONE),
               m_neutralHint(0.0) {
     }
 
@@ -114,11 +114,11 @@ class EffectManifestParameter {
         m_unitsHint = unitsHint;
     }
 
-    virtual LinkType linkHint() const {
-        return m_linkHint;
+    virtual LinkType defaultLinkType() const {
+        return m_defaultLinkType;
     }
-    virtual void setLinkHint(LinkType linkHint) {
-        m_linkHint = linkHint;
+    virtual void setDefaultLinkHint(LinkType linkHint) {
+        m_defaultLinkType = linkHint;
     }
 
     // Neutral hint is the parameter in the range 0 .. 1 on the knob scale that
@@ -183,7 +183,7 @@ class EffectManifestParameter {
     ValueHint m_valueHint;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
-    LinkType m_linkHint;
+    LinkType m_defaultLinkType;
     double m_neutralHint;
 
     QVariant m_default;

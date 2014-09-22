@@ -89,7 +89,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
 
-            m_pControlLinkType->set(m_pEffectParameter->getLinkHint());
+            m_pControlLinkType->set(m_pEffectParameter->getDefaultLinkType());
 
             if (m_pEffectParameter->getNeutralHint() == 1.0) {
                 m_pControlLinkInverse->set(1);
