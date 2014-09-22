@@ -80,6 +80,11 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->get() : 0.0;
     }
 
+    // Returns the bool interpretation of the ControlObject
+    inline bool toBool() const {
+        return get() > 0.0;
+    }
+
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
 

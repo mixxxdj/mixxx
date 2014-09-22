@@ -152,7 +152,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 static_cast<EffectManifestParameter::LinkType>(
                         static_cast<int>(m_pControlLinkType->get()));
 
-        bool inverse = m_pControlLinkInverse->get() ? true : false;
+        bool inverse = m_pControlLinkInverse->toBool();
 
         switch (type) {
             case EffectManifestParameter::LINK_LINKED:
