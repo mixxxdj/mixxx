@@ -216,7 +216,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
             parameter = 1.0 - parameter;
         }
 
-        qDebug() << "onChainParameterChanged" << parameter;
+        //qDebug() << "onChainParameterChanged" << parameter;
         if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
             m_pControlValue->setParameterFrom(parameter, NULL);
         }
