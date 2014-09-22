@@ -132,7 +132,7 @@ class EffectManifestParameter {
     virtual double neutralPointOnScale() const {
         return m_neutralPointOnScale;
     }
-    virtual void setNeutralPintOnScale(double neutralPoint) {
+    virtual void setNeutralPointOnScale(double neutralPoint) {
         m_neutralPointOnScale = neutralPoint;
     }
 
