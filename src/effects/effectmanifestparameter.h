@@ -117,7 +117,7 @@ class EffectManifestParameter {
     virtual LinkType defaultLinkType() const {
         return m_defaultLinkType;
     }
-    virtual void setDefaultLinkHint(LinkType linkHint) {
+    virtual void setDefaultLinkType(LinkType linkHint) {
         m_defaultLinkType = linkHint;
     }
 

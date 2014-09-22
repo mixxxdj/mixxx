@@ -23,7 +23,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefaultLinkHint(EffectManifestParameter::LINK_LINKED);
+    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     depth->setNeutralPointOnScale(1.0);
     depth->setDefault(16);
     // for values -1 0 +1
@@ -39,7 +39,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    frequency->setDefaultLinkHint(EffectManifestParameter::LINK_LINKED);
+    frequency->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     frequency->setNeutralPointOnScale(1.0);
     frequency->setDefault(1.0);
     frequency->setMinimum(0.02);
