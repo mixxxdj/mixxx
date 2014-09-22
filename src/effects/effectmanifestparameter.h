@@ -50,7 +50,7 @@ class EffectManifestParameter {
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
               m_defaultLinkType(LINK_NONE),
-              m_neutralHint(0.0) {
+              m_neutralPointOnScale(0.0) {
     }
 
     virtual ~EffectManifestParameter() {
@@ -121,19 +121,19 @@ class EffectManifestParameter {
         m_defaultLinkType = linkHint;
     }
 
-    // Neutral hint is the parameter in the range 0 .. 1 on the knob scale that
+    // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
     // is adopted as neutral when controlled by the super knob.
     // This is allows to link the super knob in a way that two effects are
     // cranked in simultaneous, or in case of a split filter like super knob,
     // both effects are neutral at super knob center.
-    // A EQ Gain has usually a neutralHint of 0.5 (0 dB) while a delay knob
-    // has a neutralHint of 0.0 (no delay)
+    // A EQ Gain has usually a neutral point of 0.5 (0 dB) while a delay knob
+    // has a neutral point of 0.0 (no delay)
     // A EQ Gain knob cannot be used on a split super knob.
-    virtual double neutralHint() const {
-        return m_neutralHint;
+    virtual double neutralPointOnScale() const {
+        return m_neutralPointOnScale;
     }
-    virtual void setNeutralHint(double neutralHint) {
-        m_neutralHint = neutralHint;
+    virtual void setNeutralPintOnScale(double neutralPoint) {
+        m_neutralPointOnScale = neutralPoint;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ class EffectManifestParameter {
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
     LinkType m_defaultLinkType;
-    double m_neutralHint;
+    double m_neutralPointOnScale;
 
     QVariant m_default;
     QVariant m_minimum;

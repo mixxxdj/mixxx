@@ -24,7 +24,7 @@ EffectManifest FilterEffect::getManifest() {
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setDefaultLinkHint(EffectManifestParameter::LINK_LINKED);
-    depth->setNeutralHint(0.5);
+    depth->setNeutralPintOnScale(0.5);
     depth->setDefault(0.0);
     depth->setMinimum(-1.0);
     depth->setMaximum(1.0);

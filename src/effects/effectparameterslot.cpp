@@ -91,7 +91,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
 
             m_pControlLinkType->set(m_pEffectParameter->getDefaultLinkType());
 
-            if (m_pEffectParameter->getNeutralHint() == 1.0) {
+            if (m_pEffectParameter->getNeutralPointOnScale() == 1.0) {
                 m_pControlLinkInverse->set(1);
             } else {
                 m_pControlLinkInverse->set(0);
@@ -129,7 +129,7 @@ void EffectParameterSlot::slotLinkTypeChanged(double v) {
     Q_UNUSED(v);
     m_pSoftTakeover->ignoreNext();
     if (v > EffectManifestParameter::LINK_LINKED) {
-        double neutral = m_pEffectParameter->getNeutralHint();
+        double neutral = m_pEffectParameter->getNeutralPointOnScale();
         if (neutral > 0.0 && neutral < 1.0) {
             // Button is already a split button
             // Toggle back to 0
@@ -160,7 +160,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                     return;
                 }
                 {
-                    double neutral = m_pEffectParameter->getNeutralHint();
+                    double neutral = m_pEffectParameter->getNeutralPointOnScale();
                     if (neutral > 0.0 && neutral < 1.0) {
                         if (inverse) {
                             // the neutral position must stick where it is

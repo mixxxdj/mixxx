@@ -47,7 +47,7 @@ class SuperLinkTest : public BaseEffectTest {
         low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
         low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-        low->setNeutralHint(0.25);
+        low->setNeutralPintOnScale(0.25);
         low->setDefault(1.0);
         low->setMinimum(0);
         low->setMaximum(1.0);

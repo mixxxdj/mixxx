@@ -25,7 +25,7 @@ EffectManifest Butterworth8EQEffect::getManifest() {
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    low->setNeutralHint(0.5);
+    low->setNeutralPintOnScale(0.5);
     low->setDefault(1.0);
     low->setMinimum(0);
     low->setMaximum(4.0);
@@ -38,7 +38,7 @@ EffectManifest Butterworth8EQEffect::getManifest() {
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    mid->setNeutralHint(0.5);
+    mid->setNeutralPintOnScale(0.5);
     mid->setDefault(1.0);
     mid->setMinimum(0);
     mid->setMaximum(4.0);
@@ -51,7 +51,7 @@ EffectManifest Butterworth8EQEffect::getManifest() {
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    high->setNeutralHint(0.5);
+    high->setNeutralPintOnScale(0.5);
     high->setDefault(1.0);
     high->setMinimum(0);
     high->setMaximum(4.0);

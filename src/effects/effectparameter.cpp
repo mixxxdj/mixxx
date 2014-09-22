@@ -189,8 +189,8 @@ EffectManifestParameter::LinkType EffectParameter::getDefaultLinkType() const {
     return m_parameter.defaultLinkType();
 }
 
-double EffectParameter::getNeutralHint() const {
-    return m_parameter.neutralHint();
+double EffectParameter::getNeutralPointOnScale() const {
+    return m_parameter.neutralPointOnScale();
 }
 
 QVariant EffectParameter::getValue() const {

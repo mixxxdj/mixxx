@@ -39,7 +39,7 @@ class EffectParameter : public QObject {
     ///////////////////////////////////////////////////////////////////////////
 
     EffectManifestParameter::LinkType getDefaultLinkType() const;
-    double getNeutralHint() const;
+    double getNeutralPointOnScale() const;
 
     QVariant getValue() const;
     // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
