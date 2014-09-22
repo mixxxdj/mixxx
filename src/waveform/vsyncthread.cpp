@@ -1,4 +1,3 @@
-
 #include <QThread>
 #include <QGLWidget>
 #include <QGLFormat>
@@ -28,7 +27,7 @@ VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
           m_usSyncIntervalTime(33333),
           m_vSyncMode(ST_TIMER),
           m_syncOk(false),
-          m_rtErrorCnt(0),
+          m_droppedFrames(0),
           m_swapWait(0),
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1),
@@ -50,7 +49,7 @@ void VSyncThread::stop()
 
 
 void VSyncThread::run() {
-    Counter realTimeError("VsyncThread real time error");
+    Counter droppedFrames("VsyncThread real time error");
     QThread::currentThread()->setObjectName("VSyncThread");
 
     m_usWaitToSwap = m_usSyncIntervalTime;
@@ -107,8 +106,8 @@ void VSyncThread::run() {
             if (usRemainingForSwap < 0) {
                 // Our swapping call was already delayed
                 // The real swap might happens on the following VSync, depending on driver settings
-                m_rtErrorCnt++; // Count as Real Time Error
-                realTimeError.increment();
+                m_droppedFrames++; // Count as Real Time Error
+                droppedFrames.increment();
             }
             // try to stay in right intervals
             m_usWaitToSwap = m_usSyncIntervalTime +
@@ -155,7 +154,7 @@ void VSyncThread::setVSyncType(int type) {
         type = VSyncThread::ST_TIMER;
     }
     m_vSyncMode = (enum VSyncMode)type;
-    m_rtErrorCnt = 0;
+    m_droppedFrames = 0;
     m_vSyncTypeChanged = true;
 }
 
@@ -175,8 +174,8 @@ int VSyncThread::usFromTimerToNextSync(PerformanceTimer* timer) {
     return usDifference + m_usWaitToSwap;
 }
 
-int VSyncThread::rtErrorCnt() {
-    return m_rtErrorCnt;
+int VSyncThread::droppedFrames() {
+    return m_droppedFrames;
 }
 
 void VSyncThread::vsyncSlotFinished() {
