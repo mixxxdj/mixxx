@@ -175,7 +175,7 @@
           </Children>
       </WidgetGroup> <!-- /Channel1 mixer side-by-side -->
 
-      <WidgetGroup trigger="[Master],show_4decks" persist="true">  <!-- Channel1 controls -->
+      <WidgetGroup trigger="[Master],show_4decks">  <!-- Channel1 controls -->
         <ObjectName>MixerChannel</ObjectName>
         <SizePolicy>f,f</SizePolicy>
         <Size>80,160</Size>

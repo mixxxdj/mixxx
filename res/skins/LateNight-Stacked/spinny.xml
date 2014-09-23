@@ -16,7 +16,7 @@
           </Spinny>
         </Children>
       </WidgetGroup>
-      <WidgetGroup trigger="[Master],show_mixer" persist="true">
+      <WidgetGroup trigger="[Master],show_mixer">
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <MinimumSize>20,50</MinimumSize>

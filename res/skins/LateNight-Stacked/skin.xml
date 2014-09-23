@@ -101,11 +101,11 @@
                           <Text>4DECK</Text>
                         </State>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
                         </Connection>
                     </PushButton>
                 </Children>
@@ -128,11 +128,11 @@
                           <Text>MIXER</Text>
                         </State>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                          <ConfigKey>[Master],show_mixer</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                          <ConfigKey>[Master],show_mixer</ConfigKey>
                         </Connection>
                     </PushButton>
                 </Children>

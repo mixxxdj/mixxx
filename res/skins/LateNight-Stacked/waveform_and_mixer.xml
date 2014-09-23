@@ -18,7 +18,7 @@
 					</Template>
 				</Children>
 				<Connection>
-					<ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+					<ConfigKey>[Master],show_4decks</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -64,7 +64,7 @@
 					</Template>
 				</Children>
 				<Connection>
-					<ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+					<ConfigKey>[Master],show_4decks</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -81,7 +81,7 @@
                     <Template src="skin:mixer.xml"/>
                 </Children>
                 <Connection>
-                    <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                    <ConfigKey>[Master],show_mixer</ConfigKey>
                     <BindProperty>visible</BindProperty>
                 </Connection>
             </WidgetGroup> 
