@@ -47,6 +47,8 @@
       <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
+      <attribute config_key="[Master],mixer_4decks_status">1</attribute>
+      <attribute config_key="[Master],show_mixer">1</attribute>
     </attributes>
   </manifest>
 
