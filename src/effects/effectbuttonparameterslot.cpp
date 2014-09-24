@@ -8,10 +8,10 @@
 EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
-                                         const unsigned int iParameterNumber)
+                                         const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(iRackNumber, iChainNumber, iSlotNumber,
-                                  iParameterNumber) {
-    QString itemPrefix = formatItemPrefix(iParameterNumber);
+                                  iParameterSlotNumber) {
+    QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
@@ -49,9 +49,12 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getButtonParameter(m_iParameterNumber);
+        m_pEffectParameter = pEffect->getButtonParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
+            // Set the number of states
+            int numStates = m_pEffectParameter->manifest().getOptions().size();
+            m_pControlValue->setStates(numStates);
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue().toDouble();
             double dMinimum = m_pEffectParameter->getMinimum().toDouble();
@@ -109,6 +112,13 @@ void EffectButtonParameterSlot::clear() {
 void EffectButtonParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
+}
+
+void EffectButtonParameterSlot::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        // Call setValue with type 11 (SET_PARAMETER_BUTTON_PARAMETERS)
+        m_pEffectParameter->setValue(v, 11);
+    }
 }
 
 void EffectButtonParameterSlot::onChainParameterChanged(double parameter) {

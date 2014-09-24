@@ -33,8 +33,8 @@ class Effect : public QObject {
 
     unsigned int numParameters() const;
     unsigned int numButtonParameters() const;
-    EffectParameter* getParameter(unsigned int parameterNumber);
-    EffectParameter* getButtonParameter(unsigned int parameterNumber);
+    EffectParameter* getParameterForSlot(unsigned int slotNumber);
+    EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
     EffectParameter* getParameterById(const QString& id) const;
     EffectParameter* getButtonParameterById(const QString& id) const;
 

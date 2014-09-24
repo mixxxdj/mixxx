@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QMap>
+#include <QSet>
+#include <QtDebug>
 
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -11,7 +13,8 @@ class EngineEffect;
 
 class EffectProcessor {
   public:
-    virtual ~EffectProcessor() { }
+    virtual ~EffectProcessor() {
+    }
 
     virtual void initialize(const QSet<QString>& registeredGroups) = 0;
 

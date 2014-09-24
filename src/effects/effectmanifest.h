@@ -21,7 +21,9 @@
 // example, a database-backed manifest)
 class EffectManifest {
   public:
-    EffectManifest() { }
+    EffectManifest() {
+    }
+
     virtual ~EffectManifest() {
         //qDebug() << debugString() << "deleted";
     }
@@ -65,8 +67,8 @@ class EffectManifest {
         return m_parameters;
     }
 
-
     virtual EffectManifestParameter* addParameter() {
+        m_activeParameters.append(m_parameters.size());
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();
     }
@@ -76,8 +78,25 @@ class EffectManifest {
     }
 
     virtual EffectManifestParameter* addButtonParameter() {
+        m_activeButtonParameters.append(m_buttonParameters.size());
         m_buttonParameters.append(EffectManifestParameter());
         return &m_buttonParameters.last();
+    }
+
+    virtual void setActiveParameter(int index, unsigned int value) {
+        m_activeParameters[index] = value;
+    }
+
+    virtual unsigned int getActiveParameter(int index) const {
+        return m_activeParameters[index];
+    }
+
+    virtual void setActiveButtonParameter(int index, unsigned int value) {
+        m_activeButtonParameters[index] = value;
+    }
+
+    virtual unsigned int getActiveButtonParameter(int index) const {
+        return m_activeButtonParameters[index];
     }
 
   private:
@@ -92,6 +111,13 @@ class EffectManifest {
     QString m_description;
     QList<EffectManifestParameter> m_parameters;
     QList<EffectManifestParameter> m_buttonParameters;
+
+    // These two lists store the mapping between the parameter slot and
+    // the effective parameter which is loaded onto the slot.
+    // When a manifest is created, this mapping is the identity
+    // function (list[i] = i)
+    QList<unsigned int> m_activeParameters;
+    QList<unsigned int> m_activeButtonParameters;
 };
 
 #endif /* EFFECTMANIFEST_H */

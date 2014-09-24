@@ -55,6 +55,7 @@ available_features = [features.Mad,
                       features.AutoDjCrates,
                       features.ColorDiagnostics,
                       features.AddressSanitizer,
+                      features.Lilv,
 
                       # "Features" of dubious quality
                       features.PerfTools,

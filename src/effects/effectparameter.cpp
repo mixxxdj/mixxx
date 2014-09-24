@@ -56,6 +56,7 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
             break;
         case EffectManifestParameter::VALUE_UNKNOWN: // Treat unknown like float
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             m_minimum = m_parameter.hasMinimum() && m_parameter.getMinimum().canConvert<double>() ?
                     m_parameter.getMinimum() : QVariant(0.0f);
             m_maximum = m_parameter.hasMaximum() && m_parameter.getMinimum().canConvert<double>() ?
@@ -132,6 +133,16 @@ bool EffectParameter::clampValue(EffectManifestParameter::ValueHint valueHint, Q
                 return true;
             }
             break;
+        case EffectManifestParameter::VALUE_ENUMERATION:
+            if (value.toDouble() < minimum.toDouble()) {
+                value = maximum;
+                return true;
+            } else if (value.toDouble() > maximum.toDouble()) {
+                value = minimum;
+                return true;
+            }
+            break;
+
         default:
             qWarning() << "ERROR: Unhandled valueHint";
             break;
@@ -155,6 +166,7 @@ bool EffectParameter::checkType(const QVariant& value) const {
             return value.canConvert<int>();
         case EffectManifestParameter::VALUE_FLOAT:
         case EffectManifestParameter::VALUE_UNKNOWN:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             return value.canConvert<double>();
         default:
             qWarning() << debugString() << "ERROR: Unhandled valueHint";
@@ -215,6 +227,7 @@ void EffectParameter::setValue(QVariant value, int type) {
             break;
         case EffectManifestParameter::VALUE_UNKNOWN: // treat unknown as float
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             // TODO(XXX) Handle inf, -inf, and nan
             m_value = value.toDouble();
             break;
@@ -249,6 +262,7 @@ void EffectParameter::setDefault(QVariant dflt) {
             break;
         case EffectManifestParameter::VALUE_UNKNOWN:
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             m_default = dflt.toDouble();
             break;
         default:
@@ -301,6 +315,7 @@ void EffectParameter::setMinimum(QVariant minimum) {
             break;
         case EffectManifestParameter::VALUE_UNKNOWN:
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
             m_minimum = minimum.toDouble();
 
             if (m_parameter.hasMinimum() && m_minimum.toDouble() < m_parameter.getMinimum().toDouble()) {
@@ -376,6 +391,8 @@ void EffectParameter::setMaximum(QVariant maximum) {
             break;
         case EffectManifestParameter::VALUE_UNKNOWN:
         case EffectManifestParameter::VALUE_FLOAT:
+        case EffectManifestParameter::VALUE_ENUMERATION:
+
             m_maximum = maximum.toDouble();
 
             if (m_parameter.hasMaximum() && m_maximum.toDouble() > m_parameter.getMaximum().toDouble()) {

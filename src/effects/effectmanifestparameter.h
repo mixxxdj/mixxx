@@ -11,7 +11,8 @@ class EffectManifestParameter {
         VALUE_UNKNOWN = 0,
         VALUE_BOOLEAN,
         VALUE_INTEGRAL,
-        VALUE_FLOAT
+        VALUE_FLOAT,
+        VALUE_ENUMERATION
     };
 
     enum ControlHint {
@@ -152,6 +153,13 @@ class EffectManifestParameter {
         m_maximum = maximum;
     }
 
+    virtual void insertOption(QPair<QString, QVariant> option) {
+        m_enumerationOptions.append(option);
+    }
+    virtual QList<QPair<QString, QVariant> > getOptions() const {
+        return m_enumerationOptions;
+    }
+
   private:
     QString debugString() const {
         return QString("EffectManifestParameter(%1)").arg(m_id);
@@ -170,6 +178,11 @@ class EffectManifestParameter {
     QVariant m_default;
     QVariant m_minimum;
     QVariant m_maximum;
+
+    // Useful data for enumeration parameters; each pair has the following form:
+    // description - value
+    QList<QPair<QString, QVariant> > m_enumerationOptions;
+
 };
 
 QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);

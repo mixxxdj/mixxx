@@ -9,10 +9,10 @@
 EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
-                                         const unsigned int iParameterNumber)
+                                         const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(iRackNumber, iChainNumber, iSlotNumber,
-                                  iParameterNumber) {
-    QString itemPrefix = formatItemPrefix(iParameterNumber);
+                                  iParameterSlotNumber) {
+    QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
@@ -52,7 +52,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     clear();
     if (pEffect) {
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
+        m_pEffectParameter = pEffect->getParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
@@ -116,6 +116,12 @@ EffectManifestParameter::LinkType EffectParameterSlot::getLinkType() const{
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
+}
+
+void EffectParameterSlot::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setValue(v);
+    }
 }
 
 void EffectParameterSlot::onChainParameterChanged(double parameter) {
