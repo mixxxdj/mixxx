@@ -19,9 +19,6 @@
 #define TRACKCOLLECTION_H
 
 #include <QtSql>
-#ifdef __SQLITE3__
-#include <sqlite3.h>
-#endif
 #include <QList>
 #include <QRegExp>
 #include <QSharedPointer>
@@ -35,6 +32,11 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
+
+#ifdef __SQLITE3__
+typedef struct sqlite3_context sqlite3_context;
+typedef struct Mem sqlite3_value;
+#endif
 
 class TrackInfoObject;
 
@@ -88,7 +90,7 @@ class TrackCollection : public QObject
             const QChar* string,
             int stringSize,
             const QChar esc);
-#endif
+#endif // __SQLITE3__
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
@@ -103,4 +105,4 @@ class TrackCollection : public QObject
     const QRegExp m_supportedFileExtensionsRegex;
 };
 
-#endif
+#endif // TRACKCOLLECTION_H

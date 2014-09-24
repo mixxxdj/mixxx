@@ -2,6 +2,11 @@
 #include <QtDebug>
 
 #include "library/trackcollection.h"
+
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#endif
+
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
 #include "soundsourceproxy.h"
