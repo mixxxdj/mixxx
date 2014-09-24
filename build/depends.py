@@ -970,10 +970,10 @@ class MixxxCore(Feature):
 
         if build.toolchain_is_gnu:
             # Default GNU Options
-            # TODO(XXX) always generate debugging info?
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
+            # TODO(XXX) always generate debugging info?
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
@@ -993,7 +993,7 @@ class MixxxCore(Feature):
             # Find executables (e.g. protoc) in the winlib path
             build.env.AppendENVPath('PATH', mixxx_lib_path)
             build.env.AppendENVPath('PATH', os.path.join(mixxx_lib_path, 'bin'))
-            
+
             # Valid values of /MACHINE are: {ARM|EBC|X64|X86}
             # http://msdn.microsoft.com/en-us/library/5wy54dk2.aspx
             if build.architecture_is_x86:
@@ -1015,15 +1015,17 @@ class MixxxCore(Feature):
             # http://msdn.microsoft.com/en-us/library/bb385193.aspx
             build.env.Append(CCFLAGS='/MP')
 
+            # Generate debugging information for compilation units and
+            # executables linked regardless of whether we are creating a debug
+            # build. Having PDB files for our releases is helpful for debugging.
+            build.env.Append(LINKFLAGS='/DEBUG')
+            build.env.Append(CCFLAGS='/Zi')
+
             if build.build_is_debug:
                 # Important: We always build Mixxx with the Multi-Threaded DLL
                 # runtime because Mixxx loads DLLs at runtime. Since this is a
                 # debug build, use the debug version of the MD runtime.
                 build.env.Append(CCFLAGS='/MDd')
-                # Generate debugging information for executables linked.
-                build.env.Append(LINKFLAGS='/DEBUG')
-                # Generate debugging information for compilation units.
-                build.env.Append(CCFLAGS='/Zi')
                 # Enable the Mixxx debug console (see main.cpp).
                 build.env.Append(CPPDEFINES='DEBUGCONSOLE')
             else:
