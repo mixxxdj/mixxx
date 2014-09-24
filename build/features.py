@@ -1317,7 +1317,9 @@ class LocaleCompare(Feature):
         return "Locale Aware Compare for Sqlite"
 
     def default(self, build):
-        return 1
+        if build.platform_is_linux:
+            return 1
+        return 0    
 
     def enabled(self, build):
         build.flags['localecompare'] = util.get_flags(build.env, 'localecompare',
