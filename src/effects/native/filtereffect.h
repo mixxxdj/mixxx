@@ -19,12 +19,12 @@ struct FilterGroupState {
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
     CSAMPLE* m_pBuf;
-    EngineFilterBiquad1High* m_pHighFilter;
     EngineFilterBiquad1Low* m_pLowFilter;
+    EngineFilterBiquad1High* m_pHighFilter;
 
-    double m_hiFreq;
-    double m_q;
     double m_loFreq;
+    double m_q;
+    double m_hiFreq;
 
 };
 
@@ -49,9 +49,9 @@ class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pHPF;
-    EngineEffectParameter* m_pQ;
     EngineEffectParameter* m_pLPF;
+    EngineEffectParameter* m_pQ;
+    EngineEffectParameter* m_pHPF;
 
     DISALLOW_COPY_AND_ASSIGN(FilterEffect);
 };
