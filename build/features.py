@@ -1329,7 +1329,7 @@ class LocaleCompare(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('localecomapre', 'Set to 1 to enable Locale Aware Compare support for Sqlite.',
+        vars.Add('localecompare', 'Set to 1 to enable Locale Aware Compare support for Sqlite.',
                  self.default(build))
 
     def configure(self, build, conf):
