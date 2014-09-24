@@ -553,9 +553,11 @@ QString BaseTrackCache::orderByClause(int sortColumn,
     }
     s.append(sort_field);
 
+#ifdef __SQLITE3__
     if (type == QVariant::String) {
         s.append(" COLLATE localeAwareCompare");
     }
+#endif
 
     s.append((sortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
             QLatin1String(" DESC"));
