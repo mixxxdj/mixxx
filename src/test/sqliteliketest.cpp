@@ -3,6 +3,7 @@
 
 class TrackCollectionTest : public TrackCollection {
    public:
+#ifdef __SQLITE3__
      static int likeCompareLatinLowTest(
                     QString* pattern,
                     QString* string,
@@ -11,6 +12,7 @@ class TrackCollectionTest : public TrackCollection {
                         pattern, string, esc);
 
      }
+#endif // __SQLITE3__
 };
 
 
