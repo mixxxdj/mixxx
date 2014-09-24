@@ -24,6 +24,7 @@ class SqliteLikeTest : public testing::Test {
     }
 };
 
+#ifdef __SQLITE3__
 TEST_F(SqliteLikeTest, PatternTest) {
     QString pattern;
     QString string;
@@ -69,6 +70,6 @@ TEST_F(SqliteLikeTest, PatternTest) {
     esc = '\0';
     EXPECT_FALSE(TrackCollectionTest::likeCompareLatinLowTest(&pattern, &string, esc));
 }
-
+#endif // __SQLITE3__
 
 
