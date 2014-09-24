@@ -28,11 +28,11 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
                         new ControlAudioTaperPotBehavior(-12, ratio2db(dMaxValue), 0.5));
             } else {
                 m_pControl->setBehavior(
-                        new ControlLogPotmeterBehavior(dMinValue, dMaxValue));
+                        new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
             }
         } else {
             m_pControl->setBehavior(
-                    new ControlLogPotmeterBehavior(dMinValue, dMaxValue));
+                    new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
         }
     }
 }

@@ -27,7 +27,7 @@ EffectManifest FilterEffect::getManifest() {
     hpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     hpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_RIGHT);
     hpf->setNeutralPointOnScale(0.0);
-    hpf->setDefault(0.0);
+    hpf->setDefault(0.0003);
     hpf->setMinimum(0.0003);
     hpf->setMaximum(0.5);
 
@@ -35,12 +35,12 @@ EffectManifest FilterEffect::getManifest() {
     q->setId("q");
     q->setName(QObject::tr("Q"));
     q->setDescription("Resonance of the filters, 0.707 = Flat top");
-    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    q->setDefault(2); // 0,707
-    q->setMinimum(0.1);
+    q->setDefault(0.707106781); // 0.707106781 = Butterworth
+    q->setMinimum(0.4);
     q->setMaximum(4.0);
 
     EffectManifestParameter* lpf = manifest.addParameter();
@@ -53,7 +53,7 @@ EffectManifest FilterEffect::getManifest() {
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
     lpf->setNeutralPointOnScale(1);
-    lpf->setDefault(0.2);
+    lpf->setDefault(0.5);
     lpf->setMinimum(0.0003);
     lpf->setMaximum(0.5);
 
