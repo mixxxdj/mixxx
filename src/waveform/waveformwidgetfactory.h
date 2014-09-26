@@ -106,7 +106,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   signals:
     void waveformUpdateTick();
-    void waveformMeasured(float frameRate, int rtErrorCnt);
+    void waveformMeasured(float frameRate, int droppedFrames);
 
   protected:
     WaveformWidgetFactory();

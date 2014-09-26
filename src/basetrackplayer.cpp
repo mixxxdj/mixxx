@@ -26,7 +26,8 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  bool defaultHeadphones)
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
-          m_pLoadedTrack() {
+          m_pLoadedTrack(),
+          m_replaygainPending(false) {
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
@@ -70,8 +71,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                           WaveformWidgetRenderer::s_waveformMinZoom,
                                           WaveformWidgetRenderer::s_waveformMaxZoom);
     m_pWaveformZoom->set(1.0);
-    m_pWaveformZoom->setStep(1.0);
-    m_pWaveformZoom->setSmallStep(1.0);
+    m_pWaveformZoom->setStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
+            WaveformWidgetRenderer::s_waveformMinZoom);
+    m_pWaveformZoom->setSmallStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
+            WaveformWidgetRenderer::s_waveformMinZoom);
 
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
@@ -81,6 +84,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pKey = new ControlObjectThread(group, "file_key");
     m_pReplayGain = new ControlObjectThread(group, "replaygain");
     m_pPlay = new ControlObjectThread(group, "play");
+    connect(m_pPlay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotPlayToggled(double)));
+    connect(m_pPlay, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotPlayToggled(double)));
 }
 
 BaseTrackPlayer::~BaseTrackPlayer()
@@ -190,6 +197,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
         // for all the widgets to unload the track and blank themselves.
         emit(unloadingTrack(m_pLoadedTrack));
     }
+    m_replaygainPending = false;
     m_pDuration->set(0);
     m_pBPM->slotSet(0);
     m_pKey->slotSet(0);
@@ -205,6 +213,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
 
 void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 {
+    m_replaygainPending = false;
     // Read the tags if required
     if (!m_pLoadedTrack->getHeaderParsed()) {
         m_pLoadedTrack->parse();
@@ -249,11 +258,19 @@ TrackPointer BaseTrackPlayer::getLoadedTrack() const {
 }
 
 void BaseTrackPlayer::slotSetReplayGain(double replayGain) {
-
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
     if (m_pPlay->get() == 0.0) {
         m_pReplayGain->slotSet(replayGain);
+    } else {
+        m_replaygainPending = true;
+    }
+}
+
+void BaseTrackPlayer::slotPlayToggled(double v) {
+    if (!v && m_replaygainPending) {
+        m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
+        m_replaygainPending = false;
     }
 }
 

@@ -33,8 +33,6 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue>* pConfig)
 AnalyserBeats::~AnalyserBeats(){
 }
 
-// TODO(XXX): Get rid of the horrible duplication here between initialise and
-// loadStored.
 bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     if (totalSamples == 0) {
         return false;
@@ -70,9 +68,6 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesOffsetCorrection = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
-    m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
     m_bPreferencesFastAnalysis = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
@@ -87,45 +82,8 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
-    // If the track already has a Beats object then we need to decide whether to
-    // analyze this track or not.
-    bool bShouldAnalyze = false;
-    BeatsPointer pBeats = tio->getBeats();
-    if (pBeats) {
-        QString version = pBeats->getVersion();
-        QString subVersion = pBeats->getSubVersion();
-
-        QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            m_pluginId, m_bPreferencesFastAnalysis);
-        QString newVersion = BeatFactory::getPreferredVersion(
-                m_bPreferencesFixedTempo);
-        QString newSubVersion = BeatFactory::getPreferredSubVersion(
-                m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
-                m_iMinBpm, m_iMaxBpm, extraVersionInfo);
-
-        if (version == newVersion && subVersion == newSubVersion) {
-            // If the version and settings have not changed then if the world is
-            // sane, re-analyzing will do nothing.
-            bShouldAnalyze = false;
-            qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
-        } else if (m_bPreferencesReanalyzeOldBpm) {
-            bShouldAnalyze = true;
-        } else if (pBeats->getBpm() == 0.0) {
-            bShouldAnalyze = true;
-            qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
-        } else if (pBeats->findNextBeat(0) <= 0.0) {
-            bShouldAnalyze = true;
-            qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
-        } else {
-            bShouldAnalyze = false;
-            qDebug() << "Beat calculation skips analyzing because the track has"
-                     << "a BPM computed by a previous Mixxx version and user"
-                     << "preferences indicate we should not change it.";
-        }
-    } else {
-        // No valid keys stored so we want to analyze this track.
-        bShouldAnalyze = true;
-    }
+    // if we can load a stored track don't reanalyze it
+    bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
         m_pVamp = new VampAnalyser(m_pConfig);
@@ -146,8 +104,6 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     return bShouldAnalyze;
 }
 
-// TODO(XXX): Get rid of the horrible duplication here between initialise and
-// loadStored.
 bool AnalyserBeats::loadStored(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;

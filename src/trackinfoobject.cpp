@@ -137,13 +137,13 @@ void TrackInfoObject::initialize(bool parseHeader) {
 
 TrackInfoObject::~TrackInfoObject() {
     //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
+
+    // Notifies TrackDAO and other listeners that this track is about to be
+    // deleted and should be saved to the database, removed from caches, etc.
+    emit(deleted(this));
+
     delete m_waveform;
     delete m_waveformSummary;
-}
-
-void TrackInfoObject::doSave() {
-    //qDebug() << "TIO::doSave()" << getInfo();
-    emit(save(this));
 }
 
 void TrackInfoObject::parse() {
@@ -773,7 +773,7 @@ void TrackInfoObject::waveformSummaryNew() {
 
 void TrackInfoObject::setAnalyserProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    if (progress != deref(m_analyserProgress)) {
+    if (progress != load_atomic(m_analyserProgress)) {
         m_analyserProgress = progress;
         emit(analyserProgress(progress));
     }
@@ -781,7 +781,7 @@ void TrackInfoObject::setAnalyserProgress(int progress) {
 
 int TrackInfoObject::getAnalyserProgress() const {
     // QAtomicInt so no need for lock.
-    return deref(m_analyserProgress);
+    return load_atomic(m_analyserProgress);
 }
 
 void TrackInfoObject::setCuePoint(float cue) {
