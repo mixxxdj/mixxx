@@ -346,29 +346,23 @@ QString ConfigObject<ValueType>::getResourcePath() {
     qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isNull() || qResourcePath.isEmpty()) {
-#ifdef __UNIX__
         QDir mixxxDir(QCoreApplication::applicationDirPath());
-        // On Linux, check if the path is stored in the configuration database.
+        // Always check to see if the path is stored in the configuration database.
         if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists()) {
             qResourcePath = getValueString(ConfigKey("[Config]","Path"));
         } else if (mixxxDir.cd("res")) {
             // We are running out of the repository root.
             qResourcePath = mixxxDir.absolutePath();
-        } else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
-            // Release configuraton
-            qResourcePath = mixxxDir.absolutePath();
-        } else {
-            // Set the path according to the compile time define, UNIX_SHARE_PATH
-            qResourcePath = UNIX_SHARE_PATH;
         }
+#ifdef __UNIX__
+        // On Linux, the share path is the logical place to look.
+        qResourcePath = UNIX_SHARE_PATH;
 #endif
 #ifdef __WINDOWS__
         // On Windows, set the config dir relative to the application dir
         qResourcePath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
-        QDir mixxxDir(QCoreApplication::applicationDirPath());
-
         if (mixxxDir.absolutePath().endsWith("_build")) {
             // We are running out of the osxXX_build folder.
             if (mixxxDir.cdUp() && mixxxDir.cd("res")) {
@@ -376,9 +370,6 @@ QString ConfigObject<ValueType>::getResourcePath() {
             } else {
                 // TODO(rryan): What should we do here?
             }
-        } else if (mixxxDir.cd("res")) {
-            // We are running out of the repository root.
-            qResourcePath = mixxxDir.absolutePath();
         } else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuraton
             qResourcePath = mixxxDir.absolutePath();
