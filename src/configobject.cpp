@@ -356,7 +356,9 @@ QString ConfigObject<ValueType>::getResourcePath() {
         }
 #ifdef __UNIX__
         // On Linux, the share path is the logical place to look.
-        qResourcePath = UNIX_SHARE_PATH;
+        if (qResourcePath.isEmpty()) {
+            qResourcePath = UNIX_SHARE_PATH;
+        }
 #endif
 #ifdef __WINDOWS__
         // On Windows, set the config dir relative to the application dir
