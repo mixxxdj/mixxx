@@ -347,11 +347,17 @@ QString ConfigObject<ValueType>::getResourcePath() {
 
     if (qResourcePath.isNull() || qResourcePath.isEmpty()) {
 #ifdef __UNIX__
+        QDir mixxxDir(QCoreApplication::applicationDirPath());
         // On Linux, check if the path is stored in the configuration database.
-        if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
+        if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists()) {
             qResourcePath = getValueString(ConfigKey("[Config]","Path"));
-        else
-        {
+        } else if (mixxxDir.cd("res")) {
+            // We are running out of the repository root.
+            qResourcePath = mixxxDir.absolutePath();
+        } else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+            // Release configuraton
+            qResourcePath = mixxxDir.absolutePath();
+        } else {
             // Set the path according to the compile time define, UNIX_SHARE_PATH
             qResourcePath = UNIX_SHARE_PATH;
         }
@@ -392,6 +398,8 @@ QString ConfigObject<ValueType>::getResourcePath() {
     if (!qResourcePath.endsWith("/")) {
         qResourcePath.append("/");
     }
+
+    qDebug() << "Loading resources from " << qResourcePath;
 
     return qResourcePath;
 }
