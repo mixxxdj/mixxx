@@ -97,18 +97,28 @@ void FilterEffect::processGroup(const QString& group,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
-
     double hpf = m_pHPF->value().toDouble();
     double q = m_pQ->value().toDouble();
     double lpf = m_pLPF->value().toDouble();
 
     if ((pState->m_loFreq != lpf) ||
-            (pState->m_q != q)) {
+            (pState->m_q != q) ||
+            (pState->m_hiFreq != hpf)) {
+        // limit Q to ~4 in case of overlap
+        // Determined empirically at 1000 Hz
+        double ratio = hpf / lpf;
+        if (ratio < 1.414 && ratio >= 1) {
+            ratio -= 1;
+            double qmax = 2 + ratio * ratio * ratio * 29;
+            q = math_min(q, qmax);
+        } else if (ratio < 1 && ratio >= 0.7) {
+            q = math_min(q, 2.0);
+        } else if (ratio < 0.7 && ratio > 0.1) {
+            ratio -= 0.1;
+            double qmax = 4 - 2 / 0.6 * ratio;
+            q = math_min(q, qmax);
+        }
         pState->m_pLowFilter->setFrequencyCorners(1, lpf, q);
-    }
-
-    if ((pState->m_hiFreq != hpf) ||
-            (pState->m_q != q)) {
         pState->m_pHighFilter->setFrequencyCorners(1, hpf, q);
     }
 
