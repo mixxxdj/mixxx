@@ -33,6 +33,9 @@ DlgTrackInfo::~DlgTrackInfo() {
 void DlgTrackInfo::init(){
     setupUi(this);
 
+    //set the QLabel text color to black, see Bug 673411
+    setStyleSheet("QLabel { color:black }");
+
     cueTable->hideColumn(0);
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
