@@ -2,13 +2,13 @@
 	<WidgetGroup>
 		<ObjectName>DeckRowTwoThreeFour</ObjectName>
 		<Layout>vertical</Layout>
-		<SizePolicy>min,min</SizePolicy>
+		<SizePolicy>i,min</SizePolicy>
 		<MinimumSize>-1,-1</MinimumSize>
 		<Children>
 		    <WidgetGroup>
 		        <ObjectName>TitleGutter</ObjectName>
 		        <Layout>horizontal</Layout>
-		        <SizePolicy>me,min</SizePolicy>
+		        <SizePolicy>i,min</SizePolicy>
 		        <Children>
                     <WidgetGroup>
                         <ObjectName>AlignLeftTop</ObjectName>
