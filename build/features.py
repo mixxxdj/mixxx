@@ -798,8 +798,7 @@ class Opus(Feature):
             raise Exception('Could not find libopusfile.')
         build.env.Append(CPPDEFINES='__OPUS__')
 
-        if build.platform_is_linux or build.platform_is_osx \
-                or build.platform_is_bsd:
+        if build.platform_is_linux or build.platform_is_bsd:
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
     def sources(self, build):
