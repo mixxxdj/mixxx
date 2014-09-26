@@ -20,7 +20,7 @@ SetCompressor /SOLID lzma
 !define PRODUCT_PUBLISHER "The Mixxx Development Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
-!define DEFAULT_SKIN "LateNight-Stacked"
+!define DEFAULT_SKIN "LateNight"
 
 ; Assumes this script is locaed in <base>\mixxx\build\nsis
 !define BASE_BUILD_DIR "..\.."
@@ -350,7 +350,7 @@ SectionGroup "Additional Skins" SecAddlSkins
 
 	Section "Resizable skins" SecResizableSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Shade ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\LateNight-Stacked
+	  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Shade ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\LateNight
 	SectionEnd
 
 	Section "Netbook-size (1024x600)" SecNetbookSkins
@@ -420,7 +420,7 @@ SectionEnd
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself in US English with the default scalable LateNight-Stacked"
+  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself in US English with the default scalable LateNight"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Mixxx program group containing useful shortcuts appearing under the [All] Programs section under the Start menu"
   LangString DESC_SecDesktop ${LANG_ENGLISH} "Shortcut to Mixxx placed on the Desktop"
   LangString DESC_SecTranslations ${LANG_ENGLISH} "Translations for all available languages"
@@ -620,10 +620,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\skins\Deere1920x1080-FullHD"
   RMDir /r "$INSTDIR\skins\Deere1920x1200-WUXGA"
   RMDir /r "$INSTDIR\skins\DeereSamplegrid1280x800-WXGA"
-  RMDir /r "$INSTDIR\skins\LateNight-Stacked"
-  RMDir /r "$INSTDIR\skins\LateNight1280x1024-SXGA"
-  RMDir /r "$INSTDIR\skins\LateNight1280x800-WXGA"
-  RMDir /r "$INSTDIR\skins\LateNight1366x768-WXGA"
+  RMDir /r "$INSTDIR\skins\LateNight"
   RMDir /r "$INSTDIR\skins\LateNightBlues1280x1024-SXGA"
   RMDir /r "$INSTDIR\skins\LateNightBlues1280x800-WXGA"
   RMDir /r "$INSTDIR\skins\LateNightBlues1366x768-WXGA"
