@@ -214,6 +214,10 @@ class Qt(Dependence):
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
 
+        # Set qt_sqlite_plugin flag if we should package the Qt SQLite plugin.
+        build.flags['qt_sqlite_plugin'] = util.get_flags(
+            build.env, 'qt_sqlite_plugin', 0)
+
         # Enable Qt include paths
         if build.platform_is_linux:
             if qt5 and not conf.CheckForPKG('Qt5Core', '5.0'):
@@ -336,10 +340,6 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
 
-        # QtSQLite DLL
-        if build.platform_is_windows:
-            build.flags['sqlitedll'] = util.get_flags(
-                build.env, 'sqlitedll', 1)
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
@@ -554,6 +554,8 @@ class MixxxCore(Feature):
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
                    "effects/native/butterworth8eqeffect.cpp",
+                   "effects/native/bessel4lvmixeqeffect.cpp",
+                   "effects/native/bessel8lvmixeqeffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
@@ -580,6 +582,7 @@ class MixxxCore(Feature):
                    "engine/enginefilterblock.cpp",
                    "engine/enginefilterbiquad1.cpp",
                    "engine/enginefilterbessel4.cpp",
+                   "engine/enginefilterbessel8.cpp",
                    "engine/enginefilterbutterworth4.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginefilter.cpp",
