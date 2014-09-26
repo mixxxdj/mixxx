@@ -797,7 +797,7 @@ class Opus(Feature):
         if not conf.CheckLib(['opusfile', 'libopusfile']):
             raise Exception('Could not find libopusfile.')
         build.env.Append(CPPDEFINES='__OPUS__')
-        
+
         if build.platform_is_linux or build.platform_is_osx \
                 or build.platform_is_bsd:
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
@@ -1210,31 +1210,28 @@ class MacAppStoreException(Feature):
 
 class LocaleCompare(Feature):
     def description(self):
-        return "Locale Aware Compare for Sqlite"
+        return "Locale Aware Compare for SQLite"
 
     def default(self, build):
-        if build.platform_is_linux:
-            return 1
-        return 0    
+        return 1 if build.platform_is_linux else 0
 
     def enabled(self, build):
         build.flags['localecompare'] = util.get_flags(build.env, 'localecompare',
-                                            self.default(build))
+                                                      self.default(build))
         if int(build.flags['localecompare']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('localecompare', 'Set to 1 to enable Locale Aware Compare support for Sqlite.',
+        vars.Add('localecompare',
+                 'Set to 1 to enable Locale Aware Compare support for SQLite.',
                  self.default(build))
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+        if util.get_flags(build.env, 'qt_sqlite_plugin', 0):
+            raise Exception('WARNING: localecompare is not compatible with the Qt SQLite plugin')
         if not conf.CheckLib(['sqlite3']):
-            raise Exception(
-                'Missing libsqlite3.- exiting!')
+            raise Exception('Missing libsqlite3 -- exiting!')
         build.env.Append(CPPDEFINES='__SQLITE3__')
-
-
-
