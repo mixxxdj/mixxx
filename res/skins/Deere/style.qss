@@ -1,0 +1,369 @@
+/*******************************************************************************
+ ** BORDER *********************************************************************
+ *******************************************************************************/
+/* These definitions put a faint grey border around all the widgets. We have to
+   be tricky with top/bottom-ness to get things right. */
+
+#Mixer {
+  border: 1px solid #555;
+}
+
+#UpperTextRow {
+  border-top: 1px solid #555;
+  border-bottom: 1px solid #555;
+}
+
+#DeckRows {
+  border: 1px solid #555;
+  border-top: none;
+}
+
+/* Prevent a 2px border where the decks meet. */
+#Deck3 #DeckRows, #Deck4 #DeckRows {
+  border-top: none;
+}
+
+#OverviewRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+#VisualRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+/* Rounded corners to split things up */
+
+#Deck1, #Deck3 {
+  border-bottom-right-radius:5px;
+  border-top-right-radius:5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #555;
+}
+
+#Deck2, #Deck4 {
+  border-bottom-left-radius:5px;
+  border-top-left-radius:5px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #555;
+}
+
+#Sampler {
+  border: 1px solid #555;
+  border-left:none;
+}
+
+/*******************************************************************************
+ ** END BORDER *****************************************************************
+ *******************************************************************************/
+
+WWidget, QLabel {
+  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-size: 7pt;
+  text-transform: uppercase;
+  color: black;
+}
+
+WSliderComposed {
+  background-color: rgba(200, 200, 200, 128);
+}
+
+#ControlsRow {
+  qproperty-layoutSpacing: 5;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+/* Make the hotcue button grid have black borders between all buttons */
+#HotcueGrid {
+  background-color: black;
+  qproperty-layoutSpacing: 1;
+  padding: 1px;
+}
+#HotcueGrid WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#HotcueGrid WPushButton {
+  background-color: green;
+}
+
+/* Make the beatloop button grid have black borders between all buttons */
+#BeatLoopContainer {
+  background-color: black;
+  padding: 1px;
+  qproperty-layoutSpacing: 1;
+}
+#BeatLoopContainer WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#BeatLoopContainer WPushButton {
+  background-color: green;
+}
+
+/* Make the transport button grid have black borders between all buttons */
+#TransportContainer {
+  background-color: black;
+  padding: 1px;
+  qproperty-layoutSpacing: 1;
+}
+#TransportContainer WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#TransportContainer WPushButton {
+  background-color: green;
+}
+
+#LoopingContainer {
+  background-color: black;
+  padding: 1px;
+  qproperty-layoutSpacing: 1;
+}
+#LoopingContainer WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+#LoopingContainer WPushButton {
+  background-color: green;
+}
+
+#ToolBar {
+  background-color: pink;
+}
+
+/* All widget groups that are children of #DeckRows should AlignTop. */
+#DeckRows > WWidgetGroup {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+}
+
+#ArtistGutter, #TitleGutter {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 2px;
+}
+
+#BPMGutter, #PositionGutter {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutSpacing: 10;
+  padding: 2px;
+}
+
+#DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
+  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+}
+
+#SamplerTextRow #ArtistGutter WLabel, #SamplerTextRow #BPMGutter WLabel, #SamplerTextRow #PositionGutter WLabel {
+  font: bold 12pt/14pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+}
+
+#BPMGutter WLabel, #PositionGutter WLabel {
+  qproperty-alignment: 'AlignRight | AlignVCenter';
+}
+
+#DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
+  font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#SamplerTextRow #TitleGutter WLabel {
+  font: bold 14pt/12pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#EffectRackCollapsed #EffectUnitNameContainer WLabel {
+  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  text-transform: none;
+  text-align: left;
+}
+
+#EffectUnitNameRow {
+  border-bottom: 1px solid #555;
+  background-color: transparent;
+  margin: 0px;
+}
+
+#EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
+  qproperty-layoutAlignment: 'AlignTop';
+  border: 1px solid #555;
+  border-left:none;
+}
+
+#EffectUnit1 {
+  border-left: 1px solid #555;
+}
+
+#EffectUnitNameContainer {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#EffectUnitNextPrevContainer {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#EffectUnitNextPrevContainer WPushButton {
+  font-size: 12pt;
+}
+
+#KnobLabel {
+  background-color: white;
+  border: 1px solid black;
+  qproperty-alignment: 'AlignCenter | AlignVCenter';
+}
+
+#Mixer {
+  background-color: green;
+  qproperty-layoutAlignment: 'AlignTop';
+}
+
+#MasterControls {
+  qproperty-layoutSpacing: 0;
+}
+
+#DeckControls {
+  qproperty-layoutSpacing: 0;
+}
+
+#MainDeckContainer {
+  background-color: red;
+}
+
+#Deck1, #DeckMixer1 {
+  background-color: rgb(128,128,0);
+}
+
+#Deck2, #DeckMixer2 {
+  background-color: cyan;
+}
+
+#Deck3, #DeckMixer3 {
+  background-color: violet;
+}
+
+#Deck4, #DeckMixer4 {
+  background-color: pink;
+}
+
+#Sampler {
+  background-color: cyan;
+}
+
+#LibraryContainer {
+  background-color: green;
+}
+
+#LibraryExpanded, #LibraryCollapsed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#EffectRackContainer {
+  background-color: red;
+}
+
+#EffectRackExpanded, #EffectRackCollapsed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#EffectUnitParameters {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutSpacing: 2;
+}
+
+#EffectUnitControls {
+  padding: 2px;
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutSpacing: 2;
+}
+
+#EffectUnitGroupControls {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
+
+#EffectUnit {
+  font-size: 16pt;
+}
+
+#EffectUnit1 {
+  background-color: pink;
+}
+
+#EffectUnit2 {
+  background-color: brown;
+}
+
+#EffectUnit3 {
+  background-color: red;
+}
+
+#EffectUnit4 {
+  background-color: green;
+}
+
+#SampleDecksContainer {
+  background-color: orange;
+}
+
+#SampleDecksExpanded, #SampleDecksCollapsed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#OverviewRow, #VisualRow, #ButtonRow {
+  /*qproperty-layoutContentsMargins: rect(0 1 0 1);*/
+}
+
+WWidgetGroup {
+  /*border: 1px solid rgb(128, 128, 128);*/
+  /*margin: 0px;
+  padding: 0px;
+  qproperty-layoutSpacing: 0;
+  qproperty-layoutContentsMargins: rect(0 0 0 0);*/
+  /*qproperty-layoutAlignment: 'AlignCenter';*/
+}
+
+
+/*
+
+#Deck1 {
+  margin: 0px;
+  qproperty-layoutSpacing: 0;
+  qproperty-layoutContentsMargins: rect(10 2 10 2);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+WWidget {
+  border: 1px solid rgb(128, 128, 128);
+  background-color: grey;
+}
+
+WSliderComposed {
+  background-color: orange;
+}
+
+WVuMeter {
+  background-color: pink;
+}
+
+WPushButton[value="1"] {
+  background-color: green;
+}
+
+WPushButton[pressed="true"] {
+  background-color: pink;
+}
+
+#BeatLoopButton[value="1"][pressed="true"] {
+  background-color: pink;
+}
+
+#BeatLoopButton[value="0"][pressed="true"] {
+  background-color: orange;
+}
+*/

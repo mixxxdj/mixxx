@@ -424,13 +424,7 @@ Section "Uninstall"
 
   ; Remove skins we (might have) installed
   Delete $INSTDIR\skins\*.* ; This just deletes files at the root of the skins directory
-  RMDir /r "$INSTDIR\skins\Deere1280x1024-SXGA"
-  RMDir /r "$INSTDIR\skins\Deere1280x800-WXGA"
-  RMDir /r "$INSTDIR\skins\Deere1366x768-WXGA"
-  RMDir /r "$INSTDIR\skins\Deere1440x900-WXGA+"
-  RMDir /r "$INSTDIR\skins\Deere1920x1080-FullHD"
-  RMDir /r "$INSTDIR\skins\Deere1920x1200-WUXGA"
-  RMDir /r "$INSTDIR\skins\DeereSamplegrid1280x800-WXGA"
+  RMDir /r "$INSTDIR\skins\Deere"
   RMDir /r "$INSTDIR\skins\LateNight"
   RMDir /r "$INSTDIR\skins\LateNightBlues1280x1024-SXGA"
   RMDir /r "$INSTDIR\skins\LateNightBlues1280x800-WXGA"
