@@ -62,6 +62,9 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThread* m_pReplayGain;
     ControlObjectThread* m_pPlay;
     EngineDeck* m_pChannel;
+
+    char* m_pSafeGroupName;
+
 };
 
 
