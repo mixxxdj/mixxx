@@ -15,6 +15,7 @@ class BaseSyncableListener : public SyncableListener {
     void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getMaster() const;
     void onCallbackStart(int sampleRate, int bufferSize);
+    void onCallbackEnd(int sampleRate, int bufferSize);
 
     // Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
@@ -58,6 +59,10 @@ class BaseSyncableListener : public SyncableListener {
     // Syncable is set, then returns the beat distance of the internal clock.
     double masterBeatDistance() const;
 
+    // Returns the current BPM of the master Syncable if it were playing
+    // at 1.0 rate.
+    double masterBaseBpm() const;
+
     // Set the BPM on every sync-enabled Syncable except pSource.
     void setMasterBpm(Syncable* pSource, double bpm);
 
@@ -65,9 +70,16 @@ class BaseSyncableListener : public SyncableListener {
     // pSource.
     void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
 
+    // Set the master base bpm, which is what the bpm would be if the syncable
+    // were playing at 1.0x speed
+    void setMasterBaseBpm(Syncable* pSource, double bpm);
+
     // Set the master beat distance on every sync-enabled Syncable except
     // pSource.
     void setMasterBeatDistance(Syncable* pSource, double beat_distance);
+
+    void setMasterParams(Syncable* pSource, double beat_distance,
+                         double base_bpm, double bpm);
 
     ConfigObject<ConfigValue>* m_pConfig;
     // The InternalClock syncable.

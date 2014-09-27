@@ -13,14 +13,14 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
 
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
-        BeatGrid* pGrid = new BeatGrid(pTrack.data(), beatsSerialized);
+        BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0, beatsSerialized);
         pGrid->moveToThread(pTrack->thread());
         pGrid->setParent(pTrack.data());
         pGrid->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized BeatGrid";
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (beatsVersion == BEAT_MAP_VERSION) {
-        BeatMap* pMap = new BeatMap(pTrack, beatsSerialized);
+        BeatMap* pMap = new BeatMap(pTrack, 0, beatsSerialized);
         pMap->moveToThread(pTrack->thread());
         pMap->setParent(pTrack.data());
         pMap->setSubVersion(beatsSubVersion);
@@ -31,8 +31,9 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
     return BeatsPointer();
 }
 
-BeatsPointer BeatFactory::makeBeatGrid(TrackInfoObject* pTrack, double dBpm, double dFirstBeatSample) {
-    BeatGrid* pGrid = new BeatGrid(pTrack);
+BeatsPointer BeatFactory::makeBeatGrid(TrackInfoObject* pTrack, double dBpm,
+                                       double dFirstBeatSample) {
+    BeatGrid* pGrid = new BeatGrid(pTrack, 0);
     pGrid->setGrid(dBpm, dFirstBeatSample);
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
@@ -109,13 +110,13 @@ BeatsPointer BeatFactory::makePreferredBeats(
             bEnableOffsetCorrection,
             beats, iSampleRate, iTotalSamples, globalBpm);
 
-        BeatGrid* pGrid = new BeatGrid(pTrack.data());
+        BeatGrid* pGrid = new BeatGrid(pTrack.data(), iSampleRate);
         // firstBeat is in frames here and setGrid() takes samples.
         pGrid->setGrid(globalBpm, firstBeat * 2);
         pGrid->setSubVersion(subVersion);
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
-        BeatMap* pBeatMap = new BeatMap(pTrack, beats);
+        BeatMap* pBeatMap = new BeatMap(pTrack, iSampleRate, beats);
         pBeatMap->setSubVersion(subVersion);
         return BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
     } else {
