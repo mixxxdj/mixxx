@@ -170,8 +170,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         }
         // We don't know if something downstream expects the string to persist,
         // so dupe it (probably leaking it).
+        m_pSafeGroup = strdup(group.toStdString().c_str());
         EngineMicrophone* pMicrophone =
-                new EngineMicrophone(strdup(group.toStdString().c_str()),
+                new EngineMicrophone((const char *)m_pSafeGroup,
                                      m_pEffectsManager);
         // What should channelbase be?
         AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, i);
@@ -599,6 +600,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+    free(m_pSafeGroup);
 }
 
 bool MixxxMainWindow::loadTranslations(const QLocale& systemLocale, QString userLocale,

@@ -274,6 +274,8 @@ class MixxxMainWindow : public QMainWindow {
 
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;
+
+    char *m_pSafeGroup;
 };
 
 #endif
