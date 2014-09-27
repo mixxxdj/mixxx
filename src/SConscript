@@ -54,7 +54,7 @@ if build.platform_is_windows:
         now = datetime.datetime.now()
         str_list.append('#define CUR_YEAR                    "'+str(now.year)+'"\n\n')
 
-        if build.msvcdebug:
+        if build.build_is_debug:
             str_list.append('#define DEBUG                       1\n')
         if 'pre' in mixxx_version.lower():
             str_list.append('#define PRERELEASE                  1\n')
@@ -95,8 +95,12 @@ def build_tests():
 
         if build.platform_is_windows:
                 # We want a terminal for tests.
-                env['LINKFLAGS'].remove('/subsystem:windows')
-                env['LINKFLAGS'].append('/subsystem:console')
+                if build.machine_is_64bit:
+                    env['LINKFLAGS'].remove('/subsystem:windows,5.02')
+                    env['LINKFLAGS'].append('/subsystem:console,5.02')
+                else:
+                    env['LINKFLAGS'].remove('/subsystem:windows,5.01')
+                    env['LINKFLAGS'].append('/subsystem:console,5.01')
 
                 test_bin = env.Program(
                         'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
@@ -124,13 +128,14 @@ if 'test' in BUILD_TARGETS:
         run_tests()
 
 def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version.
+        # In release mode, we only use the version and revision number.
         if build.build_is_release:
-                return mixxx_version
+                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         elif branch_name.startswith('release-'):
                 return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number
-        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
+        # In a debug build, include the branch name and revision number and
+        # don't include the Mixxx version.
+        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
@@ -142,18 +147,21 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
                 return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number
-        return "%s-%s~%s~%s%s" % (mixxx_version, ubuntu_version,
-                                   branch_name, vcs_name, vcs_revision)
+        # In a debug build, include the branch name and revision number and
+        # don't include the Mixxx version.
+        return "%s~%s~%s%s" % (ubuntu_version, branch_name, vcs_name,
+                               vcs_revision)
+
 
 def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version
+        # In release mode, we only use the version and revision number
         if build.build_is_release:
-                return mixxx_version
+                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         elif branch_name.startswith('release-'):
                 return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number
-        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
+        # In a debug build, include the branch name and revision number and
+        # don't include the Mixxx version.
+        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
 
 #Set up the install target
 #=========================
@@ -216,7 +224,7 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 if build.toolchain_is_msvs:
         mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
         # skip the MSVC DLLs incase they're in there too
-        dll_files = Glob('%s/[!"msvc"]*.dll' % mixxx_winlib_path)
+        dll_files = Glob('%s/*.dll' % mixxx_winlib_path) + Glob('%s/lib/*.dll' % mixxx_winlib_path)
 elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
         # We're cross-compiling, grab these from the crosscompile bin
         # folder. How should we be doing this?
@@ -232,23 +240,22 @@ qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
 
 if qt5:
-        suffix = 'd.dll' if build.msvcdebug else '.dll'
+        suffix = 'd.dll' if build.build_is_debug else '.dll'
         qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
         dll_files.extend(qt_modules)
 else:
-        suffix = 'd4.dll' if build.msvcdebug else '4.dll'
+        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
-        # TODO(rryan): Is this needed? We don't use phonon.
-        qt_modules.append('$QTDIR/lib/phonon' + suffix)
         dll_files.extend(qt_modules)
 
-if int(flags.get('sqlitedll', 0)):
+sqldll_files = []
+if int(flags.get('qt_sqlite_plugin', 0)):
         if qt5:
                 # TODO(rryan): Add the SQLite DLL For Qt5.
                 pass
         else:
-                suffix = 'd4.dll' if build.msvcdebug else '4.dll'
+                suffix = 'd4.dll' if build.build_is_debug else '4.dll'
                 # Qt SQLite plugin
                 sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
 
@@ -274,7 +281,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 binary = env.Install(unix_bin_path, binary_files)
                 resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
-		vamp_plugin =  env.Install(
+                vamp_plugin =  env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
 
@@ -301,7 +308,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', dotdesktop)
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
-		env.Alias('install', vamp_plugin)
+                env.Alias('install', vamp_plugin)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
                 #if 'install' in COMMAND_LINE_TARGETS:
@@ -327,10 +334,18 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # this is a BIG HACK to support Qt's plugins (since Qt *requires* that
         # it's plugins be in specific subdirectories, which OS X doesn't really
         # play nice with)
-        qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
-                      [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                      [("sqldrivers", e) for e in ["libqsqlite.dylib"]] +
-                      [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
+
+        # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
+        # sqlite_plugin mode.
+        sql_dylibs = []
+        if int(flags.get('qt_sqlite_plugin', 0)):
+                sql_dylibs = ["libqsqlite.dylib"]
+
+        qt_plugins = (
+                [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
+                [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
+                [("sqldrivers", e) for e in sql_dylibs] +
+                [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
         #Left out libqmng and libqtiff to save space.
 
         # Concatenate the SoundSource plugins to our list of plugins (converting
@@ -459,12 +474,12 @@ if build.platform_is_windows:
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
         env.Alias('mixxx', soundsource_plugins)
-	env.Alias('mixxx', vamp_plugins)
+        env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
         # QSQLite DLL
-        if 'sqldll_files' in locals():
+        if sqldll_files:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
                 env.Alias('mixxx', sql_dlls)
 
@@ -501,7 +516,7 @@ def BuildRelease(target, source, env):
     print
     print "You have built version %s" % mixxx_version
     print
-    if int(flags['msvcdebug']):
+    if build.build_is_debug:
         print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
         print
     print "Binary has size ",
@@ -533,43 +548,16 @@ def BuildRelease(target, source, env):
     print
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
+        # TODO(XXX): Installing a runtime isn't specific to MSVS?
         if build.toolchain_is_msvs:
             redist_file = 'vcredist_%s.exe' % arch
-            print "Searching for the Visual C++ DLL installer package",redist_file
-
-            # First check one level above the winlib directory
-            redist_path = '%s' % os.path.join(os.path.dirname(mixxx_winlib_path), redist_file)
-            print "   ",redist_path,
+            print "Searching for the Visual C++ DLL installer package", redist_file
+            # Check for the runtime installer in the winlib root.
+            redist_path = '%s' % os.path.join(mixxx_winlib_path, redist_file)
+            print "   ", redist_path,
             if not os.path.isfile(redist_path):
-                print "not found"
-                # If it's not there, look in the MS SDK directory
-                mssdk_path = util.get_mssdk_path()
-                #print "   Detected MS SDK path:", mssdk_path
-                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
-                print "   ",redist_path,
-                if not os.path.isfile(redist_path):
-                    print "not found"
-                    raise Exception('Cannot find the Visual C++ DLL installer.')
+                raise Exception('Could not find the MSVC++ runtime installer.')
 
-            print "Extracting needed files..."
-            szip_path = None
-            try:
-                szip_directory = win32_find_program_via_registry("7-Zip")
-                szip_path = '%s' % os.path.join(szip_directory, "7z.exe")
-            except Exception, e:
-                pass
-            if szip_path is None:
-                print "Cannot find 7-Zip. Do you have it installed?"
-                raise Exception('Cannot find 7-Zip. Do you have it installed?')
-            else:
-                output_path = '%s' % os.path.join(mixxx_winlib_path,'VC_redist')
-                args = [szip_path,"x","-y","-ir!vc_red.*","-ir!*.msp",redist_path,"-o"+output_path]
-                print "Executing:", ' '.join(args)
-                proc = subprocess.Popen(args)
-                data, err = proc.communicate()
-                rv = proc.wait()
-                if rv:
-                    raise Exception('There was a problem extracting the installer files. See above for details.')
         print "Now building installation package..."
         command_flag = None
         nsis_path = None
@@ -590,7 +578,7 @@ def BuildRelease(target, source, env):
                 {'path': nsis_path,
                  'package_name': exe_name,
                  'version': mixxx_version,
-                 'qtpath': os.environ['QTDIR'],
+                 'qtpath': build.env['QTDIR'],
                  'winlibpath': mixxx_winlib_path,
                  '64bit': buildwin64}
             print "Using command: " + command

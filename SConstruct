@@ -51,12 +51,11 @@ available_features = [features.Mad,
                       features.WavPack,
                       features.ModPlug,
                       features.TestSuite,
-                      features.MSVCDebug,
-                      features.MSVSHacks,
                       features.Vamp,
                       features.AutoDjCrates,
                       features.ColorDiagnostics,
                       features.AddressSanitizer,
+                      features.LocaleCompare,
 
                       # "Features" of dubious quality
                       features.PerfTools,

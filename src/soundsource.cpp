@@ -359,6 +359,15 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     if (!albumArtistFrame.isEmpty()) {
         QString sAlbumArtist = toQString(albumArtistFrame.front()->toString());
         setAlbumArtist(sAlbumArtist);
+
+        if (getArtist().length() == 0) {
+           setArtist(sAlbumArtist);
+        }
+    }
+    TagLib::ID3v2::FrameList originalAlbumFrame = id3v2->frameListMap()["TOAL"];
+    if (getAlbum().length() == 0 && !originalAlbumFrame.isEmpty()) {
+        QString sOriginalAlbum = TStringToQString(originalAlbumFrame.front()->toString());
+        setAlbum(sOriginalAlbum);
     }
     TagLib::ID3v2::FrameList composerFrame = id3v2->frameListMap()["TCOM"];
     if (!composerFrame.isEmpty()) {

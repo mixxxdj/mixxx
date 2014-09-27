@@ -630,6 +630,12 @@ VestaxVCI400.Deck.prototype.onWheelTouch = function(value) {
 
 VestaxVCI400.Deck.prototype.finishWheelTouch = function() {
     this.wheelTouchInertiaTimer = 0;
+    if (this.vinylActive) {
+        // Vinyl button still being pressed, don't disable scratch mode yet.
+        this.wheelTouchInertiaTimer = engine.beginTimer(
+                100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+        return;
+    }
     var play = engine.getValue(this.group, "play");
     if (play != 0) {
         // If we are playing, just hand off to the engine.
