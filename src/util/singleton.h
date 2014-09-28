@@ -14,6 +14,9 @@ public:
 
     static T* instance()
     {
+        if (m_instance == NULL) {
+            qWarning() << "Singleton class has not been created yet, returning NULL";
+        }
         return m_instance;
     }
 
