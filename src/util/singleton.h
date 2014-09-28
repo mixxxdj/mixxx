@@ -1,6 +1,8 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
+#include "util/debug.h"
+
 template<class T>
 class Singleton
 {
