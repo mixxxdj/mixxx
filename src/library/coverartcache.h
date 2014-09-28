@@ -62,6 +62,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
                              const QSize& croppedSize,
                              const bool emitSignals);
+    QImage extractEmbeddedCover(QString trackLocation);
+
   public slots:
     void imageFound();
     void imageLoaded();
@@ -97,7 +99,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
     QString calculateMD5(QImage img);
     QImage rescaleBigImage(QImage img);
-    QImage extractEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,
                                    QString trackBaseName,
                                    QString album);
