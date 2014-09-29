@@ -21,7 +21,6 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
     }
 
     virtual void TearDown() {
-        CoverArtCache::destroy();
         // make sure we clean up the db
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("DELETE FROM " % COVERART_TABLE);
@@ -99,11 +98,6 @@ TEST_F(CoverArtCacheTest, changeImage) {
     trackDAO.updateCoverArt(trackId_1, coverId);
 
     CoverArtCache* cache = CoverArtCache::instance();
-    CoverArtDAO *pDAO = &m_CoverArtDAO;
-    if (pDAO == NULL) {
-        qDebug() << "ERROR";
-        return;
-    }
     cache->setCoverArtDAO(&m_CoverArtDAO);
     cache->setTrackDAO(&trackDAO);
     bool res = cache->changeCoverArt(trackId_1, "ID3TAG");

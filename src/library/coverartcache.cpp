@@ -365,7 +365,8 @@ void CoverArtCache::imageFound() {
 // sqlite can't do a huge number of updates in a very short time,
 // so it is important to collect all new covers and write them at once.
 void CoverArtCache::updateDB(bool forceUpdate) {
-    if (!forceUpdate && m_queueOfUpdates.size() < 500) {
+    if (!m_pCoverArtDAO || !m_pTrackDAO ||
+            (!forceUpdate && m_queueOfUpdates.size() < 500)) {
         return;
     }
 
