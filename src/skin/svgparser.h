@@ -5,8 +5,6 @@
 #include <QString>
 #include <QDomNode>
 #include <QDomElement>
-#include <QScriptEngine>
-#include <QDir>
 
 #include "skin/skincontext.h"
 
