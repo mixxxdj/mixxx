@@ -197,24 +197,24 @@ void WVuMeter::paintEvent(QPaintEvent *) {
                 m_iPos = 1;
 
             QPointF targetPoint(0, 0);
-            QRectF sourceRect(0, 0, m_iPos, m_pPixmapVu->height());
+            QRectF sourceRect(0, 0, m_iPos, height());
             m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
                 targetPoint = QPointF(m_iPeakPos - m_iPeakHoldSize, 0);
                 sourceRect = QRectF(m_iPeakPos - m_iPeakHoldSize, 0,
-                                    m_iPeakHoldSize, m_pPixmapVu->height());
+                                    m_iPeakHoldSize, height());
                 m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         } else {
             QPointF targetPoint(0, m_iNoPos - m_iPos);
-            QRectF sourceRect(0, m_iNoPos - m_iPos, m_pPixmapVu->width(), m_iPos);
+            QRectF sourceRect(0, m_iNoPos - m_iPos, width(), m_iPos);
             m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if (m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
-                targetPoint = QPointF(0, m_pPixmapVu->height() - m_iPeakPos);
-                sourceRect = QRectF(0, m_pPixmapVu->height() - m_iPeakPos,
-                                    m_pPixmapVu->width(), m_iPeakHoldSize);
+                targetPoint = QPointF(0, height() - m_iPeakPos);
+                sourceRect = QRectF(0, height() - m_iPeakPos,
+                                    width(), m_iPeakHoldSize);
                 m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         }
