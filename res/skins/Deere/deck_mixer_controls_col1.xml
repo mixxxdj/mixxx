@@ -1,0 +1,78 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer<Variable name="i"/>_Column1</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <Template src="skin:knob.xml">
+        <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="label">Gain</SetVariable>
+      </Template>
+
+      <Template src="skin:knob.xml">
+        <SetVariable name="control">pitch</SetVariable>
+        <SetVariable name="label">Pitch</SetVariable>
+      </Template>
+
+      <Template src="skin:knob.xml">
+        <SetVariable name="control">filterHigh</SetVariable>
+        <SetVariable name="label">High</SetVariable>
+      </Template>
+
+      <Template src="skin:knob.xml">
+        <SetVariable name="control">filterMid</SetVariable>
+        <SetVariable name="label">Mid</SetVariable>
+      </Template>
+
+      <Template src="skin:knob.xml">
+        <SetVariable name="control">filterLow</SetVariable>
+        <SetVariable name="label">Low</SetVariable>
+      </Template>
+
+      <PushButton>
+        <ObjectName>DeckMute</ObjectName>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>MUTE</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>MUTE</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,mute</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <ObjectName>DeckPFL</ObjectName>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>HEAD</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>HEAD</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+    </Children>
+  </WidgetGroup>
+</Template>

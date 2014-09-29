@@ -243,7 +243,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
             }
             --n;
         }
-    } else if (n < 0) {
+    } else if (n < 0 && previous_beat != m_beats.end()) {
         for (; true; --previous_beat) {
             if (previous_beat->enabled()) {
                 if (n == -1) {
@@ -258,7 +258,6 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
                 break;
             }
         }
-
     }
     return -1;
 }

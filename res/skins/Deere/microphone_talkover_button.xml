@@ -1,0 +1,30 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A microphone talkover button.
+  Variables:
+    talk_text: Text to show on the button.
+    group: The group for the microphone.
+-->
+<Template>
+  <PushButton>
+    <Size>40f,20f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="talk_text"/></Text>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="talk_text"/></Text>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </PushButton>
+</Template>
