@@ -54,7 +54,14 @@ bool CoverArtCache::changeCoverArt(int trackId,
         return true;
     }
 
-    QImage img(newCoverLocation);
+    QImage img;
+    if (newCoverLocation == "ID3TAG") {
+        QString trackLocation = m_pTrackDAO->getTrackLocation(trackId);
+        img = extractEmbeddedCover(trackLocation);
+    } else {
+        img = QImage(newCoverLocation);
+    }
+
     if (img.isNull()) {
         return false;
     }

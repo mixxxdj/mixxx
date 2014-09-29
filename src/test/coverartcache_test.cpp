@@ -4,12 +4,39 @@
 
 #include "library/coverartcache.h"
 #include "library/dao/coverartdao.h"
+#include "library/trackcollection.h"
 #include "test/mixxxtest.h"
 #include "soundsourceproxy.h"
 
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache
 class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
+  protected:
+    virtual void SetUp() {
+        // make sure to use the current schema.xml file in the repo
+        config()->set(ConfigKey("[Config]","Path"),
+                      QDir::currentPath().append("/res"));
+        m_pTrackCollection = new TrackCollection(config());
+        CoverArtCache::create();
+    }
+
+    virtual void TearDown() {
+        CoverArtCache::destroy();
+        // make sure we clean up the db
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        query.prepare("DELETE FROM " % COVERART_TABLE);
+        ASSERT_TRUE(query.exec());
+        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
+        ASSERT_TRUE(query.exec());
+        query.prepare("DELETE FROM library");
+        ASSERT_TRUE(query.exec());
+        query.prepare("DELETE FROM track_locations");
+        ASSERT_TRUE(query.exec());
+
+        delete m_pTrackCollection;
+    }
+
+    TrackCollection* m_pTrackCollection;
 };
 
 const QString& kCoverLocationTest = "res/images/library/default_cover.png";
@@ -46,6 +73,41 @@ TEST_F(CoverArtCacheTest, loadImage) {
     img = pProxiedSoundSource->getCoverArt();
 
     EXPECT_TRUE(img.operator==(res.img));
+}
+
+TEST_F(CoverArtCacheTest, changeImage) {
+    CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
+    TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
+
+    QString testdir(QDir::tempPath() + "/CoverDir");
+    QString testCoverLoc = testdir + "/b/cover1.jpg";
+    QString testMd5Hash = "abc123xxxCOVER1";
+    QString trackLocation_1 = testdir % "/b/test.mp3";
+
+    // adding a new cover
+    int coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
+    EXPECT_TRUE(coverId > 0);
+
+    // add Track
+    trackDAO.addTracksPrepare();
+    trackDAO.addTracksAdd(new TrackInfoObject(
+                    kTestTrackLocation, SecurityTokenPointer(), false), false);
+    trackDAO.addTracksFinish(false);
+    int trackId_1 = trackDAO.getTrackId(kTestTrackLocation);
+
+    //associating some covers to some tracks
+    trackDAO.updateCoverArt(trackId_1, coverId);
+
+    CoverArtCache* cache = CoverArtCache::instance();
+    CoverArtDAO *pDAO = &m_CoverArtDAO;
+    if (pDAO == NULL) {
+        qDebug() << "ERROR";
+        return;
+    }
+    cache->setCoverArtDAO(&m_CoverArtDAO);
+    cache->setTrackDAO(&trackDAO);
+    bool res = cache->changeCoverArt(trackId_1, "ID3TAG");
+    EXPECT_TRUE(res);
 }
 
 TEST_F(CoverArtCacheTest, searchImage) {
