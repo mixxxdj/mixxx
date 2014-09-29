@@ -1,0 +1,27 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A hide/show button.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <PushButton>
+    <ObjectName><Variable name="object_name"/></ObjectName>
+    <Size>20f,20f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text>▶</Text>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text>▼</Text>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="control"/></ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

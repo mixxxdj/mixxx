@@ -154,6 +154,9 @@ QString BaseSqlTableModel::orderByClause() const {
     QString sort_field = QString("%1.%2").arg(m_tableName, field);
     s.append(sort_field);
 
+#ifdef __SQLITE3__
+    s.append(" COLLATE localeAwareCompare");
+#endif
     s.append((m_eSortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
              QLatin1String(" DESC"));
     return s;
