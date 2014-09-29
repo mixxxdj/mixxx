@@ -272,5 +272,25 @@ PixmapSource* SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     return source;
 }
 
+QScriptValue SkinContext::evaluateScript(QString expression) {
+    return m_scriptEngine.evaluate(expression);
+}
+
+// bool SkinContext::hasScriptUncaughtException() const {
+    // return m_scriptEngine.hasUncaughtException();
+// }
+// 
+// QScriptValue SkinContext::getNullScriptValue() const {
+    // return m_scriptEngine.nullValue();
+// }
+// 
+// QScriptValue SkinContext::getScriptGlobalObject() const {
+    // return m_scriptEngine.globalObject();
+// }
+
+QScriptEngine* SkinContext::getScriptEngine() const {
+    return &m_scriptEngine;
+}
+
 
 

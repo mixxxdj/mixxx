@@ -69,6 +69,12 @@ class SkinContext {
     // template<typename pixmapSource>
     PixmapSource* getPixmapSource(const QDomNode& pixmapNode) const;
 
+    QScriptValue evaluateScript(QString expression);
+    QScriptEngine* getScriptEngine() const;
+    // bool hasScriptUncaughtException() const;
+    // QScriptValue getNullScriptValue() const;
+    // QScriptValue getScriptGlobalObject() const;
+
   private:
     QString variableNodeToText(const QDomElement& element) const;
     
