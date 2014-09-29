@@ -230,7 +230,7 @@ Section "Mixxx (required)" SecMixxx
 
   ; Skins
   SetOutPath "$INSTDIR\skins"
-  File ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*
+  File /r ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*
 
   ; Write the installation path into the registry
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
