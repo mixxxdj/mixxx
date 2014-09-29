@@ -202,7 +202,7 @@ void WVuMeter::paintEvent(QPaintEvent *) {
 
             if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
                 targetPoint = QPointF(m_iPeakPos - m_iPeakHoldSize, 0);
-                sourceRect = QRectF(m_iPeakPos - m_iPeakHoldSize, 0,
+                soruceRect = QRectF(width() - m_iPeakPos, 0,
                                     m_iPeakHoldSize, height());
                 m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
