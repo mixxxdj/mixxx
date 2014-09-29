@@ -104,22 +104,32 @@ void WVuMeter::setPixmaps(const QString &vuFilename,
     } else {
         m_bHorizontal = bHorizontal;
         if (m_bHorizontal) {
-            m_iNoPos = m_pPixmapVu->width();
+            m_iNoPos = width();
         } else {
-            m_iNoPos = m_pPixmapVu->height();
+            m_iNoPos = height();
         }
     }
 }
 
 void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dValue);
-    m_iPos = static_cast<int>(dParameter * m_iNoPos);
-    // Range check
-    if (m_iPos > m_iNoPos) {
-        m_iPos = m_iNoPos;
-    } else if (m_iPos < 0) {
-        m_iPos = 0;
-    }
+    if (m_bHorizontal) {
+            m_iPos = static_cast<int>(dParameter * width());
+                // Range check
+                if (m_iPos > width()) {
+                    m_iPos = width();
+                } else if (m_iPos < 0) {
+                    m_iPos = 0;
+                }
+        } else {
+            m_iPos = static_cast<int>(dParameter * height());
+                // Range check
+                if (m_iPos > height()) {
+                    m_iPos = height();
+                } else if (m_iPos < 0) {
+                    m_iPos = 0;
+                }
+        }
 
     if (dParameter > 0.) {
         setPeak(m_iPos);
