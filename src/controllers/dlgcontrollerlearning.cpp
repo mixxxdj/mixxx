@@ -161,7 +161,7 @@ void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
 
     progressBarWiggleFeedback->setValue(0);
     progressBarWiggleFeedback->setMinimum(0);
-    progressBarWiggleFeedback->setMaximum(300);
+    progressBarWiggleFeedback->setMaximum(200);
     progressBarWiggleFeedback->hide();
 
     labelMappedTo->setText("");
@@ -237,7 +237,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // If we get a few messages, it's probably a rotation control so let's give
     // feedback.  If we only get one or two messages, it's probably a button
     // and we shouldn't show the progress bar.
-    if (m_messages.length() > 4) {
+    if (m_messages.length() > 10) {
         if (progressBarWiggleFeedback->isVisible()) {
             progressBarWiggleFeedback->setValue(
                     progressBarWiggleFeedback->value() + 1);

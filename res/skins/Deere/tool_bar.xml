@@ -1,0 +1,112 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The tool bar.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>ToolBar</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <PushButton>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>-MIXER</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>+MIXER</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Master],hide_mixer</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>+LIBRARY</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>-LIBRARY</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_library</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>2DECK</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>4DECK</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+        </Connection>
+      </PushButton>
+      <Time>
+      </Time>
+      <Battery>
+      </Battery>
+
+      <Template src="skin:microphone.xml"/>
+
+      <WidgetGroup>
+        <ObjectName>MasterControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">balance</SetVariable>
+            <SetVariable name="label">Balance</SetVariable>
+          </Template>
+
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">volume</SetVariable>
+            <SetVariable name="label">Volume</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>HeadphoneControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headVolume</SetVariable>
+            <SetVariable name="label">Head Vol</SetVariable>
+          </Template>
+
+          <Template src="skin:knob.xml">
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headMix</SetVariable>
+            <SetVariable name="label">Head Mix</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+
+
+
+</Template>

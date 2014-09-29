@@ -48,7 +48,7 @@ class WDisplay : public WWidget {
     void setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
                    const QString& filename);
 
-    void setPixmapBackground(const QString& filename, Paintable::DrawMode mode);
+    void setPixmapBackground(PixmapSource* pSource, Paintable::DrawMode mode);
 
     void setPositions(int iNoPos);
 

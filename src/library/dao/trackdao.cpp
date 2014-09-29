@@ -266,18 +266,6 @@ void TrackDAO::slotTrackChanged(TrackInfoObject* pTrack) {
     }
 }
 
-void TrackDAO::slotTrackSave(TrackInfoObject* pTrack) {
-    //qDebug() << "TrackDAO::slotTrackSave" << pTrack->getId() << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to ask that it be saved. The last
-    // time it is used is when the track is being deleted (i.e. its reference
-    // count has dropped to 0). The TIO is deleted with QObject:deleteLater, so
-    // Qt will wait for this slot to complete.
-    if (pTrack) {
-        saveTrack(pTrack);
-    }
-}
-
 // No need to check here if the querys exist, this is already done in
 // addTracksAdd, which is the only function that calls this
 void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack) {
@@ -813,24 +801,19 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     emit(tracksRemoved(tracksRemovedSet));
 }
 
-// deleter of the TrackInfoObject, for delete a Track from Library use hide or purge
-// static
-void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
+void TrackDAO::slotTrackDeleted(TrackInfoObject* pTrack) {
     Q_ASSERT(pTrack);
     //qDebug() << "Garbage Collecting" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
 
     // Save the track if it is dirty.
     if (pTrack->isDirty()) {
-        pTrack->doSave();
+        saveTrack(pTrack);
     }
 
     // Delete Track from weak reference cache
     m_sTracksMutex.lock();
     m_sTracks.remove(pTrack->getId());
     m_sTracksMutex.unlock();
-
-    // Now Qt will delete it in the event loop.
-    pTrack->deleteLater();
 }
 
 TrackPointer TrackDAO::getTrackFromDB(const int id) const {
@@ -844,7 +827,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, "
-        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
+        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock, "
         "keys_version, keys_sub_version, keys "
         "FROM Library "
         "INNER JOIN track_locations "
@@ -919,7 +902,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 
             TrackPointer pTrack = TrackPointer(
                     new TrackInfoObject(location, SecurityTokenPointer(), false),
-                    &TrackDAO::deleteTrack);
+                    &QObject::deleteLater);
 
             // TIO already stats the file to see if it exists, what its length is,
             // etc. So don't bother setting it.
@@ -999,8 +982,8 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
                     this, SLOT(slotTrackChanged(TrackInfoObject*)),
                     Qt::DirectConnection);
-            connect(pTrack.data(), SIGNAL(save(TrackInfoObject*)),
-                    this, SLOT(slotTrackSave(TrackInfoObject*)),
+            connect(pTrack.data(), SIGNAL(deleted(TrackInfoObject*)),
+                    this, SLOT(slotTrackDeleted(TrackInfoObject*)),
                     Qt::DirectConnection);
 
             m_sTracksMutex.lock();
@@ -1128,7 +1111,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":rating", pTrack->getRating());
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
-    query.bindValue(":played", pTrack->getPlayed());
+    query.bindValue(":played", pTrack->getPlayed() ? 1 : 0);
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());

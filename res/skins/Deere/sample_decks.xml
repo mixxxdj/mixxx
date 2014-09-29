@@ -1,0 +1,105 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sample deck container widget.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <!-- I don't now why this works but a WidgetGroup wrapper around a
+         WidgetStack with a 'fixed' size policy makes the group track the
+         minimum size of the current stack widget. -->
+    <SizePolicy>me,f</SizePolicy>
+
+    <Children>
+      <WidgetStack>
+        <ObjectName>SampleDecksContainer</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <!-- Collapsed SampleDecks -->
+          <WidgetGroup>
+            <ObjectName>SampleDecksCollapsed</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">1</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">3</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">4</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">5</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">6</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">7</SetVariable>
+              </Template>
+              <Template src="skin:sampler_simple.xml">
+                <SetVariable name="i">8</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Expanded SampleDecks -->
+          <WidgetGroup trigger="[Samplers],show_samplers">
+            <ObjectName>SampleDecksExpanded</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">1</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">3</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">4</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">5</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">6</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">7</SetVariable>
+              </Template>
+              <Template src="skin:sampler.xml">
+                <SetVariable name="i">8</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetStack>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Invert/>
+        <Add>1</Add>
+      </Transform>
+    </Connection>
+  </WidgetGroup>
+</Template>

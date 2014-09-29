@@ -123,12 +123,12 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_group = group;
 
     // Set images
-    m_pBgImage = WImageStore::getImage(context.getPixmapPath(context.selectNode(node,
-                                                    "PathBackground")));
-    m_pFgImage = WImageStore::getImage(context.getPixmapPath(context.selectNode(node,
-                                                    "PathForeground")));
-    m_pGhostImage = WImageStore::getImage(context.getPixmapPath(context.selectNode(node,
-                                                    "PathGhost")));
+    m_pBgImage = WImageStore::getImage(context.getPixmapPath(
+                        context.selectNode(node, "PathBackground")));
+    m_pFgImage = WImageStore::getImage(context.getPixmapPath(
+                        context.selectNode(node,"PathForeground")));
+    m_pGhostImage = WImageStore::getImage(context.getPixmapPath(
+                        context.selectNode(node,"PathGhost")));
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
     }
@@ -524,9 +524,15 @@ void WSpinny::dragEnterEvent(QDragEnterEvent * event)
         if (m_pPlay && m_pPlay->get()) {
             event->ignore();
         } else {
-            event->acceptProposedAction();
+            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+            if (!files.isEmpty()) {
+                event->acceptProposedAction();
+                return;
+            }
         }
     }
+    event->ignore();
 }
 
 void WSpinny::dropEvent(QDropEvent * event) {

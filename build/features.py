@@ -31,16 +31,7 @@ class HSS1394(Feature):
         if build.platform_is_windows or build.platform_is_osx:
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
-#            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
-            libs = ['libhss1394', 'hss1394']
-            if build.platform_is_windows:
-                if build.msvcdebug:
-                    libs = ['libhss1394-debug', 'hss1394-debug',
-                            'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']
-                else:
-                    libs = ['libhss1394', 'hss1394',
-                            'libHSS1394_x64_Release', 'libHSS1394_x86_Release']
-            if not conf.CheckLib(libs):
+            if not conf.CheckLib(['libhss1394', 'hss1394']):
                 raise Exception('Did not find HSS1394 development library')
 
         build.env.Append(CPPDEFINES='__HSS1394__')
@@ -249,13 +240,6 @@ class MediaFoundation(Feature):
             return
         if not build.platform_is_windows:
             raise Exception("Media Foundation is only supported on Windows!")
-        # need to look into this, SDK 6 might be ok?
-        mssdk_path = util.get_mssdk_path()
-        if mssdk_path is None:
-            raise Exception(
-                "MSSdk environment variable not set, have you run setenv?")
-        include_path = os.path.join(mssdk_path, "Include")
-        build.env.Append(CPPPATH=[include_path])
         if not conf.CheckLib('Ole32'):
             raise Exception('Did not find Ole32.lib - exiting!')
         if not conf.CheckLib(['Mfuuid']):
@@ -265,7 +249,6 @@ class MediaFoundation(Feature):
         if not conf.CheckLib(['Mfreadwrite']):  # Only available on Windows 7 and up, or properly updated Vista
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
-        return
 
 
 class IPod(Feature):
@@ -309,51 +292,6 @@ class IPod(Feature):
 
     def sources(self, build):
         return ['wipodtracksmodel.cpp']
-
-
-class MSVCDebug(Feature):
-    # FIXME: this flag is also detected in mixxx.py at line 100 because it's needed sooner than this is processed
-    # I don't know the best way to fix this and still have it show up with
-    # scons -h. - Sean, Aug 2012
-    def description(self):
-        return "MSVC Debugging"
-
-    def enabled(self, build):
-        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
-        if int(build.flags['msvcdebug']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        if build.toolchain_is_msvs:
-            vars.Add('msvcdebug',
-                     'Set to 1 to link against MS libraries with debugging info (implies debug=1)', 0)
-
-    def configure(self, build, conf):
-        if self.enabled(build):
-            if not build.toolchain_is_msvs:
-                raise Exception(
-                    "Error, msvcdebug flag set when toolchain is not MSVS.")
-
-            # if build.static_dependencies:
-            #    build.env.Append(CCFLAGS = '/MTd')
-            # else:
-            #    build.env.Append(CCFLAGS = '/MDd')
-            build.env.Append(CCFLAGS='/MDd')
-
-            build.env.Append(LINKFLAGS='/DEBUG')
-            build.env.Append(CPPDEFINES='DEBUGCONSOLE')
-            if build.machine_is_64bit:
-                build.env.Append(CCFLAGS='/Zi')
-                build.env.Append(LINKFLAGS='/NODEFAULTLIB:MSVCRT')
-            else:
-                build.env.Append(CCFLAGS='/ZI')
-        elif build.toolchain_is_msvs:
-            # if build.static_dependencies:
-            #    build.env.Append(CCFLAGS = '/MT')
-            # else:
-            #    build.env.Append(CCFLAGS = '/MD')
-            build.env.Append(CCFLAGS='/MD')
 
 
 class VinylControl(Feature):
@@ -630,7 +568,7 @@ class AsmLib(Feature):
         return "Agner Fog\'s ASMLIB"
 
     def enabled(self, build):
-        if build.msvcdebug:
+        if build.build_is_debug:
             return False
         build.flags['asmlib'] = util.get_flags(build.env, 'asmlib', 0)
         if int(build.flags['asmlib']):
@@ -642,8 +580,8 @@ class AsmLib(Feature):
             'asmlib', 'Set to 1 to enable linking against Agner Fog\'s hand-optimized asmlib, found at http://www.agner.org/optimize/', 0)
 
     def configure(self, build, conf):
-        if build.msvcdebug:
-            self.status = "Disabled (due to MSVC debug mode)"
+        if build.build_is_debug:
+            self.status = "Disabled (due to debug build)"
             return
         if not self.enabled(build):
             return
@@ -652,15 +590,15 @@ class AsmLib(Feature):
         if build.platform_is_linux:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-            build.env.Prepend(LIBS='":alibelf%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS='":libaelf%so.a"' % build.bitwidth)
         elif build.platform_is_osx:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-            build.env.Prepend(LIBS='":alibmac%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS='":libamac%so.a"' % build.bitwidth)
         elif build.platform_is_windows:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='/Oi-')
-            build.env.Prepend(LIBS='alibcof%so' % build.bitwidth)
+            build.env.Prepend(LIBS='libacof%so' % build.bitwidth)
 
 
 class QDebug(Feature):
@@ -668,13 +606,10 @@ class QDebug(Feature):
         return "Debugging message output"
 
     def enabled(self, build):
-        # Meh, repeating this can't hurt, and we require knowing the status of
-        # msvcdebug.
-        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
         build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 0)
         if build.platform_is_windows:
-            if int(build.flags['msvcdebug']):
-                # Turn general debugging flag on too if msvcdebug is specified
+            if build.build_is_debug:
+                # Turn general debugging flag on too if debug build is specified
                 build.flags['qdebug'] = 1
         if int(build.flags['qdebug']):
             return True
@@ -724,30 +659,6 @@ class Verbose(Feature):
             build.env['QT5_QRCCOMSTR'] = '[QRC] $SOURCE'
             build.env['QT5_UICCOMSTR'] = '[UIC5] $SOURCE'
             build.env['QT5_MOCCOMSTR'] = '[MOC] $SOURCE'
-
-
-class MSVSHacks(Feature):
-    """Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable
-    this)"""
-
-    def description(self):
-        return "MSVS 2005 hacks"
-
-    def enabled(self, build):
-        build.flags['msvshacks'] = util.get_flags(build.env, 'msvshacks', 0)
-        if int(build.flags['msvshacks']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        if build.toolchain_is_msvs:
-            vars.Add(
-                'msvshacks', 'Set to 1 to build properly with MS Visual Studio 2005 (Express users should leave this off)', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES='__MSVS2005__')
 
 
 class Profiling(Feature):
@@ -879,20 +790,16 @@ class Opus(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-
-        # Supported for Opus (RFC 6716)
+        # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if build.platform_is_linux or build.platform_is_osx \
-                or build.platform_is_bsd:
-            # Check for libopusfile
-            # I just randomly picked version numbers lower than mine for this
-            if not conf.CheckForPKG('opusfile', '0.2'):
-                raise Exception('Missing libopusfile (needs at least 0.2)')
+        if not conf.CheckLib(['opus', 'libopus']):
+            raise Exception('Could not find libopus.')
+        if not conf.CheckLib(['opusfile', 'libopusfile']):
+            raise Exception('Could not find libopusfile.')
+        build.env.Append(CPPDEFINES='__OPUS__')
 
-            build.env.Append(CPPDEFINES='__OPUS__')
-
-	    build.env.ParseConfig('pkg-config opusfile opus --silence-errors \
-                                  --cflags --libs')
+        if build.platform_is_linux or build.platform_is_bsd:
+            build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
     def sources(self, build):
         return ['soundsourceopus.cpp']
@@ -1035,9 +942,6 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     def enabled(self, build):
-        # Meh, repeating this can't hurt, and we require knowing the status of
-        # msvcdebug.
-        build.flags['msvcdebug'] = util.get_flags(build.env, 'msvcdebug', 0)
         build.flags['optimize'] = util.get_flags(build.env, 'optimize', 1)
         if int(build.flags['optimize']):
             return True
@@ -1063,22 +967,13 @@ class Optimize(Feature):
         optimize_level = int(build.flags['optimize'])
 
         if build.toolchain_is_msvs:
-            if int(build.flags['msvcdebug']):
-                self.status = "Disabled (due to msvcdebug mode)"
+            if build.build_is_debug:
+                self.status = "Disabled (debug build)"
                 return
-            # Valid values of /MACHINE are:
-            # {AM33|ARM|EBC|IA64|M32R|MIPS|MIPS16|MIPSFPU|MIPSFPU16|MIPSR41XX|SH3|SH3DSP|SH4|SH5|THUMB|X86}
-            # http://msdn.microsoft.com/en-us/library/5wy54dk2(v=VS.71).aspx
-            if build.machine_is_64bit:
-                build.env.Append(LINKFLAGS='/MACHINE:X64')
-            else:
-                build.env.Append(LINKFLAGS='/MACHINE:' + build.machine)
 
             # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
-            # /MP : http://msdn.microsoft.com/en-us/library/bb385193.aspx
-            # /MP has little to do with optimization so why is it here?
             # !!! /GL is incompatible with /ZI, which is set by mscvdebug
-            build.env.Append(CCFLAGS='/GL /MP')
+            build.env.Append(CCFLAGS='/GL')
 
             # Use the fastest floating point math library
             # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
@@ -1086,7 +981,7 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS='/fp:fast')
 
             # Do link-time code generation (and don't show a progress indicator
-            # -- this relies on aNSI control characters and tends to overwhelm
+            # -- this relies on ANSI control characters and tends to overwhelm
             # Jenkins logs) Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
             build.env.Append(LINKFLAGS='/LTCG:NOSTATUS')
@@ -1099,7 +994,7 @@ class Optimize(Feature):
             build.env.Append(LINKFLAGS='/OPT:REF')
             build.env.Append(LINKFLAGS='/OPT:ICF')
 
-            # Don't worry about alining code on 4KB boundaries
+            # Don't worry about aligning code on 4KB boundaries
             # build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
             # ALBERT: NOWIN98 is not supported in MSVC 2010.
 
@@ -1311,3 +1206,31 @@ class MacAppStoreException(Feature):
         if not self.enabled(build):
             return
         build.env.Append(CPPDEFINES='__MACAPPSTORE__')
+
+class LocaleCompare(Feature):
+    def description(self):
+        return "Locale Aware Compare for SQLite"
+
+    def default(self, build):
+        return 1 if build.platform_is_linux else 0
+
+    def enabled(self, build):
+        build.flags['localecompare'] = util.get_flags(build.env, 'localecompare',
+                                                      self.default(build))
+        if int(build.flags['localecompare']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('localecompare',
+                 'Set to 1 to enable Locale Aware Compare support for SQLite.',
+                 self.default(build))
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if int(util.get_flags(build.env, 'qt_sqlite_plugin', 0)):
+            raise Exception('WARNING: localecompare is not compatible with the Qt SQLite plugin')
+        if not conf.CheckLib(['sqlite3']):
+            raise Exception('Missing libsqlite3 -- exiting!')
+        build.env.Append(CPPDEFINES='__SQLITE3__')

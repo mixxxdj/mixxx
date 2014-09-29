@@ -84,6 +84,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
           m_dSlipRate(1.0),
           m_slipEnabled(0),
           m_bSlipEnabledProcessing(false),
+          m_bWasKeylocked(false),
           m_pRepeat(NULL),
           m_startButton(NULL),
           m_endButton(NULL),
@@ -257,6 +258,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
 
     m_pKeyControl = new KeyControl(_group, _config);
     addControl(m_pKeyControl);
+    m_pPitchControl = new ControlObjectSlave(m_group, "pitch", this);
 
     // Create the clock controller
     m_pClockControl = new ClockControl(_group, _config);
@@ -402,10 +404,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
 }
 
 void EngineBuffer::requestSyncPhase() {
-    if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
-        // Only honor phase syncing if quantize is on and playing.
-        m_iSeekQueued = SEEK_PHASE;
-    }
+    m_iSeekQueued = SEEK_PHASE;
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {
@@ -525,6 +524,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
+    // Reset the pitch value for the new track.
+    m_pPitchControl->set(0.0);
     m_pause.unlock();
 
     // All EngineControls are connected directly
@@ -737,6 +738,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         bool is_scratching = false;
         bool keylock_enabled = m_pKeylock->get() > 0;
 
+        // If keylock was on, and the user disabled it, also reset the pitch.
+        if (m_bWasKeylocked && !keylock_enabled) {
+            m_pPitchControl->set(0.0);
+        }
+
         // speed is the percentage change in player speed. Depending on whether
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateRate(
@@ -809,6 +815,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             m_baserate_old = baserate;
             m_speed_old = speed;
             m_pitch_old = pitch;
+            m_bWasKeylocked = keylock_enabled;
 
             // The way we treat rate inside of EngineBuffer is actually a
             // description of "sample consumption rate" or percentage of samples
@@ -1012,6 +1019,12 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
     }
 #endif
 
+    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+        // Report our speed to SyncControl immediately instead of waiting
+        // for postProcess so we can broadcast this update to followers.
+        m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+    }
+
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
 }
@@ -1109,13 +1122,18 @@ void EngineBuffer::processSeek() {
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
+    // The order of events here is very delicate.  It's necessary to update
+    // some values before others, because the later updates may require
+    // values from the first update.
     double beat_distance = m_pBpmControl->updateBeatDistance();
-    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+    SyncMode mode = m_pSyncControl->getSyncMode();
+    if (mode == SYNC_MASTER) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
+    } else if (mode == SYNC_FOLLOWER) {
+        // Report our speed to SyncControl.  If we are master, we already did this.
+        m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+        m_pSyncControl->setBeatDistance(beat_distance);
     }
-    // Report our speed to SyncControl. If we are the master then it will
-    // broadcast this update to followers.
-    m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
 
     // Update all the indicators that EngineBuffer publishes to allow
     // external parts of Mixxx to observe its status.

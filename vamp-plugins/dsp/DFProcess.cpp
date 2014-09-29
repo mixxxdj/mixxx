@@ -16,6 +16,7 @@
 #include "DFProcess.h"
 #include "MathUtilities.h"
 
+#include <algorithm>
 #include <cstring>
 
 //////////////////////////////////////////////////////////////////////

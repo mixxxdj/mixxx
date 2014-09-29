@@ -1,0 +1,38 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect parameter knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+    EffectParameter: the parameter
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <KnobComposed>
+        <Size>40f,40f</Size>
+        <Knob>knob.svg</Knob>
+        <MinAngle>-230</MinAngle>
+        <MaxAngle>50</MaxAngle>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
+        </Connection>
+      </KnobComposed>
+      <EffectParameterName>
+        <Size>40f,10f</Size>
+        <ObjectName>KnobLabel</ObjectName>
+        <EffectRack><Variable name="EffectRack"/></EffectRack>
+        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+        <Effect><Variable name="Effect"/></Effect>
+        <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+      </EffectParameterName>
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

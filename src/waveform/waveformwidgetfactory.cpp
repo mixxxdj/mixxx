@@ -459,7 +459,7 @@ void WaveformWidgetFactory::render() {
         if (timeCnt > 1000) {
             m_time.start();
             m_frameCnt = m_frameCnt * 1000 / timeCnt; // latency correction
-            emit(waveformMeasured(m_frameCnt, m_vsyncThread->rtErrorCnt()));
+            emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
             m_frameCnt = 0.0;
         }
     }

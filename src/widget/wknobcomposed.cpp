@@ -20,13 +20,13 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "BackPath")),
+        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "BackPath")),
                             Paintable::DrawModeFromString(mode_str));
     }
 
     // Set background pixmap if available
     if (context.hasNode(node, "Knob")) {
-        setPixmapKnob(context.getPixmapPath(context.selectNode(node, "Knob")));
+        setPixmapKnob(context.getPixmapSource(context.selectNode(node, "Knob")));
     }
 
     if (context.hasNode(node, "MinAngle")) {
@@ -43,20 +43,20 @@ void WKnobComposed::clear() {
     m_pKnob.clear();
 }
 
-void WKnobComposed::setPixmapBackground(const QString& filename,
+void WKnobComposed::setPixmapBackground(PixmapSource* pSource,
                                         Paintable::DrawMode mode) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(pSource, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading background pixmap:" << filename;
+                 << "Error loading background pixmap:" << pSource->getPath();
     }
 }
 
-void WKnobComposed::setPixmapKnob(const QString& filename) {
-    m_pKnob = WPixmapStore::getPaintable(filename, Paintable::STRETCH);
+void WKnobComposed::setPixmapKnob(PixmapSource* pSource) {
+    m_pKnob = WPixmapStore::getPaintable(pSource, Paintable::STRETCH);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading knob pixmap:" << filename;
+                 << "Error loading knob pixmap:" << pSource->getPath();
     }
 }
 

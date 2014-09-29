@@ -3,6 +3,7 @@
 #include <QLayout>
 #include <QMap>
 #include <QStylePainter>
+#include <QStackedLayout>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -84,7 +85,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "BackPath")),
+        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "BackPath")),
                             Paintable::DrawModeFromString(mode_str));
     }
 
@@ -101,6 +102,10 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
             pLayout->setSpacing(0);
             pLayout->setContentsMargins(0, 0, 0, 0);
             pLayout->setAlignment(Qt::AlignCenter);
+        } else if (layout == "stacked") {
+            QStackedLayout* pStackedLayout = new QStackedLayout();
+            pStackedLayout->setStackingMode(QStackedLayout::StackAll);
+            pLayout = pStackedLayout;
         }
     }
 
@@ -126,11 +131,11 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(const QString &filename, Paintable::DrawMode mode) {
+void WWidgetGroup::setPixmapBackground(PixmapSource* pSource, Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(pSource, mode);
     if (!m_pPixmapBack) {
-        qDebug() << "WWidgetGroup: Error loading background pixmap:" << filename;
+        qDebug() << "WWidgetGroup: Error loading background pixmap:" << pSource->getPath();
     }
 }
 

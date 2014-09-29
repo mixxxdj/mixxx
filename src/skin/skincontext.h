@@ -8,6 +8,8 @@
 #include <QScriptEngine>
 #include <QDir>
 
+#include "skin/pixmapsource.h"
+
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
 // evaluate skin XML nodes while loading the skin.
@@ -61,6 +63,10 @@ class SkinContext {
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
     QString getPixmapPath(const QDomNode& pixmapNode) const;
+    PixmapSource* getPixmapSource(const QDomNode& pixmapNode) const;
+
+    QScriptValue evaluateScript(QString expression);
+    QScriptEngine* getScriptEngine() const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;

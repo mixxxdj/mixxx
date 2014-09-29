@@ -42,11 +42,15 @@ class InternalClock : public QObject, public Clock, public Syncable {
     double getBeatDistance() const;
     void setMasterBeatDistance(double beatDistance);
 
-    void setBpm(double bpm);
+    double getBaseBpm() const;
+    void setMasterBaseBpm(double);
+    void setMasterBpm(double bpm);
     double getBpm() const;
     void setInstantaneousBpm(double bpm);
+    void setMasterParams(double beatDistance, double baseBpm, double bpm);
 
     void onCallbackStart(int sampleRate, int bufferSize);
+    void onCallbackEnd(int sampleRate, int bufferSize);
 
   private slots:
     void slotBpmChanged(double bpm);

@@ -1,0 +1,114 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A grid of beatloop controls with a loop double and halve on the left and right.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>BeatLoopContainer</ObjectName>
+    <Layout>horizontal</Layout>
+
+    <MinimumSize>-1,-1</MinimumSize>
+    <SizePolicy>min,max</SizePolicy>
+
+    <Children>
+      <PushButton>
+        <ObjectName>LoopHalve</ObjectName>
+        <!-- Grow to be as tall as the outer WidgetGroup -->
+        <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
+        <MaximumSize><Variable name="SmallVerticalStretchButtonMaximumSize"/></MaximumSize>
+        <SizePolicy><Variable name="SmallVerticalStretchButtonSizePolicy"/></SizePolicy>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>◀</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,loop_halve</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>BeatLoopUpperRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">0.125</SetVariable>
+                <SetVariable name="text_length">1/8</SetVariable>
+              </Template>
+
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">0.25</SetVariable>
+                <SetVariable name="text_length">1/4</SetVariable>
+              </Template>
+
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">0.5</SetVariable>
+                <SetVariable name="text_length">1/2</SetVariable>
+              </Template>
+
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">1</SetVariable>
+                <SetVariable name="text_length">1</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>BeatLoopLowerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">2</SetVariable>
+                <SetVariable name="text_length">2</SetVariable>
+              </Template>
+
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">4</SetVariable>
+                <SetVariable name="text_length">4</SetVariable>
+              </Template>
+
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">8</SetVariable>
+                <SetVariable name="text_length">8</SetVariable>
+              </Template>
+
+              <Template src="skin:beatloop_button.xml">
+                <SetVariable name="control_length">16</SetVariable>
+                <SetVariable name="text_length">16</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <PushButton>
+        <ObjectName>LoopDouble</ObjectName>
+        <!-- Grow to be as tall as the outer WidgetGroup -->
+        <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
+        <MaximumSize><Variable name="SmallVerticalStretchButtonMaximumSize"/></MaximumSize>
+        <SizePolicy><Variable name="SmallVerticalStretchButtonSizePolicy"/></SizePolicy>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>▶</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,loop_double</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>
