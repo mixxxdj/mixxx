@@ -85,8 +85,7 @@ void WVuMeter::resetPositions() {
 }
 
 void WVuMeter::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename,
-        Paintable::TILE);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename,Paintable::TILE);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
         << "Error loading background pixmap:" << filename;
@@ -95,10 +94,8 @@ void WVuMeter::setPixmapBackground(const QString& filename) {
     }
 }
 
-void WVuMeter::setPixmaps(const QString &vuFilename,
-    bool bHorizontal) {
-    m_pPixmapVu = WPixmapStore::getPaintable(vuFilename,
-        Paintable::STRETCH);
+void WVuMeter::setPixmaps(const QString &vuFilename,bool bHorizontal) {
+    m_pPixmapVu = WPixmapStore::getPaintable(vuFilename, Paintable::STRETCH);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
     } else {
@@ -202,8 +199,8 @@ void WVuMeter::paintEvent(QPaintEvent *) {
 
             if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
                 targetPoint = QPointF(m_iPeakPos - m_iPeakHoldSize, 0);
-                soruceRect = QRectF(width() - m_iPeakPos, 0,
-                    m_iPeakHoldSize, height());
+                sourceRect = QRectF(width() - m_iPeakPos, 0,
+                                    m_iPeakHoldSize, height());
                 m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         } else {
@@ -214,7 +211,7 @@ void WVuMeter::paintEvent(QPaintEvent *) {
             if (m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
                 targetPoint = QPointF(0, height() - m_iPeakPos);
                 sourceRect = QRectF(0, height() - m_iPeakPos,
-                    width(), m_iPeakHoldSize);
+                                    width(), m_iPeakHoldSize);
                 m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         }
