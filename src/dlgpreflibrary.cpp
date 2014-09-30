@@ -141,6 +141,16 @@ void DlgPrefLibrary::slotAddDir() {
         emit(requestAddDir(fd));
         slotUpdate();
     }
+
+    QMessageBox addMsgBox;
+
+    addMsgBox.setIcon(QMessageBox::Warning);
+    addMsgBox.setWindowTitle(tr("Added Directory"));
+
+    addMsgBox.setText(tr(
+        "Please rescan the library to add the new tracks in Folder: ") + fd);
+
+    addMsgBox.exec();
 }
 
 void DlgPrefLibrary::slotRemoveDir() {
