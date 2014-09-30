@@ -249,7 +249,7 @@ PixmapSource* SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
         if (!svgNode.isNull()) {
             // inline svg
             const QByteArray rslt = pSvgParser->saveToQByteArray(
-                    pSvgParser->parseSvgTree(svgNode) );
+                pSvgParser->parseSvgTree(svgNode) );
             source->setSVG( rslt );
         } else {
             // filename
