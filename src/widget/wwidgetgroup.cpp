@@ -132,11 +132,11 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(PixmapSource* pSource, Paintable::DrawMode mode) {
+void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(pSource, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (!m_pPixmapBack) {
-        qDebug() << "WWidgetGroup: Error loading background pixmap:" << pSource->getPath();
+        qDebug() << "WWidgetGroup: Error loading background pixmap:" << source.getPath();
     }
 }
 

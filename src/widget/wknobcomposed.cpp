@@ -43,20 +43,20 @@ void WKnobComposed::clear() {
     m_pKnob.clear();
 }
 
-void WKnobComposed::setPixmapBackground(PixmapSource* pSource,
+void WKnobComposed::setPixmapBackground(PixmapSource source,
                                         Paintable::DrawMode mode) {
-    m_pPixmapBack = WPixmapStore::getPaintable(pSource, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading background pixmap:" << pSource->getPath();
+                 << "Error loading background pixmap:" << source.getPath();
     }
 }
 
-void WKnobComposed::setPixmapKnob(PixmapSource* pSource) {
-    m_pKnob = WPixmapStore::getPaintable(pSource, Paintable::STRETCH);
+void WKnobComposed::setPixmapKnob(PixmapSource source) {
+    m_pKnob = WPixmapStore::getPaintable(source, Paintable::STRETCH);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading knob pixmap:" << pSource->getPath();
+                 << "Error loading knob pixmap:" << source.getPath();
     }
 }
 

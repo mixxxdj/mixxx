@@ -70,16 +70,14 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
 }
 
 /**/
-Paintable::Paintable(PixmapSource* source, DrawMode mode)
+Paintable::Paintable(PixmapSource source, DrawMode mode)
         : m_draw_mode(mode) {
-    if (source->isSVG()) {
+    if (source.isSVG()) {
         QSvgRenderer* pSvgRenderer = new QSvgRenderer();
-        if( source->getData().isEmpty() ){
-            // qWarning() << "Paintable stretch path" << source->getPath();
-            pSvgRenderer->load(source->getPath());
+        if( source.getData().isEmpty() ){
+            pSvgRenderer->load(source.getPath());
         } else {
-            // qWarning() << "Paintable stretch data" << source->getData();
-            pSvgRenderer->load(source->getData());
+            pSvgRenderer->load(source.getData());
         }
         
         if (mode == STRETCH) {
@@ -98,10 +96,10 @@ Paintable::Paintable(PixmapSource* source, DrawMode mode)
         }
     } else {
         QPixmap * pPixmap = new QPixmap();
-        if (!source->getData().isEmpty()){
-            pPixmap->loadFromData(source->getData());
+        if (!source.getData().isEmpty()){
+            pPixmap->loadFromData(source.getData());
         } else {
-            pPixmap->load(source->getPath());
+            pPixmap->load(source.getPath());
         }
         m_pPixmap.reset(pPixmap);
     }
@@ -251,19 +249,19 @@ PaintablePointer WPixmapStore::getPaintable(const QString& fileName,
 }
 
 // static
-PaintablePointer WPixmapStore::getPaintable(PixmapSource* source,
+PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
                                             Paintable::DrawMode mode) {
     // See if we have a cached value for the pixmap.
-    PaintablePointer pPaintable = m_paintableCache.value(source->getId(), PaintablePointer());
+    PaintablePointer pPaintable = m_paintableCache.value(source.getId(), PaintablePointer());
     if (pPaintable) {
         return pPaintable;
     }
 
     // Otherwise, construct it with the pixmap loader.
-    qDebug() << "WPixmapStore Loading pixmap from file" << source->getPath();
+    qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
     if (m_loader) {
-        QImage* pImage = m_loader->getImage(source->getPath());
+        QImage* pImage = m_loader->getImage(source.getPath());
         pPaintable = PaintablePointer(new Paintable(pImage, mode));
     } else {
         pPaintable = PaintablePointer(new Paintable(source, mode));
@@ -273,14 +271,14 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource* source,
         // Only log if it looks like the user tried to specify a
         // pixmap. Otherwise we probably just have a widget that is calling
         // getPaintable without checking that the skinner actually wanted one.
-        if (!source->isEmpty()) {
-            qDebug() << "WPixmapStore couldn't load:" << source->getPath()
+        if (!source.isEmpty()) {
+            qDebug() << "WPixmapStore couldn't load:" << source.getPath()
                      << pPaintable.isNull();
         }
         return PaintablePointer();
     }
     
-    m_paintableCache[source->getId()] = pPaintable;
+    m_paintableCache[source.getId()] = pPaintable;
     return pPaintable;
 }
 

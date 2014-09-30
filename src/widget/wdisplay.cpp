@@ -86,12 +86,12 @@ void WDisplay::resetPositions() {
     m_disabledPixmaps.resize(0);
 }
 
-void WDisplay::setPixmapBackground(PixmapSource* pSource,
+void WDisplay::setPixmapBackground(PixmapSource source,
                                    Paintable::DrawMode mode) {
-    m_pPixmapBack = WPixmapStore::getPaintable(pSource, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading background pixmap:" << pSource->getPath();
+                 << "Error loading background pixmap:" << source.getPath();
     }
 }
 

@@ -86,7 +86,7 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WStatusLight::setPixmap(int iState, PixmapSource* source, SizeMode mode) {
+void WStatusLight::setPixmap(int iState, PixmapSource source, SizeMode mode) {
     if (iState < 0 || iState >= m_pixmaps.size()) {
         return;
     }
@@ -111,7 +111,7 @@ void WStatusLight::setPixmap(int iState, PixmapSource* source, SizeMode mode) {
                 break;
         }
     } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << source->getPath() << iState;
+        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath() << iState;
         m_pixmaps[iState].clear();
     }
 }

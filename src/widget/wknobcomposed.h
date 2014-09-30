@@ -31,8 +31,8 @@ class WKnobComposed : public WWidget {
 
   private:
     void clear();
-    void setPixmapBackground(PixmapSource* pSource, Paintable::DrawMode mode);
-    void setPixmapKnob(PixmapSource* pSource);
+    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
+    void setPixmapKnob(PixmapSource source);
 
     double m_dCurrentAngle;
     PaintablePointer m_pKnob;
