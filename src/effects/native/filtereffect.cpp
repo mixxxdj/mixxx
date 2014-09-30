@@ -1,7 +1,8 @@
 #include "effects/native/filtereffect.h"
 #include "util/math.h"
 
-static const unsigned int kStartupSamplerate = 44100;
+static const double kMinCorner = 0.0003; // 13 Hz @ 44100
+static const double kMaxCorner = 0.5; // 22050 Hz @ 44100
 
 // static
 QString FilterEffect::getId() {
@@ -27,9 +28,9 @@ EffectManifest FilterEffect::getManifest() {
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
     lpf->setNeutralPointOnScale(1);
-    lpf->setDefault(0.5);
-    lpf->setMinimum(0.0003);
-    lpf->setMaximum(0.5);
+    lpf->setDefault(kMaxCorner);
+    lpf->setMinimum(kMinCorner);
+    lpf->setMaximum(kMaxCorner);
 
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("q");
@@ -53,17 +54,17 @@ EffectManifest FilterEffect::getManifest() {
     hpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     hpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_RIGHT);
     hpf->setNeutralPointOnScale(0.0);
-    hpf->setDefault(0.0003);
-    hpf->setMinimum(0.0003);
-    hpf->setMaximum(0.5);
+    hpf->setDefault(kMinCorner);
+    hpf->setMinimum(kMinCorner);
+    hpf->setMaximum(kMaxCorner);
 
     return manifest;
 }
 
 FilterGroupState::FilterGroupState()
-        : m_loFreq(0.5),
+        : m_loFreq(kMaxCorner),
           m_q(0.707106781),
-          m_hiFreq(0) {
+          m_hiFreq(kMinCorner) {
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q);
     m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q);
@@ -123,25 +124,29 @@ void FilterEffect::processGroup(const QString& group,
         pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
     }
 
-    if (hpf) {
-        if (lpf < 0.5) {
+    if (hpf > kMinCorner) {
+        if (lpf < kMaxCorner) {
+            // Overlapping
             pState->m_pLowFilter->process(pInput, pState->m_pBuf, numSamples);
             pState->m_pHighFilter->process(pState->m_pBuf, pOutput, numSamples);
         } else {
+            // High Pass
             pState->m_pLowFilter->pauseFilter();
             pState->m_pHighFilter->process(pInput, pOutput, numSamples);
         }
     } else {
         pState->m_pHighFilter->pauseFilter();
-        if (lpf < 0.5) {
-            pState->m_pHighFilter->process(pInput, pOutput, numSamples);
+        if (lpf < kMaxCorner) {
+            // Low Pass
+            pState->m_pLowFilter->process(pInput, pOutput, numSamples);
         } else {
+            // Bypass
             pState->m_pLowFilter->pauseFilter();
             SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
         }
     }
 
-    pState->m_loFreq = hpf;
+    pState->m_loFreq = lpf;
     pState->m_q = q;
-    pState->m_hiFreq = lpf;
+    pState->m_hiFreq = hpf;
 }
