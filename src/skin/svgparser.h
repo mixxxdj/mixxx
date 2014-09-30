@@ -32,7 +32,7 @@ class SvgParser {
     void parseScriptElements(const QDomNode& svgNode) const;
     QScriptValue evaluateTemplateExpression(QString expression) const;
     
-    mutable SkinContext * m_pContext;
+    mutable SkinContext m_context;
     
 };
 
