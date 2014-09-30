@@ -15,8 +15,11 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
         return;
     }
 
-    QPixmap pixmap;
+    if (info.coverLocation.isEmpty()) {
+        info.coverLocation = CoverArtCache::instance()->trackInDBHash(info.trackId);
+    }
 
+    QPixmap pixmap;
     if (info.coverLocation == "ID3TAG") {
         pixmap.convertFromImage(
             CoverArtCache::instance()->extractEmbeddedCover(info.trackLocation));
