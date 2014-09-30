@@ -19,7 +19,6 @@
 
 #include <QString>
 #include <QtDebug>
-#include <typeinfo>
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
