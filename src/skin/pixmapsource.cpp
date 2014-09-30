@@ -9,50 +9,54 @@ PixmapSource::~PixmapSource() {
 }
 
 QByteArray PixmapSource::getData() const {
-    return data;
-}
-
-QString PixmapSource::getType() const {
-    return type;
+    return m_baData;
 }
 
 QString PixmapSource::getPath() const {
-    return path;
+    return m_path;
 }
 
 void PixmapSource::setPath( QString newPath ) {
-    path = newPath;
+    m_path = newPath;
 }
 
-bool PixmapSource::isEmpty() {
-    return path.isEmpty() && data.isEmpty() ;
+bool PixmapSource::isEmpty() const {
+    return m_path.isEmpty() && m_baData.isEmpty() ;
+}
+
+bool PixmapSource::isSVG() const {
+    return m_eType == SVG;
+}
+
+bool PixmapSource::isBitmap() const {
+    return m_eType == BITMAP;
 }
 
 void PixmapSource::setSVG( QByteArray content ) {
-    data.truncate(0);
-    data += content;
-    type = "svg";
+    m_baData.truncate(0);
+    m_baData += content;
+    m_eType = SVG;
 }
 
 void PixmapSource::setSVG( QString filepath ) {
-    data.truncate(0);
-    path = filepath;
-    type = "svg";
+    m_baData.truncate(0);
+    m_path = filepath;
+    m_eType = SVG;
 }
 
 void PixmapSource::setBitmap( QString filepath ) {
-    path = filepath;
-    type = "bitmap";
+    m_path = filepath;
+    m_eType = BITMAP;
 }
 
 QString PixmapSource::getId() const {
     quint16 checksum;
     QString out;
-    if (data.isEmpty()) {
-        checksum = qChecksum( path.toAscii().constData(), path.length() );
+    if (m_baData.isEmpty()) {
+        checksum = qChecksum( m_path.toAscii().constData(), m_path.length() );
     } else {
-        checksum = qChecksum( data.constData(), data.length() );
+        checksum = qChecksum( m_baData.constData(), m_baData.length() );
     }
-    return path + out.setNum(checksum);
+    return m_path + out.setNum(checksum);
 }
 

@@ -72,7 +72,7 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
 /**/
 Paintable::Paintable(PixmapSource* source, DrawMode mode)
         : m_draw_mode(mode) {
-    if (source->getType() == "svg") {
+    if (source->isSVG()) {
         QSvgRenderer* pSvgRenderer = new QSvgRenderer();
         if( source->getData().isEmpty() ){
             // qWarning() << "Paintable stretch path" << source->getPath();

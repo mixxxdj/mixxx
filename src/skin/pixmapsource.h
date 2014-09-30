@@ -8,20 +8,26 @@ class PixmapSource {
     PixmapSource();
     virtual ~PixmapSource();
 
-    bool isEmpty();
+    bool isEmpty() const;
+    bool isSVG() const;
+    bool isBitmap() const;
     void setSVG( QByteArray content );
     void setSVG( QString filepath );
     void setBitmap( QString filepath );
     void setPath( QString newPath );
     QString getPath() const;
-    QString getType() const;
     QByteArray getData() const;
     QString getId() const;
     
   private:
-	QString path;
-	QString type;
-	QByteArray data;
+    enum Type {
+        SVG,
+        BITMAP
+    };
+    
+    QString m_path;
+    QByteArray m_baData;
+    enum Type m_eType;
 };
 
 #endif /* PIXMAPSOURCE_H */
