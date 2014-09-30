@@ -135,7 +135,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomAttr attribute;
     
     
-    QScriptValue global = m_context.getScriptEngine()->globalObject();
+    QScriptValue global = m_context.getScriptEngine().globalObject();
     QScriptValue hookNames;
     QString hooksPattern;
     QRegExp hookRx, nameRx;
@@ -220,7 +220,7 @@ void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
             scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
             QTextStream in(&scriptFile);
             result = m_context.evaluateScript(in.readAll());
-            if (m_context.getScriptEngine()->hasUncaughtException()) {
+            if (m_context.getScriptEngine().hasUncaughtException()) {
                 qDebug() << "SVG script exception : " << result.toString()
                         << "in" << scriptPath;
             }
@@ -228,7 +228,7 @@ void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
         
         expression = m_context.nodeToString(scriptNode);
         result = m_context.evaluateScript(expression);
-        if (m_context.getScriptEngine()->hasUncaughtException()) {
+        if (m_context.getScriptEngine().hasUncaughtException()) {
             qDebug() << "SVG script exception : " << result.toString();
         }
     }
@@ -237,13 +237,13 @@ void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
 
 QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
     QScriptValue out = m_context.evaluateScript(expression);
-    if (m_context.getScriptEngine()->hasUncaughtException()) {
+    if (m_context.getScriptEngine().hasUncaughtException()) {
         qDebug()
             << "SVG script exception : " << out.toString()
             << "Empty string returned";
         
         // return an empty string as replacement for the in-attribute expression
-        return m_context.getScriptEngine()->nullValue();
+        return m_context.getScriptEngine().nullValue();
     } else {
         return out;
     }

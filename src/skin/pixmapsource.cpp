@@ -51,12 +51,11 @@ void PixmapSource::setBitmap( QString filepath ) {
 
 QString PixmapSource::getId() const {
     quint16 checksum;
-    QString out;
     if (m_baData.isEmpty()) {
         checksum = qChecksum( m_path.toAscii().constData(), m_path.length() );
     } else {
         checksum = qChecksum( m_baData.constData(), m_baData.length() );
     }
-    return m_path + out.setNum(checksum);
+    return m_path + QString::number(checksum);
 }
 
