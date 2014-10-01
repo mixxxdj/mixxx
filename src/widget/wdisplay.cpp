@@ -100,8 +100,9 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
     if (iPos < 0 || iPos >= pPixmaps->size()) {
         return;
     }
-
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+    
+    PixmapSource source(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable( source,
                                                           Paintable::TILE);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {

@@ -256,12 +256,10 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
             pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
                 source.setPath( getSkinPath(pixmapName) );
-                if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
+                if (source.isSVG()) {
                     const QByteArray rslt = pSvgParser->saveToQByteArray(
                             pSvgParser->parseSvgFile(source.getPath()) );
                     source.setSVG( rslt );
-                } else {
-                    source.setBitmap(getSkinPath(pixmapName));
                 }
             }
         }

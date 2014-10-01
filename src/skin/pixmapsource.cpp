@@ -5,6 +5,10 @@
 PixmapSource::PixmapSource() {
 }
 
+PixmapSource::PixmapSource( QString filepath ) {
+    setPath(filepath);
+}
+
 PixmapSource::~PixmapSource() {
 }
 
@@ -17,7 +21,13 @@ QString PixmapSource::getPath() const {
 }
 
 void PixmapSource::setPath( QString newPath ) {
+    m_baData.truncate(0);
     m_path = newPath;
+    if (m_path.endsWith(".svg", Qt::CaseInsensitive)) {
+        m_eType = SVG;
+    } else {
+        m_eType = BITMAP;
+    }
 }
 
 bool PixmapSource::isEmpty() const {
@@ -36,17 +46,6 @@ void PixmapSource::setSVG( QByteArray content ) {
     m_baData.truncate(0);
     m_baData += content;
     m_eType = SVG;
-}
-
-void PixmapSource::setSVG( QString filepath ) {
-    m_baData.truncate(0);
-    m_path = filepath;
-    m_eType = SVG;
-}
-
-void PixmapSource::setBitmap( QString filepath ) {
-    m_path = filepath;
-    m_eType = BITMAP;
 }
 
 QString PixmapSource::getId() const {
