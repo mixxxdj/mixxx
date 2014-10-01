@@ -211,22 +211,22 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 
 QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
-    const SvgParser* pSvgParser = new SvgParser(*this);
+    const SvgParser svgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            pixmapPath = pSvgParser->saveToTempFile(
-                pSvgParser->parseSvgTree(svgNode) );
+            pixmapPath = svgParser.saveToTempFile(
+                svgParser.parseSvgTree(svgNode) );
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
                 pixmapName = getSkinPath(pixmapName);
                 if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-                    pixmapPath = pSvgParser->saveToTempFile(
-                        pSvgParser->parseSvgFile(pixmapName) );
+                    pixmapPath = svgParser.saveToTempFile(
+                        svgParser.parseSvgFile(pixmapName) );
                 } else {
                     pixmapPath = pixmapName;
                 }
@@ -275,8 +275,8 @@ QScriptValue SkinContext::evaluateScript(QString expression) {
     return m_scriptEngine.evaluate(expression);
 }
 
-const QScriptEngine SkinContext::getScriptEngine() const {
-    return m_scriptEngine;
+QScriptEngine* SkinContext::getScriptEngine() const {
+    return &m_scriptEngine;
 }
 
 
