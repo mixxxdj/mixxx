@@ -11,18 +11,19 @@ DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 }
 
 void DlgCoverArtFullSize::init(CoverInfo info) {
-    if (info.coverLocation == CoverArtCache::instance()->getDefaultCoverLocation())  {
+    CoverArtCache* cache = CoverArtCache::instance();
+    if (info.coverLocation == cache->getDefaultCoverLocation())  {
         return;
     }
 
     if (info.coverLocation.isEmpty()) {
-        info.coverLocation = CoverArtCache::instance()->trackInDBHash(info.trackId);
+        info.coverLocation = cache->trackInDBHash(info.trackId);
     }
 
     QPixmap pixmap;
     if (info.coverLocation == "ID3TAG") {
         pixmap.convertFromImage(
-            CoverArtCache::instance()->extractEmbeddedCover(info.trackLocation));
+            cache->extractEmbeddedCover(info.trackLocation));
     } else {
         pixmap = QPixmap(info.coverLocation);
     }
