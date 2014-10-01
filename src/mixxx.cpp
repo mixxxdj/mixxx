@@ -1861,12 +1861,14 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
 }
 
 void MixxxMainWindow::slotScanLibrary() {
+    emit(libraryScanStarted());
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(this);
 }
 
 void MixxxMainWindow::slotEnableRescanLibraryAction() {
     m_pLibraryRescan->setEnabled(true);
+    emit(libraryScanFinished());
 }
 
 void MixxxMainWindow::slotOptionsMenuShow() {
