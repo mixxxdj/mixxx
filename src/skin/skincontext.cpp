@@ -273,8 +273,8 @@ QScriptValue SkinContext::evaluateScript(QString expression) {
     return m_scriptEngine.evaluate(expression);
 }
 
-QScriptEngine* SkinContext::getScriptEngine() const {
-    return &m_scriptEngine;
+const QScriptEngine& SkinContext::getScriptEngine() const {
+    return m_scriptEngine;
 }
 
 
