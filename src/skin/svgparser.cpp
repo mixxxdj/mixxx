@@ -135,15 +135,13 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomAttr attribute;
     
     
-    QScriptValue global = m_context.getScriptEngine()->globalObject();
-    QScriptValue hookNames;
-    QString hooksPattern;
     QRegExp hookRx, nameRx;
     
-    hookNames = global.property("hookNames").call(global);
+    QScriptValue global = m_context.getScriptEngine()->globalObject();
+    QScriptValue hookNames = global.property("hookNames").call(global);
     
     if (hookNames.toString().length()) {
-        hooksPattern = hookNames.property("toPattern")
+        QString hooksPattern = hookNames.property("toPattern")
             .call(hookNames).toString();
         
         // hook_name( arg1 [, arg2]... )
