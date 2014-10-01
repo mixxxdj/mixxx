@@ -81,17 +81,16 @@ void DlgPrefLibrary::slotHide() {
         "You added one or more library directories. These files won't be"
         "available until you rescan. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
-        tr("Rescan now"), QMessageBox::AcceptRole);
-    QPushButton* laterButton = msgBox.addButton(
-        tr("Rescan later"), QMessageBox::AcceptRole);
+        tr("Scan"), QMessageBox::AcceptRole);
+    msgBox.addButton(
+        tr("Cancel"), QMessageBox::AcceptRole);
     msgBox.setDefaultButton(scanButton);
     msgBox.exec();
 
-    if (msgBox.clickedButton() == laterButton) {
+    if (msgBox.clickedButton() == scanButton) {
+        emit(scanLibrary());
         return;
     }
-
-    emit(scanLibrary());
 }
 
 void DlgPrefLibrary::initialiseDirList(){
