@@ -32,7 +32,8 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
         : DlgPreferencePage(parent),
           m_dirListModel(),
           m_pconfig(config),
-          m_pLibrary(pLibrary) {
+          m_pLibrary(pLibrary),
+          m_baddedDirectory(false) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -62,6 +63,35 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() {
+}
+
+void DlgPrefLibrary::slotShow() {
+    m_baddedDirectory = false;
+}
+
+void DlgPrefLibrary::slotHide() {
+    if (!m_baddedDirectory) {
+        return;
+    }
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle(tr("Added Directory"));
+    msgBox.setText(tr(
+        "You added one or more library directories. These files won't be"
+        "available until you rescan. Would you like to rescan now?"));
+    QPushButton* scanButton = msgBox.addButton(
+        tr("Rescan now"), QMessageBox::AcceptRole);
+    QPushButton* laterButton = msgBox.addButton(
+        tr("Rescan later"), QMessageBox::AcceptRole);
+    msgBox.setDefaultButton(scanButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == laterButton) {
+        return;
+    }
+
+    emit(scanLibrary());
 }
 
 void DlgPrefLibrary::initialiseDirList(){
@@ -140,17 +170,8 @@ void DlgPrefLibrary::slotAddDir() {
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
+        m_baddedDirectory = true;
     }
-
-    QMessageBox addMsgBox;
-
-    addMsgBox.setIcon(QMessageBox::Warning);
-    addMsgBox.setWindowTitle(tr("Added Directory"));
-
-    addMsgBox.setText(tr(
-        "Please rescan the library to add the new tracks in Folder: ") + fd);
-
-    addMsgBox.exec();
 }
 
 void DlgPrefLibrary::slotRemoveDir() {
