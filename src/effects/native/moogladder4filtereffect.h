@@ -25,6 +25,7 @@ struct MoogLadder4FilterGroupState {
     double m_loFreq;
     double m_resonance;
     double m_hiFreq;
+    double m_samplerate;
 
 };
 

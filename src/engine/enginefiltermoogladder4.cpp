@@ -9,13 +9,13 @@
 EngineFilterMoogLadder4Low::EngineFilterMoogLadder4Low(int sampleRate,
                                                double freqCorner1,
                                                double resonance)
-        : EngineFilterMoogLadderBase((float)freqCorner1 * 2 / sampleRate, (float)resonance) {
+        : EngineFilterMoogLadderBase(sampleRate, (float)freqCorner1, (float)resonance) {
 }
 
 EngineFilterMoogLadder4High::EngineFilterMoogLadder4High(int sampleRate,
                                                  double freqCorner1,
                                                  double resonance)
-        : EngineFilterMoogLadderBase((float)freqCorner1 * 2 / sampleRate, (float)resonance) {
+        : EngineFilterMoogLadderBase(sampleRate, (float)freqCorner1, (float)resonance) {
 }
 
 

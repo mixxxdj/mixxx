@@ -4,6 +4,7 @@
 
 static const double kMinCorner = 0.0003; // 13 Hz @ 44100
 static const double kMaxCorner = 0.5; // 22050 Hz @ 44100
+static const unsigned int kStartupSamplerate = 44100;
 
 // static
 QString MoogLadder4FilterEffect::getId() {
@@ -65,10 +66,13 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
 MoogLadder4FilterGroupState::MoogLadder4FilterGroupState()
         : m_loFreq(kMaxCorner),
           m_resonance(0),
-          m_hiFreq(kMinCorner) {
+          m_hiFreq(kMinCorner),
+          m_samplerate(kStartupSamplerate) {
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pLowFilter = new EngineFilterMoogLadder4Low(1, m_loFreq, m_resonance);
-    m_pHighFilter = new EngineFilterMoogLadder4High(1, m_hiFreq, m_resonance);
+    m_pLowFilter = new EngineFilterMoogLadder4Low(
+            kStartupSamplerate, m_loFreq * kStartupSamplerate, m_resonance);
+    m_pHighFilter = new EngineFilterMoogLadder4High(
+            kStartupSamplerate, m_hiFreq * kStartupSamplerate, m_resonance);
 }
 
 MoogLadder4FilterGroupState::~MoogLadder4FilterGroupState() {
@@ -104,13 +108,17 @@ void MoogLadder4FilterEffect::processGroup(const QString& group,
     double lpf = m_pLPF->value().toDouble();
 
     if (pState->m_loFreq != lpf ||
-            pState->m_resonance != resonance) {
-        pState->m_pLowFilter->setParameter(lpf * 2, resonance);
+            pState->m_resonance != resonance ||
+            pState->m_samplerate != sampleRate) {
+        pState->m_pLowFilter->setParameter(
+                sampleRate, lpf * sampleRate, resonance);
     }
 
     if (pState->m_hiFreq != hpf ||
-            pState->m_resonance != resonance) {
-        pState->m_pHighFilter->setParameter(hpf * 2, resonance);
+            pState->m_resonance != resonance ||
+            pState->m_samplerate != sampleRate) {
+        pState->m_pHighFilter->setParameter(
+                sampleRate, hpf * sampleRate, resonance);
     }
 
     if (hpf > kMinCorner) {
@@ -134,4 +142,5 @@ void MoogLadder4FilterEffect::processGroup(const QString& group,
     pState->m_loFreq = lpf;
     pState->m_resonance = resonance;
     pState->m_hiFreq = hpf;
+    pState->m_samplerate = sampleRate;
 }

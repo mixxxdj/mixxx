@@ -28,8 +28,8 @@ template<enum MoogMode MODE>
 class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
   public:
-    EngineFilterMoogLadderBase(float cutoff, float resonance) {
-        setParameter(cutoff, resonance);
+    EngineFilterMoogLadderBase(unsigned int sampleRate, float cutoff, float resonance) {
+        setParameter(sampleRate, cutoff, resonance);
         initBuffers();
     }
 
@@ -51,9 +51,10 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         m_buffersClear = true;
     }
 
-    void setParameter(float cutoff, float resonance) {
+    void setParameter(int sampleRate, float cutoff, float resonance) {
         m_cutoff = cutoff;
         m_resonance = resonance;
+        m_inputSampeRate = sampleRate;
     }
 
     void pauseFilter() {
@@ -75,16 +76,17 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     // resonance [0..1]
     // cutoff from 0 (0Hz) to 1 (nyquist)
-    inline CSAMPLE processSample(float input, float cutoff, float resonance) {
+    inline CSAMPLE processSample(float input, float cutoff_hz, float resonance) {
 
         float pi = 3.1415926535;
         float v2 = 40000;   // twice the 'thermal voltage of a transistor'
-        float sr = 22100;
 
-        float  cutoff_hz = cutoff * sr;
-
-        float kfc = cutoff_hz / sr; // sr is half the actual filter sampling rate
-        float kf = cutoff_hz / (sr * 2);
+        float kfc = cutoff_hz / m_inputSampeRate;
+        float kf = kfc;
+        if (MODE == LP_OVERS || MODE == LP_OVERS ) {
+            // m_inputSampeRate is half the actual filter sampling rate in oversampling mode
+            kf = kfc / 2;
+        }
 
         // frequency & amplitude correction
         float kfcr = 1.8730 * (kfc*kfc*kfc) + 0.4955 * (kfc*kfc) - 0.6490 * kfc + 0.9988;
@@ -92,7 +94,6 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         float x  = -2.0 * pi * kfcr * kf; // input for taylor approximations
         float exp_out  = expf(x);
-
         float k2vg = v2 * (1 - exp_out); // filter tuning
 
 
@@ -156,6 +157,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     float m_cutoff;
     float m_resonance;
+    unsigned int m_inputSampeRate;
 
     bool m_buffersClear;
 };
