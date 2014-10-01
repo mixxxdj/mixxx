@@ -29,5 +29,4 @@ void DlgCoverArtFullSize::init(QPixmap pixmap) {
 
     show();
     move(QApplication::desktop()->screenGeometry().center() - rect().center());
-    raise();
 }
