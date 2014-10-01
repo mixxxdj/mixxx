@@ -10,9 +10,24 @@ DlgCoverArtFullSize::DlgCoverArtFullSize() {
 DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 }
 
-void DlgCoverArtFullSize::init(QPixmap pixmap) {
-    if (pixmap.isNull() || CoverArtCache::instance()->getDefaultCoverArt()
-            .toImage() == pixmap.toImage())  {
+void DlgCoverArtFullSize::init(CoverInfo info) {
+    if (info.coverLocation == CoverArtCache::instance()->getDefaultCoverLocation())  {
+        return;
+    }
+
+    if (info.coverLocation.isEmpty()) {
+        info.coverLocation = CoverArtCache::instance()->trackInDBHash(info.trackId);
+    }
+
+    QPixmap pixmap;
+    if (info.coverLocation == "ID3TAG") {
+        pixmap.convertFromImage(
+            CoverArtCache::instance()->extractEmbeddedCover(info.trackLocation));
+    } else {
+        pixmap = QPixmap(info.coverLocation);
+    }
+
+    if (pixmap.isNull()) {
         return;
     }
 
@@ -22,7 +37,8 @@ void DlgCoverArtFullSize::init(QPixmap pixmap) {
     QSize mixxxSize = QApplication::activeWindow()->size() / qreal(1.2);
     if (pixmap.height() > mixxxSize.height()
             || pixmap.width() > mixxxSize.width()) {
-        pixmap.scaled(mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pixmap = pixmap.scaled(
+            mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
     resize(pixmap.size());
     coverArt->setPixmap(pixmap);

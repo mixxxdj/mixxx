@@ -49,6 +49,14 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
+    // This is for widgets that try to get the covers directly from the cache
+    // instead of waiting for the signal with the cover. Because we update the
+    // database in large batches it can happen that a widget looks up a track
+    // that we couldn't save yet. Don't use this unless you really need to. This
+    // method will look in the hash we keep with information to save in the
+    // database and return the coverlocation if it is in there. Otherweise an
+    // empty string is returned.
+    QString trackInDBHash(int trackId);
 
     struct FutureResult {
         int trackId;
@@ -62,6 +70,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
                              const QSize& croppedSize,
                              const bool emitSignals);
+    QImage extractEmbeddedCover(QString trackLocation);
+
   public slots:
     void imageFound();
     void imageLoaded();
@@ -97,7 +107,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
     QString calculateMD5(QImage img);
     QImage rescaleBigImage(QImage img);
-    QImage extractEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,
                                    QString trackBaseName,
                                    QString album);

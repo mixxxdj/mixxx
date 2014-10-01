@@ -41,6 +41,10 @@ void CoverArtCache::setTrackDAO(TrackDAO* trackdao) {
     m_pTrackDAO = trackdao;
 }
 
+QString CoverArtCache::trackInDBHash(int trackId) {
+    return m_queueOfUpdates.value(trackId).second;
+}
+
 bool CoverArtCache::changeCoverArt(int trackId,
                                    const QString& newCoverLocation) {
     if (trackId < 1) {

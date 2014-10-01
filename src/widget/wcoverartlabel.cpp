@@ -55,7 +55,7 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         if (dlgFullSize->isVisible()) {
             dlgFullSize->close();
         } else {
-            dlgFullSize->init(m_pixmap);
+            dlgFullSize->init(m_coverInfo);
         }
     }
 }
