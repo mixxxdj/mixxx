@@ -34,13 +34,15 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
     slotUpdate();
-
+    ControlObject* p_endTime = new ControlObject(ConfigKey("[Waveform]", "endTime"));
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetFrameRate(int)));
-    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
-            frameRateSlider, SLOT(setValue(int)));
+    connect(endTimeSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetWaveformEndRender(int)));
     connect(frameRateSlider, SIGNAL(valueChanged(int)),
             frameRateSpinBox, SLOT(setValue(int)));
+    connect(endTimeSlider, SIGNAL(valueChanged(int)),
+            endTimeSpinBox, SLOT(setValue(int)));
 
     connect(waveformTypeComboBox, SIGNAL(activated(int)),
             this, SLOT(slotSetWaveformType(int)));
@@ -84,6 +86,8 @@ void DlgPrefWaveform::slotUpdate() {
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
+    endTimeSpinBox->setValue(factory->getEndTime());
+    endTimeSlider->setValue(factory->getEndTime());
     synchronizeZoomCheckBox->setChecked(factory->isZoomSync());
     allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
     lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
@@ -133,12 +137,15 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // 30FPS is the default
     frameRateSlider->setValue(30);
+    endTimeSlider->setValue(30);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
     WaveformWidgetFactory::instance()->setFrameRate(frameRate);
 }
-
+void DlgPrefWaveform::slotSetWaveformEndRender(int endTime) {
+    WaveformWidgetFactory::instance()->setEndTime(endTime);
+}
 void DlgPrefWaveform::slotSetWaveformType(int index) {
     // Ignore sets for -1 since this happens when we clear the combobox.
     if (index < 0) {

@@ -60,6 +60,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_config(0),
         m_skipRender(false),
         m_frameRate(30),
+        m_endTime(30),
         m_defaultZoom(3),
         m_zoomSync(false),
         m_overviewNormalized(false),
@@ -167,6 +168,13 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config) {
     } else {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
+    
+    int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndTime")).toInt(&ok);
+    if (ok) {
+        setEndTime(endTime);
+    } else {
+        m_config->set(ConfigKey("[Waveform]","EndTime"), ConfigValue(m_endTime));
+        }
 
     int vsync = m_config->getValueString(ConfigKey("[Waveform]","VSync"),"0").toInt();
     setVSyncType(vsync);
@@ -273,6 +281,12 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     m_vsyncThread->setUsSyncIntervalTime(1e6 / m_frameRate);
 }
 
+void WaveformWidgetFactory::setEndTime(int endTime) {
+    m_endTime = math_clamp(endTime, 0, 60);
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]","EndTime"), ConfigValue(m_endTime));
+    }  
+}
 
 void WaveformWidgetFactory::setVSyncType(int type) {
     if (m_config) {
