@@ -137,6 +137,32 @@ void BrowseFeature::slotAddToLibrary() {
     }
     QString spath = m_pLastRightClickedItem->dataPath().toString();
     emit(requestAddDir(spath));
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle(tr("Added Directory"));
+    msgBox.setText(tr(
+        "You added one library directory. These files won't be"
+        "available until you rescan. Would you like to rescan now?"
+        "Note that you cannot add more directories until the scan is finished."));
+    QPushButton* scanButton = msgBox.addButton(
+        tr("Rescan now"), QMessageBox::AcceptRole);
+    msgBox.addButton(
+        tr("Rescan later"), QMessageBox::AcceptRole);
+    msgBox.setDefaultButton(scanButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == reinterpret_cast<QAbstractButton*>(scanButton)) {
+        emit(scanLibrary());
+    }
+}
+
+void BrowseFeature::slotLibraryScanStarted() {
+    m_pAddtoLibraryAction->setEnabled(false);
+}
+
+void BrowseFeature::slotLibraryScanFinished() {
+    m_pAddtoLibraryAction->setEnabled(true);
 }
 
 void BrowseFeature::slotRemoveQuickLink() {
