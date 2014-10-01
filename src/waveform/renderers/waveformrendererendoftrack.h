@@ -5,7 +5,6 @@
 #include <QTime>
 //#include <QLinearGradient>
 
-#include "configobject.h"
 #include "util.h"
 #include "waveformrendererabstract.h"
 #include "skin/skincontext.h"
@@ -13,7 +12,6 @@
 
 class ControlObject;
 class ControlObjectThread;
-class WaveformWidgetFacctory;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
   public:

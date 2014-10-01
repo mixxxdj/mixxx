@@ -5,8 +5,6 @@
 
 #include "ui_dlgprefwaveformdlg.h"
 #include "configobject.h"
-#include "controlobject.h"
-#include "controlobjectthread.h"
 #include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;

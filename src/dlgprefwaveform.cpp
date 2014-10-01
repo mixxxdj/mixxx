@@ -34,15 +34,18 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
     slotUpdate();
-    ControlObject* p_endTime = new ControlObject(ConfigKey("[Waveform]", "endTime"));
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetFrameRate(int)));
     connect(endTimeSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetWaveformEndRender(int)));
     connect(frameRateSlider, SIGNAL(valueChanged(int)),
             frameRateSpinBox, SLOT(setValue(int)));
+    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
+            frameRateSlider, SLOT(setValue(int)));
     connect(endTimeSlider, SIGNAL(valueChanged(int)),
             endTimeSpinBox, SLOT(setValue(int)));
+    connect(endTimeSpinBox, SIGNAL(valueChanged(int)),
+            endTimeSlider, SLOT(setValue(int)));
 
     connect(waveformTypeComboBox, SIGNAL(activated(int)),
             this, SLOT(slotSetWaveformType(int)));
