@@ -1,24 +1,21 @@
 #include "engine/enginefiltermoogladder4.h"
 #include "util/math.h"
 
+// Moog 24 dB/oct resonant lowpass VCF
+// References: CSound source code, Stilson/Smith CCRMA paper.
+// Modified by paul.kellett@maxim.abel.co.uk July 2000
+// Found at http://www.musicdsp.org/archive.php?classid=3#180
 
 EngineFilterMoogLadder4Low::EngineFilterMoogLadder4Low(int sampleRate,
-                                               double freqCorner1) {
-    setFrequencyCorners(sampleRate, freqCorner1);
-}
-
-void EngineFilterMoogLadder4Low::setFrequencyCorners(int sampleRate,
-                                                 double freqCorner1) {
-    // Copy the old coefficients into m_oldCoef
-    setCoefs("LpMo4", sampleRate, freqCorner1);
+                                               double freqCorner1,
+                                               double resonance)
+        : EngineFilterMoogLadderBase((float)freqCorner1 * 2 / sampleRate, (float)resonance) {
 }
 
 EngineFilterMoogLadder4High::EngineFilterMoogLadder4High(int sampleRate,
-                                                 double freqCorner1) {
-    setFrequencyCorners(sampleRate, freqCorner1);
+                                                 double freqCorner1,
+                                                 double resonance)
+        : EngineFilterMoogLadderBase((float)freqCorner1 * 2 / sampleRate, (float)resonance) {
 }
 
-void EngineFilterMoogLadder4High::setFrequencyCorners(int sampleRate,
-                                                  double freqCorner1) {
-    setCoefs("HpMo4", sampleRate, freqCorner1);
-}
+
