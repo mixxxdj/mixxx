@@ -124,8 +124,8 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    qDebug() << res.coverLocation;
-    EXPECT_TRUE(res.coverLocation.isEmpty());
+    EXPECT_QSTRING_EQ(res.coverLocation,
+                      CoverArtCache::instance()->getDefaultCoverLocation());
 
     // looking for a track with embedded cover
     cInfo.trackLocation = kTrackLocationTest;
