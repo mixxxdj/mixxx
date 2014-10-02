@@ -26,7 +26,7 @@ void WCoverArtLabel::setCoverArt(TrackPointer track, CoverInfo info, QPixmap px)
     m_coverInfo = info;
     setPixmap(px.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    QSize frameSize = px.size();
+    QSize frameSize = pixmap()->size();
     frameSize += QSize(2,2); // margin
     setMinimumSize(frameSize);
     setMaximumSize(frameSize);
