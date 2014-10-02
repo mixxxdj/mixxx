@@ -14,14 +14,15 @@ WCoverArt::WCoverArt(QWidget* parent,
                      TrackCollection* pTrackCollection)
         : QWidget(parent),
           WBaseWidget(this),
-          m_defaultCover(scaledCoverArt(CoverArtCache::instance()->getDefaultCoverArt())),
+          m_pCoverCache(CoverArtCache::instance()),
+          m_defaultCover(scaledCoverArt(m_pCoverCache->getDefaultCoverArt())),
           m_bEnableWidget(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_loadedCover(m_defaultCover),
           m_trackDAO(pTrackCollection->getTrackDAO()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
+    connect(m_pCoverCache, SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
     connect(m_pMenu,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
@@ -62,9 +63,7 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
                                          QPixmap px) {
     Q_UNUSED(oldLoc);
     Q_UNUSED(px);
-    bool res = CoverArtCache::instance()->changeCoverArt(
-                    m_lastRequestedCover.trackId, newLoc);
-    if (!res) {
+    if (!m_pCoverCache->changeCoverArt(m_lastRequestedCover.trackId, newLoc)) {
         // parent must be NULL - it ensures the use of the default style.
         QMessageBox::warning(NULL, tr("Change Cover Art"),
                              tr("Could not change the cover art."));
@@ -98,7 +97,7 @@ void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
         return;
     }
     m_lastRequestedCover = info;
-    CoverArtCache::instance()->requestPixmap(info, QSize(0,0), cachedOnly);
+    m_pCoverCache->requestPixmap(info, QSize(0,0), cachedOnly);
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {

@@ -41,6 +41,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
   private:
     QPixmap scaledCoverArt(QPixmap normal);
 
+    CoverArtCache* m_pCoverCache;
     const QPixmap m_defaultCover;
     bool m_bEnableWidget;
     WCoverArtMenu* m_pMenu;
