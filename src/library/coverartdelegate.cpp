@@ -76,7 +76,13 @@ void CoverArtDelegate::paint(QPainter *painter,
         QSize coverSize(100, option.rect.height());
         QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info,
                                         coverSize, m_bOnlyCachedCover, true);
-        if (!pixmap.isNull()) {
+        // If the cover was not saved in the DB yet, the coverLocation&md5Hash
+        // will not be in the track table. But both info will be loaded in the
+        // DBHash (CoverCache::m_queueOfUpdates).
+        // In this case, 'CoverArtCache::requestPixmap()' will update the
+        // CoverInfo. So, we must check if this location is valid again,
+        // in order to avoid displaying the default cover.
+        if (!pixmap.isNull() && info.coverLocation != m_sDefaultCover) {
             int width = pixmap.width();
             if (option.rect.width() < width) {
                 width = option.rect.width();

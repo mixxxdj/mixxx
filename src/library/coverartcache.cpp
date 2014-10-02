@@ -91,7 +91,7 @@ bool CoverArtCache::changeCoverArt(int trackId,
     return true;
 }
 
-QPixmap CoverArtCache::requestPixmap(CoverInfo info,
+QPixmap CoverArtCache::requestPixmap(CoverInfo& info,
                                      const QSize& croppedSize,
                                      const bool onlyCached,
                                      const bool issueRepaint) {
@@ -107,7 +107,9 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
 
     // check if we have already found a cover for this track
     // and if it is just waiting to be inserted/updated in the DB.
+    // In this case, we update the coverLocation and the md5Hash.
     if (m_queueOfUpdates.contains(info.trackId)) {
+        info.coverLocation = m_queueOfUpdates[info.trackId].first;
         info.md5Hash = m_queueOfUpdates[info.trackId].second;
     }
 
