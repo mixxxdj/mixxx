@@ -224,31 +224,33 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.trackId = coverInfo.trackId;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
-    bool newImgFound = false;
 
     // Looking for embedded cover art.
     //
     res.img = extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
-        res.img = rescaleBigImage(res.img);
-        res.md5Hash = calculateMD5(res.img);
         res.coverLocation = "ID3TAG";
-        newImgFound = true;
+        res.img = rescaleBigImage(res.img);
     }
 
     // Looking for cover stored in track diretory.
     //
-    if (!newImgFound) {
+    if (res.img.isNull()) {
         res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
                                                    coverInfo.trackBaseName,
                                                    coverInfo.album);
         res.img = rescaleBigImage(QImage(res.coverLocation));
-        res.md5Hash = calculateMD5(res.img);
-        newImgFound = true;
     }
 
+    if (res.img.isNull()) {
+        res.coverLocation = m_sDefaultCoverLocation;
+        res.img = QImage(m_sDefaultCoverLocation);
+    }
+
+    res.md5Hash = calculateMD5(res.img);
+
     // adjusting the cover size according to the final purpose
-    if (newImgFound && !res.croppedSize.isNull()) {
+    if (!res.croppedSize.isNull()) {
         res.img = cropImage(res.img, res.croppedSize);
     }
 
