@@ -38,9 +38,9 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
     TrackCollection* m_pTrackCollection;
 };
 
-const QString& kCoverLocationTest = "res/images/library/default_cover.png";
-const QString kTestTrackLocation =
-        QDir::currentPath().append("/src/test/id3-test-data/cover-test.mp3");
+const QString& kCoverLocationTest("res/images/library/default_cover.png");
+const QString kTrackLocationTest(QDir::currentPath() %
+                                 "/src/test/id3-test-data/cover-test.mp3");
 
 TEST_F(CoverArtCacheTest, loadImage) {
     QImage img = QImage(kCoverLocationTest);
@@ -58,15 +58,15 @@ TEST_F(CoverArtCacheTest, loadImage) {
 
     info.trackId = 1;
     info.coverLocation = "ID3TAG";
-    info.trackLocation = kTestTrackLocation;
+    info.trackLocation = kTrackLocationTest;
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
     EXPECT_EQ(info.trackId, res.trackId);
     EXPECT_QSTRING_EQ("ID3TAG", res.coverLocation);
     EXPECT_QSTRING_EQ(info.md5Hash, res.md5Hash);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-        QDir(kTestTrackLocation), true);
-    SoundSourceProxy proxy(kTestTrackLocation, securityToken);
+        QDir(kTrackLocationTest), true);
+    SoundSourceProxy proxy(kTrackLocationTest, securityToken);
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
     ASSERT_TRUE(pProxiedSoundSource != NULL && proxy.parseHeader() == OK);
     img = pProxiedSoundSource->getCoverArt();
@@ -90,9 +90,9 @@ TEST_F(CoverArtCacheTest, changeImage) {
     // add Track
     trackDAO.addTracksPrepare();
     trackDAO.addTracksAdd(new TrackInfoObject(
-                    kTestTrackLocation, SecurityTokenPointer(), false), false);
+                    kTrackLocationTest, SecurityTokenPointer(), false), false);
     trackDAO.addTracksFinish(false);
-    int trackId_1 = trackDAO.getTrackId(kTestTrackLocation);
+    int trackId_1 = trackDAO.getTrackId(kTrackLocationTest);
 
     //associating some covers to some tracks
     trackDAO.updateCoverArt(trackId_1, coverId);
@@ -124,17 +124,18 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
+    qDebug() << res.coverLocation;
     EXPECT_TRUE(res.coverLocation.isEmpty());
 
     // looking for a track with embedded cover
-    cInfo.trackLocation = kTestTrackLocation;
+    cInfo.trackLocation = kTrackLocationTest;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
     EXPECT_EQ(cInfo.trackId, res.trackId);
     EXPECT_QSTRING_EQ("ID3TAG", res.coverLocation);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-        QDir(kTestTrackLocation), true);
-    SoundSourceProxy proxy(kTestTrackLocation, securityToken);
+        QDir(kTrackLocationTest), true);
+    SoundSourceProxy proxy(kTrackLocationTest, securityToken);
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
     ASSERT_TRUE(pProxiedSoundSource != NULL && proxy.parseHeader() == OK);
     QImage img = pProxiedSoundSource->getCoverArt();
