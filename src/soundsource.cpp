@@ -19,6 +19,7 @@
 
 #include <taglib/attachedpictureframe.h>
 #include <taglib/audioproperties.h>
+#include <taglib/flacpicture.h>
 #include <taglib/id3v1tag.h>
 #include <taglib/id3v2frame.h>
 #include <taglib/id3v2header.h>
@@ -467,13 +468,17 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
     }
 
     // Get Cover Art
-    if (xiph->fieldListMap().contains("COVERART")) {
-        TagLib::ByteVector data = xiph->fieldListMap()["COVERART"]
-                                    .front().data(TagLib::String::Latin1);
-        QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
-                                              data.data()),
-                                              data.size());
-        setCoverArt(picture);
+    if (xiph->fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
+        QByteArray data(QByteArray::fromBase64(
+            xiph->fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
+        TagLib::ByteVector tdata(data.data(), data.size());
+        TagLib::FLAC::Picture p(tdata);
+        data = QByteArray(p.data().data(), p.data().size());
+        setCoverArt(QImage::fromData(data));
+    } else if (xiph->fieldListMap().contains("COVERART")) {
+        QByteArray data(QByteArray::fromBase64(
+            xiph->fieldListMap()["COVERART"].toString().toCString()));
+        setCoverArt(QImage::fromData(data));
     }
 
     // Some tags use "BPM" so check for that.
