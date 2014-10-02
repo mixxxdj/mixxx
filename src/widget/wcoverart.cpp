@@ -14,9 +14,10 @@ WCoverArt::WCoverArt(QWidget* parent,
                      TrackCollection* pTrackCollection)
         : QWidget(parent),
           WBaseWidget(this),
+          m_defaultCover(scaledCoverArt(CoverArtCache::instance()->getDefaultCoverArt())),
           m_bEnableWidget(true),
           m_pMenu(new WCoverArtMenu(this)),
-          m_loadedCover(CoverArtCache::instance()->getDefaultCoverArt()),
+          m_loadedCover(m_defaultCover),
           m_trackDAO(pTrackCollection->getTrackDAO()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
@@ -78,8 +79,7 @@ void WCoverArt::slotEnableWidget(bool enable) {
 
 void WCoverArt::slotResetWidget() {
     m_lastRequestedCover = CoverInfo();
-    m_loadedCover = scaledCoverArt(
-        CoverArtCache::instance()->getDefaultCoverArt());
+    m_loadedCover = m_defaultCover;
     update();
 }
 
@@ -124,8 +124,7 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
         setMaximumHeight(parentWidget()->height() / 3);
     }
     if (m_lastRequestedCover.trackId < 1) {
-        m_loadedCover = scaledCoverArt(
-            CoverArtCache::instance()->getDefaultCoverArt());
+        m_loadedCover = m_defaultCover;
     }
 }
 
