@@ -12,7 +12,8 @@ CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
           m_pTrackDAO(NULL),
           m_sDefaultCoverLocation(":/images/library/default_cover.png"),
-          m_defaultCover(m_sDefaultCoverLocation) {
+          m_imgDefaultCover(m_sDefaultCoverLocation),
+          m_pxDefaultCover(m_sDefaultCoverLocation) {
     // The initial QPixmapCache limit is 10MB.
     // But it is not used just by the coverArt stuff,
     // it is also used by Qt to handle other things behind the scenes.
@@ -203,7 +204,7 @@ void CoverArtCache::imageLoaded() {
 
     // The widgets expects a signal response.
     if (pixmap.isNull()) {
-        pixmap = m_defaultCover;
+        pixmap = m_pxDefaultCover;
     }
 
     if (res.issueRepaint) {
@@ -246,7 +247,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 
     if (res.img.isNull()) {
         res.coverLocation = m_sDefaultCoverLocation;
-        res.img = QImage(m_sDefaultCoverLocation);
+        res.img = m_imgDefaultCover;
     }
 
     res.md5Hash = calculateMD5(res.img);
@@ -351,7 +352,7 @@ void CoverArtCache::imageFound() {
 
     // The widgets expects a signal response.
     if (pixmap.isNull()) {
-        pixmap = m_defaultCover;
+        pixmap = m_pxDefaultCover;
     }
 
     if (res.issueRepaint) {
