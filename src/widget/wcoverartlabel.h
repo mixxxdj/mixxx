@@ -14,7 +14,7 @@ class WCoverArtLabel : public QLabel {
     WCoverArtLabel(QWidget* parent = 0);
     virtual ~WCoverArtLabel();
 
-    void setCoverArt(TrackPointer track, CoverInfo info, QPixmap pixmap);
+    void setCoverArt(TrackPointer track, CoverInfo info, QPixmap px);
 
   signals:
     void coverLocationUpdated(const QString&, const QString&, QPixmap);
@@ -29,7 +29,6 @@ class WCoverArtLabel : public QLabel {
   private:
     TrackPointer m_pTrack;
     CoverInfo m_coverInfo;
-    QPixmap m_pixmap;
     WCoverArtMenu* m_pCoverMenu;
 };
 

@@ -4,7 +4,6 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
           m_pTrack(TrackPointer()),
           m_coverInfo(CoverInfo()),
-          m_pixmap(QPixmap()),
           m_pCoverMenu(new WCoverArtMenu(this)) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
@@ -22,17 +21,12 @@ WCoverArtLabel::~WCoverArtLabel() {
     delete m_pCoverMenu;
 }
 
-void WCoverArtLabel::setCoverArt(TrackPointer track,
-                                 CoverInfo info,
-                                 QPixmap pixmap) {
+void WCoverArtLabel::setCoverArt(TrackPointer track, CoverInfo info, QPixmap px) {
     m_pTrack = track;
     m_coverInfo = info;
-    m_pixmap = pixmap;
-    QPixmap scaled = pixmap.scaled(100, 100,
-                                   Qt::KeepAspectRatio,
-                                   Qt::SmoothTransformation);
-    setPixmap(scaled);
-    QSize frameSize = scaled.size();
+    setPixmap(px.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    QSize frameSize = px.size();
     frameSize += QSize(2,2); // margin
     setMinimumSize(frameSize);
     setMaximumSize(frameSize);
