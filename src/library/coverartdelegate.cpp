@@ -74,19 +74,9 @@ void CoverArtDelegate::paint(QPainter *painter,
         info.trackLocation = index.sibling(
             index.row(), m_iTrackLocationColumn).data().toString();
         QSize coverSize(100, option.rect.height());
-
-        // If the CoverDelegate is locked, it must not try
-        // to load (from coverLocation) and search covers.
-        // It means that in this cases it will just draw
-        // covers which are already in the pixmapcache.
         QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info,
                                         coverSize, m_bOnlyCachedCover, true);
         if (!pixmap.isNull()) {
-            // It already got a cropped pixmap (from covercache)
-            // that fit to the cell.
-
-            // If you want to change the cropped_cover size,
-            // you MUST do it in CoverArtCache::cropCover()
             int width = pixmap.width();
             if (option.rect.width() < width) {
                 width = option.rect.width();
