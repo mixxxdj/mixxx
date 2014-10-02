@@ -148,8 +148,7 @@ void BrowseFeature::slotAddToLibrary() {
         "available until you rescan. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
         tr("Scan"), QMessageBox::AcceptRole);
-    msgBox.addButton(
-        tr("Cancel"), QMessageBox::AcceptRole);
+    msgBox.addButton(QMessageBox::Cancel);
     msgBox.setDefaultButton(scanButton);
     msgBox.exec();
 
