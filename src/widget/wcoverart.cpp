@@ -17,7 +17,6 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnableWidget(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_loadedCover(CoverArtCache::instance()->getDefaultCoverArt()),
-          m_loadedCoverScaled(scaledCoverArt(m_loadedCover)),
           m_trackDAO(pTrackCollection->getTrackDAO()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
@@ -79,8 +78,8 @@ void WCoverArt::slotEnableWidget(bool enable) {
 
 void WCoverArt::slotResetWidget() {
     m_lastRequestedCover = CoverInfo();
-    m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
-    m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+    m_loadedCover = scaledCoverArt(
+        CoverArtCache::instance()->getDefaultCoverArt());
     update();
 }
 
@@ -89,8 +88,7 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
         return;
     }
     if (m_lastRequestedCover.trackId == trackId) {
-        m_loadedCover = pixmap;
-        m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+        m_loadedCover = scaledCoverArt(pixmap);
         update();
     }
 }
@@ -118,7 +116,7 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     painter.drawLine(0, 0, width(), 0);
     int x = width() / 2 - height() / 2 + 4;
     int y = 6;
-    painter.drawPixmap(x, y, m_loadedCoverScaled);
+    painter.drawPixmap(x, y, m_loadedCover);
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
@@ -126,8 +124,8 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
         setMaximumHeight(parentWidget()->height() / 3);
     }
     if (m_lastRequestedCover.trackId < 1) {
-        m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
-        m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+        m_loadedCover = scaledCoverArt(
+            CoverArtCache::instance()->getDefaultCoverArt());
     }
 }
 
