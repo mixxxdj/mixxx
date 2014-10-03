@@ -165,6 +165,18 @@ Result SoundSourceFLAC::parseHeader() {
         processXiphComment(xiph);
     }
 
+    // if any cover was found in the tag parsing,
+    // try getting the first picture in the list.
+    if (getCoverArt().isNull()) {
+        TagLib::List<TagLib::FLAC::Picture*> covers = f.pictureList();
+        if (!covers.isEmpty()) {
+            std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
+            TagLib::FLAC::Picture* cover = *it;
+            setCoverArt(QImage::fromData(
+                QByteArray(cover->data().data(), cover->data().size())));
+        }
+    }
+
     return result ? OK : ERR;
 }
 
