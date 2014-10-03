@@ -55,6 +55,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         m_cutoff = cutoff;
         m_resonance = resonance;
         m_inputSampeRate = sampleRate;
+        m_postGain = (1 + resonance * (1.1f + cutoff / sampleRate * 3.5f))
+                * (2 - (1.0f - resonance) * (1.0f - resonance));
     }
 
     void pauseFilter() {
@@ -83,7 +85,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         float kfc = cutoff_hz / m_inputSampeRate;
         float kf = kfc;
-        if (MODE == LP_OVERS || MODE == LP_OVERS ) {
+        if (MODE == LP_OVERS || MODE == HP_OVERS ) {
             // m_inputSampeRate is half the actual filter sampling rate in oversampling mode
             kf = kfc / 2;
         }
@@ -96,49 +98,63 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         float exp_out  = expf(x);
         float k2vg = v2 * (1 - exp_out); // filter tuning
 
-
         // cascade of 4 1st order sections
-        float x1 = (input - 4 * resonance * m_amf * kacr) / v2;
-        m_ay1 = m_az1 + k2vg * (tanhf (x1) - tanhf (m_az1 / v2));
-        m_az1 = m_ay1;
 
-        m_ay2 = m_az2 + k2vg * (tanh(m_ay1 / v2) - tanh(m_az2 / v2));
-        m_az2 = m_ay2;
+        float x1;
+        if (MODE == LP_OVERS || MODE == LP ) {
+            x1 = (input - 4 * resonance * m_amf * kacr) / v2;
+        } else {
+            x1 = (input + 4 * resonance * (input - m_amf) * kacr) / v2;
+        }
+        m_az1 = m_az1 + k2vg * (tanhf (x1) - tanhf (m_az1 / v2));
+        //m_az1 = m_ay1;
 
-        m_ay3 = m_az3 + k2vg * (tanh(m_ay2 / v2) - tanh(m_az3 / v2));
-        m_az3 = m_ay3;
+        m_az2 = m_az2 + k2vg * (tanh(m_az1 / v2) - tanh(m_az2 / v2));
+        //m_az2 = m_ay2;
 
-        m_ay4 = m_az4 + k2vg * (tanh(m_ay3 / v2) - tanh(m_az4 / v2));
-        m_az4 = m_ay4;
+        m_az3 = m_az3 + k2vg * (tanh(m_az2 / v2) - tanh(m_az3 / v2));
+        //m_az3 = m_ay3;
+
+        m_az4 = m_az4 + k2vg * (tanh(m_az3 / v2) - tanh(m_az4 / v2));
+        //m_az4 = m_ay4;
 
         // Oversampling if requested
-        if (MODE == LP_OVERS || MODE == LP_OVERS ) {
+        if (MODE == LP_OVERS || MODE == HP_OVERS ) {
             // 1/2-sample delay for phase compensation
-            m_amf = (m_ay4 + m_az5) * 0.5;
-            m_az5 = m_ay4;
+            m_amf = (m_az4 + m_az5) * 0.5;
+            m_az5 = m_az4;
 
             // oversampling (repeat same block)
-            float x1 = (input - 4 * resonance * m_amf * kacr) / v2;
-            m_ay1 = m_az1 + k2vg * (tanhf (x1) - tanhf (m_az1 / v2));
-            m_az1 = m_ay1;
+            float x1;
+            if (MODE == LP_OVERS) {
+                x1 = (input - 4 * resonance * m_amf * kacr) / v2;
+            } else {
+                x1 = (input + 4 * resonance * (input - m_amf) * kacr) / v2;
+            }
+            m_az1 = m_az1 + k2vg * (tanhf (x1) - tanhf (m_az1 / v2));
+            //m_az1 = m_ay1;
 
-            m_ay2 = m_az2 + k2vg * (tanh(m_ay1 / v2) - tanh(m_az2 / v2));
-            m_az2 = m_ay2;
+            m_az2 = m_az2 + k2vg * (tanh(m_az1 / v2) - tanh(m_az2 / v2));
+            //m_az2 = m_ay2;
 
-            m_ay3 = m_az3 + k2vg * (tanh(m_ay2 / v2) - tanh(m_az3 / v2));
-            m_az3 = m_ay3;
+            m_az3 = m_az3 + k2vg * (tanh(m_az2 / v2) - tanh(m_az3 / v2));
+            //m_az3 = m_ay3;
 
-            m_ay4 = m_az4 + k2vg * (tanh(m_ay3 / v2) - tanh(m_az4 / v2));
-            m_az4 = m_ay4;
+            m_az4 = m_az4 + k2vg * (tanh(m_az3 / v2) - tanh(m_az4 / v2));
+            //m_az4 = m_ay4;
 
             // 1/2-sample delay for phase compensation
-            m_amf = (m_ay4 + m_az5) * 0.5;
-            m_az5 = m_ay4;
+            m_amf = (m_az4 + m_az5) * 0.5;
+            m_az5 = m_az4;
         } else {
-            m_amf = m_az5;
-            m_az5 = m_ay4;
+            m_amf = m_az4;
         }
-        return m_amf;
+
+        if (MODE == LP_OVERS) {
+            return m_amf * m_postGain;
+        } else {
+            return input - m_amf * m_postGain;
+        }
     }
 
 
@@ -158,18 +174,19 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     float m_cutoff;
     float m_resonance;
     unsigned int m_inputSampeRate;
+    float m_postGain;
 
     bool m_buffersClear;
 };
 
-class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<LP> {
+class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<LP_OVERS> {
     Q_OBJECT
   public:
     EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1, double resonance);
 };
 
 
-class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<LP_OVERS> {
+class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<HP_OVERS> {
     Q_OBJECT
   public:
     EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
