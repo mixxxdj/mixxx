@@ -107,7 +107,7 @@ void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
     int height = parentWidget()->height() / 3;
-    return normal.scaled(QSize(height - 10, height - 10),
+    return normal.scaled(QSize(height - 16, width() - 10),
                          Qt::KeepAspectRatio,
                          Qt::SmoothTransformation);
 }
@@ -117,8 +117,8 @@ void WCoverArt::paintEvent(QPaintEvent*) {
         return;
     }
     QPainter painter(this);
-    int x = width() / 2 - height() / 2 + 4;
-    int y = 6;
+    int x = 3 + width() / 2 - m_loadedCoverScaled.width() / 2;
+    int y = 8;
     painter.drawPixmap(x, y, m_loadedCoverScaled);
     QPen pen = painter.pen();
     pen.setColor(QColor("#656565"));
