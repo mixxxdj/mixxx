@@ -112,10 +112,13 @@ void WCoverArt::paintEvent(QPaintEvent*) {
         return;
     }
     QPainter painter(this);
-    painter.drawLine(0, 0, width(), 0);
     int x = width() / 2 - height() / 2 + 4;
     int y = 6;
     painter.drawPixmap(x, y, m_loadedCover);
+    QPen pen = painter.pen();
+    pen.setColor(QColor("#656565"));
+    painter.setPen(pen);
+    painter.drawRoundedRect(5, 5, width()-7, height()-10, 0, 0);
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
