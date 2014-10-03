@@ -72,7 +72,10 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
 
 void WCoverArt::slotEnableWidget(bool enable) {
     m_bEnableWidget = enable;
-    setMaximumHeight(m_bEnableWidget ? parentWidget()->height() / 3 : 0);
+    int h = (float) parentWidget()->height() / 3;
+    h = m_bEnableWidget ? h : 0;
+    setMinimumHeight(h);
+    setMaximumHeight(h);
     update();
 }
 
@@ -122,8 +125,10 @@ void WCoverArt::paintEvent(QPaintEvent*) {
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
-    if (height() && height() != parentWidget()->height() / 3) {
-        setMaximumHeight(parentWidget()->height() / 3);
+    int h = (float) parentWidget()->height() / 3;
+    if (height() && height() != h) {
+        setMinimumHeight(h);
+        setMaximumHeight(h);
     }
     if (m_lastRequestedCover.trackId < 1) {
         m_loadedCover = m_defaultCover;
