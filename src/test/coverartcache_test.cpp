@@ -42,6 +42,26 @@ const QString& kCoverLocationTest("res/images/library/default_cover.png");
 const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test.mp3");
 
+TEST_F(CoverArtCacheTest, extractEmbeddedCover) {
+    const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
+    QImage cover;
+    // aiff
+    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.aiff");
+    EXPECT_TRUE(!cover.isNull());
+    // flac
+    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.flac");
+    EXPECT_TRUE(!cover.isNull());
+    // mp3
+    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.mp3");
+    EXPECT_TRUE(!cover.isNull());
+    // ogg
+    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.ogg");
+    EXPECT_TRUE(!cover.isNull());
+    // wav
+    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.wav");
+    EXPECT_TRUE(!cover.isNull());
+}
+
 TEST_F(CoverArtCacheTest, loadImage) {
     QImage img = QImage(kCoverLocationTest);
     CoverArtDAO::CoverArtInfo info;
