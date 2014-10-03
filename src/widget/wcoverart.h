@@ -42,10 +42,10 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap scaledCoverArt(QPixmap normal);
 
     CoverArtCache* m_pCoverCache;
-    const QPixmap m_defaultCover;
     bool m_bEnableWidget;
     WCoverArtMenu* m_pMenu;
     QPixmap m_loadedCover;
+    QPixmap m_loadedCoverScaled;
     TrackDAO& m_trackDAO;
     CoverInfo m_lastRequestedCover;
 };
