@@ -24,7 +24,7 @@
 // 1.2 = drives the transistor in full range, giving a maximum Waveshaper effect
 // big values disables the non linearity
 static const float kVt = 1.2;
-static const float kPi =  3.14159265358979323846;
+static const float kPi = 3.14159265358979323846;
 
 enum MoogMode {
     LP,
@@ -50,11 +50,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         m_az2 = 0;
         m_az3 = 0;
         m_az4 = 0;
-        m_ay1 = 0;
-        m_ay2 = 0;
-        m_ay3 = 0;
-        m_ay4 = 0;
-        m_ay5 = 0;
+        m_az5 = 0;
         m_amf = 0;
 
         m_buffersClear = true;
@@ -64,8 +60,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         m_cutoff = cutoff;
         m_resonance = resonance;
         m_inputSampeRate = sampleRate;
-        m_postGain = (1 + resonance * (1.1f + cutoff / sampleRate * 3.5f))
-                * (2 - (1.0f - resonance) * (1.0f - resonance));
+        m_postGain = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
+                * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
 
         qDebug() << "setParameter" << m_cutoff << m_resonance;
     }
@@ -102,79 +98,49 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         // frequency & amplitude correction
         float kfcr = 1.8730 * (kfc*kfc*kfc) + 0.4955 * (kfc*kfc) - 0.6490 * kfc + 0.9988;
-        float kacr = -3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968;
+
 
         float x  = -2.0 * kPi * kfcr * kf; // input for taylor approximations
         float exp_out  = expf(x);
         float k2vg = v2 * (1 - exp_out); // filter tuning
 
-        // cascade of 4 1st order sections
-        float temp;
-        float x1;
-        float hpf;
-        float hpg;
+        float kacr;
         if (MODE == LP_OVERS || MODE == LP ) {
-            x1 = input - 4 * resonance * m_amf * kacr;
-            hpf = 0;
-            hpg = 1;
+            kacr = -3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968;
         } else {
-            x1 = input + 4 * resonance * m_amf;
-            hpf = -1;
-            hpg = (v2 * 2 / k2vg - 1) / 2;
+            kacr = 10;
         }
 
-        temp = m_az1;
+        // cascade of 4 1st order sections
+        float x1 = input - resonance * m_amf * kacr;
         m_az1 = m_az1 + k2vg * (tanhf (x1 / v2) - tanhf (m_az1 / v2));
-        m_ay1 = (m_az1 + hpf * temp) * hpg;
-
-        temp = m_az2;
-        m_az2 = m_az2 + k2vg * (tanhf(m_ay1 / v2) - tanhf(m_az2 / v2));
-        m_ay2 = (m_az2 + hpf * temp) * hpg;
-
-        temp = m_az4;
-        m_az3 = m_az3 + k2vg * (tanhf(m_ay2 / v2) - tanhf(m_az3 / v2));
-        m_ay3 = (m_az3 + hpf * temp) * hpg;
-
-        temp = m_az4;
-        m_az4 = m_az4 + k2vg * (tanhf(m_ay3 / v2) - tanhf(m_az4 / v2));
-        m_ay4 = (m_az4 + hpf * temp) * hpg;
+        m_az2 = m_az2 + k2vg * (tanhf(m_az1 / v2) - tanhf(m_az2 / v2));
+        m_az3 = m_az3 + k2vg * (tanhf(m_az2 / v2) - tanhf(m_az3 / v2));
+        m_az4 = m_az4 + k2vg * (tanhf(m_az3 / v2) - tanhf(m_az4 / v2));
 
         // Oversampling if requested
         if (MODE == LP_OVERS || MODE == HP_OVERS ) {
             // 1/2-sample delay for phase compensation
-            m_amf = (m_ay4 + m_ay5) / 2;
-            m_ay5 = m_ay4;
+            m_amf = (m_az4 + m_az5) / 2;
+            m_az5 = m_az4;
 
-            // oversampling (repeat same block)
-            float x1;
-            if (MODE == LP_OVERS) {
-                x1 = input - 4 * resonance * m_amf * kacr;
-            } else {
-                x1 = input + 4 * resonance * m_amf;
-            }
-            temp = m_az1;
+            // Oversampling (repeat same block)
+            x1 = input - resonance * m_amf * kacr;
             m_az1 = m_az1 + k2vg * (tanhf (x1 / v2) - tanhf (m_az1 / v2));
-            m_ay1 = (m_az1 + hpf * temp) * hpg;
-
-            temp = m_az2;
-            m_az2 = m_az2 + k2vg * (tanhf(m_ay1 / v2) - tanhf(m_az2 / v2));
-            m_ay2 = (m_az2 + hpf * temp) * hpg;
-
-            temp = m_az3;
-            m_az3 = m_az3 + k2vg * (tanhf(m_ay2 / v2) - tanhf(m_az3 / v2));
-            m_ay3 = (m_az3 + hpf * temp) * hpg;
-
-            temp = m_az4;
-            m_az4 = m_az4 + k2vg * (tanhf(m_ay3 / v2) - tanhf(m_az4 / v2));
-            m_ay4 = (m_az4 + hpf * temp) * hpg;
+            m_az2 = m_az2 + k2vg * (tanhf(m_az1 / v2) - tanhf(m_az2 / v2));
+            m_az3 = m_az3 + k2vg * (tanhf(m_az2 / v2) - tanhf(m_az3 / v2));
+            m_az4 = m_az4 + k2vg * (tanhf(m_az3 / v2) - tanhf(m_az4 / v2));
 
             // 1/2-sample delay for phase compensation
-            m_amf = (m_ay4 + m_ay5) / 2;
-            m_ay5 = m_ay4;
+            m_amf = (m_az4 + m_az5) / 2;
+            m_az5 = m_az4;
         } else {
-            m_amf = m_ay4;
+            m_amf = m_az4;
         }
 
+        if (MODE == HP_OVERS || MODE == HP ) {
+            return x1 - 3 * m_az3 + 2 * m_az4;
+        }
         return m_amf * m_postGain;
     }
 
@@ -184,11 +150,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     CSAMPLE m_az2;
     CSAMPLE m_az3;
     CSAMPLE m_az4;
-    CSAMPLE m_ay1;
-    CSAMPLE m_ay2;
-    CSAMPLE m_ay3;
-    CSAMPLE m_ay4;
-    CSAMPLE m_ay5;
+    CSAMPLE m_az5;
     CSAMPLE m_amf;
 
     float m_cutoff;

@@ -43,8 +43,8 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     q->setDefault(0);
-    q->setMinimum(0);
-    q->setMaximum(1.0);
+    q->setMinimum(0.0);
+    q->setMaximum(4.0);
 
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
