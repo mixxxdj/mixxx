@@ -273,6 +273,14 @@ QScriptValue SkinContext::evaluateScript(QString expression) {
     return m_scriptEngine.evaluate(expression);
 }
 
+QScriptValue SkinContext::importScriptExtension(QString extensionName) {
+    QScriptValue out = m_scriptEngine.importExtension(extensionName);
+    if (m_scriptEngine.hasUncaughtException()) {
+        qDebug() << out.toString();
+    }
+    return out;
+}
+
 const QScriptEngine& SkinContext::getScriptEngine() const {
     return m_scriptEngine;
 }
