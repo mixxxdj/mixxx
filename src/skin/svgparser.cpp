@@ -16,19 +16,6 @@ SvgParser::~SvgParser() {
 }
 
 // look for the document of a node
-QDomDocument SvgParser::getDocument(const QDomNode& node) const {
-    
-    QDomDocument document;
-    QDomNode parentNode = node;
-    while (!parentNode.isNull()) {
-        if (parentNode.isDocument()) {
-            document = parentNode.toDocument();
-        }
-        parentNode = parentNode.parentNode();
-    }
-    
-    return document;
-}
 
 QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     QFile* file = new QFile(svgFileName);
@@ -49,82 +36,76 @@ QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
+    m_document = getDocument(svgNode);
     
-    parseVariableElements(svgNode);
-    parseScriptElements(svgNode);
-    scanTree(svgNode, &SvgParser::parseAttributes);
+    scanTree(svgNode, &SvgParser::parseElement);
     
-    // return saveToTempFile(svgNode);
     return svgNode;
 }
 
-QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
+void SvgParser::scanTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const {
     
-    // Save the new svg in a temp file to use it with setPixmap
-    QTemporaryFile svgFile;
-    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
+    (this->*callback)(node);
+    QDomNodeList children = node.childNodes();
+    QDomNode child;
+    uint i;
     
-    // the file will be removed before being parsed in skin if set to true
-    svgFile.setAutoRemove(false);
-    
-    QString svgTempFileName;
-    if (svgFile.open()) {
-        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
-        QTextStream out(&svgFile);
-        svgNode.save(out, 2);
-        svgFile.close();
-        svgTempFileName = svgFile.fileName();
-    } else {
-        qDebug() << "Unable to open temp file for inline svg \n";
+    for (i=0; i<children.length(); i++) {
+        child = children.at(i);
+        if (child.isElement()) {
+            scanTree( child, callback);
+        }
     }
-    
-    return svgTempFileName;
-}
-
-QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
-    QByteArray out;
-    QTextStream textStream(&out);
-    svgNode.save(textStream, 2);
-    return out;
 }
 
 // replaces Variables nodes in an svg dom tree
-void SvgParser::parseVariableElements(const QDomNode& svgNode) const {
+void SvgParser::parseElement(const QDomNode& node) const {
     
-    QDomDocument document = getDocument(svgNode);
-    QDomElement svgElement = svgNode.toElement();
+    QDomElement element = node.toElement();
     
-    // replace variables
-    QDomNodeList variablesElements = svgElement.elementsByTagName("Variable");
-    int i=variablesElements.length()-1;
-    QDomElement varElement;
-    QString varName, varValue;
-    QDomNode varNode, varParentNode, oldChild;
-    QDomText varValueNode;
+    parseAttributes(node);
     
-    while (i >= 0 && (varNode = variablesElements.item(i)).isNull() == false) {
+    if (element.tagName() == "Variable"){
         
         // retrieve value
-        varElement = varNode.toElement();
-        varName = varElement.attribute("name");
-        varValue = m_context.variable(varName);
+        QString varName = element.attribute("name");
+        QString varValue = m_context.variable(varName);
         
         // replace node by its value
-        varParentNode = varNode.parentNode();
-        varValueNode = document.createTextNode(varValue);
-        oldChild = varParentNode.replaceChild(varValueNode, varNode);
+        QDomNode varParentNode = node.parentNode();
+        QDomNode varValueNode = document.createTextNode(varValue);
+        QDomNode oldChild = varParentNode.replaceChild(varValueNode, node);
         
         if (oldChild.isNull()) {
             // replaceChild has a really weird behaviour so I add this check
             qDebug() << "SVG : unable to replace dom node changed. \n";
         }
         
-        --i;
+    } else if (element.tagName() == "script"){
+        
+        QString scriptPath = node.toElement().attribute("src");
+        if (!scriptPath.isNull()) {
+            QFile scriptFile(m_context.getSkinPath(scriptPath));
+            scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
+            QTextStream in(&scriptFile);
+            QScriptValue result = m_context.evaluateScript(in.readAll());
+            if (m_context.getScriptEngine().hasUncaughtException()) {
+                qDebug() << "SVG script exception : " << result.toString()
+                        << "in" << scriptPath;
+            }
+        }
+        
+        QString expression = m_context.nodeToString(node);
+        QScriptValue result = m_context.evaluateScript(expression);
+        if (m_context.getScriptEngine().hasUncaughtException()) {
+            qDebug() << "SVG script exception : " << result.toString();
+        }
     }
+    
 }
 
-
 void SvgParser::parseAttributes(const QDomNode& node) const {
+    
     QDomNamedNodeMap attributes = node.attributes();
     QDomElement element = node.toElement();
     uint i;
@@ -187,50 +168,35 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     
 }
 
-void SvgParser::scanTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const {
+
+QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
     
-    (this->*callback)(node);
-    QDomNodeList children = node.childNodes();
-    QDomNode child;
-    uint i;
+    // Save the new svg in a temp file to use it with setPixmap
+    QTemporaryFile svgFile;
+    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
     
-    for (i=0; i<children.length(); i++) {
-        child = children.at(i);
-        if (child.isElement()) {
-            scanTree( child, callback);
-        }
+    // the file will be removed before being parsed in skin if set to true
+    svgFile.setAutoRemove(false);
+    
+    QString svgTempFileName;
+    if (svgFile.open()) {
+        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
+        QTextStream out(&svgFile);
+        svgNode.save(out, 2);
+        svgFile.close();
+        svgTempFileName = svgFile.fileName();
+    } else {
+        qDebug() << "Unable to open temp file for inline svg \n";
     }
+    
+    return svgTempFileName;
 }
 
-void SvgParser::parseScriptElements(const QDomNode& svgSkinNode) const {
-    
-    // parse script content
-    QDomElement svgElement = svgSkinNode.toElement();
-    QDomNodeList scriptElements = svgElement.elementsByTagName("script");
-    int i = 0;
-    QString expression, scriptPath;
-    QDomNode scriptNode;
-    QScriptValue result;
-    
-    while (!(scriptNode = scriptElements.item(i)).isNull() && ++i) {
-        if (!(scriptPath = scriptNode.toElement().attribute("src")).isNull()) {
-            QFile scriptFile(m_context.getSkinPath(scriptPath));
-            scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
-            QTextStream in(&scriptFile);
-            result = m_context.evaluateScript(in.readAll());
-            if (m_context.getScriptEngine().hasUncaughtException()) {
-                qDebug() << "SVG script exception : " << result.toString()
-                        << "in" << scriptPath;
-            }
-        }
-        
-        expression = m_context.nodeToString(scriptNode);
-        result = m_context.evaluateScript(expression);
-        if (m_context.getScriptEngine().hasUncaughtException()) {
-            qDebug() << "SVG script exception : " << result.toString();
-        }
-    }
-    
+QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
+    QByteArray out;
+    QTextStream textStream(&out);
+    svgNode.save(textStream, 2);
+    return out;
 }
 
 QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
@@ -246,4 +212,23 @@ QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
     } else {
         return out;
     }
+}
+
+/**
+ * Retrieves the document of a node.
+ * This method is required to replace a node by another : the document element
+ * is th only one able to do createTextNode).
+ */
+QDomDocument SvgParser::getDocument(const QDomNode& node) const {
+    
+    QDomDocument document;
+    QDomNode parentNode = node;
+    while (!parentNode.isNull()) {
+        if (parentNode.isDocument()) {
+            document = parentNode.toDocument();
+        }
+        parentNode = parentNode.parentNode();
+    }
+    
+    return document;
 }
