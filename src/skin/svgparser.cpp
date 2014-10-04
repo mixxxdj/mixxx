@@ -36,7 +36,6 @@ QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
-    m_document = getDocument(svgNode);
     
     scanTree(svgNode, &SvgParser::parseElement);
     
@@ -61,6 +60,7 @@ void SvgParser::scanTree(const QDomNode& node, void (SvgParser::*callback)(const
 // replaces Variables nodes in an svg dom tree
 void SvgParser::parseElement(const QDomNode& node) const {
     
+    QDomDocument document = getDocument(node);
     QDomElement element = node.toElement();
     
     parseAttributes(node);
@@ -217,7 +217,7 @@ QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
 /**
  * Retrieves the document of a node.
  * This method is required to replace a node by another : the document element
- * is th only one able to do createTextNode).
+ * is th only one able to do createTextNode ).
  */
 QDomDocument SvgParser::getDocument(const QDomNode& node) const {
     
