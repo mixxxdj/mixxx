@@ -7,6 +7,7 @@
 #include <QDomElement>
 #include <QScriptEngine>
 #include <QDir>
+#include <QScriptEngineDebugger>
 
 #include "skin/pixmapsource.h"
 
@@ -65,6 +66,8 @@ class SkinContext {
     QString getPixmapPath(const QDomNode& pixmapNode) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
 
+    QScriptValue evaluateScript(QString expression, QString filename, int lineNumber);
+    QScriptValue evaluateScript(QString expression, QString filename);
     QScriptValue evaluateScript(QString expression);
     QScriptValue importScriptExtension(QString extensionName);
     const QScriptEngine& getScriptEngine() const;
@@ -73,6 +76,7 @@ class SkinContext {
     QString variableNodeToText(const QDomElement& element) const;
     
     mutable QScriptEngine m_scriptEngine;
+    QScriptEngineDebugger m_debugger;
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
     

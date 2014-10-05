@@ -27,6 +27,7 @@ svg.getHooksPattern = function(){
 
 global = this;
 svg.templateHooks.variable = function( varName ){
+    
     // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     // console.log(global[varName]);
     if( varName in global ){

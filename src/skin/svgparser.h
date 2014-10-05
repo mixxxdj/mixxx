@@ -20,8 +20,10 @@ class SvgParser {
     QDomDocument getDocument(const QDomNode& node) const;
     void scanTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const;
 
-    QDomNode parseSvgTree(const QDomNode& svgSkinNode) const;
-    QDomNode parseSvgFile(const QString& svgFileName) const;
+    // QDomNode parseSvgTree(const QDomNode& svgSkinNode) const;
+    QDomNode parseSvgTree(const QDomNode& svgSkinNode);
+    // QDomNode parseSvgFile(const QString& svgFileName) const;
+    QDomNode parseSvgFile(const QString& svgFileName);
     QString saveToTempFile(const QDomNode& svgNode) const;
     QByteArray saveToQByteArray(const QDomNode& svgNode) const;
     void parseElement(const QDomNode& svgNode) const;
@@ -29,10 +31,11 @@ class SvgParser {
 
   private:
     void parseAttributes(const QDomNode& node) const;
-    QScriptValue evaluateTemplateExpression(QString expression) const;
+    QScriptValue evaluateTemplateExpression(QString expression, int lineNumber) const;
     
     mutable SkinContext m_context;
     QDomDocument m_document;
+    QString m_currentFile;
     
 };
 

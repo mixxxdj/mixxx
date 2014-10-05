@@ -17,20 +17,22 @@ SvgParser::SvgParser(const SkinContext& parent)
 SvgParser::~SvgParser() {
 }
 
-QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
+QDomNode SvgParser::parseSvgFile(const QString& svgFileName) {
+    m_currentFile = svgFileName;
     QFile* file = new QFile(svgFileName);
-    QDomNode out;
+    QDomNode svgNode;
     if (file->open(QIODevice::ReadWrite|QIODevice::Text)) {
         QDomDocument document;
         document.setContent(file);
-        QDomNode svgNode = document.elementsByTagName("svg").item(0);
-        out = parseSvgTree(svgNode);
+        svgNode = document.elementsByTagName("svg").item(0);
+        scanTree(svgNode, &SvgParser::parseElement);
         file->close();
     }
-    return out;
+    return svgNode;
 }
 
-QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
+QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) {
+    m_currentFile = "inline svg";
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
     scanTree(svgNode, &SvgParser::parseElement);
@@ -80,22 +82,23 @@ void SvgParser::parseElement(const QDomNode& node) const {
             QFile scriptFile(m_context.getSkinPath(scriptPath));
             scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
             QTextStream in(&scriptFile);
-            QScriptValue result = m_context.evaluateScript(in.readAll());
-            if (m_context.getScriptEngine().hasUncaughtException()) {
-                qDebug() << "SVG script exception : " << result.toString()
-                        << "in" << scriptPath
-                        << "line" << m_context.getScriptEngine()
-                            .uncaughtExceptionLineNumber();
-            }
+            QScriptValue result = m_context.evaluateScript(in.readAll(), scriptPath);
+            // if (m_context.getScriptEngine().hasUncaughtException()) {
+                // qDebug() << "SVG script exception : " << result.toString()
+                        // << "in" << scriptPath
+                        // << "line" << m_context.getScriptEngine()
+                            // .uncaughtExceptionLineNumber();
+            // }
         }
         // Evaluates the content of the script element
         QString expression = m_context.nodeToString(node);
-        QScriptValue result = m_context.evaluateScript(expression);
-        if (m_context.getScriptEngine().hasUncaughtException()) {
-            qDebug() << "SVG script exception : " << result.toString() << "\n"
-                    << "line" << m_context.getScriptEngine()
-                        .uncaughtExceptionLineNumber();
-        }
+        QScriptValue result = m_context.evaluateScript(expression, m_currentFile,
+                                                        node.lineNumber());
+        // if (m_context.getScriptEngine().hasUncaughtException()) {
+            // qDebug() << "SVG script exception : " << result.toString() << "\n"
+                    // << "line" << m_context.getScriptEngine()
+                        // .uncaughtExceptionLineNumber();
+        // }
     }
     
 }
@@ -124,7 +127,8 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
         // searching variable attributes :
         // expr-attribute_name="variable_name|expression"
         if (nameRx.indexIn(attributeName) != -1) {
-            QString varValue = evaluateTemplateExpression(attributeValue).toString();
+            QString varValue = evaluateTemplateExpression(attributeValue,
+                                                node.lineNumber()).toString();
             if (varValue.length()) {
                 element.setAttribute(nameRx.cap(1), varValue);
             }
@@ -139,7 +143,8 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
                 QString match = hookRx.cap(0);
                 QString tmp = "svg.templateHooks." + match;
                 // qDebug() <<  "expression : " << tmp << "\n";
-                QString replacement = evaluateTemplateExpression(tmp).toString();
+                QString replacement = evaluateTemplateExpression(tmp,
+                                                node.lineNumber()).toString();
                 attributeValue.replace(pos, match.length(), replacement);
                 pos += replacement.length();
             }
@@ -177,14 +182,15 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
     return out;
 }
 
-QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
-    QScriptValue out = m_context.evaluateScript(expression);
+QScriptValue SvgParser::evaluateTemplateExpression(QString expression, int lineNumber) const {
+    QScriptValue out = m_context.evaluateScript(expression, m_currentFile,
+                                                lineNumber);
     if (m_context.getScriptEngine().hasUncaughtException()) {
-        qDebug()
-            << "SVG script exception : " << out.toString()
-            << "Empty string returned\n"
-            << "In file ... line " << m_context.getScriptEngine()
-                .uncaughtExceptionLineNumber();
+        // qDebug()
+            // << "SVG script exception : " << out.toString()
+            // << "Empty string returned\n"
+            // << "In file " << m_currentFile << " line " << m_context.getScriptEngine()
+                // .uncaughtExceptionLineNumber();
         
         // return an empty string as replacement for the in-attribute expression
         QScriptValue nullValue;

@@ -1,9 +1,11 @@
 #include <QtDebug>
 #include <QStringList>
 #include <QScriptValue>
+#include <QAction>
 
 #include "skin/skincontext.h"
 #include "skin/svgparser.h"
+#include "util/cmdlineargs.h"
 
 SkinContext::SkinContext() {
 }
@@ -15,6 +17,12 @@ SkinContext::SkinContext(const SkinContext& parent)
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
+    }
+    
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        // Enable script debugger
+        m_debugger.attachTo(&m_scriptEngine);
+        m_debugger.action(QScriptEngineDebugger::InterruptAction);
     }
 }
 
@@ -211,7 +219,8 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 
 QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
-    const SvgParser svgParser(*this);
+    // const SvgParser svgParser(*this);
+    SvgParser svgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
@@ -242,14 +251,15 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
     PixmapSource source;
     
-    const SvgParser* pSvgParser = new SvgParser(*this);
+    // const SvgParser svgParser(*this);
+    SvgParser svgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
-            const QByteArray rslt = pSvgParser->saveToQByteArray(
-                pSvgParser->parseSvgTree(svgNode) );
+            const QByteArray rslt = svgParser.saveToQByteArray(
+                svgParser.parseSvgTree(svgNode) );
             source.setSVG( rslt );
         } else {
             // filename
@@ -257,8 +267,8 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
             if (!pixmapName.isEmpty()) {
                 source.setPath( getSkinPath(pixmapName) );
                 if (source.isSVG()) {
-                    const QByteArray rslt = pSvgParser->saveToQByteArray(
-                            pSvgParser->parseSvgFile(source.getPath()) );
+                    const QByteArray rslt = svgParser.saveToQByteArray(
+                            svgParser.parseSvgFile(source.getPath()) );
                     source.setSVG( rslt );
                 }
             }
@@ -269,8 +279,17 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     return source;
 }
 
+QScriptValue SkinContext::evaluateScript(QString expression, QString filename, int lineNumber) {
+    return m_scriptEngine.evaluate(expression, filename, lineNumber);
+}
+
+QScriptValue SkinContext::evaluateScript(QString expression, QString filename) {
+    return m_scriptEngine.evaluate(expression, filename);
+}
+
 QScriptValue SkinContext::evaluateScript(QString expression) {
-    return m_scriptEngine.evaluate(expression);
+    QString unknownFilename;
+    return evaluateScript(expression,unknownFilename);
 }
 
 QScriptValue SkinContext::importScriptExtension(QString extensionName) {
