@@ -12,23 +12,24 @@ svg.regexpQuote = function (str, delimiter) {
     );
 }
 
-svg.hookNames = function(){
-    var hookNames = ['variable'],
+svg.getHooksPattern = function(){
+    var hookNames = [],
         that = this;
     for( var i in this.templateHooks )
         hookNames.push(i);
     
-    hookNames.toPattern = function(){
-        for( var i in this )
-            this[i] = that.regexpQuote(this[i]);
-        return this.join('|');
+    // hook_name( arg1 [, arg2]... )
+    if( hookNames.length ){
+        var pattern = "("+hookNames.join('|')+")\\(([^\\(\\)]+)\\)\\s*;?";
+        
+        // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        // console.log(pattern);
+        return pattern;
     }
-    
-    return hookNames;
 }
 
 global = this;
-svg.templateHooks.variable = variable = function( varName ){
+svg.templateHooks.variable = function( varName ){
     // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     // console.log(global[varName]);
     if( varName in global ){
@@ -37,7 +38,7 @@ svg.templateHooks.variable = variable = function( varName ){
     return '';
 }
 
-svg.templateHooks.prop = prop = function( propName, varName ){
+svg.templateHooks.prop = function( propName, varName ){
     var out = '';
     
     if( (varName in global) ){
@@ -50,7 +51,7 @@ svg.templateHooks.prop = prop = function( propName, varName ){
         }
         
     } else {
-        // print( 'Unable to find ' + varName + ' for prop hook.' );
+        print( 'Unable to find ' + varName + ' for prop hook.' );
     }
     
     // print( varName + ' => ' out + ' | ' + (varName in global) );

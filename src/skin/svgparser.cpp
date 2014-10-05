@@ -84,14 +84,18 @@ void SvgParser::parseElement(const QDomNode& node) const {
             QScriptValue result = m_context.evaluateScript(in.readAll());
             if (m_context.getScriptEngine().hasUncaughtException()) {
                 qDebug() << "SVG script exception : " << result.toString()
-                        << "in" << scriptPath;
+                        << "in" << scriptPath
+                        << "line" << m_context.getScriptEngine()
+                            .uncaughtExceptionLineNumber();
             }
         }
         // Evaluates the content of the script element
         QString expression = m_context.nodeToString(node);
         QScriptValue result = m_context.evaluateScript(expression);
         if (m_context.getScriptEngine().hasUncaughtException()) {
-            qDebug() << "SVG script exception : " << result.toString();
+            qDebug() << "SVG script exception : " << result.toString() << "\n"
+                    << "line" << m_context.getScriptEngine()
+                        .uncaughtExceptionLineNumber();
         }
     }
     
@@ -102,19 +106,14 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomNamedNodeMap attributes = node.attributes();
     QDomElement element = node.toElement();
     
-    QScriptValue global = m_context.getScriptEngine().globalObject();
-    QScriptValue hookNames = global.property("svg").property("hookNames")
-        .call(global.property("svg"));
     
     // Preparing the pattern of hooks
+    QScriptValue global = m_context.getScriptEngine().globalObject();
+    QScriptValue hooksPattern = global.property("svg")
+        .property("getHooksPattern").call(global.property("svg"));
     QRegExp hookRx;
-    if (hookNames.toString().length()) {
-        QString hooksPattern = hookNames.property("toPattern")
-            .call(hookNames).toString();
-        // hook_name( arg1 [, arg2]... )
-        hookRx.setPattern("("+hooksPattern+")\\(([^\\(\\)]+)\\)\\s*;?");
-        // qDebug() <<  "hooksPattern : " << hooksPattern << "\n";
-    }
+    if (!hooksPattern.isNull())
+        hookRx.setPattern(hooksPattern.toString());
     
     // expr-attribute_name="var_name";
     QRegExp nameRx("^expr-([^=\\s]+)$");
@@ -185,7 +184,9 @@ QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
     if (m_context.getScriptEngine().hasUncaughtException()) {
         qDebug()
             << "SVG script exception : " << out.toString()
-            << "Empty string returned";
+            << "Empty string returned\n"
+            << "In file ... line " << m_context.getScriptEngine()
+                .uncaughtExceptionLineNumber();
         
         // return an empty string as replacement for the in-attribute expression
         QScriptValue nullValue;
@@ -197,8 +198,8 @@ QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
 
 /**
  * Retrieves the document of a node.
- * This method is required to replace a node by another : the document element
- * is th only one able to do createTextNode.
+ * This method is required to replace a variable element by its value as the
+ * document element is the only one able to do createTextNode.
  */
 QDomDocument SvgParser::getDocument(const QDomNode& node) const {
     QDomNode parentNode = node;
