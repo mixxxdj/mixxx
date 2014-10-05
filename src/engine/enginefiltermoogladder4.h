@@ -46,10 +46,10 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     }
 
     void initBuffers() {
-        m_az1 = 0;
-        m_az2 = 0;
-        m_az3 = 0;
-        m_az4 = 0;
+        m_azt1 = 0;
+        m_azt2 = 0;
+        m_azt3 = 0;
+        m_azt4 = 0;
         m_az5 = 0;
         m_amf = 0;
 
@@ -111,64 +111,65 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         // cascade of 4 1st order sections
         float x1 = input - m_amf * m_kacr;
-        m_az1 = m_az1 + m_k2vg * (tanhf (x1 / v2) - tanhf (m_az1 / v2));
-        float at1 = m_k2vg * tanhf(m_az1 / v2);
-        m_azt1 = m_az1 - at1;
-        m_az2 = m_az2 + at1 - m_k2vg * tanhf(m_az2 / v2);
-        float at2 = m_k2vg * tanhf(m_az2 / v2);
-        m_azt2 = m_az2 - at2;
-        m_az3 = m_az3 + at2 - m_k2vg * tanhf(m_az3 / v2);
-        float at3 = m_k2vg * tanhf(m_az3 / v2);
-        m_azt3 = m_az3 - at3;
-        m_az4 = m_az4 + at3 - m_k2vg * tanhf(m_az4 / v2);
+        float az1 = m_azt1 + m_k2vg * tanhf(x1 / v2);
+        float at1 = m_k2vg * tanhf(az1 / v2);
+        m_azt1 = az1 - at1;
+        float az2 = m_azt2 + at1;
+        float at2 = m_k2vg * tanhf(az2 / v2);
+        m_azt2 = az2 - at2;
+        float az3 = m_azt3 + at2;
+        float at3 = m_k2vg * tanhf(az3 / v2);
+        m_azt3 = az3 - at3;
+        float az4 = m_azt4 + at3;
+        float at4 = m_k2vg * tanhf(az4 / v2);
+        m_azt4 = az4 - at4;
 
         // Oversampling if requested
         if (MODE == LP_OVERS || MODE == HP_OVERS ) {
             // 1/2-sample delay for phase compensation
-            m_amf = (m_az4 + m_az5) / 2;
-            m_az5 = m_az4;
+            m_amf = (az4 + m_az5) / 2;
+            m_az5 = az4;
 
             // Oversampling (repeat same block)
             float x1 = input - m_amf * m_kacr;
-            m_az1 = m_az1 + m_k2vg * (tanhf (x1 / v2) - tanhf (m_az1 / v2));
-            float at1 = m_k2vg * tanhf(m_az1 / v2);
-            m_azt1 = m_az1 - at1;
-            m_az2 = m_az2 + at1 - m_k2vg * tanhf(m_az2 / v2);
-            float at2 = m_k2vg * tanhf(m_az2 / v2);
-            m_azt2 = m_az2 - at2;
-            m_az3 = m_az3 + at2 - m_k2vg * tanhf(m_az3 / v2);
-            float at3 = m_k2vg * tanhf(m_az3 / v2);
-            m_azt3 = m_az3 - at3;
-            m_az4 = m_az4 + at3 - m_k2vg * tanhf(m_az4 / v2);
+            float az1 = m_azt1 + m_k2vg * tanhf(x1 / v2);
+            float at1 = m_k2vg * tanhf(az1 / v2);
+            m_azt1 = az1 - at1;
+            float az2 = m_azt2 + at1;
+            float at2 = m_k2vg * tanhf(az2 / v2);
+            m_azt2 = az2 - at2;
+            float az3 = m_azt3 + at2;
+            float at3 = m_k2vg * tanhf(az3 / v2);
+            m_azt3 = az3 - at3;
+            float az4 = m_azt4 + at3;
+            float at4 = m_k2vg * tanhf(az4 / v2);
+            m_azt4 = az4 - at4;
 
             // 1/2-sample delay for phase compensation
-            m_amf = (m_az4 + m_az5) / 2;
-            m_az5 = m_az4;
+            m_amf = (az4 + m_az5) / 2;
+            m_az5 = az4;
         } else {
-            m_amf = m_az4;
+            m_amf = az4;
         }
 
         if (MODE == HP_OVERS || MODE == HP ) {
-            return (x1 - 3 * m_az3 + 2 * m_az4) * m_postGain;
+            return (x1 - 3 * az3 + 2 * az4) * m_postGain;
         }
         return m_amf * m_postGain;
     }
 
   private:
 
-    CSAMPLE m_az1;
-    CSAMPLE m_az2;
-    CSAMPLE m_az3;
-    CSAMPLE m_az4;
-    CSAMPLE m_az5;
+   // struct buf {
+        CSAMPLE m_azt1;
+        CSAMPLE m_azt2;
+        CSAMPLE m_azt3;
+        CSAMPLE m_azt4;
+        CSAMPLE m_az5;
+        CSAMPLE m_amf;
+   // };
 
-    CSAMPLE m_azt1;
-    CSAMPLE m_azt2;
-    CSAMPLE m_azt3;
-    CSAMPLE m_azt4;
-    CSAMPLE m_azt5;
-
-    CSAMPLE m_amf;
+   // struct buf m_buf[2];
 
     float m_postGain;
     float m_kacr; // resonance factor
