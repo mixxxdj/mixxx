@@ -22,7 +22,6 @@ SkinContext::SkinContext(const SkinContext& parent)
     if (CmdlineArgs::Instance().getDeveloper()) {
         // Enable script debugger
         m_debugger.attachTo(&m_scriptEngine);
-        m_debugger.action(QScriptEngineDebugger::InterruptAction);
     }
 }
 
@@ -219,7 +218,6 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 
 QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
-    // const SvgParser svgParser(*this);
     SvgParser svgParser(*this);
     
     if (!pixmapNode.isNull()) {
@@ -251,7 +249,6 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
     PixmapSource source;
     
-    // const SvgParser svgParser(*this);
     SvgParser svgParser(*this);
     
     if (!pixmapNode.isNull()) {
@@ -275,7 +272,6 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
         }
     }
     
-    // qDebug() << "getPixmapSource out path" << source->getPath();
     return source;
 }
 
