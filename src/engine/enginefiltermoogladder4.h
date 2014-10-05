@@ -16,6 +16,7 @@
 #include <memory.h>
 #include <stdio.h>
 #include <math.h>
+#include "util/timer.h"
 
 #include <QDebug>
 
@@ -100,11 +101,10 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
+        ScopedTimer("Moog");
         for (int i = 0; i < iBufferSize; i += 2) {
             pOutput[i] = processSample(pIn[i], &m_buf[0]);
             pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
-            //pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
-            //pOutput[i+1] = processSample(m_coef, m_buf2, pIn[i + 1]);
         }
         m_buffersClear = false;
     }
@@ -115,17 +115,17 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         // cascade of 4 1st order sections
         float x1 = input - pB->m_amf * m_kacr;
-        float az1 = pB->m_azt1 + m_k2vg * tanhf(x1 / v2);
-        float at1 = m_k2vg * tanhf(az1 / v2);
+        float az1 = pB->m_azt1 + m_k2vg * tanh_approx(x1 / v2);
+        float at1 = m_k2vg * tanh_approx(az1 / v2);
         pB->m_azt1 = az1 - at1;
         float az2 = pB->m_azt2 + at1;
-        float at2 = m_k2vg * tanhf(az2 / v2);
+        float at2 = m_k2vg * tanh_approx(az2 / v2);
         pB->m_azt2 = az2 - at2;
         float az3 = pB->m_azt3 + at2;
-        float at3 = m_k2vg * tanhf(az3 / v2);
+        float at3 = m_k2vg * tanh_approx(az3 / v2);
         pB->m_azt3 = az3 - at3;
         float az4 = pB->m_azt4 + at3;
-        float at4 = m_k2vg * tanhf(az4 / v2);
+        float at4 = m_k2vg * tanh_approx(az4 / v2);
         pB->m_azt4 = az4 - at4;
 
         // Oversampling if requested
@@ -136,17 +136,17 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
             // Oversampling (repeat same block)
             float x1 = input - pB->m_amf * m_kacr;
-            float az1 = pB->m_azt1 + m_k2vg * tanhf(x1 / v2);
-            float at1 = m_k2vg * tanhf(az1 / v2);
+            float az1 = pB->m_azt1 + m_k2vg * tanh_approx(x1 / v2);
+            float at1 = m_k2vg * tanh_approx(az1 / v2);
             pB->m_azt1 = az1 - at1;
             float az2 = pB->m_azt2 + at1;
-            float at2 = m_k2vg * tanhf(az2 / v2);
+            float at2 = m_k2vg * tanh_approx(az2 / v2);
             pB->m_azt2 = az2 - at2;
             float az3 = pB->m_azt3 + at2;
-            float at3 = m_k2vg * tanhf(az3 / v2);
+            float at3 = m_k2vg * tanh_approx(az3 / v2);
             pB->m_azt3 = az3 - at3;
             float az4 = pB->m_azt4 + at3;
-            float at4 = m_k2vg * tanhf(az4 / v2);
+            float at4 = m_k2vg * tanh_approx(az4 / v2);
             pB->m_azt4 = az4 - at4;
 
             // 1/2-sample delay for phase compensation
@@ -161,6 +161,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         }
         return pB->m_amf * m_postGain;
     }
+
+    inline float tanh_approx(float input) {
+        // return tanhf(input); // 142ns for process;
+        return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
+    }
+
 
   private:
 
