@@ -27,8 +27,7 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
         : ControlObject(key, bIgnoreNops, bTrack, bPersist),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
-
-    double default_value = m_dMinValue + 0.5 * m_dValueRange;
+    double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);
     setDefaultValue(default_value);
     if (!bPersist) {
         set(default_value);
@@ -37,14 +36,6 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
 }
 
 ControlPotmeter::~ControlPotmeter() {
-}
-
-double ControlPotmeter::getMin() const {
-    return m_dMinValue;
-}
-
-double ControlPotmeter::getMax() const {
-    return m_dMaxValue;
 }
 
 void ControlPotmeter::setStepCount(int count) {
@@ -57,9 +48,6 @@ void ControlPotmeter::setSmallStepCount(int count) {
 
 void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
                                bool allowOutOfBounds) {
-    m_dMinValue = dMinValue;
-    m_dMaxValue = dMaxValue;
-    m_dValueRange = m_dMaxValue - m_dMinValue;
     m_bAllowOutOfBounds = allowOutOfBounds;
 
     if (m_pControl) {

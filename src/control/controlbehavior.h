@@ -44,15 +44,15 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 
 class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue);
+    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
     virtual ~ControlLogPotmeterBehavior();
 
     virtual double valueToParameter(double dValue);
     virtual double parameterToValue(double dParam);
 
   protected:
-    bool m_bTwoState;
-    double m_dB1, m_dB2;
+    double m_minDB;
+    double m_minOffset;
 };
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
