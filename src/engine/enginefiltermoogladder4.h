@@ -149,7 +149,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         }
 
         if (MODE == HP_OVERS || MODE == HP ) {
-            return x1 - 3 * m_az3 + 2 * m_az4;
+            return (x1 - 3 * m_az3 + 2 * m_az4) * m_postGain;
         }
         return m_amf * m_postGain;
     }
