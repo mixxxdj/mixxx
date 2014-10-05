@@ -181,7 +181,9 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 }
                 break;
             case EffectManifestParameter::LINK_LINKED_LEFT:
-                if (parameter >= 0.0 && parameter <= 0.5) {
+                if (parameter >= 0.5 && parameter <= 1.0) {
+                    parameter = 0;
+                } else if (parameter >= 0.0 && parameter <= 0.5) {
                     parameter *= 2;
                     parameter = 1.0 - parameter;
                 } else {
@@ -192,6 +194,8 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 if (parameter >= 0.5 && parameter <= 1.0) {
                     parameter -= 0.5;
                     parameter *= 2;
+                } else if (parameter >= 0.0 && parameter < 0.5) {
+                    parameter = 0.0;
                 } else {
                     return;
                 }
@@ -200,7 +204,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 if (parameter >= 0.5 && parameter <= 1.0) {
                     parameter -= 0.5;
                     parameter *= 2;
-                } else if (parameter >= 0.0 && parameter <= 0.5) {
+                } else if (parameter >= 0.0 && parameter < 0.5) {
                     parameter *= 2;
                     parameter = 1.0 - parameter;
                 } else {
