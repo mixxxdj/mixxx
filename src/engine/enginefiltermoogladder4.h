@@ -36,6 +36,16 @@ enum MoogMode {
 template<enum MoogMode MODE>
 class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
+  private:
+    struct Buffer {
+         CSAMPLE m_azt1;
+         CSAMPLE m_azt2;
+         CSAMPLE m_azt3;
+         CSAMPLE m_azt4;
+         CSAMPLE m_az5;
+         CSAMPLE m_amf;
+    };
+
   public:
     EngineFilterMoogLadderBase(unsigned int sampleRate, float cutoff, float resonance) {
         setParameter(sampleRate, cutoff, resonance);
@@ -46,13 +56,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     }
 
     void initBuffers() {
-        m_azt1 = 0;
-        m_azt2 = 0;
-        m_azt3 = 0;
-        m_azt4 = 0;
-        m_az5 = 0;
-        m_amf = 0;
-
+        memset(&m_buf, 0, sizeof(m_buf));
         m_buffersClear = true;
     }
 
@@ -97,79 +101,70 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
         for (int i = 0; i < iBufferSize; i += 2) {
-            pOutput[i] = processSample(pIn[i]);
-            pOutput[i+1] = pOutput[i];
+            pOutput[i] = processSample(pIn[i], &m_buf[0]);
+            pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
             //pOutput[i] = processSample(m_coef, m_buf1, pIn[i]);
             //pOutput[i+1] = processSample(m_coef, m_buf2, pIn[i + 1]);
         }
         m_buffersClear = false;
     }
 
-    inline CSAMPLE processSample(float input) {
+    inline CSAMPLE processSample(float input, struct Buffer* pB ) {
 
         const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
 
         // cascade of 4 1st order sections
-        float x1 = input - m_amf * m_kacr;
-        float az1 = m_azt1 + m_k2vg * tanhf(x1 / v2);
+        float x1 = input - pB->m_amf * m_kacr;
+        float az1 = pB->m_azt1 + m_k2vg * tanhf(x1 / v2);
         float at1 = m_k2vg * tanhf(az1 / v2);
-        m_azt1 = az1 - at1;
-        float az2 = m_azt2 + at1;
+        pB->m_azt1 = az1 - at1;
+        float az2 = pB->m_azt2 + at1;
         float at2 = m_k2vg * tanhf(az2 / v2);
-        m_azt2 = az2 - at2;
-        float az3 = m_azt3 + at2;
+        pB->m_azt2 = az2 - at2;
+        float az3 = pB->m_azt3 + at2;
         float at3 = m_k2vg * tanhf(az3 / v2);
-        m_azt3 = az3 - at3;
-        float az4 = m_azt4 + at3;
+        pB->m_azt3 = az3 - at3;
+        float az4 = pB->m_azt4 + at3;
         float at4 = m_k2vg * tanhf(az4 / v2);
-        m_azt4 = az4 - at4;
+        pB->m_azt4 = az4 - at4;
 
         // Oversampling if requested
         if (MODE == LP_OVERS || MODE == HP_OVERS ) {
             // 1/2-sample delay for phase compensation
-            m_amf = (az4 + m_az5) / 2;
-            m_az5 = az4;
+            pB->m_amf = (az4 + pB->m_az5) / 2;
+            pB->m_az5 = az4;
 
             // Oversampling (repeat same block)
-            float x1 = input - m_amf * m_kacr;
-            float az1 = m_azt1 + m_k2vg * tanhf(x1 / v2);
+            float x1 = input - pB->m_amf * m_kacr;
+            float az1 = pB->m_azt1 + m_k2vg * tanhf(x1 / v2);
             float at1 = m_k2vg * tanhf(az1 / v2);
-            m_azt1 = az1 - at1;
-            float az2 = m_azt2 + at1;
+            pB->m_azt1 = az1 - at1;
+            float az2 = pB->m_azt2 + at1;
             float at2 = m_k2vg * tanhf(az2 / v2);
-            m_azt2 = az2 - at2;
-            float az3 = m_azt3 + at2;
+            pB->m_azt2 = az2 - at2;
+            float az3 = pB->m_azt3 + at2;
             float at3 = m_k2vg * tanhf(az3 / v2);
-            m_azt3 = az3 - at3;
-            float az4 = m_azt4 + at3;
+            pB->m_azt3 = az3 - at3;
+            float az4 = pB->m_azt4 + at3;
             float at4 = m_k2vg * tanhf(az4 / v2);
-            m_azt4 = az4 - at4;
+            pB->m_azt4 = az4 - at4;
 
             // 1/2-sample delay for phase compensation
-            m_amf = (az4 + m_az5) / 2;
-            m_az5 = az4;
+            pB->m_amf = (az4 + pB->m_az5) / 2;
+            pB->m_az5 = az4;
         } else {
-            m_amf = az4;
+            pB->m_amf = az4;
         }
 
         if (MODE == HP_OVERS || MODE == HP ) {
             return (x1 - 3 * az3 + 2 * az4) * m_postGain;
         }
-        return m_amf * m_postGain;
+        return pB->m_amf * m_postGain;
     }
 
   private:
 
-   // struct buf {
-        CSAMPLE m_azt1;
-        CSAMPLE m_azt2;
-        CSAMPLE m_azt3;
-        CSAMPLE m_azt4;
-        CSAMPLE m_az5;
-        CSAMPLE m_amf;
-   // };
-
-   // struct buf m_buf[2];
+    struct Buffer m_buf[2];
 
     float m_postGain;
     float m_kacr; // resonance factor
