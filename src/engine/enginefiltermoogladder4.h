@@ -60,10 +60,13 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         m_cutoff = cutoff;
         m_resonance = resonance;
         m_inputSampeRate = sampleRate;
-        m_postGain = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
-                * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
-
-        qDebug() << "setParameter" << m_cutoff << m_resonance;
+        if (MODE == HP_OVERS || MODE == HP ) {
+            m_postGain = 1;
+        } else {
+            m_postGain = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
+                    * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
+        }
+        // qDebug() << "setParameter" << m_cutoff << m_resonance;
     }
 
     void pauseFilter() {
@@ -105,11 +108,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         float k2vg = v2 * (1 - exp_out); // filter tuning
 
         float kacr;
-        if (MODE == LP_OVERS || MODE == LP ) {
-            kacr = -3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968;
-        } else {
-            kacr = 10;
-        }
+        kacr = -3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968;
 
         // cascade of 4 1st order sections
         float x1 = input - resonance * m_amf * kacr;
@@ -168,7 +167,7 @@ class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<LP_OVERS> {
 };
 
 
-class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<HP> {
+class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<HP_OVERS> {
     Q_OBJECT
   public:
     EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
