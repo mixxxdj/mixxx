@@ -25,7 +25,7 @@ EffectManifest PeakingFilterEffect::getManifest() {
     q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    q->setDefault(0);
+    q->setDefault(1);
     q->setMinimum(0.1);
     q->setMaximum(10);
 
@@ -100,6 +100,10 @@ void PeakingFilterEffect::processGroup(const QString& group,
     } else {
         memcpy(pOutput, pInput, numSamples * sizeof(CSAMPLE));
         pState->m_filter->pauseFilter();
+    }
+
+    for (unsigned int i = 0; i < numSamples; i++) {
+        pOutput[i] = tanhf(pOutput[i]); 
     }
 
     pState->m_oldQ = q; 
