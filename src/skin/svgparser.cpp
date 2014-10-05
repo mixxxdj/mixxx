@@ -186,10 +186,6 @@ QScriptValue SvgParser::evaluateTemplateExpression(QString expression, int lineN
     QScriptValue out = m_context.evaluateScript(expression, m_currentFile,
                                                 lineNumber);
     if (m_context.getScriptEngine().hasUncaughtException()) {
-        QScriptValue global = m_context.getScriptEngine().globalObject();
-        QScriptValue hooksPattern = global.property("print").call(
-            global,
-            "Empty string returned");
         // qDebug()
             // << "SVG script exception : " << out.toString()
             // << "Empty string returned\n"
