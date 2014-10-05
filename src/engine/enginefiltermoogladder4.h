@@ -112,9 +112,15 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // cascade of 4 1st order sections
         float x1 = input - m_amf * m_kacr;
         m_az1 = m_az1 + m_k2vg * (tanhf (x1 / v2) - tanhf (m_az1 / v2));
-        m_az2 = m_az2 + m_k2vg * (tanhf(m_az1 / v2) - tanhf(m_az2 / v2));
-        m_az3 = m_az3 + m_k2vg * (tanhf(m_az2 / v2) - tanhf(m_az3 / v2));
-        m_az4 = m_az4 + m_k2vg * (tanhf(m_az3 / v2) - tanhf(m_az4 / v2));
+        float at1 = m_k2vg * tanhf(m_az1 / v2);
+        m_azt1 = m_az1 - at1;
+        m_az2 = m_az2 + at1 - m_k2vg * tanhf(m_az2 / v2);
+        float at2 = m_k2vg * tanhf(m_az2 / v2);
+        m_azt2 = m_az2 - at2;
+        m_az3 = m_az3 + at2 - m_k2vg * tanhf(m_az3 / v2);
+        float at3 = m_k2vg * tanhf(m_az3 / v2);
+        m_azt3 = m_az3 - at3;
+        m_az4 = m_az4 + at3 - m_k2vg * tanhf(m_az4 / v2);
 
         // Oversampling if requested
         if (MODE == LP_OVERS || MODE == HP_OVERS ) {
@@ -123,11 +129,17 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             m_az5 = m_az4;
 
             // Oversampling (repeat same block)
-            x1 = input - m_amf * m_kacr;
+            float x1 = input - m_amf * m_kacr;
             m_az1 = m_az1 + m_k2vg * (tanhf (x1 / v2) - tanhf (m_az1 / v2));
-            m_az2 = m_az2 + m_k2vg * (tanhf(m_az1 / v2) - tanhf(m_az2 / v2));
-            m_az3 = m_az3 + m_k2vg * (tanhf(m_az2 / v2) - tanhf(m_az3 / v2));
-            m_az4 = m_az4 + m_k2vg * (tanhf(m_az3 / v2) - tanhf(m_az4 / v2));
+            float at1 = m_k2vg * tanhf(m_az1 / v2);
+            m_azt1 = m_az1 - at1;
+            m_az2 = m_az2 + at1 - m_k2vg * tanhf(m_az2 / v2);
+            float at2 = m_k2vg * tanhf(m_az2 / v2);
+            m_azt2 = m_az2 - at2;
+            m_az3 = m_az3 + at2 - m_k2vg * tanhf(m_az3 / v2);
+            float at3 = m_k2vg * tanhf(m_az3 / v2);
+            m_azt3 = m_az3 - at3;
+            m_az4 = m_az4 + at3 - m_k2vg * tanhf(m_az4 / v2);
 
             // 1/2-sample delay for phase compensation
             m_amf = (m_az4 + m_az5) / 2;
@@ -149,6 +161,13 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     CSAMPLE m_az3;
     CSAMPLE m_az4;
     CSAMPLE m_az5;
+
+    CSAMPLE m_azt1;
+    CSAMPLE m_azt2;
+    CSAMPLE m_azt3;
+    CSAMPLE m_azt4;
+    CSAMPLE m_azt5;
+
     CSAMPLE m_amf;
 
     float m_postGain;
