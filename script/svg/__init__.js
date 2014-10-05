@@ -21,9 +21,6 @@ svg.getHooksPattern = function(){
     // hook_name( arg1 [, arg2]... )
     if( hookNames.length ){
         var pattern = "("+hookNames.join('|')+")\\(([^\\(\\)]+)\\)\\s*;?";
-        
-        // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-        // console.log(pattern);
         return pattern;
     }
 }
@@ -51,10 +48,9 @@ svg.templateHooks.prop = function( propName, varName ){
         }
         
     } else {
-        print( 'Unable to find ' + varName + ' for prop hook.' );
+        console.log( 'Unable to find ' + varName + ' for prop hook.' );
     }
     
-    // print( varName + ' => ' out + ' | ' + (varName in global) );
     return out;
 }
 

@@ -106,8 +106,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomNamedNodeMap attributes = node.attributes();
     QDomElement element = node.toElement();
     
-    
-    // Preparing the pattern of hooks
+    // Retrieving hooks pattern from script extension
     QScriptValue global = m_context.getScriptEngine().globalObject();
     QScriptValue hooksPattern = global.property("svg")
         .property("getHooksPattern").call(global.property("svg"));
