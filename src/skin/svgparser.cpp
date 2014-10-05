@@ -17,7 +17,7 @@ SvgParser::SvgParser(const SkinContext& parent)
 SvgParser::~SvgParser() {
 }
 
-QDomNode SvgParser::parseSvgFile(const QString& svgFileName) {
+QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     m_currentFile = svgFileName;
     QFile* file = new QFile(svgFileName);
     QDomNode svgNode;
@@ -31,7 +31,7 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) {
     return svgNode;
 }
 
-QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) {
+QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     m_currentFile = "inline svg";
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);

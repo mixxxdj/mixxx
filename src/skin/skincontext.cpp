@@ -218,7 +218,7 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 
 QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
-    SvgParser svgParser(*this);
+    const SvgParser svgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
@@ -249,7 +249,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
     PixmapSource source;
     
-    SvgParser svgParser(*this);
+    const SvgParser svgParser(*this);
     
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
