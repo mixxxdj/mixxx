@@ -53,7 +53,6 @@ void SvgParser::scanTree(const QDomNode& node, void (SvgParser::*callback)(const
 // replaces Variables nodes in an svg dom tree
 void SvgParser::parseElement(const QDomNode& node) const {
     
-    QDomDocument document = getDocument(node);
     QDomElement element = node.toElement();
     
     parseAttributes(node);
@@ -66,7 +65,7 @@ void SvgParser::parseElement(const QDomNode& node) const {
         
         // replace node by its value
         QDomNode varParentNode = node.parentNode();
-        QDomNode varValueNode = document.createTextNode(varValue);
+        QDomNode varValueNode = node.ownerDocument().createTextNode(varValue);
         QDomNode oldChild = varParentNode.replaceChild(varValueNode, node);
         
         if (oldChild.isNull()) {
@@ -193,21 +192,4 @@ QScriptValue SvgParser::evaluateTemplateExpression(QString expression) const {
     } else {
         return out;
     }
-}
-
-/**
- * Retrieves the document of a node.
- * This method is required to replace a variable element by its value as the
- * document element is the only one able to do createTextNode.
- */
-QDomDocument SvgParser::getDocument(const QDomNode& node) const {
-    QDomNode parentNode = node;
-    QDomDocument document;
-    while (!parentNode.isNull()) {
-        if (parentNode.isDocument()) {
-            document = parentNode.toDocument();
-        }
-        parentNode = parentNode.parentNode();
-    }
-    return document;
 }
