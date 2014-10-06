@@ -353,24 +353,27 @@ QString ConfigObject<ValueType>::getResourcePath() {
         } else if (mixxxDir.cd("res")) {
             // We are running out of the repository root.
             qResourcePath = mixxxDir.absolutePath();
+        } else if (mixxxDir.absolutePath().endsWith("_build") &&
+                   mixxxDir.cdUp() && mixxxDir.cd("res")) {
+            // We are running out of the (lin|win|osx)XX_build folder.
+            qResourcePath = mixxxDir.absolutePath();
         }
 #ifdef __UNIX__
-        // On Linux, the share path is the logical place to look.
-        qResourcePath = UNIX_SHARE_PATH;
+        // On Linux if all of the above fail the /usr/share path is the logical
+        // place to look.
+        else {
+            qResourcePath = UNIX_SHARE_PATH;
+        }
 #endif
 #ifdef __WINDOWS__
-        // On Windows, set the config dir relative to the application dir
-        qResourcePath = QCoreApplication::applicationDirPath();
+        // On Windows, set the config dir relative to the application dir if all
+        // of the above fail.
+        else {
+            qResourcePath = QCoreApplication::applicationDirPath();
+        }
 #endif
 #ifdef __APPLE__
-        if (mixxxDir.absolutePath().endsWith("_build")) {
-            // We are running out of the osxXX_build folder.
-            if (mixxxDir.cdUp() && mixxxDir.cd("res")) {
-                qResourcePath = mixxxDir.absolutePath();
-            } else {
-                // TODO(rryan): What should we do here?
-            }
-        } else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+        else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuraton
             qResourcePath = mixxxDir.absolutePath();
         } else {

@@ -1,6 +1,8 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
+#include <QtDebug>
+
 template<class T>
 class Singleton
 {
@@ -14,6 +16,9 @@ public:
 
     static T* instance()
     {
+        if (m_instance == NULL) {
+            qWarning() << "Singleton class has not been created yet, returning NULL";
+        }
         return m_instance;
     }
 
