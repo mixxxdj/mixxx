@@ -121,7 +121,6 @@ WTrackTableView::~WTrackTableView() {
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
-    delete m_pTrackInfo;
     delete m_pNumSamplers;
     delete m_pNumDecks;
     delete m_pNumPreviewDecks;
