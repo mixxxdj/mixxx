@@ -25,7 +25,7 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
         QDomDocument document;
         document.setContent(file);
         svgNode = document.elementsByTagName("svg").item(0);
-        scanTree(svgNode, &SvgParser::parseElement);
+        scanTree(svgNode);
         file->close();
     }
     return svgNode;
@@ -35,19 +35,17 @@ QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     m_currentFile = "inline svg";
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
-    scanTree(svgNode, &SvgParser::parseElement);
+    scanTree(svgNode);
     return svgNode;
 }
 
-void SvgParser::scanTree(const QDomNode& node, void (SvgParser::*callback)(const QDomNode& node)const) const {
-    
-    (this->*callback)(node);
+void SvgParser::scanTree(const QDomNode& node) const {
+    parseElement(node);
     QDomNodeList children = node.childNodes();
-    
     for (uint i=0; i<children.length(); i++) {
         QDomNode child = children.at(i);
         if (child.isElement()) {
-            scanTree( child, callback);
+            scanTree(child);
         }
     }
 }
