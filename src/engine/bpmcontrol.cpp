@@ -431,10 +431,10 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*double sample_offset = dBeatLength * shortest_distance;
-    qDebug() << m_sGroup << sample_offset << m_dUserOffset;
+    /*qDebug() << m_sGroup << m_dUserOffset;
     qDebug() << "master beat distance:" << master_percentage;
-    qDebug() << "my     beat distance:" << my_percentage;*/
+    qDebug() << "my     beat distance:" << my_percentage;
+    qDebug() << "error               :" << (shortest_distance - m_dUserOffset);*/
 
     double adjustment = 1.0;
 
@@ -481,9 +481,14 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
 
 double BpmControl::getBeatDistance(double dThisPosition) const {
     double dBeatPercentage;
+    // We have to adjust our reported beat distance by the user offset to
+    // preserve comparisons of beat distances.  Specifically, this beat distance
+    // is used in synccontrol to update the internal clock beat distance, and if
+    // we don't adjust the reported distance the track will try to adjust
+    // sync against itself.
     if (BpmControl::getBeatContext(m_pBeats, dThisPosition, NULL, NULL, NULL,
                                    &dBeatPercentage, 0.01)) {
-        return dBeatPercentage;
+        return dBeatPercentage - m_dUserOffset;
     }
 
     if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
@@ -491,7 +496,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
                                     "Disabling quantize mode";
         m_pQuantize->set(0.0);
     }
-    return 0.0;
+    return 0.0 - m_dUserOffset;
 }
 
 // static
