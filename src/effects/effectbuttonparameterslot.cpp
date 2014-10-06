@@ -53,12 +53,12 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
-            double dValue = m_pEffectParameter->getValue().toDouble();
-            double dMinimum = m_pEffectParameter->getMinimum().toDouble();
+            double dValue = m_pEffectParameter->getValue();
+            double dMinimum = m_pEffectParameter->getMinimum();
             double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = m_pEffectParameter->getMaximum().toDouble();
+            double dMaximum = m_pEffectParameter->getMaximum();
             double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = m_pEffectParameter->getDefault().toDouble();
+            double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
                 dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
@@ -79,8 +79,8 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlLoaded->setAndConfirm(1.0);
             m_pControlLinkType->set(m_pEffectParameter->getLinkType());
 
-            connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
-                    this, SLOT(slotParameterValueChanged(QVariant)));
+            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
+                    this, SLOT(slotParameterValueChanged(double)));
         }
 
         // Update the newly loaded parameter to match the current chain
@@ -106,9 +106,9 @@ void EffectButtonParameterSlot::clear() {
     emit(updated());
 }
 
-void EffectButtonParameterSlot::slotParameterValueChanged(QVariant value) {
+void EffectButtonParameterSlot::slotParameterValueChanged(double value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
-    m_pControlValue->set(value.toDouble());
+    m_pControlValue->set(value);
 }
 
 void EffectButtonParameterSlot::onChainParameterChanged(double parameter) {

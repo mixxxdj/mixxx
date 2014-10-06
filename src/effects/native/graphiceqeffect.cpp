@@ -27,7 +27,6 @@ EffectManifest GraphicEQEffect::getManifest() {
     low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
     low->setDescription(QString("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     low->setDefault(0);
@@ -47,7 +46,6 @@ EffectManifest GraphicEQEffect::getManifest() {
         mid->setName(paramName);
         mid->setDescription(QString("Gain for Band Filter %1").arg(i));
         mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-        mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
         mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
         mid->setDefault(0);
@@ -60,7 +58,6 @@ EffectManifest GraphicEQEffect::getManifest() {
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
     high->setDescription(QString("Gain for Hight Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     high->setDefault(0);
@@ -155,10 +152,10 @@ void GraphicEQEffect::processGroup(const QString& group,
     float fMid[6];
     float fHigh;
 
-    fLow = m_pPotLow->value().toDouble();
-    fHigh = m_pPotHigh->value().toDouble();
+    fLow = m_pPotLow->value();
+    fHigh = m_pPotHigh->value();
     for (int i = 0; i < 6; i++) {
-        fMid[i] = m_pPotMid[i]->value().toDouble();
+        fMid[i] = m_pPotMid[i]->value();
     }
 
 

@@ -7,13 +7,6 @@
 
 class EffectManifestParameter {
   public:
-    enum ValueHint {
-        VALUE_UNKNOWN = 0,
-        VALUE_BOOLEAN,
-        VALUE_INTEGRAL,
-        VALUE_FLOAT
-    };
-
     enum ControlHint {
         CONTROL_UNKNOWN = 0,
         CONTROL_KNOB_LINEAR,
@@ -44,10 +37,12 @@ class EffectManifestParameter {
 
     EffectManifestParameter()
             : m_controlHint(CONTROL_UNKNOWN),
-              m_valueHint(VALUE_UNKNOWN),
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
-              m_linkHint(LINK_NONE) {
+              m_linkHint(LINK_NONE),
+              m_default(0),
+              m_minimum(0),
+              m_maximum(1.0) {
     }
 
     virtual ~EffectManifestParameter() {
@@ -90,13 +85,6 @@ class EffectManifestParameter {
         m_controlHint = controlHint;
     }
 
-    virtual ValueHint valueHint() const {
-        return m_valueHint;
-    }
-    virtual void setValueHint(ValueHint valueHint) {
-        m_valueHint = valueHint;
-    }
-
     virtual SemanticHint semanticHint() const {
         return m_semanticHint;
     }
@@ -122,33 +110,24 @@ class EffectManifestParameter {
     // Value Settings
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual bool hasDefault() const {
-        return m_default.isValid();
-    }
-    virtual const QVariant& getDefault() const {
+    virtual const double& getDefault() const {
         return m_default;
     }
-    virtual void setDefault(const QVariant& defaultValue) {
+    virtual void setDefault(const double& defaultValue) {
         m_default = defaultValue;
     }
 
-    virtual bool hasMinimum() const {
-        return m_minimum.isValid();
-    }
-    virtual const QVariant& getMinimum() const {
+    virtual const double& getMinimum() const {
         return m_minimum;
     }
-    virtual void setMinimum(const QVariant& minimum) {
+    virtual void setMinimum(const double& minimum) {
         m_minimum = minimum;
     }
 
-    virtual bool hasMaximum() const {
-        return m_maximum.isValid();
-    }
-    virtual const QVariant& getMaximum() const {
+    virtual const double& getMaximum() const {
         return m_maximum;
     }
-    virtual void setMaximum(const QVariant& maximum) {
+    virtual void setMaximum(const double& maximum) {
         m_maximum = maximum;
     }
 
@@ -162,14 +141,13 @@ class EffectManifestParameter {
     QString m_description;
 
     ControlHint m_controlHint;
-    ValueHint m_valueHint;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
     LinkType m_linkHint;
 
-    QVariant m_default;
-    QVariant m_minimum;
-    QVariant m_maximum;
+    double m_default;
+    double m_minimum;
+    double m_maximum;
 };
 
 QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);

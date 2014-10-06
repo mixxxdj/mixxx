@@ -22,7 +22,6 @@ EffectManifest Butterworth8EQEffect::getManifest() {
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     low->setDefault(1.0);
@@ -34,7 +33,6 @@ EffectManifest Butterworth8EQEffect::getManifest() {
     mid->setName(QObject::tr("Mid"));
     mid->setDescription(QObject::tr("Gain for Band Filter"));
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     mid->setDefault(1.0);
@@ -46,7 +44,6 @@ EffectManifest Butterworth8EQEffect::getManifest() {
     high->setName(QObject::tr("High"));
     high->setDescription(QObject::tr("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     high->setDefault(1.0);
@@ -112,9 +109,9 @@ void Butterworth8EQEffect::processGroup(const QString& group,
     Q_UNUSED(groupFeatures);
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
-    fLow = m_pPotLow->value().toDouble();
-    fMid = m_pPotMid->value().toDouble();
-    fHigh = m_pPotHigh->value().toDouble();
+    fLow = m_pPotLow->value();
+    fMid = m_pPotMid->value();
+    fHigh = m_pPotHigh->value();
 
     if (m_oldSampleRate != sampleRate ||
             (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||

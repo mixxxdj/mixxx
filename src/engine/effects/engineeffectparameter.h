@@ -17,15 +17,9 @@ class EngineEffectParameter {
         // their parameters are not within the manifest's minimum/maximum bounds
         // so just to be safe we read the min/max/default from the manifest
         // here.
-        if (m_parameter.hasMinimum()) {
-            m_minimum = m_parameter.getMinimum();
-        }
-        if (m_parameter.hasMaximum()) {
-            m_maximum = m_parameter.getMaximum();
-        }
-        if (m_parameter.hasDefault()) {
-            m_default_value = m_parameter.getDefault();
-        }
+        m_minimum = m_parameter.getMinimum();
+        m_maximum = m_parameter.getMaximum();
+        m_default_value = m_parameter.getDefault();
         m_value = m_default_value;
     }
     virtual ~EngineEffectParameter() { }
@@ -48,40 +42,40 @@ class EngineEffectParameter {
     // Value Settings
     ///////////////////////////////////////////////////////////////////////////
 
-    const QVariant& value() const {
+    const double& value() const {
         return m_value;
     }
-    void setValue(const QVariant& value) {
+    void setValue(const double& value) {
         m_value = value;
     }
 
-    const QVariant& defaultValue() const {
+    const double& defaultValue() const {
         return m_default_value;
     }
-    void setDefaultValue(const QVariant& default_value) {
+    void setDefaultValue(const double& default_value) {
         m_default_value = default_value;
     }
 
-    const QVariant& minimum() const {
+    const double& minimum() const {
         return m_minimum;
     }
-    void setMinimum(const QVariant& minimum) {
+    void setMinimum(const double& minimum) {
         m_minimum = minimum;
     }
 
-    const QVariant& maximum() const {
+    const double& maximum() const {
         return m_maximum;
     }
-    void setMaximum(const QVariant& maximum) {
+    void setMaximum(const double& maximum) {
         m_maximum = maximum;
     }
 
   private:
     EffectManifestParameter m_parameter;
-    QVariant m_value;
-    QVariant m_default_value;
-    QVariant m_minimum;
-    QVariant m_maximum;
+    double m_value;
+    double m_default_value;
+    double m_minimum;
+    double m_maximum;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectParameter);
 };

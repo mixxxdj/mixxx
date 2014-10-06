@@ -41,7 +41,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
   private slots:
     // Solely for handling control changes
-    void slotParameterValueChanged(QVariant value);
+    void slotParameterValueChanged(double value);
 
   private:
     QString debugString() const {

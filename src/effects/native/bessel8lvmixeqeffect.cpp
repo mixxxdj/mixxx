@@ -29,7 +29,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     low->setDefault(1.0);
@@ -41,7 +40,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     mid->setName(QObject::tr("Mid"));
     mid->setDescription(QObject::tr("Gain for Band Filter"));
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     mid->setDefault(1.0);
@@ -53,7 +51,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     high->setName(QObject::tr("High"));
     high->setDescription(QObject::tr("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     high->setDefault(1.0);
@@ -87,9 +84,9 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
-    double fLow = m_pPotLow->value().toDouble();
-    double fMid = m_pPotMid->value().toDouble();
-    double fHigh = m_pPotHigh->value().toDouble();
+    double fLow = m_pPotLow->value();
+    double fMid = m_pPotMid->value();
+    double fHigh = m_pPotHigh->value();
 
     if (pState->m_oldSampleRate != sampleRate ||
             (pState->m_loFreq != m_pLoFreqCorner->get()) ||
