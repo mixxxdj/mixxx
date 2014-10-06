@@ -44,6 +44,29 @@ QString CoverArtCache::trackInDBHash(int trackId) {
     return m_queueOfUpdates.value(trackId).first;
 }
 
+CoverInfo CoverArtCache::getCoverInfo(TrackPointer pTrack) {
+    if (!pTrack) {
+        return CoverInfo();
+    }
+
+
+    CoverInfo info;
+    info.trackId = pTrack->getId();
+    info.trackLocation = pTrack->getLocation();
+
+    if (m_queueOfUpdates.contains(info.trackId)) {
+        info.coverLocation = m_queueOfUpdates.value(info.trackId).first;
+        info.hash = m_queueOfUpdates.value(info.trackId).second;
+    } else {
+        CoverArtDAO::CoverArtInfo coverInfo;
+        coverInfo = m_pCoverArtDAO->getCoverArtInfo(info.trackId);
+        info.coverLocation = coverInfo.coverLocation;
+        info.hash = coverInfo.hash;
+    }
+
+    return info;
+}
+
 bool CoverArtCache::changeCoverArt(int trackId,
                                    const QString& newCoverLocation) {
     if (trackId < 1) {

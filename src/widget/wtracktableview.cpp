@@ -73,6 +73,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCrateMenu->setTitle(tr("Add to Crate"));
     m_pBPMMenu = new QMenu(this);
     m_pBPMMenu->setTitle(tr("BPM Options"));
+    m_pCoverMenu = new WCoverArtMenu(this);
+    m_pCoverMenu->setTitle(tr("Cover Menu"));
+    connect(m_pCoverMenu,
+            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
+            this,
+            SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
 
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -675,6 +681,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     // Gray out some stuff if multiple songs were selected.
     bool oneSongSelected = indices.size() == 1;
+    TrackModel* trackModel = getTrackModel();
 
     m_pMenu->clear();
 
@@ -805,7 +812,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addSeparator();
         if (oneSongSelected) {
-            TrackModel* trackModel = getTrackModel();
             if (trackModel == NULL) {
                 return;
             }
@@ -828,7 +834,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         } else {
             bool anyLocked = false; //true if any of the selected items are locked
-            TrackModel* trackModel = getTrackModel();
             int column = trackModel->fieldIndex("bpm_lock");
             for (int i = 0; i < indices.size() && !anyLocked; ++i) {
                 int row = indices.at(i).row();
@@ -857,7 +862,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     //end of BPM section of menu
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
-        TrackModel* trackModel = getTrackModel();
         if (trackModel == NULL) {
             return;
         }
@@ -881,6 +885,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
     }
+
+    m_iCoverChangeTrackId = indices.at(0).data().toInt();
+    m_pCoverMenu->setTrack(trackModel->getTrack(indices.at(0)));
+    m_pMenu->addMenu(m_pCoverMenu);
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
@@ -1584,5 +1592,19 @@ void WTrackTableView::slotClearBeats() {
         if (!track->hasBpmLock()) {
             track->setBeats(BeatsPointer());
         }
+    }
+}
+
+void WTrackTableView::slotCoverLocationUpdated(const QString& newLoc,
+                                               const QString& oldLoc,
+                                               QPixmap px) {
+    Q_UNUSED(oldLoc);
+    Q_UNUSED(px);
+    if (!CoverArtCache::instance()->changeCoverArt(m_iCoverChangeTrackId, newLoc)) {
+        // parent must be NULL - it ensures the use of the default style.
+        // Translations strings are the same as in wcoverartmenu. If you change
+        // them here please also change them there.
+        QMessageBox::warning(NULL, tr("Change Cover Art"),
+                             tr("Could not change the cover art."));
     }
 }

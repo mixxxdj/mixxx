@@ -48,6 +48,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_pxDefaultCover; }
+    CoverInfo getCoverInfo(TrackPointer pTrack);
     // This is for widgets that try to get the covers directly from the cache
     // instead of waiting for the signal with the cover. Because we update the
     // database in large batches it can happen that a widget looks up a track

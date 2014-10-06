@@ -9,6 +9,7 @@
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
+#include "widget/wcoverartmenu.h"
 #include "dlgtagfetcher.h"
 
 class ControlObjectThread;
@@ -71,6 +72,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotClearBeats();
     void slotGuiTickTime(double);
     void slotScrollValueChanged(int);
+    void slotCoverLocationUpdated(const QString& newLoc,
+                                  const QString& oldLoc,
+                                  QPixmap px);
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -111,6 +115,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    WCoverArtMenu *m_pCoverMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
@@ -156,6 +161,8 @@ class WTrackTableView : public WLibraryTableView {
     int m_iCoverHashColumn;     // cover art hash
     int m_iCoverColumn;         // visible cover art
     int m_iTrackLocationColumn;
+
+    int m_iCoverChangeTrackId;
 
     // Control the delay to load a cover art.
     double m_lastSelection;

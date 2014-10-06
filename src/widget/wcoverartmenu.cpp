@@ -38,12 +38,19 @@ void WCoverArtMenu::addActions() {
 }
 
 void WCoverArtMenu::show(QPoint pos, CoverInfo info, TrackPointer pTrack) {
-    if (info.trackId < 1) {
+    setTrack(pTrack, info);
+    popup(pos);
+}
+
+void WCoverArtMenu::setTrack(TrackPointer pTrack, CoverInfo info) {
+    if (!pTrack) {
         return;
     }
-    m_coverInfo = info;
     m_pTrack = pTrack;
-    popup(pos);
+    if (info.trackId == -1) {
+        info = CoverArtCache::instance()->getCoverInfo(m_pTrack);
+    }
+    m_coverInfo = info;
 }
 
 void WCoverArtMenu::slotChange() {
@@ -108,7 +115,7 @@ void WCoverArtMenu::slotChange() {
 }
 
 void WCoverArtMenu::slotReload() {
-    if (m_coverInfo.trackId < 1) {
+    if (!m_pTrack) {
         return;
     }
     CoverArtDAO::CoverArtInfo info;
