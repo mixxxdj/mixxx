@@ -21,6 +21,9 @@ SkinContext::SkinContext(const SkinContext& parent)
     
     if (CmdlineArgs::Instance().getDeveloper()) {
         // Enable script debugger
+        // I used it to test the location of script errors in SVG
+        // TODO (jclaveau) : implement error location in variables
+        // of the normal skin.
         m_debugger.attachTo(&m_scriptEngine);
     }
 }
@@ -275,6 +278,10 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     return source;
 }
 
+/**
+ * All the methods below exist to access some of the scriptEngine features
+ * from the svgParser.
+ */
 QScriptValue SkinContext::evaluateScript(QString expression, QString filename, int lineNumber) {
     return m_scriptEngine.evaluate(expression, filename, lineNumber);
 }

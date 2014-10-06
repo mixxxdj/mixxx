@@ -58,7 +58,7 @@ void SvgParser::parseElement(const QDomNode& node) const {
     parseAttributes(node);
     
     if (element.tagName() == "Variable"){
-        
+        // TODO (jclaveau) : support "expression" attribute
         // retrieve value
         QString varName = element.attribute("name");
         QString varValue = m_context.variable(varName);
@@ -105,6 +105,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     
     // expr-attribute_name="var_name";
     QRegExp nameRx("^expr-([^=\\s]+)$");
+    // TODO (jclaveau) : move this pattern definition to the script extension?
     for (uint i=0; i < attributes.length(); i++) {
         
         QDomAttr attribute = attributes.item(i).toAttr();
@@ -141,6 +142,9 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
 }
 
 QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
+    // TODO (jclaveau) : this method could be removed if the Spinny widget
+    // didn't require it. 
+    
     // Save the new svg in a temp file to use it with setPixmap
     QTemporaryFile svgFile;
     svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
@@ -159,6 +163,7 @@ QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
 }
 
 QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
+    // TODO (jclaveau) : a way to look the svg after the parsing would be nice!
     QByteArray out;
     QTextStream textStream(&out);
     svgNode.save(textStream, 2);
