@@ -188,6 +188,13 @@ void EffectsManager::setupDefaults() {
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+
+    pChain = EffectChainPointer(new EffectChain(
+        this, "org.mixxx.effectchain.goaslicer"));
+    pChain->setName(tr("GoaSlicer"));
+    pEffect = instantiateEffect("org.mixxx.effects.goaslicer");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {

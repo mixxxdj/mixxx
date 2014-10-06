@@ -12,6 +12,7 @@
 #include "effects/native/reverbeffect.h"
 #endif
 #include "effects/native/echoeffect.h"
+#include "effects/native/goaslicereffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -22,6 +23,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<ReverbEffect>();
 #endif
     registerEffect<EchoEffect>();
+    registerEffect<GoaSlicerEffect>();
     registerEffect<Butterworth8EQEffect>();
     registerEffect<Bessel4LVMixEQEffect>();
     registerEffect<Bessel8LVMixEQEffect>();
