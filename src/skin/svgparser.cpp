@@ -61,18 +61,16 @@ void SvgParser::parseElement(QDomNode& node) const {
         if (element.hasAttribute("value")){
             QString expression = element.attribute("value");
             QString result = evaluateTemplateExpression(
-                expression, node.lineNumber() ).toString().trimmed();
+                expression, node.lineNumber() ).toString();
             
-            if (result.length()){
-                if (!m_context.getScriptEngine().hasUncaughtException()) {
-                    QDomNodeList children = node.childNodes();
-                    for (uint i=0; i<children.length(); i++) {
-                        node.removeChild(children.at(i));
-                    }
-                    
-                    QDomNode newChild = node.ownerDocument().createTextNode(result);
-                    node.appendChild(newChild);
+            if (!result.isNull()){
+                QDomNodeList children = node.childNodes();
+                for (uint i=0; i<children.length(); i++) {
+                    node.removeChild(children.at(i));
                 }
+                
+                QDomNode newChild = node.ownerDocument().createTextNode(result);
+                node.appendChild(newChild);
             }
         }
         
@@ -82,7 +80,7 @@ void SvgParser::parseElement(QDomNode& node) const {
         if (element.hasAttribute("expression")){
             QString expression = element.attribute("expression");
             value = evaluateTemplateExpression(
-                expression, node.lineNumber() ).toString().trimmed();
+                expression, node.lineNumber() ).toString();
         } else if (element.hasAttribute("name")){
             value = m_context.variable(element.attribute("name"));
         }
