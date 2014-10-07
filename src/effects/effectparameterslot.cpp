@@ -143,3 +143,9 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
 double EffectParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
 }
+
+void EffectParameterSlot::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setValue(v);
+    }
+}

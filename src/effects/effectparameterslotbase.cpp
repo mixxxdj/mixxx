@@ -57,13 +57,6 @@ void EffectParameterSlotBase::slotLinkType(double v) {
     }
 }
 
-void EffectParameterSlotBase::slotValueChanged(double v) {
-    //qDebug() << debugString() << "slotValueChanged" << v;
-    if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(v);
-    }
-}
-
 void EffectParameterSlotBase::slotValueType(double v) {
     Q_UNUSED(v);
     //qDebug() << debugString() << "slotValueType" << v;

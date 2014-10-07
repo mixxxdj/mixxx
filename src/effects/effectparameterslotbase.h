@@ -44,7 +44,6 @@ class EffectParameterSlotBase : public QObject {
     // Solely for handling control changes
     void slotLoaded(double v);
     void slotLinkType(double v);
-    void slotValueChanged(double v);
     void slotValueType(double v);
 
   protected:
