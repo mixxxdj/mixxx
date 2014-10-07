@@ -77,19 +77,27 @@ void SvgParser::parseElement(QDomNode& node) const {
         }
         
     } else if (element.tagName() == "Variable"){
-        // TODO (jclaveau) : support "expression" attribute
-        // retrieve value
-        QString varName = element.attribute("name");
-        QString varValue = m_context.variable(varName);
         
-        // replace node by its value
-        QDomNode varParentNode = node.parentNode();
-        QDomNode varValueNode = node.ownerDocument().createTextNode(varValue);
-        QDomNode oldChild = varParentNode.replaceChild(varValueNode, node);
+        QString value;
         
-        if (oldChild.isNull()) {
-            // replaceChild has a really weird behaviour so I add this check
-            qDebug() << "SVG : unable to replace dom node changed. \n";
+        if (element.hasAttribute("expression")){
+            QString expression = element.attribute("expression");
+            value = evaluateTemplateExpression(
+                expression, node.lineNumber() ).toString().trimmed();
+        } else if (element.hasAttribute("name")){
+            value = m_context.variable(element.attribute("name"));
+        }
+        
+        if (!value.isNull()){
+            // replace node by its value
+            QDomNode varParentNode = node.parentNode();
+            QDomNode varValueNode = node.ownerDocument().createTextNode(value);
+            QDomNode oldChild = varParentNode.replaceChild(varValueNode, node);
+            
+            if (oldChild.isNull()) {
+                // replaceChild has a really weird behaviour so I add this check
+                qDebug() << "SVG : unable to replace dom node changed. \n";
+            }
         }
         
     } else if (element.tagName() == "script"){
@@ -108,6 +116,7 @@ void SvgParser::parseElement(QDomNode& node) const {
             expression, m_currentFile, node.lineNumber());
     }
 }
+
 
 void SvgParser::parseAttributes(QDomNode& node) const {
     

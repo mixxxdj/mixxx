@@ -25,7 +25,8 @@ class SvgParser {
     void scanTree(QDomNode& node) const;
     void parseElement(QDomNode& svgNode) const;
     void parseAttributes(QDomNode& node) const;
-    QScriptValue evaluateTemplateExpression(QString expression, int lineNumber) const;
+    QScriptValue evaluateTemplateExpression(QString expression,
+                                            int lineNumber) const;
     
     mutable SkinContext m_context;
     QDomDocument m_document;
