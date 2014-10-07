@@ -39,7 +39,7 @@ QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
     return svgNode;
 }
 
-void SvgParser::scanTree(const QDomNode& node) const {
+void SvgParser::scanTree(QDomNode& node) const {
     parseElement(node);
     QDomNodeList children = node.childNodes();
     for (uint i=0; i<children.length(); i++) {
@@ -51,13 +51,32 @@ void SvgParser::scanTree(const QDomNode& node) const {
 }
 
 // replaces Variables nodes in an svg dom tree
-void SvgParser::parseElement(const QDomNode& node) const {
+void SvgParser::parseElement(QDomNode& node) const {
     
     QDomElement element = node.toElement();
     
     parseAttributes(node);
     
-    if (element.tagName() == "Variable"){
+    if (element.tagName() == "text"){
+        if (element.hasAttribute("value")){
+            QString expression = element.attribute("value");
+            QString result = evaluateTemplateExpression(
+                expression, node.lineNumber() ).toString().trimmed();
+            
+            if (result.length()){
+                if (!m_context.getScriptEngine().hasUncaughtException()) {
+                    QDomNodeList children = node.childNodes();
+                    for (uint i=0; i<children.length(); i++) {
+                        node.removeChild(children.at(i));
+                    }
+                }
+                
+                QDomNode newChild = node.ownerDocument().createTextNode(result);
+                node.appendChild(newChild);
+            }
+        }
+        
+    } else if (element.tagName() == "Variable"){
         // TODO (jclaveau) : support "expression" attribute
         // retrieve value
         QString varName = element.attribute("name");
@@ -90,7 +109,7 @@ void SvgParser::parseElement(const QDomNode& node) const {
     }
 }
 
-void SvgParser::parseAttributes(const QDomNode& node) const {
+void SvgParser::parseAttributes(QDomNode& node) const {
     
     QDomNamedNodeMap attributes = node.attributes();
     QDomElement element = node.toElement();
