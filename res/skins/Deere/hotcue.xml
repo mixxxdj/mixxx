@@ -1,0 +1,40 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A grid of hotcue controls.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>HotcueGrid</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">1</SetVariable>
+          </Template>
+
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">3</SetVariable>
+          </Template>
+
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

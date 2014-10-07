@@ -214,6 +214,10 @@ class Qt(Dependence):
             # Enable qt4 support.
             build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
 
+        # Set qt_sqlite_plugin flag if we should package the Qt SQLite plugin.
+        build.flags['qt_sqlite_plugin'] = util.get_flags(
+            build.env, 'qt_sqlite_plugin', 0)
+
         # Enable Qt include paths
         if build.platform_is_linux:
             if qt5 and not conf.CheckForPKG('Qt5Core', '5.0'):
@@ -336,10 +340,6 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
 
-        # QtSQLite DLL
-        if build.platform_is_windows:
-            build.flags['sqlitedll'] = util.get_flags(
-                build.env, 'sqlitedll', 1)
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
@@ -554,6 +554,8 @@ class MixxxCore(Feature):
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
                    "effects/native/butterworth8eqeffect.cpp",
+                   "effects/native/bessel4lvmixeqeffect.cpp",
+                   "effects/native/bessel8lvmixeqeffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
@@ -580,6 +582,7 @@ class MixxxCore(Feature):
                    "engine/enginefilterblock.cpp",
                    "engine/enginefilterbiquad1.cpp",
                    "engine/enginefilterbessel4.cpp",
+                   "engine/enginefilterbessel8.cpp",
                    "engine/enginefilterbutterworth4.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginefilter.cpp",
@@ -968,10 +971,10 @@ class MixxxCore(Feature):
 
         if build.toolchain_is_gnu:
             # Default GNU Options
-            # TODO(XXX) always generate debugging info?
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
+            # TODO(XXX) always generate debugging info?
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
@@ -991,7 +994,7 @@ class MixxxCore(Feature):
             # Find executables (e.g. protoc) in the winlib path
             build.env.AppendENVPath('PATH', mixxx_lib_path)
             build.env.AppendENVPath('PATH', os.path.join(mixxx_lib_path, 'bin'))
-            
+
             # Valid values of /MACHINE are: {ARM|EBC|X64|X86}
             # http://msdn.microsoft.com/en-us/library/5wy54dk2.aspx
             if build.architecture_is_x86:
@@ -1013,15 +1016,17 @@ class MixxxCore(Feature):
             # http://msdn.microsoft.com/en-us/library/bb385193.aspx
             build.env.Append(CCFLAGS='/MP')
 
+            # Generate debugging information for compilation units and
+            # executables linked regardless of whether we are creating a debug
+            # build. Having PDB files for our releases is helpful for debugging.
+            build.env.Append(LINKFLAGS='/DEBUG')
+            build.env.Append(CCFLAGS='/Zi')
+
             if build.build_is_debug:
                 # Important: We always build Mixxx with the Multi-Threaded DLL
                 # runtime because Mixxx loads DLLs at runtime. Since this is a
                 # debug build, use the debug version of the MD runtime.
                 build.env.Append(CCFLAGS='/MDd')
-                # Generate debugging information for executables linked.
-                build.env.Append(LINKFLAGS='/DEBUG')
-                # Generate debugging information for compilation units.
-                build.env.Append(CCFLAGS='/Zi')
                 # Enable the Mixxx debug console (see main.cpp).
                 build.env.Append(CPPDEFINES='DEBUGCONSOLE')
             else:

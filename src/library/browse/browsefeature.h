@@ -49,10 +49,13 @@ class BrowseFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void onLazyChildExpandation(const QModelIndex& index);
+    void slotLibraryScanStarted();
+    void slotLibraryScanFinished();
 
   signals:
     void setRootIndex(const QModelIndex&);
     void requestAddDir(QString);
+    void scanLibrary();
 
   private:
     QString getRootViewHtml() const;

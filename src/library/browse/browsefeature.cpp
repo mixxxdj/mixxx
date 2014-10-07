@@ -9,6 +9,7 @@
 #include <QDesktopServices>
 #include <QAction>
 #include <QMenu>
+#include <QPushButton>
 
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
@@ -137,6 +138,31 @@ void BrowseFeature::slotAddToLibrary() {
     }
     QString spath = m_pLastRightClickedItem->dataPath().toString();
     emit(requestAddDir(spath));
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    // strings are dupes from DlgPrefLibrary
+    msgBox.setWindowTitle(tr("Added Directory"));
+    msgBox.setText(tr(
+        "You added one or more library directories. These files won't be"
+        "available until you rescan. Would you like to rescan now?"));
+    QPushButton* scanButton = msgBox.addButton(
+        tr("Scan"), QMessageBox::AcceptRole);
+    msgBox.addButton(QMessageBox::Cancel);
+    msgBox.setDefaultButton(scanButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == scanButton) {
+        emit(scanLibrary());
+    }
+}
+
+void BrowseFeature::slotLibraryScanStarted() {
+    m_pAddtoLibraryAction->setEnabled(false);
+}
+
+void BrowseFeature::slotLibraryScanFinished() {
+    m_pAddtoLibraryAction->setEnabled(true);
 }
 
 void BrowseFeature::slotRemoveQuickLink() {

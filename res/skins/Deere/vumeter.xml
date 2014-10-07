@@ -1,0 +1,22 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A VU meter.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <VuMeter>
+    <MinimumSize>100,20</MinimumSize>
+    <MaximumSize>200,20</MaximumSize>
+    <PathVu>vumeter.svg</PathVu>
+    <Horizontal>true</Horizontal>
+    <PeakHoldSize>5</PeakHoldSize>
+    <PeakHoldTime>600</PeakHoldTime>
+    <PeakFallTime>100</PeakFallTime>
+    <PeakFallStep>1</PeakFallStep>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+    </Connection>
+  </VuMeter>
+</Template>

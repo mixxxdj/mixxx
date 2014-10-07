@@ -1,0 +1,15 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The mixer status bar (shows CPU usage, battery meter, etc.)
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>MixerStatusBar</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+    </Children>
+  </WidgetGroup>
+</Template>
