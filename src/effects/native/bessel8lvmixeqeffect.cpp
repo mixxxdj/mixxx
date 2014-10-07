@@ -36,6 +36,18 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     low->setMinimum(0);
     low->setMaximum(4.0);
 
+    EffectManifestParameter* killLow = manifest.addButtonParameter();
+    killLow->setId("killLow");
+    killLow->setName(QObject::tr("Kill Low"));
+    killLow->setDescription(QObject::tr("Kill the Low Filter"));
+    killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killLow->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+    killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killLow->setDefault(0);
+    killLow->setMinimum(0);
+    killLow->setMaximum(1);
+
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
     mid->setName(QObject::tr("Mid"));
@@ -47,6 +59,18 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     mid->setDefault(1.0);
     mid->setMinimum(0);
     mid->setMaximum(4.0);
+
+    EffectManifestParameter* killMid = manifest.addButtonParameter();
+    killMid->setId("killMid");
+    killMid->setName(QObject::tr("Kill Mid"));
+    killMid->setDescription(QObject::tr("Kill the Mid Filter"));
+    killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killMid->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+    killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killMid->setDefault(0);
+    killMid->setMinimum(0);
+    killMid->setMaximum(1);
 
     EffectManifestParameter* high = manifest.addParameter();
     high->setId("high");
@@ -60,6 +84,18 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     high->setMinimum(0);
     high->setMaximum(4.0);
 
+    EffectManifestParameter* killHigh = manifest.addButtonParameter();
+    killHigh->setId("killHigh");
+    killHigh->setName(QObject::tr("Kill High"));
+    killHigh->setDescription(QObject::tr("Kill the High Filter"));
+    killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killHigh->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
+    killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killHigh->setDefault(0);
+    killHigh->setMinimum(0);
+    killHigh->setMaximum(1);
+
     return manifest;
 }
 
@@ -67,7 +103,10 @@ Bessel8LVMixEQEffect::Bessel8LVMixEQEffect(EngineEffect* pEffect,
                                            const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")) {
+          m_pPotHigh(pEffect->getParameterById("high")),
+          m_pKillLow(pEffect->getButtonParameterById("killLow")),
+          m_pKillMid(pEffect->getButtonParameterById("killMid")),
+          m_pKillHigh(pEffect->getButtonParameterById("killHigh")) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
@@ -87,9 +126,16 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
 
-    double fLow = m_pPotLow->value().toDouble();
-    double fMid = m_pPotMid->value().toDouble();
-    double fHigh = m_pPotHigh->value().toDouble();
+    float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
+    if (m_pKillLow->value().toInt() == 0) {
+        fLow = m_pPotLow->value().toDouble();
+    }
+    if (m_pKillMid->value().toInt() == 0) {
+        fMid = m_pPotMid->value().toDouble();
+    }
+    if (m_pKillHigh->value().toInt() == 0) {
+        fHigh = m_pPotHigh->value().toDouble();
+    }
 
     if (pState->m_oldSampleRate != sampleRate ||
             (pState->m_loFreq != m_pLoFreqCorner->get()) ||
