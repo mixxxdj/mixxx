@@ -69,17 +69,16 @@ void SvgParser::parseElement(QDomNode& node) const {
                     for (uint i=0; i<children.length(); i++) {
                         node.removeChild(children.at(i));
                     }
+                    
+                    QDomNode newChild = node.ownerDocument().createTextNode(result);
+                    node.appendChild(newChild);
                 }
-                
-                QDomNode newChild = node.ownerDocument().createTextNode(result);
-                node.appendChild(newChild);
             }
         }
         
     } else if (element.tagName() == "Variable"){
         
         QString value;
-        
         if (element.hasAttribute("expression")){
             QString expression = element.attribute("expression");
             value = evaluateTemplateExpression(
