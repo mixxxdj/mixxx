@@ -8,17 +8,19 @@
 #include <QScopedPointer>
 
 #include "configobject.h"
+#include "controlpotmeter.h"
+#include "controlpushbutton.h"
 #include "util.h"
 #include "util/fifo.h"
 #include "effects/effect.h"
 #include "effects/effectsbackend.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
+#include "effects/effectchainmanager.h"
 #include "effects/effectrack.h"
 #include "engine/effects/message.h"
 
 class EngineEffectsManager;
-class EffectChainManager;
 
 class EffectsManager : public QObject {
     Q_OBJECT
@@ -43,16 +45,25 @@ class EffectsManager : public QObject {
 
     EffectRackPointer addEffectRack();
     EffectRackPointer getEffectRack(int rack);
+    EffectRackPointer getEQEffectRack();
+    int getEQEffectRackNumber();
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
     const QSet<QString> getAvailableEffects() const;
+    // Each entry of the set is a pair containing the effect id and its name
+    const QSet<QPair<QString, QString> > getAvailableEffectNames() const;
+    // Each entry of the set is a pair containing the effect id and its name
+    const QSet<QPair<QString, QString> > getAvailableEQEffectNames() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
-    // Temporary, but for setting up all the default EffectChains and EffectRack
+    // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setupDefaults();
+
+    // Add an Equalizer for the specified channel
+    void addEqualizer(int channelNumber);
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
@@ -76,6 +87,11 @@ class EffectsManager : public QObject {
     QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
     qint64 m_nextRequestId;
     QHash<qint64, EffectsRequest*> m_activeRequests;
+
+    // We need to create Control Objects for Equalizers' frequencies
+    ControlPotmeter* m_pLoEqFreq;
+    ControlPotmeter* m_pHiEqFreq;
+    ControlPushButton* m_pEnableEq;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

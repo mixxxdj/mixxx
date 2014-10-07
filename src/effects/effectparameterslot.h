@@ -59,4 +59,4 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };
 
-#endif /* EFFECTPARAMETERSLOT_H */
+#endif // EFFECTPARAMETERSLOT_H

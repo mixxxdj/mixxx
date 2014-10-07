@@ -19,12 +19,13 @@
 #define DLGPREFEQ_H
 
 #include <QWidget>
+#include <QComboBox>
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
-#include "engine/enginefilterblock.h"
 #include "controlobjectthread.h"
 #include "preferences/dlgpreferencepage.h"
+#include "effects/effectsmanager.h"
 
 /**
   *@author John Sully
@@ -33,22 +34,29 @@
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, ConfigObject<ConfigValue>* _config);
+    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
+              ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
 
   public slots:
-    void slotEqChanged();
-    /** Update Hi EQ **/
+    void slotEffectChangedOnDeck(int effectIndex);
+    void slotBasicEffectChangedOnDeck(int effectIndex);
+    void slotAddComboBox(double numDecks);
+    // Slot for toggling between advanced and basic views
+    void slotShowAllEffects();
+    // Update Hi EQ
     void slotUpdateHiEQ();
-    /** Update Lo EQ **/
+    // Update Lo EQ
     void slotUpdateLoEQ();
-    /** Apply changes to widget */
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void slotBypass(int state);
 
   signals:
     void apply(const QString &);
+    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:
     void loadSettings();
@@ -59,10 +67,17 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     ControlObjectThread m_COTLoFreq;
     ControlObjectThread m_COTHiFreq;
-    ControlObjectThread m_COTLoFi;
     ControlObjectThread m_COTEnableEq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
+
+    // Members needed for changing the effects loaded on the EQ Effect Rack
+    EffectsManager* m_pEffectsManager;
+    EffectRack* m_pEQEffectRack;
+    QList<QComboBox*> m_deckEffectSelectors;
+    QList<QComboBox*> m_deckBasicEffectSelectors;
+    ControlObjectSlave* m_pNumDecks;
+    QString m_eqRackGroup;
 };
 
 #endif
