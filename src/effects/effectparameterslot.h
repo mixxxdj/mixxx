@@ -47,7 +47,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);
     void slotValueChanged(double v);
-    void slotLinkTypeChanged(double v);
+    void slotLinkTypeChanging(double v);
     void slotLinkInverseChanged(double v);
 
   private:
