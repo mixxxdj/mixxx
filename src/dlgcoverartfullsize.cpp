@@ -12,12 +12,12 @@ DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 
 void DlgCoverArtFullSize::init(CoverInfo info) {
     CoverArtCache* cache = CoverArtCache::instance();
-    if (info.coverLocation == cache->getDefaultCoverLocation())  {
-        return;
-    }
-
     if (info.coverLocation.isEmpty()) {
         info.coverLocation = cache->trackInDBHash(info.trackId);
+    }
+
+    if (info.coverLocation == cache->getDefaultCoverLocation())  {
+        return;
     }
 
     QPixmap pixmap;
