@@ -4,6 +4,7 @@
 #include <QStyledItemDelegate>
 #include <QTableView>
 
+#include "library/coverartcache.h"
 #include "library/trackmodel.h"
 
 class CoverArtDelegate : public QStyledItemDelegate {
@@ -31,6 +32,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
     void slotOnlyCachedCoverArt(bool b);
 
   private:
+    CoverArtCache* m_pCoverCache;
     bool m_bOnlyCachedCover;
     QString m_sDefaultCover;
     int m_iCoverLocationColumn;

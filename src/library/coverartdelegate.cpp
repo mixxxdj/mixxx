@@ -1,13 +1,13 @@
 #include <QPainter>
 
-#include "library/coverartcache.h"
 #include "library/coverartdelegate.h"
 #include "library/dao/trackdao.h"
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
+          m_pCoverCache(CoverArtCache::instance()),
           m_bOnlyCachedCover(false),
-          m_sDefaultCover(CoverArtCache::instance()->getDefaultCoverLocation()),
+          m_sDefaultCover(m_pCoverCache->getDefaultCoverLocation()),
           m_iCoverLocationColumn(-1),
           m_iMd5Column(-1),
           m_iIdColumn(-1) {
@@ -74,14 +74,13 @@ void CoverArtDelegate::paint(QPainter *painter,
         info.trackLocation = index.sibling(
             index.row(), m_iTrackLocationColumn).data().toString();
         QSize coverSize(100, option.rect.height());
-        QPixmap pixmap = CoverArtCache::instance()->requestPixmap(info,
-                                        coverSize, m_bOnlyCachedCover, true);
-        // If the cover was not saved in the DB yet, the coverLocation&md5Hash
-        // will not be in the track table. But both info will be loaded in the
-        // DBHash (CoverCache::m_queueOfUpdates).
-        // In this case, 'CoverArtCache::requestPixmap()' will update the
-        // CoverInfo. So, we must check if this location is valid again,
-        // in order to avoid displaying the default cover.
+        QPixmap pixmap = m_pCoverCache->requestPixmap(info, coverSize,
+                                                      m_bOnlyCachedCover, true);
+
+        if (info.coverLocation.isEmpty()) {
+            info.coverLocation = m_pCoverCache->trackInDBHash(info.trackId);
+        }
+
         if (!pixmap.isNull() && info.coverLocation != m_sDefaultCover) {
             int width = pixmap.width();
             if (option.rect.width() < width) {
