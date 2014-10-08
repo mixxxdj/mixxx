@@ -11,7 +11,6 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_parameter(parameter),
-          m_linkType(m_parameter.linkHint()),
           m_bAddedToEngine(false) {
     // qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
     //          << m_parameter.id();
@@ -84,13 +83,12 @@ bool EffectParameter::clampRanges() {
     return false;
 }
 
-EffectManifestParameter::LinkType EffectParameter::getLinkType() const {
-    return m_linkType;
+EffectManifestParameter::LinkType EffectParameter::getDefaultLinkType() const {
+    return m_parameter.defaultLinkType();
 }
 
-void EffectParameter::setLinkType(EffectManifestParameter::LinkType linkType) {
-    m_linkType = linkType;
-    // TODO(rryan) update value based on link type.
+double EffectParameter::getNeutralPointOnScale() const {
+    return m_parameter.neutralPointOnScale();
 }
 
 double EffectParameter::getValue() const {
@@ -104,6 +102,9 @@ void EffectParameter::setValue(double value, int type) {
     if (clampValue()) {
         qWarning() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
+
+    m_value = value;
+
     updateEngineState(type);
     emit(valueChanged(m_value));
 }
@@ -118,6 +119,8 @@ void EffectParameter::setDefault(double dflt) {
     if (clampDefault()) {
         qWarning() << debugString() << "WARNING: Default parameter value was outside of range, clamped.";
     }
+
+    m_default = dflt;
 
     updateEngineState();
 }
@@ -148,10 +151,6 @@ void EffectParameter::setMinimum(double minimum) {
 
     if (clampValue()) {
         qWarning() << debugString() << "WARNING: Value was outside of new minimum, clamped.";
-    }
-
-    if (clampDefault()) {
-        qWarning() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
     }
 
     updateEngineState();

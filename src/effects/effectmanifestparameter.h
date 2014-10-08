@@ -29,9 +29,11 @@ class EffectManifestParameter {
     };
 
     enum LinkType {
-        LINK_NONE = 0,
-        LINK_LINKED,
-        LINK_INVERSE,
+        LINK_NONE = 0,  // Not controlled by the super knob
+        LINK_LINKED,  // Controlled by the super knob as it is
+        LINK_LINKED_LEFT,  // Controlled by the left side of the super knob
+        LINK_LINKED_RIGHT, // Controlled by the right side of the super knob
+        LINK_LINKED_LEFT_RIGHT, // Controlled by both sides of the super knob
         NUM_LINK_TYPES
     };
 
@@ -39,7 +41,8 @@ class EffectManifestParameter {
             : m_controlHint(CONTROL_UNKNOWN),
               m_semanticHint(SEMANTIC_UNKNOWN),
               m_unitsHint(UNITS_UNKNOWN),
-              m_linkHint(LINK_NONE),
+              m_defaultLinkType(LINK_NONE),
+              m_neutralPointOnScale(0.0),
               m_default(0),
               m_minimum(0),
               m_maximum(1.0) {
@@ -99,11 +102,26 @@ class EffectManifestParameter {
         m_unitsHint = unitsHint;
     }
 
-    virtual LinkType linkHint() const {
-        return m_linkHint;
+    virtual LinkType defaultLinkType() const {
+        return m_defaultLinkType;
     }
-    virtual void setLinkHint(LinkType linkHint) {
-        m_linkHint = linkHint;
+    virtual void setDefaultLinkType(LinkType linkHint) {
+        m_defaultLinkType = linkHint;
+    }
+
+    // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
+    // is adopted as neutral when controlled by the super knob.
+    // This is allows to link the super knob in a way that two effects are
+    // cranked in simultaneous, or in case of a split filter like super knob,
+    // both effects are neutral at super knob center.
+    // A EQ Gain has usually a neutral point of 0.5 (0 dB) while a delay knob
+    // has a neutral point of 0.0 (no delay)
+    // A EQ Gain knob cannot be used on a split super knob.
+    virtual double neutralPointOnScale() const {
+        return m_neutralPointOnScale;
+    }
+    virtual void setNeutralPointOnScale(double neutralPoint) {
+        m_neutralPointOnScale = neutralPoint;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +161,8 @@ class EffectManifestParameter {
     ControlHint m_controlHint;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
-    LinkType m_linkHint;
+    LinkType m_defaultLinkType;
+    double m_neutralPointOnScale;
 
     double m_default;
     double m_minimum;

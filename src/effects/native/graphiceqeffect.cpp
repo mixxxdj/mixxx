@@ -29,6 +29,7 @@ EffectManifest GraphicEQEffect::getManifest() {
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setNeutralPointOnScale(0.5);
     low->setDefault(0);
     low->setMinimum(-12);
     low->setMaximum(12);
@@ -48,6 +49,7 @@ EffectManifest GraphicEQEffect::getManifest() {
         mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
         mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+        mid->setNeutralPointOnScale(0.5);
         mid->setDefault(0);
         mid->setMinimum(-12);
         mid->setMaximum(12);

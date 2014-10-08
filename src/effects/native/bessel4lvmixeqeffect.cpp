@@ -24,6 +24,7 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setNeutralPointOnScale(0.5);
     low->setDefault(1.0);
     low->setMinimum(0);
     low->setMaximum(4.0);
@@ -35,6 +36,7 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    mid->setNeutralPointOnScale(0.5);
     mid->setDefault(1.0);
     mid->setMinimum(0);
     mid->setMaximum(4.0);
@@ -46,6 +48,7 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    high->setNeutralPointOnScale(0.5);
     high->setDefault(1.0);
     high->setMinimum(0);
     high->setMaximum(4.0);
