@@ -101,7 +101,6 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
-        ScopedTimer("Moog");
         for (int i = 0; i < iBufferSize; i += 2) {
             pOutput[i] = processSample(pIn[i], &m_buf[0]);
             pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);

@@ -21,7 +21,7 @@ EffectManifest FilterEffect::getManifest() {
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
-    lpf->setDescription("Corner frequency ratio of the low pass filter");
+    lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     lpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -35,7 +35,7 @@ EffectManifest FilterEffect::getManifest() {
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("q");
     q->setName(QObject::tr("Q"));
-    q->setDescription("Resonance of the filters, 0.707 = Flat top");
+    q->setDescription(QObject::tr("Resonance of the filters, 0.707 = Flat top"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -47,7 +47,7 @@ EffectManifest FilterEffect::getManifest() {
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
-    hpf->setDescription("Corner frequency ratio of the high pass filter");
+    hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     hpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     hpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);

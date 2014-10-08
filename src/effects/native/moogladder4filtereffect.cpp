@@ -18,12 +18,13 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     manifest.setName(QObject::tr("Moog Ladder 4 Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("Allows to fade a song out by sweeping a low or high pass filter");
+    manifest.setDescription(QObject::tr(
+            "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
-    lpf->setDescription("Corner frequency ratio of the low pass filter");
+    lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     lpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -37,7 +38,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("resonance");
     q->setName(QObject::tr("Resonance"));
-    q->setDescription("Resonance of the filters");
+    q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -49,7 +50,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
-    hpf->setDescription("Corner frequency ratio of the high pass filter");
+    hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     hpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     hpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);

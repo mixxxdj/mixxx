@@ -108,7 +108,6 @@ ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
 }
 
 double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
-    // Calc linear parameter fist
     if (m_dValueRange == 0.0) {
         return 0;
     }
@@ -118,8 +117,6 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
         dValue = m_dMinValue;
     }
     double linPrameter = (dValue - m_dMinValue) / m_dValueRange;
-
-    // now bend to a logarithmic scale
     double dbParamter = ratio2db(linPrameter + m_minOffset * (1 - linPrameter));
     return 1 - (dbParamter / m_minDB);
 }
