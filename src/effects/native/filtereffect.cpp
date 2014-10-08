@@ -16,7 +16,7 @@ EffectManifest FilterEffect::getManifest() {
     manifest.setName(QObject::tr("Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("Allows to fade a song out by sweeping a low or high pass filter");
+    manifest.setDescription(QObject::tr("Allows to fade a song out by sweeping a low or high pass filter"));
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
