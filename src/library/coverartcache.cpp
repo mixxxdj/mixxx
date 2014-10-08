@@ -345,14 +345,9 @@ void CoverArtCache::imageFound() {
 
     QPixmap pixmap;
     QPixmapCache::find(cacheKey, &pixmap);
-    if (pixmap.isNull() && !res.img.isNull()) {
+    if (pixmap.isNull()) {
         pixmap.convertFromImage(res.img);
         QPixmapCache::insert(cacheKey, pixmap);
-    }
-
-    // The widgets expects a signal response.
-    if (pixmap.isNull()) {
-        pixmap = m_pxDefaultCover;
     }
 
     if (res.issueRepaint) {
