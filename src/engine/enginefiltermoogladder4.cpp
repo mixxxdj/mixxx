@@ -1,5 +1,4 @@
 #include "engine/enginefiltermoogladder4.h"
-#include "util/math.h"
 
 
 EngineFilterMoogLadder4Low::EngineFilterMoogLadder4Low(int sampleRate,

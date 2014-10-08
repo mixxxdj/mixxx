@@ -15,7 +15,7 @@
 
 #include <memory.h>
 #include <stdio.h>
-#include <math.h>
+#include "util/math.h"
 #include "util/timer.h"
 
 #include <QDebug>
