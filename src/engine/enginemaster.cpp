@@ -347,7 +347,7 @@ void EngineMaster::process(const int iBufferSize) {
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get() == MIXXX_XFADER_CONSTPWR,
-                                m_pXFaderReverse->get() == 1.0,
+                                m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain);
 
     // Channels with the talkover flag should be mixed with the master signal at

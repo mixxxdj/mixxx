@@ -16,6 +16,7 @@ class WTrackTableView;
 class AnalyserQueue;
 class QSqlTableModel;
 class ControlObjectThread;
+class ControlObjectSlave;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
@@ -91,7 +92,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     ControlObjectThread* m_pCORepeat1;
     ControlObjectThread* m_pCORepeat2;
     ControlObjectThread* m_pCOCrossfader;
-    ControlObjectThread* m_pCOCrossfaderReverse;
+    ControlObjectSlave* m_pCOCrossfaderReverse;
     ControlObjectThread* m_pCOTSkipNext;
     ControlObjectThread* m_pCOTFadeNow;
     ControlObjectThread* m_pCOTShufflePlaylist;
