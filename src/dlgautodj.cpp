@@ -299,7 +299,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
         pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
         if (m_pCOTEnabledAutoDJ->get() != 1.0) {
-            m_pCOTEnabledAutoDJ->slotSet(1.0);
+            m_pCOTEnabledAutoDJ->set(1.0);
         }
         qDebug() << "Auto DJ enabled";
 
@@ -320,7 +320,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             m_eState = ADJ_ENABLE_P1LOADED;
             pushButtonFadeNow->setEnabled(false);
             // Force Update on load Track
-            m_pCOPlayPos1->slotSet(-0.001);
+            player1PositionChanged(m_pCOPlayPos1->get());
         } else {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
