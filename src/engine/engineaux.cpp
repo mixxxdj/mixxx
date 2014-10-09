@@ -38,6 +38,7 @@ EngineAux::~EngineAux() {
     qDebug() << "~EngineAux()";
     delete m_pEnabled;
     delete m_pPassing;
+    delete m_pPregain;
 }
 
 bool EngineAux::isActive() {

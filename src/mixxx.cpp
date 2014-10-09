@@ -532,6 +532,12 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShoutcastManager;
 #endif
 
+    // Delete ControlObjectSlaves we created for checking passthrough and
+    // talkover status.
+    qDeleteAll(m_pAuxiliaryPassthrough);
+    qDeleteAll(m_pPassthroughEnabled);
+    qDeleteAll(m_micTalkoverControls);
+
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;

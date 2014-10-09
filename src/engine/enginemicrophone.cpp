@@ -37,6 +37,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsM
 EngineMicrophone::~EngineMicrophone() {
     qDebug() << "~EngineMicrophone()";
     delete m_pEnabled;
+    delete m_pPregain;
 }
 
 bool EngineMicrophone::isActive() {

@@ -165,7 +165,7 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
     if (!pBehavior.isNull() && !pBehavior->setFilter(&value)) {
         return;
     }
-    if(m_confirmRequired) {
+    if (m_confirmRequired) {
         emit(valueChangeRequest(value));
     } else {
         setInner(value, pSender);
