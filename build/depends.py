@@ -553,7 +553,7 @@ class MixxxCore(Feature):
 
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
-                   "effects/native/butterworth8eqeffect.cpp",
+                   "effects/native/linkwitzriley8eqeffect.cpp",
                    "effects/native/bessel4lvmixeqeffect.cpp",
                    "effects/native/bessel8lvmixeqeffect.cpp",
                    "effects/native/graphiceqeffect.cpp",
@@ -585,6 +585,8 @@ class MixxxCore(Feature):
                    "engine/enginefilterbessel8.cpp",
                    "engine/enginefilterbutterworth4.cpp",
                    "engine/enginefilterbutterworth8.cpp",
+                   "engine/enginefilterlinkwitzriley4.cpp",
+                   "engine/enginefilterlinkwitzriley8.cpp",
                    "engine/enginefilter.cpp",
                    "engine/engineobject.cpp",
                    "engine/enginepregain.cpp",
