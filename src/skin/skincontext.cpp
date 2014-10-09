@@ -282,17 +282,10 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
  * All the methods below exist to access some of the scriptEngine features
  * from the svgParser.
  */
-QScriptValue SkinContext::evaluateScript(QString expression, QString filename, int lineNumber) {
+QScriptValue SkinContext::evaluateScript(const QString& expression,
+                                         const QString& filename/*=QString()*/,
+                                         int lineNumber/*=1*/) {
     return m_scriptEngine.evaluate(expression, filename, lineNumber);
-}
-
-QScriptValue SkinContext::evaluateScript(QString expression, QString filename) {
-    return m_scriptEngine.evaluate(expression, filename);
-}
-
-QScriptValue SkinContext::evaluateScript(QString expression) {
-    QString unknownFilename;
-    return evaluateScript(expression,unknownFilename);
 }
 
 QScriptValue SkinContext::importScriptExtension(QString extensionName) {

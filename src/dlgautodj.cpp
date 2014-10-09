@@ -291,7 +291,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             qDebug() << "Queue is empty now";
             pushButtonAutoDJ->setChecked(false);
             if (m_pCOTEnabledAutoDJ->get() != 0.0) {
-                m_pCOTEnabledAutoDJ->slot(0.0);
+                m_pCOTEnabledAutoDJ->set(0.0);
             }
             return;
         }
@@ -339,7 +339,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
         pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
         if (m_pCOTEnabledAutoDJ->get() != 0.0) {
-            m_pCOTEnabledAutoDJ->slot(0.0);
+            m_pCOTEnabledAutoDJ->set(0.0);
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;

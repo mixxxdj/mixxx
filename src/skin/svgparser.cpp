@@ -52,7 +52,6 @@ void SvgParser::scanTree(QDomNode& node) const {
 
 // replaces Variables nodes in an svg dom tree
 void SvgParser::parseElement(QDomNode& node) const {
-    
     QDomElement element = node.toElement();
     
     parseAttributes(node);

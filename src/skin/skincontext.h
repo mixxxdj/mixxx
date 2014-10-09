@@ -66,9 +66,9 @@ class SkinContext {
     QString getPixmapPath(const QDomNode& pixmapNode) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
 
-    QScriptValue evaluateScript(QString expression, QString filename, int lineNumber);
-    QScriptValue evaluateScript(QString expression, QString filename);
-    QScriptValue evaluateScript(QString expression);
+    QScriptValue evaluateScript(const QString& expression,
+                                const QString& filename=QString(),
+                                int lineNumber=1);
     QScriptValue importScriptExtension(QString extensionName);
     const QScriptEngine& getScriptEngine() const;
 
