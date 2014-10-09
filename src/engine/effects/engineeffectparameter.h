@@ -19,8 +19,8 @@ class EngineEffectParameter {
         // here.
         m_minimum = m_parameter.getMinimum();
         m_maximum = m_parameter.getMaximum();
-        m_default_value = m_parameter.getDefault();
-        m_value = m_default_value;
+        m_defaultValue = m_parameter.getDefault();
+        m_value = m_defaultValue;
     }
     virtual ~EngineEffectParameter() { }
 
@@ -42,38 +42,44 @@ class EngineEffectParameter {
     // Value Settings
     ///////////////////////////////////////////////////////////////////////////
 
-    const double& value() const {
+    inline double value() const {
         return m_value;
     }
-    void setValue(const double& value) {
+    inline void setValue(const double value) {
         m_value = value;
     }
-
-    const double& defaultValue() const {
-        return m_default_value;
+    inline int intValue() const {
+        return (int)m_value;
     }
-    void setDefaultValue(const double& default_value) {
-        m_default_value = default_value;
+    inline int boolValue() const {
+        return m_value > 0;
     }
 
-    const double& minimum() const {
+    inline double defaultValue() const {
+        return m_defaultValue;
+    }
+    inline void setDefaultValue(const double default_value) {
+        m_defaultValue = default_value;
+    }
+
+    inline double minimum() const {
         return m_minimum;
     }
-    void setMinimum(const double& minimum) {
+    inline void setMinimum(const double minimum) {
         m_minimum = minimum;
     }
 
-    const double& maximum() const {
+    inline double maximum() const {
         return m_maximum;
     }
-    void setMaximum(const double& maximum) {
+    inline void setMaximum(const double maximum) {
         m_maximum = maximum;
     }
 
   private:
     EffectManifestParameter m_parameter;
     double m_value;
-    double m_default_value;
+    double m_defaultValue;
     double m_minimum;
     double m_maximum;
 
