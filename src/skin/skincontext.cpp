@@ -288,7 +288,7 @@ QScriptValue SkinContext::evaluateScript(const QString& expression,
     return m_scriptEngine.evaluate(expression, filename, lineNumber);
 }
 
-QScriptValue SkinContext::importScriptExtension(QString extensionName) {
+QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
     QScriptValue out = m_scriptEngine.importExtension(extensionName);
     if (m_scriptEngine.hasUncaughtException()) {
         qDebug() << out.toString();

@@ -69,7 +69,7 @@ class SkinContext {
     QScriptValue evaluateScript(const QString& expression,
                                 const QString& filename=QString(),
                                 int lineNumber=1);
-    QScriptValue importScriptExtension(QString extensionName);
+    QScriptValue importScriptExtension(const QString& extensionName);
     const QScriptEngine& getScriptEngine() const;
 
   private:
