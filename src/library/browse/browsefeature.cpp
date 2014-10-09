@@ -47,6 +47,9 @@ BrowseFeature::BrowseFeature(QObject* parent,
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
+    // of the item.
+    m_proxyModel.setSortRole(Qt::UserRole);
 
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
