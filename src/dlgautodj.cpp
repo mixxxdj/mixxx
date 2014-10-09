@@ -3,6 +3,7 @@
 #include "dlgautodj.h"
 
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "playerinfo.h"
@@ -116,7 +117,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pCORepeat1 = new ControlObjectThread("[Channel1]", "repeat");
     m_pCORepeat2 = new ControlObjectThread("[Channel2]", "repeat");
     m_pCOCrossfader = new ControlObjectThread("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectThread("[Mixer Profile]", "xFaderReverse");
+    m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
@@ -163,7 +164,7 @@ void DlgAutoDJ::onSearch(const QString& text) {
 }
 
 double DlgAutoDJ::getCrossfader() const {
-    if (m_pCOCrossfaderReverse->get() > 0.0) {
+    if (m_pCOCrossfaderReverse->toBool()) {
         return m_pCOCrossfader->get() * -1.0;
     }
     return m_pCOCrossfader->get();
