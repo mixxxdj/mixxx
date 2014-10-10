@@ -656,7 +656,7 @@ Result SoundSourceFFmpeg::parseHeader() {
     this->setSampleRate(CodecCtx->sample_rate);
     this->setChannels(CodecCtx->channels);
     lock();
-    avcodec_close(m_pCodecCtx);
+    avcodec_close(CodecCtx);
     avformat_close_input(&FmtCtx);
     av_free(FmtCtx);
     unlock();
