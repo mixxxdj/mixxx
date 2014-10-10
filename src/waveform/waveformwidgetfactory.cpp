@@ -60,7 +60,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_config(0),
         m_skipRender(false),
         m_frameRate(30),
-        m_endTime(30),
+        m_endOfTrackWarningTime(30),
         m_defaultZoom(3),
         m_zoomSync(false),
         m_overviewNormalized(false),
@@ -169,12 +169,12 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
     
-    int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndTime")).toInt(&ok);
+    int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndOfTrackWarningTime")).toInt(&ok);
     if (ok) {
-        setEndTime(endTime);
+        setEndOfTrackWarningTime(endTime);
     } else {
-        m_config->set(ConfigKey("[Waveform]","EndTime"), ConfigValue(m_endTime));
-        }
+        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"), ConfigValue(m_endOfTrackWarningTime));
+    }
 
     int vsync = m_config->getValueString(ConfigKey("[Waveform]","VSync"),"0").toInt();
     setVSyncType(vsync);
@@ -281,10 +281,10 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     m_vsyncThread->setUsSyncIntervalTime(1e6 / m_frameRate);
 }
 
-void WaveformWidgetFactory::setEndTime(int endTime) {
-    m_endTime = math_clamp(endTime, 0, 60);
+void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
+    m_endOfTrackWarningTime = endTime;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","EndTime"), ConfigValue(m_endTime));
+        m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"), ConfigValue(m_endOfTrackWarningTime));
     }  
 }
 

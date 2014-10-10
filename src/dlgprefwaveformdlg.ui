@@ -59,7 +59,7 @@
       </widget>
      </item> 
      <item row="10" column="3">
-      <widget class="QSpinBox" name="endTimeSpinBox">
+      <widget class="QSpinBox" name="endOfTrackWarningTimeSpinBox">
        <property name="toolTip">
         <string/>
        </property>
@@ -75,15 +75,15 @@
       </widget>
      </item>
     <item row="10" column="0">
-      <widget class="QLabel" name="endTimeLabel">
+      <widget class="QLabel" name="endOfTrackWarningTimeLabel">
        <property name="text">
-        <string>End track waveform flash</string>
+        <string>End of track warning time</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
        <property name="buddy">
-        <cstring>endTimeSlider</cstring>
+        <cstring>endOfTrackWarningTimeSlider</cstring>
        </property>
       </widget>
      </item>
@@ -208,7 +208,7 @@
       </widget>
      </item>
      <item row="10" column="1" colspan="2">
-      <widget class="QSlider" name="endTimeSlider">
+      <widget class="QSlider" name="endOfTrackWarningTimeSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>

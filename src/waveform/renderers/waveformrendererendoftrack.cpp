@@ -88,7 +88,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
              << "m_loopControl->get()" << m_loopControl->get();*/
 
     m_endOfTrackEnabled = m_pEndOfTrackControl->get() > 0.5;
-    m_remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndTime();
+    m_remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
     //special case of track not long enough
     const double trackLength = 0.5 * trackSamples / sampleRate;
 
