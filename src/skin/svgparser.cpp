@@ -5,9 +5,6 @@
 
 #include "skin/svgparser.h"
 
-SvgParser::SvgParser() {
-}
-
 SvgParser::SvgParser(const SkinContext& parent)
         : m_context(parent) {
     m_context.importScriptExtension("console");
@@ -194,7 +191,7 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
     return out;
 }
 
-QScriptValue SvgParser::evaluateTemplateExpression(QString expression,
+QScriptValue SvgParser::evaluateTemplateExpression(const QString expression,
                                                    int lineNumber) const {
     QScriptValue out = m_context.evaluateScript(
         expression, m_currentFile, lineNumber);

@@ -12,7 +12,6 @@
 // A class for managing the svg files
 class SvgParser {
   public:
-    SvgParser();
     SvgParser(const SkinContext& parent);
     virtual ~SvgParser();
 
@@ -25,12 +24,12 @@ class SvgParser {
     void scanTree(QDomNode& node) const;
     void parseElement(QDomNode& svgNode) const;
     void parseAttributes(QDomNode& node) const;
-    QScriptValue evaluateTemplateExpression(QString expression,
+    QScriptValue evaluateTemplateExpression(const QString expression,
                                             int lineNumber) const;
     
     mutable SkinContext m_context;
-    QDomDocument m_document;
     mutable QString m_currentFile;
+    QDomDocument m_document;
     
 };
 
