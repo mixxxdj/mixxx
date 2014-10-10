@@ -445,12 +445,12 @@ Result SoundSourceFFmpeg::open() {
 
     // qDebug() << "ffmpeg: opening the audio codec";
     //avcodec_open is not thread safe
-    lock();
+    //lock();
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
         qDebug() << "ffmpeg:  cannot open" << qBAFilename;
         return ERR;
     }
-    unlock();
+    //unlock();
 
     m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
     m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16);
@@ -570,7 +570,7 @@ Result SoundSourceFFmpeg::parseHeader() {
 //        av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
 //    }
 // #endif
-    lock();
+    //lock();
     if (avformat_open_input(&FmtCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts) !=0) {
         qDebug() << "av_open_input_file: cannot open" << qBAFilename.constData();
@@ -591,7 +591,7 @@ Result SoundSourceFFmpeg::parseHeader() {
                  qBAFilename.constData();
         return ERR;
     }
-    unlock();
+    //unlock();
     for (i=0; i<FmtCtx->nb_streams; i++)
         if (FmtCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
             m_iAudioStream=i;
@@ -655,11 +655,11 @@ Result SoundSourceFFmpeg::parseHeader() {
     this->setBitrate((int)(CodecCtx->bit_rate / 1000));
     this->setSampleRate(CodecCtx->sample_rate);
     this->setChannels(CodecCtx->channels);
-    lock();
+    //lock();
     avcodec_close(CodecCtx);
     avformat_close_input(&FmtCtx);
     av_free(FmtCtx);
-    unlock();
+    //unlock();
     return OK;
 }
 
