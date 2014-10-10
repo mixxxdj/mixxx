@@ -24,7 +24,7 @@ SkinContext::SkinContext(const SkinContext& parent)
         // I used it to test the location of script errors in SVG
         // TODO (jclaveau) : implement error location in variables
         // of the normal skin.
-        m_debugger.attachTo(&m_scriptEngine);
+        // m_debugger.attachTo(&m_scriptEngine);
     }
 }
 
