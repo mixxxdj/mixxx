@@ -19,7 +19,7 @@
 class SkinContext {
   public:
     SkinContext();
-    SkinContext(ConfigObject<ConfigValue>* pConfig);
+    SkinContext(ConfigObject<ConfigValue>* pConfig, QString xmlPath);
     SkinContext(const SkinContext& parent);
     virtual ~SkinContext();
 
@@ -41,7 +41,7 @@ class SkinContext {
         return m_variables;
     }
     void setVariable(const QString& name, const QString& value);
-
+    void setXmlPath(const QString& xmlPath);
 
     // Updates the SkinContext with all the <SetVariable> children of node.
     void updateVariables(const QDomNode& node);
@@ -83,6 +83,7 @@ class SkinContext {
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
     ConfigObject<ConfigValue>* m_pConfig;
+    QString m_xmlPath;
     
 };
 

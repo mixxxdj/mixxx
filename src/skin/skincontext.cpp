@@ -10,14 +10,16 @@
 SkinContext::SkinContext() {
 }
 
-SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig) {
+SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig, QString xmlPath)
+        : m_pConfig(pConfig),
+          m_xmlPath(xmlPath) {
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
         : m_variables(parent.variables()),
           m_skinBasePath(parent.m_skinBasePath),
-          m_pConfig(parent.m_pConfig) {
+          m_pConfig(parent.m_pConfig),
+          m_xmlPath(parent.m_xmlPath) {
     QScriptValue context = m_scriptEngine.currentContext()->activationObject();
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
@@ -55,6 +57,10 @@ void SkinContext::setVariable(const QString& name, const QString& value) {
     m_variables[name] = value;
     QScriptValue context = m_scriptEngine.currentContext()->activationObject();
     context.setProperty(name, value);
+}
+
+void SkinContext::setXmlPath(const QString& xmlPath) {
+    m_xmlPath = xmlPath;
 }
 
 void SkinContext::updateVariables(const QDomNode& node) {
@@ -184,8 +190,13 @@ QString SkinContext::selectAttributeString(const QDomElement& element,
 
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
     if (variableNode.hasAttribute("expression")) {
+        // QDomAttr attributeNode = variableNode.cloneNode().toElement()
+            // .attributeNode("expression");
+        // QScriptValue result = m_scriptEngine.evaluate(
+            // attributeNode.value(), m_xmlPath, attributeNode.lineNumber());
         QScriptValue result = m_scriptEngine.evaluate(
-            variableNode.attribute("expression"));
+            variableNode.attribute("expression"), m_xmlPath,
+            variableNode.lineNumber());
         return result.toString();
     } else if (variableNode.hasAttribute("name")) {
         QString variableName = variableNode.attribute("name");
