@@ -491,7 +491,7 @@ double RateControl::calculateRate(double baserate, bool paused,
                 }
 
                 double userTweak = 0.0;
-                if (*reportScratching) {
+                if (!*reportScratching) {
                     // Only report user tweak if the user is not scratching.
                     userTweak = getTempRate() + wheelFactor + jogFactor;
                 }
