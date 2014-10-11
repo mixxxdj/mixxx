@@ -11,7 +11,10 @@ class EffectManifestParameter {
         CONTROL_UNKNOWN = 0,
         CONTROL_KNOB_LINEAR,
         CONTROL_KNOB_LOGARITHMIC,
-        CONTROL_TOGGLE
+        CONTROL_KNOB_STEPPING,   // A step rotary, steps given by m_steps
+                                 // are arranged with equal distance on scale
+        CONTROL_TOGGLE_STEPPING  // For button and enum controls, not accessible
+                                 // form many controllers, no linking to super knob
     };
 
     enum SemanticHint {
@@ -149,11 +152,11 @@ class EffectManifestParameter {
         m_maximum = maximum;
     }
 
-    virtual void insertOption(QPair<QString, double> option) {
-        m_enumerationOptions.append(option);
+    virtual void appendStep(const QPair<QString, double>& step) {
+        m_steps.append(step);
     }
-    virtual QList<QPair<QString, double> > getOptions() const {
-        return m_enumerationOptions;
+    virtual const QList<QPair<QString, double> >& getSteps() const {
+        return m_steps;
     }
 
   private:
@@ -175,9 +178,12 @@ class EffectManifestParameter {
     double m_minimum;
     double m_maximum;
 
-    // Useful data for enumeration parameters; each pair has the following form:
-    // description - value
-    QList<QPair<QString, double> > m_enumerationOptions;
+    // Used to describe steps of
+    // CONTROL_KNOB_STEPPING and CONTROL_TOGGLE_STEPPING
+    // effect parameters
+    // Each pair has the following form:
+    // name - value
+    QList<QPair<QString, double> > m_steps;
 
 };
 

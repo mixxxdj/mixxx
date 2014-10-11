@@ -4,6 +4,7 @@
 #include "effects/effectbuttonparameterslot.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "util/math.h"
 
 EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
@@ -47,7 +48,7 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
 
         if (m_pEffectParameter) {
             // Set the number of states
-            int numStates = m_pEffectParameter->manifest().getOptions().size();
+            int numStates = math_max(m_pEffectParameter->manifest().getSteps().size(), 2);
             m_pControlValue->setStates(numStates);
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();

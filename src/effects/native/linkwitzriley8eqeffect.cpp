@@ -37,7 +37,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     killLow->setId("killLow");
     killLow->setName(QObject::tr("Kill Low"));
     killLow->setDescription(QObject::tr("Kill the Low Filter"));
-    killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killLow->setDefault(0);
@@ -60,7 +60,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     killMid->setId("killMid");
     killMid->setName(QObject::tr("Kill Mid"));
     killMid->setDescription(QObject::tr("Kill the Mid Filter"));
-    killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killMid->setDefault(0);
@@ -83,7 +83,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     killHigh->setId("killHigh");
     killHigh->setName(QObject::tr("Kill High"));
     killHigh->setDescription(QObject::tr("Kill the High Filter"));
-    killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
+    killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killHigh->setDefault(0);
