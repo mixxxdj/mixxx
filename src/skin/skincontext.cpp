@@ -29,9 +29,6 @@ SkinContext::SkinContext(const SkinContext& parent)
     if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
         // Enable script debugger
-        // I used it to test the location of script errors in SVG
-        // TODO (jclaveau) : implement error location in variables
-        // of the normal skin.
         m_debugger.attachTo(&m_scriptEngine);
     }
 }
@@ -190,10 +187,6 @@ QString SkinContext::selectAttributeString(const QDomElement& element,
 
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
     if (variableNode.hasAttribute("expression")) {
-        // QDomAttr attributeNode = variableNode.cloneNode().toElement()
-            // .attributeNode("expression");
-        // QScriptValue result = m_scriptEngine.evaluate(
-            // attributeNode.value(), m_xmlPath, attributeNode.lineNumber());
         QScriptValue result = m_scriptEngine.evaluate(
             variableNode.attribute("expression"), m_xmlPath,
             variableNode.lineNumber());
@@ -245,7 +238,7 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
         if (!svgNode.isNull()) {
             // inline svg
             pixmapPath = svgParser.saveToTempFile(
-                svgParser.parseSvgTree(svgNode) );
+                svgParser.parseSvgTree(svgNode, m_xmlPath) );
         } else {
             // filename
             pixmapName = nodeToString(pixmapNode);
@@ -264,7 +257,6 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
     return pixmapPath;
 }
 
-
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     QString pixmapPath, pixmapName;
     PixmapSource source;
@@ -276,7 +268,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
         if (!svgNode.isNull()) {
             // inline svg
             const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgTree(svgNode) );
+                svgParser.parseSvgTree(svgNode, m_xmlPath) );
             source.setSVG( rslt );
         } else {
             // filename

@@ -18,7 +18,7 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     m_currentFile = svgFileName;
     QFile* file = new QFile(svgFileName);
     QDomNode svgNode;
-    if (file->open(QIODevice::ReadWrite|QIODevice::Text)) {
+    if (file->open(QIODevice::ReadOnly|QIODevice::Text)) {
         QDomDocument document;
         document.setContent(file);
         svgNode = document.elementsByTagName("svg").item(0);
@@ -28,8 +28,9 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     return svgNode;
 }
 
-QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode) const {
-    m_currentFile = "inline svg";
+QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode,
+                                 const QString sourcePath) const {
+    m_currentFile = sourcePath;
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
     scanTree(svgNode);
@@ -71,13 +72,17 @@ void SvgParser::parseElement(QDomNode& node) const {
         }
         
     } else if (element.tagName() == "Variable"){
-        
         QString value;
         if (element.hasAttribute("expression")){
             QString expression = element.attribute("expression");
             value = evaluateTemplateExpression(
                 expression, node.lineNumber() ).toString();
         } else if (element.hasAttribute("name")){
+            /* TODO (jclaveau) : Getting the variable fro the context or the
+             * script engine have the same result here (in the skin context two)
+             * Isn't it useless?
+             * m_context.variable(name) <=> m_scriptEngine.evaluate(name)
+             */
             value = m_context.variable(element.attribute("name"));
         }
         
