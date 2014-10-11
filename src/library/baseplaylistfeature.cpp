@@ -124,8 +124,8 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
+        emit(enableCoverArtDisplay(true));
     }
-    emit(enableCoverArtDisplay(true));
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
