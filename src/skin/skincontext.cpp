@@ -10,21 +10,27 @@
 SkinContext::SkinContext() {
 }
 
+SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig) {
+}
+
 SkinContext::SkinContext(const SkinContext& parent)
         : m_variables(parent.variables()),
-          m_skinBasePath(parent.m_skinBasePath) {
+          m_skinBasePath(parent.m_skinBasePath),
+          m_pConfig(parent.m_pConfig) {
     QScriptValue context = m_scriptEngine.currentContext()->activationObject();
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
     }
     
-    if (CmdlineArgs::Instance().getDeveloper()) {
+    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
+        ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
         // Enable script debugger
         // I used it to test the location of script errors in SVG
         // TODO (jclaveau) : implement error location in variables
         // of the normal skin.
-        // m_debugger.attachTo(&m_scriptEngine);
+        m_debugger.attachTo(&m_scriptEngine);
     }
 }
 

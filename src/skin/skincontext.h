@@ -9,7 +9,9 @@
 #include <QDir>
 #include <QScriptEngineDebugger>
 
+#include "configobject.h"
 #include "skin/pixmapsource.h"
+
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -17,6 +19,7 @@
 class SkinContext {
   public:
     SkinContext();
+    SkinContext(ConfigObject<ConfigValue>* pConfig);
     SkinContext(const SkinContext& parent);
     virtual ~SkinContext();
 
@@ -79,6 +82,7 @@ class SkinContext {
     QScriptEngineDebugger m_debugger;
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
+    ConfigObject<ConfigValue>* m_pConfig;
     
 };
 
