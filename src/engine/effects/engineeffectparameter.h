@@ -48,11 +48,11 @@ class EngineEffectParameter {
     inline void setValue(const double value) {
         m_value = value;
     }
-    inline int intValue() const {
+    inline int toInt() const {
         return (int)m_value;
     }
-    inline int boolValue() const {
-        return m_value > 0;
+    inline int toBool() const {
+        return m_value > 0.0;
     }
 
     inline double defaultValue() const {
