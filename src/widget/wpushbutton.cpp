@@ -89,7 +89,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 }
                 
                 m_text.replace(iState, stateContext.selectString(state, "Text"));
-                QString alignment = stateContext.selectString(state, "Alignment");
+                QString alignment = stateContext.selectString(state, "Alignment").toLower();
                 if (alignment == "left") {
                     m_align.replace(iState, Qt::AlignLeft);
                 } else if (alignment == "right") {

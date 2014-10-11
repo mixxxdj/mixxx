@@ -79,7 +79,7 @@ void DlgPrefLibrary::slotHide() {
     msgBox.setWindowTitle(tr("Added Directory"));
     msgBox.setText(tr(
         "You added one or more library directories. These files won't be"
-        "available until you rescan. Would you like to rescan now?"));
+        " available until you rescan. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
         tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
