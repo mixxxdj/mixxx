@@ -276,7 +276,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
     dir.setNameFilters(nameFilters);
 
     QStringList imglist = dir.entryList();
-    if (imglist.size() < 1) {
+    if (imglist.isEmpty()) {
         return QString();
     } else if (imglist.size() == 1) {
         // only a single picture in folder.
