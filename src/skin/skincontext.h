@@ -41,7 +41,7 @@ class SkinContext {
         return m_variables;
     }
     void setVariable(const QString& name, const QString& value);
-    void setXmlPath(const QString& xmlPath);
+    void setXmlPath(const QString xmlPath);
 
     // Updates the SkinContext with all the <SetVariable> children of node.
     void updateVariables(const QDomNode& node);

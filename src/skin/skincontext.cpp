@@ -59,7 +59,7 @@ void SkinContext::setVariable(const QString& name, const QString& value) {
     context.setProperty(name, value);
 }
 
-void SkinContext::setXmlPath(const QString& xmlPath) {
+void SkinContext::setXmlPath(const QString xmlPath) {
     m_xmlPath = xmlPath;
 }
 
