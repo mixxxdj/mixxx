@@ -478,7 +478,7 @@ void WEffectPushButton::fillDebugTooltip(QStringList* debug) {
 
 void WEffectPushButton::parameterUpdated() {
     m_pButtonMenu->clear();
-    QList<QPair<QString, QVariant> > options = m_pEffectParameterSlot->getManifest().getOptions();
+    QList<QPair<QString, double> > options = m_pEffectParameterSlot->getManifest().getOptions();
     qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size();
     QActionGroup* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);

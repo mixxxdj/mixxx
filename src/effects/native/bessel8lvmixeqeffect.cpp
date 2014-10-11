@@ -29,7 +29,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     low->setNeutralPointOnScale(0.5);
@@ -42,7 +41,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     killLow->setName(QObject::tr("Kill Low"));
     killLow->setDescription(QObject::tr("Kill the Low Filter"));
     killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
-    killLow->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
     killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killLow->setDefault(0);
@@ -54,7 +52,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     mid->setName(QObject::tr("Mid"));
     mid->setDescription(QObject::tr("Gain for Band Filter"));
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     mid->setNeutralPointOnScale(0.5);
@@ -67,7 +64,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     killMid->setName(QObject::tr("Kill Mid"));
     killMid->setDescription(QObject::tr("Kill the Mid Filter"));
     killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
-    killMid->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
     killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killMid->setDefault(0);
@@ -79,7 +75,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     high->setName(QObject::tr("High"));
     high->setDescription(QObject::tr("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     high->setNeutralPointOnScale(0.5);
@@ -92,7 +87,6 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     killHigh->setName(QObject::tr("Kill High"));
     killHigh->setDescription(QObject::tr("Kill the High Filter"));
     killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE);
-    killHigh->setValueHint(EffectManifestParameter::VALUE_INTEGRAL);
     killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     killHigh->setDefault(0);
@@ -130,14 +124,14 @@ void Bessel8LVMixEQEffect::processGroup(const QString& group,
     Q_UNUSED(groupFeatures);
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
-    if (m_pKillLow->value().toInt() == 0) {
-        fLow = m_pPotLow->value().toDouble();
+    if (!m_pKillLow->toBool()) {
+        fLow = m_pPotLow->value();
     }
-    if (m_pKillMid->value().toInt() == 0) {
-        fMid = m_pPotMid->value().toDouble();
+    if (!m_pKillMid->toBool()) {
+        fMid = m_pPotMid->value();
     }
-    if (m_pKillHigh->value().toInt() == 0) {
-        fHigh = m_pPotHigh->value().toDouble();
+    if (!m_pKillHigh->toBool()) {
+        fHigh = m_pPotHigh->value();
     }
 
     if (pState->m_oldSampleRate != sampleRate ||

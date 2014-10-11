@@ -20,7 +20,6 @@ EffectManifest FilterEffect::getManifest() {
     depth->setName(QObject::tr("Depth"));
     depth->setDescription("TODO");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
@@ -34,7 +33,6 @@ EffectManifest FilterEffect::getManifest() {
     bandpass_width->setName(QObject::tr("Bandpass Width"));
     bandpass_width->setDescription("TODO");
     bandpass_width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    bandpass_width->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     bandpass_width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     bandpass_width->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     bandpass_width->setDefault(0.01);
@@ -46,7 +44,6 @@ EffectManifest FilterEffect::getManifest() {
     bandpass_gain->setName(QObject::tr("Bandpass Gain"));
     bandpass_gain->setDescription("TODO");
     bandpass_gain->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    bandpass_gain->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     bandpass_gain->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     bandpass_gain->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     bandpass_gain->setDefault(0.3);
@@ -86,12 +83,9 @@ void FilterEffect::processGroup(const QString& group,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
-    double depth = m_pDepthParameter ?
-            m_pDepthParameter->value().toDouble() : 0.0;
-    double bandpass_width = m_pBandpassWidthParameter ?
-            m_pBandpassWidthParameter->value().toDouble() : 0.0;
-    CSAMPLE bandpass_gain = m_pBandpassGainParameter ?
-            m_pBandpassGainParameter->value().toFloat() : 0.0;
+    double depth = m_pDepthParameter->value();
+    double bandpass_width = m_pBandpassWidthParameter->value();
+    CSAMPLE bandpass_gain = m_pBandpassGainParameter->value();
 
     // TODO(rryan) what if bandpass_gain changes?
     bool parametersChanged = depth != pState->oldDepth ||

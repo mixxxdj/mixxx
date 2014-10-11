@@ -189,8 +189,7 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
         QDomElement parameter = doc->createElement("Parameter");
         XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
         // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, parameter, "Value",
-                             pParameter->getValue().toString());
+        XmlParse::addElement(*doc, parameter, "Value", QString::number(pParameter->getValue()));
         // TODO(rryan): Output link state, etc.
         parameters.appendChild(parameter);
     }
@@ -203,8 +202,7 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
         QDomElement parameter = doc->createElement("ButtonParameter");
         XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
         // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, parameter, "Value",
-                             pParameter->getValue().toString());
+        XmlParse::addElement(*doc, parameter, "Value", QString::number(pParameter->getValue()));
         // TODO(rryan): Output link state, etc.
         buttonParameters.appendChild(parameter);
     }
