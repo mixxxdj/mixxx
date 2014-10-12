@@ -13,12 +13,14 @@ EffectManifest BitCrusherEffect::getManifest() {
     manifest.setName(QObject::tr("BitCrusher"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("TODO");
+    manifest.setDescription(
+            QObject::tr("The BitCrusher is an effect that produces a distortion "
+                        "by the reduction of the resolution or bandwidth of the samples."));
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("bit_depth");
     depth->setName(QObject::tr("Bit Depth"));
-    depth->setDescription("TODO");
+    depth->setDescription("Adjusts the amount of bit depth reduction of the samples.");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -34,7 +36,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
-    frequency->setDescription("TODO");
+    frequency->setDescription("Adjusts the amount of bit rate reduction of the samples.");
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     frequency->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
