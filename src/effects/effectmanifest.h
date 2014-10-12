@@ -68,17 +68,8 @@ class EffectManifest {
     }
 
     virtual EffectManifestParameter* addParameter() {
-        m_activeParameters.append(m_parameters.size());
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();
-    }
-
-    virtual void setActiveParameter(int index, unsigned int value) {
-        m_activeParameters[index] = value;
-    }
-
-    virtual unsigned int getActiveParameter(int index) const {
-        return m_activeParameters[index];
     }
 
   private:
@@ -92,12 +83,6 @@ class EffectManifest {
     QString m_version;
     QString m_description;
     QList<EffectManifestParameter> m_parameters;
-
-    // These two lists store the mapping between the parameter slot and
-    // the effective parameter which is loaded onto the slot.
-    // When a manifest is created, this mapping is the identity
-    // function (list[i] = i)
-    QList<unsigned int> m_activeParameters;
 };
 
 #endif /* EFFECTMANIFEST_H */

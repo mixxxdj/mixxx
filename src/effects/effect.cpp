@@ -20,7 +20,7 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
           m_bEnabled(true) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-            this, pEffectsManager, m_parameters.size(), parameter);
+             this, pEffectsManager, m_parameters.size(), parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
@@ -140,7 +140,9 @@ EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {
     // for NULL.
     unsigned int num = 0;
     foreach(EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() != EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest().showInParameterSlot() &&
+                parameter->manifest().controlHint() ==
+                        EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
             if(num == slotNumber) {
                 return parameter;
             }
@@ -155,7 +157,9 @@ EffectParameter* Effect::getButtonParameterForSlot(unsigned int slotNumber) {
     // for NULL.
     unsigned int num = 0;
     foreach(EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() == EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest().showInParameterSlot() &&
+                parameter->manifest().controlHint() ==
+                        EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
             if(num == slotNumber) {
                 return parameter;
             }
