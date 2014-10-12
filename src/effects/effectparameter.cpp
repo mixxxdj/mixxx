@@ -95,7 +95,7 @@ double EffectParameter::getValue() const {
     return m_value;
 }
 
-void EffectParameter::setValue(double value, int type) {
+void EffectParameter::setValue(double value) {
     // TODO(XXX) Handle inf, -inf, and nan
     m_value = value;
 
@@ -105,7 +105,7 @@ void EffectParameter::setValue(double value, int type) {
 
     m_value = value;
 
-    updateEngineState(type);
+    updateEngineState();
     emit(valueChanged(m_value));
 }
 
@@ -202,12 +202,12 @@ void EffectParameter::removeFromEngine() {
     m_bAddedToEngine = false;
 }
 
-void EffectParameter::updateEngineState(int type) {
+void EffectParameter::updateEngineState() {
     if (!m_bAddedToEngine) {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = static_cast<EffectsRequest::MessageType>(type);
+    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
     pRequest->pTargetEffect = m_pEffect->getEngineEffect();
     pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_value;

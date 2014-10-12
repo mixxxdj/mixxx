@@ -42,8 +42,8 @@ class EffectParameter : public QObject {
     double getNeutralPointOnScale() const;
 
     double getValue() const;
-    // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
-    void setValue(double value, int type = 10);
+
+    void setValue(double value);
 
     double getDefault() const;
     void setDefault(double defaultValue);
@@ -56,8 +56,7 @@ class EffectParameter : public QObject {
 
     EffectManifestParameter::ControlHint getControlHint() const;
 
-    // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
-    void updateEngineState(int type = 10);
+    void updateEngineState();
 
   signals:
     void valueChanged(double value);

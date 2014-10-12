@@ -59,7 +59,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     clear();
     if (pEffect) {
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getParameterForSlot(m_iParameterSlotNumber);
+        m_pEffectParameter = pEffect->getKnobParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();

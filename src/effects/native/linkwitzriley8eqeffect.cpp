@@ -33,7 +33,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     low->setMinimum(0);
     low->setMaximum(4.0);
 
-    EffectManifestParameter* killLow = manifest.addButtonParameter();
+    EffectManifestParameter* killLow = manifest.addParameter();
     killLow->setId("killLow");
     killLow->setName(QObject::tr("Kill Low"));
     killLow->setDescription(QObject::tr("Kill the Low Filter"));
@@ -56,7 +56,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     mid->setMinimum(0);
     mid->setMaximum(4.0);
 
-    EffectManifestParameter* killMid = manifest.addButtonParameter();
+    EffectManifestParameter* killMid = manifest.addParameter();
     killMid->setId("killMid");
     killMid->setName(QObject::tr("Kill Mid"));
     killMid->setDescription(QObject::tr("Kill the Mid Filter"));
@@ -79,7 +79,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     high->setMinimum(0);
     high->setMaximum(4.0);
 
-    EffectManifestParameter* killHigh = manifest.addButtonParameter();
+    EffectManifestParameter* killHigh = manifest.addParameter();
     killHigh->setId("killHigh");
     killHigh->setName(QObject::tr("Kill High"));
     killHigh->setDescription(QObject::tr("Kill the High Filter"));
@@ -134,9 +134,9 @@ LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect,
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
           m_pPotHigh(pEffect->getParameterById("high")),
-          m_pKillLow(pEffect->getButtonParameterById("killLow")),
-          m_pKillMid(pEffect->getButtonParameterById("killMid")),
-          m_pKillHigh(pEffect->getButtonParameterById("killHigh")) {
+          m_pKillLow(pEffect->getParameterById("killLow")),
+          m_pKillMid(pEffect->getParameterById("killMid")),
+          m_pKillHigh(pEffect->getParameterById("killHigh")) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
