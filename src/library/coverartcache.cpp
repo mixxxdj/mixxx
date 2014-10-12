@@ -22,6 +22,11 @@ CoverArtCache::CoverArtCache()
     // So, we must increase this size a bit more,
     // in order to allow CoverCache handle more covers (performance gain).
     QPixmapCache::setCacheLimit(20480);
+
+    m_regExpList << QRegExp(".*cover.*", Qt::CaseInsensitive)
+                 << QRegExp(".*front.*", Qt::CaseInsensitive)
+                 << QRegExp(".*album.*", Qt::CaseInsensitive)
+                 << QRegExp(".*folder.*", Qt::CaseInsensitive);
 }
 
 CoverArtCache::~CoverArtCache() {
@@ -274,9 +279,9 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
     QStringList nameFilters;
     nameFilters << "*.jpg" << "*.jpeg" << "*.png" << "*.gif" << "*.bmp";
     dir.setNameFilters(nameFilters);
-
     QStringList imglist = dir.entryList();
-    if (imglist.isEmpty()) {
+
+    if (imglist.isEmpty()) { // no covers in this dir
         return QString();
     } else if (imglist.size() == 1) {
         // only a single picture in folder.
@@ -299,12 +304,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         }
     }
 
-    QList<QRegExp> regExpList;
-    regExpList << QRegExp(".*cover.*", Qt::CaseInsensitive)
-               << QRegExp(".*front.*", Qt::CaseInsensitive)
-               << QRegExp(".*album.*", Qt::CaseInsensitive)
-               << QRegExp(".*folder.*", Qt::CaseInsensitive);
-    foreach (QRegExp regExp, regExpList) {
+    foreach (QRegExp regExp, m_regExpList) {
         idx  = imglist.indexOf(regExp);
         if (idx  != -1 ) {
             // cover named as cover|front|folder.
