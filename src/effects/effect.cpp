@@ -141,7 +141,7 @@ EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {
     unsigned int num = 0;
     foreach(EffectParameter* parameter, m_parameters) {
         if (parameter->manifest().showInParameterSlot() &&
-                parameter->manifest().controlHint() ==
+                parameter->manifest().controlHint() !=
                         EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
             if(num == slotNumber) {
                 return parameter;
