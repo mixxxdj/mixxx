@@ -16,10 +16,10 @@
 		<MinimumSize>-1,45</MinimumSize>
 		<MaximumSize>-1,45</MaximumSize> 
 		<Children>
-			<EffectParameterName>
+			<EffectButtonParameterName>
 			<MinimumSize>38f,8f</MinimumSize>
 			<Style>
-				WEffectParameter { 
+				WEffectButtonParameter { 
 					font: 10px/8px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 					background-color: transparent; 
 					color: #191F24; 
@@ -32,12 +32,12 @@
 			<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
 			<Effect><Variable name="effectnum"/></Effect>
 			<EffectParameter><Variable name="effectparameternum"/></EffectParameter>
-		</EffectParameterName>
+		</EffectButtonParameterName>
 		<WidgetGroup>
 			<Layout>vertical</Layout>
 			<Size>38,26</Size>
 			<Children>
-				<PushButton>
+				<EffectPushButton>
 					<TooltipId></TooltipId>
 					<Style></Style>
 					<NumberStates>2</NumberStates>
@@ -56,7 +56,7 @@
 						<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],button_parameter<Variable name="effectparameternum"/></ConfigKey>
 						<ButtonState>LeftButton</ButtonState>
 					</Connection>
-				</PushButton>
+				</EffectPushButton>
 			</Children>
 		</WidgetGroup>
     	</Children>
