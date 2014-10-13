@@ -1,6 +1,7 @@
 #include "effects/lv2/lv2effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "controlobject.h"
+#include "sampleutil.h"
 
 #define MAX_BUFFER_LEN 160000
 
@@ -10,13 +11,19 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        QList<int> audioPortIndices,
                                        QList<int> controlPortIndices) {
     m_sampleRate = ControlObject::get(ConfigKey("[Master]", "samplerate"));
+ 
+    m_handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL); 
+    if (!m_handle) {
+	return;  
+    } 
+
     m_inputL = new float[MAX_BUFFER_LEN];
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
     m_outputR = new float[MAX_BUFFER_LEN];
     m_params = new float[manifest.parameters().size()];
 
-    m_handle = lilv_plugin_instantiate(plugin, m_sampleRate, NULL);
+
     const QList<EffectManifestParameter> effectManifestParameterList =
             manifest.parameters();
 
@@ -41,6 +48,9 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
 }
 
 LV2EffectProcessor::~LV2EffectProcessor() {
+    if (!m_handle) {
+	return;
+    } 
     lilv_instance_deactivate(m_handle);
     lilv_instance_free(m_handle);
     delete[] m_inputL;
@@ -63,6 +73,12 @@ void LV2EffectProcessor::process(const QString& group,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     Q_UNUSED(group);
+
+    if (!m_handle) {
+	SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+	return;  
+    } 
+
     for (int i = 0; i < m_parameters.size(); i++) {
         m_params[i] = m_parameters[i]->value();
     }
