@@ -279,7 +279,19 @@ void WEffectPushButton::onConnectedControlChanged(double dParameter, double dVal
         m_bPressed = (dValue == 1.0);
     }
 
-    double value = getControlParameterDisplay();
+    foreach (QAction* action, m_pButtonMenu->actions()) {
+        if (action->data().toDouble() == dValue) {
+            action->setChecked(true);
+            break;
+        }
+    }
+
+
+    double value = getControlParameterDisplay(); 
+    if (isnan(value) || m_iNoStates == 0) {
+	return; 
+    }
+
     int idx = static_cast<int>(value) % m_iNoStates;
     setProperty("displayValue", idx);
     // According to http://stackoverflow.com/a/3822243 this is the least
@@ -341,6 +353,10 @@ void WEffectPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
+    if (rightClick && m_pButtonMenu->actions().size()) {
+        m_pButtonMenu->exec(e->globalPos());
+    }
+
     if (m_leftButtonMode == ControlPushButton::POWERWINDOW
             && m_iNoStates == 2) {
         if (leftClick) {
@@ -356,19 +372,6 @@ void WEffectPushButton::mousePressEvent(QMouseEvent * e) {
         return;
     }
 
-    if (rightClick) {
-        m_pButtonMenu->exec(e->globalPos());
-        // This is the secondary button function allways a Pushbutton
-        // due the leak of visual feedback we do not allow a toggle function
-        if (m_rightButtonMode == ControlPushButton::PUSH
-                || m_iNoStates == 1) {
-            m_bPressed = true;
-            setControlParameterRightDown(1.0);
-            update();
-        }
-        return;
-    }
-
     if (leftClick) {
         double emitValue;
         if (m_leftButtonMode == ControlPushButton::PUSH
@@ -378,7 +381,10 @@ void WEffectPushButton::mousePressEvent(QMouseEvent * e) {
             emitValue = 1.0;
         } else {
             // Toggle thru the states
-            emitValue = static_cast<int>(getControlParameterLeft() + 1.0) % m_iNoStates;
+            emitValue = getControlParameterLeft(); 
+            if (!isnan(emitValue) && m_iNoStates) { 
+                emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
+            }	
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
@@ -429,19 +435,6 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent * e) {
         return;
     }
 
-    if (rightClick) {
-        // This is the secondary clickButton function,
-        // due the leak of visual feedback we do not allow a toggle
-        // function
-        if (m_rightButtonMode == ControlPushButton::PUSH
-                || m_iNoStates == 1) {
-            m_bPressed = false;
-            setControlParameterRightUp(0.0);
-            update();
-        }
-        return;
-    }
-
     if (leftClick) {
         double emitValue = getControlParameterLeft();
         if (m_leftButtonMode == ControlPushButton::PUSH
@@ -452,7 +445,9 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING
                     && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
+                if (!isnan(emitValue) && m_iNoStates) { 
+                    emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
+                }      
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }
@@ -479,15 +474,28 @@ void WEffectPushButton::fillDebugTooltip(QStringList* debug) {
 void WEffectPushButton::parameterUpdated() {
     m_pButtonMenu->clear();
     const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
-    qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size();
+    // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
+    m_iNoStates = options.size(); 
+	if (m_iNoStates == 0) {
+		// Toggle button without a menu
+		m_iNoStates = 2; 
+		return; 
+	}
+    double value = getControlParameterLeft();     
+
     QActionGroup* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
     for (int i = 0; i < options.size(); i++) {
         // action is added automatically to actionGroup
         QAction* action = new QAction(actionGroup);
+        // qDebug() << options[i].first; 
         action->setText(options[i].first);
         action->setData(options[i].second);
         action->setCheckable(true);
+	
+        if (options[i].second == value) {
+            action->setChecked(true);
+        }
         m_pButtonMenu->addAction(action);
     }
 }
