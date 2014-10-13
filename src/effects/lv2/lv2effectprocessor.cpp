@@ -43,6 +43,11 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
 LV2EffectProcessor::~LV2EffectProcessor() {
     lilv_instance_deactivate(m_handle);
     lilv_instance_free(m_handle);
+    delete[] m_inputL;
+    delete[] m_inputR;
+    delete[] m_outputL;
+    delete[] m_outputR;
+    delete[] m_params;
 }
 
 void LV2EffectProcessor::initialize(const QSet<QString>& registeredGroups) {
