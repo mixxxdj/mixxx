@@ -192,7 +192,10 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
     // TODO (jclaveau) : a way to look the svg after the parsing would be nice!
     QByteArray out;
     QTextStream textStream(&out);
+    // TODO (jclaveau) : saving crashes if there are comments before 
+    // the svg root node. Need help :D
     svgNode.save(textStream, 2);
+    
     return out;
 }
 
