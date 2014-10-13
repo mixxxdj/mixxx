@@ -117,9 +117,9 @@ bool SoundSourceFFmpeg::clearCache() {
     return true;
 }
 
-bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
+bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
     unsigned int l_iCount = 0;
-    int32_t l_iRet = 0;
+    qint32 l_iRet = 0;
     AVPacket l_SPacket;
     AVFrame *l_pFrame = NULL;
     bool l_iStop = false;
@@ -127,7 +127,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
     struct ffmpegCacheObject *l_SObj = NULL;
     struct ffmpegCacheObject *l_SRmObj = NULL;
     bool m_bUnique = false;
-    int64_t l_lLastPacketPos = -1;
+    qint64 l_lLastPacketPos = -1;
     int l_iError = 0;
     int l_iFrameCount = 0;
 
@@ -235,7 +235,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
                             m_bUnique = false;
                         }
 
-                        if (offset < 0 || (uint64_t) offset <= (m_lCacheBytePos / 2)) {
+                        if (offset < 0 || (quint64) offset <= (m_lCacheBytePos / 2)) {
                             l_iCount --;
                         }
                     } else {
@@ -300,13 +300,13 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, int64_t offset) {
     }
 }
 
-bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, uint64_t offset,
-        uint64_t size) {
+bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
+        quint64 size) {
     struct ffmpegCacheObject *l_SObj = NULL;
-    uint32_t l_lPos = 0;
-    uint32_t l_lLeft = 0;
-    uint32_t l_lOffset = 0;
-    uint32_t l_lBytesToCopy = 0;
+    quint32 l_lPos = 0;
+    quint32 l_lLeft = 0;
+    quint32 l_lOffset = 0;
+    quint32 l_lBytesToCopy = 0;
 
     if (offset >= m_lCacheStartByte) {
         if (m_lCacheLastPos == 0) {
@@ -472,7 +472,7 @@ Result SoundSourceFFmpeg::open() {
 
 long SoundSourceFFmpeg::seek(long filepos) {
     int ret = 0;
-    int64_t i = 0;
+    qint64 i = 0;
 
     if (filepos < 0 || (unsigned long) filepos < m_lCacheStartByte) {
         ret = avformat_seek_file(m_pFormatCtx,

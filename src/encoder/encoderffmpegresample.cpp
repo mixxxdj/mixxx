@@ -160,7 +160,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
     return 0;
 }
 
-unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, uint8_t **outbuffer) {
+unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffer) {
 
     if (m_pSwrCtx) {
 
@@ -170,16 +170,16 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, uint8_t **outbuff
 #if LIBAVRESAMPLE_VERSION_MAJOR == 0
         void **l_pIn = (void **)inframe->extended_data;
 #else
-        uint8_t **l_pIn = (uint8_t **)inframe->extended_data;
+        quint8 **l_pIn = (quint8 **)inframe->extended_data;
 #endif // LIBAVRESAMPLE_VERSION_MAJOR == 0
 #else
-        uint8_t **l_pIn = (uint8_t **)inframe->extended_data;
+        quint8 **l_pIn = (quint8 **)inframe->extended_data;
 #endif // __LIBAVRESAMPLE__
 
 // Left here for reason!
 // Sometime in time we will need this!
 #else
-        int64_t l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
+        qint64 l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                                  inframe->nb_samples,
                                  m_pCodecCtx->sample_fmt, 1);
 #endif // __FFMPEGOLDAPI__
@@ -233,14 +233,14 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, uint8_t **outbuff
                                     (void **)l_pIn, 0, inframe->nb_samples);
 #else
         //AVResample NEW
-        l_iLen = avresample_convert(m_pSwrCtx, (uint8_t **)outbuffer, 0, l_iOutSamples,
-                                    (uint8_t **)l_pIn, 0, inframe->nb_samples);
+        l_iLen = avresample_convert(m_pSwrCtx, (quint8 **)outbuffer, 0, l_iOutSamples,
+                                    (quint8 **)l_pIn, 0, inframe->nb_samples);
 #endif // LIBAVRESAMPLE_VERSION_INT <= 3
 
 #else
         // SWResample
-        l_iLen = swr_convert(m_pSwrCtx, (uint8_t **)outbuffer, l_iOutSamples,
-                             (const uint8_t **)l_pIn, inframe->nb_samples);
+        l_iLen = swr_convert(m_pSwrCtx, (quint8 **)outbuffer, l_iOutSamples,
+                             (const quint8 **)l_pIn, inframe->nb_samples);
 #endif // __LIBAVRESAMPLE__
 
         l_iOutBytes = av_samples_get_buffer_size(NULL, 2, l_iLen, m_pOutSampleFmt, 1);
@@ -257,8 +257,8 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, uint8_t **outbuff
         }
         return l_iOutBytes;
     } else {
-        uint8_t *l_ptrBuf = NULL;
-        int64_t l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
+        quint8 *l_ptrBuf = NULL;
+        qint64 l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                                  inframe->nb_samples,
                                  m_pCodecCtx->sample_fmt, 1);
 
@@ -266,7 +266,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, uint8_t **outbuff
            return 0;
         }
 
-        l_ptrBuf = (uint8_t *)av_malloc(l_lInReadBytes);
+        l_ptrBuf = (quint8 *)av_malloc(l_lInReadBytes);
 
         memcpy(l_ptrBuf, inframe->data[0], l_lInReadBytes);
 

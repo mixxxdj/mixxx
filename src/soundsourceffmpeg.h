@@ -53,15 +53,15 @@ extern "C" {
 class TrackInfoObject;
 
 struct ffmpegLocationObject {
-    uint64_t pos;
-    int64_t pts;
-    uint64_t startByte;
+    quint64 pos;
+    qint64 pts;
+    quint64 startByte;
 };
 
 struct ffmpegCacheObject {
-    uint64_t startByte;
-    uint32_t length;
-    uint8_t *bytes;
+    quint64 startByte;
+    quint32 length;
+    quint8 *bytes;
 };
 
 class SoundSourceFFmpeg : public Mixxx::SoundSource {
@@ -84,34 +84,34 @@ protected:
     void lock();
     void unlock();
 
-    bool readFramesToCache(unsigned int count, int64_t offset);
-    bool getBytesFromCache(char *buffer, uint64_t offset, uint64_t size);
-    uint64_t getSizeofCache();
+    bool readFramesToCache(unsigned int count, qint64 offset);
+    bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
+    quint64 getSizeofCache();
     bool clearCache();
 
 private:
     int m_iAudioStream;
-    uint64_t filelength;
+    quint64 filelength;
     QString m_qFilename;
     AVFormatContext *m_pFormatCtx;
     AVInputFormat *m_pIformat;
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 
-    int64_t m_iCurrentMixxTs;
+    qint64 m_iCurrentMixxTs;
 
     EncoderFfmpegResample *m_pResample;
 
     bool m_bIsSeeked;
 
-    uint64_t m_lCacheBytePos;
-    uint64_t m_lCacheStartByte;
-    uint64_t m_lCacheEndByte;
-    uint32_t m_lCacheLastPos;
+    quint64 m_lCacheBytePos;
+    quint64 m_lCacheStartByte;
+    quint64 m_lCacheEndByte;
+    quint32 m_lCacheLastPos;
     QVector<struct ffmpegCacheObject  *> m_SCache;
     QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
-    uint64_t m_lLastStoredPos;
-    int64_t m_lStoredSeekPoint;
+    quint64 m_lLastStoredPos;
+    qint64 m_lStoredSeekPoint;
 };
 
 #endif

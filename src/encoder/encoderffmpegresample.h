@@ -56,7 +56,7 @@ public:
     ~EncoderFfmpegResample();
     int open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
 
-    unsigned int reSample(AVFrame *inframe, uint8_t **outbuffer);
+    unsigned int reSample(AVFrame *inframe, quint8 **outbuffer);
 
 private:
     AVCodecContext *m_pCodecCtx;
