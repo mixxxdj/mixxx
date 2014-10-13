@@ -374,8 +374,10 @@ Result SoundSourceFFmpeg::open() {
 
     m_pFormatCtx = avformat_alloc_context();
 
+#if LIBAVCODEC_VERSION_INT < 3622144
     m_pFormatCtx->max_analyze_duration = 999999999;
-    
+#endif
+
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts)!=0) {
@@ -551,7 +553,9 @@ Result SoundSourceFFmpeg::parseHeader() {
     }
 #endif
 
+#if LIBAVCODEC_VERSION_INT < 3622144
     FmtCtx->max_analyze_duration = 999999999;
+#endif
 
     // Retrieve stream information
     if (avformat_find_stream_info(FmtCtx, NULL)<0) {
