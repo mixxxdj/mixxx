@@ -31,7 +31,7 @@
 			<EffectRack>1</EffectRack>
 			<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
 			<Effect><Variable name="effectnum"/></Effect>
-			<EffectParameter><Variable name="effectparameternum"/></EffectParameter>
+			<EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
 		</EffectButtonParameterName>
 		<WidgetGroup>
 			<Layout>vertical</Layout>
