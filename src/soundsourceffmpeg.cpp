@@ -24,14 +24,8 @@
 #include "trackinfoobject.h"
 #include "soundsourceffmpeg.h"
 
-//#ifdef __WINDOWS__
-//#include <io.h>
-//#include <fcntl.h>
-//#endif
-
 #include <QtDebug>
 #include <QBuffer>
-
 
 static QMutex ffmpegmutex;
 
@@ -310,16 +304,10 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
 
     if (offset >= m_lCacheStartByte) {
         if (m_lCacheLastPos == 0) {
-            // lock();
             m_lCacheLastPos = m_SCache.size() - 1;
-            // unlock();
-
         }
         for (l_lPos = m_lCacheLastPos; l_lPos > 0; l_lPos --) {
-            // lock();
             l_SObj = m_SCache[l_lPos];
-            // unlock();
-
             if ((l_SObj->startByte + l_SObj->length) < offset) {
                 break;
             }
@@ -382,40 +370,31 @@ Result SoundSourceFFmpeg::open() {
 
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 
-    // Initialize FFMPEG
-    // FFmpegInit();
-
     qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
 
     m_pFormatCtx = avformat_alloc_context();
 
-// Enable this to use old slow MP3 Xing TOC
-//#if LIBAVCODEC_VERSION_INT > 3544932
-//    qDebug() << "Using MP3 Xing TOC if needed";
-//    av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
-//#endif
-
     m_pFormatCtx->max_analyze_duration = 999999999;
-    // lock();
+    
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts)!=0) {
         qDebug() << "av_open_input_file: cannot open" << qBAFilename;
         return ERR;
     }
-    // unlock();
+    
 
 #if LIBAVCODEC_VERSION_INT > 3544932
     av_dict_free(&l_iFormatOpts);
 #endif
 
-    // lock();
+    
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL)<0) {
         qDebug() << "av_find_stream_info: cannot open" << qBAFilename;
         return ERR;
     }
-    // unlock();
+    
 
     //debug only (Enable if needed)
     //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);
@@ -443,14 +422,10 @@ Result SoundSourceFFmpeg::open() {
         return ERR;
     }
 
-    // qDebug() << "ffmpeg: opening the audio codec";
-    //avcodec_open is not thread safe
-    //lock();
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
         qDebug() << "ffmpeg:  cannot open" << qBAFilename;
         return ERR;
     }
-    //unlock();
 
     m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
     m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16);
@@ -564,13 +539,6 @@ Result SoundSourceFFmpeg::parseHeader() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    // Enable this to use old slow MP3 Xing TOC
-// #ifndef CODEC_ID_MP3
-//    if (LIBAVFORMAT_VERSION_INT > 3540580) {
-//        av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
-//    }
-// #endif
-    //lock();
     if (avformat_open_input(&FmtCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts) !=0) {
         qDebug() << "av_open_input_file: cannot open" << qBAFilename.constData();
@@ -591,7 +559,7 @@ Result SoundSourceFFmpeg::parseHeader() {
                  qBAFilename.constData();
         return ERR;
     }
-    //unlock();
+
     for (i=0; i<FmtCtx->nb_streams; i++)
         if (FmtCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
             m_iAudioStream=i;
@@ -655,11 +623,11 @@ Result SoundSourceFFmpeg::parseHeader() {
     this->setBitrate((int)(CodecCtx->bit_rate / 1000));
     this->setSampleRate(CodecCtx->sample_rate);
     this->setChannels(CodecCtx->channels);
-    //lock();
+
     avcodec_close(CodecCtx);
     avformat_close_input(&FmtCtx);
     av_free(FmtCtx);
-    //unlock();
+
     return OK;
 }
 
