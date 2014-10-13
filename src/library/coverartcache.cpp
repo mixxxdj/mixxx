@@ -285,14 +285,14 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         return QString();
     } else if (imglist.size() == 1) {
         // only a single picture in folder.
-        return directory % "/" % imglist[0];
+        return dir.filePath(imglist[0]);
     }
 
     int idx  = imglist.indexOf(QRegExp(".*" % trackBaseName % ".*",
                                        Qt::CaseInsensitive));
     if (idx  != -1 ) {
         // cover with the same name of the trackFilename.
-        return directory % "/" % imglist[idx];
+        return dir.filePath(imglist[idx]);
     }
 
     if (!album.isEmpty()) {
@@ -300,7 +300,7 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
                                        Qt::CaseInsensitive));
         if (idx  != -1 ) {
             // cover with the same name of the album.
-            return directory % "/" % imglist[idx];
+            return dir.filePath(imglist[idx]);
         }
     }
 
@@ -308,12 +308,12 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         idx  = imglist.indexOf(regExp);
         if (idx  != -1 ) {
             // cover named as cover|front|folder.
-            return directory % "/" % imglist[idx];
+            return dir.filePath(imglist[idx]);
         }
     }
 
     // Return the lighter image file.
-    return directory % "/" % imglist[0];
+    return dir.filePath(imglist[0]);
 }
 
 // this method will parse the information stored in the sound file
