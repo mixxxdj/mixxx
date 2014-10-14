@@ -288,20 +288,16 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         return dir.filePath(imglist[0]);
     }
 
-    int idx  = imglist.indexOf(QRegExp(".*" % trackBaseName % ".*",
-                                       Qt::CaseInsensitive));
-    if (idx  != -1 ) {
+    int idx = 0;
+    foreach (QString img, imglist) {
         // cover with the same name of the trackFilename.
-        return dir.filePath(imglist[idx]);
-    }
-
-    if (!album.isEmpty()) {
-        idx  = imglist.indexOf(QRegExp(".*" % album % ".*",
-                                       Qt::CaseInsensitive));
-        if (idx  != -1 ) {
-            // cover with the same name of the album.
+        if (img.contains(trackBaseName, Qt::CaseInsensitive)) {
+            return dir.filePath(imglist[idx]);
+        // cover with the same name of the album.
+        } else if (!album.isEmpty() && img.contains(album, Qt::CaseInsensitive)) {
             return dir.filePath(imglist[idx]);
         }
+        idx++;
     }
 
     foreach (QRegExp regExp, m_regExpList) {
