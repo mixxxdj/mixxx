@@ -668,12 +668,12 @@ QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
             QList<QWidget*> children = parseNode(element);
 
             if (children.empty()) {
-                qWarning() << "WidgetStack child produced no widget.";
+                qWarning() << "SizeAwareStack child produced no widget.";
                 continue;
             }
 
             if (children.size() > 1) {
-                qWarning() << "WidgetStack child produced multiple widgets."
+                qWarning() << "SizeAwareStack child produced multiple widgets."
                            << "All but the first are ignored.";
             }
             QWidget* pChild = children[0];
