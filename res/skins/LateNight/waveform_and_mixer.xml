@@ -1,0 +1,90 @@
+<Template>
+	<WidgetGroup>
+	    <ObjectName>WaveformMixerContainer</ObjectName>
+		<Layout>vertical</Layout>
+		<SizePolicy>e,e</SizePolicy>
+		<Children>
+			<WidgetGroup>
+				<Layout>horizontal</Layout>
+				<SizePolicy>me,f</SizePolicy>
+				<Children>
+					<Template src="skin:spinny.xml">
+						<SetVariable name="channum">3</SetVariable>
+                        <SetVariable name="color">2</SetVariable>
+					</Template>
+					<Template src="skin:waveform.xml">
+						<SetVariable name="channum">3</SetVariable>
+                        <SetVariable name="deck_color">#09B2AE</SetVariable>
+					</Template>
+				</Children>
+				<Connection>
+					<ConfigKey>[Master],show_4decks</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+			<WidgetGroup>
+				<Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+				<Children>
+					<Template src="skin:spinny.xml">
+						<SetVariable name="channum">1</SetVariable>
+                        <SetVariable name="color">1</SetVariable>
+					</Template>
+					<Template src="skin:waveform.xml">
+						<SetVariable name="channum">1</SetVariable>
+                        <SetVariable name="deck_color">#EECE33</SetVariable>
+					</Template>
+				</Children>
+			</WidgetGroup>
+			<WidgetGroup>
+				<Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+				<Children>
+					<Template src="skin:spinny.xml">
+						<SetVariable name="channum">2</SetVariable>
+                        <SetVariable name="color">1</SetVariable>
+					</Template>
+					<Template src="skin:waveform.xml">
+						<SetVariable name="channum">2</SetVariable>
+                        <SetVariable name="deck_color">#EECE33</SetVariable>
+					</Template>
+				</Children>
+			</WidgetGroup>
+			<WidgetGroup>
+				<SizePolicy>me,f</SizePolicy>
+				<Layout>horizontal</Layout>
+				<Children>
+					<Template src="skin:spinny.xml">
+						<SetVariable name="channum">4</SetVariable>
+                        <SetVariable name="color">2</SetVariable>
+					</Template>
+					<Template src="skin:waveform.xml">
+						<SetVariable name="channum">4</SetVariable>
+                        <SetVariable name="deck_color">#09B2AE</SetVariable>
+					</Template>
+				</Children>
+				<Connection>
+					<ConfigKey>[Master],show_4decks</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>HorizBorder</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <Size>,1</Size>
+                <Children></Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                    <Template src="skin:mixer.xml"/>
+                </Children>
+                <Connection>
+                    <ConfigKey>[Master],show_mixer</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup> 
+		</Children>
+	</WidgetGroup>
+</Template>

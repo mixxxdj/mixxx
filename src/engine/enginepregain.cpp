@@ -33,7 +33,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char* group)
 {
-    potmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, +12, 0.5);
+    m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, +12, 0.5);
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
@@ -50,7 +50,7 @@ EnginePregain::EnginePregain(const char* group)
 
 EnginePregain::~EnginePregain()
 {
-    delete potmeterPregain;
+    delete m_pPotmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;
 
@@ -64,7 +64,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     float fEnableReplayGain = s_pEnableReplayGain->get();
     const float fReplayGainBoost = s_pReplayGainBoost->get();
-    float fGain = potmeterPregain->get();
+    float fGain = m_pPotmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
     float fReplayGainCorrection = 1;
     float fPassing = m_pPassthroughEnabled->get();

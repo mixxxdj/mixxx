@@ -3,6 +3,7 @@
 #include "dlgautodj.h"
 
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "playerinfo.h"
@@ -113,10 +114,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pCOPlayPos2 = new ControlObjectThread("[Channel2]", "playposition");
     m_pCOPlay1 = new ControlObjectThread("[Channel1]", "play");
     m_pCOPlay2 = new ControlObjectThread("[Channel2]", "play");
-    m_pCORepeat1 = new ControlObjectThread("[Channel1]", "repeat");
-    m_pCORepeat2 = new ControlObjectThread("[Channel2]", "repeat");
-    m_pCOCrossfader = new ControlObjectThread("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectThread("[Mixer Profile]", "xFaderReverse");
+    m_pCORepeat1 = new ControlObjectSlave("[Channel1]", "repeat");
+    m_pCORepeat2 = new ControlObjectSlave("[Channel2]", "repeat");
+    m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
@@ -163,7 +164,7 @@ void DlgAutoDJ::onSearch(const QString& text) {
 }
 
 double DlgAutoDJ::getCrossfader() const {
-    if (m_pCOCrossfaderReverse->get() > 0.0) {
+    if (m_pCOCrossfaderReverse->toBool()) {
         return m_pCOCrossfader->get() * -1.0;
     }
     return m_pCOCrossfader->get();
@@ -252,12 +253,12 @@ void DlgAutoDJ::fadeNow(double value) {
             m_posThreshold1 = m_pCOPlayPos1->get() -
                     ((crossfader + 1.0) / 2 * (m_fadeDuration1));
             // Repeat is disabled by FadeNow but disables auto Fade
-            m_pCORepeat1->slotSet(0.0);
+            m_pCORepeat1->set(0.0);
         } else if (crossfader >= -0.3 && m_pCOPlay2->get() == 1.0) {
             m_posThreshold2 = m_pCOPlayPos2->get() -
                     ((1.0 - crossfader) / 2 * (m_fadeDuration2));
             // Repeat is disabled by FadeNow but disables auto Fade
-            m_pCORepeat2->slotSet(0.0);
+            m_pCORepeat2->set(0.0);
         }
     }
 }
@@ -290,7 +291,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             qDebug() << "Queue is empty now";
             pushButtonAutoDJ->setChecked(false);
             if (m_pCOTEnabledAutoDJ->get() != 0.0) {
-                m_pCOTEnabledAutoDJ->slotSet(0.0);
+                m_pCOTEnabledAutoDJ->set(0.0);
             }
             return;
         }
@@ -299,7 +300,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
         pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
         if (m_pCOTEnabledAutoDJ->get() != 1.0) {
-            m_pCOTEnabledAutoDJ->slotSet(1.0);
+            m_pCOTEnabledAutoDJ->set(1.0);
         }
         qDebug() << "Auto DJ enabled";
 
@@ -320,7 +321,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             m_eState = ADJ_ENABLE_P1LOADED;
             pushButtonFadeNow->setEnabled(false);
             // Force Update on load Track
-            m_pCOPlayPos1->slotSet(-0.001);
+            player1PositionChanged(m_pCOPlayPos1->get());
         } else {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
@@ -338,7 +339,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
         pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
         if (m_pCOTEnabledAutoDJ->get() != 0.0) {
-            m_pCOTEnabledAutoDJ->slotSet(0.0);
+            m_pCOTEnabledAutoDJ->set(0.0);
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
@@ -379,7 +380,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
         // Auto DJ Start
         if (!deck1Playing && !deck2Playing) {
             setCrossfader(-1.0, false);  // Move crossfader to the left!
-            m_pCOPlay1->slotSet(1.0);  // Play the track in player 1
+            m_pCOPlay1->set(1.0);  // Play the track in player 1
             removePlayingTrackFromQueue("[Channel1]");
         } else {
             m_eState = ADJ_IDLE;
@@ -422,10 +423,10 @@ void DlgAutoDJ::player1PositionChanged(double value) {
             if (!deck2Playing) {
                 // Start Deck 2
                 player2PlayChanged(1.0);
-                m_pCOPlay2->slotSet(1.0);
+                m_pCOPlay2->set(1.0);
                 if (fadeDuration < 0.0) {
                     // Scroll back for pause between tracks
-                    m_pCOPlayPos2->slotSet(m_fadeDuration2);
+                    m_pCOPlayPos2->set(m_fadeDuration2);
                 }
             }
             removePlayingTrackFromQueue("[Channel2]");
@@ -438,7 +439,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
         if (value >= posFadeEnd) {
             // Pre-EndState
 
-            m_pCOPlay1->slotSet(0.0);  // Stop the player
+            m_pCOPlay1->set(0.0);  // Stop the player
             //m_posThreshold = 1.0f - fadeDuration; // back to default
 
             // does not work always immediately after stop
@@ -495,10 +496,10 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             (deck2Playing || m_posThreshold2 >= 1.0f)) {
             if (!deck1Playing) {
                 player1PlayChanged(1.0);
-                m_pCOPlay1->slotSet(1.0);
+                m_pCOPlay1->set(1.0);
                 if (fadeDuration < 0) {
                     // Scroll back for pause between tracks
-                    m_pCOPlayPos1->slotSet(m_fadeDuration1);
+                    m_pCOPlayPos1->set(m_fadeDuration1);
                 }
             }
             removePlayingTrackFromQueue("[Channel1]");
@@ -511,7 +512,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
         if (value >= posFadeEnd) {
             // Pre-End State
 
-            m_pCOPlay2->slotSet(0.0f);  // Stop the player
+            m_pCOPlay2->set(0.0f);  // Stop the player
 
             //m_posThreshold = 1.0f - fadeDuration; // back to default
 

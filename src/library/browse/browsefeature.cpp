@@ -9,6 +9,7 @@
 #include <QDesktopServices>
 #include <QAction>
 #include <QMenu>
+#include <QPushButton>
 
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
@@ -46,6 +47,9 @@ BrowseFeature::BrowseFeature(QObject* parent,
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
+    // of the item.
+    m_proxyModel.setSortRole(Qt::UserRole);
 
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
@@ -137,6 +141,32 @@ void BrowseFeature::slotAddToLibrary() {
     }
     QString spath = m_pLastRightClickedItem->dataPath().toString();
     emit(requestAddDir(spath));
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    // strings are dupes from DlgPrefLibrary
+    msgBox.setWindowTitle(tr("Added Directory"));
+    msgBox.setText(tr("Music Directory Added.\n"
+                      "You added one or more music directories. Contained files"
+                      "won't be available until you rescan your library. Would"
+                      "you like to rescan now?"));
+    QPushButton* scanButton = msgBox.addButton(
+        tr("Scan"), QMessageBox::AcceptRole);
+    msgBox.addButton(QMessageBox::Cancel);
+    msgBox.setDefaultButton(scanButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == scanButton) {
+        emit(scanLibrary());
+    }
+}
+
+void BrowseFeature::slotLibraryScanStarted() {
+    m_pAddtoLibraryAction->setEnabled(false);
+}
+
+void BrowseFeature::slotLibraryScanFinished() {
+    m_pAddtoLibraryAction->setEnabled(true);
 }
 
 void BrowseFeature::slotRemoveQuickLink() {

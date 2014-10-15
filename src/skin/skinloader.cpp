@@ -51,7 +51,7 @@ QString SkinLoader::getConfiguredSkinPath() {
             QString defaultSkin;
             QRect screenGeo = QApplication::desktop()->screenGeometry();
             if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
-                defaultSkin = "Deere1280x800-WXGA";
+                defaultSkin = "LateNight";
             }
             else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
                 defaultSkin = "ShadeDark1024x600-Netbook";

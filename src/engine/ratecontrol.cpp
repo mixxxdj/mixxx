@@ -197,6 +197,7 @@ RateControl::~RateControl() {
 
     delete m_pWheel;
     delete m_pScratch2;
+    delete m_pScratch2Scratching;
     delete m_pScratch2Enable;
     delete m_pJog;
     delete m_pJogFilter;
@@ -489,7 +490,11 @@ double RateControl::calculateRate(double baserate, bool paused,
                     return 1.0;
                 }
 
-                double userTweak = getTempRate() + wheelFactor + jogFactor;
+                double userTweak = 0.0;
+                if (!*reportScratching) {
+                    // Only report user tweak if the user is not scratching.
+                    userTweak = getTempRate() + wheelFactor + jogFactor;
+                }
                 rate = m_pBpmControl->calcSyncedRate(userTweak);
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.

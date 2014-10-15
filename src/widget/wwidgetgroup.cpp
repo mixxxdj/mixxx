@@ -3,6 +3,7 @@
 #include <QLayout>
 #include <QMap>
 #include <QStylePainter>
+#include <QStackedLayout>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -93,11 +94,16 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         QString layout = context.selectString(node, "Layout");
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
-            pLayout->setSpacing(0);
-            pLayout->setContentsMargins(0, 0, 0, 0);
-            pLayout->setAlignment(Qt::AlignCenter);
         } else if (layout == "horizontal") {
             pLayout = new QHBoxLayout();
+        } else if (layout == "stacked") {
+            QStackedLayout* pStackedLayout = new QStackedLayout();
+            pStackedLayout->setStackingMode(QStackedLayout::StackAll);
+            pLayout = pStackedLayout;
+        }
+
+        // Set common layout parameters.
+        if (pLayout != NULL) {
             pLayout->setSpacing(0);
             pLayout->setContentsMargins(0, 0, 0, 0);
             pLayout->setAlignment(Qt::AlignCenter);

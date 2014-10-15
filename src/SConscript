@@ -147,11 +147,13 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
                 return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number and
-        # don't include the Mixxx version.
-        return "%s~%s~%s%s" % (ubuntu_version, branch_name, vcs_name,
-                               vcs_revision)
-
+        # In a debug build, we must include the Mixxx version since it is the
+        # base "upstream" version in the Debian version number. Also include the
+        # branch name and VCS version so we know where the build came from.
+        # See: https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
+        # e.g. 1.12.0-alpha~master-gitXXXX~ppa1~trusty1
+        return "%s~%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
+                                  vcs_revision, ubuntu_version)
 
 def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
         # In release mode, we only use the version and revision number
@@ -249,7 +251,8 @@ else:
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         dll_files.extend(qt_modules)
 
-if int(flags.get('sqlitedll', 0)):
+sqldll_files = []
+if int(flags.get('qt_sqlite_plugin', 0)):
         if qt5:
                 # TODO(rryan): Add the SQLite DLL For Qt5.
                 pass
@@ -333,10 +336,18 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # this is a BIG HACK to support Qt's plugins (since Qt *requires* that
         # it's plugins be in specific subdirectories, which OS X doesn't really
         # play nice with)
-        qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
-                      [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                      [("sqldrivers", e) for e in ["libqsqlite.dylib"]] +
-                      [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
+
+        # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
+        # sqlite_plugin mode.
+        sql_dylibs = []
+        if int(flags.get('qt_sqlite_plugin', 0)):
+                sql_dylibs = ["libqsqlite.dylib"]
+
+        qt_plugins = (
+                [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
+                [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
+                [("sqldrivers", e) for e in sql_dylibs] +
+                [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
         #Left out libqmng and libqtiff to save space.
 
         # Concatenate the SoundSource plugins to our list of plugins (converting
@@ -470,7 +481,7 @@ if build.platform_is_windows:
         env.Alias('mixxx', binary)
 
         # QSQLite DLL
-        if 'sqldll_files' in locals():
+        if sqldll_files:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
                 env.Alias('mixxx', sql_dlls)
 
