@@ -284,28 +284,26 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         return dir.filePath(imglist[0]);
     }
 
-    int idx = 0;
     foreach (QString img, imglist) {
         // cover with the same name of the trackFilename.
         if (img.contains(trackBaseName, Qt::CaseInsensitive)) {
-            return dir.filePath(imglist[idx]);
+            return dir.filePath(img);
         // cover with the same name of the album.
         } else if (!album.isEmpty() && img.contains(album, Qt::CaseInsensitive)) {
-            return dir.filePath(imglist[idx]);
+            return dir.filePath(img);
         // cover named as 'cover'
         } else if (img.contains("cover", Qt::CaseInsensitive)) {
-            return dir.filePath(imglist[idx]);
+            return dir.filePath(img);
         // cover named as 'front'
         } else if (img.contains("front", Qt::CaseInsensitive)) {
-            return dir.filePath(imglist[idx]);
+            return dir.filePath(img);
         // cover named as 'album'
         } else if (img.contains("album", Qt::CaseInsensitive)) {
-            return dir.filePath(imglist[idx]);
+            return dir.filePath(img);
         // cover named as 'folder'
         } else if (img.contains("folder", Qt::CaseInsensitive)) {
-            return dir.filePath(imglist[idx]);
+            return dir.filePath(img);
         }
-        idx++;
     }
 
     // Return the lighter image file.
