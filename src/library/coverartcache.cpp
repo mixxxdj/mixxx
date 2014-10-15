@@ -22,11 +22,6 @@ CoverArtCache::CoverArtCache()
     // So, we must increase this size a bit more,
     // in order to allow CoverCache handle more covers (performance gain).
     QPixmapCache::setCacheLimit(20480);
-
-    m_regExpList << QRegExp(".*cover.*", Qt::CaseInsensitive)
-                 << QRegExp(".*front.*", Qt::CaseInsensitive)
-                 << QRegExp(".*album.*", Qt::CaseInsensitive)
-                 << QRegExp(".*folder.*", Qt::CaseInsensitive);
 }
 
 CoverArtCache::~CoverArtCache() {
@@ -281,10 +276,11 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
     dir.setNameFilters(nameFilters);
     QStringList imglist = dir.entryList();
 
-    if (imglist.isEmpty()) { // no covers in this dir
+    // no covers in this dir
+    if (imglist.isEmpty()) {
         return QString();
+    // only a single picture in folder.
     } else if (imglist.size() == 1) {
-        // only a single picture in folder.
         return dir.filePath(imglist[0]);
     }
 
@@ -296,16 +292,20 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         // cover with the same name of the album.
         } else if (!album.isEmpty() && img.contains(album, Qt::CaseInsensitive)) {
             return dir.filePath(imglist[idx]);
-        }
-        idx++;
-    }
-
-    foreach (QRegExp regExp, m_regExpList) {
-        idx  = imglist.indexOf(regExp);
-        if (idx  != -1 ) {
-            // cover named as cover|front|folder.
+        // cover named as 'cover'
+        } else if (img.contains("cover", Qt::CaseInsensitive)) {
+            return dir.filePath(imglist[idx]);
+        // cover named as 'front'
+        } else if (img.contains("front", Qt::CaseInsensitive)) {
+            return dir.filePath(imglist[idx]);
+        // cover named as 'album'
+        } else if (img.contains("album", Qt::CaseInsensitive)) {
+            return dir.filePath(imglist[idx]);
+        // cover named as 'folder'
+        } else if (img.contains("folder", Qt::CaseInsensitive)) {
             return dir.filePath(imglist[idx]);
         }
+        idx++;
     }
 
     // Return the lighter image file.

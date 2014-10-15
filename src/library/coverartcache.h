@@ -101,7 +101,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     const QPixmap m_pxDefaultCover;
     QSet<int> m_runningIds;
     QHash<int, QPair<QString, QString> > m_queueOfUpdates;
-    QList<QRegExp> m_regExpList;
 
     // @param img: image that will be cropped
     // @param size: (desired cover width, cell height)
