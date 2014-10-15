@@ -61,7 +61,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
 
     connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
-            this, SLOT(slotShowAllEffects()));
+            this, SLOT(slotPopulateDeckEffectSelectors()));
 
     connect(this,
             SIGNAL(effectOnChainSlot(const unsigned int, const unsigned int, QString)),
@@ -98,6 +98,7 @@ DlgPrefEQ::~DlgPrefEQ() {
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
+    int oldDecks = m_deckEffectSelectors.size();     
     while (m_deckEffectSelectors.size() < static_cast<int>(numDecks)) {
         QHBoxLayout* innerHLayout = new QHBoxLayout();
         QLabel* label = new QLabel(QObject::tr("Deck %1").
@@ -105,87 +106,57 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
 
         // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
-        QList<QPair<QString, QString> > availableEffectNames =
-                m_pEffectsManager->getAvailableEffectNames().toList();
-        for (int i = 0; i < availableEffectNames.size(); ++i) {
-            box->addItem(availableEffectNames[i].second);
-            box->setItemData(i, QVariant(availableEffectNames[i].first));
-        }
         m_deckEffectSelectors.append(box);
         connect(box, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotEffectChangedOnDeck(int)));
 
-        // Create the drop down list for basic view
-        // Add EQ Effects only
-        QComboBox* simpleBox = new QComboBox(this);
-        QList<QPair<QString, QString> > availableEQEffectNames =
-                m_pEffectsManager->getAvailableEQEffectNames().toList();
-        for (int i = 0; i < availableEQEffectNames.size(); ++i) {
-            simpleBox->addItem(availableEQEffectNames[i].second);
-            simpleBox->setItemData(i, QVariant(availableEQEffectNames[i].first));
-        }
-        m_deckBasicEffectSelectors.append(simpleBox);
-        connect(simpleBox, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotBasicEffectChangedOnDeck(int)));
-
+        // Setup the GUI
+        innerHLayout->addWidget(label);
+        innerHLayout->addWidget(box);
+        innerHLayout->addStretch();
+        verticalLayout_2->addLayout(innerHLayout);
+    }
+    slotPopulateDeckEffectSelectors(); 
+    for (int i = oldDecks; i < static_cast<int>(numDecks); ++i) {
         // Set the configured effect for box and simpleBox or Bessel8 LV-Mix EQ
         // if none is configured
         QString configuredEffect;
         int selectedEffectIndex;
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("EffectForDeck%1").arg(m_deckEffectSelectors.size())),
-                QString("bessel8lvmixeq"));
-        selectedEffectIndex = box->findData(configuredEffect);
-        box->setCurrentIndex(selectedEffectIndex);
-
-        configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
-                QString("BasicEffectForDeck%1").arg(m_deckBasicEffectSelectors.size())),
-                QString("bessel8lvmixeq"));
-        selectedEffectIndex = simpleBox->findData(configuredEffect);
-        simpleBox->setCurrentIndex(selectedEffectIndex);
-
-        // Force the selected effect on the Effect Rack based on user's preference
-        bool advancedView = CheckBoxShowAllEffects->isChecked();
-        if (advancedView) {
-            simpleBox->setVisible(false);
-            emit(effectOnChainSlot(m_deckEffectSelectors.size() - 1, 0,
-                                   box->itemData(box->currentIndex()).toString()));
-        } else {
-            box->setVisible(false);
-            emit(effectOnChainSlot(m_deckBasicEffectSelectors.size() - 1, 0,
-                                   simpleBox->itemData(simpleBox->currentIndex()).toString()));
-        }
-
-        // Setup the GUI
-        innerHLayout->addWidget(label);
-        innerHLayout->addWidget(box);
-        innerHLayout->addWidget(simpleBox);
-        innerHLayout->addStretch();
-        verticalLayout_2->addLayout(innerHLayout);
-    }
+                QString("org.mixxx.effects.bessel8lvmixeq"));
+        selectedEffectIndex = m_deckEffectSelectors[i]->findData(configuredEffect);
+        m_deckEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
+    }	
 }
 
-void DlgPrefEQ::slotShowAllEffects() {
-    if (!CheckBoxShowAllEffects->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("no"));
-        foreach (QComboBox* box, m_deckEffectSelectors) {
-            box->setVisible(false);
-        }
-        foreach (QComboBox* basicBox, m_deckBasicEffectSelectors) {
-            basicBox->setVisible(true);
-            emit(effectOnChainSlot(m_deckBasicEffectSelectors.indexOf(basicBox),
-                                   0, basicBox->itemData(basicBox->currentIndex()).toString()));
-        }
-    } else {
+void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
+    QList<QPair<QString, QString> > availableEQEffectNames; 
+    if (CheckBoxShowAllEffects->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("yes"));
-        foreach (QComboBox* box, m_deckEffectSelectors) {
-            box->setVisible(true);
-            emit(effectOnChainSlot(m_deckEffectSelectors.indexOf(box),
-                                   0, box->itemData(box->currentIndex()).toString()));
+        availableEQEffectNames =
+                m_pEffectsManager->getAvailableEffectNames().toList();
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("no"));
+        availableEQEffectNames =
+                m_pEffectsManager->getAvailableEQEffectNames().toList();
+    }
+
+    foreach (QComboBox* box, m_deckEffectSelectors) {
+	// Populate comboboxes with all available effects 
+	// Save current selection 
+        QString selectedEffectId = box->itemData(box->currentIndex()).toString();
+	box->clear(); 
+	int currentIndex = -1; // Nothing selected 
+
+        for (int i = 0; i < availableEQEffectNames.size(); ++i) {
+            box->addItem(availableEQEffectNames[i].second);
+            box->setItemData(i, QVariant(availableEQEffectNames[i].first));
+            if (selectedEffectId == availableEQEffectNames[i].first) {
+                currentIndex = i; 
+            }
         }
-        foreach (QComboBox* basicBox, m_deckBasicEffectSelectors) {
-            basicBox->setVisible(false);
-        }
+        box->setCurrentIndex(currentIndex); 
     }
 }
 
@@ -250,20 +221,6 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
-                       arg(deckNumber + 1)), ConfigValue(effectId));
-    }
-}
-
-void DlgPrefEQ::slotBasicEffectChangedOnDeck(int effectIndex) {
-    QComboBox* c = qobject_cast<QComboBox*>(sender());
-    // Check if qobject_cast was successful
-    if (c) {
-        int deckNumber = m_deckBasicEffectSelectors.indexOf(c);
-        QString effectId = c->itemData(effectIndex).toString();
-        emit(effectOnChainSlot(deckNumber, 0, effectId));
-
-        // Update the configured effect for the current QComboBox
-        m_pConfig->set(ConfigKey(CONFIG_KEY, QString("BasicEffectForDeck%1").
                        arg(deckNumber + 1)), ConfigValue(effectId));
     }
 }
@@ -352,11 +309,6 @@ void DlgPrefEQ::slotBypass(int state) {
             deck++;
             box->setEnabled(false);
         }
-
-        foreach(QComboBox* box, m_deckBasicEffectSelectors) {
-            box->setEnabled(false);
-        }
-
     } else {
         m_pConfig->set(ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("yes"));
         // Enable effect processing for all decks by setting the appropriate
@@ -367,10 +319,6 @@ void DlgPrefEQ::slotBypass(int state) {
             enableControl.initialize(ConfigKey(m_eqRackGroup.arg(deck), "enabled"));
             enableControl.set(1);
             deck++;
-            box->setEnabled(true);
-        }
-
-        foreach(QComboBox* box, m_deckBasicEffectSelectors) {
             box->setEnabled(true);
         }
     }
