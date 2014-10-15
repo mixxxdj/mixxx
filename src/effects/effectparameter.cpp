@@ -11,7 +11,6 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_parameter(parameter),
-          m_linkType(m_parameter.linkHint()),
           m_bAddedToEngine(false) {
     // qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
     //          << m_parameter.id();
@@ -108,27 +107,30 @@ const QString EffectParameter::description() const {
 }
 
 // static
-bool EffectParameter::clampValue(EffectManifestParameter::ValueHint valueHint, QVariant& value,
+bool EffectParameter::clampValue(EffectManifestParameter::ValueHint valueHint, QVariant* pValue,
                                  const QVariant& minimum, const QVariant& maximum) {
+    if (!pValue) {
+        return true;
+    }
     switch (valueHint) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             break;
         case EffectManifestParameter::VALUE_INTEGRAL:
-            if (value.toInt() < minimum.toInt()) {
-                value = minimum;
+            if (pValue->toInt() < minimum.toInt()) {
+                *pValue = minimum;
                 return true;
-            } else if (value.toInt() > maximum.toInt()) {
-                value = maximum;
+            } else if (pValue->toInt() > maximum.toInt()) {
+                *pValue = maximum;
                 return true;
             }
             break;
         case EffectManifestParameter::VALUE_FLOAT:
         case EffectManifestParameter::VALUE_UNKNOWN:
-            if (value.toDouble() < minimum.toDouble()) {
-                value = minimum;
+            if (pValue->toDouble() < minimum.toDouble()) {
+                *pValue = minimum;
                 return true;
-            } else if (value.toDouble() > maximum.toDouble()) {
-                value = maximum;
+            } else if (pValue->toDouble() > maximum.toDouble()) {
+                *pValue = maximum;
                 return true;
             }
             break;
@@ -139,12 +141,8 @@ bool EffectParameter::clampValue(EffectManifestParameter::ValueHint valueHint, Q
     return false;
 }
 
-bool EffectParameter::clampValue() {
-    return clampValue(m_parameter.valueHint(), m_value, m_minimum, m_maximum);
-}
-
-bool EffectParameter::clampDefault() {
-    return clampValue(m_parameter.valueHint(), m_default, m_minimum, m_maximum);
+bool EffectParameter::clampValue(QVariant* pValue) {
+    return clampValue(m_parameter.valueHint(), pValue, m_minimum, m_maximum);
 }
 
 bool EffectParameter::checkType(const QVariant& value) const {
@@ -187,13 +185,12 @@ bool EffectParameter::clampRanges() {
     return false;
 }
 
-EffectManifestParameter::LinkType EffectParameter::getLinkType() const {
-    return m_linkType;
+EffectManifestParameter::LinkType EffectParameter::getDefaultLinkType() const {
+    return m_parameter.defaultLinkType();
 }
 
-void EffectParameter::setLinkType(EffectManifestParameter::LinkType linkType) {
-    m_linkType = linkType;
-    // TODO(rryan) update value based on link type.
+double EffectParameter::getNeutralPointOnScale() const {
+    return m_parameter.neutralPointOnScale();
 }
 
 QVariant EffectParameter::getValue() const {
@@ -206,26 +203,12 @@ void EffectParameter::setValue(QVariant value, int type) {
         return;
     }
 
-    switch (m_parameter.valueHint()) {
-        case EffectManifestParameter::VALUE_BOOLEAN:
-            m_value = value.toBool();
-            break;
-        case EffectManifestParameter::VALUE_INTEGRAL:
-            m_value = value.toInt();
-            break;
-        case EffectManifestParameter::VALUE_UNKNOWN: // treat unknown as float
-        case EffectManifestParameter::VALUE_FLOAT:
-            // TODO(XXX) Handle inf, -inf, and nan
-            m_value = value.toDouble();
-            break;
-        default:
-            qWarning() << debugString() << "ERROR: Unhandled valueHint";
-            break;
-    }
-
-    if (clampValue()) {
+    if (clampValue(&value)) {
         qWarning() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
+
+    m_value = value;
+
     updateEngineState(type);
     emit(valueChanged(m_value));
 }
@@ -240,25 +223,11 @@ void EffectParameter::setDefault(QVariant dflt) {
         return;
     }
 
-    switch (m_parameter.valueHint()) {
-        case EffectManifestParameter::VALUE_BOOLEAN:
-            m_default = dflt.toBool();
-            break;
-        case EffectManifestParameter::VALUE_INTEGRAL:
-            m_default = dflt.toInt();
-            break;
-        case EffectManifestParameter::VALUE_UNKNOWN:
-        case EffectManifestParameter::VALUE_FLOAT:
-            m_default = dflt.toDouble();
-            break;
-        default:
-            qWarning() << debugString() << "ERROR: Unhandled valueHint";
-            break;
-    }
-
-    if (clampDefault()) {
+    if (clampValue(&dflt)) {
         qWarning() << debugString() << "WARNING: Default parameter value was outside of range, clamped.";
     }
+
+    m_default = dflt;
 
     updateEngineState();
 }
@@ -327,11 +296,11 @@ void EffectParameter::setMinimum(QVariant minimum) {
             break;
     }
 
-    if (clampValue()) {
+    if (clampValue(&m_value)) {
         qWarning() << debugString() << "WARNING: Value was outside of new minimum, clamped.";
     }
 
-    if (clampDefault()) {
+    if (clampValue(&m_default)) {
         qWarning() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
     }
 
@@ -402,11 +371,11 @@ void EffectParameter::setMaximum(QVariant maximum) {
             break;
     }
 
-    if (clampValue()) {
+    if (clampValue(&m_value)) {
         qWarning() << debugString() << "WARNING: Value was outside of new maximum, clamped.";
     }
 
-    if (clampDefault()) {
+    if (clampValue(&m_default)) {
         qWarning() << debugString() << "WARNING: Default was outside of new maximum, clamped.";
     }
 

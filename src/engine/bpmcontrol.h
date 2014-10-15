@@ -26,8 +26,14 @@ class BpmControl : public EngineControl {
 
     double getBpm() const;
     double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
-    double getSyncAdjustment(bool userTweakingSync);
-    double getSyncedRate() const;
+    // When in master sync mode, ratecontrol calls calcSyncedRate to figure out
+    // how fast the track should play back.  The returned rate is usually just
+    // the correct pitch to match bpms.  The usertweak argument represents
+    // how much the user is nudging the pitch to get two tracks into sync, and
+    // that value is added to the rate by bpmcontrol.  The rate may be
+    // further adjusted if bpmcontrol discovers that the tracks have fallen
+    // out of sync.
+    double calcSyncedRate(double userTweak);
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
     double getBeatDistance(double dThisPosition) const;
@@ -88,6 +94,7 @@ class BpmControl : public EngineControl {
         return syncModeFromDouble(m_pSyncMode->get());
     }
     bool syncTempo();
+    double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
 
     friend class SyncControl;
 
@@ -133,7 +140,8 @@ class BpmControl : public EngineControl {
     ControlObjectSlave* m_pThisBeatDistance;
     double m_dSyncTargetBeatDistance;
     double m_dSyncInstantaneousBpm;
-    double m_dSyncAdjustment;
+    double m_dLastSyncAdjustment;
+    bool m_resetSyncAdjustment;
     double m_dUserOffset;
 
     TapFilter m_tapFilter;

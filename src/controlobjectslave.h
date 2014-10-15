@@ -45,6 +45,11 @@ class ControlObjectSlave : public QObject {
         return m_pControl ? m_pControl->get() : 0.0;
     }
 
+    // Returns the bool interpretation of the value
+    inline bool toBool() const {
+        return get() > 0.0;
+    }
+
     // Returns the parameterized value of the object. Thread safe, non-blocking.
     inline double getParameter() const {
         return m_pControl ? m_pControl->getParameter() : 0.0;

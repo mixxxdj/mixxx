@@ -533,6 +533,12 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShoutcastManager;
 #endif
 
+    // Delete ControlObjectSlaves we created for checking passthrough and
+    // talkover status.
+    qDeleteAll(m_pAuxiliaryPassthrough);
+    qDeleteAll(m_pPassthroughEnabled);
+    qDeleteAll(m_micTalkoverControls);
+
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
@@ -1862,12 +1868,14 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
 }
 
 void MixxxMainWindow::slotScanLibrary() {
+    emit(libraryScanStarted());
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(this);
 }
 
 void MixxxMainWindow::slotEnableRescanLibraryAction() {
     m_pLibraryRescan->setEnabled(true);
+    emit(libraryScanFinished());
 }
 
 void MixxxMainWindow::slotOptionsMenuShow() {

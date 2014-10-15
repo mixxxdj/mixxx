@@ -151,6 +151,9 @@ QString BaseSqlTableModel::orderByClause() const {
     QString sort_field = QString("%1.%2").arg(m_tableName, field);
     s.append(sort_field);
 
+#ifdef __SQLITE3__
+    s.append(" COLLATE localeAwareCompare");
+#endif
     s.append((m_eSortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
              QLatin1String(" DESC"));
     return s;
@@ -325,8 +328,15 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
+        // It's important that this not be a direct connection, or else the UI
+        // might try to update while a cache operation is in progress, and that
+        // will hit the cache again and cause dangerous reentry cycles
+        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // TODO: A better fix is to have cache and trackpointers defer saving
+        // and deleting, so those operations only take place at the top of
+        // the call stack.
         connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
-                this, SLOT(tracksChanged(QSet<int>)));
+                this, SLOT(tracksChanged(QSet<int>)), Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()

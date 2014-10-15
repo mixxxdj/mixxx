@@ -128,19 +128,19 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         connect(simpleBox, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotBasicEffectChangedOnDeck(int)));
 
-        // Set the configured effect for box and simpleBox or Butterworth8 EQ
+        // Set the configured effect for box and simpleBox or Bessel8 LV-Mix EQ
         // if none is configured
         QString configuredEffect;
         int selectedEffectIndex;
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("EffectForDeck%1").arg(m_deckEffectSelectors.size())),
-                QString("butterwortheq"));
+                QString("bessel8lvmixeq"));
         selectedEffectIndex = box->findData(configuredEffect);
         box->setCurrentIndex(selectedEffectIndex);
 
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("BasicEffectForDeck%1").arg(m_deckBasicEffectSelectors.size())),
-                QString("butterwortheq"));
+                QString("bessel8lvmixeq"));
         selectedEffectIndex = simpleBox->findData(configuredEffect);
         simpleBox->setCurrentIndex(selectedEffectIndex);
 

@@ -1,0 +1,25 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Main deck container.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>MainDeckContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <Template src="skin:left_gutter.xml"/>
+      <Template src="skin:mixer.xml"/>
+      <Template src="skin:right_gutter.xml"/>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_library</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Invert/>
+        <Add>1</Add>
+      </Transform>
+    </Connection>
+  </WidgetGroup>
+</Template>

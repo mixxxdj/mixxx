@@ -136,7 +136,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void slotTrackDirty(TrackInfoObject* pTrack);
     void slotTrackChanged(TrackInfoObject* pTrack);
     void slotTrackClean(TrackInfoObject* pTrack);
-    void slotTrackSave(TrackInfoObject* pTrack);
+    // Called by ~TrackInfoObject right before the track is destroyed.
+    void slotTrackDeleted(TrackInfoObject* pTrack);
 
   private:
     bool isTrackFormatSupported(TrackInfoObject* pTrack) const;
@@ -150,8 +151,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);
 
     void writeAudioMetaData(TrackInfoObject* pTrack);
-    // Called when the TIO reference count drops to 0
-    static void deleteTrack(TrackInfoObject* pTrack);
 
     QSqlDatabase& m_database;
     CueDAO& m_cueDao;
