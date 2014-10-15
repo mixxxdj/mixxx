@@ -5,6 +5,7 @@
 #include <QStringBuilder>
 
 #include "library/dao/directorydao.h"
+#include "library/dao/coverartdao.h"
 #include "library/queryutil.h"
 
 DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
@@ -96,12 +97,12 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     // location column becomes non-unique.
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
-    query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR % "="
-                  ":newFolder WHERE " % DIRECTORYDAO_DIR % " = :oldFolder");
+    query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR %
+                  "=:newFolder WHERE " % DIRECTORYDAO_DIR % " = :oldFolder");
     query.bindValue(":newFolder", newFolder);
     query.bindValue(":oldFolder", oldFolder);
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "coud not relocate directory"
+        LOG_FAILED_QUERY(query) << "could not relocate directory"
                                 << oldFolder << "to" << newFolder;
         return QSet<int>();
     }
@@ -109,16 +110,50 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     FieldEscaper escaper(m_database);
     // on Windows the absolute path starts with the drive name
     // we also need to check for that
-    QString startsWithOldFolder = escaper.escapeStringForLike(QDir(oldFolder).absolutePath() + "/", '%') + "%";
+    QString startsWithOldFolder = escaper.escapeStringForLike(
+        QDir(oldFolder).absolutePath() + "/", '%') + "%";
+
+    // update the location entries for coverArt
+    query.prepare(QString("SELECT " % COVERARTTABLE_LOCATION % " FROM " % COVERART_TABLE %
+                  " WHERE " % COVERARTTABLE_LOCATION % " LIKE '%1' ESCAPE '%'")
+                  .arg(startsWithOldFolder));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "could not relocate directory"
+                                << oldFolder << "to" << newFolder;
+        return QSet<int>();
+    }
+
+    QStringList oldCovers;
+    while (query.next()) {
+        oldCovers.append(query.value(0).toString());
+    }
+
+    QString replacement("UPDATE " % COVERART_TABLE % " SET " %
+                        COVERARTTABLE_LOCATION % " = :newcover "
+                        "WHERE " % COVERARTTABLE_LOCATION % " = :oldcover");
+    query.prepare(replacement);
+
+    foreach (QString oldCover, oldCovers) {
+        QString newCover = oldCover;
+        newCover.replace(0, oldFolder.size(), newFolder);
+        query.bindValue("newcover", newCover);
+        query.bindValue("oldcover", oldCover);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
+            return QSet<int>();
+        }
+    }
+
     // Also update information in the track_locations table. This is where mixxx
-    // gets the location information for a track. Put marks around %1 so that this also works on windows
+    // gets the location information for a track. Put marks around %1 so that
+    // this also works on windows
     query.prepare(QString("SELECT library.id, track_locations.id, track_locations.location "
                           "FROM library INNER JOIN track_locations ON "
                           "track_locations.id = library.location WHERE "
                           "track_locations.location LIKE '%1' ESCAPE '%'")
                   .arg(startsWithOldFolder));
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
+        LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return QSet<int>();
     }
 
@@ -131,8 +166,8 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
         old_locs.append(query.value(2).toString());
     }
 
-    QString replacement("UPDATE track_locations SET location = :newloc "
-                        "WHERE id = :id");
+    replacement = "UPDATE track_locations SET location = :newloc "
+            "WHERE id = :id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
         QString newloc = old_locs.at(i);
@@ -140,23 +175,12 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
         query.bindValue("newloc", newloc);
         query.bindValue("id", loc_ids.at(i));
         if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
+            LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
             return QSet<int>();
         }
     }
 
-    query.prepare(QString("SELECT location FROM track_locations"));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "coud not select track locations";
-        return QSet<int>();
-    }
-
-    while (query.next()) {
-        qDebug() << query.value(0).toString();
-    }
-
     qDebug() << "Relocated tracks:" << ids.size();
-
     transaction.commit();
     return ids;
 }

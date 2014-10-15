@@ -12,6 +12,7 @@
 #include "configobject.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
+#include "library/dao/coverartdao.h"
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
 
@@ -88,7 +89,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     }
 
     // the test db should be always empty when tests are started.
-    ASSERT_EQ(1, dirs.size());
+    EXPECT_EQ(1, dirs.size());
     EXPECT_QSTRING_EQ(testParent, dirs.at(0));
 }
 
@@ -125,13 +126,14 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 
     QStringList dirs = m_DirectoryDao.getDirs();
 
-    ASSERT_EQ(2, dirs.size());
+    EXPECT_EQ(2, dirs.size());
     EXPECT_QSTRING_EQ(testdir, dirs.at(0));
     EXPECT_QSTRING_EQ(testdir2, dirs.at(1));
 }
 
 TEST_F(DirectoryDAOTest, relocateDirTest) {
     DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
+    CoverArtDAO &coverDao = m_pTrackCollection->getCoverArtDAO();
 
     // use a temp dir so that we always use a real existing system path
     QString testdir(QDir::tempPath() + "/TestDir");
@@ -140,6 +142,10 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
 
     directoryDao.addDirectory(testdir);
     directoryDao.addDirectory(test2);
+
+    coverDao.saveCoverArt(testdir + "/cover1.jpg", "hash1");
+    coverDao.saveCoverArt(test2 + "/cover2.jpg", "hash2");
+
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
@@ -157,9 +163,22 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     EXPECT_EQ(2, ids.size());
 
     QStringList dirs = directoryDao.getDirs();
-    ASSERT_EQ(2, dirs.size());
+    EXPECT_EQ(2, dirs.size());
     qSort(dirs);
     EXPECT_THAT(dirs, ElementsAre(test2, testnew));
+
+    // Test if the covers where also moved
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    query.prepare("SELECT " % COVERARTTABLE_LOCATION % " FROM " % COVERART_TABLE);
+    bool success = query.exec();
+    EXPECT_TRUE(success);
+    dirs = QStringList();
+    while (query.next()) {
+        dirs << query.value(0).toString();
+    }
+    qSort(dirs);
+    EXPECT_THAT(dirs, ElementsAre(test2 + "/cover2.jpg",
+                                  testnew + "/cover1.jpg"));
 }
 
 }  // namespace
