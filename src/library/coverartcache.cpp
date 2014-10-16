@@ -284,25 +284,19 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
         return dir.filePath(imglist[0]);
     }
 
-    foreach (QString img, imglist) {
-        // cover with the same name of the trackFilename.
-        if (img.contains(trackBaseName, Qt::CaseInsensitive)) {
-            return dir.filePath(img);
-        // cover with the same name of the album.
-        } else if (!album.isEmpty() && img.contains(album, Qt::CaseInsensitive)) {
-            return dir.filePath(img);
-        // cover named as 'cover'
-        } else if (img.contains("cover", Qt::CaseInsensitive)) {
-            return dir.filePath(img);
-        // cover named as 'front'
-        } else if (img.contains("front", Qt::CaseInsensitive)) {
-            return dir.filePath(img);
-        // cover named as 'album'
-        } else if (img.contains("album", Qt::CaseInsensitive)) {
-            return dir.filePath(img);
-        // cover named as 'folder'
-        } else if (img.contains("folder", Qt::CaseInsensitive)) {
-            return dir.filePath(img);
+    QStringList prefNames;
+    prefNames << trackBaseName  // cover with the same name of the trackFilename.
+              << album          // cover with the same name of the album.
+              << "cover"        // cover named as 'cover'
+              << "front"        // cover named as 'front'
+              << "album"        // cover named as 'album'
+              << "folder";      // cover named as 'folder'
+
+    foreach (QString name, prefNames) {
+        foreach (QString img, imglist) {
+            if (img.contains(name, Qt::CaseInsensitive)) {
+                return dir.filePath(img);
+            }
         }
     }
 
