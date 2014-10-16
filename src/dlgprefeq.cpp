@@ -40,7 +40,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
-          m_pEffectsManager(pEffectsManager) {
+          m_pEffectsManager(pEffectsManager),
+          m_deckEffectSelectorsSetup(false) {
 
     // Get the EQ Effect Rack
     m_pEQEffectRack = m_pEffectsManager->getEQEffectRack().data();
@@ -123,14 +124,18 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         QString configuredEffect;
         int selectedEffectIndex;
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
-                QString("EffectForDeck%1").arg(m_deckEffectSelectors.size())),
+                QString("EffectForDeck%1").arg(i + 1)),
                 QString("org.mixxx.effects.bessel8lvmixeq"));
         selectedEffectIndex = m_deckEffectSelectors[i]->findData(configuredEffect);
+        if (selectedEffectIndex < 0) {
+            selectedEffectIndex = m_deckEffectSelectors[i]->findData("org.mixxx.effects.bessel8lvmixeq");
+        }
         m_deckEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
     }	
 }
 
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
+    m_deckEffectSelectorsSetup = true; // prevents a recursive call
     QList<QPair<QString, QString> > availableEQEffectNames; 
     if (CheckBoxShowAllEffects->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("yes"));
@@ -143,21 +148,31 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     }
 
     foreach (QComboBox* box, m_deckEffectSelectors) {
-	// Populate comboboxes with all available effects 
-	// Save current selection 
+        // Populate comboboxes with all available effects
+        // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
-	box->clear(); 
-	int currentIndex = -1; // Nothing selected 
+        QString selectedEffectName = box->itemText(box->currentIndex());
+        box->clear();
+        int currentIndex = -1;// Nothing selected
 
-        for (int i = 0; i < availableEQEffectNames.size(); ++i) {
+        int i;
+        for (i = 0; i < availableEQEffectNames.size(); ++i) {
             box->addItem(availableEQEffectNames[i].second);
             box->setItemData(i, QVariant(availableEQEffectNames[i].first));
             if (selectedEffectId == availableEQEffectNames[i].first) {
                 currentIndex = i; 
             }
         }
+        if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
+            // current selection is not part of the new list
+            // So we need to add it
+            box->addItem(selectedEffectName);
+            box->setItemData(i, QVariant(selectedEffectId));
+            currentIndex = i;
+        }
         box->setCurrentIndex(currentIndex); 
     }
+    m_deckEffectSelectorsSetup = false;
 }
 
 void DlgPrefEQ::loadSettings() {
@@ -214,7 +229,7 @@ void DlgPrefEQ::slotResetToDefaults() {
 void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
-    if (c) {
+    if (c && !m_deckEffectSelectorsSetup) {
         int deckNumber = m_deckEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
         emit(effectOnChainSlot(deckNumber, 0, effectId));
@@ -222,6 +237,10 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
                        arg(deckNumber + 1)), ConfigValue(effectId));
+
+        // This is required to remove a previous selected effect that does not
+        // fit to the current ShowAllEffects checkbox
+        slotPopulateDeckEffectSelectors();
     }
 }
 

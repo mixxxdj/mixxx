@@ -76,6 +76,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QList<QComboBox*> m_deckEffectSelectors;
     ControlObjectSlave* m_pNumDecks;
     QString m_eqRackGroup;
+
+    bool m_deckEffectSelectorsSetup;
 };
 
 #endif
