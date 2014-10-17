@@ -119,9 +119,11 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
     // in the table view (cover art column).
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
-    QString cacheKey = QString("%1_%2x%3").arg(info.md5Hash)
-                                          .arg(croppedSize.width())
-                                          .arg(croppedSize.height());
+    QString cacheKey = QString("CoverArtCache_%1_%2x%3")
+                           .arg(info.md5Hash)
+                           .arg(croppedSize.width())
+                           .arg(croppedSize.height());
+
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         if (!issueRepaint) {
@@ -191,9 +193,10 @@ void CoverArtCache::imageLoaded() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    QString cacheKey = QString("%1_%2x%3").arg(res.md5Hash)
-                                          .arg(res.croppedSize.width())
-                                          .arg(res.croppedSize.height());
+    QString cacheKey = QString("CoverArtCache_%1_%2x%3")
+                           .arg(res.md5Hash)
+                           .arg(res.croppedSize.width())
+                           .arg(res.croppedSize.height());
 
     QPixmap pixmap;
     QPixmapCache::find(cacheKey, &pixmap);
@@ -327,9 +330,10 @@ void CoverArtCache::imageFound() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    QString cacheKey = QString("%1_%2x%3").arg(res.md5Hash)
-                                          .arg(res.croppedSize.width())
-                                          .arg(res.croppedSize.height());
+    QString cacheKey = QString("CoverArtCache_%1_%2x%3")
+                           .arg(res.md5Hash)
+                           .arg(res.croppedSize.width())
+                           .arg(res.croppedSize.height());
 
     QPixmap pixmap;
     QPixmapCache::find(cacheKey, &pixmap);
