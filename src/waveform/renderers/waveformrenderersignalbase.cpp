@@ -5,7 +5,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
@@ -64,21 +64,21 @@ bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
-    m_pEQEnabled = new ControlObjectThread(
-        ConfigKey("[Mixer Profile]", "EnableEQs"));
-    m_pLowFilterControlObject = new ControlObjectThread(
+    m_pEQEnabled = new ControlObjectSlave(
+            m_waveformRenderer->getGroup(), "EnableWaveformEQs");
+    m_pLowFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(),"filterLow");
-    m_pLowFilterControlObject = new ControlObjectThread(
+    m_pLowFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(),"filterLow");
-    m_pMidFilterControlObject = new ControlObjectThread(
+    m_pMidFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(),"filterMid");
-    m_pHighFilterControlObject = new ControlObjectThread(
+    m_pHighFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(),"filterHigh");
-    m_pLowKillControlObject = new ControlObjectThread(
+    m_pLowKillControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(),"filterLowKill");
-    m_pMidKillControlObject = new ControlObjectThread(
+    m_pMidKillControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(),"filterMidKill");
-    m_pHighKillControlObject = new ControlObjectThread(
+    m_pHighKillControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(),"filterHighKill");
 
     return onInit();

@@ -34,9 +34,8 @@ const int kFrequencyLowerLimit = 16;
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
                      ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
-          m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
-          m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
-          m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
+          m_COLoFreq(CONFIG_KEY, "LoEQFrequency"),
+          m_COHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
@@ -303,11 +302,8 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
 }
 
 void DlgPrefEQ::slotApply() {
-    m_COTLoFreq.slotSet(m_lowEqFreq);
-    m_COTHiFreq.slotSet(m_highEqFreq);
-
-    m_COTEnableEq.slotSet((m_pConfig->getValueString(
-            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), "yes") == QString("yes")));
+    m_COLoFreq.set(m_lowEqFreq);
+    m_COHiFreq.set(m_highEqFreq);
 }
 
 void DlgPrefEQ::slotUpdate() {

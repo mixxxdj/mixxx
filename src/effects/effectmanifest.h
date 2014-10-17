@@ -21,7 +21,7 @@
 // example, a database-backed manifest)
 class EffectManifest {
   public:
-    EffectManifest() : m_isEQ(false) { }
+    EffectManifest() : m_isMixingEQ(false) { }
     virtual ~EffectManifest() {
         //qDebug() << debugString() << "deleted";
     }
@@ -59,11 +59,11 @@ class EffectManifest {
     }
 
     virtual const bool& isEQ() const {
-        return m_isEQ;
+        return m_isMixingEQ;
     }
 
-    virtual void setIsEQ(const bool value) {
-        m_isEQ = value;
+    virtual void setIsMixingEQ(const bool value) {
+        m_isMixingEQ = value;
     }
 
     virtual void setDescription(const QString& description) {
@@ -100,7 +100,7 @@ class EffectManifest {
     QString m_version;
     QString m_description;
     // This helps us at DlgPrefEQ's basic selection of Equalizers
-    bool m_isEQ;
+    bool m_isMixingEQ;
     QList<EffectManifestParameter> m_parameters;
     QList<EffectManifestParameter> m_buttonParameters;
 };

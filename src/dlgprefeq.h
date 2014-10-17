@@ -23,7 +23,7 @@
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
 
@@ -64,9 +64,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
 
-    ControlObjectThread m_COTLoFreq;
-    ControlObjectThread m_COTHiFreq;
-    ControlObjectThread m_COTEnableEq;
+    ControlObjectSlave m_COLoFreq;
+    ControlObjectSlave m_COHiFreq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
