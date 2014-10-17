@@ -38,6 +38,9 @@
 #include "engine/enginemicrophone.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
+#ifdef __LILV__
+#include "effects/lv2/lv2backend.h"
+#endif
 #include "engine/engineaux.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -143,6 +146,13 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // effect backends to refer to controls that are produced by the engine.
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
+#ifdef __LILV__
+    LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pLV2Backend);
+    pLV2Backend->enumeratePlugins();
+#else
+    LV2Backend* pLV2Backend = 0;
+#endif
 
     // Sets up the default EffectChains and EffectRack.
     m_pEffectsManager->setupDefaults();
@@ -329,7 +339,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, m_pConfig, m_pLibrary);
+                                    m_pControllerManager, m_pVCManager, pLV2Backend,
+                                    m_pConfig, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
