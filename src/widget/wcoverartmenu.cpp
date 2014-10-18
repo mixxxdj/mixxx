@@ -79,11 +79,12 @@ void WCoverArtMenu::slotChange() {
     QFileInfo fileInfo(selectedCover);
     QString coverPath = fileInfo.absolutePath();
     if (trackPath != coverPath) {
+        QDir trackDir(trackPath);
         QString ext = fileInfo.suffix();
         QStringList filepaths;
-        filepaths << trackPath % "/cover." % ext
-                  << trackPath % "/album." % ext
-                  << trackPath % "/mixxx-cover." % ext;
+        filepaths << trackDir.filePath("cover." % ext)
+                  << trackDir.filePath("album." % ext)
+                  << trackDir.filePath("mixxx-cover." % ext);
 
         foreach (QString filepath, filepaths) {
             if (QFile::copy(selectedCover, filepath)) {
