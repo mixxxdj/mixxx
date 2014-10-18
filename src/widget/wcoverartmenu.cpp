@@ -78,7 +78,9 @@ void WCoverArtMenu::slotChange() {
     QString newCover;
     QFileInfo fileInfo(selectedCover);
     QString coverPath = fileInfo.absolutePath();
-    if (trackPath != coverPath) {
+    if (trackPath == coverPath) {
+        newCover = selectedCover;
+    } else {
         QDir trackDir(trackPath);
         QString ext = fileInfo.suffix();
         QString mixxxCoverFile = trackDir.filePath("mixxx-cover." % ext);
@@ -101,8 +103,6 @@ void WCoverArtMenu::slotChange() {
                 newCover = mixxxCoverFile;
             }
         }
-    } else {
-        newCover = selectedCover;
     }
 
     QPixmap px(newCover);
