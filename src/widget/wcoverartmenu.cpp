@@ -81,10 +81,11 @@ void WCoverArtMenu::slotChange() {
     if (trackPath != coverPath) {
         QDir trackDir(trackPath);
         QString ext = fileInfo.suffix();
+        QString mixxxCoverFile = trackDir.filePath("mixxx-cover." % ext);
         QStringList filepaths;
         filepaths << trackDir.filePath("cover." % ext)
                   << trackDir.filePath("album." % ext)
-                  << trackDir.filePath("mixxx-cover." % ext);
+                  << mixxxCoverFile;
 
         foreach (QString filepath, filepaths) {
             if (QFile::copy(selectedCover, filepath)) {
@@ -95,9 +96,9 @@ void WCoverArtMenu::slotChange() {
 
         if (newCover.isEmpty()) {
             // overwrites "mixxx-cover"
-            QFile::remove(filepaths.last());
-            if (QFile::copy(selectedCover, filepaths.last())) {
-                newCover = filepaths.last();
+            QFile::remove(mixxxCoverFile);
+            if (QFile::copy(selectedCover, mixxxCoverFile)) {
+                newCover = mixxxCoverFile;
             }
         }
     } else {
