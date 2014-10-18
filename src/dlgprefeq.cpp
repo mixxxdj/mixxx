@@ -24,6 +24,7 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "util/math.h"
+#include "playermanager.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
 #define ENABLE_INTERNAL_EQ "EnableEQs"
@@ -95,6 +96,11 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 DlgPrefEQ::~DlgPrefEQ() {
     qDeleteAll(m_deckEffectSelectors);
     m_deckEffectSelectors.clear();
+
+    int iNum = m_enableWaveformEqCOs.count();
+    for (int i=0; i < iNum; i++) {
+        delete (m_enableWaveformEqCOs.takeAt(0)); // Always delete element 0
+    }
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
@@ -103,6 +109,10 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         QHBoxLayout* innerHLayout = new QHBoxLayout();
         QLabel* label = new QLabel(QObject::tr("Deck %1").
                             arg(m_deckEffectSelectors.size() + 1), this);
+
+        m_enableWaveformEqCOs.append(
+                new ControlObject(ConfigKey(PlayerManager::groupForDeck(
+                        m_deckEffectSelectors.size()), "enableWaveformEq")));
 
         // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
@@ -130,6 +140,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             selectedEffectIndex = m_deckEffectSelectors[i]->findData("org.mixxx.effects.bessel8lvmixeq");
         }
         m_deckEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
+        m_enableWaveformEqCOs[i]->set(1.0);
     }	
 }
 
@@ -317,10 +328,8 @@ void DlgPrefEQ::slotBypass(int state) {
         // Disable effect processing for all decks by setting the appropriate
         // controls to 0 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
         int deck = 1;
-        ControlObjectSlave disableControl;
         foreach(QComboBox* box, m_deckEffectSelectors) {
-            disableControl.initialize(ConfigKey(m_eqRackGroup.arg(deck), "enabled"));
-            disableControl.set(0);
+            ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 0);
             deck++;
             box->setEnabled(false);
         }
@@ -331,8 +340,7 @@ void DlgPrefEQ::slotBypass(int state) {
         int deck = 1;
         ControlObjectSlave enableControl;
         foreach(QComboBox* box, m_deckEffectSelectors) {
-            enableControl.initialize(ConfigKey(m_eqRackGroup.arg(deck), "enabled"));
-            enableControl.set(1);
+            ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 1);
             deck++;
             box->setEnabled(true);
         }
@@ -350,7 +358,7 @@ double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
             (maxValue - minValue);
     // Use a non-linear mapping between slider and frequency.
     normValue = normValue * normValue * normValue * normValue;
-    double result = normValue * (kFrequencyUpperLimit-kFrequencyLowerLimit) +
+    double result = normValue * (kFrequencyUpperLimit - kFrequencyLowerLimit) +
             kFrequencyLowerLimit;
     return result;
 }

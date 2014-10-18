@@ -34,7 +34,6 @@ EffectsManager::~EffectsManager() {
         it = m_activeRequests.erase(it);
     }
 
-    delete m_pEnableEq;
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
 }
@@ -201,16 +200,16 @@ void EffectsManager::addEqualizer(int channelNumber) {
     pRack->addEffectChainSlotForEQ();
 
     // Set the EQ to be active on Deck 'channelNumber'
-    ControlObjectSlave cot(QString("[EffectRack%1_EffectUnit%2]").
-        arg(rackNum).arg(channelNumber),
-        QString("group_[Channel%1]_enable").arg(channelNumber));
-    cot.set(1.0);
+    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").
+                arg(rackNum).arg(channelNumber),
+                QString("group_[Channel%1]_enable").arg(channelNumber)),
+            1.0);
 
     // Set the EQ to be fully wet
-    ControlObjectSlave cotMix(QString("[EffectRack%1_EffectUnit%2]").
-        arg(rackNum).arg(channelNumber),
-        QString("mix"));
-    cotMix.set(1.0);
+    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").
+                arg(rackNum).arg(channelNumber),
+                QString("mix")),
+            1.0);
 
     // Create aliases
     ControlDoublePrivate::insertAlias(
@@ -227,6 +226,7 @@ void EffectsManager::addEqualizer(int channelNumber) {
                 ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHigh"),
                 ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
                                   arg(rackNum).arg(channelNumber), "parameter3"));
+
     ControlDoublePrivate::insertAlias(
                 ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterLowKill"),
                 ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
