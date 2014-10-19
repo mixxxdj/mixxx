@@ -42,6 +42,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void fadeNow(double value);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
+    void player3PositionChanged(double value);
+    void player4PositionChanged(double value);
     void player1PlayChanged(double value);
     void player2PlayChanged(double value);
     void transitionValueChanged(int value);
@@ -87,8 +89,14 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     int m_backUpTransition;
     ControlObjectThread* m_pCOPlayPos1;
     ControlObjectThread* m_pCOPlayPos2;
+    ControlObjectThread* m_pCOPlayPos3;
+    ControlObjectThread* m_pCOPlayPos4;
     ControlObjectThread* m_pCOPlay1;
     ControlObjectThread* m_pCOPlay2;
+    ControlObjectThread* m_pCOPlay3;
+    ControlObjectThread* m_pCOPlay4;
+    ControlObjectSlave* m_pCOVolume3;
+    ControlObjectSlave* m_pCOVolume4;
     ControlObjectSlave* m_pCORepeat1;
     ControlObjectSlave* m_pCORepeat2;
     ControlObjectSlave* m_pCOCrossfader;

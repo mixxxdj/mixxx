@@ -112,10 +112,16 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     // playposition is from 0 to 1 (though out of range sets are allowed)
     m_pCOPlayPos1 = new ControlObjectThread("[Channel1]", "playposition");
     m_pCOPlayPos2 = new ControlObjectThread("[Channel2]", "playposition");
+    m_pCOPlayPos3 = new ControlObjectThread("[Channel3]", "playposition");
+    m_pCOPlayPos4 = new ControlObjectThread("[Channel4]", "playposition");
     m_pCOPlay1 = new ControlObjectThread("[Channel1]", "play");
     m_pCOPlay2 = new ControlObjectThread("[Channel2]", "play");
+    m_pCOPlay3 = new ControlObjectThread("[Channel3]", "play");
+    m_pCOPlay4 = new ControlObjectThread("[Channel4]", "play");
     m_pCORepeat1 = new ControlObjectSlave("[Channel1]", "repeat");
     m_pCORepeat2 = new ControlObjectSlave("[Channel2]", "repeat");
+    m_pCOVolume3 = new ControlObjectSlave("[Channel3]", "volume");
+    m_pCOVolume4 = new ControlObjectSlave("[Channel4]", "volume");
     m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
 
@@ -133,10 +139,16 @@ DlgAutoDJ::~DlgAutoDJ() {
     qDebug() << "~DlgAutoDJ()";
     delete m_pCOPlayPos1;
     delete m_pCOPlayPos2;
+    delete m_pCOPlayPos3;
+    delete m_pCOPlayPos4;
     delete m_pCOPlay1;
     delete m_pCOPlay2;
+    delete m_pCOPlay3;
+    delete m_pCOPlay4;
     delete m_pCORepeat1;
     delete m_pCORepeat2;
+    delete m_pCOVolume3;
+    delete m_pCOVolume4;
     delete m_pCOCrossfader;
     delete m_pCOCrossfaderReverse;
     delete m_pCOSkipNext;
@@ -310,6 +322,10 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
                 this, SLOT(player1PositionChanged(double)));
         connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
                 this, SLOT(player2PositionChanged(double)));
+        connect(m_pCOPlayPos3, SIGNAL(valueChanged(double)),
+                this, SLOT(player3PositionChanged(double)));
+        connect(m_pCOPlayPos4, SIGNAL(valueChanged(double)),
+                this, SLOT(player4PositionChanged(double)));
 
         connect(m_pCOPlay1, SIGNAL(valueChanged(double)),
                 this, SLOT(player1PlayChanged(double)));
@@ -348,6 +364,8 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         m_bFadeNow = false;
         m_pCOPlayPos1->disconnect(this);
         m_pCOPlayPos2->disconnect(this);
+        m_pCOPlayPos3->disconnect(this);
+        m_pCOPlayPos4->disconnect(this);
         m_pCOPlay1->disconnect(this);
         m_pCOPlay2->disconnect(this);
         m_pCOCrossfader->set(0);
@@ -527,6 +545,44 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             setCrossfader(crossfadeValue, false); // Move crossfader to the left!
         }
     }
+}
+
+void DlgAutoDJ::player3PositionChanged(double) {
+    // Reduce Deck3 gain, then stop it so it doesn't interfere with Auto DJ.
+    if (m_eState == ADJ_DISABLED) {
+        return;
+    }
+
+    double cur_volume = m_pCOVolume3->get();
+
+    if (cur_volume <= 0.0) {
+        if (m_pCOPlay3->get()) {
+            m_pCOPlay3->set(0.0);
+        }
+        return;
+    }
+
+    const double kVolumeReducePerUpdate = 0.01;
+    m_pCOVolume3->set(cur_volume - kVolumeReducePerUpdate);
+}
+
+void DlgAutoDJ::player4PositionChanged(double) {
+    // Reduce Deck4 gain, then stop it so it doesn't interfere with Auto DJ.
+    if (m_eState == ADJ_DISABLED) {
+        return;
+    }
+
+    double cur_volume = m_pCOVolume4->get();
+
+    if (cur_volume <= 0.0) {
+        if (m_pCOPlay4->get()) {
+            m_pCOPlay4->set(0.0);
+        }
+        return;
+    }
+
+    const double kVolumeReducePerUpdate = 0.01;
+    m_pCOVolume4->set(cur_volume - kVolumeReducePerUpdate);
 }
 
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
