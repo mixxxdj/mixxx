@@ -839,7 +839,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Microphone]", "show_microphone"));
     setVisibilityOptionState(m_pViewShowPreviewDeck,
                              ConfigKey("[PreviewDeck]", "show_previewdeck"));
-    setVisibilityOptionState(m_pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
+    setVisibilityOptionState(m_pViewShowCoverArt,
+                             ConfigKey("[Library]", "show_coverart"));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
