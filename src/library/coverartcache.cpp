@@ -71,19 +71,19 @@ bool CoverArtCache::changeCoverArt(int trackId,
         return false;
     }
     img = rescaleBigImage(img);
-    QString md5Hash = calculateHash(img);
+    QString hash = calculateHash(img);
 
     // Update DB
-    int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, md5Hash);
+    int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, hash);
     m_pTrackDAO->updateCoverArt(trackId, coverId);
 
     QPixmap pixmap;
-    if (QPixmapCache::find(md5Hash, &pixmap)) {
+    if (QPixmapCache::find(hash, &pixmap)) {
         emit(pixmapFound(trackId, pixmap));
         emit(requestRepaint());
     } else {
         pixmap.convertFromImage(img);
-        if (QPixmapCache::insert(md5Hash, pixmap)) {
+        if (QPixmapCache::insert(hash, pixmap)) {
             emit(pixmapFound(trackId, pixmap));
             emit(requestRepaint());
         }
@@ -108,10 +108,10 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
 
     // check if we have already found a cover for this track
     // and if it is just waiting to be inserted/updated in the DB.
-    // In this case, we update the coverLocation and the md5Hash.
+    // In this case, we update the coverLocation and the hash.
     if (m_queueOfUpdates.contains(info.trackId)) {
         info.coverLocation = m_queueOfUpdates[info.trackId].first;
-        info.md5Hash = m_queueOfUpdates[info.trackId].second;
+        info.hash = m_queueOfUpdates[info.trackId].second;
     }
 
     // If this request comes from CoverDelegate (table view),
@@ -120,7 +120,7 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
     QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(info.md5Hash)
+                           .arg(info.hash)
                            .arg(croppedSize.width())
                            .arg(croppedSize.height());
 
@@ -139,7 +139,7 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     CoverArtDAO::CoverArtInfo coverInfo;
-    if (info.md5Hash.isEmpty() ||
+    if (info.hash.isEmpty() ||
            (info.coverLocation != "ID3TAG" && !QFile::exists(info.coverLocation))) {
         coverInfo = m_pCoverArtDAO->getCoverArtInfo(info.trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
@@ -148,7 +148,7 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
     } else {
         coverInfo.trackId = info.trackId;
         coverInfo.coverLocation = info.coverLocation;
-        coverInfo.md5Hash = info.md5Hash;
+        coverInfo.hash = info.hash;
         coverInfo.trackLocation = info.trackLocation;
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
                                    coverInfo, croppedSize, issueRepaint);
@@ -168,7 +168,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo c
     FutureResult res;
     res.trackId = coverInfo.trackId;
     res.coverLocation = coverInfo.coverLocation;
-    res.md5Hash = coverInfo.md5Hash;
+    res.hash = coverInfo.hash;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
 
@@ -194,7 +194,7 @@ void CoverArtCache::imageLoaded() {
     FutureResult res = watcher->result();
 
     QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(res.md5Hash)
+                           .arg(res.hash)
                            .arg(res.croppedSize.width())
                            .arg(res.croppedSize.height());
 
@@ -253,7 +253,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         res.img = m_imgDefaultCover;
     }
 
-    res.md5Hash = calculateHash(res.img);
+    res.hash = calculateHash(res.img);
 
     // adjusting the cover size according to the final purpose
     if (!res.croppedSize.isNull()) {
@@ -331,7 +331,7 @@ void CoverArtCache::imageFound() {
     FutureResult res = watcher->result();
 
     QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(res.md5Hash)
+                           .arg(res.hash)
                            .arg(res.croppedSize.width())
                            .arg(res.croppedSize.height());
 
@@ -351,7 +351,7 @@ void CoverArtCache::imageFound() {
     // update DB
     if (!m_queueOfUpdates.contains(res.trackId)) {
         m_queueOfUpdates.insert(res.trackId,
-                                qMakePair(res.coverLocation, res.md5Hash));
+                                qMakePair(res.coverLocation, res.hash));
         updateDB();
     }
 

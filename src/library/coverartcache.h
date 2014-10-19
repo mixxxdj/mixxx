@@ -11,12 +11,14 @@
 #include "util/singleton.h"
 
 struct CoverInfo {
-  CoverInfo() : trackId(-1), coverLocation(QString()), trackLocation(QString()),
-        md5Hash(QString()) {}
+    CoverInfo() : trackId(-1),
+                  coverLocation(QString()),
+                  trackLocation(QString()),
+                  hash(QString()) {}
     int trackId;
     QString coverLocation;
     QString trackLocation;
-    QString md5Hash;
+    QString hash;
 };
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache>
@@ -61,7 +63,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     struct FutureResult {
         int trackId;
         QString coverLocation;
-        QString md5Hash;
+        QString hash;
         QImage img;
         QSize croppedSize;
         bool issueRepaint;
