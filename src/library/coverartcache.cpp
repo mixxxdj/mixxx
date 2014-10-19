@@ -71,7 +71,7 @@ bool CoverArtCache::changeCoverArt(int trackId,
         return false;
     }
     img = rescaleBigImage(img);
-    QString md5Hash = calculateMD5(img);
+    QString md5Hash = calculateHash(img);
 
     // Update DB
     int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, md5Hash);
@@ -253,7 +253,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         res.img = m_imgDefaultCover;
     }
 
-    res.md5Hash = calculateMD5(res.img);
+    res.md5Hash = calculateHash(res.img);
 
     // adjusting the cover size according to the final purpose
     if (!res.croppedSize.isNull()) {
@@ -403,12 +403,9 @@ QImage CoverArtCache::rescaleBigImage(QImage img) {
     }
 }
 
-QString CoverArtCache::calculateMD5(QImage img) {
+QString CoverArtCache::calculateHash(QImage img) {
     if (img.isNull()) {
         return QString();
     }
-    QByteArray arr((char*)img.bits(), img.byteCount());
-    QCryptographicHash md5(QCryptographicHash::Md5);
-    md5.addData(arr);
-    return md5.result().toHex();
+    return QString::number(qChecksum((char*)img.bits(), img.byteCount()));
 }

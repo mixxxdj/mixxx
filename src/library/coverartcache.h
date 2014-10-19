@@ -106,7 +106,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     // @param size: (desired cover width, cell height)
     QImage cropImage(QImage img, const QSize& finalSize);
 
-    QString calculateMD5(QImage img);
+    QString calculateHash(QImage img);
     QImage rescaleBigImage(QImage img);
     QString searchInTrackDirectory(QString directory,
                                    QString trackBaseName,
