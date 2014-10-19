@@ -685,7 +685,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
-    addControl("[CoverArt]", "show_coverart",
+    addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide the cover art"), guiMenu);
 
