@@ -55,7 +55,8 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    bool m_bEnabled;
+    bool m_bEnabled; // [EffectRackN_EffectUnitN_EffectN], "enabled"
+    bool m_bOldEnabled; // [EffectRackN_EffectUnitN_EffectN], "enabled"
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QVector<EngineEffectParameter*> m_buttonParameters;

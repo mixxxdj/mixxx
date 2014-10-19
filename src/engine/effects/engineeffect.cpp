@@ -1,10 +1,12 @@
 #include "engine/effects/engineeffect.h"
+#include "sampleutil.h"
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
           m_bEnabled(true),
+          m_bOldEnabled(false),
           m_parameters(manifest.parameters().size()),
           m_buttonParameters(manifest.buttonParameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
@@ -61,6 +63,7 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                 qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
                          << "enabled" << message.SetEffectParameters.enabled;
             }
+            m_bOldEnabled = m_bEnabled;
             m_bEnabled = message.SetEffectParameters.enabled;
             response.success = true;
             pResponsePipe->writeMessages(&response, 1);
@@ -123,10 +126,19 @@ void EngineEffect::process(const QString& group,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
                            const GroupFeatureState& groupFeatures) {
-    // The EngineEffectChain checks if we are enabled so we don't have to.
-    if (kEffectDebugOutput && !m_bEnabled) {
-        qDebug() << debugString()
-                 << "WARNING: EngineEffect::process() called on disabled effect.";
-    }
     m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, groupFeatures);
+    if (m_bOldEnabled && !m_bEnabled) {
+        // Fade out (fade to dry signal)
+        SampleUtil::copy2WithRampingGain(pOutput,
+                pInput, 0.0, 1.0,
+                pOutput, 1.0, 0.0,
+                numSamples);
+    } else if (!m_bOldEnabled && m_bEnabled) {
+        // Fade in (fade to wet signal)
+        SampleUtil::copy2WithRampingGain(pOutput,
+                pInput, 1.0, 0.0,
+                pOutput, 0.0, 1.0,
+                numSamples);
+    }
+    m_bOldEnabled = m_bEnabled;
 }
