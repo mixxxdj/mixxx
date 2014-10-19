@@ -82,7 +82,7 @@ void DlgTrackInfo::init(){
     }
 
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
-            this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+            this, SLOT(slotPixmapFound(int, QPixmap)));
     connect(m_pWCoverArtLabel,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
