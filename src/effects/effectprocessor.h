@@ -31,6 +31,8 @@ class EffectProcessor {
                          const GroupFeatureState& groupFeatures) = 0;
 };
 
+// const enum EffectProcessor::EnableState enableState,
+
 // Helper class for automatically fetching group state parameters upon receipt
 // of a group-specific process call.
 template <typename T>

@@ -5,8 +5,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_bEnabled(true),
-          m_bOldEnabled(false),
+          m_enableState(ENABLING),
           m_parameters(manifest.parameters().size()),
           m_buttonParameters(manifest.buttonParameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
@@ -63,8 +62,13 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                 qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
                          << "enabled" << message.SetEffectParameters.enabled;
             }
-            m_bOldEnabled = m_bEnabled;
-            m_bEnabled = message.SetEffectParameters.enabled;
+
+            if (m_enableState != DISABLED && !message.SetEffectParameters.enabled) {
+                m_enableState = DISABLING;
+            } else if (m_enableState == DISABLED && message.SetEffectParameters.enabled) {
+                m_enableState = ENABLING;
+            }
+
             response.success = true;
             pResponsePipe->writeMessages(&response, 1);
             return true;
@@ -127,18 +131,19 @@ void EngineEffect::process(const QString& group,
                            const unsigned int sampleRate,
                            const GroupFeatureState& groupFeatures) {
     m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, groupFeatures);
-    if (m_bOldEnabled && !m_bEnabled) {
+    if (m_enableState == DISABLING) {
         // Fade out (fade to dry signal)
         SampleUtil::copy2WithRampingGain(pOutput,
                 pInput, 0.0, 1.0,
                 pOutput, 1.0, 0.0,
                 numSamples);
-    } else if (!m_bOldEnabled && m_bEnabled) {
+        m_enableState = DISABLED;
+    } else if (m_enableState == ENABLING) {
         // Fade in (fade to wet signal)
         SampleUtil::copy2WithRampingGain(pOutput,
                 pInput, 1.0, 0.0,
                 pOutput, 0.0, 1.0,
                 numSamples);
+        m_enableState = ENABLED;
     }
-    m_bOldEnabled = m_bEnabled;
 }

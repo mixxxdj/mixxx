@@ -17,6 +17,15 @@
 
 class EngineEffect : public EffectsRequestHandler {
   public:
+
+    enum EnableState {
+        DISABLED = 0x00,
+        ENABLED = 0x01,
+        DISABLING = 0x02,
+        ENABLING = 0x03
+    };
+
+
     EngineEffect(const EffectManifest& manifest,
                  const QSet<QString>& registeredGroups,
                  EffectInstantiatorPointer pInstantiator);
@@ -45,7 +54,7 @@ class EngineEffect : public EffectsRequestHandler {
                  const GroupFeatureState& groupFeatures);
 
     bool enabled() const {
-        return m_bEnabled;
+        return m_enableState != DISABLED;
     }
 
   private:
@@ -56,7 +65,7 @@ class EngineEffect : public EffectsRequestHandler {
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
     bool m_bEnabled; // [EffectRackN_EffectUnitN_EffectN], "enabled"
-    bool m_bOldEnabled; // [EffectRackN_EffectUnitN_EffectN], "enabled"
+    enum EnableState m_enableState;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QVector<EngineEffectParameter*> m_buttonParameters;
