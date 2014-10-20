@@ -699,10 +699,6 @@ qproperty-layoutAlignment: 'AlignCenter';
     margin-right: 1px;
 }
 
-WLabel {
-  qproperty-alignment: 'AlignCenter';
-}
-
 /* Library styling is hard */
 
 QTableView, QTextBrowser, QTreeView {

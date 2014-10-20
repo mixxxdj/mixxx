@@ -80,10 +80,6 @@ class ControlPotmeter : public ControlObject {
                     bool bPersist = false);
     virtual ~ControlPotmeter();
 
-    // Returns the minimum allowed value.
-    double getMin() const;
-    // Returns the maximum allowed value.
-    double getMax() const;
     // Sets the step count of the associated PushButtons.
     void setStepCount(int count);
 
@@ -95,9 +91,6 @@ class ControlPotmeter : public ControlObject {
     void setRange(double dMinValue, double dMaxValue, bool allowOutOfBounds);
 
   protected:
-    double m_dMaxValue;
-    double m_dMinValue;
-    double m_dValueRange;
     bool m_bAllowOutOfBounds;
     PotmeterControls m_controls;
 };

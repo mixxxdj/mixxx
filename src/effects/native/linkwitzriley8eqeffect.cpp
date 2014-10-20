@@ -18,7 +18,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct)"
+        "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
 
     EffectManifestParameter* low = manifest.addParameter();
@@ -29,6 +29,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setNeutralPointOnScale(0.5);
     low->setDefault(1.0);
     low->setMinimum(0);
     low->setMaximum(4.0);
@@ -41,6 +42,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    mid->setNeutralPointOnScale(0.5);    
     mid->setDefault(1.0);
     mid->setMinimum(0);
     mid->setMaximum(4.0);
@@ -53,6 +55,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    high->setNeutralPointOnScale(0.5);
     high->setDefault(1.0);
     high->setMinimum(0);
     high->setMaximum(4.0);

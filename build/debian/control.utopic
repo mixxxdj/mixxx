@@ -1,0 +1,58 @@
+Source: mixxx
+Section: sound
+Priority: optional
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: RJ Ryan <rryan@mixxx.org>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, docbook-to-man, libglu1-mesa-dev, libqt4-opengl-dev | libqt4-dev (>= 4.6.0), scons, libjack-dev, portaudio19-dev, libid3tag0-dev, libmad0-dev, libogg-dev, libsndfile1-dev, libasound2-dev, libvorbis-dev, libsoundtouch1-dev, libmp4v2-dev, libfaad-dev, libportmidi-dev, libtag1-dev, libshout-dev, libqtwebkit-dev, vamp-plugin-sdk, libprotobuf-dev, protobuf-compiler, libusb-1.0-0-dev, libchromaprint-dev, librubberband-dev, libopus-dev, libopusfile-dev
+Standards-Version: 3.7.3
+Homepage: http://www.mixxx.org/
+
+Package: mixxx
+Section: sound
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-opengl, libqt4-svg, libqt4-xmlpatterns, libqt4-webkit, libqt4-sql, libqt4-sql-sqlite
+Recommends: libmp3lame0
+Suggests: pdf-viewer
+Replaces: mixxx-data
+Description: Free Digital DJ software. Start making live DJ mixes today.
+ Mixxx is free DJ software that gives you everything you need to perform live DJ
+ mixes. Blend songs together with automatic BPM matching and remix on-the-fly
+ with looping and hot cues. Whether you're a pro DJ or just getting started,
+ Mixxx has you covered.
+ .
+ Mixxx works with ALSA, JACK, OSS and supports many popular DJ controllers.
+ .
+ Features include:
+  - Parallel or split scratchable waveform displays
+  - Waveform summaries
+  - Spinning vinyl widgets
+  - MP3, OGG, WAVE, FLAC, and optional unprotected aac (m4a) playback
+  - Extra playback formats through plugins
+  - Wave and Ogg recording with optional MP3 support
+  - Fast, database-powered library
+  - Crates and playlists for organizing your music
+  - Reads iTunes, Traktor, and Rhythmbox libraries
+  - History section keeps track of your setlists
+  - Internet Broadcasting with Shoutcast and Icecast
+  - Microphone Support
+  - Automatic crossfading with Auto DJ
+  - Pitch-independent time stretch (key lock)
+  - Adjustable pitch range
+  - Ramping pitchbend controls
+  - ReplayGain volume normalization
+  - Quantized loops, hotcues, and beatloops
+  - Synchronization and auto-beatmatching
+  - BPM detection and estimation
+  - Bulk BPM analysis
+  - Adjustable EQ shelves
+  - Crossfader curve control
+  - Sampler Decks
+  - Vinyl emulation with Serato, Traktor, and Mixvibes timecode support
+  - Multichannel soundcard support (playback and capture)
+  - Headphone cueing with multiple soundcard support
+  - Skinnable interface with several skins bundled
+  - Support for many DJ MIDI and HID controllers out-of-the-box
+  - Advanced MIDI/HID scripting engine
+  - Multiple simultaneous MIDI/HID controllers
+  - Multi-core CPU support
+  - 24-bit/96000 Hz playback and capture

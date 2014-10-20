@@ -72,19 +72,19 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
                 QString pixmapPath;
-                
+
                 pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
                 if (!pixmapPath.isEmpty()) {
                     setPixmap(iState, false, pixmapPath);
                 }
-                
+
                 pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
                 if (!pixmapPath.isEmpty()) {
                     setPixmap(iState, true, pixmapPath);
                 }
-                
+
                 m_text.replace(iState, context.selectString(state, "Text"));
-                QString alignment = context.selectString(state, "Alignment");
+                QString alignment = context.selectString(state, "Alignment").toLower();
                 if (alignment == "left") {
                     m_align.replace(iState, Qt::AlignLeft);
                 } else if (alignment == "right") {
