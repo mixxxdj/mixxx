@@ -1,9 +1,7 @@
-#include <QCryptographicHash>
-#include <QDir>
-#include <QPixmap>
+#include <QFutureWatcher>
+#include <QPixmapCache>
 #include <QStringBuilder>
 #include <QtConcurrentRun>
-#include <QTimer>
 
 #include "coverartcache.h"
 #include "soundsourceproxy.h"

@@ -1,10 +1,7 @@
 #ifndef COVERARTCACHE_H
 #define COVERARTCACHE_H
 
-#include <QImage>
-#include <QFutureWatcher>
 #include <QObject>
-#include <QPixmapCache>
 
 #include "library/dao/coverartdao.h"
 #include "library/dao/trackdao.h"
