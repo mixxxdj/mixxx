@@ -1,5 +1,4 @@
 #include <QFileDialog>
-#include <QIcon>
 #include <QStringBuilder>
 
 #include "wcoverartmenu.h"
