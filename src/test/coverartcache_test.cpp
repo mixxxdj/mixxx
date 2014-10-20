@@ -88,8 +88,8 @@ TEST_F(CoverArtCacheTest, loadImage) {
         QDir(kTrackLocationTest), true);
     SoundSourceProxy proxy(kTrackLocationTest, securityToken);
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    ASSERT_TRUE(pProxiedSoundSource != NULL && proxy.parseHeader() == OK);
-    img = pProxiedSoundSource->getCoverArt();
+    ASSERT_TRUE(pProxiedSoundSource != NULL);
+    img = proxy.parseCoverArt();
 
     EXPECT_TRUE(img.operator==(res.img));
 }
@@ -157,8 +157,8 @@ TEST_F(CoverArtCacheTest, searchImage) {
         QDir(kTrackLocationTest), true);
     SoundSourceProxy proxy(kTrackLocationTest, securityToken);
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    ASSERT_TRUE(pProxiedSoundSource != NULL && proxy.parseHeader() == OK);
-    QImage img = pProxiedSoundSource->getCoverArt();
+    ASSERT_TRUE(pProxiedSoundSource != NULL);
+    QImage img = proxy.parseCoverArt();
 
     EXPECT_TRUE(img.operator==(res.img));
 

@@ -311,15 +311,14 @@ QImage CoverArtCache::extractEmbeddedCover(QString trackLocation) {
     if (trackLocation.isEmpty()) {
         return QImage();
     }
-
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
                                              QDir(trackLocation), true);
     SoundSourceProxy proxy(trackLocation, securityToken);
     Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
-        return pProxiedSoundSource->getCoverArt();
+    if (pProxiedSoundSource == NULL) {
+        return QImage();
     }
-    return QImage();
+    return proxy.parseCoverArt();
 }
 
 // watcher

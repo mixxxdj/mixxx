@@ -67,6 +67,7 @@ public:
     virtual long unsigned length() = 0;
     static float str2bpm( QString sBpm );
     virtual Result parseHeader() = 0;
+    virtual QImage parseCoverArt() = 0;
     //static QList<QString> supportedFileExtensions(); //CRAP can't do this!
     /** Return a list of cue points stored in the file */
     virtual QList<long> *getCuePoints();
@@ -92,7 +93,6 @@ public:
     virtual int getBitrate();
     virtual unsigned int getSampleRate();
     virtual int getChannels();
-    virtual QImage getCoverArt();
 
     virtual void setArtist(QString);
     virtual void setTitle(QString);
@@ -112,7 +112,6 @@ public:
     virtual void setBitrate(int);
     virtual void setSampleRate(unsigned int);
     virtual void setChannels(int);
-    virtual void setCoverArt(QImage);
 
 protected:
     // Automatically collects generic data from a TagLib File: title, artist,
@@ -125,6 +124,13 @@ protected:
     bool processMP4Tag(TagLib::MP4::Tag* mp4);
     void processBpmString(QString tagName, QString sBpm);
     void parseReplayGainString(QString sReplayGain);
+
+    // In order to avoid processing images when it's not
+    // needed (TIO building), we must process it separately.
+    QImage getCoverInID3v2Tag(TagLib::ID3v2::Tag* id3v2);
+    QImage getCoverInAPETag(TagLib::APE::Tag* ape);
+    QImage getCoverInXiphComment(TagLib::Ogg::XiphComment* xiph);
+    QImage getCoverInMP4Tag(TagLib::MP4::Tag* mp4);
 
     // Taglib strings can be NULL and using it could cause some segfaults,
     // so in this case it will return a QString()
@@ -144,7 +150,6 @@ protected:
     QString m_sComposer;
     QString m_sGrouping;
     QString m_sTrackNumber;
-    QImage m_coverArt;
     float m_fReplayGain;
     QString m_sKey;
     float m_fBPM;

@@ -48,6 +48,7 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
     Result parseHeader();
+    QImage parseCoverArt();
     unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();

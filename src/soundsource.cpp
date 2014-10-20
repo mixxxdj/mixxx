@@ -149,10 +149,6 @@ int SoundSource::getChannels()
 {
     return m_iChannels;
 }
-QImage SoundSource::getCoverArt()
-{
-    return m_coverArt;
-}
 
 void SoundSource::setArtist(QString artist)
 {
@@ -221,10 +217,6 @@ void SoundSource::setSampleRate(unsigned int samplerate)
 void SoundSource::setChannels(int channels)
 {
     m_iChannels = channels;
-}
-void SoundSource::setCoverArt(QImage picture)
-{
-    m_coverArt = picture;
 }
 QString SoundSource::getKey(){
     return m_sKey;
@@ -390,18 +382,6 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
         setGrouping(sGrouping);
     }
 
-    // Get Cover Art
-    TagLib::ID3v2::FrameList covertArtFrame = id3v2->frameListMap()["APIC"];
-    if (!covertArtFrame.isEmpty()) {
-        TagLib::ID3v2::AttachedPictureFrame* picframe = static_cast
-                <TagLib::ID3v2::AttachedPictureFrame*>(covertArtFrame.front());
-        TagLib::ByteVector data = picframe->picture();
-        QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
-                                              data.data()),
-                                              data.size());
-        setCoverArt(picture);
-    }
-
     return true;
 }
 
@@ -410,21 +390,6 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
         for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
                 it != ape->itemListMap().end(); ++it) {
                 qDebug() << "APE" << toQString((*it).first) << "-" << toQString((*it).second.toString());
-        }
-    }
-
-    // Get Cover Art
-    if (ape->itemListMap().contains("COVER ART (FRONT)"))
-    {
-        const TagLib::ByteVector nullStringTerminator(1, 0);
-        TagLib::ByteVector item = ape->itemListMap()["COVER ART (FRONT)"].value();
-        int pos = item.find(nullStringTerminator);	// skip the filename
-        if (++pos > 0) {
-            const TagLib::ByteVector& data = item.mid(pos);
-            QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
-                                                  data.data()),
-                                                  data.size());
-            setCoverArt(picture);
         }
     }
 
@@ -465,20 +430,6 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
                 it != xiph->fieldListMap().end(); ++it) {
             qDebug() << "XIPH" << toQString((*it).first) << "-" << toQString((*it).second.toString());
         }
-    }
-
-    // Get Cover Art
-    if (xiph->fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
-        QByteArray data(QByteArray::fromBase64(
-            xiph->fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
-        TagLib::ByteVector tdata(data.data(), data.size());
-        TagLib::FLAC::Picture p(tdata);
-        data = QByteArray(p.data().data(), p.data().size());
-        setCoverArt(QImage::fromData(data));
-    } else if (xiph->fieldListMap().contains("COVERART")) {
-        QByteArray data(QByteArray::fromBase64(
-            xiph->fieldListMap()["COVERART"].toString().toCString()));
-        setCoverArt(QImage::fromData(data));
     }
 
     // Some tags use "BPM" so check for that.
@@ -559,17 +510,6 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
         }
     }
 
-    // Get Cover Art
-    if (mp4->itemListMap().contains("covr")) {
-        TagLib::MP4::CoverArtList coverArtList = mp4->itemListMap()["covr"]
-                                                        .toCoverArtList();
-        TagLib::ByteVector data = coverArtList.front().data();
-        QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
-                                              data.data()),
-                                              data.size());
-        setCoverArt(picture);
-    }
-
     // Get BPM
     if (mp4->itemListMap().contains("tmpo")) {
         QString sBpm = toQString(
@@ -623,6 +563,80 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
     }
 
     return true;
+}
+
+QImage SoundSource::getCoverInID3v2Tag(TagLib::ID3v2::Tag *id3v2) {
+    if (!id3v2) {
+        return QImage();
+    }
+
+    QImage coverArt;
+    TagLib::ID3v2::FrameList covertArtFrame = id3v2->frameListMap()["APIC"];
+    if (!covertArtFrame.isEmpty()) {
+        TagLib::ID3v2::AttachedPictureFrame* picframe = static_cast
+                <TagLib::ID3v2::AttachedPictureFrame*>(covertArtFrame.front());
+        TagLib::ByteVector data = picframe->picture();
+        coverArt = QImage::fromData(
+            reinterpret_cast<const uchar *>(data.data()), data.size());
+    }
+    return coverArt;
+}
+
+QImage SoundSource::getCoverInAPETag(TagLib::APE::Tag *ape) {
+    if (!ape) {
+        return QImage();
+    }
+
+    QImage coverArt;
+    if (ape->itemListMap().contains("COVER ART (FRONT)"))
+    {
+        const TagLib::ByteVector nullStringTerminator(1, 0);
+        TagLib::ByteVector item = ape->itemListMap()["COVER ART (FRONT)"].value();
+        int pos = item.find(nullStringTerminator);	// skip the filename
+        if (++pos > 0) {
+            const TagLib::ByteVector& data = item.mid(pos);
+            coverArt = QImage::fromData(
+                reinterpret_cast<const uchar *>(data.data()), data.size());
+        }
+    }
+    return coverArt;
+}
+
+QImage SoundSource::getCoverInXiphComment(TagLib::Ogg::XiphComment *xiph) {
+    if (!xiph) {
+        return QImage();
+    }
+
+    QImage coverArt;
+    if (xiph->fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
+        QByteArray data(QByteArray::fromBase64(
+            xiph->fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
+        TagLib::ByteVector tdata(data.data(), data.size());
+        TagLib::FLAC::Picture p(tdata);
+        data = QByteArray(p.data().data(), p.data().size());
+        coverArt = QImage::fromData(data);
+    } else if (xiph->fieldListMap().contains("COVERART")) {
+        QByteArray data(QByteArray::fromBase64(
+            xiph->fieldListMap()["COVERART"].toString().toCString()));
+        coverArt = QImage::fromData(data);
+    }
+    return coverArt;
+}
+
+QImage SoundSource::getCoverInMP4Tag(TagLib::MP4::Tag *mp4) {
+    if (!mp4) {
+        return QImage();
+    }
+
+    QImage coverArt;
+    if (mp4->itemListMap().contains("covr")) {
+        TagLib::MP4::CoverArtList coverArtList = mp4->itemListMap()["covr"]
+                                                        .toCoverArtList();
+        TagLib::ByteVector data = coverArtList.front().data();
+        coverArt = QImage::fromData(
+            reinterpret_cast<const uchar *>(data.data()), data.size());
+    }
+    return coverArt;
 }
 
 } //namespace Mixxx

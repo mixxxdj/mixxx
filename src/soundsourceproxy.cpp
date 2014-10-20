@@ -359,6 +359,10 @@ Result SoundSourceProxy::parseHeader() {
     return m_pSoundSource ? m_pSoundSource->parseHeader() : ERR;
 }
 
+QImage SoundSourceProxy::parseCoverArt() {
+    return m_pSoundSource ? m_pSoundSource->parseCoverArt() : QImage();
+}
+
 // static
 QStringList SoundSourceProxy::supportedFileExtensions()
 {
