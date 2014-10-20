@@ -142,7 +142,7 @@ bool CrateTableModel::isColumnInternal(int column) {
             (PlayerManager::numPreviewDecks() == 0 &&
              column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_MD5)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
         return true;
     }
     return false;

@@ -57,7 +57,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
             << coverartLocation
-            << COVERART_TABLE + "." + COVERARTTABLE_MD5;
+            << COVERART_TABLE + "." + COVERARTTABLE_HASH;
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";

@@ -21,20 +21,20 @@ void CoverArtDAO::initialize() {
              << m_database.connectionName();
 }
 
-int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
-    if (md5Hash.isEmpty()) {
+int CoverArtDAO::saveCoverArt(QString coverLocation, QString coverHash) {
+    if (coverHash.isEmpty()) {
         return -1;
     }
 
-    int coverId = getCoverArtId(md5Hash);
+    int coverId = getCoverArtId(coverHash);
     if (coverId == -1) { // new cover
         QSqlQuery query(m_database);
 
         query.prepare("INSERT INTO " % COVERART_TABLE % " ("
-                      % COVERARTTABLE_LOCATION % "," % COVERARTTABLE_MD5 % ") "
-                      "VALUES (:location, :md5)");
+                      % COVERARTTABLE_LOCATION % "," % COVERARTTABLE_HASH % ") "
+                      "VALUES (:location, :hash)");
         query.bindValue(":location", coverLocation);
-        query.bindValue(":md5", md5Hash);
+        query.bindValue(":hash", coverHash);
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "Saving new cover (" % coverLocation % ") failed.";
@@ -54,8 +54,8 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
     }
 
     // it'll be used to avoid writing a new ID for
-    // rows which have the same md5 (not changed).
-    QString selectCoverId = QString("SELECT id FROM cover_art WHERE md5='%1'");
+    // rows which have the same hash (not changed).
+    QString selectCoverId = QString("SELECT id FROM cover_art WHERE hash='%1'");
 
     // <trackId, coverId>
     QSet<QPair<int, int> > res;
@@ -65,8 +65,8 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
     QHashIterator<int, QPair<QString, QString> > i(covers);
     i.next();
     res.insert(qMakePair(i.key(), -1));
-    sQuery = QString("INSERT OR REPLACE INTO cover_art ('id', 'location', 'md5') "
-                     "SELECT (%1) AS 'id', '%2' AS 'location', '%3' AS 'md5' ")
+    sQuery = QString("INSERT OR REPLACE INTO cover_art ('id', 'location', 'hash') "
+                     "SELECT (%1) AS 'id', '%2' AS 'location', '%3' AS 'hash' ")
                     .arg(selectCoverId.arg(i.value().second))
                     .arg(i.value().first)
                     .arg(i.value().second);
@@ -116,8 +116,8 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     }
 }
 
-int CoverArtDAO::getCoverArtId(QString md5Hash) {
-    if (md5Hash.isEmpty()) {
+int CoverArtDAO::getCoverArtId(QString coverHash) {
+    if (coverHash.isEmpty()) {
         return -1;
     }
 
@@ -125,8 +125,8 @@ int CoverArtDAO::getCoverArtId(QString md5Hash) {
 
     query.prepare(QString(
         "SELECT " % COVERARTTABLE_ID % " FROM " % COVERART_TABLE %
-        " WHERE " % COVERARTTABLE_MD5 % "=:md5"));
-    query.bindValue(":md5", md5Hash);
+        " WHERE " % COVERARTTABLE_HASH % "=:hash"));
+    query.bindValue(":hash", coverHash);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return -1;
@@ -152,7 +152,7 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     // performance issues...
     QString columns = "album,"                         //0
                       "cover_art.location AS cover,"   //1
-                      "cover_art.md5,"                 //2
+                      "cover_art.hash,"                //2
                       "track_locations.directory,"     //3
                       "track_locations.filename,"      //4
                       "track_locations.location";      //5
@@ -174,7 +174,7 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         coverInfo.trackId = trackId;
         coverInfo.album = query.value(0).toString();
         coverInfo.coverLocation = query.value(1).toString();
-        coverInfo.md5Hash = query.value(2).toString();
+        coverInfo.hash = query.value(2).toString();
         coverInfo.trackDirectory = query.value(3).toString();
         QString filename = query.value(4).toString();
         coverInfo.trackLocation = query.value(5).toString();

@@ -39,20 +39,20 @@ class CoverArtDAOTest : public MixxxTest {
 
 TEST_F(CoverArtDAOTest, saveCoverArt) {
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
-    QString testCoverLoc, testMd5Hash;
+    QString testCoverLoc, testHash;
 
     // adding a empty cover location
-    int coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
+    int coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testHash);
     EXPECT_EQ(-1, coverId);
 
     // adding a new cover
     testCoverLoc = "/a/b/cover1.jpg";
-    testMd5Hash = "abc123xxxCOVER1";
-    coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
+    testHash = "abc123xxxCOVER1";
+    coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testHash);
     EXPECT_TRUE(coverId > 0);
 
     // adding an existing cover
-    int e_coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
+    int e_coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testHash);
     EXPECT_EQ(coverId, e_coverId);
 
     // we do not trust what coverartdao thinks and better check up on it
@@ -60,9 +60,9 @@ TEST_F(CoverArtDAOTest, saveCoverArt) {
     query.prepare(QString(
         "SELECT " % COVERARTTABLE_ID % " FROM " % COVERART_TABLE %
         " WHERE " % COVERARTTABLE_LOCATION % "=:location"
-        " AND " % COVERARTTABLE_MD5 % "=:md5"));
+        " AND " % COVERARTTABLE_HASH % "=:hash"));
     query.bindValue(":location", testCoverLoc);
-    query.bindValue(":md5", testMd5Hash);
+    query.bindValue(":hash", testHash);
     ASSERT_TRUE(query.exec());
     int testCoverId = -1;
     if (query.next()) {
@@ -74,7 +74,7 @@ TEST_F(CoverArtDAOTest, saveCoverArt) {
 // saving many covers at once
 TEST_F(CoverArtDAOTest, saveCoverArts) {
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
-    // <trackId, <coverLoc, md5> >
+    // <trackId, <coverLoc, coverHash> >
     QHash<int, QPair<QString, QString> > covers;
     // <trackId, coverId>
     QSet<QPair<int, int> > res;
@@ -104,7 +104,7 @@ TEST_F(CoverArtDAOTest, saveCoverArts) {
     res = m_CoverArtDAO.saveCoverArt(covers);
     iterateQHashAndQSet(covers, res);
 
-    // adding invalid covers (empty md5hash)
+    // adding invalid covers (empty hash)
     QHash<int, QPair<QString, QString> > invalidCovers;
     QList<int> invalidCoverKeys;
     invalidCoverKeys << 7 << 8;
@@ -154,10 +154,10 @@ void CoverArtDAOTest::iterateQHashAndQSet(QHash<int, QPair<QString, QString> > c
 TEST_F(CoverArtDAOTest, getCoverArtId) {
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
     QString testCoverLoc = "a/b/cover2.jpg";
-    QString testCoverMd5 = "abc123xxxCOVER2";
+    QString testCoverHash = "abc123xxxCOVER2";
 
-    int coverIdSaved = m_CoverArtDAO.saveCoverArt(testCoverLoc, testCoverMd5);
-    int coverId = m_CoverArtDAO.getCoverArtId(testCoverMd5);
+    int coverIdSaved = m_CoverArtDAO.saveCoverArt(testCoverLoc, testCoverHash);
+    int coverId = m_CoverArtDAO.getCoverArtId(testCoverHash);
 
     ASSERT_EQ(coverIdSaved, coverId);
 }
@@ -190,17 +190,17 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
     // adding some covers
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
     QString coverLocation_1 = "foo/cover.jpg";
-    QString coverMd5_1 = "abc123xxxCOVER";
+    QString coverHash_1 = "abc123xxxCOVER";
     QString coverLocation_2 = "foo/folder.jpg";
-    QString coverMd5_2 = "abc123xxxFOLDER";
+    QString coverHash_2 = "abc123xxxFOLDER";
     QString coverLocation_3 = "foo/album.jpg";
-    QString coverMd5_3 = "abc123xxxALBUM";
+    QString coverHash_3 = "abc123xxxALBUM";
     QString coverLocation_4 = "foo/front.jpg";
-    QString coverMd5_4 = "abc123xxxFRONT";
-    int coverId_1 = m_CoverArtDAO.saveCoverArt(coverLocation_1, coverMd5_1);
-    int coverId_2 = m_CoverArtDAO.saveCoverArt(coverLocation_2, coverMd5_2);
-    int coverId_3 = m_CoverArtDAO.saveCoverArt(coverLocation_3, coverMd5_3);
-    int coverId_4 = m_CoverArtDAO.saveCoverArt(coverLocation_4, coverMd5_4);
+    QString coverHash_4 = "abc123xxxFRONT";
+    int coverId_1 = m_CoverArtDAO.saveCoverArt(coverLocation_1, coverHash_1);
+    int coverId_2 = m_CoverArtDAO.saveCoverArt(coverLocation_2, coverHash_2);
+    int coverId_3 = m_CoverArtDAO.saveCoverArt(coverLocation_3, coverHash_3);
+    int coverId_4 = m_CoverArtDAO.saveCoverArt(coverLocation_4, coverHash_4);
     ASSERT_TRUE(coverId_1 > 0);
     ASSERT_TRUE(coverId_2 > 0);
     ASSERT_TRUE(coverId_3 > 0);
@@ -214,10 +214,10 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
     m_CoverArtDAO.deleteUnusedCoverArts();
 
     // checking current id of each cover
-    int coverId_1t = m_CoverArtDAO.getCoverArtId(coverMd5_1);
-    int coverId_2t = m_CoverArtDAO.getCoverArtId(coverMd5_2);
-    int coverId_3t = m_CoverArtDAO.getCoverArtId(coverMd5_3);
-    int coverId_4t = m_CoverArtDAO.getCoverArtId(coverMd5_4);
+    int coverId_1t = m_CoverArtDAO.getCoverArtId(coverHash_1);
+    int coverId_2t = m_CoverArtDAO.getCoverArtId(coverHash_2);
+    int coverId_3t = m_CoverArtDAO.getCoverArtId(coverHash_3);
+    int coverId_4t = m_CoverArtDAO.getCoverArtId(coverHash_4);
     ASSERT_EQ(coverId_1, coverId_1t);
     ASSERT_EQ(coverId_2, coverId_2t);
     ASSERT_EQ(-1, coverId_3t);
@@ -252,8 +252,8 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
     // adding cover art
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
     QString coverLocation = "/getCoverArtInfo/cover.jpg";
-    QString coverMd5 = "abc12345xxxCOVER";
-    int coverId = m_CoverArtDAO.saveCoverArt(coverLocation, coverMd5);
+    QString coverHash = "abc12345xxxCOVER";
+    int coverId = m_CoverArtDAO.saveCoverArt(coverLocation, coverHash);
     trackDAO.updateCoverArt(trackId, coverId);
 
     // getting cover art info from coverartdao
@@ -261,7 +261,7 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
     coverInfo = m_CoverArtDAO.getCoverArtInfo(trackId);
     ASSERT_EQ(trackId, coverInfo.trackId);
     EXPECT_QSTRING_EQ(coverLocation, coverInfo.coverLocation);
-    EXPECT_QSTRING_EQ(coverMd5, coverInfo.md5Hash);
+    EXPECT_QSTRING_EQ(coverHash, coverInfo.hash);
     EXPECT_QSTRING_EQ(album, coverInfo.album);
     EXPECT_QSTRING_EQ(file.baseName(), coverInfo.trackBaseName);
     EXPECT_QSTRING_EQ(file.absolutePath(), coverInfo.trackDirectory);

@@ -67,13 +67,13 @@ TEST_F(CoverArtCacheTest, loadImage) {
     CoverArtDAO::CoverArtInfo info;
     info.trackId = 1;
     info.coverLocation = kCoverLocationTest;
-    info.md5Hash = "md5hash"; // fake md5 hash
+    info.hash = "coverhash"; // fake cover hash
 
     CoverArtCache::FutureResult res;
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
     EXPECT_EQ(info.trackId, res.trackId);
     EXPECT_QSTRING_EQ(kCoverLocationTest, res.coverLocation);
-    EXPECT_QSTRING_EQ(info.md5Hash, res.md5Hash);
+    EXPECT_QSTRING_EQ(info.hash, res.hash);
     EXPECT_TRUE(img.operator==(res.img));
 
     info.trackId = 1;
@@ -82,7 +82,7 @@ TEST_F(CoverArtCacheTest, loadImage) {
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
     EXPECT_EQ(info.trackId, res.trackId);
     EXPECT_QSTRING_EQ("ID3TAG", res.coverLocation);
-    EXPECT_QSTRING_EQ(info.md5Hash, res.md5Hash);
+    EXPECT_QSTRING_EQ(info.hash, res.hash);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
         QDir(kTrackLocationTest), true);
@@ -100,11 +100,11 @@ TEST_F(CoverArtCacheTest, changeImage) {
 
     QString testdir(QDir::tempPath() + "/CoverDir");
     QString testCoverLoc = testdir + "/b/cover1.jpg";
-    QString testMd5Hash = "abc123xxxCOVER1";
+    QString testHash = "abc123xxxCOVER1";
     QString trackLocation_1 = testdir % "/b/test.mp3";
 
     // adding a new cover
-    int coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testMd5Hash);
+    int coverId = m_CoverArtDAO.saveCoverArt(testCoverLoc, testHash);
     EXPECT_TRUE(coverId > 0);
 
     // add Track
@@ -134,7 +134,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     CoverArtDAO::CoverArtInfo cInfo = {
         1,                                             // cInfo.trackId
         "",                                            // cInfo.coverLocation
-        "",                                            // cInfo.md5Hash
+        "",                                            // cInfo.hash
         "album_name",                                  // cInfo.album
         "track",                                       // cInfo.trackBaseName
         trackdir,                                      // cInfo.trackDirectory
@@ -258,7 +258,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     const CoverArtDAO::CoverArtInfo cInfoUtf8 = {
         2,                                             // cInfo.trackId
         "",                                            // cInfo.coverLocation
-        "",                                            // cInfo.md5Hash
+        "",                                            // cInfo.hash
         QString::fromUtf8("öæäîðÑ_album"),             // cInfo.album
         QString::fromUtf8("track_ðÑöæäî"),             // cInfo.trackBaseName
         trackdir,                                      // cInfo.trackDirectory

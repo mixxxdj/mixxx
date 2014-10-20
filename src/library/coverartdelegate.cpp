@@ -9,7 +9,7 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
           m_bOnlyCachedCover(false),
           m_sDefaultCover(m_pCoverCache->getDefaultCoverLocation()),
           m_iCoverLocationColumn(-1),
-          m_iMd5Column(-1),
+          m_iCoverHashColumn(-1),
           m_iIdColumn(-1) {
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
@@ -23,7 +23,7 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
     }
 
     if (pTrackModel) {
-        m_iMd5Column = pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
+        m_iCoverHashColumn = pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
         m_iCoverLocationColumn = pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_LOCATION);
         m_iTrackLocationColumn = pTrackModel->fieldIndex(
@@ -50,7 +50,7 @@ void CoverArtDelegate::paint(QPainter *painter,
         painter->fillRect(option.rect, option.palette.highlight());
     }
 
-    if (m_iIdColumn == -1 || m_iCoverLocationColumn == -1 || m_iMd5Column == -1) {
+    if (m_iIdColumn == -1 || m_iCoverLocationColumn == -1 || m_iCoverHashColumn == -1) {
         return;
     }
 
@@ -69,8 +69,8 @@ void CoverArtDelegate::paint(QPainter *painter,
         CoverInfo info;
         info.trackId = trackId;
         info.coverLocation = coverLocation;
-        info.md5Hash = index.sibling(
-            index.row(), m_iMd5Column).data().toString();
+        info.hash = index.sibling(
+            index.row(), m_iCoverHashColumn).data().toString();
         info.trackLocation = index.sibling(
             index.row(), m_iTrackLocationColumn).data().toString();
         QSize coverSize(100, option.rect.height());

@@ -9,7 +9,7 @@
 const QString COVERART_TABLE = "cover_art";
 const QString COVERARTTABLE_ID = "id";
 const QString COVERARTTABLE_LOCATION = "location";
-const QString COVERARTTABLE_MD5 = "md5";
+const QString COVERARTTABLE_HASH = "hash";
 
 class CoverArtDAO : public DAO {
   public:
@@ -20,17 +20,17 @@ class CoverArtDAO : public DAO {
     void initialize();
 
     void deleteUnusedCoverArts();
-    int getCoverArtId(QString md5Hash);
-    int saveCoverArt(QString coverLocation, QString md5Hash);
+    int getCoverArtId(QString coverHash);
+    int saveCoverArt(QString coverLocation, QString coverHash);
 
-    // @param covers: <trackId, <coverLoc, md5>>
+    // @param covers: <trackId, <coverLoc, hash>>
     // @return <trackId, coverId>
     QSet<QPair<int, int> > saveCoverArt(QHash<int, QPair<QString, QString> > covers);
 
     struct CoverArtInfo {
         int trackId;
         QString coverLocation;
-        QString md5Hash;
+        QString hash;
         QString album;
         QString trackBaseName;
         QString trackDirectory;

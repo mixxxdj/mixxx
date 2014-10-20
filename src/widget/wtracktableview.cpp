@@ -32,7 +32,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_DlgTagFetcher(NULL),
           m_sorting(sorting),
           m_iCoverLocationColumn(-1),
-          m_iMd5Column(-1),
+          m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
           m_lastSelection(0.0),
           m_loadCachedOnly(false) {
@@ -183,7 +183,7 @@ void WTrackTableView::slotGuiTickTime(double cpuTime) {
 }
 
 void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
-    if (m_iCoverLocationColumn < 0 || m_iMd5Column < 0) {
+    if (m_iCoverLocationColumn < 0 || m_iCoverHashColumn < 0) {
         return;
     }
 
@@ -193,7 +193,7 @@ void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             QModelIndex idx = indices.last();
-            info.md5Hash = idx.sibling(idx.row(), m_iMd5Column).data().toString();
+            info.hash = idx.sibling(idx.row(), m_iCoverHashColumn).data().toString();
             info.trackId = trackModel->getTrackId(idx);
             info.coverLocation = idx.sibling(
                 idx.row(), m_iCoverLocationColumn).data().toString();
@@ -224,12 +224,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         return;
     }
 
-    // The "coverLocation" and "md5" column numbers are very often required
+    // The "coverLocation" and "hash" column numbers are required very often
     // by slotLoadCoverArt(). As this value will not change when the model
     // still the same, we must avoid doing hundreds of "fieldIndex" calls
     // when it is completely unnecessary...
     m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
-    m_iMd5Column = trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
+    m_iCoverHashColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
     m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
     m_iTrackLocationColumn = trackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION);
 
@@ -615,8 +615,8 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     info.trackId = trackModel->getTrackId(index);
     info.coverLocation = index.sibling(
         index.row(), m_iCoverLocationColumn).data().toString();
-    info.md5Hash = index.sibling(
-        index.row(), m_iMd5Column).data().toString();
+    info.hash = index.sibling(
+        index.row(), m_iCoverHashColumn).data().toString();
     info.trackLocation = index.sibling(
         index.row(), m_iTrackLocationColumn).data().toString();
 
