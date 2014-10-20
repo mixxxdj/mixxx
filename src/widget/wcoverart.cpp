@@ -5,7 +5,6 @@
 #include <QIcon>
 #include <QPainter>
 
-#include "dlgcoverartfullsize.h"
 #include "wcoverart.h"
 #include "wskincolor.h"
 #include "library/coverartcache.h"
@@ -19,7 +18,8 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_pMenu(new WCoverArtMenu(this)),
           m_loadedCover(m_pCoverCache->getDefaultCoverArt()),
           m_loadedCoverScaled(scaledCoverArt(m_loadedCover)),
-          m_trackDAO(pTrackCollection->getTrackDAO()) {
+          m_trackDAO(pTrackCollection->getTrackDAO()),
+          m_pDlgFullSize(new DlgCoverArtFullSize()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     connect(m_pCoverCache, SIGNAL(pixmapFound(int, QPixmap)),
@@ -32,6 +32,7 @@ WCoverArt::WCoverArt(QWidget* parent,
 
 WCoverArt::~WCoverArt() {
     delete m_pMenu;
+    delete m_pDlgFullSize;
 }
 
 void WCoverArt::setup(QDomNode node, const SkinContext& context) {
@@ -148,15 +149,14 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedCover.trackId);
         m_pMenu->show(event->globalPos(), m_lastRequestedCover, pTrack);
     } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
-        DlgCoverArtFullSize* dlgFullSize = DlgCoverArtFullSize::instance();
-        if (dlgFullSize->isVisible()) {
-            dlgFullSize->close();
+        if (m_pDlgFullSize->isVisible()) {
+            m_pDlgFullSize->close();
         } else {
-            dlgFullSize->init(m_lastRequestedCover);
+            m_pDlgFullSize->init(m_lastRequestedCover);
         }
     }
 }
 
 void WCoverArt::leaveEvent(QEvent*) {
-        DlgCoverArtFullSize::instance()->close();
+    m_pDlgFullSize->close();
 }

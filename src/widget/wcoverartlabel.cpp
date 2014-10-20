@@ -4,7 +4,8 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
           m_pTrack(TrackPointer()),
           m_coverInfo(CoverInfo()),
-          m_pCoverMenu(new WCoverArtMenu(this)) {
+          m_pCoverMenu(new WCoverArtMenu(this)),
+          m_pDlgFullSize(new DlgCoverArtFullSize()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
@@ -19,6 +20,7 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
 
 WCoverArtLabel::~WCoverArtLabel() {
     delete m_pCoverMenu;
+    delete m_pDlgFullSize;
 }
 
 void WCoverArtLabel::setCoverArt(TrackPointer track, CoverInfo info, QPixmap px) {
@@ -45,15 +47,14 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
     }
 
     if (event->button() == Qt::LeftButton) {
-        DlgCoverArtFullSize* dlgFullSize = DlgCoverArtFullSize::instance();
-        if (dlgFullSize->isVisible()) {
-            dlgFullSize->close();
+        if (m_pDlgFullSize->isVisible()) {
+            m_pDlgFullSize->close();
         } else {
-            dlgFullSize->init(m_coverInfo);
+            m_pDlgFullSize->init(m_coverInfo);
         }
     }
 }
 
 void WCoverArtLabel::leaveEvent(QEvent*) {
-    DlgCoverArtFullSize::instance()->close();
+    m_pDlgFullSize->close();
 }

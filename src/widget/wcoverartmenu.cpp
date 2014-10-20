@@ -2,7 +2,6 @@
 #include <QIcon>
 #include <QStringBuilder>
 
-#include "dlgcoverartfullsize.h"
 #include "wcoverartmenu.h"
 #include "library/coverartcache.h"
 #include "library/dao/coverartdao.h"

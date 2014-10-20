@@ -32,7 +32,6 @@
 #include "deck.h"
 #include "defs_urls.h"
 #include "dlgabout.h"
-#include "dlgcoverartfullsize.h"
 #include "dlgpreferences.h"
 #include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
@@ -271,7 +270,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
 
     CoverArtCache::create();
-    DlgCoverArtFullSize::Singleton::create();
 
     m_pLibrary = new Library(this, m_pConfig,
                              m_pRecordingManager);
@@ -537,8 +535,6 @@ MixxxMainWindow::~MixxxMainWindow() {
     // the data models.
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
-
-    DlgCoverArtFullSize::Singleton::destroy();
 
     // RecordingManager depends on config, engine
     qDebug() << "delete RecordingManager " << qTime.elapsed();

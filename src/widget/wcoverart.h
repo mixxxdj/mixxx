@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QWidget>
 
+#include "dlgcoverartfullsize.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
 #include "library/trackcollection.h"
@@ -48,6 +49,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_loadedCoverScaled;
     TrackDAO& m_trackDAO;
     CoverInfo m_lastRequestedCover;
+    DlgCoverArtFullSize* m_pDlgFullSize;
 };
 
 #endif // WCOVERART_H

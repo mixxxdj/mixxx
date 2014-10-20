@@ -4,7 +4,6 @@
 #include <QDesktopServices>
 #include <QtDebug>
 
-#include "dlgcoverartfullsize.h"
 #include "dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"

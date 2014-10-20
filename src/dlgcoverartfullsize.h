@@ -5,21 +5,17 @@
 
 #include "ui_dlgcoverartfullsize.h"
 #include "library/coverartcache.h"
-#include "util/singleton.h"
 
 class DlgCoverArtFullSize
         : public QDialog,
-          public Ui::DlgCoverArtFullSize,
-          public Singleton<DlgCoverArtFullSize>
+          public Ui::DlgCoverArtFullSize
 {
     Q_OBJECT
   public:
-    void init(CoverInfo info);
-
-  protected:
-    DlgCoverArtFullSize();
+    DlgCoverArtFullSize(QWidget* parent=0);
     virtual ~DlgCoverArtFullSize();
-    friend class Singleton<DlgCoverArtFullSize>;
+
+    void init(CoverInfo info);
 };
 
 #endif // DLGCOVERARTFULLSIZE_H

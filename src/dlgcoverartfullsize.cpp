@@ -2,7 +2,8 @@
 
 #include "dlgcoverartfullsize.h"
 
-DlgCoverArtFullSize::DlgCoverArtFullSize() {
+DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent)
+        : QDialog(parent) {
     setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 }

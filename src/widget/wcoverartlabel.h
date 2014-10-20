@@ -30,6 +30,7 @@ class WCoverArtLabel : public QLabel {
     TrackPointer m_pTrack;
     CoverInfo m_coverInfo;
     WCoverArtMenu* m_pCoverMenu;
+    DlgCoverArtFullSize* m_pDlgFullSize;
 };
 
 #endif // WCOVERARTLABEL_H
