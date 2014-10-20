@@ -30,7 +30,7 @@
 									<!--Cover Art-->
 									<CoverArt>
 										<Connection>
-											<ConfigKey>[CoverArt],show_coverart</ConfigKey>
+											<ConfigKey>[Library],show_coverart</ConfigKey>
 											<BindProperty>visible</BindProperty>
 										</Connection>
 									</CoverArt>
