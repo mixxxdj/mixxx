@@ -117,11 +117,6 @@ void WCoverArt::paintEvent(QPaintEvent*) {
         return;
     }
 
-    // forcing resizeEvent when the height (Mixxx) changes.
-    if (parentWidget()->height() != height() * 3 + 1) {
-        resizeEvent(new QResizeEvent(QSize(), QSize()));
-    }
-
     QPainter painter(this);
     int x = 3 + width() / 2 - m_loadedCoverScaled.width() / 2;
     int y = 8;
