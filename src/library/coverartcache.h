@@ -91,7 +91,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
                            const bool emitSignals);
 
   private:
-    static CoverArtCache* m_instance;
     CoverArtDAO* m_pCoverArtDAO;
     TrackDAO* m_pTrackDAO;
     const QString m_sDefaultCoverLocation;

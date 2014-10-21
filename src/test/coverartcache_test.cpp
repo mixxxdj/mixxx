@@ -18,7 +18,6 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
         config()->set(ConfigKey("[Config]","Path"),
                       QDir::currentPath().append("/res"));
         m_pTrackCollection = new TrackCollection(config());
-        CoverArtCache::create();
     }
 
     virtual void TearDown() {
@@ -75,7 +74,7 @@ TEST_F(CoverArtCacheTest, loadImage) {
     EXPECT_EQ(info.trackId, res.trackId);
     EXPECT_QSTRING_EQ(kCoverLocationTest, res.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.hash);
-    EXPECT_TRUE(img.operator==(res.img));
+    EXPECT_EQ(img, res.img);
 
     info.trackId = 1;
     info.coverLocation = "ID3TAG";
@@ -92,7 +91,7 @@ TEST_F(CoverArtCacheTest, loadImage) {
     ASSERT_TRUE(pProxiedSoundSource != NULL);
     img = proxy.parseCoverArt();
 
-    EXPECT_TRUE(img.operator==(res.img));
+    EXPECT_EQ(img, res.img);
 }
 
 TEST_F(CoverArtCacheTest, changeImage) {
@@ -118,11 +117,9 @@ TEST_F(CoverArtCacheTest, changeImage) {
     //associating some covers to some tracks
     trackDAO.updateCoverArt(trackId_1, coverId);
 
-    CoverArtCache* cache = CoverArtCache::instance();
-    cache->setCoverArtDAO(&m_CoverArtDAO);
-    cache->setTrackDAO(&trackDAO);
-    bool res = cache->changeCoverArt(trackId_1, "ID3TAG");
-    EXPECT_TRUE(res);
+    setCoverArtDAO(&m_CoverArtDAO);
+    setTrackDAO(&trackDAO);
+    EXPECT_TRUE(changeCoverArt(trackId_1, "ID3TAG"));
 }
 
 TEST_F(CoverArtCacheTest, searchImage) {
@@ -139,14 +136,14 @@ TEST_F(CoverArtCacheTest, searchImage) {
         "album_name",                                  // cInfo.album
         "track",                                       // cInfo.trackBaseName
         trackdir,                                      // cInfo.trackDirectory
-        trackdir % "/" % cInfo.trackBaseName % ".mp3"  // cInfo.trackLocation
+        trackdir % "/track.mp3"                        // cInfo.trackLocation
     };
 
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
     EXPECT_QSTRING_EQ(res.coverLocation,
-                      CoverArtCache::instance()->getDefaultCoverLocation());
+                      getDefaultCoverLocation());
 
     // looking for a track with embedded cover
     cInfo.trackLocation = kTrackLocationTest;
@@ -161,7 +158,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     ASSERT_TRUE(pProxiedSoundSource != NULL);
     QImage img = proxy.parseCoverArt();
 
-    EXPECT_TRUE(img.operator==(res.img));
+    EXPECT_EQ(img, res.img);
 
     // setting image source and default format
     cInfo.trackLocation = trackdir % "/" % cInfo.trackBaseName % ".mp3";
