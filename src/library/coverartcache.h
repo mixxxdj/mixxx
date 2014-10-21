@@ -69,7 +69,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
                              const QSize& croppedSize,
                              const bool emitSignals);
-    QImage extractEmbeddedCover(QString trackLocation);
 
   public slots:
     void imageFound();

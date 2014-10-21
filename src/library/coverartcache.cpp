@@ -3,7 +3,8 @@
 #include <QStringBuilder>
 #include <QtConcurrentRun>
 
-#include "coverartcache.h"
+#include "library/coverartcache.h"
+#include "library/coverartutils.h"
 #include "soundsourceproxy.h"
 
 CoverArtCache::CoverArtCache()
@@ -60,7 +61,7 @@ bool CoverArtCache::changeCoverArt(int trackId,
     QImage img;
     if (newCoverLocation == "ID3TAG") {
         QString trackLocation = m_pTrackDAO->getTrackLocation(trackId);
-        img = extractEmbeddedCover(trackLocation);
+        img = CoverArtUtils::extractEmbeddedCover(trackLocation);
     } else {
         img = QImage(newCoverLocation);
     }
@@ -171,7 +172,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo c
     res.issueRepaint = issueRepaint;
 
     if (res.coverLocation == "ID3TAG") {
-        res.img = extractEmbeddedCover(coverInfo.trackLocation);
+        res.img = CoverArtUtils::extractEmbeddedCover(coverInfo.trackLocation);
     } else {
         res.img = QImage(res.coverLocation);
     }
@@ -231,7 +232,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 
     // Looking for embedded cover art.
     //
-    res.img = extractEmbeddedCover(coverInfo.trackLocation);
+    res.img = CoverArtUtils::extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.coverLocation = "ID3TAG";
         res.img = rescaleBigImage(res.img);
@@ -303,22 +304,6 @@ QString CoverArtCache::searchInTrackDirectory(QString directory,
 
     // Return the lighter image file.
     return dir.filePath(imglist[0]);
-}
-
-// this method will parse the information stored in the sound file
-// just to extract the embedded cover art
-QImage CoverArtCache::extractEmbeddedCover(QString trackLocation) {
-    if (trackLocation.isEmpty()) {
-        return QImage();
-    }
-    SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-                                             QDir(trackLocation), true);
-    SoundSourceProxy proxy(trackLocation, securityToken);
-    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    if (pProxiedSoundSource == NULL) {
-        return QImage();
-    }
-    return proxy.parseCoverArt();
 }
 
 // watcher

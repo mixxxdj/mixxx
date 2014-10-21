@@ -1,6 +1,7 @@
 #include <QDesktopWidget>
 
 #include "dlgcoverartfullsize.h"
+#include "library/coverartutils.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent)
         : QDialog(parent) {
@@ -29,8 +30,8 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
 
     QPixmap pixmap;
     if (info.coverLocation == "ID3TAG") {
-        pixmap.convertFromImage(
-            cache->extractEmbeddedCover(info.trackLocation));
+        pixmap.convertFromImage(CoverArtUtils::extractEmbeddedCover(
+            info.trackLocation));
     } else {
         pixmap = QPixmap(info.coverLocation);
     }

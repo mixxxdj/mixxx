@@ -67,7 +67,10 @@ public:
     virtual long unsigned length() = 0;
     static float str2bpm( QString sBpm );
     virtual Result parseHeader() = 0;
+
+    // Returns the first cover art image embedded within the file (if any).
     virtual QImage parseCoverArt() = 0;
+
     //static QList<QString> supportedFileExtensions(); //CRAP can't do this!
     /** Return a list of cue points stored in the file */
     virtual QList<long> *getCuePoints();

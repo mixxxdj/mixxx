@@ -3,6 +3,7 @@
 #include <QFileInfo>
 
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
 #include "library/dao/coverartdao.h"
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
@@ -46,19 +47,19 @@ TEST_F(CoverArtCacheTest, extractEmbeddedCover) {
     const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
     // aiff
-    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.aiff");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff");
     EXPECT_TRUE(!cover.isNull());
     // flac
-    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.flac");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac");
     EXPECT_TRUE(!cover.isNull());
     // mp3
-    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.mp3");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3");
     EXPECT_TRUE(!cover.isNull());
     // ogg
-    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.ogg");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg");
     EXPECT_TRUE(!cover.isNull());
     // wav
-    cover = CoverArtCache::extractEmbeddedCover(kTestPath % "cover-test.wav");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav");
     EXPECT_TRUE(!cover.isNull());
 }
 
