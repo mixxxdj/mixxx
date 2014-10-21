@@ -51,12 +51,16 @@ void WCoverArtMenu::slotChange() {
         return;
     }
 
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache == NULL) {
+        return;
+    }
+
     // get initial directory (trackdir or coverdir)
     QString initialDir;
     QString trackPath = m_pTrack->getDirectory();
     if (m_coverInfo.coverLocation.isEmpty() ||
-        m_coverInfo.coverLocation == CoverArtCache::instance()
-            ->getDefaultCoverLocation()) {
+            m_coverInfo.coverLocation == pCache->getDefaultCoverLocation()) {
         initialDir = trackPath;
     } else {
         initialDir = m_coverInfo.coverLocation;
@@ -111,14 +115,19 @@ void WCoverArtMenu::slotReload() {
     if (m_coverInfo.trackId < 1) {
         return;
     }
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache == NULL) {
+        return;
+    }
+
     CoverArtDAO::CoverArtInfo info;
     info.trackId = m_pTrack->getId();
     info.album = m_pTrack->getAlbum();
     info.trackDirectory = m_pTrack->getDirectory();
     info.trackLocation = m_pTrack->getLocation();
     info.trackBaseName = QFileInfo(m_pTrack->getFilename()).baseName();
-    CoverArtCache::FutureResult res =
-            CoverArtCache::instance()->searchImage(info, QSize(0,0), false);
+    CoverArtCache::FutureResult res = pCache->searchImage(
+        info, QSize(0,0), false);
     QPixmap px;
     px.convertFromImage(res.img);
     emit(coverLocationUpdated(res.coverLocation, m_coverInfo.coverLocation, px));
@@ -128,7 +137,11 @@ void WCoverArtMenu::slotUnset() {
     if (m_coverInfo.trackId < 1) {
         return;
     }
-    QString newLoc = CoverArtCache::instance()->getDefaultCoverLocation();
-    QPixmap px = CoverArtCache::instance()->getDefaultCoverArt();
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache == NULL) {
+        return;
+    }
+    QString newLoc = pCache->getDefaultCoverLocation();
+    QPixmap px = pCache->getDefaultCoverArt();
     emit(coverLocationUpdated(newLoc, m_coverInfo.coverLocation, px));
 }

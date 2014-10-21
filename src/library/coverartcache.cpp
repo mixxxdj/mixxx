@@ -51,7 +51,7 @@ QString CoverArtCache::trackInDBHash(int trackId) {
 
 bool CoverArtCache::changeCoverArt(int trackId,
                                    const QString& newCoverLocation) {
-    if (trackId < 1) {
+    if (trackId < 1 || m_pCoverArtDAO == NULL || m_pTrackDAO == NULL) {
         return false;
     }
 
@@ -99,7 +99,7 @@ QPixmap CoverArtCache::requestPixmap(CoverInfo info,
                                      const QSize& croppedSize,
                                      const bool onlyCached,
                                      const bool issueRepaint) {
-    if (info.trackId < 1) {
+    if (info.trackId < 1 || m_pCoverArtDAO == NULL) {
         return QPixmap();
     }
 

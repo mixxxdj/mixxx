@@ -13,17 +13,19 @@ WCoverArt::WCoverArt(QWidget* parent,
                      TrackCollection* pTrackCollection)
         : QWidget(parent),
           WBaseWidget(this),
-          m_pCoverCache(CoverArtCache::instance()),
           m_bEnableWidget(true),
           m_pMenu(new WCoverArtMenu(this)),
-          m_loadedCover(m_pCoverCache->getDefaultCoverArt()),
-          m_loadedCoverScaled(scaledCoverArt(m_loadedCover)),
           m_trackDAO(pTrackCollection->getTrackDAO()),
           m_pDlgFullSize(new DlgCoverArtFullSize()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    connect(m_pCoverCache, SIGNAL(pixmapFound(int, QPixmap)),
-            this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
+                this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+        m_loadedCover = pCache->getDefaultCoverArt();
+        m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+    }
     connect(m_pMenu,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
@@ -64,7 +66,9 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
                                          QPixmap px) {
     Q_UNUSED(oldLoc);
     Q_UNUSED(px);
-    if (!m_pCoverCache->changeCoverArt(m_lastRequestedCover.trackId, newLoc)) {
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL && !pCache->changeCoverArt(
+            m_lastRequestedCover.trackId, newLoc)) {
         // parent must be NULL - it ensures the use of the default style.
         QMessageBox::warning(NULL, tr("Change Cover Art"),
                              tr("Could not change the cover art."));
@@ -82,8 +86,11 @@ void WCoverArt::slotEnableWidget(bool enable) {
 
 void WCoverArt::slotResetWidget() {
     m_lastRequestedCover = CoverInfo();
-    m_loadedCover = m_pCoverCache->getDefaultCoverArt();
-    m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        m_loadedCover = pCache->getDefaultCoverArt();
+        m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+    }
     update();
 }
 
@@ -103,7 +110,10 @@ void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
         return;
     }
     m_lastRequestedCover = info;
-    m_pCoverCache->requestPixmap(info, QSize(0,0), cachedOnly);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        pCache->requestPixmap(info, QSize(0,0), cachedOnly);
+    }
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
@@ -135,7 +145,10 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
         setMaximumHeight(h);
     }
     if (m_lastRequestedCover.trackId < 1) {
-        m_loadedCover = m_pCoverCache->getDefaultCoverArt();
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache != NULL) {
+            m_loadedCover = pCache->getDefaultCoverArt();
+        }
     }
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
 }

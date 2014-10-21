@@ -80,8 +80,11 @@ void DlgTrackInfo::init(){
         m_bpmTapFilter[i] = 0.0f;
     }
 
-    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
-            this, SLOT(slotPixmapFound(int, QPixmap)));
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
+                this, SLOT(slotPixmapFound(int, QPixmap)));
+    }
     connect(m_pWCoverArtLabel,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
@@ -187,7 +190,10 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack, CoverInfo info) {
     connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
             this, SLOT(updateTrackMetadata()));
 
-    CoverArtCache::instance()->requestPixmap(info);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        pCache->requestPixmap(info);
+    }
 }
 
 void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
@@ -365,7 +371,12 @@ void DlgTrackInfo::saveTrack() {
         m_pLoadedTrack->removeCue(pCue);
     }
 
-    bool res = CoverArtCache::instance()->changeCoverArt(
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache == NULL) {
+        return;
+    }
+
+    bool res = pCache->changeCoverArt(
         m_pLoadedTrack->getId(), m_loadedCover.coverLocation);
 
     if (!res) {

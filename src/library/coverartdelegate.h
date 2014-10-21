@@ -1,15 +1,15 @@
 #ifndef COVERARTDELEGATE_H
 #define COVERARTDELEGATE_H
 
+#include <QObject>
+#include <QPainter>
 #include <QStyledItemDelegate>
 #include <QTableView>
 
-#include "library/coverartcache.h"
 #include "library/trackmodel.h"
 
 class CoverArtDelegate : public QStyledItemDelegate {
-  Q_OBJECT
-
+    Q_OBJECT
   public:
     explicit CoverArtDelegate(QObject* parent = NULL);
     virtual ~CoverArtDelegate();
@@ -32,7 +32,6 @@ class CoverArtDelegate : public QStyledItemDelegate {
     void slotOnlyCachedCoverArt(bool b);
 
   private:
-    CoverArtCache* m_pCoverCache;
     bool m_bOnlyCachedCover;
     QString m_sDefaultCover;
     int m_iCoverLocationColumn;

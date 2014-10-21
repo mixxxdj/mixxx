@@ -1,16 +1,19 @@
-#include <QPainter>
-
 #include "library/coverartdelegate.h"
+#include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
-          m_pCoverCache(CoverArtCache::instance()),
           m_bOnlyCachedCover(false),
-          m_sDefaultCover(m_pCoverCache->getDefaultCoverLocation()),
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
+          m_iTrackLocationColumn(-1),
           m_iIdColumn(-1) {
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        m_sDefaultCover = pCache->getDefaultCoverLocation();
+    }
+
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
             this, SLOT(slotOnlyCachedCoverArt(bool)));
@@ -63,6 +66,11 @@ void CoverArtDelegate::paint(QPainter *painter,
     QString coverLocation = index.sibling(
         index.row(), m_iCoverLocationColumn).data().toString();
 
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache == NULL) {
+        return;
+    }
+
     // drawing only an existing cover_art,
     // otherwise leave it blank...
     if (coverLocation != m_sDefaultCover) {
@@ -74,11 +82,12 @@ void CoverArtDelegate::paint(QPainter *painter,
         info.trackLocation = index.sibling(
             index.row(), m_iTrackLocationColumn).data().toString();
         QSize coverSize(100, option.rect.height());
-        QPixmap pixmap = m_pCoverCache->requestPixmap(info, coverSize,
-                                                      m_bOnlyCachedCover, true);
+
+        QPixmap pixmap = pCache->requestPixmap(info, coverSize,
+                                               m_bOnlyCachedCover, true);
 
         if (info.coverLocation.isEmpty()) {
-            info.coverLocation = m_pCoverCache->trackInDBHash(info.trackId);
+            info.coverLocation = pCache->trackInDBHash(info.trackId);
         }
 
         if (!pixmap.isNull() && info.coverLocation != m_sDefaultCover) {

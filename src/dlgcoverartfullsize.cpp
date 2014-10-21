@@ -20,6 +20,10 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
     }
 
     CoverArtCache* cache = CoverArtCache::instance();
+    if (cache == NULL) {
+        return;
+    }
+
     if (info.coverLocation.isEmpty()) {
         info.coverLocation = cache->trackInDBHash(info.trackId);
     }
