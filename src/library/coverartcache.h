@@ -99,7 +99,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QSet<int> m_runningIds;
     QHash<int, QPair<QString, QString> > m_queueOfUpdates;
 
-    QImage rescaleBigImage(QImage img);
     QString searchInTrackDirectory(QString directory,
                                    QString trackBaseName,
                                    QString album);

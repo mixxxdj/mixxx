@@ -7,6 +7,10 @@
 #include "library/coverartutils.h"
 #include "soundsourceproxy.h"
 
+// Large cover art wastes space in our cache when we typicaly won't show them at
+// their full size. This is the max side length we resize images to.
+const int kMaxCoverSize = 300;
+
 CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
           m_pTrackDAO(NULL),
@@ -69,7 +73,7 @@ bool CoverArtCache::changeCoverArt(int trackId,
     if (img.isNull()) {
         return false;
     }
-    img = rescaleBigImage(img);
+    img = CoverArtUtils::maybeResizeImage(img, kMaxCoverSize);
     QString hash = CoverArtUtils::calculateHash(img);
 
     // Update DB
@@ -178,7 +182,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo c
     }
 
     if (res.croppedSize.isNull()) {
-        res.img = rescaleBigImage(res.img);
+        res.img = CoverArtUtils::maybeResizeImage(res.img, kMaxCoverSize);
     } else {
         res.img = CoverArtUtils::cropImage(res.img, res.croppedSize);
     }
@@ -235,7 +239,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.img = CoverArtUtils::extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.coverLocation = "ID3TAG";
-        res.img = rescaleBigImage(res.img);
+        res.img = CoverArtUtils::maybeResizeImage(res.img, kMaxCoverSize);
     }
 
     // Looking for cover stored in track diretory.
@@ -244,7 +248,8 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
                                                    coverInfo.trackBaseName,
                                                    coverInfo.album);
-        res.img = rescaleBigImage(QImage(res.coverLocation));
+        res.img = CoverArtUtils::maybeResizeImage(QImage(res.coverLocation),
+                                                  kMaxCoverSize);
     }
 
     if (res.img.isNull()) {
@@ -354,18 +359,4 @@ void CoverArtCache::updateDB(bool forceUpdate) {
     covers = m_pCoverArtDAO->saveCoverArt(m_queueOfUpdates);
     m_pTrackDAO->updateCoverArt(covers);
     m_queueOfUpdates.clear();
-}
-
-// if it's too big, we have to scale it.
-// big images would be quickly removed from cover cache.
-QImage CoverArtCache::rescaleBigImage(QImage img) {
-    const int kMaxSize = 300;
-    QSize size = img.size();
-    if (size.height() > kMaxSize || size.width() > kMaxSize) {
-        return img.scaled(kMaxSize, kMaxSize,
-                          Qt::KeepAspectRatio,
-                          Qt::SmoothTransformation);
-    } else {
-        return img;
-    }
 }

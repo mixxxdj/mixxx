@@ -49,6 +49,17 @@ class CoverArtUtils {
         return result.copy(0, 0, image.width(), size.height());
     }
 
+    // Resizes the image (preserving aspect ratio) if it is larger than
+    // maxEdgeSize on either side.
+    static QImage maybeResizeImage(const QImage& image, int maxEdgeSize) {
+        if (image.width() > maxEdgeSize || image.height() > maxEdgeSize) {
+            return image.scaled(maxEdgeSize, maxEdgeSize, Qt::KeepAspectRatio,
+                                Qt::SmoothTransformation);
+        }
+        return image;
+    }
+
+
   private:
     CoverArtUtils() {}
 };
