@@ -1,7 +1,9 @@
 #ifndef COVERARTUTILS_H
 #define COVERARTUTILS_H
 
+#include <QByteArray>
 #include <QImage>
+#include <QString>
 #include <QDir>
 
 #include "util/sandbox.h"
@@ -24,6 +26,15 @@ class CoverArtUtils {
             return QImage();
         }
         return proxy.parseCoverArt();
+    }
+
+    static QString calculateHash(const QImage& image) {
+        if (image.isNull()) {
+            return QString();
+        }
+        return QString::number(
+            qChecksum(reinterpret_cast<const char*>(image.constBits()),
+                      image.byteCount()));
     }
 
   private:

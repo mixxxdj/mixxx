@@ -70,7 +70,7 @@ bool CoverArtCache::changeCoverArt(int trackId,
         return false;
     }
     img = rescaleBigImage(img);
-    QString hash = calculateHash(img);
+    QString hash = CoverArtUtils::calculateHash(img);
 
     // Update DB
     int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, hash);
@@ -252,7 +252,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         res.img = m_imgDefaultCover;
     }
 
-    res.hash = calculateHash(res.img);
+    res.hash = CoverArtUtils::calculateHash(res.img);
 
     // adjusting the cover size according to the final purpose
     if (!res.croppedSize.isNull()) {
@@ -383,11 +383,4 @@ QImage CoverArtCache::rescaleBigImage(QImage img) {
     } else {
         return img;
     }
-}
-
-QString CoverArtCache::calculateHash(QImage img) {
-    if (img.isNull()) {
-        return QString();
-    }
-    return QString::number(qChecksum((char*)img.bits(), img.byteCount()));
 }
