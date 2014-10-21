@@ -5,7 +5,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_enableState(ENABLING),
+          m_enableState(EffectProcessor::ENABLING),
           m_parameters(manifest.parameters().size()),
           m_buttonParameters(manifest.buttonParameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
@@ -63,10 +63,10 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                          << "enabled" << message.SetEffectParameters.enabled;
             }
 
-            if (m_enableState != DISABLED && !message.SetEffectParameters.enabled) {
-                m_enableState = DISABLING;
-            } else if (m_enableState == DISABLED && message.SetEffectParameters.enabled) {
-                m_enableState = ENABLING;
+            if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+                m_enableState = EffectProcessor::DISABLING;
+            } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+                m_enableState = EffectProcessor::ENABLING;
             }
 
             response.success = true;
@@ -130,20 +130,20 @@ void EngineEffect::process(const QString& group,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
                            const GroupFeatureState& groupFeatures) {
-    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, groupFeatures);
-    if (m_enableState == DISABLING) {
+    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, m_enableState, groupFeatures);
+    if (m_enableState == EffectProcessor::DISABLING) {
         // Fade out (fade to dry signal)
         SampleUtil::copy2WithRampingGain(pOutput,
                 pInput, 0.0, 1.0,
                 pOutput, 1.0, 0.0,
                 numSamples);
-        m_enableState = DISABLED;
-    } else if (m_enableState == ENABLING) {
+        m_enableState = EffectProcessor::DISABLED;
+    } else if (m_enableState == EffectProcessor::ENABLING) {
         // Fade in (fade to wet signal)
         SampleUtil::copy2WithRampingGain(pOutput,
                 pInput, 1.0, 0.0,
                 pOutput, 0.0, 1.0,
                 numSamples);
-        m_enableState = ENABLED;
+        m_enableState = EffectProcessor::ENABLED;
     }
 }

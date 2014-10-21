@@ -79,6 +79,7 @@ void Bessel4LVMixEQEffect::processGroup(const QString& group,
                                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                                         const unsigned int numSamples,
                                         const unsigned int sampleRate,
+                                        const enum EffectProcessor::EnableState enableState,
                                         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);

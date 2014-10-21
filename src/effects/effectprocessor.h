@@ -11,6 +11,14 @@ class EngineEffect;
 
 class EffectProcessor {
   public:
+    enum EnableState {
+        DISABLED = 0x00,
+        ENABLED = 0x01,
+        DISABLING = 0x02,
+        ENABLING = 0x03
+    };
+
+
     virtual ~EffectProcessor() { }
 
     virtual void initialize(const QSet<QString>& registeredGroups) = 0;
@@ -28,10 +36,9 @@ class EffectProcessor {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
+                         const enum EnableState enableState,
                          const GroupFeatureState& groupFeatures) = 0;
 };
-
-// const enum EffectProcessor::EnableState enableState,
 
 // Helper class for automatically fetching group state parameters upon receipt
 // of a group-specific process call.
@@ -63,6 +70,7 @@ class GroupEffectProcessor : public EffectProcessor {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
+                         const enum EffectProcessor::EnableState enableState,
                          const GroupFeatureState& groupFeatures) {
         T* pState = m_groupState.value(group, NULL);
         if (pState == NULL) {
@@ -70,7 +78,7 @@ class GroupEffectProcessor : public EffectProcessor {
             m_groupState[group] = pState;
             qWarning() << "Allocated group state in the engine for" << group;
         }
-        processGroup(group, pState, pInput, pOutput, numSamples, sampleRate, groupFeatures);
+        processGroup(group, pState, pInput, pOutput, numSamples, sampleRate, enableState, groupFeatures);
     }
 
     virtual void processGroup(const QString& group,
@@ -78,6 +86,7 @@ class GroupEffectProcessor : public EffectProcessor {
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
                               const unsigned int numSamples,
                               const unsigned int sampleRate,
+                              const enum EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) = 0;
 
   private:
