@@ -37,6 +37,18 @@ class CoverArtUtils {
                       image.byteCount()));
     }
 
+    // Crops image to the provided size by first scaling to the appropriate
+    // width and then cropping off the bottom. If size is taller than the image,
+    // black pixels are padded on the bottom.
+    static QImage cropImage(const QImage& image, const QSize& size) {
+        if (image.isNull()) {
+            return QImage();
+        }
+        QImage result = image.scaledToWidth(size.width(),
+                                            Qt::SmoothTransformation);
+        return result.copy(0, 0, image.width(), size.height());
+    }
+
   private:
     CoverArtUtils() {}
 };

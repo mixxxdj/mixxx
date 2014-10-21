@@ -99,10 +99,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     QSet<int> m_runningIds;
     QHash<int, QPair<QString, QString> > m_queueOfUpdates;
 
-    // @param img: image that will be cropped
-    // @param size: (desired cover width, cell height)
-    QImage cropImage(QImage img, const QSize& finalSize);
-
     QImage rescaleBigImage(QImage img);
     QString searchInTrackDirectory(QString directory,
                                    QString trackBaseName,

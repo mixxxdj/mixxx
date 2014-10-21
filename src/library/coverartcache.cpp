@@ -180,7 +180,7 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo c
     if (res.croppedSize.isNull()) {
         res.img = rescaleBigImage(res.img);
     } else {
-        res.img = cropImage(res.img, res.croppedSize);
+        res.img = CoverArtUtils::cropImage(res.img, res.croppedSize);
     }
 
     return res;
@@ -256,7 +256,7 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 
     // adjusting the cover size according to the final purpose
     if (!res.croppedSize.isNull()) {
-        res.img = cropImage(res.img, res.croppedSize);
+        res.img = CoverArtUtils::cropImage(res.img, res.croppedSize);
     }
 
     return res;
@@ -354,21 +354,6 @@ void CoverArtCache::updateDB(bool forceUpdate) {
     covers = m_pCoverArtDAO->saveCoverArt(m_queueOfUpdates);
     m_pTrackDAO->updateCoverArt(covers);
     m_queueOfUpdates.clear();
-}
-
-// It will return a cropped cover that is ready to be
-// used by the tableview-cover_column (CoverDelegate).
-// As QImage is optimized to manipulate images, we will do it here
-// instead of rescale it directly on the CoverDelegate::paint()
-// because it would be much slower and could easily freeze the UI...
-// Also, this method will run in separate thread
-// (via Qtconcurrent - called by searchImage() or loadImage())
-QImage CoverArtCache::cropImage(QImage img, const QSize& finalSize) {
-    if (img.isNull()) {
-        return QImage();
-    }
-    img = img.scaledToWidth(finalSize.width(), Qt::SmoothTransformation);
-    return img.copy(0, 0, img.width(), finalSize.height());
 }
 
 // if it's too big, we have to scale it.
