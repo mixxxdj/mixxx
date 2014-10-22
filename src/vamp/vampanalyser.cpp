@@ -360,8 +360,7 @@ QVector<double> VampAnalyser::GetEndFramesVector() {
          fli != m_Results.end(); ++fli) {
         if (fli->hasDuration) {
             Vamp::RealTime ftime0 = fli->timestamp;
-            Vamp::RealTime ftime1 = ftime0;
-            ftime1 = ftime0 + fli->duration;
+            Vamp::RealTime ftime1 = ftime0 + fli->duration;
             //double ltime1 = ftime1.sec + (double(ftime1.nsec)
             //        / 1000000000.0);
             vectout << static_cast<double>(
