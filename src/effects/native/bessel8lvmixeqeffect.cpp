@@ -23,7 +23,7 @@ EffectManifest Bessel8LVMixEQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A Bessel 8th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
-    manifest.setEffectFadesFromDry(true);
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");

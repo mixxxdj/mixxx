@@ -22,7 +22,7 @@
 class EffectManifest {
   public:
     EffectManifest()
-          : m_effectFadesFromDry(false) {
+          : m_effectRampsFromDry(false) {
 
     }
     virtual ~EffectManifest() {
@@ -83,11 +83,11 @@ class EffectManifest {
         return &m_buttonParameters.last();
     }
 
-    virtual bool effectFadesFromDry() const {
-        return m_effectFadesFromDry;
+    virtual bool effectRampsFromDry() const {
+        return m_effectRampsFromDry;
     }
-    virtual void setEffectFadesFromDry(bool effectFadesFromDry) {
-        m_effectFadesFromDry = effectFadesFromDry;
+    virtual void setEffectRampsFromDry(bool effectFadesFromDry) {
+        m_effectRampsFromDry = effectFadesFromDry;
     }
 
   private:
@@ -102,7 +102,7 @@ class EffectManifest {
     QString m_description;
     QList<EffectManifestParameter> m_parameters;
     QList<EffectManifestParameter> m_buttonParameters;
-    bool m_effectFadesFromDry;
+    bool m_effectRampsFromDry;
 };
 
 #endif /* EFFECTMANIFEST_H */

@@ -30,7 +30,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, manifest);
     m_pProcessor->initialize(registeredGroups);
-    m_effectFadesFromDry = manifest.effectFadesFromDry();
+    m_effectRampsFromDry = manifest.effectRampsFromDry();
 }
 
 EngineEffect::~EngineEffect() {
@@ -132,7 +132,7 @@ void EngineEffect::process(const QString& group,
                            const unsigned int sampleRate,
                            const GroupFeatureState& groupFeatures) {
     m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, m_enableState, groupFeatures);
-    if (!m_effectFadesFromDry) {
+    if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it
         if (m_enableState == EffectProcessor::DISABLING) {
             // Fade out (fade to dry signal)

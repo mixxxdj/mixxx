@@ -57,7 +57,7 @@ class EngineEffect : public EffectsRequestHandler {
     EffectProcessor* m_pProcessor;
     bool m_bEnabled; // [EffectRackN_EffectUnitN_EffectN], "enabled"
     enum EffectProcessor::EnableState m_enableState;
-    bool m_effectFadesFromDry;
+    bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QVector<EngineEffectParameter*> m_buttonParameters;

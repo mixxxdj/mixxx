@@ -17,7 +17,7 @@ EffectManifest GraphicEQEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
         "An 8 band Graphic EQ based on Biquad Filters"));
-    manifest.setEffectFadesFromDry(true);
+    manifest.setEffectRampsFromDry(true);
 
     // Display rounded center frequencies for each filter
     float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500,
