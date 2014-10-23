@@ -46,19 +46,18 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool disableForGroup(const QString& group);
 
     QString m_id;
-    bool m_bEnabled;
+    enum EffectProcessor::EnableState m_enableState;
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
     CSAMPLE* m_pBuffer;
     struct GroupStatus {
-        GroupStatus() : enabled(false),
-                        old_gain(0),
-                        ramp_out(false) {
+        GroupStatus()
+                : old_gain(0),
+                  enable_state(EffectProcessor::DISABLED) {
         }
-        bool enabled;
         CSAMPLE old_gain;
-        bool ramp_out;
+        enum EffectProcessor::EnableState enable_state;
     };
     QMap<QString, GroupStatus> m_groupStatus;
 

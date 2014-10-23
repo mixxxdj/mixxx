@@ -132,17 +132,25 @@ void EngineEffect::process(const QString& group,
                            const unsigned int sampleRate,
                            const enum EffectProcessor::EnableState enableState,
                            const GroupFeatureState& groupFeatures) {
-    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, m_enableState, groupFeatures);
+    enum EffectProcessor::EnableState effectiveEnableState = m_enableState;
+    if (enableState == EffectProcessor::DISABLING) {
+        effectiveEnableState = EffectProcessor::DISABLING;
+    } else if (enableState == EffectProcessor::ENABLING) {
+        effectiveEnableState = EffectProcessor::ENABLING;
+    }
+
+    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate,
+            effectiveEnableState, groupFeatures);
     if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it
-        if (m_enableState == EffectProcessor::DISABLING) {
+        if (effectiveEnableState == EffectProcessor::DISABLING) {
             // Fade out (fade to dry signal)
             SampleUtil::copy2WithRampingGain(pOutput,
                     pInput, 0.0, 1.0,
                     pOutput, 1.0, 0.0,
                     numSamples);
             m_enableState = EffectProcessor::DISABLED;
-        } else if (m_enableState == EffectProcessor::ENABLING) {
+        } else if (effectiveEnableState == EffectProcessor::ENABLING) {
             // Fade in (fade to wet signal)
             SampleUtil::copy2WithRampingGain(pOutput,
                     pInput, 1.0, 0.0,
