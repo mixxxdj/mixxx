@@ -30,6 +30,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, manifest);
     m_pProcessor->initialize(registeredGroups);
+    m_effectFadesFromDry = manifest.effectFadesFromDry();
 }
 
 EngineEffect::~EngineEffect() {
@@ -131,19 +132,22 @@ void EngineEffect::process(const QString& group,
                            const unsigned int sampleRate,
                            const GroupFeatureState& groupFeatures) {
     m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, m_enableState, groupFeatures);
-    if (m_enableState == EffectProcessor::DISABLING) {
-        // Fade out (fade to dry signal)
-        SampleUtil::copy2WithRampingGain(pOutput,
-                pInput, 0.0, 1.0,
-                pOutput, 1.0, 0.0,
-                numSamples);
-        m_enableState = EffectProcessor::DISABLED;
-    } else if (m_enableState == EffectProcessor::ENABLING) {
-        // Fade in (fade to wet signal)
-        SampleUtil::copy2WithRampingGain(pOutput,
-                pInput, 1.0, 0.0,
-                pOutput, 0.0, 1.0,
-                numSamples);
-        m_enableState = EffectProcessor::ENABLED;
+    if (!m_effectFadesFromDry) {
+        // the effect does not fade, so we care for it
+        if (m_enableState == EffectProcessor::DISABLING) {
+            // Fade out (fade to dry signal)
+            SampleUtil::copy2WithRampingGain(pOutput,
+                    pInput, 0.0, 1.0,
+                    pOutput, 1.0, 0.0,
+                    numSamples);
+            m_enableState = EffectProcessor::DISABLED;
+        } else if (m_enableState == EffectProcessor::ENABLING) {
+            // Fade in (fade to wet signal)
+            SampleUtil::copy2WithRampingGain(pOutput,
+                    pInput, 1.0, 0.0,
+                    pOutput, 0.0, 1.0,
+                    numSamples);
+            m_enableState = EffectProcessor::ENABLED;
+        }
     }
 }
