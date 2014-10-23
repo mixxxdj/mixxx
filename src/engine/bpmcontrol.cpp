@@ -723,6 +723,10 @@ void BpmControl::slotBeatsTranslate(double v) {
 
 void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        // Must reset the user offset *before* calling getPhaseOffset(),
+        // otherwise it will always return 0 if master sync is active.
+        m_dUserOffset = 0.0;
+
         double offset = getPhaseOffset(getCurrentSample());
         m_pBeats->translate(-offset);
     }
