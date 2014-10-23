@@ -686,7 +686,6 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                 // When processing playlist entries, playlist name and id have
                 // already been processed and persisted
                 if (key == "Track ID") {
-                    track_reference = -1;
 
                     readNextStartElement(xml);
                     track_reference = xml.readElementText().toInt();
