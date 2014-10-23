@@ -32,7 +32,8 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
         : DlgPreferencePage(parent),
           m_dirListModel(),
           m_pconfig(config),
-          m_pLibrary(pLibrary) {
+          m_pLibrary(pLibrary),
+          m_baddedDirectory(false) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -62,6 +63,34 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() {
+}
+
+void DlgPrefLibrary::slotShow() {
+    m_baddedDirectory = false;
+}
+
+void DlgPrefLibrary::slotHide() {
+    if (!m_baddedDirectory) {
+        return;
+    }
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle(tr("Added Directory"));
+    msgBox.setText(tr("Music Directory Added.\n"
+                      "You added one or more music directories. Contained files"
+                      "won't be available until you rescan your library. Would"
+                      "you like to rescan now?"));
+    QPushButton* scanButton = msgBox.addButton(
+        tr("Scan"), QMessageBox::AcceptRole);
+    msgBox.addButton(QMessageBox::Cancel);
+    msgBox.setDefaultButton(scanButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == scanButton) {
+        emit(scanLibrary());
+        return;
+    }
 }
 
 void DlgPrefLibrary::initialiseDirList(){
@@ -140,6 +169,7 @@ void DlgPrefLibrary::slotAddDir() {
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
+        m_baddedDirectory = true;
     }
 }
 

@@ -149,6 +149,14 @@ class TrackInfoObject : public QObject {
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
 
+    // Returns file modified datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileModifiedTime() const;
+
+    // Returns file creation datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileCreationTime() const;
+
     // Getter/Setter methods for metadata
     // Return title
     QString getTitle() const;
@@ -234,10 +242,6 @@ class TrackInfoObject : public QObject {
 
     bool isDirty();
 
-    // Signals to the creator of this TrackInfoObject to save the Track as it
-    // may be deleted.
-    void doSave();
-
     // Returns true if the track location has changed
     bool locationChanged();
 
@@ -276,7 +280,9 @@ class TrackInfoObject : public QObject {
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
     void clean(TrackInfoObject* pTrack);
-    void save(TrackInfoObject* pTrack);
+    // The deleted signal is emitted in TIO's destructor.  Any connections
+    // to this signal *must* be Qt::DirectConnection or risk segfaults.
+    void deleted(TrackInfoObject* pTrack);
 
   private slots:
     void slotBeatsUpdated();

@@ -27,6 +27,8 @@ const int COLUMN_BITRATE = 13;
 const int COLUMN_LOCATION = 14;
 const int COLUMN_ALBUMARTIST = 15;
 const int COLUMN_GROUPING = 16;
+const int COLUMN_FILE_MODIFIED_TIME = 17;
+const int COLUMN_FILE_CREATION_TIME = 18;
 
 // The BrowseTable models displays tracks
 // of given directory on the HDD.

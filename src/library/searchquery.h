@@ -76,10 +76,13 @@ class TextFilterNode : public QueryNode {
 class NumericFilterNode : public QueryNode {
   public:
     NumericFilterNode(const QStringList& sqlColumns, QString argument);
+    NumericFilterNode(const QStringList& sqlColumns);
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
 
-  private:
+  protected:
+    virtual void init(QString argument);
+    virtual double parse(const QString& arg, bool *ok);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -87,6 +90,14 @@ class NumericFilterNode : public QueryNode {
     bool m_bRangeQuery;
     double m_dRangeLow;
     double m_dRangeHigh;
+};
+
+class DurationFilterNode : public NumericFilterNode {
+  public:
+    DurationFilterNode(const QStringList& sqlColumns, QString argument);
+
+  private:
+    virtual double parse(const QString& arg, bool* ok);
 };
 
 class KeyFilterNode : public QueryNode {

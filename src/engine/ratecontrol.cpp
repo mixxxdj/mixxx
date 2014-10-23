@@ -197,6 +197,7 @@ RateControl::~RateControl() {
 
     delete m_pWheel;
     delete m_pScratch2;
+    delete m_pScratch2Scratching;
     delete m_pScratch2Enable;
     delete m_pJog;
     delete m_pJogFilter;
@@ -425,7 +426,7 @@ double RateControl::calculateRate(double baserate, bool paused,
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
         bool useScratch2Value = m_pScratch2Enable->get() != 0;
 
-        // By default scratch2_enable enough to determine if the user is
+        // By default scratch2_enable is enough to determine if the user is
         // scratching or not. Moving platter controllers have to disable
         // "scratch2_indicates_scratching" if they are not scratching,
         // to allow things like key-lock.
@@ -489,12 +490,12 @@ double RateControl::calculateRate(double baserate, bool paused,
                     return 1.0;
                 }
 
-                rate = m_pBpmControl->getSyncedRate();
-                double userTweak = getTempRate() + wheelFactor + jogFactor;
-                bool userTweakingSync = userTweak != 0.0;
-                rate += userTweak;
-
-                rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
+                double userTweak = 0.0;
+                if (!*reportScratching) {
+                    // Only report user tweak if the user is not scratching.
+                    userTweak = getTempRate() + wheelFactor + jogFactor;
+                }
+                rate = m_pBpmControl->calcSyncedRate(userTweak);
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.

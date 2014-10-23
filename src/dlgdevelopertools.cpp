@@ -9,7 +9,6 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
         : QDialog(pParent) {
     Q_UNUSED(pConfig);
     setupUi(this);
-    this->setWindowFlags(Qt::Window);
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);

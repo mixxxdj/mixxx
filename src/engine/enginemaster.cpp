@@ -137,14 +137,16 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
     // X-Fader Setup
-    m_pXFaderMode = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
+    m_pXFaderMode = new ControlPushButton(
+            ConfigKey("[Mixer Profile]", "xFaderMode"));
+    m_pXFaderMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pXFaderCurve = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
+            ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
     m_pXFaderCalibration = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
-    m_pXFaderReverse = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
+            ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+    m_pXFaderReverse = new ControlPushButton(
+            ConfigKey("[Mixer Profile]", "xFaderReverse"));
+    m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),
                                          true, false, true);
@@ -224,13 +226,13 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                                    int iBufferSize) {
     ScopedTimer timer("EngineMaster::processChannels");
 
-    QList<ChannelInfo*>::iterator it = m_channels.begin();
-
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
 
-    QSet<EngineChannel*> processed_channels;
-    it = m_channels.begin();
+    EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
+    m_activeChannels.clear();
+    m_activeChannels.reserve(m_channels.size());
+    QList<ChannelInfo*>::iterator it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
@@ -254,15 +256,25 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
-        // Process the buffer if necessary
+        // If necessary, add the channel to the list of buffers to process.
         if (needsProcessing) {
-            processed_channels.insert(pChannel);
-            pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
-
-            if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                    pChannel->isTalkover()) {
-                m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+            if (pChannel == pMasterChannel) {
+                // If this is the sync master, it should be processed first.
+                m_activeChannels.prepend(pChannelInfo);
+            } else {
+                m_activeChannels.append(pChannelInfo);
             }
+        }
+    }
+
+    // Now that the list is built and ordered, do the processing.
+    foreach (ChannelInfo* pChannelInfo, m_activeChannels) {
+        EngineChannel* pChannel = pChannelInfo->m_pChannel;
+        pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
+
+        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                pChannel->isTalkover()) {
+            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
     }
 
@@ -270,8 +282,8 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    foreach (EngineChannel* channel, processed_channels) {
-        channel->postProcess(iBufferSize);
+    foreach (ChannelInfo* pChannelInfo, m_activeChannels) {
+        pChannelInfo->m_pChannel->postProcess(iBufferSize);
     }
 }
 
@@ -296,10 +308,12 @@ void EngineMaster::process(const int iBufferSize) {
     unsigned int busChannelConnectionFlags[3] = { 0, 0, 0 };
     unsigned int headphoneOutput = 0;
 
+    // Update internal master sync rate.
+    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
     // Prepare each channel for output
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
-    // Update internal master sync.
-    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
+    // Do internal master sync post-processing
+    m_pMasterSync->onCallbackEnd(iSampleRate, iBufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix
@@ -333,7 +347,7 @@ void EngineMaster::process(const int iBufferSize) {
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get() == MIXXX_XFADER_CONSTPWR,
-                                m_pXFaderReverse->get() == 1.0,
+                                m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain);
 
     // Channels with the talkover flag should be mixed with the master signal at

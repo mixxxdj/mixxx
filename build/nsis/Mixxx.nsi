@@ -20,8 +20,6 @@ SetCompressor /SOLID lzma
 !define PRODUCT_PUBLISHER "The Mixxx Development Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
-!define DEFAULT_SKIN "Deere1280x800-WXGA"
-
 ; Assumes this script is locaed in <base>\mixxx\build\nsis
 !define BASE_BUILD_DIR "..\.."
 
@@ -121,17 +119,12 @@ Function InstallVCRedist
   SetOutPath $TEMP
 
   ; Put the VC redist installer files there
-  File ${WINLIB_PATH}\VC_redist\vc_red.cab
-  File ${WINLIB_PATH}\VC_redist\vc_red.msi
-  File ${WINLIB_PATH}\VC_redist\msp_kb2565063.msp
+  File ${WINLIB_PATH}\vcredist_${ARCH}.exe
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait 'msiexec /i $TEMP\vc_red.msi'
-  ExecWait 'msiexec /update $TEMP\msp_kb2565063.msp'
-  Delete "$TEMP\vc_red.cab"
-  Delete "$TEMP\vc_red.msi"
-  Delete "$TEMP\msp_kb2565063.msp"
+  ExecWait 'vcredist_${ARCH}.exe /quiet /install'
+  Delete "$TEMP\vc_redist_${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -172,7 +165,7 @@ FunctionEnd
 Function CheckVCRedist
    Push $R0
    ClearErrors
-   ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\${ARCH}" "Installed"
+   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\${ARCH}" "Installed"
    ; Old way:
    ;   x64
    ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
@@ -201,7 +194,7 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  File /x "msvc*" "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
 
   ; Put other files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.xml"
@@ -230,18 +223,14 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
 
-  ; HID/MIDI mapping tools (mappings are below) & common script file
+  ; HID/MIDI controller presets
   SetOutPath $INSTDIR\controllers
-  File /r /x ".svn" /x ".bzr" /x "*.git" /x "*.xml" /x "*.js" ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.*
-  File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\common-controller-scripts.js
+  File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.xml
+  File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.js
 
-  ; Common skin files
+  ; Skins
   SetOutPath "$INSTDIR\skins"
-  File /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*.*
-
-  ; Just the default skin
-  SetOutPath "$INSTDIR\skins\${DEFAULT_SKIN}"
-  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\${DEFAULT_SKIN}\*.*
+  File /r ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*
 
   ; Write the installation path into the registry
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
@@ -267,183 +256,26 @@ Section "Translations" SecTranslations
     File /r ${QTDIR}\translations\qt_*.qm
 SectionEnd
 
-SectionGroup "HID/MIDI controller mappings" SecControllerMappings
-
-  SectionGroup "Certified mappings" SecCertifiedMappings
-
-	Section "American Audio VMS4"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\American Audio VMS4.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\American-Audio-VMS4-scripts.js"
-	SectionEnd
-
-	Section "Hercules DJ Console Mk2"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Console Mk2.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules-DJ-Console-Mk2-scripts.js"
-	SectionEnd
-
-	Section "Hercules DJ Console RMX"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Console RMX.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules-DJ-Console-RMX-scripts.js"
-	SectionEnd
-
-	Section "Hercules DJ Control MP3 e2"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Control MP3 e2.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Control MP3 e2-scripts.js"
-	SectionEnd
-
-	Section "Stanton SCS.3d"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.3d.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS3d-scripts.js"
-	SectionEnd
-
-	Section "Stanton SCS.3m"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.3m.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS3m-scripts.js"
-	SectionEnd
-
-	Section "Stanton SCS.1d" SecSCS1d
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.1d.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS1d-scripts.js"
-	SectionEnd
-
-	Section "Stanton SCS.1m" SecSCS1m
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.1m.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS1m-scripts.js"
-	SectionEnd
-
-	Section "Vestax VCI-400" SecVCI400
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Vestax VCI-400.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Vestax-VCI-400-scripts.js"
-	SectionEnd
-
-	Section "DJ TechTools MIDIFighter"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\DJTechTools MIDI Fighter.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\DJTechTools-MIDIFighter-scripts.js"
-	SectionEnd
-
-	Section "M-Audio X-Session Pro"
-	  SetOutPath $INSTDIR\controllers
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\M-Audio_Xsession_pro.midi.xml"
-	SectionEnd
-
-  SectionGroupEnd
-
-  Section "Community-supported mappings" SecCommunityMappings
-    SetOutPath $INSTDIR\controllers
-        File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.xml
-	File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.js
-  SectionEnd
-
-SectionGroupEnd
-
-SectionGroup "Additional Skins" SecAddlSkins
-
-	Section "Minimalist skins" SecBasicSkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline*
-	SectionEnd
-
-	Section "Netbook-size (1024x600)" SecNetbookSkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook
-	SectionEnd
-
-	Section "XGA-size (1024x768)" SecXGASkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA
-	SectionEnd
-
-    Section "SXGA-size (1280x1024)" SecSXGASkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA
-	SectionEnd
-
-	Section "WXGA-size (1280x800)" SecWXGASkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA
-	SectionEnd
-
-    Section "WXGA+-size (1440x900)" SecWXGAPlusSkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA+
-	SectionEnd
-
-    Section "WSXGA-size (1680x1050)" SecWSXGASkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA
-	SectionEnd
-
-	Section "UXGA-size (1600x1200)" SecUXGASkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA
-	SectionEnd
-
-    Section "Full HD-size (1920x1080)" SecFullHDSkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-FullHD
-	SectionEnd
-
-    Section "WUXGA-size (1920x1200)" SecWUXGASkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WUXGA
-	SectionEnd
-
-SectionGroupEnd
-
 Section "Start Menu Shortcuts" SecStartMenu
-
   CreateDirectory "$SMPROGRAMS\Mixxx"
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
-
 SectionEnd
 
 Section "Desktop Shortcut" SecDesktop
-
   SetOutPath $INSTDIR
   CreateShortCut "$DESKTOP\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
-
 SectionEnd
 
 ;--------------------------------
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself in US English with the default 1280x800 Deere skin"
+  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself in US English"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Mixxx program group containing useful shortcuts appearing under the [All] Programs section under the Start menu"
   LangString DESC_SecDesktop ${LANG_ENGLISH} "Shortcut to Mixxx placed on the Desktop"
   LangString DESC_SecTranslations ${LANG_ENGLISH} "Translations for all available languages"
-
-  ; Controller mapping descriptions
-  LangString DESC_SecControllerMappings ${LANG_ENGLISH} "Mappings that enable popular HID/MIDI controllers to be used with Mixxx"
-  LangString DESC_SecCertifiedMappings ${LANG_ENGLISH} "Mappings developed and supported by the Mixxx team."
-  LangString DESC_SecCommunityMappings ${LANG_ENGLISH} "User-developed mappings that the Mixxx team is unable to directly support. Please visit the Mixxx forum for help with these: http://mixxx.org/forums/"
-  LangString DESC_SecSCS1d ${LANG_ENGLISH} "Mapping for the Stanton SCS.1d. DaRouter must be closed to use it."
-  LangString DESC_SecSCS1m ${LANG_ENGLISH} "Mapping for the Stanton SCS.1m. DaRouter must be closed to use it."
-
-  ; Skin group descriptions
-  LangString DESC_SecBasicSkins ${LANG_ENGLISH} "Additional skins using the Outline theme (featuring a clear, clean and simple layout,) including one for 800 pixel-wide screens"
-  LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional skins with varying themes and screen sizes."
-  LangString DESC_SecNetbookSkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
-  LangString DESC_SecXGASkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
-  LangString DESC_SecSXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
-  LangString DESC_SecWXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
-  LangString DESC_SecWXGAPlusSkins ${LANG_ENGLISH} "Deere"
-  LangString DESC_SecWSXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
-  LangString DESC_SecUXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
-  LangString DESC_SecFullHDSkins ${LANG_ENGLISH} "Deere"
-  LangString DESC_SecWUXGASkins ${LANG_ENGLISH} "Deere"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -451,24 +283,6 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(DESC_SecStartMenu)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktop} $(DESC_SecDesktop)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecTranslations} $(DESC_SecTranslations)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecControllerMappings} $(DESC_SecControllerMappings)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecCertifiedMappings} $(DESC_SecCertifiedMappings)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecCommunityMappings} $(DESC_SecCommunityMappings)
-
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecAddlSkins} $(DESC_SecAddlSkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecBasicSkins} $(DESC_SecBasicSkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecNetbookSkins} $(DESC_SecNetbookSkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecXGASkins} $(DESC_SecXGASkins)
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecSXGASkins} $(DESC_SecSXGASkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecWXGASkins} $(DESC_SecWXGASkins)
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecWXGAPlusSkins} $(DESC_SecWXGAPlusSkins)
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecWSXGASkins} $(DESC_SecWSXGASkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecUXGASkins} $(DESC_SecUXGASkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecFullHDSkins} $(DESC_SecFullHDSkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecWUXGASkins} $(DESC_SecWUXGASkins)
-
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1d} $(DESC_SecSCS1d)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1m} $(DESC_SecSCS1m)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -610,17 +424,8 @@ Section "Uninstall"
 
   ; Remove skins we (might have) installed
   Delete $INSTDIR\skins\*.* ; This just deletes files at the root of the skins directory
-  RMDir /r "$INSTDIR\skins\${DEFAULT_SKIN}"
-  RMDir /r "$INSTDIR\skins\Deere1280x1024-SXGA"
-  RMDir /r "$INSTDIR\skins\Deere1280x800-WXGA"
-  RMDir /r "$INSTDIR\skins\Deere1366x768-WXGA"
-  RMDir /r "$INSTDIR\skins\Deere1440x900-WXGA+"
-  RMDir /r "$INSTDIR\skins\Deere1920x1080-FullHD"
-  RMDir /r "$INSTDIR\skins\Deere1920x1200-WUXGA"
-  RMDir /r "$INSTDIR\skins\DeereSamplegrid1280x800-WXGA"
-  RMDir /r "$INSTDIR\skins\LateNight1280x1024-SXGA"
-  RMDir /r "$INSTDIR\skins\LateNight1280x800-WXGA"
-  RMDir /r "$INSTDIR\skins\LateNight1366x768-WXGA"
+  RMDir /r "$INSTDIR\skins\Deere"
+  RMDir /r "$INSTDIR\skins\LateNight"
   RMDir /r "$INSTDIR\skins\LateNightBlues1280x1024-SXGA"
   RMDir /r "$INSTDIR\skins\LateNightBlues1280x800-WXGA"
   RMDir /r "$INSTDIR\skins\LateNightBlues1366x768-WXGA"
@@ -631,6 +436,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\skins\Phoney1680x1050-WSXGA"
   RMDir /r "$INSTDIR\skins\PhoneyDark1600x1200-UXGA"
   RMDir /r "$INSTDIR\skins\PhoneyDark1680x1050-WSXGA"
+  RMDir /r "$INSTDIR\skins\Shade"
   RMDir /r "$INSTDIR\skins\Shade1024x600-Netbook"
   RMDir /r "$INSTDIR\skins\Shade1024x768-XGA"
   RMDir /r "$INSTDIR\skins\ShadeDark1024x600-Netbook"

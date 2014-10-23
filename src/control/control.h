@@ -27,9 +27,9 @@ class ControlDoublePrivate : public QObject {
 
     static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
 
-    // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
-    // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
-    // does not exist.
+    // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
+    // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
+    // one does not exist.
     static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key, bool warn = true,
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,

@@ -137,6 +137,8 @@ class MixxxMainWindow : public QMainWindow {
 
   signals:
     void newSkinLoaded();
+    void libraryScanStarted();
+    void libraryScanFinished();
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
