@@ -189,7 +189,8 @@ void EngineEffectChain::process(const QString& group,
                     continue;
                 }
                 pEffect->process(group, pInOut, pInOut,
-                                 numSamples, sampleRate, groupFeatures);
+                                 numSamples, sampleRate,
+                                 EffectProcessor::ENABLED, groupFeatures);
             }
         } else if (wet_gain_old == 0.0 && wet_gain == 0.0) {
             // Fully dry, no ramp, insert optimization. No action is needed
@@ -207,7 +208,8 @@ void EngineEffectChain::process(const QString& group,
                 const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
                 pEffect->process(group, pIntermediateInput, pIntermediateOutput,
-                                 numSamples, sampleRate, groupFeatures);
+                                 numSamples, sampleRate,
+                                 EffectProcessor::ENABLED, groupFeatures);
                 anyProcessed = true;
             }
 
@@ -235,7 +237,7 @@ void EngineEffectChain::process(const QString& group,
             CSAMPLE* pIntermediateOutput = m_pBuffer;
             pEffect->process(group, pIntermediateInput,
                              pIntermediateOutput, numSamples, sampleRate,
-                             groupFeatures);
+                             EffectProcessor::ENABLED, groupFeatures);
             anyProcessed = true;
         }
 

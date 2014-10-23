@@ -130,6 +130,7 @@ void EngineEffect::process(const QString& group,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
+                           const enum EffectProcessor::EnableState enableState,
                            const GroupFeatureState& groupFeatures) {
     m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, m_enableState, groupFeatures);
     if (!m_effectRampsFromDry) {

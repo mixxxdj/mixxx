@@ -42,6 +42,7 @@ class EngineEffect : public EffectsRequestHandler {
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
+                 const enum EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);
 
     bool enabled() const {
