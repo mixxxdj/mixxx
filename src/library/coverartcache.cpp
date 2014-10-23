@@ -235,7 +235,6 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.issueRepaint = issueRepaint;
 
     // Looking for embedded cover art.
-    //
     res.img = CoverArtUtils::extractEmbeddedCover(coverInfo.trackLocation);
     if (!res.img.isNull()) {
         res.coverLocation = "ID3TAG";
@@ -243,11 +242,9 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     }
 
     // Looking for cover stored in track diretory.
-    //
     if (res.img.isNull()) {
-        res.coverLocation = searchInTrackDirectory(coverInfo.trackDirectory,
-                                                   coverInfo.trackBaseName,
-                                                   coverInfo.album);
+        res.coverLocation = CoverArtUtils::searchInTrackDirectory(
+            coverInfo.trackDirectory, coverInfo.trackBaseName, coverInfo.album);
         res.img = CoverArtUtils::maybeResizeImage(QImage(res.coverLocation),
                                                   kMaxCoverSize);
     }
@@ -265,50 +262,6 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     }
 
     return res;
-}
-
-QString CoverArtCache::searchInTrackDirectory(QString directory,
-                                              QString trackBaseName,
-                                              QString album) {
-    if (directory.isEmpty()) {
-        return QString();
-    }
-
-    QDir dir(directory);
-    dir.setFilter(QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
-    dir.setSorting(QDir::Size | QDir::Reversed);
-
-    QStringList nameFilters;
-    nameFilters << "*.jpg" << "*.jpeg" << "*.png" << "*.gif" << "*.bmp";
-    dir.setNameFilters(nameFilters);
-    QStringList imglist = dir.entryList();
-
-    // no covers in this dir
-    if (imglist.isEmpty()) {
-        return QString();
-    // only a single picture in folder.
-    } else if (imglist.size() == 1) {
-        return dir.filePath(imglist[0]);
-    }
-
-    QStringList prefNames;
-    prefNames << trackBaseName  // cover with the same name of the trackFilename.
-              << album          // cover with the same name of the album.
-              << "cover"        // cover named as 'cover'
-              << "front"        // cover named as 'front'
-              << "album"        // cover named as 'album'
-              << "folder";      // cover named as 'folder'
-
-    foreach (QString name, prefNames) {
-        foreach (QString img, imglist) {
-            if (img.contains(name, Qt::CaseInsensitive)) {
-                return dir.filePath(img);
-            }
-        }
-    }
-
-    // Return the lighter image file.
-    return dir.filePath(imglist[0]);
 }
 
 // watcher

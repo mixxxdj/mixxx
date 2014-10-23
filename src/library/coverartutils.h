@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QString>
 #include <QDir>
+#include <QStringList>
 
 #include "util/sandbox.h"
 #include "soundsourceproxy.h"
@@ -57,6 +58,50 @@ class CoverArtUtils {
                                 Qt::SmoothTransformation);
         }
         return image;
+    }
+
+    static QString searchInTrackDirectory(QString directory,
+                                          QString trackBaseName,
+                                          QString album) {
+        if (directory.isEmpty()) {
+            return QString();
+        }
+
+        QDir dir(directory);
+        dir.setFilter(QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
+        dir.setSorting(QDir::Size | QDir::Reversed);
+
+        QStringList nameFilters;
+        nameFilters << "*.jpg" << "*.jpeg" << "*.png" << "*.gif" << "*.bmp";
+        dir.setNameFilters(nameFilters);
+        QStringList imglist = dir.entryList();
+
+        // no covers in this dir
+        if (imglist.isEmpty()) {
+            return QString();
+            // only a single picture in folder.
+        } else if (imglist.size() == 1) {
+            return dir.filePath(imglist[0]);
+        }
+
+        QStringList prefNames;
+        prefNames << trackBaseName  // cover with the same name of the trackFilename.
+                  << album          // cover with the same name of the album.
+                  << "cover"        // cover named as 'cover'
+                  << "front"        // cover named as 'front'
+                  << "album"        // cover named as 'album'
+                  << "folder";      // cover named as 'folder'
+
+        foreach (QString name, prefNames) {
+            foreach (QString img, imglist) {
+                if (img.contains(name, Qt::CaseInsensitive)) {
+                    return dir.filePath(img);
+                }
+            }
+        }
+
+        // Return the lighter image file.
+        return dir.filePath(imglist[0]);
     }
 
 

@@ -98,10 +98,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     const QPixmap m_pxDefaultCover;
     QSet<int> m_runningIds;
     QHash<int, QPair<QString, QString> > m_queueOfUpdates;
-
-    QString searchInTrackDirectory(QString directory,
-                                   QString trackBaseName,
-                                   QString album);
 };
 
 #endif // COVERARTCACHE_H
