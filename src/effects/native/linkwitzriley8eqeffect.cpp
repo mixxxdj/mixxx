@@ -169,7 +169,19 @@ void LinkwitzRiley8EQEffect::processGroup(const QString& group,
                 numSamples);
     }
 
-    pState->old_low = fLow;
-    pState->old_mid = fMid;
-    pState->old_high = fHigh;
+    if (enableState == EffectProcessor::DISABLING) {
+        // we rely on the ramping to dry in EngineEffect
+        // since this EQ is not fully dry at unity
+        pState->m_low1->pauseFilter();
+        pState->m_low2->pauseFilter();
+        pState->m_high1->pauseFilter();
+        pState->m_high2->pauseFilter();
+        pState->old_low = 1.0;
+        pState->old_mid = 1.0;
+        pState->old_high = 1.0;
+    } else {
+        pState->old_low = fLow;
+        pState->old_mid = fMid;
+        pState->old_high = fHigh;
+    }
 }
