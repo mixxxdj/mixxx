@@ -32,10 +32,6 @@ class EngineEffectChain : public EffectsRequestHandler {
         return m_id;
     }
 
-    bool enabled() const {
-        return m_bEnabled;
-    }
-
     bool enabledForGroup(const QString& group) const;
 
   private:
