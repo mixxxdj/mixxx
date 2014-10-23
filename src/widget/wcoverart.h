@@ -23,8 +23,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void slotResetWidget();
-    void slotEnableWidget(bool);
+    void slotReset();
+    void slotEnable(bool);
     void slotLoadCoverArt(CoverInfo info, bool cachedOnly);
 
   private slots:
@@ -42,7 +42,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
   private:
     QPixmap scaledCoverArt(QPixmap normal);
 
-    bool m_bEnableWidget;
+    bool m_bEnable;
     WCoverArtMenu* m_pMenu;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;

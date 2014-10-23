@@ -13,7 +13,7 @@ WCoverArt::WCoverArt(QWidget* parent,
                      TrackCollection* pTrackCollection)
         : QWidget(parent),
           WBaseWidget(this),
-          m_bEnableWidget(true),
+          m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_trackDAO(pTrackCollection->getTrackDAO()),
           m_pDlgFullSize(new DlgCoverArtFullSize()) {
@@ -75,16 +75,16 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
     }
 }
 
-void WCoverArt::slotEnableWidget(bool enable) {
-    m_bEnableWidget = enable;
+void WCoverArt::slotEnable(bool enable) {
+    m_bEnable = enable;
     int h = (float) parentWidget()->height() / 3;
-    h = m_bEnableWidget ? h : 0;
+    h = m_bEnable ? h : 0;
     setMinimumHeight(h);
     setMaximumHeight(h);
     update();
 }
 
-void WCoverArt::slotResetWidget() {
+void WCoverArt::slotReset() {
     m_lastRequestedCover = CoverInfo();
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -95,7 +95,7 @@ void WCoverArt::slotResetWidget() {
 }
 
 void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
-    if (!m_bEnableWidget) {
+    if (!m_bEnable) {
         return;
     }
     if (m_lastRequestedCover.trackId == trackId) {
@@ -106,7 +106,7 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
 }
 
 void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
-    if (!m_bEnableWidget) {
+    if (!m_bEnable) {
         return;
     }
     m_lastRequestedCover = info;
@@ -124,7 +124,7 @@ QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
 }
 
 void WCoverArt::paintEvent(QPaintEvent*) {
-    if (!m_bEnableWidget) {
+    if (!m_bEnable) {
         return;
     }
 
@@ -154,7 +154,7 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
 }
 
 void WCoverArt::mousePressEvent(QMouseEvent* event) {
-    if (!m_bEnableWidget) {
+    if (!m_bEnable) {
         return;
     }
 
