@@ -149,14 +149,18 @@ void EngineEffect::process(const QString& group,
                     pInput, 0.0, 1.0,
                     pOutput, 1.0, 0.0,
                     numSamples);
-            m_enableState = EffectProcessor::DISABLED;
         } else if (effectiveEnableState == EffectProcessor::ENABLING) {
             // Fade in (fade to wet signal)
             SampleUtil::copy2WithRampingGain(pOutput,
                     pInput, 1.0, 0.0,
                     pOutput, 0.0, 1.0,
                     numSamples);
-            m_enableState = EffectProcessor::ENABLED;
         }
+    }
+
+    if (m_enableState == EffectProcessor::DISABLING) {
+        m_enableState = EffectProcessor::DISABLED;
+    } else if (m_enableState == EffectProcessor::ENABLING) {
+        m_enableState = EffectProcessor::ENABLED;
     }
 }
