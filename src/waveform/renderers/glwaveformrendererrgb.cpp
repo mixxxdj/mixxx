@@ -111,7 +111,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
         glEnd();
 
-        glLineWidth(1.2);
+        glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
@@ -172,7 +172,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         glScalef(1.0f, allGain, 1.0f);
 
-        glLineWidth(1.2);
+        glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
