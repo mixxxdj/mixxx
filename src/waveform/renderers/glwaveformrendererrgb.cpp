@@ -28,19 +28,19 @@ void GLWaveformRendererRGB::setup(const QDomNode& node,
 
     WaveformRendererSignalBase::setup(node, context);
 
-    m_lowColor.setNamedColor(context.selectString(node, "SignalLowColor"));
+    m_lowColor.setNamedColor(context.selectString(node, "SignalRGBLowColor"));
     if (!m_lowColor.isValid()) {
         m_lowColor = Qt::red;
     }
     m_lowColor  = WSkinColor::getCorrectColor(m_lowColor);
 
-    m_midColor.setNamedColor(context.selectString(node, "SignalMidColor"));
+    m_midColor.setNamedColor(context.selectString(node, "SignalRGBMidColor"));
     if (!m_midColor.isValid()) {
         m_midColor = Qt::green;
     }
     m_midColor  = WSkinColor::getCorrectColor(m_midColor);
 
-    m_highColor.setNamedColor(context.selectString(node, "SignalHighColor"));
+    m_highColor.setNamedColor(context.selectString(node, "SignalRGBHighColor"));
     if (!m_highColor.isValid()) {
         m_highColor = Qt::blue;
     }
