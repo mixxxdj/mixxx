@@ -5,8 +5,8 @@
 #include <QIcon>
 #include <QPainter>
 
-#include "wcoverart.h"
-#include "wskincolor.h"
+#include "widget/wcoverart.h"
+#include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
@@ -22,7 +22,7 @@ WCoverArt::WCoverArt(QWidget* parent,
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
-                this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+                this, SLOT(slotPixmapFound(int, QPixmap)));
         m_loadedCover = pCache->getDefaultCoverArt();
         m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     }
@@ -116,15 +116,20 @@ void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
     }
 }
 
-QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
+QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
+    if (normal.isNull()) {
+        return QPixmap();
+    }
+
     int height = parentWidget()->height() / 3;
     return normal.scaled(QSize(height - 16, width() - 10),
                          Qt::KeepAspectRatio,
                          Qt::SmoothTransformation);
 }
 
-void WCoverArt::paintEvent(QPaintEvent*) {
+void WCoverArt::paintEvent(QPaintEvent* pEvent) {
     if (!m_bEnable) {
+        QWidget::paintEvent(pEvent);
         return;
     }
 

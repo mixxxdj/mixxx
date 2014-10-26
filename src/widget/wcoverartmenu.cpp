@@ -47,7 +47,7 @@ void WCoverArtMenu::show(QPoint pos, CoverInfo info, TrackPointer pTrack) {
 }
 
 void WCoverArtMenu::slotChange() {
-    if (m_coverInfo.trackId < 1 || !m_pTrack) {
+    if (m_coverInfo.trackId < 1 || m_pTrack.isNull()) {
         return;
     }
 
@@ -112,7 +112,7 @@ void WCoverArtMenu::slotChange() {
 }
 
 void WCoverArtMenu::slotReload() {
-    if (m_coverInfo.trackId < 1) {
+    if (m_coverInfo.trackId < 1 || m_pTrack.isNull()) {
         return;
     }
     CoverArtCache* pCache = CoverArtCache::instance();

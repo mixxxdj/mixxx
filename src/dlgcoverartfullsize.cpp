@@ -15,7 +15,7 @@ DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 void DlgCoverArtFullSize::init(CoverInfo info) {
     // this cannot be null
     QWidget* activeWindow = QApplication::activeWindow();
-    if (!activeWindow) {
+    if (activeWindow == NULL) {
         return;
     }
 

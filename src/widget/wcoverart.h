@@ -40,7 +40,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void leaveEvent(QEvent*);
 
   private:
-    QPixmap scaledCoverArt(QPixmap normal);
+    QPixmap scaledCoverArt(const QPixmap& normal);
 
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;

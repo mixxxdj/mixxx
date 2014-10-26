@@ -1,4 +1,4 @@
-#include "wcoverartlabel.h"
+#include "widget/wcoverartlabel.h"
 
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
