@@ -36,7 +36,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
      *      In this way, the method will just look into CoverCache and return
      *      a Pixmap if it is already loaded in the QPixmapCache.
      */
-    QPixmap requestPixmap(CoverInfo info,
+    QPixmap requestPixmap(const CoverInfo& info,
                           const QSize& croppedSize = QSize(0,0),
                           const bool onlyCached = false,
                           const bool issueRepaint = false);

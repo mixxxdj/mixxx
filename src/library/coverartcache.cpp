@@ -92,10 +92,11 @@ bool CoverArtCache::changeCoverArt(int trackId,
     return true;
 }
 
-QPixmap CoverArtCache::requestPixmap(CoverInfo info,
+QPixmap CoverArtCache::requestPixmap(const CoverInfo& requestInfo,
                                      const QSize& croppedSize,
                                      const bool onlyCached,
                                      const bool issueRepaint) {
+    CoverInfo info = requestInfo;
     if (info.trackId < 1 || m_pCoverArtDAO == NULL) {
         return QPixmap();
     }

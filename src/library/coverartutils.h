@@ -64,9 +64,9 @@ class CoverArtUtils {
         return image;
     }
 
-    static QString searchInTrackDirectory(QString directory,
-                                          QString trackBaseName,
-                                          QString album) {
+    static QString searchInTrackDirectory(const QString& directory,
+                                          const QString& trackBaseName,
+                                          const QString& album) {
         if (directory.isEmpty()) {
             return QString();
         }
