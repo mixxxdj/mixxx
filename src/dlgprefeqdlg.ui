@@ -55,6 +55,13 @@
        </attribute>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="bEqAutoReset">
+       <property name="text">
+        <string>Enable Equalizer Auto Reset</string>
+       </property>
+      </widget>
+     </item> 
     </layout>
    </item>
    <item>

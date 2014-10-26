@@ -11,6 +11,7 @@ class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlObjectThread;
+class ControlObjectSlave;
 class AnalyserQueue;
 class EffectsManager;
 
@@ -61,6 +62,10 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThread* m_pKey;
     ControlObjectThread* m_pReplayGain;
     ControlObjectThread* m_pPlay;
+    ControlObjectSlave* m_pLowFilterControlObject;
+    ControlObjectSlave* m_pMidFilterControlObject;
+    ControlObjectSlave* m_pHighFilterControlObject;
+    ControlObjectSlave* m_pPreGain;
     EngineDeck* m_pChannel;
 };
 

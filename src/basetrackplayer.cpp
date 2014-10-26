@@ -77,7 +77,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
-
+    m_pLowFilterControlObject = new ControlObjectSlave(group,"filterLow");
+    m_pMidFilterControlObject = new ControlObjectSlave(group,"filterMid");
+    m_pHighFilterControlObject = new ControlObjectSlave(group,"filterHigh");
+    m_pPreGain = new ControlObjectSlave(ConfigKey(group, "pregain"));
     //BPM of the current song
     m_pBPM = new ControlObjectThread(group, "file_bpm");
     m_pKey = new ControlObjectThread(group, "file_key");
@@ -241,6 +244,12 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
                 break;
             }
         }
+    }
+    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset")).toInt()) {
+        m_pLowFilterControlObject->set(1.0);
+        m_pMidFilterControlObject->set(1.0);
+        m_pHighFilterControlObject->set(1.0);
+        m_pPreGain->set(1.0);
     }
 
     emit(newTrackLoaded(m_pLoadedTrack));
