@@ -114,7 +114,10 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
 
-    // Add a single EffectSlot for EQDefault
+    // Add a one EffectSlot for EQDefault
+    pChainSlot->addEffectSlot();
+
+    // Add a second EffectSlot for Filter
     pChainSlot->addEffectSlot();
 
     const QSet<QString>& registeredGroups =

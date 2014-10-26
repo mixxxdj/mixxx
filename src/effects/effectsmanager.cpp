@@ -242,6 +242,15 @@ void EffectsManager::addEqualizer(int channelNumber) {
                 ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
                                   arg(rackNum).arg(channelNumber), "button_parameter3"));
 
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterDepth"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2]").
+                                  arg(rackNum).arg(channelNumber), "parameter"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filter"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect2]").
+                                  arg(rackNum).arg(channelNumber), "enabled"));
 }
 
 void EffectsManager::setupDefaults() {
