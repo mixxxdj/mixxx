@@ -72,8 +72,12 @@ bool CoverArtCache::changeCoverArt(int trackId,
     if (img.isNull()) {
         return false;
     }
-    img = CoverArtUtils::maybeResizeImage(img, kMaxCoverSize);
+
+    // Calculate the hash of the full-size image.
     QString hash = CoverArtUtils::calculateHash(img);
+
+    // Maybe resize it for efficiency.
+    img = CoverArtUtils::maybeResizeImage(img, kMaxCoverSize);
 
     // Update DB
     int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, hash);
@@ -177,6 +181,13 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(
         res.cover.image = QImage(res.cover.info.coverLocation);
     }
 
+    // TODO(XXX) Should we re-hash here? If the cover file (or track metadata)
+    // has changed then coverAndAlbumInfo.info.hash may be incorrect. The fix
+    // will also require noticing a hash mis-match at higher levels and
+    // recording the hash change in the database.
+
+    // Adjust the cover size according to the request or downsize the image for
+    // efficiency.
     if (res.croppedSize.isNull()) {
         res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image, kMaxCoverSize);
     } else {
@@ -225,7 +236,6 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
     res.cover.image = CoverArtUtils::extractEmbeddedCover(coverAndAlbumInfo.info.trackLocation);
     if (!res.cover.image.isNull()) {
         res.cover.info.coverLocation = "ID3TAG";
-        res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image, kMaxCoverSize);
     }
 
     // Looking for cover stored in track diretory.
@@ -233,18 +243,27 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         QFileInfo track(coverAndAlbumInfo.info.trackLocation);
         QString trackDirectory = track.path();
         QString trackBaseName = track.baseName();
+        // TODO(XXX) instead of returning a single location, provide a list of
+        // candidates. The returned image may be invalid.
         res.cover.info.coverLocation = CoverArtUtils::searchInTrackDirectory(
             trackDirectory, trackBaseName, coverAndAlbumInfo.album);
-        res.cover.image = CoverArtUtils::maybeResizeImage(
-            QImage(res.cover.info.coverLocation),
-            kMaxCoverSize);
+        res.cover.image = QImage(res.cover.info.coverLocation);
     }
 
-    res.cover.info.hash = CoverArtUtils::calculateHash(res.cover.image);
+    if (!res.cover.image.isNull()) {
+        // Calculate the hash of the full-size image.
+        res.cover.info.hash = CoverArtUtils::calculateHash(res.cover.image);
 
-    // adjusting the cover size according to the final purpose
-    if (!res.croppedSize.isNull()) {
-        res.cover.image = CoverArtUtils::cropImage(res.cover.image, res.croppedSize);
+        // Adjust the cover size according to the request or downsize the image
+        // for efficiency.
+        if (res.croppedSize.isNull()) {
+            res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image, kMaxCoverSize);
+        } else {
+            res.cover.image = CoverArtUtils::cropImage(res.cover.image, res.croppedSize);
+        }
+    } else {
+        // Reset the hash to empty if we didn't find anything.
+        res.cover.info.hash = QString();
     }
 
     return res;
