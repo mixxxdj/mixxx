@@ -8,6 +8,7 @@
 #include "widget/wcoverart.h"
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      TrackCollection* pTrackCollection)
@@ -23,8 +24,6 @@ WCoverArt::WCoverArt(QWidget* parent,
     if (pCache != NULL) {
         connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
                 this, SLOT(slotPixmapFound(int, QPixmap)));
-        m_loadedCover = pCache->getDefaultCoverArt();
-        m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     }
     connect(m_pMenu,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
@@ -59,13 +58,24 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
+
+    if (context.hasNode(node, "DefaultCover")) {
+        m_defaultCover = QPixmap(context.selectString(node, "DefaultCover"));
+    }
+
+    // If no default cover is specified or we failed to load it, fall back on
+    // the resource bundle default cover.
+    if (m_defaultCover.isNull()) {
+        m_defaultCover = QPixmap(CoverArtUtils::defaultCoverLocation());
+    }
+    m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
 void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
                                          const QString& oldLoc,
-                                         QPixmap px) {
+                                         QPixmap newCover) {
     Q_UNUSED(oldLoc);
-    Q_UNUSED(px);
+    Q_UNUSED(newCover);
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL && !pCache->changeCoverArt(
             m_lastRequestedCover.trackId, newLoc)) {
@@ -86,11 +96,8 @@ void WCoverArt::slotEnable(bool enable) {
 
 void WCoverArt::slotReset() {
     m_lastRequestedCover = CoverInfo();
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        m_loadedCover = pCache->getDefaultCoverArt();
-        m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
-    }
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
     update();
 }
 
@@ -134,13 +141,22 @@ void WCoverArt::paintEvent(QPaintEvent* pEvent) {
     }
 
     QPainter painter(this);
-    int x = 3 + width() / 2 - m_loadedCoverScaled.width() / 2;
-    int y = 8;
-    painter.drawPixmap(x, y, m_loadedCoverScaled);
+
+    QPixmap toDraw = m_loadedCoverScaled;
+    if (toDraw.isNull()) {
+        toDraw = m_defaultCoverScaled;
+    }
+
+    if (!toDraw.isNull()) {
+        int x = 3 + width() / 2 - toDraw.width() / 2;
+        int y = 8;
+        painter.drawPixmap(x, y, toDraw);
+    }
+
     QPen pen = painter.pen();
     pen.setColor(QColor("#656565"));
     painter.setPen(pen);
-    painter.drawRoundedRect(5, 5, width()-7, height()-10, 0, 0);
+    painter.drawRoundedRect(5, 5, width() - 7, height() - 10, 0, 0);
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
@@ -149,13 +165,8 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
         setMinimumHeight(h);
         setMaximumHeight(h);
     }
-    if (m_lastRequestedCover.trackId < 1) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != NULL) {
-            m_loadedCover = pCache->getDefaultCoverArt();
-        }
-    }
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+    m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
 void WCoverArt::mousePressEvent(QMouseEvent* event) {

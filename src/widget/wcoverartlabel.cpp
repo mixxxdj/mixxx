@@ -1,11 +1,16 @@
 #include "widget/wcoverartlabel.h"
 
+#include "library/coverartutils.h"
+
+static const QSize s_labelDisplaySize = QSize(100, 100);
+
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
           m_pTrack(TrackPointer()),
           m_coverInfo(CoverInfo()),
           m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()) {
+          m_pDlgFullSize(new DlgCoverArtFullSize()),
+          m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
@@ -16,6 +21,11 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
             this,
             SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)));
+
+    m_defaultCover = m_defaultCover.scaled(s_labelDisplaySize,
+                                           Qt::KeepAspectRatio,
+                                           Qt::SmoothTransformation);
+    setPixmap(m_defaultCover);
 }
 
 WCoverArtLabel::~WCoverArtLabel() {
@@ -26,7 +36,13 @@ WCoverArtLabel::~WCoverArtLabel() {
 void WCoverArtLabel::setCoverArt(TrackPointer track, CoverInfo info, QPixmap px) {
     m_pTrack = track;
     m_coverInfo = info;
-    setPixmap(px.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    if (px.isNull()) {
+        setPixmap(m_defaultCover);
+    } else {
+        setPixmap(px.scaled(s_labelDisplaySize, Qt::KeepAspectRatio,
+                            Qt::SmoothTransformation));
+    }
 
     QSize frameSize = pixmap()->size();
     frameSize += QSize(2,2); // margin

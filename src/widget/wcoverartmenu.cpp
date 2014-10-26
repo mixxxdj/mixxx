@@ -59,8 +59,7 @@ void WCoverArtMenu::slotChange() {
     // get initial directory (trackdir or coverdir)
     QString initialDir;
     QString trackPath = m_pTrack->getDirectory();
-    if (m_coverInfo.coverLocation.isEmpty() ||
-            m_coverInfo.coverLocation == pCache->getDefaultCoverLocation()) {
+    if (m_coverInfo.coverLocation.isEmpty()) {
         initialDir = trackPath;
     } else {
         initialDir = m_coverInfo.coverLocation;
@@ -141,7 +140,6 @@ void WCoverArtMenu::slotUnset() {
     if (pCache == NULL) {
         return;
     }
-    QString newLoc = pCache->getDefaultCoverLocation();
-    QPixmap px = pCache->getDefaultCoverArt();
-    emit(coverLocationUpdated(newLoc, m_coverInfo.coverLocation, px));
+    QPixmap px;
+    emit(coverLocationUpdated(QString(), m_coverInfo.coverLocation, QPixmap()));
 }

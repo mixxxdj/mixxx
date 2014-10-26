@@ -33,7 +33,6 @@ class CoverArtDelegate : public QStyledItemDelegate {
 
   private:
     bool m_bOnlyCachedCover;
-    QString m_sDefaultCover;
     int m_iCoverLocationColumn;
     int m_iCoverHashColumn;
     int m_iTrackLocationColumn;

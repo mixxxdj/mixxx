@@ -12,6 +12,10 @@
 
 class CoverArtUtils {
   public:
+    static QString defaultCoverLocation() {
+        return QString(":/images/library/default_cover.png");
+    }
+
     // Extracts the first cover art image embedded within the file at
     // trackLocation.
     static QImage extractEmbeddedCover(const QString& trackLocation) {

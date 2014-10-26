@@ -18,8 +18,7 @@ struct CoverInfo {
     QString hash;
 };
 
-class CoverArtCache : public QObject, public Singleton<CoverArtCache>
-{
+class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT
   public:
     /* This method is used to request a cover art pixmap.
@@ -46,8 +45,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
 
-    QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
-    QPixmap getDefaultCoverArt() { return m_pxDefaultCover; }
     // This is for widgets that try to get the covers directly from the cache
     // instead of waiting for the signal with the cover. Because we update the
     // database in large batches it can happen that a widget looks up a track
@@ -93,9 +90,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
   private:
     CoverArtDAO* m_pCoverArtDAO;
     TrackDAO* m_pTrackDAO;
-    const QString m_sDefaultCoverLocation;
-    const QImage m_imgDefaultCover;
-    const QPixmap m_pxDefaultCover;
     QSet<int> m_runningIds;
     QHash<int, QPair<QString, QString> > m_queueOfUpdates;
 };

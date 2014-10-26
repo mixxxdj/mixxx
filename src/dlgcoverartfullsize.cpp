@@ -28,7 +28,8 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
         info.coverLocation = cache->trackInDBHash(info.trackId);
     }
 
-    if (info.coverLocation == cache->getDefaultCoverLocation())  {
+    // If it's still empty, we don't have a cover.
+    if (info.coverLocation.isEmpty()) {
         return;
     }
 

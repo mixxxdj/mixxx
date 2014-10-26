@@ -25,7 +25,7 @@ class WCoverArtMenu : public QMenu {
   signals:
     void coverLocationUpdated(const QString& newLocation,
                               const QString& oldLocation,
-                              QPixmap px);
+                              QPixmap newCover);
 
   private slots:
     void slotChange();

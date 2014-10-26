@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QWidget>
+#include <QPixmap>
 
 #include "dlgcoverartfullsize.h"
 #include "widget/wcoverartmenu.h"
@@ -17,7 +18,9 @@ class WCoverArtLabel : public QLabel {
     void setCoverArt(TrackPointer track, CoverInfo info, QPixmap px);
 
   signals:
-    void coverLocationUpdated(const QString&, const QString&, QPixmap);
+    void coverLocationUpdated(const QString& newLocation,
+                              const QString& oldLocation,
+                              QPixmap newCover);
 
   protected:
     void leaveEvent(QEvent*);
@@ -31,6 +34,7 @@ class WCoverArtLabel : public QLabel {
     CoverInfo m_coverInfo;
     WCoverArtMenu* m_pCoverMenu;
     DlgCoverArtFullSize* m_pDlgFullSize;
+    QPixmap m_defaultCover;
 };
 
 #endif // WCOVERARTLABEL_H

@@ -9,11 +9,6 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
           m_iCoverHashColumn(-1),
           m_iTrackLocationColumn(-1),
           m_iIdColumn(-1) {
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        m_sDefaultCover = pCache->getDefaultCoverLocation();
-    }
-
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
             this, SLOT(slotOnlyCachedCoverArt(bool)));
@@ -71,9 +66,8 @@ void CoverArtDelegate::paint(QPainter *painter,
         return;
     }
 
-    // drawing only an existing cover_art,
-    // otherwise leave it blank...
-    if (coverLocation != m_sDefaultCover) {
+    // drawing only an existing cover_art, otherwise leave it blank...
+    if (!coverLocation.isEmpty()) {
         CoverInfo info;
         info.trackId = trackId;
         info.coverLocation = coverLocation;
@@ -86,11 +80,7 @@ void CoverArtDelegate::paint(QPainter *painter,
         QPixmap pixmap = pCache->requestPixmap(info, coverSize,
                                                m_bOnlyCachedCover, true);
 
-        if (info.coverLocation.isEmpty()) {
-            info.coverLocation = pCache->trackInDBHash(info.trackId);
-        }
-
-        if (!pixmap.isNull() && info.coverLocation != m_sDefaultCover) {
+        if (!pixmap.isNull()) {
             int width = pixmap.width();
             if (option.rect.width() < width) {
                 width = option.rect.width();

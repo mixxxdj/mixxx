@@ -38,7 +38,7 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
     TrackCollection* m_pTrackCollection;
 };
 
-const QString& kCoverLocationTest("res/images/library/default_cover.png");
+const QString kCoverLocationTest("res/images/library/default_cover.png");
 const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test.mp3");
 
@@ -142,8 +142,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    EXPECT_QSTRING_EQ(res.coverLocation,
-                      getDefaultCoverLocation());
+    EXPECT_TRUE(res.coverLocation.isEmpty());
 
     // looking for a track with embedded cover
     cInfo.trackLocation = kTrackLocationTest;
