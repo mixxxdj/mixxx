@@ -61,6 +61,10 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThread* m_pKey;
     ControlObjectThread* m_pReplayGain;
     ControlObjectThread* m_pPlay;
+    ControlObjectThread* m_pLowFilterControlObject;
+    ControlObjectThread* m_pMidFilterControlObject;
+    ControlObjectThread* m_pHighFilterControlObject;
+    ControlObjectThread* m_pPreGain;
     EngineDeck* m_pChannel;
 };
 
