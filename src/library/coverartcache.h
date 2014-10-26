@@ -3,20 +3,10 @@
 
 #include <QObject>
 
+#include "library/coverart.h"
 #include "library/dao/coverartdao.h"
 #include "library/dao/trackdao.h"
 #include "util/singleton.h"
-
-struct CoverInfo {
-    CoverInfo() : trackId(-1),
-                  coverLocation(QString()),
-                  trackLocation(QString()),
-                  hash(QString()) {}
-    int trackId;
-    QString coverLocation;
-    QString trackLocation;
-    QString hash;
-};
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT
