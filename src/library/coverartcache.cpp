@@ -2,6 +2,7 @@
 #include <QPixmapCache>
 #include <QStringBuilder>
 #include <QtConcurrentRun>
+#include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
@@ -12,6 +13,8 @@
 // Large cover art wastes space in our cache when we typicaly won't show them at
 // their full size. This is the max side length we resize images to.
 const int kMaxCoverSize = 300;
+
+const bool sDebug = false;
 
 CoverArtCache::CoverArtCache()
         : m_pCoverArtDAO(NULL),
@@ -99,6 +102,15 @@ QPixmap CoverArtCache::requestPixmap(const CoverInfo& requestInfo,
                                      const QSize& croppedSize,
                                      const bool onlyCached,
                                      const bool issueRepaint) {
+    if (sDebug) {
+        qDebug() << "CoverArtCache::requestPixmap"
+                 << requestInfo.coverLocation
+                 << requestInfo.hash
+                 << requestInfo.trackId
+                 << requestInfo.trackLocation;
+    }
+
+    // TODO(XXX) handle requests for non-library tracks.
     if (requestInfo.trackId < 1 || m_pCoverArtDAO == NULL) {
         return QPixmap();
     }
@@ -171,6 +183,15 @@ CoverArtCache::FutureResult CoverArtCache::loadImage(
         const CoverAndAlbumInfo& coverAndAlbumInfo,
         const QSize& croppedSize,
         const bool issueRepaint) {
+    if (sDebug) {
+        qDebug() << "CoverArtCache::loadImage"
+                 << coverAndAlbumInfo.info.coverLocation
+                 << coverAndAlbumInfo.info.hash
+                 << coverAndAlbumInfo.info.trackId
+                 << coverAndAlbumInfo.info.trackLocation
+                 << coverAndAlbumInfo.album;
+    }
+
     FutureResult res;
     res.cover.info = coverAndAlbumInfo.info;
     res.croppedSize = croppedSize;
@@ -229,6 +250,15 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
         const CoverAndAlbumInfo& coverAndAlbumInfo,
         const QSize& croppedSize,
         const bool issueRepaint) {
+    if (sDebug) {
+        qDebug() << "CoverArtCache::searchImage"
+                 << coverAndAlbumInfo.info.coverLocation
+                 << coverAndAlbumInfo.info.hash
+                 << coverAndAlbumInfo.info.trackId
+                 << coverAndAlbumInfo.info.trackLocation
+                 << coverAndAlbumInfo.album;
+    }
+
     FutureResult res;
     res.cover.info = coverAndAlbumInfo.info;
     res.croppedSize = croppedSize;
