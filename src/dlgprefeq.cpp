@@ -330,6 +330,7 @@ void DlgPrefEQ::slotBypass(int state) {
         int deck = 1;
         foreach(QComboBox* box, m_deckEffectSelectors) {
             ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 0);
+            m_enableWaveformEqCOs[deck - 1]->set(0);
             deck++;
             box->setEnabled(false);
         }
@@ -341,6 +342,7 @@ void DlgPrefEQ::slotBypass(int state) {
         ControlObjectSlave enableControl;
         foreach(QComboBox* box, m_deckEffectSelectors) {
             ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 1);
+            m_enableWaveformEqCOs[deck - 1]->set(1);
             deck++;
             box->setEnabled(true);
         }
