@@ -124,7 +124,6 @@ void WCoverArtMenu::slotReload() {
     info.album = m_pTrack->getAlbum();
     info.trackDirectory = m_pTrack->getDirectory();
     info.trackLocation = m_pTrack->getLocation();
-    info.trackBaseName = QFileInfo(m_pTrack->getFilename()).baseName();
     CoverArtCache::FutureResult res = pCache->searchImage(
         info, QSize(0,0), false);
     QPixmap px;

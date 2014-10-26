@@ -178,7 +178,6 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         coverInfo.trackDirectory = query.value(3).toString();
         QString filename = query.value(4).toString();
         coverInfo.trackLocation = query.value(5).toString();
-        coverInfo.trackBaseName = QFileInfo(filename).baseName();
         return coverInfo;
     }
 

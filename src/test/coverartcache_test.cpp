@@ -134,7 +134,6 @@ TEST_F(CoverArtCacheTest, searchImage) {
         "",                                            // cInfo.coverLocation
         "",                                            // cInfo.hash
         "album_name",                                  // cInfo.album
-        "track",                                       // cInfo.trackBaseName
         trackdir,                                      // cInfo.trackDirectory
         trackdir % "/track.mp3"                        // cInfo.trackLocation
     };
@@ -160,7 +159,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     EXPECT_EQ(img, res.img);
 
     // setting image source and default format
-    cInfo.trackLocation = trackdir % "/" % cInfo.trackBaseName % ".mp3";
+    cInfo.trackLocation = trackdir % "/track.mp3";
     img = QImage(kCoverLocationTest);
     const char* format("jpg");
 
@@ -199,7 +198,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // saving more covers using the preferred names in the right order
     QStringList prefCovers;
     // 1. track_filename.jpg
-    QString cLoc_filename = QString(trackdir % "/" % cInfo.trackBaseName % ".");
+    QString cLoc_filename = QString(trackdir % "/track.");
     cLoc_filename.append(format);
     EXPECT_TRUE(img.scaled(500,500).save(cLoc_filename, format));
     prefCovers << cLoc_filename;
@@ -252,17 +251,17 @@ TEST_F(CoverArtCacheTest, searchImage) {
 
     // As we are looking for %album%.jpg and %base_track.jpg%,
     // we need to check if everything works with UTF8 chars.
+    QString trackBaseName = QString::fromUtf8("track_ðÑöæäî");
     const CoverArtDAO::CoverArtInfo cInfoUtf8 = {
         2,                                             // cInfo.trackId
         "",                                            // cInfo.coverLocation
         "",                                            // cInfo.hash
         QString::fromUtf8("öæäîðÑ_album"),             // cInfo.album
-        QString::fromUtf8("track_ðÑöæäî"),             // cInfo.trackBaseName
         trackdir,                                      // cInfo.trackDirectory
-        trackdir % "/" % cInfo.trackBaseName % ".mp3"  // cInfo.trackLocation
+        trackdir % "/" % trackBaseName % ".mp3"  // cInfo.trackLocation
     };
     // 1. track_filename.jpg
-    cLoc_filename = QString(trackdir % "/" % cInfoUtf8.trackBaseName % ".");
+    cLoc_filename = QString(trackdir % "/" % trackBaseName % ".");
     cLoc_filename.append(format);
     EXPECT_TRUE(img.save(cLoc_filename, format));
     res = CoverArtCache::searchImage(cInfoUtf8, QSize(0,0), false);

@@ -236,8 +236,9 @@ CoverArtCache::FutureResult CoverArtCache::searchImage(
 
     // Looking for cover stored in track diretory.
     if (res.img.isNull()) {
+        QString trackBaseName = QFileInfo(coverInfo.trackLocation).baseName();
         res.coverLocation = CoverArtUtils::searchInTrackDirectory(
-            coverInfo.trackDirectory, coverInfo.trackBaseName, coverInfo.album);
+            coverInfo.trackDirectory, trackBaseName, coverInfo.album);
         res.img = CoverArtUtils::maybeResizeImage(QImage(res.coverLocation),
                                                   kMaxCoverSize);
     }

@@ -32,7 +32,6 @@ class CoverArtDAO : public DAO {
         QString coverLocation;
         QString hash;
         QString album;
-        QString trackBaseName;
         QString trackDirectory;
         QString trackLocation;
     };
