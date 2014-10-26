@@ -79,18 +79,15 @@ bool CoverArtCache::changeCoverArt(int trackId,
     int coverId = m_pCoverArtDAO->saveCoverArt(newCoverLocation, hash);
     m_pTrackDAO->updateCoverArt(trackId, coverId);
 
+    // TODO(XXX): invalidate existing cached cropped pixmaps of this hash
+    QString cacheKey = CoverArtUtils::pixmapCacheKey(hash, QSize());
     QPixmap pixmap;
-    if (QPixmapCache::find(hash, &pixmap)) {
-        emit(pixmapFound(trackId, pixmap));
-        emit(requestRepaint());
-    } else {
+    if (!QPixmapCache::find(cacheKey, &pixmap)) {
         pixmap.convertFromImage(img);
-        if (QPixmapCache::insert(hash, pixmap)) {
-            emit(pixmapFound(trackId, pixmap));
-            emit(requestRepaint());
-        }
+        QPixmapCache::insert(cacheKey, pixmap);
     }
-
+    emit(pixmapFound(trackId, pixmap));
+    emit(requestRepaint());
     return true;
 }
 
@@ -127,10 +124,8 @@ QPixmap CoverArtCache::requestPixmap(const CoverInfo& requestInfo,
     // in the table view (cover art column).
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
-    QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(coverAndAlbumInfo.info.hash)
-                           .arg(croppedSize.width())
-                           .arg(croppedSize.height());
+    QString cacheKey = CoverArtUtils::pixmapCacheKey(coverAndAlbumInfo.info.hash,
+                                                     croppedSize);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
@@ -197,14 +192,10 @@ void CoverArtCache::imageLoaded() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(res.cover.info.hash)
-                           .arg(res.croppedSize.width())
-                           .arg(res.croppedSize.height());
-
+    QString cacheKey = CoverArtUtils::pixmapCacheKey(res.cover.info.hash,
+                                                     res.croppedSize);
     QPixmap pixmap;
-    QPixmapCache::find(cacheKey, &pixmap);
-    if (pixmap.isNull() && !res.cover.image.isNull()) {
+    if (!QPixmapCache::find(cacheKey, &pixmap) && !res.cover.image.isNull()) {
         pixmap.convertFromImage(res.cover.image);
         QPixmapCache::insert(cacheKey, pixmap);
     }
@@ -265,14 +256,11 @@ void CoverArtCache::imageFound() {
     watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
     FutureResult res = watcher->result();
 
-    QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(res.cover.info.hash)
-                           .arg(res.croppedSize.width())
-                           .arg(res.croppedSize.height());
 
+    QString cacheKey = CoverArtUtils::pixmapCacheKey(res.cover.info.hash,
+                                                     res.croppedSize);
     QPixmap pixmap;
-    QPixmapCache::find(cacheKey, &pixmap);
-    if (pixmap.isNull()) {
+    if (!QPixmapCache::find(cacheKey, &pixmap) && !res.cover.image.isNull()) {
         pixmap.convertFromImage(res.cover.image);
         QPixmapCache::insert(cacheKey, pixmap);
     }

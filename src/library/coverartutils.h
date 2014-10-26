@@ -6,6 +6,7 @@
 #include <QString>
 #include <QDir>
 #include <QStringList>
+#include <QSize>
 
 #include "util/sandbox.h"
 #include "soundsourceproxy.h"
@@ -14,6 +15,17 @@ class CoverArtUtils {
   public:
     static QString defaultCoverLocation() {
         return QString(":/images/library/default_cover.png");
+    }
+
+    static QString pixmapCacheKey(const QString& hash,
+                                  const QSize& size) {
+        if (size.isNull()) {
+            return QString("CoverArtCache_%1").arg(hash);
+        }
+        return QString("CoverArtCache_%1_%2x%3")
+                .arg(hash)
+                .arg(size.width())
+                .arg(size.height());
     }
 
     // Extracts the first cover art image embedded within the file at
