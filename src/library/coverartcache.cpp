@@ -5,6 +5,8 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dao/coverartdao.h"
+#include "library/dao/trackdao.h"
 #include "soundsourceproxy.h"
 
 // Large cover art wastes space in our cache when we typicaly won't show them at
@@ -96,23 +98,28 @@ QPixmap CoverArtCache::requestPixmap(const CoverInfo& requestInfo,
                                      const QSize& croppedSize,
                                      const bool onlyCached,
                                      const bool issueRepaint) {
-    CoverInfo info = requestInfo;
-    if (info.trackId < 1 || m_pCoverArtDAO == NULL) {
+    if (requestInfo.trackId < 1 || m_pCoverArtDAO == NULL) {
         return QPixmap();
     }
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    if (m_runningIds.contains(info.trackId)) {
+    if (m_runningIds.contains(requestInfo.trackId)) {
         return QPixmap();
     }
+
+    // Begin to build the request.
+    CoverAndAlbumInfo coverAndAlbumInfo;
+    coverAndAlbumInfo.info = requestInfo;
 
     // check if we have already found a cover for this track
     // and if it is just waiting to be inserted/updated in the DB.
     // In this case, we update the coverLocation and the hash.
-    if (m_queueOfUpdates.contains(info.trackId)) {
-        info.coverLocation = m_queueOfUpdates[info.trackId].first;
-        info.hash = m_queueOfUpdates[info.trackId].second;
+    QPair<QString, QString> update = m_queueOfUpdates.value(
+        coverAndAlbumInfo.info.trackId);
+    if (!update.first.isEmpty()) {
+        coverAndAlbumInfo.info.coverLocation = update.first;
+        coverAndAlbumInfo.info.hash = update.second;
     }
 
     // If this request comes from CoverDelegate (table view),
@@ -121,14 +128,14 @@ QPixmap CoverArtCache::requestPixmap(const CoverInfo& requestInfo,
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
     QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(info.hash)
+                           .arg(coverAndAlbumInfo.info.hash)
                            .arg(croppedSize.width())
                            .arg(croppedSize.height());
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         if (!issueRepaint) {
-            emit(pixmapFound(info.trackId, pixmap));
+            emit(pixmapFound(coverAndAlbumInfo.info.trackId, pixmap));
         }
         return pixmap;
     }
@@ -139,23 +146,19 @@ QPixmap CoverArtCache::requestPixmap(const CoverInfo& requestInfo,
 
     QFuture<FutureResult> future;
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
-    CoverArtDAO::CoverArtInfo coverInfo;
-    if (info.hash.isEmpty() ||
-           (info.coverLocation != "ID3TAG" && !QFile::exists(info.coverLocation))) {
-        coverInfo = m_pCoverArtDAO->getCoverArtInfo(info.trackId);
+    if (coverAndAlbumInfo.info.hash.isEmpty() ||
+           (coverAndAlbumInfo.info.coverLocation != "ID3TAG" &&
+            !QFile::exists(coverAndAlbumInfo.info.coverLocation))) {
+        coverAndAlbumInfo = m_pCoverArtDAO->getCoverAndAlbumInfo(coverAndAlbumInfo.info.trackId);
         future = QtConcurrent::run(this, &CoverArtCache::searchImage,
-                                   coverInfo, croppedSize, issueRepaint);
+                                   coverAndAlbumInfo, croppedSize, issueRepaint);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageFound()));
     } else {
-        coverInfo.trackId = info.trackId;
-        coverInfo.coverLocation = info.coverLocation;
-        coverInfo.hash = info.hash;
-        coverInfo.trackLocation = info.trackLocation;
         future = QtConcurrent::run(this, &CoverArtCache::loadImage,
-                                   coverInfo, croppedSize, issueRepaint);
+                                   coverAndAlbumInfo, croppedSize, issueRepaint);
         connect(watcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
     }
-    m_runningIds.insert(info.trackId);
+    m_runningIds.insert(coverAndAlbumInfo.info.trackId);
     watcher->setFuture(future);
 
     return QPixmap();
@@ -163,26 +166,26 @@ QPixmap CoverArtCache::requestPixmap(const CoverInfo& requestInfo,
 
 // Load cover from path stored in DB.
 // It is executed in a separate thread via QtConcurrent::run
-CoverArtCache::FutureResult CoverArtCache::loadImage(CoverArtDAO::CoverArtInfo coverInfo,
-                                                     const QSize& croppedSize,
-                                                     const bool issueRepaint) {
+CoverArtCache::FutureResult CoverArtCache::loadImage(
+        const CoverAndAlbumInfo& coverAndAlbumInfo,
+        const QSize& croppedSize,
+        const bool issueRepaint) {
     FutureResult res;
-    res.trackId = coverInfo.trackId;
-    res.coverLocation = coverInfo.coverLocation;
-    res.hash = coverInfo.hash;
+    res.cover.info = coverAndAlbumInfo.info;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
 
-    if (res.coverLocation == "ID3TAG") {
-        res.img = CoverArtUtils::extractEmbeddedCover(coverInfo.trackLocation);
+    if (res.cover.info.coverLocation == "ID3TAG") {
+        res.cover.image = CoverArtUtils::extractEmbeddedCover(
+            res.cover.info.trackLocation);
     } else {
-        res.img = QImage(res.coverLocation);
+        res.cover.image = QImage(res.cover.info.coverLocation);
     }
 
     if (res.croppedSize.isNull()) {
-        res.img = CoverArtUtils::maybeResizeImage(res.img, kMaxCoverSize);
+        res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image, kMaxCoverSize);
     } else {
-        res.img = CoverArtUtils::cropImage(res.img, res.croppedSize);
+        res.cover.image = CoverArtUtils::cropImage(res.cover.image, res.croppedSize);
     }
 
     return res;
@@ -195,59 +198,62 @@ void CoverArtCache::imageLoaded() {
     FutureResult res = watcher->result();
 
     QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(res.hash)
+                           .arg(res.cover.info.hash)
                            .arg(res.croppedSize.width())
                            .arg(res.croppedSize.height());
 
     QPixmap pixmap;
     QPixmapCache::find(cacheKey, &pixmap);
-    if (pixmap.isNull() && !res.img.isNull()) {
-        pixmap.convertFromImage(res.img);
+    if (pixmap.isNull() && !res.cover.image.isNull()) {
+        pixmap.convertFromImage(res.cover.image);
         QPixmapCache::insert(cacheKey, pixmap);
     }
 
     if (res.issueRepaint) {
         emit(requestRepaint());
     } else {
-        emit(pixmapFound(res.trackId, pixmap));
+        emit(pixmapFound(res.cover.info.trackId, pixmap));
     }
 
-    m_runningIds.remove(res.trackId);
+    m_runningIds.remove(res.cover.info.trackId);
 }
 
 // Searching and loading QImages is a very slow process
 // that could block the main thread. Therefore, this method
 // is executed in a separate thread via QtConcurrent::run
 CoverArtCache::FutureResult CoverArtCache::searchImage(
-                                           CoverArtDAO::CoverArtInfo coverInfo,
-                                           const QSize& croppedSize,
-                                           const bool issueRepaint) {
+        const CoverAndAlbumInfo& coverAndAlbumInfo,
+        const QSize& croppedSize,
+        const bool issueRepaint) {
     FutureResult res;
-    res.trackId = coverInfo.trackId;
+    res.cover.info = coverAndAlbumInfo.info;
     res.croppedSize = croppedSize;
     res.issueRepaint = issueRepaint;
 
     // Looking for embedded cover art.
-    res.img = CoverArtUtils::extractEmbeddedCover(coverInfo.trackLocation);
-    if (!res.img.isNull()) {
-        res.coverLocation = "ID3TAG";
-        res.img = CoverArtUtils::maybeResizeImage(res.img, kMaxCoverSize);
+    res.cover.image = CoverArtUtils::extractEmbeddedCover(coverAndAlbumInfo.info.trackLocation);
+    if (!res.cover.image.isNull()) {
+        res.cover.info.coverLocation = "ID3TAG";
+        res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image, kMaxCoverSize);
     }
 
     // Looking for cover stored in track diretory.
-    if (res.img.isNull()) {
-        QString trackBaseName = QFileInfo(coverInfo.trackLocation).baseName();
-        res.coverLocation = CoverArtUtils::searchInTrackDirectory(
-            coverInfo.trackDirectory, trackBaseName, coverInfo.album);
-        res.img = CoverArtUtils::maybeResizeImage(QImage(res.coverLocation),
-                                                  kMaxCoverSize);
+    if (res.cover.image.isNull()) {
+        QFileInfo track(coverAndAlbumInfo.info.trackLocation);
+        QString trackDirectory = track.path();
+        QString trackBaseName = track.baseName();
+        res.cover.info.coverLocation = CoverArtUtils::searchInTrackDirectory(
+            trackDirectory, trackBaseName, coverAndAlbumInfo.album);
+        res.cover.image = CoverArtUtils::maybeResizeImage(
+            QImage(res.cover.info.coverLocation),
+            kMaxCoverSize);
     }
 
-    res.hash = CoverArtUtils::calculateHash(res.img);
+    res.cover.info.hash = CoverArtUtils::calculateHash(res.cover.image);
 
     // adjusting the cover size according to the final purpose
     if (!res.croppedSize.isNull()) {
-        res.img = CoverArtUtils::cropImage(res.img, res.croppedSize);
+        res.cover.image = CoverArtUtils::cropImage(res.cover.image, res.croppedSize);
     }
 
     return res;
@@ -260,31 +266,32 @@ void CoverArtCache::imageFound() {
     FutureResult res = watcher->result();
 
     QString cacheKey = QString("CoverArtCache_%1_%2x%3")
-                           .arg(res.hash)
+                           .arg(res.cover.info.hash)
                            .arg(res.croppedSize.width())
                            .arg(res.croppedSize.height());
 
     QPixmap pixmap;
     QPixmapCache::find(cacheKey, &pixmap);
     if (pixmap.isNull()) {
-        pixmap.convertFromImage(res.img);
+        pixmap.convertFromImage(res.cover.image);
         QPixmapCache::insert(cacheKey, pixmap);
     }
 
     if (res.issueRepaint) {
         emit(requestRepaint());
     } else {
-        emit(pixmapFound(res.trackId, pixmap));
+        emit(pixmapFound(res.cover.info.trackId, pixmap));
     }
 
     // update DB
-    if (!m_queueOfUpdates.contains(res.trackId)) {
-        m_queueOfUpdates.insert(res.trackId,
-                                qMakePair(res.coverLocation, res.hash));
+    if (!m_queueOfUpdates.contains(res.cover.info.trackId)) {
+        m_queueOfUpdates.insert(res.cover.info.trackId,
+                                qMakePair(res.cover.info.coverLocation,
+                                          res.cover.info.hash));
         updateDB();
     }
 
-    m_runningIds.remove(res.trackId);
+    m_runningIds.remove(res.cover.info.trackId);
 }
 
 // sqlite can't do a huge number of updates in a very short time,

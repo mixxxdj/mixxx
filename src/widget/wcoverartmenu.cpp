@@ -3,7 +3,6 @@
 
 #include "wcoverartmenu.h"
 #include "library/coverartcache.h"
-#include "library/dao/coverartdao.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -119,16 +118,15 @@ void WCoverArtMenu::slotReload() {
         return;
     }
 
-    CoverArtDAO::CoverArtInfo info;
-    info.trackId = m_pTrack->getId();
+    CoverAndAlbumInfo info;
+    info.info.trackId = m_pTrack->getId();
+    info.info.trackLocation = m_pTrack->getLocation();
     info.album = m_pTrack->getAlbum();
-    info.trackDirectory = m_pTrack->getDirectory();
-    info.trackLocation = m_pTrack->getLocation();
     CoverArtCache::FutureResult res = pCache->searchImage(
         info, QSize(0,0), false);
     QPixmap px;
-    px.convertFromImage(res.img);
-    emit(coverLocationUpdated(res.coverLocation, m_coverInfo.coverLocation, px));
+    px.convertFromImage(res.cover.image);
+    emit(coverLocationUpdated(res.cover.info.coverLocation, m_coverInfo.coverLocation, px));
 }
 
 void WCoverArtMenu::slotUnset() {

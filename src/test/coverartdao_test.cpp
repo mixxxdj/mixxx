@@ -224,13 +224,13 @@ TEST_F(CoverArtDAOTest, deleteUnusedCoverArts) {
     ASSERT_EQ(-1, coverId_4t);
 }
 
-TEST_F(CoverArtDAOTest, getCoverArtInfo) {
+TEST_F(CoverArtDAOTest, getCoverAndAlbumInfo) {
     DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
     // creating a temp dir
     QString testdir(QDir::tempPath() + "/CoverDir");
     directoryDao.addDirectory(testdir);
     // creating a track
-    QString trackLocation = testdir % "/getCoverArtInfo/track.mp3";
+    QString trackLocation = testdir % "/getCoverAndAlbumInfo/track.mp3";
     QFileInfo file = QFileInfo(trackLocation);
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     trackDAO.addTracksPrepare();
@@ -251,18 +251,17 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
 
     // adding cover art
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
-    QString coverLocation = "/getCoverArtInfo/cover.jpg";
+    QString coverLocation = "/getCoverAndAlbumInfo/cover.jpg";
     QString coverHash = "abc12345xxxCOVER";
     int coverId = m_CoverArtDAO.saveCoverArt(coverLocation, coverHash);
     trackDAO.updateCoverArt(trackId, coverId);
 
     // getting cover art info from coverartdao
-    CoverArtDAO::CoverArtInfo coverInfo;
-    coverInfo = m_CoverArtDAO.getCoverArtInfo(trackId);
-    ASSERT_EQ(trackId, coverInfo.trackId);
-    EXPECT_QSTRING_EQ(coverLocation, coverInfo.coverLocation);
-    EXPECT_QSTRING_EQ(coverHash, coverInfo.hash);
+    CoverAndAlbumInfo coverInfo;
+    coverInfo = m_CoverArtDAO.getCoverAndAlbumInfo(trackId);
+    ASSERT_EQ(trackId, coverInfo.info.trackId);
+    EXPECT_QSTRING_EQ(coverLocation, coverInfo.info.coverLocation);
+    EXPECT_QSTRING_EQ(coverHash, coverInfo.info.hash);
     EXPECT_QSTRING_EQ(album, coverInfo.album);
-    EXPECT_QSTRING_EQ(file.absolutePath(), coverInfo.trackDirectory);
-    EXPECT_QSTRING_EQ(trackLocation, coverInfo.trackLocation);
+    EXPECT_QSTRING_EQ(trackLocation, coverInfo.info.trackLocation);
 }

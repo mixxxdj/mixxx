@@ -64,25 +64,25 @@ TEST_F(CoverArtCacheTest, extractEmbeddedCover) {
 
 TEST_F(CoverArtCacheTest, loadImage) {
     QImage img = QImage(kCoverLocationTest);
-    CoverArtDAO::CoverArtInfo info;
-    info.trackId = 1;
-    info.coverLocation = kCoverLocationTest;
-    info.hash = "coverhash"; // fake cover hash
+    CoverAndAlbumInfo info;
+    info.info.trackId = 1;
+    info.info.coverLocation = kCoverLocationTest;
+    info.info.hash = "coverhash"; // fake cover hash
 
     CoverArtCache::FutureResult res;
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
-    EXPECT_EQ(info.trackId, res.trackId);
-    EXPECT_QSTRING_EQ(kCoverLocationTest, res.coverLocation);
-    EXPECT_QSTRING_EQ(info.hash, res.hash);
-    EXPECT_EQ(img, res.img);
+    EXPECT_EQ(info.info.trackId, res.cover.info.trackId);
+    EXPECT_QSTRING_EQ(kCoverLocationTest, res.cover.info.coverLocation);
+    EXPECT_QSTRING_EQ(info.info.hash, res.cover.info.hash);
+    EXPECT_EQ(img, res.cover.image);
 
-    info.trackId = 1;
-    info.coverLocation = "ID3TAG";
-    info.trackLocation = kTrackLocationTest;
+    info.info.trackId = 1;
+    info.info.coverLocation = "ID3TAG";
+    info.info.trackLocation = kTrackLocationTest;
     res = CoverArtCache::loadImage(info, QSize(0,0), false);
-    EXPECT_EQ(info.trackId, res.trackId);
-    EXPECT_QSTRING_EQ("ID3TAG", res.coverLocation);
-    EXPECT_QSTRING_EQ(info.hash, res.hash);
+    EXPECT_EQ(info.info.trackId, res.cover.info.trackId);
+    EXPECT_QSTRING_EQ("ID3TAG", res.cover.info.coverLocation);
+    EXPECT_QSTRING_EQ(info.info.hash, res.cover.info.hash);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
         QDir(kTrackLocationTest), true);
@@ -91,7 +91,7 @@ TEST_F(CoverArtCacheTest, loadImage) {
     ASSERT_TRUE(pProxiedSoundSource != NULL);
     img = proxy.parseCoverArt();
 
-    EXPECT_EQ(img, res.img);
+    EXPECT_EQ(img, res.cover.image);
 }
 
 TEST_F(CoverArtCacheTest, changeImage) {
@@ -129,25 +129,23 @@ TEST_F(CoverArtCacheTest, searchImage) {
     ASSERT_TRUE(QDir().mkpath(trackdir));
 
     // creating CoverArtInfo with empty coverLocation
-    CoverArtDAO::CoverArtInfo cInfo = {
-        1,                                             // cInfo.trackId
-        "",                                            // cInfo.coverLocation
-        "",                                            // cInfo.hash
-        "album_name",                                  // cInfo.album
-        trackdir,                                      // cInfo.trackDirectory
-        trackdir % "/track.mp3"                        // cInfo.trackLocation
-    };
+    CoverAndAlbumInfo cInfo;
+    cInfo.info.trackId = 1;
+    cInfo.info.coverLocation = "";
+    cInfo.info.trackLocation = trackdir % "/track.mp3";
+    cInfo.info.hash = "";
+    cInfo.album = "album_name";
 
     // looking for cover in an empty directory
     CoverArtCache::FutureResult res;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    EXPECT_TRUE(res.coverLocation.isEmpty());
+    EXPECT_TRUE(res.cover.info.coverLocation.isEmpty());
 
     // looking for a track with embedded cover
-    cInfo.trackLocation = kTrackLocationTest;
+    cInfo.info.trackLocation = kTrackLocationTest;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    EXPECT_EQ(cInfo.trackId, res.trackId);
-    EXPECT_QSTRING_EQ("ID3TAG", res.coverLocation);
+    EXPECT_EQ(cInfo.info.trackId, res.cover.info.trackId);
+    EXPECT_QSTRING_EQ("ID3TAG", res.cover.info.coverLocation);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
         QDir(kTrackLocationTest), true);
@@ -156,10 +154,10 @@ TEST_F(CoverArtCacheTest, searchImage) {
     ASSERT_TRUE(pProxiedSoundSource != NULL);
     QImage img = proxy.parseCoverArt();
 
-    EXPECT_EQ(img, res.img);
+    EXPECT_EQ(img, res.cover.image);
 
     // setting image source and default format
-    cInfo.trackLocation = trackdir % "/track.mp3";
+    cInfo.info.trackLocation = trackdir % "/track.mp3";
     img = QImage(kCoverLocationTest);
     const char* format("jpg");
 
@@ -180,7 +178,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     EXPECT_TRUE(img.save(cLoc_foo, format));
     // looking for cover in an directory with one image
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    EXPECT_QSTRING_EQ(cLoc_foo, res.coverLocation);
+    EXPECT_QSTRING_EQ(cLoc_foo, res.cover.info.coverLocation);
     QFile::remove(cLoc_foo);
 
     QStringList extraCovers;
@@ -231,7 +229,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     EXPECT_EQ(7, prefCovers.size());
     for (int coverNameId = 0; coverNameId < prefCovers.size(); coverNameId++) {
         res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-        EXPECT_QSTRING_EQ(prefCovers[coverNameId], res.coverLocation);
+        EXPECT_QSTRING_EQ(prefCovers[coverNameId], res.cover.info.coverLocation);
         QFile::remove(prefCovers[coverNameId]);
     }
 
@@ -247,32 +245,31 @@ TEST_F(CoverArtCacheTest, searchImage) {
     EXPECT_TRUE(img.scaled(400,400).save(cLoc_coverjpg, "jpg"));
     extraCovers << cLoc_coverJPG << cLoc_coverjpg;
     res = CoverArtCache::searchImage(cInfo, QSize(0,0), false);
-    EXPECT_QSTRING_EQ(cLoc_coverJPG, res.coverLocation);
+    EXPECT_QSTRING_EQ(cLoc_coverJPG, res.cover.info.coverLocation);
 
     // As we are looking for %album%.jpg and %base_track.jpg%,
     // we need to check if everything works with UTF8 chars.
     QString trackBaseName = QString::fromUtf8("track_ðÑöæäî");
-    const CoverArtDAO::CoverArtInfo cInfoUtf8 = {
-        2,                                             // cInfo.trackId
-        "",                                            // cInfo.coverLocation
-        "",                                            // cInfo.hash
-        QString::fromUtf8("öæäîðÑ_album"),             // cInfo.album
-        trackdir,                                      // cInfo.trackDirectory
-        trackdir % "/" % trackBaseName % ".mp3"  // cInfo.trackLocation
-    };
+    CoverAndAlbumInfo cInfoUtf8;
+    cInfoUtf8.info.trackId = 2;
+    cInfoUtf8.info.coverLocation = "";
+    cInfoUtf8.info.trackLocation = trackdir % "/" % trackBaseName % ".mp3";
+    cInfoUtf8.info.hash = "";
+    cInfoUtf8.album = QString::fromUtf8("öæäîðÑ_album");
+
     // 1. track_filename.jpg
     cLoc_filename = QString(trackdir % "/" % trackBaseName % ".");
     cLoc_filename.append(format);
     EXPECT_TRUE(img.save(cLoc_filename, format));
     res = CoverArtCache::searchImage(cInfoUtf8, QSize(0,0), false);
-    EXPECT_QSTRING_EQ(cLoc_filename, res.coverLocation);
+    EXPECT_QSTRING_EQ(cLoc_filename, res.cover.info.coverLocation);
     QFile::remove(cLoc_filename);
     // 2. album_name.jpg
     cLoc_albumName = QString(trackdir % "/" % cInfoUtf8.album % ".");
     cLoc_albumName.append(format);
     EXPECT_TRUE(img.save(cLoc_albumName, format));
     res = CoverArtCache::searchImage(cInfoUtf8, QSize(0,0), false);
-    EXPECT_QSTRING_EQ(cLoc_albumName, res.coverLocation);
+    EXPECT_QSTRING_EQ(cLoc_albumName, res.cover.info.coverLocation);
     QFile::remove(cLoc_albumName);
 
     // cleaning temp dir

@@ -21,7 +21,8 @@ void CoverArtDAO::initialize() {
              << m_database.connectionName();
 }
 
-int CoverArtDAO::saveCoverArt(QString coverLocation, QString coverHash) {
+int CoverArtDAO::saveCoverArt(const QString& coverLocation,
+                              const QString& coverHash) {
     if (coverHash.isEmpty()) {
         return -1;
     }
@@ -48,7 +49,7 @@ int CoverArtDAO::saveCoverArt(QString coverLocation, QString coverHash) {
 }
 
 QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
-                            QHash<int, QPair<QString, QString> > covers) {
+                            const QHash<int, QPair<QString, QString> >& covers) {
     if (covers.isEmpty()) {
         return QSet<QPair<int, int> >();
     }
@@ -116,7 +117,7 @@ void CoverArtDAO::deleteUnusedCoverArts() {
     }
 }
 
-int CoverArtDAO::getCoverArtId(QString coverHash) {
+int CoverArtDAO::getCoverArtId(const QString& coverHash) {
     if (coverHash.isEmpty()) {
         return -1;
     }
@@ -140,10 +141,9 @@ int CoverArtDAO::getCoverArtId(QString coverHash) {
     return coverId;
 }
 
-// it'll get just the fields which are required for scanCover stuff
-CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
+CoverAndAlbumInfo CoverArtDAO::getCoverAndAlbumInfo(int trackId) {
     if (trackId < 1) {
-        return CoverArtInfo();
+        return CoverAndAlbumInfo();
     }
 
     // This method can be called a lot of times (by CoverCache),
@@ -153,9 +153,7 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     QString columns = "album,"                         //0
                       "cover_art.location AS cover,"   //1
                       "cover_art.hash,"                //2
-                      "track_locations.directory,"     //3
-                      "track_locations.filename,"      //4
-                      "track_locations.location";      //5
+                      "track_locations.location";      //3
 
     QString sQuery = QString(
          "SELECT " % columns % " FROM Library "
@@ -166,20 +164,18 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
     QSqlQuery query(m_database);
     if (!query.exec(sQuery)) {
       LOG_FAILED_QUERY(query);
-      return CoverArtInfo();
+      return CoverAndAlbumInfo();
     }
 
     if (query.next()) {
-        CoverArtInfo coverInfo;
-        coverInfo.trackId = trackId;
-        coverInfo.album = query.value(0).toString();
-        coverInfo.coverLocation = query.value(1).toString();
-        coverInfo.hash = query.value(2).toString();
-        coverInfo.trackDirectory = query.value(3).toString();
-        QString filename = query.value(4).toString();
-        coverInfo.trackLocation = query.value(5).toString();
-        return coverInfo;
+        CoverAndAlbumInfo info;
+        info.info.trackId = trackId;
+        info.album = query.value(0).toString();
+        info.info.coverLocation = query.value(1).toString();
+        info.info.hash = query.value(2).toString();
+        info.info.trackLocation = query.value(3).toString();
+        return info;
     }
 
-    return CoverArtInfo();
+    return CoverAndAlbumInfo();
 }

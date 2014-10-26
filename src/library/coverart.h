@@ -17,6 +17,13 @@ struct CoverInfo {
     QString hash;
 };
 
+struct CoverAndAlbumInfo {
+    CoverAndAlbumInfo() {}
+
+    CoverInfo info;
+    QString album;
+};
+
 struct CoverArt {
     CoverArt() {}
 

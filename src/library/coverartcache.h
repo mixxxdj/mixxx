@@ -2,11 +2,13 @@
 #define COVERARTCACHE_H
 
 #include <QObject>
+#include <QPixmap>
 
 #include "library/coverart.h"
-#include "library/dao/coverartdao.h"
-#include "library/dao/trackdao.h"
 #include "util/singleton.h"
+
+class TrackDAO;
+class CoverArtDAO;
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT
@@ -45,15 +47,12 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     QString trackInDBHash(int trackId);
 
     struct FutureResult {
-        int trackId;
-        QString coverLocation;
-        QString hash;
-        QImage img;
+        CoverArt cover;
         QSize croppedSize;
         bool issueRepaint;
     };
 
-    FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
+    FutureResult searchImage(const CoverAndAlbumInfo& coverInfo,
                              const QSize& croppedSize,
                              const bool emitSignals);
 
@@ -73,7 +72,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     virtual ~CoverArtCache();
     friend class Singleton<CoverArtCache>;
 
-    FutureResult loadImage(CoverArtDAO::CoverArtInfo coverInfo,
+    FutureResult loadImage(const CoverAndAlbumInfo& coverInfo,
                            const QSize &croppedSize,
                            const bool emitSignals);
 

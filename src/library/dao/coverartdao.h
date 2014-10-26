@@ -5,6 +5,7 @@
 
 #include "configobject.h"
 #include "library/dao/dao.h"
+#include "library/coverart.h"
 
 const QString COVERART_TABLE = "cover_art";
 const QString COVERARTTABLE_ID = "id";
@@ -20,23 +21,14 @@ class CoverArtDAO : public DAO {
     void initialize();
 
     void deleteUnusedCoverArts();
-    int getCoverArtId(QString coverHash);
-    int saveCoverArt(QString coverLocation, QString coverHash);
+    int getCoverArtId(const QString& coverHash);
+    int saveCoverArt(const QString& coverLocation, const QString& coverHash);
 
     // @param covers: <trackId, <coverLoc, hash>>
     // @return <trackId, coverId>
-    QSet<QPair<int, int> > saveCoverArt(QHash<int, QPair<QString, QString> > covers);
+    QSet<QPair<int, int> > saveCoverArt(const QHash<int, QPair<QString, QString> >& covers);
 
-    struct CoverArtInfo {
-        int trackId;
-        QString coverLocation;
-        QString hash;
-        QString album;
-        QString trackDirectory;
-        QString trackLocation;
-    };
-
-    CoverArtInfo getCoverArtInfo(int trackId);
+    CoverAndAlbumInfo getCoverAndAlbumInfo(int trackId);
 
   private:
     QSqlDatabase& m_database;
