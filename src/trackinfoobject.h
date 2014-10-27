@@ -31,6 +31,7 @@
 #include <taglib/tfile.h>
 
 #include "library/dao/cue.h"
+#include "library/coverart.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
@@ -265,6 +266,12 @@ class TrackInfoObject : public QObject {
     void setKeyText(QString key,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
+    void setCoverInfo(const CoverInfo& cover);
+    CoverInfo getCoverInfo() const;
+
+    void setCoverArt(const CoverArt& cover);
+    CoverArt getCoverArt() const;
+
   public slots:
     void slotCueUpdated();
 
@@ -390,6 +397,8 @@ class TrackInfoObject : public QObject {
     Waveform* const m_waveformSummary;
 
     QAtomicInt m_analyserProgress; // in 0.1%
+
+    CoverArt m_coverArt;
 
     friend class TrackDAO;
 };
