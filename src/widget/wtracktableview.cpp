@@ -18,6 +18,7 @@
 #include "soundsourceproxy.h"
 #include "playermanager.h"
 #include "util/dnd.h"
+#include "util/time.h"
 #include "dlgpreflibrary.h"
 #include "waveform/guitick.h"
 
@@ -36,7 +37,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
-          m_lastSelection(0.0),
+          m_lastUserActionNanos(0),
           m_loadCachedOnly(false) {
     m_pTrackInfo = new DlgTrackInfo(parent, m_DlgTagFetcher);
     connect(m_pTrackInfo, SIGNAL(next()),
@@ -92,9 +93,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
 
-    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTick50ms");
-    connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
-            this, SLOT(slotGuiTickTime(double)));
+    m_pCOTGuiTick = new ControlObjectThread("[Master]", "guiTick50ms");
+    connect(m_pCOTGuiTick, SIGNAL(valueChanged(double)),
+            this, SLOT(slotGuiTick50ms(double)));
+
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
 
@@ -140,7 +142,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
     delete m_pSamplerMenu;
-    delete m_pCOTGuiTickTime;
+    delete m_pCOTGuiTick;
 }
 
 void WTrackTableView::enableCachedOnly() {
@@ -150,9 +152,7 @@ void WTrackTableView::enableCachedOnly() {
         emit(onlyCachedCoverArt(true));
         m_loadCachedOnly = true;
     }
-    double currentTime = GuiTick::cpuTimeNow();
-    //qDebug() << "WTrackTableView::enableCachedOnly()" << currentTime - m_lastSelection;
-    m_lastSelection = currentTime;
+    m_lastUserActionNanos = Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int) {
@@ -177,10 +177,11 @@ void WTrackTableView::selectionChanged(const QItemSelection& selected,
     QTableView::selectionChanged(selected, deselected);
 }
 
-void WTrackTableView::slotGuiTickTime(double cpuTime) {
+void WTrackTableView::slotGuiTick50ms(double) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    if (m_loadCachedOnly && cpuTime >= m_lastSelection + 0.1) {
+    qint64 timeDeltaNanos = Time::elapsed() - m_lastUserActionNanos;
+    if (m_loadCachedOnly && timeDeltaNanos > 100000000) {
         // it will allows CoverCache to load and search covers normally
         emit(onlyCachedCoverArt(false));
         m_loadCachedOnly = false;

@@ -15,16 +15,15 @@ class GuiTick : public QObject {
     ~GuiTick();
     void process();
     static double cpuTimeLastTick();
-    static double cpuTimeNow();
 
   private:
     ControlObject* m_pCOGuiTickTime;
     ControlObject* m_pCOGuiTick50ms;
 
-    static PerformanceTimer m_cpuTimer;
+    PerformanceTimer m_cpuTimer;
 
     double m_lastUpdateTime;
-    static double m_cpuTime; // Stream Time in seconds
+    static double m_cpuTimeLastTick; // Stream Time in seconds
 };
 
 #endif // GUITICK_H

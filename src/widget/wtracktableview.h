@@ -69,7 +69,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int);
     void slotClearBeats();
-    void slotGuiTickTime(double);
+    // Signalled 20 times per second (every 50ms) by GuiTick.
+    void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
 
   private:
@@ -159,9 +160,9 @@ class WTrackTableView : public WLibraryTableView {
     int m_iTrackLocationColumn;
 
     // Control the delay to load a cover art.
-    double m_lastSelection;
+    qint64 m_lastUserActionNanos;
     bool m_loadCachedOnly;
-    ControlObjectThread* m_pCOTGuiTickTime;
+    ControlObjectThread* m_pCOTGuiTick;
 };
 
 #endif
