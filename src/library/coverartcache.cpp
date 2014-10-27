@@ -32,7 +32,7 @@ CoverArtCache::~CoverArtCache() {
 QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
                                     const QSize& croppedSize,
                                     const bool onlyCached,
-                                    const bool issueRepaint) {
+                                    const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::requestCover"
                  << requestInfo.coverLocation
@@ -67,7 +67,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
         QPixmap pixmap;
         if (QPixmapCache::find(cacheKey, &pixmap)) {
-            if (!issueRepaint) {
+            if (signalWhenDone) {
                 emit(pixmapFound(coverAndAlbumInfo.info.trackId, pixmap));
             }
             return pixmap;
@@ -85,7 +85,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, coverAndAlbumInfo, croppedSize,
-            issueRepaint);
+            signalWhenDone);
     connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
     watcher->setFuture(future);
     return QPixmap();
@@ -94,7 +94,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 CoverArtCache::FutureResult CoverArtCache::loadCover(
         const CoverAndAlbumInfo& coverAndAlbumInfo,
         const QSize& croppedSize,
-        const bool issueRepaint) {
+        const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::loadCover"
                  << coverAndAlbumInfo.info.coverLocation
@@ -107,7 +107,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     FutureResult res;
     res.cover.info = coverAndAlbumInfo.info;
     res.croppedSize = croppedSize;
-    res.issueRepaint = issueRepaint;
+    res.signalWhenDone = signalWhenDone;
     res.cover.image = CoverArtUtils::loadCover(res.cover.info);
 
     if (res.cover.image.isNull()) {
@@ -155,9 +155,7 @@ void CoverArtCache::coverLoaded() {
         QPixmapCache::insert(cacheKey, pixmap);
     }
 
-    if (res.issueRepaint) {
-        emit(requestRepaint());
-    } else {
+    if (res.signalWhenDone) {
         emit(pixmapFound(res.cover.info.trackId, pixmap));
     }
 

@@ -142,7 +142,7 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
 
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
-            pCache->requestCover(m_lastRequestedCover, QSize(0,0), false);
+            pCache->requestCover(m_lastRequestedCover);
         }
     }
 }

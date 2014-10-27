@@ -79,8 +79,12 @@ void CoverArtDelegate::paint(QPainter *painter,
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
     QSize coverSize(100, option.rect.height());
+
+    // Do not signal when done sine we don't listen to CoverArtCache for updates
+    // and instead refresh on a timer in WTrackTableView.
     QPixmap pixmap = pCache->requestCover(info, coverSize,
-                                          m_bOnlyCachedCover, true);
+                                          m_bOnlyCachedCover, false);
+
 
     if (!pixmap.isNull()) {
         int width = pixmap.width();

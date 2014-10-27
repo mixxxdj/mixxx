@@ -28,12 +28,12 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     QPixmap requestCover(const CoverInfo& info,
                          const QSize& croppedSize = QSize(0,0),
                          const bool onlyCached = false,
-                         const bool issueRepaint = false);
+                         const bool signalWhenDone = true);
 
     struct FutureResult {
         CoverArt cover;
         QSize croppedSize;
-        bool issueRepaint;
+        bool signalWhenDone;
     };
 
   public slots:
@@ -42,7 +42,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
 
   signals:
     void pixmapFound(int trackId, QPixmap pixmap);
-    void requestRepaint();
 
   protected:
     CoverArtCache();

@@ -99,12 +99,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
-
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        connect(pCache, SIGNAL(requestRepaint()),
-                this, SLOT(update()));
-    }
 }
 
 WTrackTableView::~WTrackTableView() {
