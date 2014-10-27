@@ -9,6 +9,7 @@
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "util/math.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      const QString& group)
@@ -90,10 +91,6 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
 void WCoverArt::slotEnable(bool enable) {
     bool wasDisabled = !m_bEnable && enable;
     m_bEnable = enable;
-    int h = (float) parentWidget()->height() / 3;
-    h = m_bEnable ? h : 0;
-    setMinimumHeight(h);
-    setMaximumHeight(h);
 
     if (wasDisabled) {
         slotLoadTrack(m_loadedTrack);
@@ -122,7 +119,6 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
 }
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
-    qDebug() << "WCoverArt::slotLoadTrack" << pTrack;
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
@@ -148,11 +144,7 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-
-    int height = parentWidget()->height() / 3;
-    return normal.scaled(QSize(height - 16, width() - 10),
-                         Qt::KeepAspectRatio,
-                         Qt::SmoothTransformation);
+    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 void WCoverArt::paintEvent(QPaintEvent* pEvent) {
@@ -169,23 +161,18 @@ void WCoverArt::paintEvent(QPaintEvent* pEvent) {
     }
 
     if (!toDraw.isNull()) {
-        int x = 3 + width() / 2 - toDraw.width() / 2;
-        int y = 8;
-        painter.drawPixmap(x, y, toDraw);
-    }
+        QSize widgetSize = size();
+        QSize pixmapSize = toDraw.size();
 
-    QPen pen = painter.pen();
-    pen.setColor(QColor("#656565"));
-    painter.setPen(pen);
-    painter.drawRoundedRect(5, 5, width() - 7, height() - 10, 0, 0);
+        int x = math_max(0, (widgetSize.width() - pixmapSize.width()) / 2);
+        int y = math_max(0, (widgetSize.height() - pixmapSize.height()) / 2);
+        painter.drawPixmap(x, y, toDraw);
+    } else {
+        QWidget::paintEvent(pEvent);
+    }
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
-    int h = (float) parentWidget()->height() / 3;
-    if (height() && height() != h) {
-        setMinimumHeight(h);
-        setMaximumHeight(h);
-    }
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
@@ -194,7 +181,6 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     if (!m_bEnable) {
         return;
     }
-
 
     if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
         m_pMenu->show(event->globalPos(), m_lastRequestedCover, m_loadedTrack);
