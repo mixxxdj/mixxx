@@ -9,6 +9,7 @@
 #include <QSize>
 
 #include "util/sandbox.h"
+#include "util/regex.h"
 #include "soundsourceproxy.h"
 
 class CoverArtUtils {
@@ -74,6 +75,12 @@ class CoverArtUtils {
                                 Qt::SmoothTransformation);
         }
         return image;
+    }
+
+    static QString supportedCoverArtExtensionsRegex() {
+        QStringList extensions;
+        extensions << "jpg" << "jpeg" << "png" << "gif" << "bmp";
+        return RegexUtils::fileExtensionsRegex(extensions);
     }
 
     static QString searchInTrackDirectory(const QString& directory,
