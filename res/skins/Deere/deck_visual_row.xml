@@ -14,6 +14,12 @@
          calculation we set our minimum size to the spinny size. -->
     <MinimumSize>-1,118</MinimumSize>
     <Children>
+      <CoverArt>
+        <MaximumSize>118,118</MaximumSize>
+        <MinimumSize>118,118</MinimumSize>
+        <Size>118,118</Size>
+        <Group><Variable name="group"/></Group>
+      </CoverArt>
       <Visual>
         <Group><Variable name="group"/></Group>
         <BgColor>#1C1C1C</BgColor>
