@@ -18,8 +18,6 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_pMenu(new WCoverArtMenu(this)),
           m_trackDAO(pTrackCollection->getTrackDAO()),
           m_pDlgFullSize(new DlgCoverArtFullSize()) {
-    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
@@ -38,7 +36,7 @@ WCoverArt::~WCoverArt() {
 
 void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
-    setMouseTracking(TRUE);
+    setMouseTracking(true);
 
     // Background color
     QColor bgc(255,255,255);
