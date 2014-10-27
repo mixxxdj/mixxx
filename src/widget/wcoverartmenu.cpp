@@ -2,6 +2,7 @@
 #include <QStringBuilder>
 
 #include "widget/wcoverartmenu.h"
+#include "library/coverartutils.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -58,10 +59,16 @@ void WCoverArtMenu::slotChange() {
         initialDir = m_coverInfo.coverLocation;
     }
 
+    QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
+    for (QStringList::iterator it = extensions.begin(); it != extensions.end(); ++it) {
+        it->prepend("*.");
+    }
+    QString supportedText = QString("%1 (%2)").arg(tr("Image Files"))
+            .arg(extensions.join(" "));
+
     // open file dialog
     QString selectedCover = QFileDialog::getOpenFileName(
-        this, tr("Change Cover Art"), initialDir,
-        tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
+        this, tr("Change Cover Art"), initialDir, supportedText);
 
     if (selectedCover.isEmpty()) {
         return;

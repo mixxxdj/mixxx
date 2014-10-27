@@ -108,9 +108,14 @@ class CoverArtUtils {
         return image;
     }
 
-    static QString supportedCoverArtExtensionsRegex() {
+    static QStringList supportedCoverArtExtensions() {
         QStringList extensions;
         extensions << "jpg" << "jpeg" << "png" << "gif" << "bmp";
+        return extensions;
+    }
+
+    static QString supportedCoverArtExtensionsRegex() {
+        QStringList extensions = supportedCoverArtExtensions();
         return RegexUtils::fileExtensionsRegex(extensions);
     }
 
