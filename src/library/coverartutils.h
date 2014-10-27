@@ -7,6 +7,8 @@
 #include <QDir>
 #include <QStringList>
 #include <QSize>
+#include <QFileInfo>
+#include <QLinkedList>
 
 #include "util/sandbox.h"
 #include "util/regex.h"
@@ -46,6 +48,35 @@ class CoverArtUtils {
         return proxy.parseCoverArt();
     }
 
+    static QImage loadCover(const CoverInfo& info) {
+        if (info.type == CoverInfo::METADATA) {
+            if (info.trackLocation.isEmpty()) {
+                qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
+                return QImage();
+            }
+            return CoverArtUtils::extractEmbeddedCover(info.trackLocation);
+        } else if (info.type == CoverInfo::FILE) {
+            if (info.trackLocation.isEmpty()) {
+                qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
+                         << "Relative paths will not work.";
+                return QImage(info.coverLocation);
+            }
+
+            QFileInfo track(info.trackLocation);
+            QFileInfo cover(track.dir(), info.coverLocation);
+
+            if (!cover.exists()) {
+                qDebug() << "CoverArtUtils::loadCover FILE cover does not exist:"
+                         << info.coverLocation << info.trackLocation;
+                return QImage();
+            }
+            return QImage(cover.filePath());
+        } else {
+            qDebug() << "CoverArtUtils::loadCover bad type";
+            return QImage();
+        }
+    }
+
     static QString calculateHash(const QImage& image) {
         if (image.isNull()) {
             return QString();
@@ -81,6 +112,74 @@ class CoverArtUtils {
         QStringList extensions;
         extensions << "jpg" << "jpeg" << "png" << "gif" << "bmp";
         return RegexUtils::fileExtensionsRegex(extensions);
+    }
+
+    enum PreferredCoverType {
+        TRACK_BASENAME = 0,
+        ALBUM_NAME,
+        COVER,
+        FRONT,
+        ALBUM,
+        FOLDER,
+        OTHER_FILENAME,
+        NONE
+    };
+
+    // Selects an appropriate cover file from provided list of image files.
+    static CoverArt selectCoverArtForTrack(TrackInfoObject* pTrack,
+                                           const QLinkedList<QFileInfo>& covers) {
+        if (pTrack == NULL || covers.isEmpty()) {
+            return CoverArt();
+        }
+
+        const QString trackBaseName = pTrack->getFileInfo().baseName();
+        const QString albumName = pTrack->getAlbum();
+        PreferredCoverType bestType = NONE;
+        const QFileInfo* bestInfo = NULL;
+
+        // TODO(XXX) Sort instead so that we can fall-back if one fails to open?
+        int index = 0;
+        for (QLinkedList<QFileInfo>::const_iterator it = covers.begin();
+             it != covers.end(); ++it, ++index) {
+            const QString coverBaseName = it->baseName();
+            if (bestType > TRACK_BASENAME && coverBaseName == trackBaseName) {
+                bestType = TRACK_BASENAME;
+                bestInfo = &(*it);
+                // This is the best type so we know we're done.
+                break;
+            } else if (bestType > ALBUM_NAME && coverBaseName == albumName) {
+                bestType = ALBUM_NAME;
+                bestInfo = &(*it);
+            } else if (bestType > COVER && coverBaseName == "cover") {
+                bestType = COVER;
+                bestInfo = &(*it);
+            } else if (bestType > FRONT && coverBaseName == "front") {
+                bestType = FRONT;
+                bestInfo = &(*it);
+            } else if (bestType > ALBUM && coverBaseName == "album") {
+                bestType = ALBUM;
+                bestInfo = &(*it);
+            } else if (bestType > FOLDER && coverBaseName == "folder") {
+                bestType = FOLDER;
+                bestInfo = &(*it);
+            } else if (bestType > OTHER_FILENAME) {
+                bestType = OTHER_FILENAME;
+                bestInfo = &(*it);
+            }
+        }
+
+        if (bestInfo != NULL) {
+            CoverArt art;
+            art.image = QImage(bestInfo->filePath());
+            if (!art.image.isNull()) {
+                art.info.source = CoverInfo::GUESSED;
+                art.info.type = CoverInfo::FILE;
+                art.info.hash = CoverArtUtils::calculateHash(art.image);
+                art.info.coverLocation = bestInfo->fileName();
+                return art;
+            }
+        }
+        return CoverArt();
     }
 
     static QString searchInTrackDirectory(const QString& directory,
