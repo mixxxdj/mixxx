@@ -297,13 +297,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         }
     }
 
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        pCache->setCoverArtDAO(
-            &m_pLibrary->getTrackCollection()->getCoverArtDAO());
-        pCache->setTrackDAO(&m_pLibrary->getTrackCollection()->getTrackDAO());
-    }
-
     // Call inits to invoke all other construction parts
 
     // Intialize default BPM system values
@@ -526,10 +519,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
-    // As CoverArtCache needs to have an available CoverArtDAO/TrackDAO,
-    // it must be destroyed BEFORE them (before the library is destroyed).
-    // During the CoverArtCache destruction, some covers and tracks
-    // might be updated (queued).
+    // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
     // Delete the library after the view so there are no dangling pointers to

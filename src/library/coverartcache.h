@@ -7,9 +7,6 @@
 #include "library/coverart.h"
 #include "util/singleton.h"
 
-class TrackDAO;
-class CoverArtDAO;
-
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT
   public:
@@ -28,23 +25,10 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
      *      In this way, the method will just look into CoverCache and return
      *      a Pixmap if it is already loaded in the QPixmapCache.
      */
-    QPixmap requestPixmap(const CoverInfo& info,
-                          const QSize& croppedSize = QSize(0,0),
-                          const bool onlyCached = false,
-                          const bool issueRepaint = false);
-
-    bool changeCoverArt(int trackId, const QString& newCoverLocation="");
-    void setCoverArtDAO(CoverArtDAO* coverdao);
-    void setTrackDAO(TrackDAO* trackdao);
-
-    // This is for widgets that try to get the covers directly from the cache
-    // instead of waiting for the signal with the cover. Because we update the
-    // database in large batches it can happen that a widget looks up a track
-    // that we couldn't save yet. Don't use this unless you really need to. This
-    // method will look in the hash we keep with information to save in the
-    // database and return the coverlocation if it is in there. Otherweise an
-    // empty string is returned.
-    QString trackInDBHash(int trackId);
+    QPixmap requestCover(const CoverInfo& info,
+                         const QSize& croppedSize = QSize(0,0),
+                         const bool onlyCached = false,
+                         const bool issueRepaint = false);
 
     struct FutureResult {
         CoverArt cover;
@@ -52,16 +36,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
         bool issueRepaint;
     };
 
-    FutureResult searchImage(const CoverAndAlbumInfo& coverInfo,
-                             const QSize& croppedSize,
-                             const bool emitSignals);
-
   public slots:
-    void imageFound();
-    void imageLoaded();
-
-  private slots:
-    void updateDB(bool forceUpdate=false);
+    // Called when loadCover is complete in the main thread.
+    void coverLoaded();
 
   signals:
     void pixmapFound(int trackId, QPixmap pixmap);
@@ -72,15 +49,14 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     virtual ~CoverArtCache();
     friend class Singleton<CoverArtCache>;
 
-    FutureResult loadImage(const CoverAndAlbumInfo& coverInfo,
+    // Load cover from path indicated in coverInfo. WARNING: This is run in a
+    // worker thread.
+    FutureResult loadCover(const CoverAndAlbumInfo& coverInfo,
                            const QSize &croppedSize,
                            const bool emitSignals);
 
   private:
-    CoverArtDAO* m_pCoverArtDAO;
-    TrackDAO* m_pTrackDAO;
     QSet<int> m_runningIds;
-    QHash<int, QPair<QString, QString> > m_queueOfUpdates;
 };
 
 #endif // COVERARTCACHE_H

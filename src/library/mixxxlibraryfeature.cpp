@@ -27,8 +27,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
-    QString coverartLocation = COVERART_TABLE + "." + COVERARTTABLE_LOCATION
-                                + " AS " + LIBRARYTABLE_COVERART_LOCATION;
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -56,33 +54,30 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
-            << coverartLocation
-            << COVERART_TABLE + "." + COVERARTTABLE_HASH;
+            << "library." + LIBRARYTABLE_COVERART_SOURCE
+            << "library." + LIBRARYTABLE_COVERART_TYPE
+            << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_HASH;
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id "
-        "LEFT JOIN cover_art ON library.cover_art = cover_art.id")
+        "INNER JOIN track_locations ON library.location = track_locations.id")
             .arg(tableName, columns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
-    // Strip out library. track_locations. and cover_art.
+    // Strip out library. track_locations.
     for (QStringList::iterator it = columns.begin();
          it != columns.end(); ++it) {
         if (it->startsWith("library.")) {
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
-        } else if (it->operator==(coverartLocation)) {
-            *it = LIBRARYTABLE_COVERART_LOCATION;
-        } else if (it->startsWith(COVERART_TABLE + ".")) {
-            *it = it->replace(COVERART_TABLE + ".", "");
         }
     }
 
@@ -127,7 +122,7 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
-                    MixxxKeyboard* pKeyboard) {
+                                     MixxxKeyboard* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);

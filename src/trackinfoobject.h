@@ -50,18 +50,20 @@ class TrackInfoObject : public QObject {
     // Initialize a new track with the filename.
     TrackInfoObject(const QString& file="",
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true);
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Initialize track with a QFileInfo class
     TrackInfoObject(const QFileInfo& fileInfo,
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true);
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
-    void parse();
+    void parse(bool parseCoverArt);
 
     // Returns the duration in seconds
     int getDuration() const;
@@ -269,6 +271,7 @@ class TrackInfoObject : public QObject {
     void setCoverInfo(const CoverInfo& cover);
     CoverInfo getCoverInfo() const;
 
+    void reloadCoverArt();
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
 
@@ -297,7 +300,7 @@ class TrackInfoObject : public QObject {
 
   private:
     // Common initialization function between all TIO constructors.
-    void initialize(bool parseHeader);
+    void initialize(bool parseHeader, bool parseCoverArt);
 
     // Methods for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"

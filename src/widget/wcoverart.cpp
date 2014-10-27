@@ -76,12 +76,13 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
                                          QPixmap newCover) {
     Q_UNUSED(oldLoc);
     Q_UNUSED(newCover);
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL && !pCache->changeCoverArt(
-            m_lastRequestedCover.trackId, newLoc)) {
-        // parent must be NULL - it ensures the use of the default style.
-        QMessageBox::warning(NULL, tr("Change Cover Art"),
-                             tr("Could not change the cover art."));
+    TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedCover.trackId);
+    if (pTrack) {
+        CoverArt art;
+        art.info.coverLocation = newLoc;
+        art.info.source = CoverInfo::USER_SELECTED;
+        art.info.type = CoverInfo::FILE;
+        pTrack->setCoverArt(art);
     }
 }
 
@@ -119,7 +120,7 @@ void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
     m_lastRequestedCover = info;
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestPixmap(info, QSize(0,0), cachedOnly);
+        pCache->requestCover(info, QSize(0,0), cachedOnly);
     }
 }
 

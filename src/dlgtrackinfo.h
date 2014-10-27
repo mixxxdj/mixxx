@@ -9,7 +9,7 @@
 #include "ui_dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
-#include "library/coverartcache.h"
+#include "library/coverart.h"
 #include "util/types.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
@@ -27,7 +27,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
-    void loadTrack(TrackPointer pTrack, CoverInfo info);
+    void loadTrack(TrackPointer pTrack);
 
   signals:
     void next();

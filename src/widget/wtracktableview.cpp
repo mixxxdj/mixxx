@@ -31,6 +31,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pTrackCollection(pTrackCollection),
           m_DlgTagFetcher(NULL),
           m_sorting(sorting),
+          m_iCoverSourceColumn(-1),
+          m_iCoverTypeColumn(-1),
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
@@ -186,7 +188,8 @@ void WTrackTableView::slotGuiTickTime(double cpuTime) {
 }
 
 void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
-    if (m_iCoverLocationColumn < 0 || m_iCoverHashColumn < 0) {
+    if (m_iCoverSourceColumn < 0 || m_iCoverTypeColumn < 0 ||
+            m_iCoverLocationColumn < 0 || m_iCoverHashColumn < 0) {
         return;
     }
 
@@ -196,6 +199,10 @@ void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             QModelIndex idx = indices.last();
+            info.source = static_cast<CoverInfo::Source>(
+                idx.sibling(idx.row(), m_iCoverSourceColumn).data().toInt());
+            info.type = static_cast<CoverInfo::Type>(
+                idx.sibling(idx.row(), m_iCoverTypeColumn).data().toInt());
             info.hash = idx.sibling(idx.row(), m_iCoverHashColumn).data().toString();
             info.trackId = trackModel->getTrackId(idx);
             info.coverLocation = idx.sibling(
@@ -231,6 +238,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // by slotLoadCoverArt(). As this value will not change when the model
     // still the same, we must avoid doing hundreds of "fieldIndex" calls
     // when it is completely unnecessary...
+    m_iCoverSourceColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE);
+    m_iCoverTypeColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE);
     m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
     m_iCoverHashColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
     m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
@@ -614,16 +623,7 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     }
 
     TrackPointer pTrack = trackModel->getTrack(index);
-    CoverInfo info;
-    info.trackId = trackModel->getTrackId(index);
-    info.coverLocation = index.sibling(
-        index.row(), m_iCoverLocationColumn).data().toString();
-    info.hash = index.sibling(
-        index.row(), m_iCoverHashColumn).data().toString();
-    info.trackLocation = index.sibling(
-        index.row(), m_iTrackLocationColumn).data().toString();
-
-    m_pTrackInfo->loadTrack(pTrack, info); // NULL is fine.
+    m_pTrackInfo->loadTrack(pTrack); // NULL is fine.
     currentTrackInfoIndex = index;
 
     m_pTrackInfo->show();
@@ -1309,7 +1309,7 @@ void WTrackTableView::slotReloadTrackMetadata() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->parse();
+            pTrack->parse(false);
         }
     }
 }

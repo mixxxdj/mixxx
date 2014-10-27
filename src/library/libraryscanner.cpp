@@ -24,6 +24,7 @@
 #include "libraryscanner.h"
 #include "libraryscannerdlg.h"
 #include "library/queryutil.h"
+#include "library/coverartutils.h"
 #include "trackinfoobject.h"
 #include "util/trace.h"
 #include "util/file.h"
@@ -36,9 +37,8 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 m_playlistDao(m_database),
                 m_crateDao(m_database),
                 m_directoryDao(m_database),
-                m_coverArtDao(m_database),
                 m_analysisDao(m_database, collection->getConfig()),
-                m_trackDao(m_database, m_coverArtDao, m_cueDao, m_playlistDao,
+                m_trackDao(m_database, m_cueDao, m_playlistDao,
                            m_crateDao, m_analysisDao,m_directoryDao,
                            collection->getConfig()),
                 // Don't initialize m_database here, we need to do it in run() so the DB
@@ -163,7 +163,6 @@ void LibraryScanner::run() {
     m_playlistDao.setDatabase(m_database);
     m_analysisDao.setDatabase(m_database);
     m_directoryDao.setDatabase(m_database);
-    m_coverArtDao.setDatabase(m_database);
 
     m_libraryHashDao.initialize();
     m_cueDao.initialize();
@@ -171,7 +170,6 @@ void LibraryScanner::run() {
     m_playlistDao.initialize();
     m_analysisDao.initialize();
     m_directoryDao.initialize();
-    m_coverArtDao.initialize();
 
     resetCancel();
 
@@ -200,6 +198,8 @@ void LibraryScanner::run() {
     // Refresh the name filters in case we loaded new SoundSource plugins.
     m_extensionFilter = QRegExp(SoundSourceProxy::supportedFileExtensionsRegex(),
                                 Qt::CaseInsensitive);
+    m_coverExtensionFilter = QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                                     Qt::CaseInsensitive);
 
     // Time the library scanner.
     QTime t;
@@ -344,6 +344,7 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
     QString currentFile;
     QFileInfo currentFileInfo;
     QLinkedList<QFileInfo> filesToImport;
+    QLinkedList<QFileInfo> possibleCovers;
     QLinkedList<QDir> dirsToScan;
 
     QString newHashStr;
@@ -360,6 +361,8 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
             if (m_extensionFilter.indexIn(currentFileInfo.fileName()) != -1) {
                 newHashStr += currentFile;
                 filesToImport.append(currentFileInfo);
+            } else if (m_coverExtensionFilter.indexIn(currentFileInfo.fileName()) != -1) {
+                possibleCovers.append(currentFileInfo);
             }
         } else {
             // File is a directory. Add it to our list of directories to scan.
@@ -383,7 +386,7 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
     if (prevHash != newHash) {
         // Rescan that mofo! If importing fails then the scan was cancelled so
         // we return immediately.
-        if (!importFiles(filesToImport, pToken)) {
+        if (!importFiles(filesToImport, possibleCovers, pToken)) {
             return false;
         }
 
@@ -420,6 +423,7 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 }
 
 bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
+                                 const QLinkedList<QFileInfo>& possibleCovers,
                                  SecurityTokenPointer pToken) {
     foreach (const QFileInfo& file, files) {
         // If a flag was raised telling us to cancel the library scan then stop.
@@ -442,9 +446,20 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
         if (!m_trackDao.trackExistsInDatabase(filePath)) {
             emit(progressLoading(file.fileName()));
 
+            // Parse the track including cover art from metadata.
             TrackPointer pTrack = TrackPointer(
-                    new TrackInfoObject(filePath, pToken),
+                new TrackInfoObject(filePath, pToken, true, true),
                     &QObject::deleteLater);
+
+            // If cover art is not found in the track metadata, populate from
+            // possibleCovers.
+            if (pTrack->getCoverArt().image.isNull()) {
+                CoverArt art = CoverArtUtils::selectCoverArtForTrack(pTrack.data(), possibleCovers);
+                if (art.image.isNull()) {
+                    pTrack->setCoverArt(art);
+                }
+            }
+
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successfully added. Signal the main instance of TrackDAO,
                 // that there is a new track in the database.
@@ -452,6 +467,9 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             } else {
                 qDebug() << "Track ("+filePath+") could not be added";
             }
+        } else {
+            // TODO(rryan): Potentially automatically update the cover of the
+            // track.
         }
     }
 

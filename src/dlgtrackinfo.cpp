@@ -174,9 +174,9 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 }
 
-void DlgTrackInfo::loadTrack(TrackPointer pTrack, CoverInfo info) {
+void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     m_pLoadedTrack = pTrack;
-    m_loadedCover = info;
+    m_loadedCover = pTrack->getCoverInfo();
     clear();
 
     if (m_pLoadedTrack == NULL) {
@@ -192,7 +192,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack, CoverInfo info) {
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestPixmap(info);
+        pCache->requestCover(m_loadedCover);
     }
 }
 
@@ -371,19 +371,7 @@ void DlgTrackInfo::saveTrack() {
         m_pLoadedTrack->removeCue(pCue);
     }
 
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == NULL) {
-        return;
-    }
-
-    bool res = pCache->changeCoverArt(
-        m_pLoadedTrack->getId(), m_loadedCover.coverLocation);
-
-    if (!res) {
-        // parent must be NULL - it ensures the use of the default style.
-        QMessageBox::warning(NULL, tr("Change Cover Art"),
-                             tr("Could not change the cover art."));
-    }
+    m_pLoadedTrack->setCoverInfo(m_loadedCover);
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {

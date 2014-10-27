@@ -5,6 +5,8 @@
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
           m_bOnlyCachedCover(false),
+          m_iCoverSourceColumn(-1),
+          m_iCoverTypeColumn(-1),
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iTrackLocationColumn(-1),
@@ -21,7 +23,12 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
     }
 
     if (pTrackModel) {
-        m_iCoverHashColumn = pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
+        m_iCoverSourceColumn = pTrackModel->fieldIndex(
+            LIBRARYTABLE_COVERART_SOURCE);
+        m_iCoverTypeColumn = pTrackModel->fieldIndex(
+            LIBRARYTABLE_COVERART_TYPE);
+        m_iCoverHashColumn = pTrackModel->fieldIndex(
+            LIBRARYTABLE_COVERART_HASH);
         m_iCoverLocationColumn = pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_LOCATION);
         m_iTrackLocationColumn = pTrackModel->fieldIndex(
@@ -48,48 +55,42 @@ void CoverArtDelegate::paint(QPainter *painter,
         painter->fillRect(option.rect, option.palette.highlight());
     }
 
-    if (m_iIdColumn == -1 || m_iCoverLocationColumn == -1 || m_iCoverHashColumn == -1) {
-        return;
-    }
-
-    int trackId = index.sibling(
-        index.row(), m_iIdColumn).data().toInt();
-    if (trackId < 1) {
-        return;
-    }
-
-    QString coverLocation = index.sibling(
-        index.row(), m_iCoverLocationColumn).data().toString();
-
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == NULL) {
+    if (pCache == NULL || m_iIdColumn == -1 || m_iCoverSourceColumn == -1 ||
+            m_iCoverTypeColumn == -1 || m_iCoverLocationColumn == -1 ||
+            m_iCoverHashColumn == -1) {
         return;
     }
 
-    // drawing only an existing cover_art, otherwise leave it blank...
-    if (!coverLocation.isEmpty()) {
-        CoverInfo info;
-        info.trackId = trackId;
-        info.coverLocation = coverLocation;
-        info.hash = index.sibling(
-            index.row(), m_iCoverHashColumn).data().toString();
-        info.trackLocation = index.sibling(
-            index.row(), m_iTrackLocationColumn).data().toString();
-        QSize coverSize(100, option.rect.height());
+    CoverInfo info;
+    info.type = static_cast<CoverInfo::Type>(
+        index.sibling(index.row(), m_iCoverTypeColumn).data().toInt());
 
-        QPixmap pixmap = pCache->requestPixmap(info, coverSize,
-                                               m_bOnlyCachedCover, true);
+    // We don't support types other than METADATA or FILE currently.
+    if (info.type != CoverInfo::METADATA && info.type != CoverInfo::FILE) {
+        return;
+    }
 
-        if (!pixmap.isNull()) {
-            int width = pixmap.width();
-            if (option.rect.width() < width) {
-                width = option.rect.width();
-            }
+    info.source = static_cast<CoverInfo::Source>(
+        index.sibling(index.row(), m_iCoverSourceColumn).data().toInt());
+    info.coverLocation = index.sibling(index.row(), m_iCoverLocationColumn).data().toString();
+    info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toString();
+    info.trackId = index.sibling(index.row(), m_iIdColumn).data().toInt();
+    info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
-            QRect target(option.rect.x(), option.rect.y(),
-                         width, option.rect.height());
-            QRect source(0, 0, width, pixmap.height());
-            painter->drawPixmap(target, pixmap, source);
+    QSize coverSize(100, option.rect.height());
+    QPixmap pixmap = pCache->requestCover(info, coverSize,
+                                          m_bOnlyCachedCover, true);
+
+    if (!pixmap.isNull()) {
+        int width = pixmap.width();
+        if (option.rect.width() < width) {
+            width = option.rect.width();
         }
+
+        QRect target(option.rect.x(), option.rect.y(),
+                     width, option.rect.height());
+        QRect source(0, 0, width, pixmap.height());
+        painter->drawPixmap(target, pixmap, source);
     }
 }

@@ -4,12 +4,11 @@
 #include <QDialog>
 
 #include "ui_dlgcoverartfullsize.h"
-#include "library/coverartcache.h"
+#include "library/coverart.h"
 
 class DlgCoverArtFullSize
         : public QDialog,
-          public Ui::DlgCoverArtFullSize
-{
+          public Ui::DlgCoverArtFullSize {
     Q_OBJECT
   public:
     DlgCoverArtFullSize(QWidget* parent=0);

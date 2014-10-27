@@ -19,9 +19,12 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFileInfo>
+#include <QDirIterator>
+#include <QFile>
 #include <QMutexLocker>
 #include <QString>
 #include <QtDebug>
+#include <QRegExp>
 
 #include "trackinfoobject.h"
 
@@ -36,10 +39,11 @@
 #include "util/time.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
+#include "library/coverartutils.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,
-                                 bool parseHeader)
+                                 bool parseHeader, bool parseCoverArt)
         : m_fileInfo(file),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
@@ -47,12 +51,12 @@ TrackInfoObject::TrackInfoObject(const QString& file,
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    initialize(parseHeader);
+    initialize(parseHeader, parseCoverArt);
 }
 
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
                                  SecurityTokenPointer pToken,
-                                 bool parseHeader)
+                                 bool parseHeader, bool parseCoverArt)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
@@ -60,7 +64,7 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    initialize(parseHeader);
+    initialize(parseHeader, parseCoverArt);
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
@@ -103,7 +107,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bLocationChanged = false;
 }
 
-void TrackInfoObject::initialize(bool parseHeader) {
+void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     m_bDirty = false;
     m_bLocationChanged = false;
 
@@ -131,7 +135,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader) {
-        parse();
+        parse(parseCoverArt);
     }
 }
 
@@ -146,7 +150,7 @@ TrackInfoObject::~TrackInfoObject() {
     delete m_waveformSummary;
 }
 
-void TrackInfoObject::parse() {
+void TrackInfoObject::parse(bool parseCoverArt) {
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
     const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
@@ -209,6 +213,18 @@ void TrackInfoObject::parse() {
         if (!key.isEmpty()) {
             setKeyText(key, mixxx::track::io::key::FILE_METADATA);
         }
+
+        if (parseCoverArt) {
+            m_coverArt.image = proxy.parseCoverArt();
+            if (!m_coverArt.image.isNull()) {
+                m_coverArt.info.hash = CoverArtUtils::calculateHash(
+                    m_coverArt.image);
+                m_coverArt.info.coverLocation = QString();
+                m_coverArt.info.type = CoverInfo::METADATA;
+                m_coverArt.info.source = CoverInfo::GUESSED;
+            }
+        }
+
         setHeaderParsed(true);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
@@ -1026,4 +1042,65 @@ void TrackInfoObject::setCoverArt(const CoverArt& cover) {
 CoverArt TrackInfoObject::getCoverArt() const {
     QMutexLocker lock(&m_qMutex);
     return m_coverArt;
+}
+
+void TrackInfoObject::reloadCoverArt() {
+    // TODO(rryan): Reduce code duplication from other places.
+    QMutexLocker lock(&m_qMutex);
+    m_coverArt = CoverArt();
+
+    // Log parsing of header information in developer mode. This is useful for
+    // tracking down corrupt files.
+    const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        qDebug() << "TrackInfoObject::reloadCoverArt()" << canonicalLocation;
+    }
+
+    // Parse the information stored in the sound file.
+    SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
+    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+    if (pProxiedSoundSource != NULL) {
+        m_coverArt.image = proxy.parseCoverArt();
+        if (!m_coverArt.image.isNull()) {
+            m_coverArt.info.hash = CoverArtUtils::calculateHash(
+                m_coverArt.image);
+            m_coverArt.info.coverLocation = QString();
+            m_coverArt.info.type = CoverInfo::METADATA;
+            m_coverArt.info.source = CoverInfo::GUESSED;
+            qDebug() << "reloadCoverArt found metadata cover art"
+                     << m_coverArt.info.hash
+                     << m_coverArt.info.type
+                     << m_coverArt.info.source
+                     << m_coverArt.info.coverLocation;
+            setDirty(true);
+            return;
+        } else {
+            qDebug() << "reloadCoverArt didn't find metadata cover art";
+        }
+    }
+
+    // Search for image files in the track directory.
+    QRegExp coverArtFilenames(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                              Qt::CaseInsensitive);
+
+    QDirIterator it(m_fileInfo.path(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    QFile currentFile;
+    QFileInfo currentFileInfo;
+    QLinkedList<QFileInfo> possibleCovers;
+    while (it.hasNext()) {
+        it.next();
+        currentFileInfo = it.fileInfo();
+        if (currentFileInfo.isFile() &&
+                coverArtFilenames.indexIn(currentFileInfo.fileName()) != -1) {
+            possibleCovers.append(currentFileInfo);
+        }
+    }
+
+    m_coverArt = CoverArtUtils::selectCoverArtForTrack(this, possibleCovers);
+    qDebug() << "reloadCoverArt file cover art?"
+             << m_coverArt.info.hash
+             << m_coverArt.info.type
+             << m_coverArt.info.source
+             << m_coverArt.info.coverLocation;
+    setDirty(true);
 }

@@ -152,9 +152,11 @@ class WTrackTableView : public WLibraryTableView {
     bool m_sorting;
 
     // Column numbers
+    int m_iCoverSourceColumn; // cover art source
+    int m_iCoverTypeColumn; // cover art type
     int m_iCoverLocationColumn; // cover art location
-    int m_iCoverHashColumn;     // cover art hash
-    int m_iCoverColumn;         // visible cover art
+    int m_iCoverHashColumn; // cover art hash
+    int m_iCoverColumn; // visible cover art
     int m_iTrackLocationColumn;
 
     // Control the delay to load a cover art.

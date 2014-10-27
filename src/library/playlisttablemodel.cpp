@@ -209,6 +209,8 @@ bool PlaylistTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             (PlayerManager::numPreviewDecks() == 0 &&
              column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
         return true;

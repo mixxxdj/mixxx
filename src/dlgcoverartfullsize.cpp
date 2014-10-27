@@ -19,26 +19,11 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
         return;
     }
 
-    CoverArtCache* cache = CoverArtCache::instance();
-    if (cache == NULL) {
-        return;
-    }
-
-    if (info.coverLocation.isEmpty()) {
-        info.coverLocation = cache->trackInDBHash(info.trackId);
-    }
-
-    // If it's still empty, we don't have a cover.
-    if (info.coverLocation.isEmpty()) {
-        return;
-    }
-
+    // TODO(rryan): don't do this in the main thread
+    QImage cover = CoverArtUtils::loadCover(info);
     QPixmap pixmap;
-    if (info.coverLocation == "ID3TAG") {
-        pixmap.convertFromImage(CoverArtUtils::extractEmbeddedCover(
-            info.trackLocation));
-    } else {
-        pixmap = QPixmap(info.coverLocation);
+    if (!cover.isNull()) {
+        pixmap.convertFromImage(cover);
     }
 
     if (pixmap.isNull()) {

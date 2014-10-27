@@ -317,6 +317,14 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->hasBpmLock());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
+        trackValue.setValue(pTrack->getCoverInfo().coverLocation);
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column) {
+        trackValue.setValue(pTrack->getCoverInfo().hash);
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
+        trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
+        trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().type));
     }
 }
 

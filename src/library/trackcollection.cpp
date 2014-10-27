@@ -18,11 +18,10 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
           m_playlistDao(m_db),
           m_crateDao(m_db),
-          m_coverArtDao(m_db),
           m_cueDao(m_db),
           m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
-          m_trackDao(m_db, m_coverArtDao, m_cueDao, m_playlistDao, m_crateDao,
+          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
                      m_analysisDao, m_directoryDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
@@ -47,7 +46,6 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     qDebug() << "~TrackCollection()";
-    m_coverArtDao.deleteUnusedCoverArts();
     m_trackDao.finish();
 
     if (m_db.isOpen()) {
@@ -117,17 +115,12 @@ bool TrackCollection::checkForTables() {
     m_crateDao.initialize();
     m_cueDao.initialize();
     m_directoryDao.initialize();
-    m_coverArtDao.initialize();
 
     return true;
 }
 
 QSqlDatabase& TrackCollection::getDatabase() {
     return m_db;
-}
-
-CoverArtDAO& TrackCollection::getCoverArtDAO() {
-    return m_coverArtDao;
 }
 
 CrateDAO& TrackCollection::getCrateDAO() {

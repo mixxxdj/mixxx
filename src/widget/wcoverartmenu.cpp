@@ -113,20 +113,7 @@ void WCoverArtMenu::slotReload() {
     if (m_coverInfo.trackId < 1 || m_pTrack.isNull()) {
         return;
     }
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == NULL) {
-        return;
-    }
-
-    CoverAndAlbumInfo info;
-    info.info.trackId = m_pTrack->getId();
-    info.info.trackLocation = m_pTrack->getLocation();
-    info.album = m_pTrack->getAlbum();
-    CoverArtCache::FutureResult res = pCache->searchImage(
-        info, QSize(0,0), false);
-    QPixmap px;
-    px.convertFromImage(res.cover.image);
-    emit(coverLocationUpdated(res.cover.info.coverLocation, m_coverInfo.coverLocation, px));
+    // TODO(rryan): implement, need to signal to parent
 }
 
 void WCoverArtMenu::slotUnset() {
