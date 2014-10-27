@@ -62,30 +62,30 @@ TEST_F(CoverArtCacheTest, extractEmbeddedCover) {
 
 TEST_F(CoverArtCacheTest, loadCover) {
     QImage img = QImage(kCoverLocationTest);
-    CoverAndAlbumInfo info;
-    info.info.trackId = 1;
-    info.info.type = CoverInfo::FILE;
-    info.info.source = CoverInfo::GUESSED;
-    info.info.coverLocation = "../../../" % kCoverLocationTest;
-    info.info.trackLocation = kTrackLocationTest;
-    info.info.hash = "coverhash"; // fake cover hash
+    CoverInfo info;
+    info.trackId = 1;
+    info.type = CoverInfo::FILE;
+    info.source = CoverInfo::GUESSED;
+    info.coverLocation = "../../../" % kCoverLocationTest;
+    info.trackLocation = kTrackLocationTest;
+    info.hash = "coverhash"; // fake cover hash
 
     CoverArtCache::FutureResult res;
     res = CoverArtCache::loadCover(info, QSize(0,0), false);
-    EXPECT_EQ(info.info.trackId, res.cover.info.trackId);
-    EXPECT_QSTRING_EQ(info.info.coverLocation, res.cover.info.coverLocation);
-    EXPECT_QSTRING_EQ(info.info.hash, res.cover.info.hash);
+    EXPECT_EQ(info.trackId, res.cover.info.trackId);
+    EXPECT_QSTRING_EQ(info.coverLocation, res.cover.info.coverLocation);
+    EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
     EXPECT_EQ(img, res.cover.image);
 
-    info.info.trackId = 1;
-    info.info.type = CoverInfo::METADATA;
-    info.info.source = CoverInfo::GUESSED;
-    info.info.coverLocation = QString();
-    info.info.trackLocation = kTrackLocationTest;
+    info.trackId = 1;
+    info.type = CoverInfo::METADATA;
+    info.source = CoverInfo::GUESSED;
+    info.coverLocation = QString();
+    info.trackLocation = kTrackLocationTest;
     res = CoverArtCache::loadCover(info, QSize(0,0), false);
-    EXPECT_EQ(info.info.trackId, res.cover.info.trackId);
+    EXPECT_EQ(info.trackId, res.cover.info.trackId);
     EXPECT_QSTRING_EQ(QString(), res.cover.info.coverLocation);
-    EXPECT_QSTRING_EQ(info.info.hash, res.cover.info.hash);
+    EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
         QDir(kTrackLocationTest), true);
@@ -256,11 +256,11 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // // As we are looking for %album%.jpg and %base_track.jpg%,
     // // we need to check if everything works with UTF8 chars.
     // QString trackBaseName = QString::fromUtf8("track_ðÑöæäî");
-    // CoverAndAlbumInfo cInfoUtf8;
-    // cInfoUtf8.info.trackId = 2;
-    // cInfoUtf8.info.coverLocation = "";
-    // cInfoUtf8.info.trackLocation = trackdir % "/" % trackBaseName % ".mp3";
-    // cInfoUtf8.info.hash = "";
+    // CoverInfo cInfoUtf8;
+    // cInfoUtf8.trackId = 2;
+    // cInfoUtf8.coverLocation = "";
+    // cInfoUtf8.trackLocation = trackdir % "/" % trackBaseName % ".mp3";
+    // cInfoUtf8.hash = "";
     // cInfoUtf8.album = QString::fromUtf8("öæäîðÑ_album");
 
     // // 1. track_filename.jpg

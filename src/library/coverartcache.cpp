@@ -52,23 +52,19 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
         return QPixmap();
     }
 
-    // Begin to build the request.
-    CoverAndAlbumInfo coverAndAlbumInfo;
-    coverAndAlbumInfo.info = requestInfo;
-
     // If this request comes from CoverDelegate (table view),
     // it'll want to get a cropped cover which is ready to be drawn
     // in the table view (cover art column).
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
-    if (!coverAndAlbumInfo.info.hash.isEmpty()) {
-        QString cacheKey = CoverArtUtils::pixmapCacheKey(coverAndAlbumInfo.info.hash,
+    if (!requestInfo.hash.isEmpty()) {
+        QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
                                                          croppedSize);
 
         QPixmap pixmap;
         if (QPixmapCache::find(cacheKey, &pixmap)) {
             if (signalWhenDone) {
-                emit(pixmapFound(coverAndAlbumInfo.info.trackId, pixmap));
+                emit(pixmapFound(requestInfo.trackId, pixmap));
             }
             return pixmap;
         }
@@ -81,10 +77,10 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
         return QPixmap();
     }
 
-    m_runningIds.insert(coverAndAlbumInfo.info.trackId);
+    m_runningIds.insert(requestInfo.trackId);
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
-            this, &CoverArtCache::loadCover, coverAndAlbumInfo, croppedSize,
+            this, &CoverArtCache::loadCover, requestInfo, croppedSize,
             signalWhenDone);
     connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
     watcher->setFuture(future);
@@ -92,20 +88,19 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 }
 
 CoverArtCache::FutureResult CoverArtCache::loadCover(
-        const CoverAndAlbumInfo& coverAndAlbumInfo,
+        const CoverInfo& info,
         const QSize& croppedSize,
         const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::loadCover"
-                 << coverAndAlbumInfo.info.coverLocation
-                 << coverAndAlbumInfo.info.hash
-                 << coverAndAlbumInfo.info.trackId
-                 << coverAndAlbumInfo.info.trackLocation
-                 << coverAndAlbumInfo.album;
+                 << info.coverLocation
+                 << info.hash
+                 << info.trackId
+                 << info.trackLocation;
     }
 
     FutureResult res;
-    res.cover.info = coverAndAlbumInfo.info;
+    res.cover.info = info;
     res.croppedSize = croppedSize;
     res.signalWhenDone = signalWhenDone;
     res.cover.image = CoverArtUtils::loadCover(res.cover.info);
@@ -115,7 +110,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     }
 
     // TODO(XXX) Should we re-hash here? If the cover file (or track metadata)
-    // has changed then coverAndAlbumInfo.info.hash may be incorrect. The fix
+    // has changed then info.hash may be incorrect. The fix
     // will also require noticing a hash mis-match at higher levels and
     // recording the hash change in the database.
 

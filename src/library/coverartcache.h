@@ -50,7 +50,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
 
     // Load cover from path indicated in coverInfo. WARNING: This is run in a
     // worker thread.
-    FutureResult loadCover(const CoverAndAlbumInfo& coverInfo,
+    FutureResult loadCover(const CoverInfo& coverInfo,
                            const QSize &croppedSize,
                            const bool emitSignals);
 
