@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QWidget>
 
+#include "configobject.h"
 #include "dlgcoverartfullsize.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
@@ -16,7 +17,8 @@
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WCoverArt(QWidget* parent, const QString& group);
+    WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+              const QString& group);
     virtual ~WCoverArt();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -41,10 +43,15 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void mousePressEvent(QMouseEvent*);
     void leaveEvent(QEvent*);
 
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);
 
     QString m_group;
+    ConfigObject<ConfigValue>* m_pConfig;
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;
     TrackPointer m_loadedTrack;

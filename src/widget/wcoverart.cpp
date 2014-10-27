@@ -5,20 +5,27 @@
 #include <QIcon>
 #include <QPainter>
 
+#include "controlobject.h"
 #include "widget/wcoverart.h"
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "util/math.h"
+#include "util/dnd.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
+                     ConfigObject<ConfigValue>* pConfig,
                      const QString& group)
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
+          m_pConfig(pConfig),
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_pDlgFullSize(new DlgCoverArtFullSize()) {
+    // Accept drops if we have a group to load tracks into.
+    setAcceptDrops(!m_group.isEmpty());
+
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
@@ -195,4 +202,52 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
 
 void WCoverArt::leaveEvent(QEvent*) {
     m_pDlgFullSize->close();
+}
+
+void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
+    if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
+        DragAndDropHelper::dragTrack(m_loadedTrack, this);
+    }
+}
+
+void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
+    // We don't have a group to load the track into.
+    if (m_group.isEmpty()) {
+        event->ignore();
+        return;
+    }
+
+    if (event->mimeData()->hasUrls() &&
+            event->mimeData()->urls().size() > 0) {
+        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
+        if ((!ControlObject::get(ConfigKey(m_group, "play")) ||
+             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
+            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+            if (!files.isEmpty()) {
+                event->acceptProposedAction();
+                return;
+            }
+        }
+    }
+    event->ignore();
+}
+
+void WCoverArt::dropEvent(QDropEvent *event) {
+    // We don't have a group to load the track into.
+    if (m_group.isEmpty()) {
+        event->ignore();
+        return;
+    }
+
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
+        }
+    }
+    event->ignore();
 }

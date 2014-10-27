@@ -1016,7 +1016,7 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
     QString channel = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
 
-    WCoverArt* pCoverArt = new WCoverArt(m_pParent, channel);
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel);
     setupConnections(node, pCoverArt);
     setupBaseWidget(node, pCoverArt);
     setupWidget(node, pCoverArt);
