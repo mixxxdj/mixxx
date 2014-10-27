@@ -44,7 +44,6 @@ class SuperLinkTest : public BaseEffectTest {
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
         low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-        low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
         low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
         low->setNeutralPointOnScale(0.25);
