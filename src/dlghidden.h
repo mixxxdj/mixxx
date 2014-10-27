@@ -3,7 +3,6 @@
 
 #include "ui_dlghidden.h"
 #include "configobject.h"
-#include "library/coverartcache.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
@@ -28,7 +27,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
   signals:
-    void loadCoverArt(CoverInfo info, bool cachedOnly);
+    void trackSelected(TrackPointer pTrack);
 
   private:
     void activateButtons(bool enable);

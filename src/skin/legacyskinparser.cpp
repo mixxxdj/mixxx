@@ -1013,20 +1013,32 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
-    WCoverArt* pCoverArt = new WCoverArt(m_pParent,
-                                         m_pLibrary->getTrackCollection());
+    QString channel = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
+
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, channel);
     setupConnections(node, pCoverArt);
     setupBaseWidget(node, pCoverArt);
     setupWidget(node, pCoverArt);
     pCoverArt->setup(node, *m_pContext);
 
-    // Connect cover art signals to the library
-    connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
-            pCoverArt, SLOT(slotReset()));
-    connect(m_pLibrary, SIGNAL(enableCoverArtDisplay(bool)),
-            pCoverArt, SLOT(slotEnable(bool)));
-    connect(m_pLibrary, SIGNAL(loadCoverArt(CoverInfo, bool)),
-            pCoverArt, SLOT(slotLoadCoverArt(CoverInfo, bool)));
+    // If no group was provided, hook the widget up to the Library.
+    if (channel.isEmpty()) {
+        // Connect cover art signals to the library
+        connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
+                pCoverArt, SLOT(slotReset()));
+        connect(m_pLibrary, SIGNAL(enableCoverArtDisplay(bool)),
+                pCoverArt, SLOT(slotEnable(bool)));
+        connect(m_pLibrary, SIGNAL(trackSelected(TrackPointer)),
+                pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
+    } else if (pPlayer != NULL) {
+        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
+        connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+                pCoverArt, SLOT(slotReset()));
+        connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
+                m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    }
 
     return pCoverArt;
 }
@@ -1316,8 +1328,10 @@ QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     // will specify the channel as either 1 or 2.
     if (group.size() == 0) {
         int channel = m_pContext->selectInt(node, "Channel");
-        // groupForDeck is 0-indexed
-        group = PlayerManager::groupForDeck(channel - 1);
+        if (channel > 0) {
+            // groupForDeck is 0-indexed
+            group = PlayerManager::groupForDeck(channel - 1);
+        }
     }
 
     return group;

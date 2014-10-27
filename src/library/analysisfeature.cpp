@@ -77,8 +77,8 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
 
-    connect(m_pAnalysisView, SIGNAL(loadCoverArt(CoverInfo, bool)),
-            this, SIGNAL(loadCoverArt(CoverInfo, bool)));
+    connect(m_pAnalysisView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));

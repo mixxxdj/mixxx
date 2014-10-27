@@ -82,7 +82,6 @@ class WTrackTableView : public WLibraryTableView {
     void dropEvent(QDropEvent * event);
     void lockBpm(bool lock);
 
-    void emitLoadCoverArt(bool cachedOnly);
     void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected);

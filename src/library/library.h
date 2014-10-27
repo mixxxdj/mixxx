@@ -88,7 +88,7 @@ public:
     void searchStarting();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
-    void loadCoverArt(CoverInfo info, bool cachedOnly);
+    void trackSelected(TrackPointer pTrack);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

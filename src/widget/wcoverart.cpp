@@ -11,12 +11,12 @@
 #include "library/coverartutils.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     TrackCollection* pTrackCollection)
+                     const QString& group)
         : QWidget(parent),
           WBaseWidget(this),
+          m_group(group),
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
           m_pDlgFullSize(new DlgCoverArtFullSize()) {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -74,26 +74,36 @@ void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
                                          QPixmap newCover) {
     Q_UNUSED(oldLoc);
     Q_UNUSED(newCover);
-    TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedCover.trackId);
-    if (pTrack) {
-        CoverArt art;
-        art.info.coverLocation = newLoc;
-        art.info.source = CoverInfo::USER_SELECTED;
-        art.info.type = CoverInfo::FILE;
-        pTrack->setCoverArt(art);
+
+    if (m_loadedTrack.isNull()) {
+        return;
     }
+
+    CoverArt art;
+    art.info.coverLocation = newLoc;
+    art.info.source = CoverInfo::USER_SELECTED;
+    art.info.type = CoverInfo::FILE;
+    // TODO(rryan): hash
+    m_loadedTrack->setCoverArt(art);
 }
 
 void WCoverArt::slotEnable(bool enable) {
+    bool wasDisabled = !m_bEnable && enable;
     m_bEnable = enable;
     int h = (float) parentWidget()->height() / 3;
     h = m_bEnable ? h : 0;
     setMinimumHeight(h);
     setMaximumHeight(h);
+
+    if (wasDisabled) {
+        slotLoadTrack(m_loadedTrack);
+    }
+
     update();
 }
 
 void WCoverArt::slotReset() {
+    m_loadedTrack = TrackPointer();
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
@@ -111,14 +121,26 @@ void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     }
 }
 
-void WCoverArt::slotLoadCoverArt(CoverInfo info, bool cachedOnly) {
+void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
+    qDebug() << "WCoverArt::slotLoadTrack" << pTrack;
+    m_lastRequestedCover = CoverInfo();
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
+    m_loadedTrack = pTrack;
+
     if (!m_bEnable) {
         return;
     }
-    m_lastRequestedCover = info;
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        pCache->requestCover(info, QSize(0,0), cachedOnly);
+
+    if (m_loadedTrack) {
+        m_lastRequestedCover = m_loadedTrack->getCoverInfo();
+        m_lastRequestedCover.trackId = m_loadedTrack->getId();
+        m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
+
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache != NULL) {
+            pCache->requestCover(m_lastRequestedCover, QSize(0,0), false);
+        }
     }
 }
 
@@ -173,9 +195,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
-    if (event->button() == Qt::RightButton) { // show context-menu
-        TrackPointer pTrack = m_trackDAO.getTrack(m_lastRequestedCover.trackId);
-        m_pMenu->show(event->globalPos(), m_lastRequestedCover, pTrack);
+
+    if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
+        m_pMenu->show(event->globalPos(), m_lastRequestedCover, m_loadedTrack);
     } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();

@@ -159,10 +159,20 @@ void WTrackTableView::slotScrollValueChanged(int) {
     enableCachedOnly();
 }
 
-void WTrackTableView::selectionChanged(const QItemSelection &selected,
-                                       const QItemSelection &deselected) {
+void WTrackTableView::selectionChanged(const QItemSelection& selected,
+                                       const QItemSelection& deselected) {
     enableCachedOnly();
-    emitLoadCoverArt(true);
+
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0 && indices.last().isValid()) {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            TrackPointer pTrack = trackModel->getTrack(indices.last());
+            if (pTrack) {
+                emit(trackSelected(pTrack));
+            }
+        }
+    }
 
     QTableView::selectionChanged(selected, deselected);
 }
@@ -171,7 +181,6 @@ void WTrackTableView::slotGuiTickTime(double cpuTime) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
     if (m_loadCachedOnly && cpuTime >= m_lastSelection + 0.1) {
-        emitLoadCoverArt(false);
         // it will allows CoverCache to load and search covers normally
         emit(onlyCachedCoverArt(false));
         m_loadCachedOnly = false;
@@ -185,33 +194,6 @@ void WTrackTableView::slotGuiTickTime(double cpuTime) {
             dataChanged(top, bottom);
         }
     }
-}
-
-void WTrackTableView::emitLoadCoverArt(bool cachedOnly) {
-    if (m_iCoverSourceColumn < 0 || m_iCoverTypeColumn < 0 ||
-            m_iCoverLocationColumn < 0 || m_iCoverHashColumn < 0) {
-        return;
-    }
-
-    CoverInfo info;
-    const QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0 && indices.last().isValid()) {
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            QModelIndex idx = indices.last();
-            info.source = static_cast<CoverInfo::Source>(
-                idx.sibling(idx.row(), m_iCoverSourceColumn).data().toInt());
-            info.type = static_cast<CoverInfo::Type>(
-                idx.sibling(idx.row(), m_iCoverTypeColumn).data().toInt());
-            info.hash = idx.sibling(idx.row(), m_iCoverHashColumn).data().toString();
-            info.trackId = trackModel->getTrackId(idx);
-            info.coverLocation = idx.sibling(
-                idx.row(), m_iCoverLocationColumn).data().toString();
-            info.trackLocation = idx.sibling(
-                idx.row(), m_iTrackLocationColumn).data().toString();
-        }
-    }
-    emit(loadCoverArt(info, cachedOnly));
 }
 
 // slot

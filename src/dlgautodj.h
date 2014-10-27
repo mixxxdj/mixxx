@@ -6,7 +6,6 @@
 #include "configobject.h"
 #include "controlpushbutton.h"
 #include "trackinfoobject.h"
-#include "library/coverartcache.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "library/dao/playlistdao.h"
@@ -52,7 +51,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void addRandomButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group, bool);
-    void loadCoverArt(CoverInfo info, bool cachedOnly);
+    void trackSelected(TrackPointer pTrack);
 
   private:
     enum ADJstates {

@@ -38,8 +38,8 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 
-    connect(m_pTrackTableView, SIGNAL(loadCoverArt(CoverInfo, bool)),
-            this, SIGNAL(loadCoverArt(CoverInfo, bool)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 }
 
 DlgHidden::~DlgHidden() {

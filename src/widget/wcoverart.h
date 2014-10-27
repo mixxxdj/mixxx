@@ -9,7 +9,6 @@
 #include "dlgcoverartfullsize.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
-#include "library/trackcollection.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
@@ -17,15 +16,18 @@
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WCoverArt(QWidget* parent, TrackCollection* pTrackCollection);
+    WCoverArt(QWidget* parent, const QString& group);
     virtual ~WCoverArt();
 
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
+    void slotLoadTrack(TrackPointer);
     void slotReset();
     void slotEnable(bool);
-    void slotLoadCoverArt(CoverInfo info, bool cachedOnly);
+
+  signals:
+    void trackDropped(QString filename, QString group);
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);
@@ -42,13 +44,14 @@ class WCoverArt : public QWidget, public WBaseWidget {
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);
 
+    QString m_group;
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;
+    TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
     QPixmap m_defaultCover;
     QPixmap m_defaultCoverScaled;
-    TrackDAO& m_trackDAO;
     CoverInfo m_lastRequestedCover;
     DlgCoverArtFullSize* m_pDlgFullSize;
 };
