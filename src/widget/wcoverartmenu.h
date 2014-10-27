@@ -4,9 +4,10 @@
 #include <QAction>
 #include <QMenu>
 #include <QWidget>
+#include <QPixmap>
 
 #include "trackinfoobject.h"
-#include "library/coverartcache.h"
+#include "library/coverart.h"
 
 class WCoverArtMenu : public QMenu {
     Q_OBJECT

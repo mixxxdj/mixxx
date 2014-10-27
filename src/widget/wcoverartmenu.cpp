@@ -1,8 +1,7 @@
 #include <QFileDialog>
 #include <QStringBuilder>
 
-#include "wcoverartmenu.h"
-#include "library/coverartcache.h"
+#include "widget/wcoverartmenu.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -47,11 +46,6 @@ void WCoverArtMenu::show(QPoint pos, CoverInfo info, TrackPointer pTrack) {
 
 void WCoverArtMenu::slotChange() {
     if (m_coverInfo.trackId < 1 || m_pTrack.isNull()) {
-        return;
-    }
-
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == NULL) {
         return;
     }
 
@@ -118,10 +112,6 @@ void WCoverArtMenu::slotReload() {
 
 void WCoverArtMenu::slotUnset() {
     if (m_coverInfo.trackId < 1) {
-        return;
-    }
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == NULL) {
         return;
     }
     QPixmap px;
