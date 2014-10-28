@@ -15,12 +15,10 @@ class WCoverArtLabel : public QLabel {
     WCoverArtLabel(QWidget* parent = 0);
     virtual ~WCoverArtLabel();
 
-    void setCoverArt(TrackPointer track, CoverInfo info, QPixmap px);
+    void setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPixmap px);
 
   signals:
-    void coverLocationUpdated(const QString& newLocation,
-                              const QString& oldLocation,
-                              QPixmap newCover);
+    void coverArtSelected(const CoverArt& art);
 
   protected:
     void leaveEvent(QEvent*);

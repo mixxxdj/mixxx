@@ -1,3 +1,5 @@
+#include <QtDebug>
+
 #include "widget/wcoverartlabel.h"
 
 #include "library/coverartutils.h"
@@ -6,8 +8,6 @@ static const QSize s_labelDisplaySize = QSize(100, 100);
 
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
-          m_pTrack(TrackPointer()),
-          m_coverInfo(CoverInfo()),
           m_pCoverMenu(new WCoverArtMenu(this)),
           m_pDlgFullSize(new DlgCoverArtFullSize()),
           m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
@@ -17,10 +17,8 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu,
-            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
-            this,
-            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)));
+    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
+            this, SIGNAL(coverArtSelected(const CoverArt&)));
 
     m_defaultCover = m_defaultCover.scaled(s_labelDisplaySize,
                                            Qt::KeepAspectRatio,
@@ -33,9 +31,17 @@ WCoverArtLabel::~WCoverArtLabel() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArtLabel::setCoverArt(TrackPointer track, CoverInfo info, QPixmap px) {
-    m_pTrack = track;
+void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPixmap px) {
+    qDebug() << "WCoverArtLabel::setCoverArt" << info << px.size();
+
+    // Clear the WCoverArtMenu to release the TrackPointer it holds (we may as
+    // well have a WCoverArtMenu::setCoverArt method to match this one but the
+    // existing pattern is passing them in through show() so that's what we
+    // do)..
+    m_pCoverMenu->clear();
+
     m_coverInfo = info;
+    m_pTrack = pTrack;
 
     if (px.isNull()) {
         setPixmap(m_defaultCover);
@@ -51,9 +57,6 @@ void WCoverArtLabel::setCoverArt(TrackPointer track, CoverInfo info, QPixmap px)
 }
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
-    if (m_pTrack == NULL) {
-        return;
-    }
     m_pCoverMenu->show(mapToGlobal(pos), m_coverInfo, m_pTrack);
 }
 

@@ -33,9 +33,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   private slots:
     void slotPixmapFound(int trackId, QPixmap pixmap);
-    void slotCoverLocationUpdated(const QString& newLoc,
-                                  const QString& oldLoc,
-                                  QPixmap px);
+    void slotCoverArtSelected(const CoverArt& art);
 
   protected:
     void paintEvent(QPaintEvent*);

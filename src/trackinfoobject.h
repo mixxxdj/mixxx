@@ -271,7 +271,6 @@ class TrackInfoObject : public QObject {
     void setCoverInfo(const CoverInfo& cover);
     CoverInfo getCoverInfo() const;
 
-    void reloadCoverArt();
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
 

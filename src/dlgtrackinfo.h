@@ -56,9 +56,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotOpenInFileBrowser();
 
     void slotPixmapFound(int trackId, QPixmap pixmap);
-    void slotCoverLocationUpdated(const QString& newLoc,
-                                  const QString& oldLoc,
-                                  QPixmap pixmap);
+    void slotCoverArtSelected(const CoverArt& art);
 
   private:
     void populateFields(TrackPointer pTrack);

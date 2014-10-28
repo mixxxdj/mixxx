@@ -31,10 +31,8 @@ WCoverArt::WCoverArt(QWidget* parent,
         connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
                 this, SLOT(slotPixmapFound(int, QPixmap)));
     }
-    connect(m_pMenu,
-            SIGNAL(coverLocationUpdated(const QString&, const QString&, QPixmap)),
-            this,
-            SLOT(slotCoverLocationUpdated(const QString&, const QString&, QPixmap)));
+    connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
+            this, SLOT(slotCoverArtSelected(const CoverArt&)));
 }
 
 WCoverArt::~WCoverArt() {
@@ -77,22 +75,13 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
-void WCoverArt::slotCoverLocationUpdated(const QString& newLoc,
-                                         const QString& oldLoc,
-                                         QPixmap newCover) {
-    Q_UNUSED(oldLoc);
-    Q_UNUSED(newCover);
-
+void WCoverArt::slotCoverArtSelected(const CoverArt& art) {
     if (m_loadedTrack.isNull()) {
         return;
     }
-
-    CoverArt art;
-    art.info.coverLocation = newLoc;
-    art.info.source = CoverInfo::USER_SELECTED;
-    art.info.type = CoverInfo::FILE;
-    // TODO(rryan): hash
     m_loadedTrack->setCoverArt(art);
+    // TODO(rryan): listen to TIO signal instead
+    slotLoadTrack(m_loadedTrack);
 }
 
 void WCoverArt::slotEnable(bool enable) {

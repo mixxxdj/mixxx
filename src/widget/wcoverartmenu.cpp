@@ -1,5 +1,5 @@
 #include <QFileDialog>
-#include <QStringBuilder>
+#include <QFileInfo>
 
 #include "widget/wcoverartmenu.h"
 #include "library/coverartutils.h"
@@ -7,7 +7,6 @@
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
     createActions();
-    addActions();
 }
 
 WCoverArtMenu::~WCoverArtMenu() {
@@ -20,43 +19,48 @@ void WCoverArtMenu::createActions() {
     m_pChange = new QAction(tr("Choose new cover",
             "change cover art location"), this);
     connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
+    addAction(m_pChange);
 
     m_pUnset = new QAction(tr("Unset cover",
             "unset cover art - load default"), this);
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
+    addAction(m_pUnset);
 
     m_pReload = new QAction(tr("Reload from track/folder",
             "reload just cover art, using the search algorithm"), this);
     connect(m_pReload, SIGNAL(triggered()), this, SLOT(slotReload()));
-}
-
-void WCoverArtMenu::addActions() {
-    addAction(m_pChange);
-    addAction(m_pUnset);
     addAction(m_pReload);
 }
 
+void WCoverArtMenu::clear() {
+    m_coverInfo = CoverInfo();
+    m_pTrack.clear();
+}
+
 void WCoverArtMenu::show(QPoint pos, CoverInfo info, TrackPointer pTrack) {
-    if (info.trackId < 1) {
-        return;
-    }
     m_coverInfo = info;
     m_pTrack = pTrack;
     popup(pos);
 }
 
 void WCoverArtMenu::slotChange() {
-    if (m_coverInfo.trackId < 1 || m_pTrack.isNull()) {
-        return;
-    }
-
     // get initial directory (trackdir or coverdir)
     QString initialDir;
-    QString trackPath = m_pTrack->getDirectory();
-    if (m_coverInfo.coverLocation.isEmpty()) {
-        initialDir = trackPath;
-    } else {
-        initialDir = m_coverInfo.coverLocation;
+
+    QFileInfo track;
+    if (m_pTrack) {
+        track = m_pTrack->getFileInfo();
+    } else if (!m_coverInfo.trackLocation.isEmpty()) {
+        track = QFileInfo(m_coverInfo.trackLocation);
+    }
+
+    // If the cover is from file metadata then use the directory the track is
+    // in.
+    if (m_coverInfo.type == CoverInfo::METADATA) {
+        initialDir = track.absolutePath();
+    } else if (m_coverInfo.type == CoverInfo::FILE) {
+        QFileInfo file(track.dir(), m_coverInfo.coverLocation);
+        initialDir = file.absolutePath();
     }
 
     QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
@@ -69,58 +73,36 @@ void WCoverArtMenu::slotChange() {
     // open file dialog
     QString selectedCover = QFileDialog::getOpenFileName(
         this, tr("Change Cover Art"), initialDir, supportedText);
-
     if (selectedCover.isEmpty()) {
         return;
     }
 
-    // if the cover comes from an external dir,
-    // we copy it to the track directory.
-    QString newCover;
-    QFileInfo fileInfo(selectedCover);
-    QString coverPath = fileInfo.absolutePath();
-    if (trackPath == coverPath) {
-        newCover = selectedCover;
-    } else {
-        QDir trackDir(trackPath);
-        QString ext = fileInfo.suffix();
-        QString mixxxCoverFile = trackDir.filePath("mixxx-cover." % ext);
-        QStringList filepaths;
-        filepaths << trackDir.filePath("cover." % ext)
-                  << trackDir.filePath("album." % ext)
-                  << mixxxCoverFile;
+    // TODO(rryan): Ask if user wants to copy the file.
 
-        foreach (QString filepath, filepaths) {
-            if (QFile::copy(selectedCover, filepath)) {
-                newCover = filepath;
-                break;
-            }
-        }
-
-        if (newCover.isEmpty()) {
-            // overwrites "mixxx-cover"
-            QFile::remove(mixxxCoverFile);
-            if (QFile::copy(selectedCover, mixxxCoverFile)) {
-                newCover = mixxxCoverFile;
-            }
-        }
+    CoverArt art;
+    art.image = QImage(selectedCover);
+    if (art.image.isNull()) {
+        // TODO(rryan): feedback
+        return;
     }
-
-    QPixmap px(newCover);
-    emit(coverLocationUpdated(newCover, m_coverInfo.coverLocation, px));
+    art.info.type = CoverInfo::FILE;
+    art.info.source = CoverInfo::USER_SELECTED;
+    art.info.coverLocation = selectedCover;
+    art.info.hash = CoverArtUtils::calculateHash(art.image);
+    qDebug() << "WCoverArtMenu::slotChange emit" << art;
+    emit(coverArtSelected(art));
 }
 
 void WCoverArtMenu::slotReload() {
-    if (m_coverInfo.trackId < 1 || m_pTrack.isNull()) {
-        return;
-    }
-    // TODO(rryan): implement, need to signal to parent
+    CoverArt art = CoverArtUtils::guessCoverArt(m_pTrack);
+    qDebug() << "WCoverArtMenu::slotReload emit" << art;
+    emit(coverArtSelected(art));
 }
 
 void WCoverArtMenu::slotUnset() {
-    if (m_coverInfo.trackId < 1) {
-        return;
-    }
-    QPixmap px;
-    emit(coverLocationUpdated(QString(), m_coverInfo.coverLocation, QPixmap()));
+    CoverArt art;
+    art.info.type = CoverInfo::NONE;
+    art.info.source = CoverInfo::USER_SELECTED;
+    qDebug() << "WCoverArtMenu::slotUnset emit" << art;
+    emit(coverArtSelected(art));
 }
