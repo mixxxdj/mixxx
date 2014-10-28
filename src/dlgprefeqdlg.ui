@@ -58,7 +58,10 @@
      <item>
       <widget class="QCheckBox" name="bEqAutoReset">
        <property name="text">
-        <string>Enable Equalizer Auto Reset</string>
+        <string>Reset equalizers on track load</string>
+       </property>
+       <property name="toolTip">
+        <string>Resets the equalizers to their default values when loading a track</string>
        </property>
       </widget>
      </item> 

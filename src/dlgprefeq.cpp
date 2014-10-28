@@ -31,13 +31,13 @@ const int kFrequencyLowerLimit = 16;
 
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
+          m_bEqAutoReset(false),
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
           m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
-          m_bEqAutoReset(false),
           m_highEqFreq(0.0) {
     setupUi(this);
     // Connection
@@ -53,6 +53,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
     connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_butterworth8, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(bEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotEqAutoReset(int)));
+
     loadSettings();
     slotUpdate();
     slotApply();
@@ -211,7 +212,7 @@ void DlgPrefEQ::slotApply() {
     m_COTHiFreq.slotSet(m_highEqFreq);
     
     m_pConfig->set(ConfigKey(CONFIG_KEY,"EqAutoReset"),
-            ConfigValue(m_bEqAutoReset? 1 : 0));
+            ConfigValue(m_bEqAutoReset ? 1 : 0));
     m_COTLoFi.slotSet((m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")));
     m_COTEnableEq.slotSet((m_pConfig->getValueString(
