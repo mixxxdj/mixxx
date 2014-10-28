@@ -109,6 +109,7 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // looking for cover in an empty directory
     res = CoverArtUtils::selectCoverArtForTrack(pTrack.data(), covers);
     CoverArt expected;
+    expected.info.source = CoverInfo::GUESSED;
     EXPECT_EQ(expected, res);
 
     // Looking for a track with embedded cover.
