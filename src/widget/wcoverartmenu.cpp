@@ -32,15 +32,9 @@ void WCoverArtMenu::createActions() {
     addAction(m_pReload);
 }
 
-void WCoverArtMenu::clear() {
-    m_coverInfo = CoverInfo();
-    m_pTrack.clear();
-}
-
-void WCoverArtMenu::show(QPoint pos, CoverInfo info, TrackPointer pTrack) {
-    m_coverInfo = info;
+void WCoverArtMenu::setCoverArt(TrackPointer pTrack, const CoverInfo& info) {
     m_pTrack = pTrack;
-    popup(pos);
+    m_coverInfo = info;
 }
 
 void WCoverArtMenu::slotChange() {

@@ -21,6 +21,7 @@
 #include "util/time.h"
 #include "dlgpreflibrary.h"
 #include "waveform/guitick.h"
+#include "widget/wcoverartmenu.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -76,6 +77,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCrateMenu->setTitle(tr("Add to Crate"));
     m_pBPMMenu = new QMenu(this);
     m_pBPMMenu->setTitle(tr("BPM Options"));
+    m_pCoverMenu = new WCoverArtMenu(this);
+    m_pCoverMenu->setTitle(tr("Cover Art"));
+    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
+            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+
 
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -655,6 +661,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     // Gray out some stuff if multiple songs were selected.
     bool oneSongSelected = indices.size() == 1;
+    TrackModel* trackModel = getTrackModel();
 
     m_pMenu->clear();
 
@@ -785,7 +792,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addSeparator();
         if (oneSongSelected) {
-            TrackModel* trackModel = getTrackModel();
             if (trackModel == NULL) {
                 return;
             }
@@ -808,7 +814,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         } else {
             bool anyLocked = false; //true if any of the selected items are locked
-            TrackModel* trackModel = getTrackModel();
             int column = trackModel->fieldIndex("bpm_lock");
             for (int i = 0; i < indices.size() && !anyLocked; ++i) {
                 int row = indices.at(i).row();
@@ -837,7 +842,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     //end of BPM section of menu
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
-        TrackModel* trackModel = getTrackModel();
         if (trackModel == NULL) {
             return;
         }
@@ -861,6 +865,13 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
     }
+
+    m_contextTrack = trackModel->getTrack(indices.at(0));
+    m_pCoverMenu->setCoverArt(m_contextTrack, m_contextTrack->getCoverInfo());
+    // TODO(rryan): support multiple selection. disable for now to indicate we
+    // don't support it.
+    m_pCoverMenu->setEnabled(indices.size() == 1);
+    m_pMenu->addMenu(m_pCoverMenu);
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
@@ -1564,5 +1575,11 @@ void WTrackTableView::slotClearBeats() {
         if (!track->hasBpmLock()) {
             track->setBeats(BeatsPointer());
         }
+    }
+}
+
+void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
+    if (m_contextTrack) {
+        m_contextTrack->setCoverArt(art);
     }
 }

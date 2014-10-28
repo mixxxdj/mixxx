@@ -55,16 +55,8 @@ public:
     EncoderFfmpegResample(AVCodecContext *codecCtx);
     ~EncoderFfmpegResample();
     int open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
-    unsigned int getBufferSize();
 
-#ifndef __FFMPEGOLDAPI__
-    uint8_t *getBuffer();
-#else
-    short *getBuffer();
-#endif
-
-    void removeBuffer();
-    unsigned int reSample(AVFrame *inframe);
+    unsigned int reSample(AVFrame *inframe, quint8 **outbuffer);
 
 private:
     AVCodecContext *m_pCodecCtx;
@@ -81,13 +73,11 @@ private:
 #else
     SwrContext *m_pSwrCtx;
 #endif
-    uint8_t *m_pOut;
+
 #else
     ReSampleContext *m_pSwrCtx;
-    short *m_pOut;
 #endif
 
-    unsigned int m_pOutSize;
 };
 
 #endif

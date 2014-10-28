@@ -33,12 +33,7 @@ WCoverArtLabel::~WCoverArtLabel() {
 
 void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << info << px.size();
-
-    // Clear the WCoverArtMenu to release the TrackPointer it holds (we may as
-    // well have a WCoverArtMenu::setCoverArt method to match this one but the
-    // existing pattern is passing them in through show() so that's what we
-    // do)..
-    m_pCoverMenu->clear();
+    m_pCoverMenu->setCoverArt(pTrack, info);
 
     m_coverInfo = info;
     m_pTrack = pTrack;
@@ -57,7 +52,7 @@ void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPi
 }
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
-    m_pCoverMenu->show(mapToGlobal(pos), m_coverInfo, m_pTrack);
+    m_pCoverMenu->popup(mapToGlobal(pos));
 }
 
 void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {

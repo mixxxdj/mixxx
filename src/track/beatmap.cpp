@@ -196,7 +196,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 
     // Back-up by one.
     if (it != m_beats.begin()) {
-        it--;
+        --it;
     }
 
     // Scan forward to find whether we are on a beat.
