@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QString>
 #include <QDir>
+#include <QDirIterator>
 #include <QStringList>
 #include <QSize>
 #include <QFileInfo>
@@ -130,11 +131,65 @@ class CoverArtUtils {
         NONE
     };
 
+    // Guesses the cover art for the provided track. Does not modify the
+    // provided track.
+    static CoverArt guessCoverArt(TrackPointer pTrack) {
+        CoverArt art;
+        art.info.source = CoverInfo::GUESSED;
+
+        if (pTrack.isNull()) {
+            return art;
+        }
+
+        const QFileInfo trackInfo = pTrack->getFileInfo();
+        const QString trackLocation = trackInfo.absoluteFilePath();
+        SecurityTokenPointer pToken = pTrack->getSecurityToken();
+        SoundSourceProxy proxy(trackLocation, pToken);
+        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+        if (pProxiedSoundSource != NULL) {
+            art.image = proxy.parseCoverArt();
+            if (!art.image.isNull()) {
+                art.info.hash = calculateHash(art.image);
+                art.info.coverLocation = QString();
+                art.info.type = CoverInfo::METADATA;
+                qDebug() << "CoverArtUtils::guessCoverArt found metadata art" << art;
+                return art;
+            }
+        }
+
+        // Search for image files in the track directory.
+        QRegExp coverArtFilenames(supportedCoverArtExtensionsRegex(),
+                                  Qt::CaseInsensitive);
+        QDirIterator it(trackInfo.absolutePath(),
+                        QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+        QFile currentFile;
+        QFileInfo currentFileInfo;
+        QLinkedList<QFileInfo> possibleCovers;
+        while (it.hasNext()) {
+            it.next();
+            currentFileInfo = it.fileInfo();
+            if (currentFileInfo.isFile() &&
+                coverArtFilenames.indexIn(currentFileInfo.fileName()) != -1) {
+                possibleCovers.append(currentFileInfo);
+            }
+        }
+
+        art = selectCoverArtForTrack(pTrack.data(), possibleCovers);
+        if (art.info.type == CoverInfo::FILE) {
+            qDebug() << "CoverArtUtils::guessCoverArt found file art" << art;
+        } else {
+            qDebug() << "CoverArtUtils::guessCoverArt didn't find art" << art;
+        }
+        return art;
+    }
+
     // Selects an appropriate cover file from provided list of image files.
     static CoverArt selectCoverArtForTrack(TrackInfoObject* pTrack,
                                            const QLinkedList<QFileInfo>& covers) {
+        CoverArt art;
+        art.info.source = CoverInfo::GUESSED;
         if (pTrack == NULL || covers.isEmpty()) {
-            return CoverArt();
+            return art;
         }
 
         const QString trackBaseName = pTrack->getFileInfo().baseName();
@@ -174,7 +229,6 @@ class CoverArtUtils {
         }
 
         if (bestInfo != NULL) {
-            CoverArt art;
             art.image = QImage(bestInfo->filePath());
             if (!art.image.isNull()) {
                 art.info.source = CoverInfo::GUESSED;
@@ -184,7 +238,8 @@ class CoverArtUtils {
                 return art;
             }
         }
-        return CoverArt();
+
+        return art;
     }
 
     static QString searchInTrackDirectory(const QString& directory,
