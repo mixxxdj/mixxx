@@ -177,14 +177,27 @@ class CoverArtUtils {
     // Selects an appropriate cover file from provided list of image files.
     static CoverArt selectCoverArtForTrack(TrackInfoObject* pTrack,
                                            const QLinkedList<QFileInfo>& covers) {
-        CoverArt art;
-        art.info.source = CoverInfo::GUESSED;
         if (pTrack == NULL || covers.isEmpty()) {
+            CoverArt art;
+            art.info.source = CoverInfo::GUESSED;
             return art;
         }
 
         const QString trackBaseName = pTrack->getFileInfo().baseName();
         const QString albumName = pTrack->getAlbum();
+        return selectCoverArtForTrack(trackBaseName, albumName, covers);
+    }
+
+    // Selects an appropriate cover file from provided list of image files.
+    static CoverArt selectCoverArtForTrack(const QString& trackBaseName,
+                                           const QString& albumName,
+                                           const QLinkedList<QFileInfo>& covers) {
+        CoverArt art;
+        art.info.source = CoverInfo::GUESSED;
+        if (covers.isEmpty()) {
+            return art;
+        }
+
         PreferredCoverType bestType = NONE;
         const QFileInfo* bestInfo = NULL;
 
