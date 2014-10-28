@@ -1023,6 +1023,8 @@ void TrackInfoObject::setCoverInfo(const CoverInfo& info) {
         m_coverArt = CoverArt();
         m_coverArt.info = info;
         setDirty(true);
+        lock.unlock();
+        emit(coverArtUpdated());
     }
 }
 
@@ -1036,6 +1038,8 @@ void TrackInfoObject::setCoverArt(const CoverArt& cover) {
     if (cover != m_coverArt) {
         m_coverArt = cover;
         setDirty(true);
+        lock.unlock();
+        emit(coverArtUpdated());
     }
 }
 

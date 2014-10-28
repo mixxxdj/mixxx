@@ -174,6 +174,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     m_loadedCover = pTrack->getCoverInfo();
     m_loadedCover.trackId = pTrack->getId();
     m_loadedCover.trackLocation = pTrack->getLocation();
+    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCover, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         pCache->requestCover(m_loadedCover);
@@ -192,6 +193,9 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     populateCues(m_pLoadedTrack);
 
     disconnect(this, SLOT(updateTrackMetadata()));
+
+    // We already listen to changed() so we don't need to listen to individual
+    // signals such as cuesUpdates, coverArtUpdated(), etc.
     connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
             this, SLOT(updateTrackMetadata()));
 }
@@ -424,7 +428,7 @@ void DlgTrackInfo::clear() {
     cueTable->setRowCount(0);
 
     m_loadedCover = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), CoverInfo(), QPixmap());
+    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCover, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {

@@ -280,6 +280,7 @@ class TrackInfoObject : public QObject {
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
+    void coverArtUpdated();
     void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
