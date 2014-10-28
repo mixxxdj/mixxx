@@ -3,7 +3,8 @@
 #include <QBitmap>
 #include <QLabel>
 #include <QIcon>
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 
 #include "controlobject.h"
 #include "widget/wcoverart.h"
@@ -159,13 +160,15 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-void WCoverArt::paintEvent(QPaintEvent* pEvent) {
+void WCoverArt::paintEvent(QPaintEvent*) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter painter(this);
+    painter.drawPrimitive(QStyle::PE_Widget, option);
+
     if (!m_bEnable) {
-        QWidget::paintEvent(pEvent);
         return;
     }
-
-    QPainter painter(this);
 
     QPixmap toDraw = m_loadedCoverScaled;
     if (toDraw.isNull()) {
@@ -179,8 +182,6 @@ void WCoverArt::paintEvent(QPaintEvent* pEvent) {
         int x = math_max(0, (widgetSize.width() - pixmapSize.width()) / 2);
         int y = math_max(0, (widgetSize.height() - pixmapSize.height()) / 2);
         painter.drawPixmap(x, y, toDraw);
-    } else {
-        QWidget::paintEvent(pEvent);
     }
 }
 
