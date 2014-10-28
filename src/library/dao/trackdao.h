@@ -114,6 +114,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
     bool verifyRemainingTracks(volatile bool* pCancel);
+    void detectCoverArtForUnknownTracks(volatile bool* pCancel);
 
   signals:
     void trackDirty(int trackId);

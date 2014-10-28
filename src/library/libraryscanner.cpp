@@ -287,6 +287,10 @@ void LibraryScanner::run() {
         m_libraryHashDao.removeDeletedDirectoryHashes();
 
         transaction.commit();
+
+        qDebug() << "Detecting cover art for unscanned files.";
+        m_trackDao.detectCoverArtForUnknownTracks(&m_bCancelLibraryScan);
+
         qDebug() << "Scan finished cleanly";
     } else {
         qDebug() << "Scan cancelled";
@@ -467,9 +471,6 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             } else {
                 qDebug() << "Track ("+filePath+") could not be added";
             }
-        } else {
-            // TODO(rryan): Potentially automatically update the cover of the
-            // track.
         }
     }
 

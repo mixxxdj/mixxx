@@ -1,6 +1,10 @@
 #include <QtDebug>
 #include <QDir>
+#include <QDirIterator>
+#include <QFileInfo>
 #include <QtSql>
+#include <QImage>
+#include <QRegExp>
 
 #include "library/dao/trackdao.h"
 
@@ -11,6 +15,8 @@
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "trackinfoobject.h"
+#include "library/coverart.h"
+#include "library/coverartutils.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
@@ -1538,4 +1544,111 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     }
     qDebug() << "verifyTracksOutside finished";
     return true;
+}
+
+void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT "
+                  " library.id, " // 0
+                  " track_locations.location, " // 1
+                  " track_locations.directory, " // 2
+                  " album " // 3
+                  "FROM library "
+                  "INNER JOIN track_locations "
+                  "ON library.location = track_locations.id "
+                  // CoverInfo::Source 0 is UNKNOWN
+                  "WHERE coverart_source is NULL or coverart_source = 0 "
+                  "ORDER BY track_locations.directory");
+
+    QSqlQuery updateQuery(m_database);
+    updateQuery.prepare(
+        "UPDATE library SET "
+        "  coverart_type=:coverart_type,"
+        "  coverart_source=:coverart_source,"
+        "  coverart_hash=:coverart_hash,"
+        "  coverart_location=:coverart_location "
+        "WHERE id=:track_id");
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "failed looking for tracks with unknown cover art";
+        return;
+    }
+
+    QRegExp coverArtFilenames(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                              Qt::CaseInsensitive);
+    QString currentDirectory;
+    QLinkedList<QFileInfo> possibleCovers;
+    while (query.next()) {
+        if (*pCancel) {
+            return;
+        }
+
+        int trackId = query.value(0).toInt();
+        QString trackLocation = query.value(1).toString();
+        // TODO(rryan) use QFileInfo path instead? symlinks? relative?
+        QString directory = query.value(2).toString();
+        QString trackAlbum = query.value(3).toString();
+
+        qDebug() << "Searching for cover art for" << trackLocation;
+
+        QFileInfo trackInfo(trackLocation);
+        if (!trackInfo.exists()) {
+            qDebug() << trackLocation << "does not exist";
+            continue;
+        }
+
+        SecurityTokenPointer pToken = Sandbox::openSecurityToken(trackInfo, true);
+        SoundSourceProxy proxy(trackLocation, pToken);
+        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+        if (pProxiedSoundSource != NULL) {
+            QImage image = proxy.parseCoverArt();
+            if (!image.isNull()) {
+                updateQuery.bindValue(":coverart_type",
+                                      static_cast<int>(CoverInfo::METADATA));
+                updateQuery.bindValue(":coverart_source",
+                                      static_cast<int>(CoverInfo::GUESSED));
+                updateQuery.bindValue(":coverart_hash",
+                                      CoverArtUtils::calculateHash(image));
+                updateQuery.bindValue(":coverart_location", "");
+                updateQuery.bindValue(":track_id", trackId);
+                if (!updateQuery.exec()) {
+                    LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
+                }
+                continue;
+            }
+        }
+
+        if (directory != currentDirectory) {
+            possibleCovers.clear();
+            currentDirectory = directory;
+            QDirIterator it(directory,
+                            QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+            QFile currentFile;
+            QFileInfo currentFileInfo;
+            QLinkedList<QFileInfo> possibleCovers;
+            while (it.hasNext()) {
+                it.next();
+                currentFileInfo = it.fileInfo();
+                if (currentFileInfo.isFile() &&
+                    coverArtFilenames.indexIn(currentFileInfo.fileName()) != -1) {
+                    possibleCovers.append(currentFileInfo);
+                }
+            }
+        }
+
+        CoverArt art = CoverArtUtils::selectCoverArtForTrack(
+            trackInfo.baseName(), trackAlbum, possibleCovers);
+
+        updateQuery.bindValue(":coverart_type",
+                              static_cast<int>(art.info.type));
+        updateQuery.bindValue(":coverart_source",
+                              static_cast<int>(art.info.source));
+        updateQuery.bindValue(":coverart_hash", art.info.hash);
+        updateQuery.bindValue(":coverart_location", art.info.coverLocation);
+        updateQuery.bindValue(":track_id", trackId);
+        if (!updateQuery.exec()) {
+            LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";
+        }
+    }
 }
