@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QString>
 #include <QObject>
+#include <QtDebug>
 
 struct CoverInfo {
     // DO NOT CHANGE THESE CONSTANT VALUES. THEY ARE STORED IN THE DATABASE.
@@ -68,5 +69,8 @@ struct CoverArt {
     CoverInfo info;
     QImage image;
 };
+
+QDebug operator<<(QDebug dbg, const CoverInfo& info);
+QDebug operator<<(QDebug dbg, const CoverArt& art);
 
 #endif /* COVERART_H */
