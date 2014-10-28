@@ -35,14 +35,18 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
                                     const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::requestCover"
-                 << requestInfo.coverLocation
-                 << requestInfo.hash
-                 << requestInfo.trackId
-                 << requestInfo.trackLocation;
+                 << requestInfo << croppedSize << onlyCached << signalWhenDone;
     }
 
-    // TODO(XXX) handle requests for non-library tracks.
+    // TODO(rryan) handle requests for non-library tracks.
     if (requestInfo.trackId < 1) {
+        return QPixmap();
+    }
+
+    if (requestInfo.type == CoverInfo::NONE) {
+        if (signalWhenDone) {
+            emit(pixmapFound(requestInfo.trackId, QPixmap()));
+        }
         return QPixmap();
     }
 
@@ -93,10 +97,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
         const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::loadCover"
-                 << info.coverLocation
-                 << info.hash
-                 << info.trackId
-                 << info.trackLocation;
+                 << info << croppedSize << signalWhenDone;
     }
 
     FutureResult res;
@@ -134,12 +135,7 @@ void CoverArtCache::coverLoaded() {
     FutureResult res = watcher->result();
 
     if (sDebug) {
-        qDebug() << "CoverArtCache::coverLoaded"
-                 << res.cover.info.coverLocation
-                 << res.cover.info.hash
-                 << res.cover.info.trackId
-                 << res.cover.info.trackLocation
-                 << res.cover.image.isNull();
+        qDebug() << "CoverArtCache::coverLoaded" << res.cover;
     }
 
     QString cacheKey = CoverArtUtils::pixmapCacheKey(res.cover.info.hash,
