@@ -1038,6 +1038,9 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
                 pCoverArt, SLOT(slotReset()));
         connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
                 m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
+        // just in case a track is already loaded
+        pCoverArt->slotLoadTrack(pPlayer->getLoadedTrack());
     }
 
     return pCoverArt;
