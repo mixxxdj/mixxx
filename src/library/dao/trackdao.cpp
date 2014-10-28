@@ -1547,6 +1547,13 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
 }
 
 void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
+    // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
+    // The library contains user selected cover art. There is nothing worse than
+    // spending hours curating your library only to have an automated search
+    // method like this one replace it all with its mistakes again. Take care to
+    // not modify any tracks with coverart_source equal to USER_SELECTED (value
+    // 2).
+
     QSqlQuery query(m_database);
     query.prepare("SELECT "
                   " library.id, " // 0

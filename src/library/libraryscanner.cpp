@@ -450,7 +450,11 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
         if (!m_trackDao.trackExistsInDatabase(filePath)) {
             emit(progressLoading(file.fileName()));
 
-            // Parse the track including cover art from metadata.
+            // Parse the track including cover art from metadata. This is a new
+            // (never before seen) track so it is safe to parse cover art
+            // without checking if we have cover art that is USER_SELECTED. If
+            // this changes in the future you MUST check that the cover art is
+            // not USER_SELECTED first.
             TrackPointer pTrack = TrackPointer(
                 new TrackInfoObject(filePath, pToken, true, true),
                     &QObject::deleteLater);
