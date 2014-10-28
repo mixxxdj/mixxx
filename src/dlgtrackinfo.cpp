@@ -203,7 +203,6 @@ void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
 
     if (m_pLoadedTrack->getId() == trackId) {
         m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
-        update();
     }
 }
 
@@ -213,7 +212,6 @@ void DlgTrackInfo::slotCoverLocationUpdated(const QString& newLoc,
     if (isVisible() && m_loadedCover.coverLocation == oldLoc) {
         m_loadedCover.coverLocation = newLoc;
         m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
-        update();
     }
 }
 
