@@ -71,7 +71,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     info.hash = "coverhash"; // fake cover hash
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadCover(info, QSize(0,0), false);
+    res = CoverArtCache::loadCover(info, 0, false);
     EXPECT_EQ(info.trackId, res.cover.info.trackId);
     EXPECT_QSTRING_EQ(info.coverLocation, res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
@@ -82,7 +82,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     info.source = CoverInfo::GUESSED;
     info.coverLocation = QString();
     info.trackLocation = kTrackLocationTest;
-    res = CoverArtCache::loadCover(info, QSize(0,0), false);
+    res = CoverArtCache::loadCover(info, 0, false);
     EXPECT_EQ(info.trackId, res.cover.info.trackId);
     EXPECT_QSTRING_EQ(QString(), res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
@@ -267,14 +267,14 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // cLoc_filename = QString(trackdir % "/" % trackBaseName % ".");
     // cLoc_filename.append(format);
     // EXPECT_TRUE(img.save(cLoc_filename, format));
-    // res = CoverArtCache::searchImage(cInfoUtf8, QSize(0,0), false);
+    // res = CoverArtCache::searchImage(cInfoUtf8, 0, false);
     // EXPECT_QSTRING_EQ(cLoc_filename, res.cover.info.coverLocation);
     // QFile::remove(cLoc_filename);
     // // 2. album_name.jpg
     // cLoc_albumName = QString(trackdir % "/" % cInfoUtf8.album % ".");
     // cLoc_albumName.append(format);
     // EXPECT_TRUE(img.save(cLoc_albumName, format));
-    // res = CoverArtCache::searchImage(cInfoUtf8, QSize(0,0), false);
+    // res = CoverArtCache::searchImage(cInfoUtf8, 0, false);
     // EXPECT_QSTRING_EQ(cLoc_albumName, res.cover.info.coverLocation);
     // QFile::remove(cLoc_albumName);
 

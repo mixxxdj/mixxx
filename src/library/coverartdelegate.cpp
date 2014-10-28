@@ -1,6 +1,7 @@
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
+#include "util/math.h"
 
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
@@ -78,23 +79,15 @@ void CoverArtDelegate::paint(QPainter *painter,
     info.trackId = index.sibling(index.row(), m_iIdColumn).data().toInt();
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
-    QSize coverSize(100, option.rect.height());
-
     // Do not signal when done sine we don't listen to CoverArtCache for updates
     // and instead refresh on a timer in WTrackTableView.
-    QPixmap pixmap = pCache->requestCover(info, coverSize,
-                                          m_bOnlyCachedCover, false);
-
-
+    QPixmap pixmap = pCache->requestCover(info, 100, m_bOnlyCachedCover, false);
     if (!pixmap.isNull()) {
-        int width = pixmap.width();
-        if (option.rect.width() < width) {
-            width = option.rect.width();
-        }
-
+        int width = math_min(pixmap.width(), option.rect.width());
+        int height = math_min(pixmap.height(), option.rect.height());
         QRect target(option.rect.x(), option.rect.y(),
-                     width, option.rect.height());
-        QRect source(0, 0, width, pixmap.height());
+                     width, height);
+        QRect source(0, 0, target.width(), target.height());
         painter->drawPixmap(target, pixmap, source);
     }
 }

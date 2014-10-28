@@ -9,8 +9,8 @@
 #include "soundsourceproxy.h"
 
 // Large cover art wastes space in our cache when we typicaly won't show them at
-// their full size. This is the max side length we resize images to.
-const int kMaxCoverSize = 300;
+// their full size. If no width is specified, this is the maximum width cap.
+const int kMaxCoverWidth = 300;
 
 const bool sDebug = false;
 
@@ -30,12 +30,12 @@ CoverArtCache::~CoverArtCache() {
 }
 
 QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
-                                    const QSize& croppedSize,
+                                    const int desiredWidth,
                                     const bool onlyCached,
                                     const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::requestCover"
-                 << requestInfo << croppedSize << onlyCached << signalWhenDone;
+                 << requestInfo << desiredWidth << onlyCached << signalWhenDone;
     }
 
     // TODO(rryan) handle requests for non-library tracks.
@@ -63,7 +63,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
     if (!requestInfo.hash.isEmpty()) {
         QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
-                                                         croppedSize);
+                                                         desiredWidth);
 
         QPixmap pixmap;
         if (QPixmapCache::find(cacheKey, &pixmap)) {
@@ -84,7 +84,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     m_runningIds.insert(requestInfo.trackId);
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
-            this, &CoverArtCache::loadCover, requestInfo, croppedSize,
+            this, &CoverArtCache::loadCover, requestInfo, desiredWidth,
             signalWhenDone);
     connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
     watcher->setFuture(future);
@@ -93,16 +93,16 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
 CoverArtCache::FutureResult CoverArtCache::loadCover(
         const CoverInfo& info,
-        const QSize& croppedSize,
+        const int desiredWidth,
         const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::loadCover"
-                 << info << croppedSize << signalWhenDone;
+                 << info << desiredWidth << signalWhenDone;
     }
 
     FutureResult res;
     res.cover.info = info;
-    res.croppedSize = croppedSize;
+    res.desiredWidth = desiredWidth;
     res.signalWhenDone = signalWhenDone;
     res.cover.image = CoverArtUtils::loadCover(res.cover.info);
 
@@ -117,12 +117,12 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
 
     // Adjust the cover size according to the request or downsize the image for
     // efficiency.
-    if (res.croppedSize.isNull()) {
-        res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image,
-                                                          kMaxCoverSize);
+    if (res.desiredWidth > 0) {
+        res.cover.image = CoverArtUtils::resizeImage(res.cover.image,
+                                                     res.desiredWidth);
     } else {
-        res.cover.image = CoverArtUtils::cropImage(res.cover.image,
-                                                   res.croppedSize);
+        res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image,
+                                                          kMaxCoverWidth);
     }
 
     return res;
@@ -139,7 +139,7 @@ void CoverArtCache::coverLoaded() {
     }
 
     QString cacheKey = CoverArtUtils::pixmapCacheKey(res.cover.info.hash,
-                                                     res.croppedSize);
+                                                     res.desiredWidth);
     QPixmap pixmap;
     if (!QPixmapCache::find(cacheKey, &pixmap) && !res.cover.image.isNull()) {
         pixmap.convertFromImage(res.cover.image);

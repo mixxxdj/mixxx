@@ -22,14 +22,12 @@ class CoverArtUtils {
     }
 
     static QString pixmapCacheKey(const QString& hash,
-                                  const QSize& size) {
-        if (size.isNull()) {
+                                  const int width) {
+        if (width == 0) {
             return QString("CoverArtCache_%1").arg(hash);
         }
-        return QString("CoverArtCache_%1_%2x%3")
-                .arg(hash)
-                .arg(size.width())
-                .arg(size.height());
+        return QString("CoverArtCache_%1_%2")
+                .arg(hash).arg(width);
     }
 
     // Extracts the first cover art image embedded within the file at
@@ -87,18 +85,6 @@ class CoverArtUtils {
                       image.byteCount()));
     }
 
-    // Crops image to the provided size by first scaling to the appropriate
-    // width and then cropping off the bottom. If size is taller than the image,
-    // black pixels are padded on the bottom.
-    static QImage cropImage(const QImage& image, const QSize& size) {
-        if (image.isNull()) {
-            return QImage();
-        }
-        QImage result = image.scaledToWidth(size.width(),
-                                            Qt::SmoothTransformation);
-        return result.copy(0, 0, image.width(), size.height());
-    }
-
     // Resizes the image (preserving aspect ratio) if it is larger than
     // maxEdgeSize on either side.
     static QImage maybeResizeImage(const QImage& image, int maxEdgeSize) {
@@ -107,6 +93,11 @@ class CoverArtUtils {
                                 Qt::SmoothTransformation);
         }
         return image;
+    }
+
+    // Resizes the image (preserving aspect ratio) to width.
+    static QImage resizeImage(const QImage& image, int width) {
+        return image.scaledToWidth(width, Qt::SmoothTransformation);
     }
 
     static QStringList supportedCoverArtExtensions() {
