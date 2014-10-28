@@ -28,8 +28,8 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
-                this, SLOT(slotPixmapFound(int, QPixmap)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&, QPixmap)),
+                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&, QPixmap)));
     }
     connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
@@ -105,11 +105,14 @@ void WCoverArt::slotReset() {
     update();
 }
 
-void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
+void WCoverArt::slotCoverFound(const QObject* pRequestor, const CoverInfo& info,
+                               QPixmap pixmap) {
     if (!m_bEnable) {
         return;
     }
-    if (m_lastRequestedCover.trackId == trackId) {
+
+    if (pRequestor == this && m_loadedTrack &&
+            m_loadedTrack->getId() == info.trackId) {
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
@@ -123,7 +126,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
         m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
-            pCache->requestCover(m_lastRequestedCover);
+            pCache->requestCover(m_lastRequestedCover, this);
         }
     }
 }

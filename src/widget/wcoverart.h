@@ -32,7 +32,8 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void trackDropped(QString filename, QString group);
 
   private slots:
-    void slotPixmapFound(int trackId, QPixmap pixmap);
+    void slotCoverFound(const QObject* pRequestor, const CoverInfo& info,
+                        QPixmap pixmap);
     void slotCoverArtSelected(const CoverArt& art);
     void slotTrackCoverArtUpdated();
 

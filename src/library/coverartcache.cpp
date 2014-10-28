@@ -30,6 +30,7 @@ CoverArtCache::~CoverArtCache() {
 }
 
 QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
+                                    const QObject* pRequestor,
                                     const int desiredWidth,
                                     const bool onlyCached,
                                     const bool signalWhenDone) {
@@ -45,7 +46,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     if (requestInfo.type == CoverInfo::NONE) {
         if (signalWhenDone) {
-            emit(pixmapFound(requestInfo.trackId, QPixmap()));
+            emit(coverFound(pRequestor, requestInfo, QPixmap()));
         }
         return QPixmap();
     }
@@ -68,7 +69,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
         QPixmap pixmap;
         if (QPixmapCache::find(cacheKey, &pixmap)) {
             if (signalWhenDone) {
-                emit(pixmapFound(requestInfo.trackId, pixmap));
+                emit(coverFound(pRequestor, requestInfo, pixmap));
             }
             return pixmap;
         }
@@ -84,8 +85,8 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     m_runningIds.insert(requestInfo.trackId);
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
-            this, &CoverArtCache::loadCover, requestInfo, desiredWidth,
-            signalWhenDone);
+            this, &CoverArtCache::loadCover, requestInfo, pRequestor,
+            desiredWidth, signalWhenDone);
     connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
     watcher->setFuture(future);
     return QPixmap();
@@ -93,6 +94,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
 CoverArtCache::FutureResult CoverArtCache::loadCover(
         const CoverInfo& info,
+        const QObject* pRequestor,
         const int desiredWidth,
         const bool signalWhenDone) {
     if (sDebug) {
@@ -101,6 +103,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     }
 
     FutureResult res;
+    res.pRequestor = pRequestor;
     res.cover.info = info;
     res.desiredWidth = desiredWidth;
     res.signalWhenDone = signalWhenDone;
@@ -147,7 +150,7 @@ void CoverArtCache::coverLoaded() {
     }
 
     if (res.signalWhenDone) {
-        emit(pixmapFound(res.cover.info.trackId, pixmap));
+        emit(coverFound(res.pRequestor, res.cover.info, pixmap));
     }
 
     m_runningIds.remove(res.cover.info.trackId);

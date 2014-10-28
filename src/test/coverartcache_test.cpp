@@ -71,7 +71,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     info.hash = "coverhash"; // fake cover hash
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadCover(info, 0, false);
+    res = CoverArtCache::loadCover(info, NULL, 0, false);
     EXPECT_EQ(info.trackId, res.cover.info.trackId);
     EXPECT_QSTRING_EQ(info.coverLocation, res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
@@ -82,7 +82,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     info.source = CoverInfo::GUESSED;
     info.coverLocation = QString();
     info.trackLocation = kTrackLocationTest;
-    res = CoverArtCache::loadCover(info, 0, false);
+    res = CoverArtCache::loadCover(info, NULL, 0, false);
     EXPECT_EQ(info.trackId, res.cover.info.trackId);
     EXPECT_QSTRING_EQ(QString(), res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);

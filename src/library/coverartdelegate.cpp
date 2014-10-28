@@ -81,7 +81,7 @@ void CoverArtDelegate::paint(QPainter *painter,
 
     // Do not signal when done sine we don't listen to CoverArtCache for updates
     // and instead refresh on a timer in WTrackTableView.
-    QPixmap pixmap = pCache->requestCover(info, 100, m_bOnlyCachedCover, false);
+    QPixmap pixmap = pCache->requestCover(info, this, 100, m_bOnlyCachedCover, false);
     if (!pixmap.isNull()) {
         int width = math_min(pixmap.width(), option.rect.width());
         int height = math_min(pixmap.height(), option.rect.height());

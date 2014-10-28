@@ -82,8 +82,8 @@ void DlgTrackInfo::init(){
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(pixmapFound(int, QPixmap)),
-                this, SLOT(slotPixmapFound(int, QPixmap)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&, QPixmap)),
+                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&, QPixmap)));
     }
     connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
@@ -177,7 +177,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCover, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCover);
+        pCache->requestCover(m_loadedCover, this);
     }
 }
 
@@ -200,13 +200,12 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
             this, SLOT(updateTrackMetadata()));
 }
 
-void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
-    qDebug() << "DlgTrackInfo::slotPixmapFound" << trackId << pixmap.size();
-    if (m_pLoadedTrack.isNull()) {
-        return;
-    }
-
-    if (m_pLoadedTrack->getId() == trackId) {
+void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
+                                  const CoverInfo& info, QPixmap pixmap) {
+    qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
+             << pixmap.size();
+    if (pRequestor == this && m_pLoadedTrack &&
+            m_pLoadedTrack->getId() == info.trackId) {
         m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
     }
 }
@@ -220,7 +219,7 @@ void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     }
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCover);
+        pCache->requestCover(m_loadedCover, this);
     }
 }
 
