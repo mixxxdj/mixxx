@@ -687,7 +687,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Show/hide the preview deck"), guiMenu);
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
-               tr("Show/hide the cover art"), guiMenu);
+               tr("Show/hide cover art"), guiMenu);
 
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");

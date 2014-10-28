@@ -22,12 +22,12 @@ void WCoverArtMenu::createActions() {
     addAction(m_pChange);
 
     m_pUnset = new QAction(tr("Unset cover",
-            "unset cover art - load default"), this);
+            "clears the set cover art -- does not touch files on disk"), this);
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
     addAction(m_pUnset);
 
     m_pReload = new QAction(tr("Reload from track/folder",
-            "reload just cover art, using the search algorithm"), this);
+            "reload cover art from track metadata or folder"), this);
     connect(m_pReload, SIGNAL(triggered()), this, SLOT(slotReload()));
     addAction(m_pReload);
 }

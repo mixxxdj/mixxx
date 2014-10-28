@@ -142,7 +142,7 @@ void Tooltips::addStandardTooltips() {
 
     add("show_coverart")
             << tr("Cover Art")
-            << tr("Show/hide the Cover Art.");
+            << tr("Show/hide Cover Art.");
 
     add("microphone_volume")
             << tr("Microphone Volume")

@@ -1274,7 +1274,7 @@ void MixxxMainWindow::initActions()
             this, SLOT(slotViewShowPreviewDeck(bool)));
 
     QString showCoverArtTitle = tr("Show Cover Art");
-    QString showCoverArtText = tr("Show the cover art in the Mixxx interface.") +
+    QString showCoverArtText = tr("Show cover art in the Mixxx interface.") +
             " " + mayNotBeSupported;
     m_pViewShowCoverArt = new QAction(showCoverArtTitle, this);
     m_pViewShowCoverArt->setCheckable(true);
