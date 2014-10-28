@@ -311,6 +311,11 @@ void DlgTrackInfo::saveTrack() {
     if (!m_pLoadedTrack)
         return;
 
+    // First, disconnect the track changed signal. Otherwise we signal ourselves
+    // and repopulate all these fields.
+    disconnect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+               this, SLOT(updateTrackMetadata()));
+
     m_pLoadedTrack->setTitle(txtTrackName->text());
     m_pLoadedTrack->setArtist(txtArtist->text());
     m_pLoadedTrack->setAlbum(txtAlbum->text());
@@ -375,6 +380,10 @@ void DlgTrackInfo::saveTrack() {
     }
 
     m_pLoadedTrack->setCoverInfo(m_loadedCover);
+
+    // Reconnect changed signals now.
+    connect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata()));
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
