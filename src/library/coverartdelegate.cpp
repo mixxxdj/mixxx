@@ -1,3 +1,5 @@
+#include <QTableView>
+
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"

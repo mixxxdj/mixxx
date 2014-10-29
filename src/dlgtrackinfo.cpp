@@ -171,13 +171,13 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
 
-    m_loadedCover = pTrack->getCoverInfo();
+    m_loadedCoverInfo = pTrack->getCoverInfo();
     int reference = pTrack->getId();
-    m_loadedCover.trackLocation = pTrack->getLocation();
-    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCover, QPixmap());
+    m_loadedCoverInfo.trackLocation = pTrack->getLocation();
+    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCover, this, reference);
+        pCache->requestCover(m_loadedCoverInfo, this, reference);
     }
 }
 
@@ -208,22 +208,22 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
             m_pLoadedTrack->getId() == requestReference) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
     }
 }
 
 void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     qDebug() << "DlgTrackInfo::slotCoverArtSelected" << art;
-    m_loadedCover = art.info;
+    m_loadedCoverInfo = art.info;
     // TODO(rryan) don't use track ID as a reference
     int reference = 0;
     if (m_pLoadedTrack) {
         reference = m_pLoadedTrack->getId();
-        m_loadedCover.trackLocation = m_pLoadedTrack->getLocation();
+        m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
     }
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCover, this, reference);
+        pCache->requestCover(m_loadedCoverInfo, this, reference);
     }
 }
 
@@ -386,7 +386,7 @@ void DlgTrackInfo::saveTrack() {
         m_pLoadedTrack->removeCue(pCue);
     }
 
-    m_pLoadedTrack->setCoverInfo(m_loadedCover);
+    m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
     // Reconnect changed signals now.
     connect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
@@ -430,8 +430,8 @@ void DlgTrackInfo::clear() {
     cueTable->clearContents();
     cueTable->setRowCount(0);
 
-    m_loadedCover = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCover, QPixmap());
+    m_loadedCoverInfo = CoverInfo();
+    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {

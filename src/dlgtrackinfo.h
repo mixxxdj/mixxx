@@ -75,7 +75,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     DlgTagFetcher& m_DlgTagFetcher;
 
-    CoverInfo m_loadedCover;
+    CoverInfo m_loadedCoverInfo;
     WCoverArtLabel* m_pWCoverArtLabel;
 };
 

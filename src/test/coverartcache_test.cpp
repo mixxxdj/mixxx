@@ -235,7 +235,6 @@ TEST_F(CoverArtCacheTest, searchImage) {
 
     // what is chosen when cover.jpg and cover.JPG exists?
     // (it must always prefer the lighter cover)
-    // NOTE(rryan): wat?
     QString cLoc_coverJPG = trackdir % "/" % "cover." % "JPG";
     EXPECT_TRUE(img.scaled(200,200).save(cLoc_coverJPG, "JPG"));
     prefCovers.append(QFileInfo(cLoc_coverJPG));

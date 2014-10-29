@@ -1195,11 +1195,11 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
 
-    CoverArt art = pTrack->getCoverArt();
-    query.bindValue(":coverart_source", art.info.source);
-    query.bindValue(":coverart_type", art.info.type);
-    query.bindValue(":coverart_location", art.info.coverLocation);
-    query.bindValue(":coverart_hash", art.info.hash);
+    CoverInfo coverInfo = pTrack->getCoverInfo();
+    query.bindValue(":coverart_source", coverInfo.source);
+    query.bindValue(":coverart_type", coverInfo.type);
+    query.bindValue(":coverart_location", coverInfo.coverLocation);
+    query.bindValue(":coverart_hash", coverInfo.hash);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

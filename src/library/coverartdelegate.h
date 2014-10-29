@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QPainter>
 #include <QStyledItemDelegate>
-#include <QTableView>
 
 #include "library/trackmodel.h"
 
