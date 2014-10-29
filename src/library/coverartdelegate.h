@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QPainter>
 #include <QStyledItemDelegate>
+#include <QHash>
+#include <QLinkedList>
 
 #include "library/trackmodel.h"
 
@@ -47,6 +49,10 @@ class CoverArtDelegate : public QStyledItemDelegate {
     int m_iCoverHashColumn;
     int m_iTrackLocationColumn;
     int m_iIdColumn;
+
+    // We need to record rows in paint (which is const) so this is marked
+    // mutable.
+    mutable QHash<quint16, QLinkedList<int> > m_hashToRow;
 };
 
 #endif // COVERARTDELEGATE_H

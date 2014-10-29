@@ -145,11 +145,10 @@ void CoverArtCache::coverLoaded() {
         pixmap.convertFromImage(res.cover.image);
         QPixmapCache::insert(cacheKey, pixmap);
     }
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestReference));
 
     if (res.signalWhenDone) {
         emit(coverFound(res.pRequestor, res.requestReference,
                         res.cover.info, pixmap, false));
     }
-
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestReference));
 }
