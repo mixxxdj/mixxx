@@ -29,8 +29,10 @@ WCoverArt::WCoverArt(QWidget* parent,
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&, QPixmap)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&, QPixmap)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)));
     }
     connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
@@ -106,14 +108,19 @@ void WCoverArt::slotReset() {
     update();
 }
 
-void WCoverArt::slotCoverFound(const QObject* pRequestor, const CoverInfo& info,
-                               QPixmap pixmap) {
+void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
+                               const CoverInfo& info, QPixmap pixmap,
+                               bool fromCache) {
+    Q_UNUSED(info);
+    Q_UNUSED(fromCache);
     if (!m_bEnable) {
         return;
     }
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId() == info.trackId) {
+            m_loadedTrack->getId() == requestReference) {
+        qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
+                 << pixmap.size();
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
@@ -123,11 +130,11 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, const CoverInfo& info,
 void WCoverArt::slotTrackCoverArtUpdated() {
     if (m_loadedTrack) {
         m_lastRequestedCover = m_loadedTrack->getCoverInfo();
-        m_lastRequestedCover.trackId = m_loadedTrack->getId();
         m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
-            pCache->requestCover(m_lastRequestedCover, this);
+            // TODO(rryan): Don't use track id.
+            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId());
         }
     }
 }

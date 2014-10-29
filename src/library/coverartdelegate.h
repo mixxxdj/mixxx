@@ -39,6 +39,8 @@ class CoverArtDelegate : public QStyledItemDelegate {
     int m_iCoverHashColumn;
     int m_iTrackLocationColumn;
     int m_iIdColumn;
+    // So we can increment it in paint(). Doesn't really matter.
+    mutable int m_iRequestCounter;
 };
 
 #endif // COVERARTDELEGATE_H

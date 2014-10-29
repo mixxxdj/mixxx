@@ -11,7 +11,8 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iTrackLocationColumn(-1),
-          m_iIdColumn(-1) {
+          m_iIdColumn(-1),
+          m_iRequestCounter(0) {
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
             this, SLOT(slotOnlyCachedCoverArt(bool)));
@@ -76,12 +77,14 @@ void CoverArtDelegate::paint(QPainter *painter,
         index.sibling(index.row(), m_iCoverSourceColumn).data().toInt());
     info.coverLocation = index.sibling(index.row(), m_iCoverLocationColumn).data().toString();
     info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toString();
-    info.trackId = index.sibling(index.row(), m_iIdColumn).data().toInt();
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
-    // Do not signal when done sine we don't listen to CoverArtCache for updates
-    // and instead refresh on a timer in WTrackTableView.
-    QPixmap pixmap = pCache->requestCover(info, this, 100, m_bOnlyCachedCover, false);
+    // Do not signal when done since we don't listen to CoverArtCache for
+    // updates and instead refresh on a timer in WTrackTableView. Use a
+    // meaningless request counter as the reference.
+    QPixmap pixmap = pCache->requestCover(info, this, m_iRequestCounter++,
+                                          100, m_bOnlyCachedCover, false);
+
     if (!pixmap.isNull()) {
         int width = math_min(pixmap.width(), option.rect.width());
         int height = math_min(pixmap.height(), option.rect.height());

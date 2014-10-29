@@ -29,7 +29,6 @@ struct CoverInfo {
 
     CoverInfo() : source(UNKNOWN),
                   type(NONE),
-                  trackId(-1),
                   coverLocation(QString()),
                   trackLocation(QString()),
                   hash(QString()) {}
@@ -47,7 +46,6 @@ struct CoverInfo {
 
     Source source;
     Type type;
-    int trackId;
     QString coverLocation;
     QString trackLocation;
     QString hash;

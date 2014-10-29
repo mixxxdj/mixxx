@@ -63,7 +63,6 @@ TEST_F(CoverArtCacheTest, extractEmbeddedCover) {
 TEST_F(CoverArtCacheTest, loadCover) {
     QImage img = QImage(kCoverLocationTest);
     CoverInfo info;
-    info.trackId = 1;
     info.type = CoverInfo::FILE;
     info.source = CoverInfo::GUESSED;
     info.coverLocation = "../../../" % kCoverLocationTest;
@@ -71,19 +70,18 @@ TEST_F(CoverArtCacheTest, loadCover) {
     info.hash = "coverhash"; // fake cover hash
 
     CoverArtCache::FutureResult res;
-    res = CoverArtCache::loadCover(info, NULL, 0, false);
-    EXPECT_EQ(info.trackId, res.cover.info.trackId);
+    res = CoverArtCache::loadCover(info, NULL, 1234, 0, false);
+    EXPECT_EQ(1234, res.requestReference);
     EXPECT_QSTRING_EQ(info.coverLocation, res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
     EXPECT_EQ(img, res.cover.image);
 
-    info.trackId = 1;
     info.type = CoverInfo::METADATA;
     info.source = CoverInfo::GUESSED;
     info.coverLocation = QString();
     info.trackLocation = kTrackLocationTest;
-    res = CoverArtCache::loadCover(info, NULL, 0, false);
-    EXPECT_EQ(info.trackId, res.cover.info.trackId);
+    res = CoverArtCache::loadCover(info, NULL, 1234, 0, false);
+    EXPECT_EQ(1234, res.requestReference);
     EXPECT_QSTRING_EQ(QString(), res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
 
@@ -258,7 +256,6 @@ TEST_F(CoverArtCacheTest, searchImage) {
     // // we need to check if everything works with UTF8 chars.
     // QString trackBaseName = QString::fromUtf8("track_ðÑöæäî");
     // CoverInfo cInfoUtf8;
-    // cInfoUtf8.trackId = 2;
     // cInfoUtf8.coverLocation = "";
     // cInfoUtf8.trackLocation = trackdir % "/" % trackBaseName % ".mp3";
     // cInfoUtf8.hash = "";

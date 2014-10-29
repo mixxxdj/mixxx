@@ -27,18 +27,21 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
      */
     QPixmap requestCover(const CoverInfo& info,
                          const QObject* pRequestor,
+                         const int requestReference,
                          const int desiredWidth = 0,
                          const bool onlyCached = false,
                          const bool signalWhenDone = true);
 
     struct FutureResult {
         FutureResult() : pRequestor(NULL),
+                         requestReference(0),
                          desiredWidth(0),
                          signalWhenDone(false) {
         }
 
         CoverArt cover;
         const QObject* pRequestor;
+        int requestReference;
         int desiredWidth;
         bool signalWhenDone;
     };
@@ -48,7 +51,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     void coverLoaded();
 
   signals:
-    void coverFound(const QObject* requestor, const CoverInfo& info, QPixmap pixmap);
+    void coverFound(const QObject* requestor, int requestReference,
+                    const CoverInfo& info, QPixmap pixmap, bool fromCache);
 
   protected:
     CoverArtCache();
@@ -59,11 +63,12 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // worker thread.
     FutureResult loadCover(const CoverInfo& coverInfo,
                            const QObject* pRequestor,
+                           const int requestReference,
                            const int desiredWidth,
                            const bool emitSignals);
 
   private:
-    QSet<int> m_runningIds;
+    QSet<QPair<const QObject*, int> > m_runningRequests;
 };
 
 #endif // COVERARTCACHE_H

@@ -82,8 +82,8 @@ void DlgTrackInfo::init(){
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&, QPixmap)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&, QPixmap)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)));
     }
     connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
@@ -172,12 +172,12 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 
     m_loadedCover = pTrack->getCoverInfo();
-    m_loadedCover.trackId = pTrack->getId();
+    int reference = pTrack->getId();
     m_loadedCover.trackLocation = pTrack->getLocation();
     m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCover, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCover, this);
+        pCache->requestCover(m_loadedCover, this, reference);
     }
 }
 
@@ -201,11 +201,13 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 }
 
 void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
-                                  const CoverInfo& info, QPixmap pixmap) {
-    qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
-             << pixmap.size();
+                                  int requestReference, const CoverInfo& info,
+                                  QPixmap pixmap, bool fromCache) {
+    Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
-            m_pLoadedTrack->getId() == info.trackId) {
+            m_pLoadedTrack->getId() == requestReference) {
+        qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
+                 << pixmap.size();
         m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCover, pixmap);
     }
 }
@@ -213,13 +215,15 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
 void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     qDebug() << "DlgTrackInfo::slotCoverArtSelected" << art;
     m_loadedCover = art.info;
+    // TODO(rryan) don't use track ID as a reference
+    int reference = 0;
     if (m_pLoadedTrack) {
-        m_loadedCover.trackId = m_pLoadedTrack->getId();
+        reference = m_pLoadedTrack->getId();
         m_loadedCover.trackLocation = m_pLoadedTrack->getLocation();
     }
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        pCache->requestCover(m_loadedCover, this);
+        pCache->requestCover(m_loadedCover, this, reference);
     }
 }
 
