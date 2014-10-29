@@ -94,6 +94,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
+    // We use QSet<int> in signals in the library.
+    qRegisterMetaType<QSet<int> >("QSet<int>");
+
     logBuildDetails();
     ScopedTimer t("MixxxMainWindow::MixxxMainWindow");
     m_runtime_timer.start();

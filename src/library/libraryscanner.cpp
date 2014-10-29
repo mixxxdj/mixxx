@@ -143,8 +143,6 @@ void LibraryScanner::run() {
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
-    qRegisterMetaType<QSet<int> >("QSet<int>");
-
     if (!m_database.isValid()) {
         m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
     }
