@@ -1633,7 +1633,6 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
                             QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
             QFile currentFile;
             QFileInfo currentFileInfo;
-            QLinkedList<QFileInfo> possibleCovers;
             while (it.hasNext()) {
                 it.next();
                 currentFileInfo = it.fileInfo();
