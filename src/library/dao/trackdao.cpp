@@ -319,11 +319,11 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":mixxx_deleted", 0);
     m_pQueryLibraryInsert->bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
 
-    CoverArt art = pTrack->getCoverArt();
-    m_pQueryLibraryInsert->bindValue(":coverart_source", art.info.source);
-    m_pQueryLibraryInsert->bindValue(":coverart_type", art.info.type);
-    m_pQueryLibraryInsert->bindValue(":coverart_location", art.info.coverLocation);
-    m_pQueryLibraryInsert->bindValue(":coverart_hash", art.info.hash);
+    CoverInfo coverInfo = pTrack->getCoverInfo();
+    m_pQueryLibraryInsert->bindValue(":coverart_source", coverInfo.source);
+    m_pQueryLibraryInsert->bindValue(":coverart_type", coverInfo.type);
+    m_pQueryLibraryInsert->bindValue(":coverart_location", coverInfo.coverLocation);
+    m_pQueryLibraryInsert->bindValue(":coverart_hash", coverInfo.hash);
 
     const QByteArray* pBeatsBlob = NULL;
     QString beatsVersion = "";
