@@ -202,33 +202,31 @@ class CoverArtUtils {
         const QFileInfo* bestInfo = NULL;
 
         // TODO(XXX) Sort instead so that we can fall-back if one fails to open?
-        int index = 0;
-        for (QLinkedList<QFileInfo>::const_iterator it = covers.begin();
-             it != covers.end(); ++it, ++index) {
-            const QString coverBaseName = it->baseName();
+        foreach (const QFileInfo& file, covers) {
+            const QString coverBaseName = file.baseName();
             if (bestType > TRACK_BASENAME && coverBaseName == trackBaseName) {
                 bestType = TRACK_BASENAME;
-                bestInfo = &(*it);
+                bestInfo = &file;
                 // This is the best type so we know we're done.
                 break;
             } else if (bestType > ALBUM_NAME && coverBaseName == albumName) {
                 bestType = ALBUM_NAME;
-                bestInfo = &(*it);
+                bestInfo = &file;
             } else if (bestType > COVER && coverBaseName == "cover") {
                 bestType = COVER;
-                bestInfo = &(*it);
+                bestInfo = &file;
             } else if (bestType > FRONT && coverBaseName == "front") {
                 bestType = FRONT;
-                bestInfo = &(*it);
+                bestInfo = &file;
             } else if (bestType > ALBUM && coverBaseName == "album") {
                 bestType = ALBUM;
-                bestInfo = &(*it);
+                bestInfo = &file;
             } else if (bestType > FOLDER && coverBaseName == "folder") {
                 bestType = FOLDER;
-                bestInfo = &(*it);
+                bestInfo = &file;
             } else if (bestType > OTHER_FILENAME) {
                 bestType = OTHER_FILENAME;
-                bestInfo = &(*it);
+                bestInfo = &file;
             }
         }
 
