@@ -59,17 +59,15 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     // in the table view (cover art column).
     // It's very important to keep the cropped covers in cache because it avoids
     // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
-    if (!requestInfo.hash.isEmpty()) {
-        QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
-                                                         desiredWidth);
+    QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
+                                                     desiredWidth);
 
-        QPixmap pixmap;
-        if (QPixmapCache::find(cacheKey, &pixmap)) {
-            if (signalWhenDone) {
-                emit(coverFound(pRequestor, requestReference, requestInfo, pixmap, true));
-            }
-            return pixmap;
+    QPixmap pixmap;
+    if (QPixmapCache::find(cacheKey, &pixmap)) {
+        if (signalWhenDone) {
+            emit(coverFound(pRequestor, requestReference, requestInfo, pixmap, true));
         }
+        return pixmap;
     }
 
     if (onlyCached) {

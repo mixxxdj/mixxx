@@ -5,6 +5,7 @@
 #include <QString>
 #include <QObject>
 #include <QtDebug>
+#include <QtGlobal>
 
 struct CoverInfo {
     // DO NOT CHANGE THESE CONSTANT VALUES. THEY ARE STORED IN THE DATABASE.
@@ -31,7 +32,8 @@ struct CoverInfo {
                   type(NONE),
                   coverLocation(QString()),
                   trackLocation(QString()),
-                  hash(QString()) {}
+                  // This default value is fine: qChecksum(NULL, 0) is 0.
+                  hash(0) {}
 
     bool operator==(const CoverInfo& other) const {
         return other.source == source &&
@@ -48,7 +50,7 @@ struct CoverInfo {
     Type type;
     QString coverLocation;
     QString trackLocation;
-    QString hash;
+    quint16 hash;
 };
 
 struct CoverArt {

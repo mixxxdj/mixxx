@@ -30,7 +30,7 @@ QDebug operator<<(QDebug dbg, const CoverInfo& info) {
             .arg(typeToString(info.type))
             .arg(sourceToString(info.source))
             .arg(info.coverLocation)
-            .arg(info.hash)
+            .arg(QString::number(info.hash))
             .arg(info.trackLocation);
 }
 

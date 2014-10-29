@@ -99,7 +99,7 @@ void CoverArtDelegate::paint(QPainter *painter,
     info.source = static_cast<CoverInfo::Source>(
         index.sibling(index.row(), m_iCoverSourceColumn).data().toInt());
     info.coverLocation = index.sibling(index.row(), m_iCoverLocationColumn).data().toString();
-    info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toString();
+    info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toUInt();
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
     // We listen for updates via slotCoverFound above and signal to

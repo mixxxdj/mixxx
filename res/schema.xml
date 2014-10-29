@@ -392,7 +392,7 @@ METADATA
       ALTER TABLE library ADD COLUMN coverart_source INTEGER DEFAULT 0;
       ALTER TABLE library ADD COLUMN coverart_type INTEGER DEFAULT 0;
       ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT "";
-      ALTER TABLE library ADD COLUMN coverart_hash TEXT DEFAULT "";
+      ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
     </sql>
   </revision>
 </schema>

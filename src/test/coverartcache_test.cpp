@@ -67,7 +67,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     info.source = CoverInfo::GUESSED;
     info.coverLocation = "../../../" % kCoverLocationTest;
     info.trackLocation = kTrackLocationTest;
-    info.hash = "coverhash"; // fake cover hash
+    info.hash = 4321; // fake cover hash
 
     CoverArtCache::FutureResult res;
     res = CoverArtCache::loadCover(info, NULL, 1234, 0, false);

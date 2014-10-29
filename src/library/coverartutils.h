@@ -21,13 +21,13 @@ class CoverArtUtils {
         return QString(":/images/library/default_cover.png");
     }
 
-    static QString pixmapCacheKey(const QString& hash,
+    static QString pixmapCacheKey(const quint16 hash,
                                   const int width) {
         if (width == 0) {
-            return QString("CoverArtCache_%1").arg(hash);
+            return QString("CoverArtCache_%1").arg(QString::number(hash));
         }
         return QString("CoverArtCache_%1_%2")
-                .arg(hash).arg(width);
+                .arg(QString::number(hash)).arg(width);
     }
 
     // Extracts the first cover art image embedded within the file at
@@ -76,13 +76,9 @@ class CoverArtUtils {
         }
     }
 
-    static QString calculateHash(const QImage& image) {
-        if (image.isNull()) {
-            return QString();
-        }
-        return QString::number(
-            qChecksum(reinterpret_cast<const char*>(image.constBits()),
-                      image.byteCount()));
+    static quint16 calculateHash(const QImage& image) {
+        return qChecksum(reinterpret_cast<const char*>(image.constBits()),
+                         image.byteCount());
     }
 
     // Resizes the image (preserving aspect ratio) if it is larger than

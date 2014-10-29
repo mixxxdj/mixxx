@@ -929,7 +929,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
                 query.value(coverartTypeColumn).toInt(&ok));
             if (!ok) art.info.type = CoverInfo::NONE;
             art.info.coverLocation = query.value(coverartPathColumn).toString();
-            art.info.hash = query.value(coverartHashColumn).toString();
+            art.info.hash = query.value(coverartHashColumn).toUInt();
 
             TrackPointer pTrack = TrackPointer(
                     new TrackInfoObject(location, SecurityTokenPointer(), false),
