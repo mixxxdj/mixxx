@@ -6,16 +6,23 @@
 CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
           m_bOnlyCachedCover(false),
+          m_iCoverColumn(-1),
           m_iCoverSourceColumn(-1),
           m_iCoverTypeColumn(-1),
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iTrackLocationColumn(-1),
-          m_iIdColumn(-1),
-          m_iRequestCounter(0) {
+          m_iIdColumn(-1) {
     // This assumes that the parent is wtracktableview
     connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
             this, SLOT(slotOnlyCachedCoverArt(bool)));
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        connect(pCache, SIGNAL(coverFound(const QObject*, int, const CoverInfo&,
+                                          QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, int, const CoverInfo&,
+                                          QPixmap, bool)));
+    }
 
     TrackModel* pTrackModel = NULL;
     QTableView* pTableView = NULL;
@@ -25,6 +32,8 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
     }
 
     if (pTrackModel) {
+        m_iCoverColumn = pTrackModel->fieldIndex(
+            LIBRARYTABLE_COVERART);
         m_iCoverSourceColumn = pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_SOURCE);
         m_iCoverTypeColumn = pTrackModel->fieldIndex(
@@ -48,6 +57,18 @@ CoverArtDelegate::~CoverArtDelegate() {
 
 void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
     m_bOnlyCachedCover = b;
+}
+
+void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
+                                      int requestReference,
+                                      const CoverInfo& info,
+                                      QPixmap pixmap, bool fromCache) {
+    Q_UNUSED(info);
+    if (pRequestor == this && !pixmap.isNull() && !fromCache) {
+        // qDebug() << "CoverArtDelegate::slotCoverFound" << pRequestor << info
+        //          << pixmap.size();
+        emit(coverReadyForCell(requestReference, m_iCoverColumn));
+    }
 }
 
 void CoverArtDelegate::paint(QPainter *painter,
@@ -79,12 +100,10 @@ void CoverArtDelegate::paint(QPainter *painter,
     info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toString();
     info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
 
-    // Do not signal when done since we don't listen to CoverArtCache for
-    // updates and instead refresh on a timer in WTrackTableView. Use a
-    // meaningless request counter as the reference.
-    QPixmap pixmap = pCache->requestCover(info, this, m_iRequestCounter++,
-                                          100, m_bOnlyCachedCover, false);
-
+    // We listen for updates via slotCoverFound above and signal to
+    // BaseSqlTableModel when a row's cover is ready.
+    QPixmap pixmap = pCache->requestCover(info, this, index.row(), 100,
+                                          m_bOnlyCachedCover, true);
     if (!pixmap.isNull()) {
         int width = math_min(pixmap.width(), option.rect.width());
         int height = math_min(pixmap.height(), option.rect.height());

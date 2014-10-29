@@ -18,6 +18,9 @@ class CoverArtDelegate : public QStyledItemDelegate {
                const QStyleOptionViewItem &option,
                const QModelIndex &index) const;
 
+  signals:
+    void coverReadyForCell(int row, int column);
+
   private slots:
     // If it is true, it must not try to load and search covers.
     //
@@ -31,16 +34,20 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // which could bring performance issues.
     void slotOnlyCachedCoverArt(bool b);
 
+    void slotCoverFound(const QObject* pRequestor,
+                        int requestReference,
+                        const CoverInfo& info,
+                        QPixmap pixmap, bool fromCache);
+
   private:
     bool m_bOnlyCachedCover;
+    int m_iCoverColumn;
     int m_iCoverSourceColumn;
     int m_iCoverTypeColumn;
     int m_iCoverLocationColumn;
     int m_iCoverHashColumn;
     int m_iTrackLocationColumn;
     int m_iIdColumn;
-    // So we can increment it in paint(). Doesn't really matter.
-    mutable int m_iRequestCounter;
 };
 
 #endif // COVERARTDELEGATE_H
