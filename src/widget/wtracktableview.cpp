@@ -162,18 +162,6 @@ void WTrackTableView::slotScrollValueChanged(int) {
 void WTrackTableView::selectionChanged(const QItemSelection& selected,
                                        const QItemSelection& deselected) {
     enableCachedOnly();
-
-    const QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0 && indices.last().isValid()) {
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            TrackPointer pTrack = trackModel->getTrack(indices.last());
-            if (pTrack) {
-                emit(trackSelected(pTrack));
-            }
-        }
-    }
-
     QTableView::selectionChanged(selected, deselected);
 }
 
@@ -182,7 +170,23 @@ void WTrackTableView::slotGuiTick50ms(double) {
     // we load un-cached cover arts as well.
     qint64 timeDeltaNanos = Time::elapsed() - m_lastUserActionNanos;
     if (m_loadCachedOnly && timeDeltaNanos > 100000000) {
-        // it will allows CoverCache to load and search covers normally
+
+        // Show the currently selected track in the large cover art view. Doing
+        // this in selectionChanged slows down scrolling performance so we wait
+        // until the user has stopped interacting first.
+        const QModelIndexList indices = selectionModel()->selectedRows();
+        if (indices.size() > 0 && indices.last().isValid()) {
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel) {
+                TrackPointer pTrack = trackModel->getTrack(indices.last());
+                if (pTrack) {
+                    emit(trackSelected(pTrack));
+                }
+            }
+        }
+
+        // This allows CoverArtDelegate to request that we load covers from disk
+        // (as opposed to only serving them from cache).
         emit(onlyCachedCoverArt(false));
         m_loadCachedOnly = false;
 
