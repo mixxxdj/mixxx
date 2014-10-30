@@ -40,7 +40,9 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverColumn(-1),
           m_lastUserActionNanos(0),
           m_loadCachedOnly(false) {
-    m_pTrackInfo = new DlgTrackInfo(parent, m_DlgTagFetcher);
+    // Give a NULL parent because otherwise it inherits our style which can make
+    // it unreadable. Bug #673411
+    m_pTrackInfo = new DlgTrackInfo(NULL, m_DlgTagFetcher);
     connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
     connect(m_pTrackInfo, SIGNAL(previous()),

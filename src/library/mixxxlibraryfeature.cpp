@@ -71,7 +71,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         LOG_FAILED_QUERY(query);
     }
 
-    // Strip out library. track_locations.
+    // Strip out library. and track_locations.
     for (QStringList::iterator it = columns.begin();
          it != columns.end(); ++it) {
         if (it->startsWith("library.")) {

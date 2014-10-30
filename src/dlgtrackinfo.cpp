@@ -32,15 +32,8 @@ DlgTrackInfo::~DlgTrackInfo() {
 void DlgTrackInfo::init(){
     setupUi(this);
 
-    //set the QLabel text color to black, see Bug 673411
-    setStyleSheet("QLabel { color:black }");
-
     cueTable->hideColumn(0);
     coverBox->insertWidget(1, m_pWCoverArtLabel);
-
-    // It is essential to make the QPlainTextEdit transparent.
-    // Without this, the background is always solid (white by default).
-    txtLocation->viewport()->setAutoFillBackground(false);
 
     connect(btnNext, SIGNAL(clicked()),
             this, SLOT(slotNext()));
