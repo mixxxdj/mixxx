@@ -249,7 +249,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
             }
         }
     }
-    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset")).toInt()) {
+    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset"), 0).toInt()) {
         m_pLowFilter->set(1.0);
         m_pMidFilter->set(1.0);
         m_pHighFilter->set(1.0);
