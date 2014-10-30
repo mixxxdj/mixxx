@@ -1559,7 +1559,8 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
                   " library.id, " // 0
                   " track_locations.location, " // 1
                   " track_locations.directory, " // 2
-                  " album " // 3
+                  " album, " // 3
+                  " coverart_source " // 4
                   "FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location = track_locations.id "
@@ -1596,6 +1597,13 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
         // TODO(rryan) use QFileInfo path instead? symlinks? relative?
         QString directory = query.value(2).toString();
         QString trackAlbum = query.value(3).toString();
+        CoverInfo::Source source = static_cast<CoverInfo::Source>(
+            query.value(4).toInt());
+        if (source == CoverInfo::USER_SELECTED) {
+            qWarning() << "PROGRAMMING ERROR! detectCoverArtForUnknownTracks"
+                       << "got a USER_SELECTED track. Skipping.";
+            continue;
+        }
 
         qDebug() << "Searching for cover art for" << trackLocation;
 
