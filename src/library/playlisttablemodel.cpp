@@ -32,7 +32,9 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             << PLAYLISTTRACKSTABLE_POSITION
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
             << "'' AS " + LIBRARYTABLE_PREVIEW
-            << "'' AS " + LIBRARYTABLE_COVERART;
+            // For sorting the cover art column we give LIBRARYTABLE_COVERART
+            // the same value as the cover hash.
+            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where

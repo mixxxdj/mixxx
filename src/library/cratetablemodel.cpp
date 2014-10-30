@@ -35,7 +35,9 @@ void CrateTableModel::setTableModel(int crateId) {
     QStringList columns;
     columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
-            << "'' AS " + LIBRARYTABLE_COVERART;
+            // For sorting the cover art column we give LIBRARYTABLE_COVERART
+            // the same value as the cover hash.
+            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where

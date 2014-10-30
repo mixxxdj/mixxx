@@ -305,7 +305,10 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->hasBpmLock());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
+               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+        // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
+        // the cover hash.
         trackValue.setValue(pTrack->getCoverInfo().hash);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));

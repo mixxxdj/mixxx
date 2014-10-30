@@ -21,7 +21,9 @@ void LibraryTableModel::setTableModel(int id) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
-            << "'' AS " + LIBRARYTABLE_COVERART;
+            // For sorting the cover art column we give LIBRARYTABLE_COVERART
+            // the same value as the cover hash.
+            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
     const QString tableName = "library_view";
 
