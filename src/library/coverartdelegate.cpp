@@ -60,6 +60,15 @@ CoverArtDelegate::~CoverArtDelegate() {
 
 void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
     m_bOnlyCachedCover = b;
+
+    // If we can request non-cache covers now, request updates for all rows that
+    // were cache misses since the last time.
+    if (!m_bOnlyCachedCover) {
+        foreach (int row, m_cacheMissRows) {
+            emit(coverReadyForCell(row, m_iCoverColumn));
+        }
+        m_cacheMissRows.clear();
+    }
 }
 
 void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
@@ -121,5 +130,10 @@ void CoverArtDelegate::paint(QPainter *painter,
         // If we asked for a non-cache image and got a null pixmap, then our
         // request was queued.
         m_hashToRow[info.hash].append(index.row());
+    } else {
+        // Otherwise, we are requesting cache-only covers and got a cache
+        // miss. Record this row so that when we switch to requesting non-cache
+        // we can request an update.
+        m_cacheMissRows.append(index.row());
     }
 }

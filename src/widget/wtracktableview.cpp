@@ -189,15 +189,6 @@ void WTrackTableView::slotGuiTick50ms(double) {
         // (as opposed to only serving them from cache).
         emit(onlyCachedCoverArt(false));
         m_loadCachedOnly = false;
-
-        // Invalidate (refresh) cover column
-        if (m_iCoverColumn > 0) {
-            QModelIndex top = indexAt(QPoint(0, 0));
-            top = top.sibling(top.row(), m_iCoverColumn);
-            QModelIndex bottom = indexAt(QPoint(0, height()));
-            bottom = bottom.sibling(bottom.row(), m_iCoverColumn);
-            dataChanged(top, bottom);
-        }
     }
 }
 

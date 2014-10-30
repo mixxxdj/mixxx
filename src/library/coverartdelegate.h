@@ -50,8 +50,9 @@ class CoverArtDelegate : public QStyledItemDelegate {
     int m_iTrackLocationColumn;
     int m_iIdColumn;
 
-    // We need to record rows in paint (which is const) so this is marked
+    // We need to record rows in paint() (which is const) so these are marked
     // mutable.
+    mutable QList<int> m_cacheMissRows;
     mutable QHash<quint16, QLinkedList<int> > m_hashToRow;
 };
 
