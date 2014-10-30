@@ -920,16 +920,16 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             bool header_parsed = query.value(headerParsedColumn).toBool();
             bool has_bpm_lock = query.value(bpmLockColumn).toBool();
 
-            CoverArt art;
+            CoverInfo coverInfo;
             bool ok = false;
-            art.info.source = static_cast<CoverInfo::Source>(
+            coverInfo.source = static_cast<CoverInfo::Source>(
                 query.value(coverartSourceColumn).toInt(&ok));
-            if (!ok) art.info.source = CoverInfo::UNKNOWN;
-            art.info.type = static_cast<CoverInfo::Type>(
+            if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+            coverInfo.type = static_cast<CoverInfo::Type>(
                 query.value(coverartTypeColumn).toInt(&ok));
-            if (!ok) art.info.type = CoverInfo::NONE;
-            art.info.coverLocation = query.value(coverartPathColumn).toString();
-            art.info.hash = query.value(coverartHashColumn).toUInt();
+            if (!ok) coverInfo.type = CoverInfo::NONE;
+            coverInfo.coverLocation = query.value(coverartPathColumn).toString();
+            coverInfo.hash = query.value(coverartHashColumn).toUInt();
 
             TrackPointer pTrack = TrackPointer(
                     new TrackInfoObject(location, SecurityTokenPointer(), false),
@@ -997,7 +997,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setLocation(location);
             pTrack->setHeaderParsed(header_parsed);
             pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
-            pTrack->setCoverArt(art);
+            pTrack->setCoverInfo(coverInfo);
 
             // Normally we will set the track as clean but sometimes when
             // loading from the database we need to perform upkeep that ought to
