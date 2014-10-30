@@ -45,4 +45,5 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
     show();
     move(QApplication::desktop()->screenGeometry().center() - rect().center());
     raise();
+    activateWindow();
 }
