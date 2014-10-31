@@ -257,6 +257,11 @@ void TrackDAO::databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracks
     emit(tracksAdded(tracksMovedSetOld));
 }
 
+void TrackDAO::databaseTracksChanged(QSet<int> tracksChanged) {
+    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
+    emit(tracksAdded(tracksChanged));
+}
+
 void TrackDAO::slotTrackChanged(TrackInfoObject* pTrack) {
     //qDebug() << "TrackDAO::slotTrackChanged" << pTrack->getInfo();
     // This is a private slot that is connected to TIO's created by this
@@ -1546,7 +1551,8 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     return true;
 }
 
-void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
+void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
+                                              QSet<int>* pTracksChanged) {
     // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
     // The library contains user selected cover art. There is nothing worse than
     // spending hours curating your library only to have an automated search
@@ -1630,6 +1636,8 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
                 updateQuery.bindValue(":track_id", trackId);
                 if (!updateQuery.exec()) {
                     LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
+                } else {
+                    pTracksChanged->insert(trackId);
                 }
                 continue;
             }
@@ -1664,6 +1672,8 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
         updateQuery.bindValue(":track_id", trackId);
         if (!updateQuery.exec()) {
             LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";
+        } else {
+            pTracksChanged->insert(trackId);
         }
     }
 }

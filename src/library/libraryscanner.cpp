@@ -259,6 +259,7 @@ void LibraryScanner::run() {
     // want to mark those tracks/dirs as deleted in that case) :)
     QSet<int> tracksMovedSetOld;
     QSet<int> tracksMovedSetNew;
+    QSet<int> coverArtTracksChanged;
     if (bScanFinishedCleanly) {
         // Start a transaction for all the library hashing (moved file detection)
         // stuff.
@@ -287,7 +288,8 @@ void LibraryScanner::run() {
         transaction.commit();
 
         qDebug() << "Detecting cover art for unscanned files.";
-        m_trackDao.detectCoverArtForUnknownTracks(&m_bCancelLibraryScan);
+        m_trackDao.detectCoverArtForUnknownTracks(&m_bCancelLibraryScan,
+                                                  &coverArtTracksChanged);
 
         qDebug() << "Scan finished cleanly";
     } else {
@@ -302,6 +304,7 @@ void LibraryScanner::run() {
     // Update BaseTrackCache via the main TrackDao.
     // TODO(rryan): Not ok! We are in the library scanner thread. Use a signal instead.
     m_pCollection->getTrackDAO().databaseTracksMoved(tracksMovedSetOld, tracksMovedSetNew);
+    m_pCollection->getTrackDAO().databaseTracksChanged(coverArtTracksChanged);
 
     emit(scanFinished());
 }
