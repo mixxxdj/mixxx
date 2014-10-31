@@ -200,24 +200,36 @@ class CoverArtUtils {
         // TODO(XXX) Sort instead so that we can fall-back if one fails to open?
         foreach (const QFileInfo& file, covers) {
             const QString coverBaseName = file.baseName();
-            if (bestType > TRACK_BASENAME && coverBaseName == trackBaseName) {
+            if (bestType > TRACK_BASENAME &&
+                    coverBaseName.compare(trackBaseName,
+                                          Qt::CaseInsensitive) == 0) {
                 bestType = TRACK_BASENAME;
                 bestInfo = &file;
                 // This is the best type so we know we're done.
                 break;
-            } else if (bestType > ALBUM_NAME && coverBaseName == albumName) {
+            } else if (bestType > ALBUM_NAME &&
+                       coverBaseName.compare(albumName,
+                                             Qt::CaseInsensitive) == 0) {
                 bestType = ALBUM_NAME;
                 bestInfo = &file;
-            } else if (bestType > COVER && coverBaseName == "cover") {
+            } else if (bestType > COVER &&
+                       coverBaseName.compare(QLatin1String("cover"),
+                                             Qt::CaseInsensitive) == 0) {
                 bestType = COVER;
                 bestInfo = &file;
-            } else if (bestType > FRONT && coverBaseName == "front") {
+            } else if (bestType > FRONT &&
+                       coverBaseName.compare(QLatin1String("front"),
+                                             Qt::CaseInsensitive) == 0) {
                 bestType = FRONT;
                 bestInfo = &file;
-            } else if (bestType > ALBUM && coverBaseName == "album") {
+            } else if (bestType > ALBUM &&
+                       coverBaseName.compare(QLatin1String("album"),
+                                             Qt::CaseInsensitive) == 0) {
                 bestType = ALBUM;
                 bestInfo = &file;
-            } else if (bestType > FOLDER && coverBaseName == "folder") {
+            } else if (bestType > FOLDER &&
+                       coverBaseName.compare(QLatin1String("folder"),
+                                             Qt::CaseInsensitive) == 0) {
                 bestType = FOLDER;
                 bestInfo = &file;
             } else if (bestType > OTHER_FILENAME) {
