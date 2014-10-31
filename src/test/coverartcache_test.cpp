@@ -204,21 +204,37 @@ TEST_F(CoverArtCacheTest, searchImage) {
     QString cLoc_folder = QString(trackdir % "/" % "folder." % qFormat);
     EXPECT_TRUE(img.scaled(100,100).save(cLoc_folder, format));
     prefCovers << QFileInfo(cLoc_folder);
+    // 8. other_1.jpg
+    QString cLoc_other1 = QString(trackdir % "/" % "other1." % qFormat);
+    EXPECT_TRUE(img.scaled(10,10).save(cLoc_other1, format));
+    prefCovers << QFileInfo(cLoc_other1);
     // 7. lighter.jpg
-    QString cLoc_lighter = QString(trackdir % "/" % "lighter." % qFormat);
-    EXPECT_TRUE(img.scaled(10,10).save(cLoc_lighter, format));
-    prefCovers << QFileInfo(cLoc_lighter);
+    QString cLoc_other2 = QString(trackdir % "/" % "other2." % qFormat);
+    EXPECT_TRUE(img.scaled(10,10).save(cLoc_other2, format));
+    prefCovers << QFileInfo(cLoc_other2);
 
     // we must find covers in the right order
-    EXPECT_EQ(7, prefCovers.size());
+    EXPECT_EQ(8, prefCovers.size());
 
     // Remove the covers one by one from the front, checking that each one is
     // selected as we remove the previously-most-preferable cover.
     while (!prefCovers.isEmpty()) {
         QFileInfo cover = prefCovers.first();
-        expected.image = QImage(cover.filePath());
-        expected.info.coverLocation = cover.fileName();
-        expected.info.hash = CoverArtUtils::calculateHash(expected.image);
+
+        // We expect no cover selected for other1 since there are 2 covers,
+        // neither of which match our preferred cover names. other2 will be
+        // selected once we get to it since it is the only cover available.
+        if (cover.baseName() == "other1") {
+            expected.image = QImage();
+            expected.info.type = CoverInfo::NONE;
+            expected.info.coverLocation = QString();
+            expected.info.hash = 0;
+        } else {
+            expected.image = QImage(cover.filePath());
+            expected.info.type = CoverInfo::FILE;
+            expected.info.coverLocation = cover.fileName();
+            expected.info.hash = CoverArtUtils::calculateHash(expected.image);
+        }
         res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                     prefCovers);
         EXPECT_QSTRING_EQ(expected.info.coverLocation, res.info.coverLocation);

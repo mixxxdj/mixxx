@@ -114,7 +114,6 @@ class CoverArtUtils {
         FRONT,
         ALBUM,
         FOLDER,
-        OTHER_FILENAME,
         NONE
     };
 
@@ -197,44 +196,52 @@ class CoverArtUtils {
         PreferredCoverType bestType = NONE;
         const QFileInfo* bestInfo = NULL;
 
-        // TODO(XXX) Sort instead so that we can fall-back if one fails to open?
-        foreach (const QFileInfo& file, covers) {
-            const QString coverBaseName = file.baseName();
-            if (bestType > TRACK_BASENAME &&
+        // If there is a single image then we use it unconditionally. Otherwise
+        // we use the priority order described in PreferredCoverType. Notably,
+        // if there are multiple image files in the folder we require they match
+        // one of the name patterns -- otherwise we run the risk of picking an
+        // arbitrary image that happens to be in the same folder as some of the
+        // user's music files.
+        if (covers.size() == 1) {
+            bestInfo = &covers.first();
+        } else {
+            // TODO(XXX) Sort instead so that we can fall-back if one fails to
+            // open?
+            foreach (const QFileInfo& file, covers) {
+                const QString coverBaseName = file.baseName();
+                if (bestType > TRACK_BASENAME &&
                     coverBaseName.compare(trackBaseName,
                                           Qt::CaseInsensitive) == 0) {
-                bestType = TRACK_BASENAME;
-                bestInfo = &file;
-                // This is the best type so we know we're done.
-                break;
-            } else if (bestType > ALBUM_NAME &&
-                       coverBaseName.compare(albumName,
-                                             Qt::CaseInsensitive) == 0) {
-                bestType = ALBUM_NAME;
-                bestInfo = &file;
-            } else if (bestType > COVER &&
-                       coverBaseName.compare(QLatin1String("cover"),
-                                             Qt::CaseInsensitive) == 0) {
-                bestType = COVER;
-                bestInfo = &file;
-            } else if (bestType > FRONT &&
-                       coverBaseName.compare(QLatin1String("front"),
-                                             Qt::CaseInsensitive) == 0) {
-                bestType = FRONT;
-                bestInfo = &file;
-            } else if (bestType > ALBUM &&
-                       coverBaseName.compare(QLatin1String("album"),
-                                             Qt::CaseInsensitive) == 0) {
-                bestType = ALBUM;
-                bestInfo = &file;
-            } else if (bestType > FOLDER &&
-                       coverBaseName.compare(QLatin1String("folder"),
-                                             Qt::CaseInsensitive) == 0) {
-                bestType = FOLDER;
-                bestInfo = &file;
-            } else if (bestType > OTHER_FILENAME) {
-                bestType = OTHER_FILENAME;
-                bestInfo = &file;
+                    bestType = TRACK_BASENAME;
+                    bestInfo = &file;
+                    // This is the best type so we know we're done.
+                    break;
+                } else if (bestType > ALBUM_NAME &&
+                           coverBaseName.compare(albumName,
+                                                 Qt::CaseInsensitive) == 0) {
+                    bestType = ALBUM_NAME;
+                    bestInfo = &file;
+                } else if (bestType > COVER &&
+                           coverBaseName.compare(QLatin1String("cover"),
+                                                 Qt::CaseInsensitive) == 0) {
+                    bestType = COVER;
+                    bestInfo = &file;
+                } else if (bestType > FRONT &&
+                           coverBaseName.compare(QLatin1String("front"),
+                                                 Qt::CaseInsensitive) == 0) {
+                    bestType = FRONT;
+                    bestInfo = &file;
+                } else if (bestType > ALBUM &&
+                           coverBaseName.compare(QLatin1String("album"),
+                                                 Qt::CaseInsensitive) == 0) {
+                    bestType = ALBUM;
+                    bestInfo = &file;
+                } else if (bestType > FOLDER &&
+                           coverBaseName.compare(QLatin1String("folder"),
+                                                 Qt::CaseInsensitive) == 0) {
+                    bestType = FOLDER;
+                    bestInfo = &file;
+                }
             }
         }
 
