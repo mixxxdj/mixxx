@@ -19,6 +19,7 @@ class WCoverArtLabel : public QLabel {
 
   signals:
     void coverArtSelected(const CoverArt& art);
+    void reloadCoverArt();
 
   protected:
     void leaveEvent(QEvent*);

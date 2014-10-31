@@ -83,6 +83,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCoverMenu->setTitle(tr("Cover Art"));
     connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
+            this, SLOT(slotReloadCoverArt()));
 
 
     // Disable editing
@@ -863,12 +865,22 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
     }
 
-    m_contextTrack = trackModel->getTrack(indices.at(0));
-    m_pCoverMenu->setCoverArt(m_contextTrack, m_contextTrack->getCoverInfo());
-    // TODO(rryan): support multiple selection. disable for now to indicate we
-    // don't support it.
-    m_pCoverMenu->setEnabled(indices.size() == 1);
+    // We load a single track to get the necessary context for the cover (we use
+    // last to be consistent with selectionChanged above).
+    QModelIndex last = indices.last();
+    CoverInfo info;
+    info.source = static_cast<CoverInfo::Source>(
+        last.sibling(last.row(), m_iCoverSourceColumn).data().toInt());
+    info.type = static_cast<CoverInfo::Type>(
+        last.sibling(last.row(), m_iCoverTypeColumn).data().toInt());
+    info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toUInt();
+    info.trackLocation = last.sibling(
+        last.row(), m_iTrackLocationColumn).data().toString();
+    info.coverLocation = last.sibling(
+        last.row(), m_iCoverLocationColumn).data().toString();
+    m_pCoverMenu->setCoverArt(TrackPointer(), info);
     m_pMenu->addMenu(m_pCoverMenu);
+
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
@@ -1576,7 +1588,34 @@ void WTrackTableView::slotClearBeats() {
 }
 
 void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
-    if (m_contextTrack) {
-        m_contextTrack->setCoverArt(art);
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+    QModelIndexList selection = selectionModel()->selectedRows();
+    foreach (QModelIndex index, selection) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setCoverArt(art);
+        }
+    }
+}
+
+void WTrackTableView::slotReloadCoverArt() {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+    QList<TrackPointer> selectedTracks;
+    QModelIndexList selection = selectionModel()->selectedRows();
+    foreach (QModelIndex index, selection) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            selectedTracks.append(pTrack);
+        }
+    }
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        pCache->requestGuessCovers(selectedTracks);
     }
 }

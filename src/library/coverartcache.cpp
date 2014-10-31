@@ -152,3 +152,25 @@ void CoverArtCache::coverLoaded() {
                         res.cover.info, pixmap, false));
     }
 }
+
+void CoverArtCache::requestGuessCovers(QList<TrackPointer> tracks) {
+    QtConcurrent::run(this, &CoverArtCache::guessCovers, tracks);
+}
+
+void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
+    QtConcurrent::run(this, &CoverArtCache::guessCover, pTrack);
+}
+
+void CoverArtCache::guessCover(TrackPointer pTrack) {
+    if (pTrack) {
+        pTrack->setCoverArt(CoverArtUtils::guessCoverArt(pTrack));
+    }
+}
+
+void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
+    qDebug() << "CoverArtCache::guessCovers guessing covers for"
+             << tracks.size() << "tracks";
+    foreach (TrackPointer pTrack, tracks) {
+        guessCover(pTrack);
+    }
+}

@@ -36,6 +36,8 @@ WCoverArt::WCoverArt(QWidget* parent,
     }
     connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pMenu, SIGNAL(reloadCoverArt()),
+            this, SLOT(slotReloadCoverArt()));
 }
 
 WCoverArt::~WCoverArt() {
@@ -76,6 +78,15 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
         m_defaultCover = QPixmap(CoverArtUtils::defaultCoverLocation());
     }
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
+}
+
+void WCoverArt::slotReloadCoverArt() {
+    if (m_loadedTrack) {
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache) {
+            pCache->requestGuessCover(m_loadedTrack);
+        }
+    }
 }
 
 void WCoverArt::slotCoverArtSelected(const CoverArt& art) {

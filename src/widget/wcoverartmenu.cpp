@@ -28,7 +28,7 @@ void WCoverArtMenu::createActions() {
 
     m_pReload = new QAction(tr("Reload from track/folder",
             "reload cover art from track metadata or folder"), this);
-    connect(m_pReload, SIGNAL(triggered()), this, SLOT(slotReload()));
+    connect(m_pReload, SIGNAL(triggered()), this, SIGNAL(reloadCoverArt()));
     addAction(m_pReload);
 }
 
@@ -87,12 +87,6 @@ void WCoverArtMenu::slotChange() {
     art.info.coverLocation = selectedCover;
     art.info.hash = CoverArtUtils::calculateHash(art.image);
     qDebug() << "WCoverArtMenu::slotChange emit" << art;
-    emit(coverArtSelected(art));
-}
-
-void WCoverArtMenu::slotReload() {
-    CoverArt art = CoverArtUtils::guessCoverArt(m_pTrack);
-    qDebug() << "WCoverArtMenu::slotReload emit" << art;
     emit(coverArtSelected(art));
 }
 

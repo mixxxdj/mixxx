@@ -19,6 +19,8 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
             this, SLOT(slotCoverMenu(QPoint)));
     connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SIGNAL(coverArtSelected(const CoverArt&)));
+    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
+            this, SIGNAL(reloadCoverArt()));
 
     m_defaultCover = m_defaultCover.scaled(s_labelDisplaySize,
                                            Qt::KeepAspectRatio,

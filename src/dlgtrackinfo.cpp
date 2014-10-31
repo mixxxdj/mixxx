@@ -7,6 +7,7 @@
 #include "dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
 #include "library/dao/cue.h"
 
 const int kMinBPM = 30;
@@ -80,6 +81,8 @@ void DlgTrackInfo::init(){
     }
     connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pWCoverArtLabel, SIGNAL(reloadCover()),
+            this, SLOT(slotReloadCoverArt()));
 }
 
 void DlgTrackInfo::OK() {
@@ -202,6 +205,17 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
         m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+    }
+}
+
+void DlgTrackInfo::slotReloadCoverArt() {
+    if (m_pLoadedTrack) {
+        // TODO(rryan) move this out of the main thread. The issue is that
+        // CoverArtCache::requestGuessCover mutates the provided track whereas
+        // in DlgTrackInfo we delay changing the track until the user hits apply
+        // (or cancels the edit).
+        CoverArt art = CoverArtUtils::guessCoverArt(m_pLoadedTrack);
+        slotCoverArtSelected(art);
     }
 }
 

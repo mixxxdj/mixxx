@@ -75,6 +75,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
     void slotCoverArtSelected(const CoverArt& art);
+    void slotReloadCoverArt();
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -162,8 +163,6 @@ class WTrackTableView : public WLibraryTableView {
     int m_iCoverHashColumn; // cover art hash
     int m_iCoverColumn; // visible cover art
     int m_iTrackLocationColumn;
-
-    TrackPointer m_contextTrack;
 
     // Control the delay to load a cover art.
     qint64 m_lastUserActionNanos;

@@ -24,10 +24,10 @@ class WCoverArtMenu : public QMenu {
 
   signals:
     void coverArtSelected(const CoverArt& art);
+    void reloadCoverArt();
 
   private slots:
     void slotChange();
-    void slotReload();
     void slotUnset();
 
   private:

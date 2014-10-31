@@ -6,6 +6,7 @@
 
 #include "library/coverart.h"
 #include "util/singleton.h"
+#include "trackinfoobject.h"
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT
@@ -31,6 +32,12 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
                          const int desiredWidth = 0,
                          const bool onlyCached = false,
                          const bool signalWhenDone = true);
+
+    // Guesses the cover art for the provided tracks by searching the tracks'
+    // metadata and folders for image files. All I/O is done in a separate
+    // thread.
+    void requestGuessCovers(QList<TrackPointer> tracks);
+    void requestGuessCover(TrackPointer pTrack);
 
     struct FutureResult {
         FutureResult() : pRequestor(NULL),
@@ -66,6 +73,10 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
                            const int requestReference,
                            const int desiredWidth,
                            const bool emitSignals);
+
+    // Guesses the cover art for each track.
+    void guessCovers(QList<TrackPointer> tracks);
+    void guessCover(TrackPointer pTrack);
 
   private:
     QSet<QPair<const QObject*, int> > m_runningRequests;
