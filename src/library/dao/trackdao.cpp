@@ -1605,11 +1605,12 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel) {
             continue;
         }
 
-        qDebug() << "Searching for cover art for" << trackLocation;
+        //qDebug() << "Searching for cover art for" << trackLocation;
+        emit(progressCoverArt(trackLocation));
 
         QFileInfo trackInfo(trackLocation);
         if (!trackInfo.exists()) {
-            qDebug() << trackLocation << "does not exist";
+            //qDebug() << trackLocation << "does not exist";
             continue;
         }
 

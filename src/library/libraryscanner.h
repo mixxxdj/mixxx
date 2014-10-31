@@ -61,6 +61,7 @@ class LibraryScanner : public QThread {
     void scanFinished();
     void progressHashing(QString);
     void progressLoading(QString path);
+    void progressCoverArt(QString file);
 
   private:
     // Recursively scan a music library. Doesn't import tracks for any

@@ -329,6 +329,8 @@ void LibraryScanner::scan(QWidget* parent) {
             this, SLOT(cancel()));
     connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
             m_pProgress, SLOT(slotUpdate(QString)));
+    connect(&m_trackDao, SIGNAL(progressCoverArt(QString)),
+            m_pProgress, SLOT(slotUpdateCover(QString)));
     start(QThread::LowPriority);
 }
 
