@@ -3,6 +3,7 @@
 
 #include "widget/wcoverartmenu.h"
 #include "library/coverartutils.h"
+#include "util/sandbox.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -77,6 +78,9 @@ void WCoverArtMenu::slotChange() {
     // TODO(rryan): Ask if user wants to copy the file.
 
     CoverArt art;
+    // Create a security token for the file.
+    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+        selectedCover, true);
     art.image = QImage(selectedCover);
     if (art.image.isNull()) {
         // TODO(rryan): feedback
