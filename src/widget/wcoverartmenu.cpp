@@ -69,9 +69,9 @@ void WCoverArtMenu::slotChange() {
             .arg(extensions.join(" "));
 
     // open file dialog
-    QString selectedCover = QFileDialog::getOpenFileName(
+    QString selectedCoverPath = QFileDialog::getOpenFileName(
         this, tr("Change Cover Art"), initialDir, supportedText);
-    if (selectedCover.isEmpty()) {
+    if (selectedCoverPath.isEmpty()) {
         return;
     }
 
@@ -79,16 +79,17 @@ void WCoverArtMenu::slotChange() {
 
     CoverArt art;
     // Create a security token for the file.
+    QFileInfo selectedCover(selectedCoverPath);
     SecurityTokenPointer pToken = Sandbox::openSecurityToken(
         selectedCover, true);
-    art.image = QImage(selectedCover);
+    art.image = QImage(selectedCoverPath);
     if (art.image.isNull()) {
         // TODO(rryan): feedback
         return;
     }
     art.info.type = CoverInfo::FILE;
     art.info.source = CoverInfo::USER_SELECTED;
-    art.info.coverLocation = selectedCover;
+    art.info.coverLocation = selectedCoverPath;
     art.info.hash = CoverArtUtils::calculateHash(art.image);
     qDebug() << "WCoverArtMenu::slotChange emit" << art;
     emit(coverArtSelected(art));

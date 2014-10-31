@@ -12,6 +12,7 @@
 #include <QLinkedList>
 
 #include "util/sandbox.h"
+#include "util/file.h"
 #include "util/regex.h"
 #include "soundsourceproxy.h"
 
@@ -58,6 +59,8 @@ class CoverArtUtils {
             if (info.trackLocation.isEmpty()) {
                 qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
                          << "Relative paths will not work.";
+                SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+                    QFileInfo(info.coverLocation), true);
                 return QImage(info.coverLocation);
             }
 
@@ -69,7 +72,10 @@ class CoverArtUtils {
                          << info.coverLocation << info.trackLocation;
                 return QImage();
             }
-            return QImage(cover.filePath());
+            QString coverPath = cover.filePath();
+            SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+                cover, true);
+            return QImage(coverPath);
         } else {
             qDebug() << "CoverArtUtils::loadCover bad type";
             return QImage();
@@ -183,7 +189,9 @@ class CoverArtUtils {
         return selectCoverArtForTrack(trackBaseName, albumName, covers);
     }
 
-    // Selects an appropriate cover file from provided list of image files.
+    // Selects an appropriate cover file from provided list of image
+    // files. Assumes a SecurityTokenPointer is held by the caller for all files
+    // in 'covers'.
     static CoverArt selectCoverArtForTrack(const QString& trackBaseName,
                                            const QString& albumName,
                                            const QLinkedList<QFileInfo>& covers) {

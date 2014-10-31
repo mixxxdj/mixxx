@@ -1591,7 +1591,8 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
 
     QRegExp coverArtFilenames(CoverArtUtils::supportedCoverArtExtensionsRegex(),
                               Qt::CaseInsensitive);
-    QString currentDirectory;
+    QString currentDirectoryPath;
+    MDir currentDirectory;
     QLinkedList<QFileInfo> possibleCovers;
     while (query.next()) {
         if (*pCancel) {
@@ -1601,7 +1602,7 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
         int trackId = query.value(0).toInt();
         QString trackLocation = query.value(1).toString();
         // TODO(rryan) use QFileInfo path instead? symlinks? relative?
-        QString directory = query.value(2).toString();
+        QString directoryPath = query.value(2).toString();
         QString trackAlbum = query.value(3).toString();
         CoverInfo::Source source = static_cast<CoverInfo::Source>(
             query.value(4).toInt());
@@ -1643,11 +1644,13 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
             }
         }
 
-        if (directory != currentDirectory) {
+        if (directoryPath != currentDirectoryPath) {
             possibleCovers.clear();
-            currentDirectory = directory;
-            QDirIterator it(directory,
-                            QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+            currentDirectoryPath = directoryPath;
+            currentDirectory = MDir(currentDirectoryPath);
+            currentDirectory.dir().setFilter(
+                QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+            QDirIterator it(currentDirectory.dir());
             QFile currentFile;
             QFileInfo currentFileInfo;
             while (it.hasNext()) {
