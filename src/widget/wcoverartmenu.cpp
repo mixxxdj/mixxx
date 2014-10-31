@@ -55,6 +55,9 @@ void WCoverArtMenu::slotChange() {
     } else if (m_coverInfo.type == CoverInfo::FILE) {
         QFileInfo file(track.dir(), m_coverInfo.coverLocation);
         initialDir = file.absolutePath();
+    } else {
+        // Otherwise, default to the track directory.
+        initialDir = track.absolutePath();
     }
 
     QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
