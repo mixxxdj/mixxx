@@ -130,9 +130,9 @@ void EngineEffect::process(const QString& group,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
-                           const enum EffectProcessor::EnableState enableState,
+                           const EffectProcessor::EnableState enableState,
                            const GroupFeatureState& groupFeatures) {
-    enum EffectProcessor::EnableState effectiveEnableState = m_enableState;
+    EffectProcessor::EnableState effectiveEnableState = m_enableState;
     if (enableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
     } else if (enableState == EffectProcessor::ENABLING) {

@@ -46,7 +46,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool disableForGroup(const QString& group);
 
     QString m_id;
-    enum EffectProcessor::EnableState m_enableState;
+    EffectProcessor::EnableState m_enableState;
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
@@ -57,7 +57,7 @@ class EngineEffectChain : public EffectsRequestHandler {
                   enable_state(EffectProcessor::DISABLED) {
         }
         CSAMPLE old_gain;
-        enum EffectProcessor::EnableState enable_state;
+        EffectProcessor::EnableState enable_state;
     };
     QMap<QString, GroupStatus> m_groupStatus;
 

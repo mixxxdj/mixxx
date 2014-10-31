@@ -38,7 +38,7 @@ class MockEffectProcessor : public EffectProcessor {
                                CSAMPLE* pOutput,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,
-                               const enum EffectProcessor::EnableState enableState,
+                               const EffectProcessor::EnableState enableState,
                                const GroupFeatureState& groupFeatures));
 
     MOCK_METHOD1(initialize, void(const QSet<QString>& registeredGroups));

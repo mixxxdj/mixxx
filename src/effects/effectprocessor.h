@@ -70,7 +70,7 @@ class GroupEffectProcessor : public EffectProcessor {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
-                         const enum EffectProcessor::EnableState enableState,
+                         const EffectProcessor::EnableState enableState,
                          const GroupFeatureState& groupFeatures) {
         T* pState = m_groupState.value(group, NULL);
         if (pState == NULL) {
@@ -86,7 +86,7 @@ class GroupEffectProcessor : public EffectProcessor {
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
                               const unsigned int numSamples,
                               const unsigned int sampleRate,
-                              const enum EffectProcessor::EnableState enableState,
+                              const EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) = 0;
 
   private:

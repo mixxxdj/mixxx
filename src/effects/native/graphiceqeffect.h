@@ -45,7 +45,7 @@ class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
-                      const enum EffectProcessor::EnableState enableState,
+                      const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatureState);
 
   private:

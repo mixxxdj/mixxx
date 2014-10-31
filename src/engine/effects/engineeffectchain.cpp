@@ -156,7 +156,7 @@ void EngineEffectChain::process(const QString& group,
         return;
     }
 
-    enum EffectProcessor::EnableState effectiveEnableState = group_info.enable_state;
+    EffectProcessor::EnableState effectiveEnableState = group_info.enable_state;
 
     if (m_enableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
