@@ -1,10 +1,11 @@
 #include "engine/effects/engineeffect.h"
+#include "sampleutil.h"
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_bEnabled(true),
+          m_enableState(EffectProcessor::ENABLING),
           m_parameters(manifest.parameters().size()),
           m_buttonParameters(manifest.buttonParameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
@@ -29,6 +30,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, manifest);
     m_pProcessor->initialize(registeredGroups);
+    m_effectRampsFromDry = manifest.effectRampsFromDry();
 }
 
 EngineEffect::~EngineEffect() {
@@ -61,7 +63,13 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                 qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
                          << "enabled" << message.SetEffectParameters.enabled;
             }
-            m_bEnabled = message.SetEffectParameters.enabled;
+
+            if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+                m_enableState = EffectProcessor::DISABLING;
+            } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+                m_enableState = EffectProcessor::ENABLING;
+            }
+
             response.success = true;
             pResponsePipe->writeMessages(&response, 1);
             return true;
@@ -122,11 +130,37 @@ void EngineEffect::process(const QString& group,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
+                           const EffectProcessor::EnableState enableState,
                            const GroupFeatureState& groupFeatures) {
-    // The EngineEffectChain checks if we are enabled so we don't have to.
-    if (kEffectDebugOutput && !m_bEnabled) {
-        qDebug() << debugString()
-                 << "WARNING: EngineEffect::process() called on disabled effect.";
+    EffectProcessor::EnableState effectiveEnableState = m_enableState;
+    if (enableState == EffectProcessor::DISABLING) {
+        effectiveEnableState = EffectProcessor::DISABLING;
+    } else if (enableState == EffectProcessor::ENABLING) {
+        effectiveEnableState = EffectProcessor::ENABLING;
     }
-    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate, groupFeatures);
+
+    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate,
+            effectiveEnableState, groupFeatures);
+    if (!m_effectRampsFromDry) {
+        // the effect does not fade, so we care for it
+        if (effectiveEnableState == EffectProcessor::DISABLING) {
+            // Fade out (fade to dry signal)
+            SampleUtil::copy2WithRampingGain(pOutput,
+                    pInput, 0.0, 1.0,
+                    pOutput, 1.0, 0.0,
+                    numSamples);
+        } else if (effectiveEnableState == EffectProcessor::ENABLING) {
+            // Fade in (fade to wet signal)
+            SampleUtil::copy2WithRampingGain(pOutput,
+                    pInput, 1.0, 0.0,
+                    pOutput, 0.0, 1.0,
+                    numSamples);
+        }
+    }
+
+    if (m_enableState == EffectProcessor::DISABLING) {
+        m_enableState = EffectProcessor::DISABLED;
+    } else if (m_enableState == EffectProcessor::ENABLING) {
+        m_enableState = EffectProcessor::ENABLED;
+    }
 }
