@@ -56,7 +56,6 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    bool m_bEnabled; // [EffectRackN_EffectUnitN_EffectN], "enabled"
     EffectProcessor::EnableState m_enableState;
     bool m_effectRampsFromDry;
     // Must not be modified after construction.
