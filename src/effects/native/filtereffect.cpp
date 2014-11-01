@@ -35,7 +35,7 @@ EffectManifest FilterEffect::getManifest() {
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("q");
     q->setName(QObject::tr("Q"));
-    q->setDescription(QObject::tr("Resonance of the filters, 0.707 = Flat top"));
+    q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
