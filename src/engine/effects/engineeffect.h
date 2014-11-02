@@ -42,10 +42,11 @@ class EngineEffect : public EffectsRequestHandler {
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
+                 const EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);
 
     bool enabled() const {
-        return m_bEnabled;
+        return m_enableState != EffectProcessor::DISABLED;
     }
 
   private:
@@ -55,7 +56,8 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    bool m_bEnabled;
+    EffectProcessor::EnableState m_enableState;
+    bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QVector<EngineEffectParameter*> m_buttonParameters;
