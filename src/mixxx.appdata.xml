@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014 Tuukka Pasanen <pasanen.tuukka@gmail.com> -->
+<application>
+  <id type="desktop">mixxx.desktop</id>
+  <metadata_license>GPL-2.0</metadata_license>
+  <description>
+    <p>
+        The most advanced free DJ software with Incredible Features, Unbeatable Value
+    </p>
+    <p> 
+      Mixxx has everything you need to start making DJ mixes in a tight, integrated package. Whether you're DJing your next house party, spinning at a club, or broadcasting as a radio DJ, Mixxx has what you need to do it right.
+    </p>
+    <ul>
+      <li>iTunes Integration. All your playlists and songs from iTunes, automatically ready to go for your next live DJ performance.
+          DJ MIDI Controller Support</li>
+      <li>With over 30 DJ MIDI controllers supported out-of-the-box, Mixxx gives you comprehensive hardware control for your DJ mixes.
+          BPM Detection and Sync</li>
+      <li>Instantly sync the tempo of two songs for seamless beatmixing. Need a break? Create a quick playlist and let Auto DJ take over.
+          Powerful Mixing Engine</li>
+      <li>Mixxx has a cutting-edge mixing engine including support for MP3, M4A/AAC, OGG, and FLAC audio, adjustable EQ shelves, timecode vinyl control, recording, and Shoutcast broadcasting.</li>
+    </ul>
+  </description>
+  <screenshots>
+    <screenshot type="default">http://www.mixxx.org/images/press_art/mixxx_1110_default_deere_skin.png</screenshot>
+  </screenshots>
+  <url type="homepage">http://mixxx.org</url>
+  <updatecontact>pasanen_dot_tuukka_at_gmail_dot_com</updatecontact>
+</application>
