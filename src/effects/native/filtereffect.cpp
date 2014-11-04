@@ -17,6 +17,7 @@ EffectManifest FilterEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Allows to fade a song out by sweeping a low or high pass filter"));
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
@@ -99,9 +100,18 @@ void FilterEffect::processGroup(const QString& group,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
-    double hpf = m_pHPF->value().toDouble();
+    double hpf;
+    double lpf;
     double q = m_pQ->value().toDouble();
-    double lpf = m_pLPF->value().toDouble();
+
+    if (enableState == EffectProcessor::DISABLING) {
+        // Ramp to dry, when disabling, this will ramp from dry when enabling as well
+        hpf = kMinCorner;
+        lpf = kMaxCorner;
+    } else {
+        hpf = m_pHPF->value().toDouble();
+        lpf = m_pLPF->value().toDouble();
+    }
 
     if ((pState->m_loFreq != lpf) ||
             (pState->m_q != q) ||
