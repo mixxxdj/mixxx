@@ -40,12 +40,13 @@ class EffectRack : public QObject {
     // Getter for rack number
     int getRackNumber();
 
+    void loadEffectToChainSlot(const unsigned int iChainSlotNumber,
+                                   const unsigned int iEffectSlotNumber,
+                                   QString effectId);
+
   public slots:
     void slotClearRack(double v);
     void slotNumEffectChainSlots(double v);
-    void slotLoadEffectOnChainSlot(const unsigned int iChainSlotNumber,
-                                   const unsigned int iEffectSlotNumber,
-                                   QString effectId);
 
   private slots:
     void loadNextChain(const unsigned int iChainSlotNumber,

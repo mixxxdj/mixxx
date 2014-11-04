@@ -41,7 +41,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
-          m_deckEffectSelectorsSetup(false) {
+          m_inSlotPopulateDeckEffectSelectors(false) {
 
     // Get the EQ Effect Rack
     m_pEQEffectRack = m_pEffectsManager->getEQEffectRack().data();
@@ -63,11 +63,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 
     connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
             this, SLOT(slotPopulateDeckEffectSelectors()));
-
-    connect(this,
-            SIGNAL(effectOnChainSlot(const unsigned int, const unsigned int, QString)),
-            m_pEQEffectRack,
-            SLOT(slotLoadEffectOnChainSlot(const unsigned int, const unsigned int, QString)));
 
     // Set to basic view if a previous configuration is missing
     CheckBoxShowAllEffects->setChecked(m_pConfig->getValueString(
@@ -94,8 +89,11 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 }
 
 DlgPrefEQ::~DlgPrefEQ() {
-    qDeleteAll(m_deckEffectSelectors);
-    m_deckEffectSelectors.clear();
+    qDeleteAll(m_deckEqEffectSelectors);
+    m_deckEqEffectSelectors.clear();
+
+    qDeleteAll(m_deckFilterEffectSelectors);
+    m_deckFilterEffectSelectors.clear();
 
     int iNum = m_enableWaveformEqCOs.count();
     for (int i=0; i < iNum; i++) {
@@ -104,25 +102,32 @@ DlgPrefEQ::~DlgPrefEQ() {
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
-    int oldDecks = m_deckEffectSelectors.size();     
-    while (m_deckEffectSelectors.size() < static_cast<int>(numDecks)) {
+    int oldDecks = m_deckEqEffectSelectors.size();     
+    while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
         QHBoxLayout* innerHLayout = new QHBoxLayout();
         QLabel* label = new QLabel(QObject::tr("Deck %1").
-                            arg(m_deckEffectSelectors.size() + 1), this);
+                            arg(m_deckEqEffectSelectors.size() + 1), this);
 
         m_enableWaveformEqCOs.append(
                 new ControlObject(ConfigKey(PlayerManager::groupForDeck(
-                        m_deckEffectSelectors.size()), "enableWaveformEq")));
+                        m_deckEqEffectSelectors.size()), "enableWaveformEq")));
 
-        // Create the drop down list and populate it with the available effects
-        QComboBox* box = new QComboBox(this);
-        m_deckEffectSelectors.append(box);
-        connect(box, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotEffectChangedOnDeck(int)));
+        // Create the drop down list for EQs
+        QComboBox* eqComboBox = new QComboBox(this);
+        m_deckEqEffectSelectors.append(eqComboBox);
+        connect(eqComboBox, SIGNAL(currentIndexChanged(int)),
+                this, SLOT(slotEqEffectChangedOnDeck(int)));
+
+        // Create the drop down list for EQs
+        QComboBox* filterComboBox = new QComboBox(this);
+        m_deckFilterEffectSelectors.append(eqComboBox);
+        connect(filterComboBox, SIGNAL(currentIndexChanged(int)),
+                this, SLOT(slotFilterEffectChangedOnDeck(int)));
 
         // Setup the GUI
         innerHLayout->addWidget(label);
-        innerHLayout->addWidget(box);
+        innerHLayout->addWidget(eqComboBox);
+        innerHLayout->addWidget(filterComboBox);
         innerHLayout->addStretch();
         verticalLayout_2->addLayout(innerHLayout);
     }
@@ -135,17 +140,17 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
                 QString("EffectForDeck%1").arg(i + 1)),
                 QString("org.mixxx.effects.bessel8lvmixeq"));
-        selectedEffectIndex = m_deckEffectSelectors[i]->findData(configuredEffect);
+        selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
         if (selectedEffectIndex < 0) {
-            selectedEffectIndex = m_deckEffectSelectors[i]->findData("org.mixxx.effects.bessel8lvmixeq");
+            selectedEffectIndex = m_deckEqEffectSelectors[i]->findData("org.mixxx.effects.bessel8lvmixeq");
         }
-        m_deckEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
+        m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
         m_enableWaveformEqCOs[i]->set(1.0);
     }	
 }
 
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
-    m_deckEffectSelectorsSetup = true; // prevents a recursive call
+    m_inSlotPopulateDeckEffectSelectors = true; // prevents a recursive call
     QList<QPair<QString, QString> > availableEQEffectNames; 
     if (CheckBoxShowAllEffects->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("yes"));
@@ -157,7 +162,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
                 m_pEffectsManager->getAvailableEQEffectNames().toList();
     }
 
-    foreach (QComboBox* box, m_deckEffectSelectors) {
+    foreach (QComboBox* box, m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects
         // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
@@ -182,7 +187,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         }
         box->setCurrentIndex(currentIndex); 
     }
-    m_deckEffectSelectorsSetup = false;
+    m_inSlotPopulateDeckEffectSelectors = false;
 }
 
 void DlgPrefEQ::loadSettings() {
@@ -236,13 +241,13 @@ void DlgPrefEQ::slotResetToDefaults() {
     slotApply();
 }
 
-void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
+void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
-    if (c && !m_deckEffectSelectorsSetup) {
-        int deckNumber = m_deckEffectSelectors.indexOf(c);
+    if (c && !m_inSlotPopulateDeckEffectSelectors) {
+        int deckNumber = m_deckEqEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
-        emit(effectOnChainSlot(deckNumber, 0, effectId));
+        m_pEQEffectRack->loadEffectToChainSlot(deckNumber, 0, effectId);
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
@@ -251,6 +256,20 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
         // This is required to remove a previous selected effect that does not
         // fit to the current ShowAllEffects checkbox
         slotPopulateDeckEffectSelectors();
+    }
+}
+
+void DlgPrefEQ::slotFilterEffectChangedOnDeck(int effectIndex) {
+    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    // Check if qobject_cast was successful
+    if (c && !m_inSlotPopulateDeckEffectSelectors) {
+        int deckNumber = m_deckFilterEffectSelectors.indexOf(c);
+        QString effectId = c->itemData(effectIndex).toString();
+        m_pEQEffectRack->loadEffectToChainSlot(deckNumber, 1, effectId);
+
+        // Update the configured effect for the current QComboBox
+        //m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
+        //               arg(deckNumber + 1)), ConfigValue(effectId));
     }
 }
 
@@ -328,7 +347,7 @@ void DlgPrefEQ::slotBypass(int state) {
         // Disable effect processing for all decks by setting the appropriate
         // controls to 0 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
         int deck = 1;
-        foreach(QComboBox* box, m_deckEffectSelectors) {
+        foreach(QComboBox* box, m_deckEqEffectSelectors) {
             ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 0);
             m_enableWaveformEqCOs[deck - 1]->set(0);
             deck++;
@@ -340,7 +359,7 @@ void DlgPrefEQ::slotBypass(int state) {
         // controls to 1 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
         int deck = 1;
         ControlObjectSlave enableControl;
-        foreach(QComboBox* box, m_deckEffectSelectors) {
+        foreach(QComboBox* box, m_deckEqEffectSelectors) {
             ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 1);
             m_enableWaveformEqCOs[deck - 1]->set(1);
             deck++;

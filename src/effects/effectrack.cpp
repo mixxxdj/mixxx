@@ -77,7 +77,7 @@ void EffectRack::slotNumEffectChainSlots(double v) {
     qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }
 
-void EffectRack::slotLoadEffectOnChainSlot(const unsigned int iChainSlotNumber,
+void EffectRack::loadEffectToChainSlot(const unsigned int iChainSlotNumber,
                                            const unsigned int iEffectSlotNumber,
                                            QString effectId) {
     if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
