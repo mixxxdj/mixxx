@@ -84,17 +84,16 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableEffectNames() c
             availableEffectNames.insert(qMakePair(effectId, currentEffectName));
         }
     }
-
     return availableEffectNames;
 }
 
-const QSet<QPair<QString, QString> > EffectsManager::getAvailableEQEffectNames() const {
+const QSet<QPair<QString, QString> > EffectsManager::getAvailableMixingEqEffectNames() const {
     QSet<QPair<QString, QString> > availableEQEffectNames;
     QString currentEffectName;
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         QSet<QString> backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
-            if (pBackend->getManifest(effectId).isEQ()) {
+            if (pBackend->getManifest(effectId).isMixingEQ()) {
                 currentEffectName = pBackend->getManifest(effectId).name();
                 if (availableEQEffectNames.contains(qMakePair(effectId, currentEffectName))) {
                     qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
@@ -104,8 +103,26 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableEQEffectNames()
             }
         }
     }
-
     return availableEQEffectNames;
+}
+
+const QSet<QPair<QString, QString> > EffectsManager::getAvailableFilterEffectNames() const {
+    QSet<QPair<QString, QString> > availableFilterEffectNames;
+    QString currentEffectName;
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        QSet<QString> backendEffects = pBackend->getEffectIds();
+        foreach (QString effectId, backendEffects) {
+            if (pBackend->getManifest(effectId).isForFilterKnob()) {
+                currentEffectName = pBackend->getManifest(effectId).name();
+                if (availableFilterEffectNames.contains(qMakePair(effectId, currentEffectName))) {
+                    qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
+                    continue;
+                }
+                availableFilterEffectNames.insert(qMakePair(effectId, currentEffectName));
+            }
+        }
+    }
+    return availableFilterEffectNames;
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {

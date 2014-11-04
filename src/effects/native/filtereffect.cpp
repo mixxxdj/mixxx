@@ -14,6 +14,7 @@ EffectManifest FilterEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription("TODO");
+    manifest.setIsForFilterKnob(true);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");

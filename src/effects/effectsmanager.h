@@ -54,8 +54,10 @@ class EffectsManager : public QObject {
     const QSet<QString> getAvailableEffects() const;
     // Each entry of the set is a pair containing the effect id and its name
     const QSet<QPair<QString, QString> > getAvailableEffectNames() const;
-    // Each entry of the set is a pair containing the effect id and its name
-    const QSet<QPair<QString, QString> > getAvailableEQEffectNames() const;
+    // Same as above but only Deck Eqs
+    const QSet<QPair<QString, QString> > getAvailableMixingEqEffectNames() const;
+    // Same as above but only Filter like fading effects
+    const QSet<QPair<QString, QString> > getAvailableFilterEffectNames() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
