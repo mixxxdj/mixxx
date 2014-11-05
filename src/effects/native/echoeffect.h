@@ -44,6 +44,7 @@ class EchoEffect : public GroupEffectProcessor<EchoGroupState> {
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
+                      const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatures);
 
   private:

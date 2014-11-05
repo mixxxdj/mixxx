@@ -159,12 +159,12 @@ void BrowseThread::populateModel() {
 
         item = new QStandardItem(tio.getTrackNumber());
         item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
+        item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
         item = new QStandardItem(tio.getYear());
         item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
+        item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(tio.getGenre());
@@ -196,7 +196,7 @@ void BrowseThread::populateModel() {
 
         item = new QStandardItem(tio.getBpmStr());
         item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
+        item->setData(tio.getBpm(), Qt::UserRole);
         row_data.insert(COLUMN_BPM, item);
 
         item = new QStandardItem(tio.getKeyText());
@@ -211,7 +211,7 @@ void BrowseThread::populateModel() {
 
         item = new QStandardItem(tio.getBitrateStr());
         item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
+        item->setData(tio.getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
         item = new QStandardItem(filepath);

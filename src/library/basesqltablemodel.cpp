@@ -679,8 +679,10 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
 }
 
 const QLinkedList<int> BaseSqlTableModel::getTrackRows(int trackId) const {
-    if (m_trackIdToRows.contains(trackId)) {
-        return m_trackIdToRows[trackId];
+    QHash<int, QLinkedList<int> >::const_iterator it =
+            m_trackIdToRows.constFind(trackId);
+    if (it != m_trackIdToRows.constEnd()) {
+        return it.value();
     }
     return QLinkedList<int>();
 }
