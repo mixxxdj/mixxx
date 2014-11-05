@@ -465,8 +465,9 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
             if (pTrack->getCoverArt().image.isNull()) {
-                CoverArt art = CoverArtUtils::selectCoverArtForTrack(pTrack.data(), possibleCovers);
-                if (art.image.isNull()) {
+                CoverArt art = CoverArtUtils::selectCoverArtForTrack(
+                    pTrack.data(), possibleCovers);
+                if (!art.image.isNull()) {
                     pTrack->setCoverArt(art);
                 }
             }
