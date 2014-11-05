@@ -19,6 +19,7 @@
 
 #include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
+#include "sampleutil.h"
 #include <QtDebug>
 #ifdef __WINDOWS__
 #include <io.h>
@@ -202,18 +203,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 
     // convert into stereo if file is mono
     if (channels == 1) {
-        // rryan 2/2009
-        // Mini-proof of the below:
-        // size = 20, destination is a 20 element array 0-19
-        // readNo = 10 (or less, but 10 in this case)
-        // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
-        // so the first iteration touches the very ends of destination
-        // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
-        for(int i=(index/2-1); i>=0; i--) {
-            dest[i*2]     = dest[i];
-            dest[(i*2)+1] = dest[i];
-        }
-
+        SampleUtil::inPlaceMonoToStereo(dest, index / 2);
         // Pretend we read twice as many bytes as we did, since we just repeated
         // each pair of bytes.
         index *= 2;

@@ -23,6 +23,7 @@
 #include <QtDebug>
 
 #include "soundsourcesndfile.h"
+#include "sampleutil.h"
 #include "trackinfoobject.h"
 #include "util/math.h"
 
@@ -137,18 +138,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
 
             // readNo*2 is strictly less than available buffer space
 
-            // rryan 2/2009
-            // Mini-proof of the below:
-            // size = 20, destination is a 20 element array 0-19
-            // readNo = 10 (or less, but 10 in this case)
-            // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
-            // so the first iteration touches the very ends of destination
-            // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
-
-            for(int i=(readNo-1); i>=0; i--) {
-                dest[i*2]     = dest[i];
-                dest[(i*2)+1] = dest[i];
-            }
+            SampleUtil::inPlaceMonoToStereo(dest, readNo);
 
             // We doubled the readNo bytes we read into stereo.
             return readNo * 2;

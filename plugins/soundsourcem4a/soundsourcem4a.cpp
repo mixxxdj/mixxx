@@ -30,6 +30,7 @@
 
 #include <QtDebug>
 #include "soundsourcem4a.h"
+#include "sampleutil.h"
 #include "m4a/mp4-mixxx.cpp"
 
 namespace Mixxx {
@@ -147,13 +148,8 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
     // At this point *destination should be filled. If mono : double all samples
     // (L => R)
-    if (m_iChannels == 1) {
-        for (int i = total_bytes_decoded/2-1; i >= 0; --i) {
-            // as_buffer[i] is an audio sample (s16)
-            //scroll through , copying L->R & expanding buffer
-            as_buffer[i*2+1] = as_buffer[i];
-            as_buffer[i*2] = as_buffer[i];
-        }
+    if (1 == m_iChannels) {
+        SampleUtil::inPlaceMonoToStereo(as_buffer, total_bytes_decoded / 2);
     }
 
     // Tell us about it only if we end up decoding a different value

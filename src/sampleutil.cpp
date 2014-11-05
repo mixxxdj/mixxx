@@ -12,6 +12,8 @@ typedef qint32 int32_t;
 #include "sampleutil.h"
 #include "util/math.h"
 
+#include <climits>
+
 // static
 CSAMPLE* SampleUtil::alloc(unsigned int size) {
     // TODO(XXX) align the array
@@ -240,6 +242,15 @@ void SampleUtil::copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                  int iNumSamples) {
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = clampSample(pSrc[i]);
+    }
+}
+
+// static
+void SampleUtil::inPlaceMonoToStereo(SAMPLE* pBuffer, int numMonoSamples) {
+    int sampleOffset = numMonoSamples;
+    while (0 < sampleOffset--) {
+        pBuffer[sampleOffset * 2] = pBuffer[sampleOffset];
+        pBuffer[sampleOffset * 2 + 1] = pBuffer[sampleOffset];
     }
 }
 
