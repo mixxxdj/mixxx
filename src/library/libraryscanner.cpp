@@ -228,7 +228,7 @@ void LibraryScanner::run() {
         // directory.
         MDir dir(dirPath);
 
-        bScanFinishedCleanly = recursiveScan(dirPath, verifiedDirectories,
+        bScanFinishedCleanly = recursiveScan(dir.dir(), verifiedDirectories,
                                              dir.token());
         if (bScanFinishedCleanly) {
             qDebug() << "Recursive scanning (" << dirPath << ") finished cleanly.";
@@ -334,9 +334,14 @@ void LibraryScanner::resetCancel() {
     m_bCancelLibraryScan = false;
 }
 
-bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories,
+bool LibraryScanner::recursiveScan(QDir dir, QStringList& verifiedDirectories,
                                    SecurityTokenPointer pToken) {
-    QDirIterator it(dir.path(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    // Note, we save on filesystem operations (and random work) by initializing
+    // a QDirIterator with a QDir instead of a QString -- but it inherits its
+    // Filter from the QDir so we have to set it first. If the QDir has not done
+    // any FS operations yet then this should be lightweight.
+    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator it(dir);
     QString currentFile;
     QFileInfo currentFileInfo;
     QLinkedList<QFileInfo> filesToImport;
@@ -439,7 +444,7 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             emit(progressLoading(file.fileName()));
 
             TrackPointer pTrack = TrackPointer(
-                    new TrackInfoObject(filePath, pToken),
+                    new TrackInfoObject(file, pToken),
                     &QObject::deleteLater);
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successfully added. Signal the main instance of TrackDAO,

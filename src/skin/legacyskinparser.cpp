@@ -64,6 +64,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidgetstack.h"
+#include "widget/wsizeawarestack.h"
 #include "widget/wwidgetgroup.h"
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
@@ -443,6 +444,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseWidgetGroup(node));
     } else if (nodeName == "WidgetStack") {
         result = wrapWidget(parseWidgetStack(node));
+    } else if (nodeName == "SizeAwareStack") {
+        result = wrapWidget(parseSizeAwareStack(node));
     } else if (nodeName == "EffectChainName") {
         result = wrapWidget(parseEffectChainName(node));
     } else if (nodeName == "EffectName") {
@@ -634,6 +637,55 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     // Init the widget last now that all the children have been created,
     // so if the current page was saved we can switch to the correct page.
     pStack->Init();
+    m_pParent = pOldParent;
+    return pStack;
+}
+
+QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
+    WSizeAwareStack* pStack = new WSizeAwareStack(m_pParent);
+    pStack->setObjectName("SizeAwareStack");
+    pStack->setContentsMargins(0, 0, 0, 0);
+    setupConnections(node, pStack);
+    setupBaseWidget(node, pStack);
+    setupWidget(node, pStack);
+
+    QWidget* pOldParent = m_pParent;
+    m_pParent = pStack;
+
+    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
+    if (!childrenNode.isNull()) {
+        // Descend chilren
+        QDomNodeList children = childrenNode.childNodes();
+
+        for (int i = 0; i < children.count(); ++i) {
+            QDomNode node = children.at(i);
+
+            if (!node.isElement()) {
+                continue;
+            }
+            QDomElement element = node.toElement();
+
+            QList<QWidget*> children = parseNode(element);
+
+            if (children.empty()) {
+                qWarning() << "SizeAwareStack child produced no widget.";
+                continue;
+            }
+
+            if (children.size() > 1) {
+                qWarning() << "SizeAwareStack child produced multiple widgets."
+                           << "All but the first are ignored.";
+            }
+            QWidget* pChild = children[0];
+
+            if (pChild == NULL) {
+                continue;
+            }
+
+            pStack->addWidget(pChild);
+        }
+    }
+
     m_pParent = pOldParent;
     return pStack;
 }
@@ -1067,10 +1119,8 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
 #undef ohyesithas
 #endif
 
-    QString styleHack = "";
-
     // Style the library preview button with a default image.
-    styleHack = (
+    QString styleHack = (
         "#LibraryPreviewButton { background: transparent; border: 0; }"
         "#LibraryPreviewButton:checked {"
         "  image: url(:/images/library/ic_library_preview_pause.png);"

@@ -15,6 +15,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription("TODO");
     manifest.setIsForFilterKnob(true);
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("bit_depth");
@@ -65,12 +66,13 @@ void BitCrusherEffect::processGroup(const QString& group,
                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
                                     const unsigned int numSamples,
                                     const unsigned int sampleRate,
+                                    const EffectProcessor::EnableState enableState,
                                     const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
-    // TODO(rryan) this is broken. it needs to take into account the sample
-    // rate.
+    Q_UNUSED(sampleRate); // we are normalized to 1
+    Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
+
     const CSAMPLE downsample = m_pDownsampleParameter ?
             m_pDownsampleParameter->value().toDouble() : 0.0;
 
