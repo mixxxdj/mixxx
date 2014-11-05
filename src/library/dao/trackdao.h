@@ -50,6 +50,11 @@ const QString LIBRARYTABLE_KEY = "key";
 const QString LIBRARYTABLE_KEY_ID = "key_id";
 const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 const QString LIBRARYTABLE_PREVIEW = "preview";
+const QString LIBRARYTABLE_COVERART = "coverart";
+const QString LIBRARYTABLE_COVERART_SOURCE = "coverart_source";
+const QString LIBRARYTABLE_COVERART_TYPE = "coverart_type";
+const QString LIBRARYTABLE_COVERART_LOCATION = "coverart_location";
+const QString LIBRARYTABLE_COVERART_HASH = "coverart_hash";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";
@@ -106,9 +111,16 @@ class TrackDAO : public QObject, public virtual DAO {
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
     void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
+    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
     void databaseTrackAdded(TrackPointer pTrack);
+    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
+    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
+    void databaseTracksChanged(QSet<int> tracksChanged);
+
     bool verifyRemainingTracks(volatile bool* pCancel);
+    void detectCoverArtForUnknownTracks(volatile bool* pCancel,
+                                        QSet<int>* pTracksChanged);
 
   signals:
     void trackDirty(int trackId);
@@ -118,6 +130,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void tracksRemoved(QSet<int> trackIds);
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
+    void progressCoverArt(QString file);
 
   public slots:
     // The public interface to the TrackDAO requires a TrackPointer so that we

@@ -1,6 +1,10 @@
 #include <QtDebug>
 #include <QDir>
+#include <QDirIterator>
+#include <QFileInfo>
 #include <QtSql>
+#include <QImage>
+#include <QRegExp>
 
 #include "library/dao/trackdao.h"
 
@@ -11,6 +15,8 @@
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "trackinfoobject.h"
+#include "library/coverart.h"
+#include "library/coverartutils.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
@@ -251,6 +257,11 @@ void TrackDAO::databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracks
     emit(tracksAdded(tracksMovedSetOld));
 }
 
+void TrackDAO::databaseTracksChanged(QSet<int> tracksChanged) {
+    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
+    emit(tracksAdded(tracksChanged));
+}
+
 void TrackDAO::slotTrackChanged(TrackInfoObject* pTrack) {
     //qDebug() << "TrackDAO::slotTrackChanged" << pTrack->getInfo();
     // This is a private slot that is connected to TIO's created by this
@@ -302,7 +313,6 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
-
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
 
     // We no longer store the wavesummary in the library table.
@@ -313,6 +323,12 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":channels", pTrack->getChannels());
     m_pQueryLibraryInsert->bindValue(":mixxx_deleted", 0);
     m_pQueryLibraryInsert->bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
+
+    CoverInfo coverInfo = pTrack->getCoverInfo();
+    m_pQueryLibraryInsert->bindValue(":coverart_source", coverInfo.source);
+    m_pQueryLibraryInsert->bindValue(":coverart_type", coverInfo.type);
+    m_pQueryLibraryInsert->bindValue(":coverart_location", coverInfo.coverLocation);
+    m_pQueryLibraryInsert->bindValue(":coverart_hash", coverInfo.hash);
 
     const QByteArray* pBeatsBlob = NULL;
     QString beatsVersion = "";
@@ -389,14 +405,17 @@ void TrackDAO::addTracksPrepare() {
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
-            "keys_version, keys_sub_version, keys) "
+            "keys_version, keys_sub_version, keys, "
+            "coverart_source, coverart_type, coverart_location, coverart_hash ) "
             "VALUES ("
             ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
             ":beats_version, :beats_sub_version, :beats, :bpm_lock, "
-            ":keys_version, :keys_sub_version, :keys)");
+            ":keys_version, :keys_sub_version, :keys, "
+            ":coverart_source, :coverart_type, :coverart_location, :coverart_hash "
+            ")");
 
     m_pQueryLibraryUpdate->prepare("UPDATE library SET mixxx_deleted = 0 "
             "WHERE id = :id");
@@ -828,7 +847,8 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, "
         "beats_version, beats_sub_version, beats, datetime_added, bpm_lock, "
-        "keys_version, keys_sub_version, keys "
+        "keys_version, keys_sub_version, keys, "
+        "coverart_source, coverart_type, coverart_location, coverart_hash "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -869,6 +889,11 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int beatsSubVersionColumn = queryRecord.indexOf("beats_sub_version");
         const int beatsColumn = queryRecord.indexOf("beats");
 
+        const int coverartSourceColumn = queryRecord.indexOf("coverart_source");
+        const int coverartTypeColumn = queryRecord.indexOf("coverart_type");
+        const int coverartPathColumn = queryRecord.indexOf("coverart_location");
+        const int coverartHashColumn = queryRecord.indexOf("coverart_hash");
+
         while (query.next()) {
             bool shouldDirty = false;
 
@@ -899,6 +924,17 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString location = query.value(locationColumn).toString();
             bool header_parsed = query.value(headerParsedColumn).toBool();
             bool has_bpm_lock = query.value(bpmLockColumn).toBool();
+
+            CoverInfo coverInfo;
+            bool ok = false;
+            coverInfo.source = static_cast<CoverInfo::Source>(
+                query.value(coverartSourceColumn).toInt(&ok));
+            if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+            coverInfo.type = static_cast<CoverInfo::Type>(
+                query.value(coverartTypeColumn).toInt(&ok));
+            if (!ok) coverInfo.type = CoverInfo::NONE;
+            coverInfo.coverLocation = query.value(coverartPathColumn).toString();
+            coverInfo.hash = query.value(coverartHashColumn).toUInt();
 
             TrackPointer pTrack = TrackPointer(
                     new TrackInfoObject(location, SecurityTokenPointer(), false),
@@ -966,6 +1002,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setLocation(location);
             pTrack->setHeaderParsed(header_parsed);
             pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
+            pTrack->setCoverInfo(coverInfo);
 
             // Normally we will set the track as clean but sometimes when
             // loading from the database we need to perform upkeep that ought to
@@ -997,7 +1034,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             // track clean and hooked it up to the track cache, because this will
             // dirty it.
             if (!header_parsed) {
-                pTrack->parse();
+                pTrack->parse(false);
             }
 
             return pTrack;
@@ -1079,7 +1116,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
-                  "title=:title, album=:album, album_artist=:album_artist, "
+                  "title=:title, album=:album, "
+                  "album_artist=:album_artist, "
                   "year=:year, genre=:genre, composer=:composer, "
                   "grouping=:grouping, filetype=:filetype, "
                   "tracknumber=:tracknumber, comment=:comment, url=:url, "
@@ -1091,7 +1129,9 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats_sub_version=:beats_sub_version, beats=:beats, "
                   "bpm_lock=:bpm_lock, "
-                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys "
+                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys, "
+                  "coverart_source=:coverart_source, coverart_type=:coverart_type, "
+                  "coverart_location=:coverart_location, coverart_hash=:coverart_hash "
                   "WHERE id=:track_id");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -1161,6 +1201,12 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":key", keyText);
     query.bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
+
+    CoverInfo coverInfo = pTrack->getCoverInfo();
+    query.bindValue(":coverart_source", coverInfo.source);
+    query.bindValue(":coverart_type", coverInfo.type);
+    query.bindValue(":coverart_location", coverInfo.coverLocation);
+    query.bindValue(":coverart_hash", coverInfo.hash);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -1505,4 +1551,123 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     }
     qDebug() << "verifyTracksOutside finished";
     return true;
+}
+
+void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
+                                              QSet<int>* pTracksChanged) {
+    // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
+    // The library contains user selected cover art. There is nothing worse than
+    // spending hours curating your library only to have an automated search
+    // method like this one replace it all with its mistakes again. Take care to
+    // not modify any tracks with coverart_source equal to USER_SELECTED (value
+    // 2).
+
+    QSqlQuery query(m_database);
+    query.prepare("SELECT "
+                  " library.id, " // 0
+                  " track_locations.location, " // 1
+                  " track_locations.directory, " // 2
+                  " album, " // 3
+                  " coverart_source " // 4
+                  "FROM library "
+                  "INNER JOIN track_locations "
+                  "ON library.location = track_locations.id "
+                  // CoverInfo::Source 0 is UNKNOWN
+                  "WHERE coverart_source is NULL or coverart_source = 0 "
+                  "ORDER BY track_locations.directory");
+
+    QSqlQuery updateQuery(m_database);
+    updateQuery.prepare(
+        "UPDATE library SET "
+        "  coverart_type=:coverart_type,"
+        "  coverart_source=:coverart_source,"
+        "  coverart_hash=:coverart_hash,"
+        "  coverart_location=:coverart_location "
+        "WHERE id=:track_id");
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "failed looking for tracks with unknown cover art";
+        return;
+    }
+
+    QRegExp coverArtFilenames(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                              Qt::CaseInsensitive);
+    QString currentDirectoryPath;
+    MDir currentDirectory;
+    QLinkedList<QFileInfo> possibleCovers;
+    while (query.next()) {
+        if (*pCancel) {
+            return;
+        }
+
+        int trackId = query.value(0).toInt();
+        QString trackLocation = query.value(1).toString();
+        // TODO(rryan) use QFileInfo path instead? symlinks? relative?
+        QString directoryPath = query.value(2).toString();
+        QString trackAlbum = query.value(3).toString();
+        CoverInfo::Source source = static_cast<CoverInfo::Source>(
+            query.value(4).toInt());
+        if (source == CoverInfo::USER_SELECTED) {
+            qWarning() << "PROGRAMMING ERROR! detectCoverArtForUnknownTracks"
+                       << "got a USER_SELECTED track. Skipping.";
+            continue;
+        }
+
+        //qDebug() << "Searching for cover art for" << trackLocation;
+        emit(progressCoverArt(trackLocation));
+
+        QFileInfo trackInfo(trackLocation);
+        if (!trackInfo.exists()) {
+            //qDebug() << trackLocation << "does not exist";
+            continue;
+        }
+
+        SecurityTokenPointer pToken = Sandbox::openSecurityToken(trackInfo, true);
+        SoundSourceProxy proxy(trackLocation, pToken);
+        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+        if (pProxiedSoundSource != NULL) {
+            QImage image = proxy.parseCoverArt();
+            if (!image.isNull()) {
+                updateQuery.bindValue(":coverart_type",
+                                      static_cast<int>(CoverInfo::METADATA));
+                updateQuery.bindValue(":coverart_source",
+                                      static_cast<int>(CoverInfo::GUESSED));
+                updateQuery.bindValue(":coverart_hash",
+                                      CoverArtUtils::calculateHash(image));
+                updateQuery.bindValue(":coverart_location", "");
+                updateQuery.bindValue(":track_id", trackId);
+                if (!updateQuery.exec()) {
+                    LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
+                } else {
+                    pTracksChanged->insert(trackId);
+                }
+                continue;
+            }
+        }
+
+        if (directoryPath != currentDirectoryPath) {
+            possibleCovers.clear();
+            currentDirectoryPath = directoryPath;
+            currentDirectory = MDir(currentDirectoryPath);
+            possibleCovers = CoverArtUtils::findPossibleCoversInFolder(
+                currentDirectoryPath);
+        }
+
+        CoverArt art = CoverArtUtils::selectCoverArtForTrack(
+            trackInfo.baseName(), trackAlbum, possibleCovers);
+
+        updateQuery.bindValue(":coverart_type",
+                              static_cast<int>(art.info.type));
+        updateQuery.bindValue(":coverart_source",
+                              static_cast<int>(art.info.source));
+        updateQuery.bindValue(":coverart_hash", art.info.hash);
+        updateQuery.bindValue(":coverart_location", art.info.coverLocation);
+        updateQuery.bindValue(":track_id", trackId);
+        if (!updateQuery.exec()) {
+            LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";
+        } else {
+            pTracksChanged->insert(trackId);
+        }
+    }
 }

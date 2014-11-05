@@ -25,6 +25,9 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
+  signals:
+    void trackSelected(TrackPointer pTrack);
+
   private:
     void activateButtons(bool enable);
     WTrackTableView* m_pTrackTableView;

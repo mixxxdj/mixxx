@@ -61,6 +61,7 @@ class LibraryScanner : public QThread {
     void scanFinished();
     void progressHashing(QString);
     void progressLoading(QString path);
+    void progressCoverArt(QString file);
 
   private:
     // Recursively scan a music library. Doesn't import tracks for any
@@ -73,6 +74,7 @@ class LibraryScanner : public QThread {
     // Import the provided files. Returns true if the scan completed without
     // being cancelled. False if the scan was cancelled part-way through.
     bool importFiles(const QLinkedList<QFileInfo>& files,
+                     const QLinkedList<QFileInfo>& possibleCovers,
                      SecurityTokenPointer pToken);
 
     // The library trackcollection
@@ -89,6 +91,7 @@ class LibraryScanner : public QThread {
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     QRegExp m_extensionFilter;
+    QRegExp m_coverExtensionFilter;
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
 };

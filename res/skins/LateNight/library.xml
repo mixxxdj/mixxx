@@ -27,6 +27,13 @@
 									<SearchBox></SearchBox>
 									<!--Library Tree View-->
 									<LibrarySidebar></LibrarySidebar>
+									<!--Cover Art-->
+									<CoverArt>
+										<Connection>
+											<ConfigKey>[Library],show_coverart</ConfigKey>
+											<BindProperty>visible</BindProperty>
+										</Connection>
+									</CoverArt>
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
