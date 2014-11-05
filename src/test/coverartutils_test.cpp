@@ -46,9 +46,11 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     // them in a sandboxed environment.
     SecurityTokenPointer pToken;
     // aiff
+#ifndef __FFMPEGFILE__
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff",
                                                 pToken);
     EXPECT_TRUE(!cover.isNull());
+#endif
     // flac
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac",
                                                 pToken);
@@ -62,9 +64,11 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
                                                 pToken);
     EXPECT_TRUE(!cover.isNull());
     // wav
+#ifndef __FFMPEGFILE__
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav",
                                                 pToken);
     EXPECT_TRUE(!cover.isNull());
+#endif
 
 #ifdef __OPUS__
     // opus
