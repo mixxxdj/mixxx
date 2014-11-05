@@ -90,9 +90,9 @@ class SampleUtil {
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                     CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples);
 
-    // Convert a buffer of SAMPLEs to a buffer of CSAMPLEs. Does not work
-    // in-place! pDest and pSrc must not be aliased.
-    static void convert(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
+    // Convert and normalize a buffer of SAMPLEs in the range [-SHRT_MAX, SHRT_MAX]
+    // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
+    static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples);
 
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r

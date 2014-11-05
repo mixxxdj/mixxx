@@ -82,13 +82,9 @@ void CachingReaderWorker::processChunkReadRequest(ChunkReadRequest* request,
     // SSE.
     CSAMPLE* buffer = request->chunk->data;
     //qDebug() << "Reading into " << buffer;
-    SampleUtil::convert(buffer, m_pSample, samples_read);
-
     // Normalize the samples from [SHRT_MIN, SHRT_MAX] to [-1.0, 1.0].
     // TODO(rryan): Change the SoundSource API to do this for us.
-    for (int i = 0; i < samples_read; ++i) {
-        buffer[i] /= SHRT_MAX;
-    }
+    SampleUtil::convertS16ToFloat32(buffer, m_pSample, samples_read);
 
     update->status = CHUNK_READ_SUCCESS;
     update->chunk->length = samples_read;

@@ -189,11 +189,15 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     // applyGain(pDest, gain);
 }
 
+namespace
+{
+    CSAMPLE const kSampleScale(1.0f / CSAMPLE(SHRT_MAX));
+}
+
 // static
-void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
-                         int iNumSamples) {
+void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc, int iNumSamples) {
     for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc[i];
+        pDest[i] = CSAMPLE(pSrc[i]) * kSampleScale;
     }
 }
 

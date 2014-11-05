@@ -8,6 +8,7 @@
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 #include "playerinfo.h"
+#include "sampleutil.h"
 #include "util/timer.h"
 #include "library/trackcollection.h"
 #include "analyserwaveform.h"
@@ -199,9 +200,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::SoundSource* pSoundSourc
 
         // Normalize the samples from [SHRT_MIN, SHRT_MAX] to [-1.0, 1.0].
         // TODO(rryan): Change the SoundSource API to do this for us.
-        for (int i = 0; i < read; ++i) {
-            m_pSamples[i] = static_cast<CSAMPLE>(m_pSamplesPCM[i]) / SHRT_MAX;
-        }
+        SampleUtil::convertS16ToFloat32(m_pSamples, m_pSamplesPCM, read);
 
         QListIterator<Analyser*> it(m_aq);
 
