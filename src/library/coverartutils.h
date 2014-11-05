@@ -135,24 +135,32 @@ class CoverArtUtils {
 
         const QFileInfo trackInfo = pTrack->getFileInfo();
         const QString trackLocation = trackInfo.absoluteFilePath();
-        SecurityTokenPointer pToken = pTrack->getSecurityToken();
-        SoundSourceProxy proxy(trackLocation, pToken);
-        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-        if (pProxiedSoundSource != NULL) {
-            art.image = proxy.parseCoverArt();
-            if (!art.image.isNull()) {
-                art.info.hash = calculateHash(art.image);
-                art.info.coverLocation = QString();
-                art.info.type = CoverInfo::METADATA;
-                qDebug() << "CoverArtUtils::guessCoverArt found metadata art" << art;
-                return art;
-            }
+
+        art.image = extractEmbeddedCover(trackLocation);
+        if (!art.image.isNull()) {
+            art.info.hash = calculateHash(art.image);
+            art.info.coverLocation = QString();
+            art.info.type = CoverInfo::METADATA;
+            qDebug() << "CoverArtUtils::guessCoverArt found metadata art" << art;
+            return art;
         }
 
+        QLinkedList<QFileInfo> possibleCovers = findPossibleCoversInFolder(
+            trackInfo.absolutePath());
+        art = selectCoverArtForTrack(pTrack.data(), possibleCovers);
+        if (art.info.type == CoverInfo::FILE) {
+            qDebug() << "CoverArtUtils::guessCoverArt found file art" << art;
+        } else {
+            qDebug() << "CoverArtUtils::guessCoverArt didn't find art" << art;
+        }
+        return art;
+    }
+
+    static QLinkedList<QFileInfo> findPossibleCoversInFolder(const QString& folder) {
         // Search for image files in the track directory.
         QRegExp coverArtFilenames(supportedCoverArtExtensionsRegex(),
                                   Qt::CaseInsensitive);
-        QDirIterator it(trackInfo.absolutePath(),
+        QDirIterator it(folder,
                         QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
         QFile currentFile;
         QFileInfo currentFileInfo;
@@ -165,14 +173,7 @@ class CoverArtUtils {
                 possibleCovers.append(currentFileInfo);
             }
         }
-
-        art = selectCoverArtForTrack(pTrack.data(), possibleCovers);
-        if (art.info.type == CoverInfo::FILE) {
-            qDebug() << "CoverArtUtils::guessCoverArt found file art" << art;
-        } else {
-            qDebug() << "CoverArtUtils::guessCoverArt didn't find art" << art;
-        }
-        return art;
+        return possibleCovers;
     }
 
     // Selects an appropriate cover file from provided list of image files.

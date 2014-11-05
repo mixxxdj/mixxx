@@ -1648,19 +1648,8 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
             possibleCovers.clear();
             currentDirectoryPath = directoryPath;
             currentDirectory = MDir(currentDirectoryPath);
-            currentDirectory.dir().setFilter(
-                QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-            QDirIterator it(currentDirectory.dir());
-            QFile currentFile;
-            QFileInfo currentFileInfo;
-            while (it.hasNext()) {
-                it.next();
-                currentFileInfo = it.fileInfo();
-                if (currentFileInfo.isFile() &&
-                    coverArtFilenames.indexIn(currentFileInfo.fileName()) != -1) {
-                    possibleCovers.append(currentFileInfo);
-                }
-            }
+            possibleCovers = CoverArtUtils::findPossibleCoversInFolder(
+                currentDirectoryPath);
         }
 
         CoverArt art = CoverArtUtils::selectCoverArtForTrack(
