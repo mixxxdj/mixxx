@@ -37,12 +37,14 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
                                     const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::requestCover"
-                 << requestInfo << pRequestor << requestReference << desiredWidth << onlyCached << signalWhenDone;
+                 << requestInfo << pRequestor << requestReference <<
+                desiredWidth << onlyCached << signalWhenDone;
     }
 
     if (requestInfo.type == CoverInfo::NONE) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestReference, requestInfo, QPixmap(), true));
+            emit(coverFound(pRequestor, requestReference, requestInfo,
+                            QPixmap(), true));
         }
         return QPixmap();
     }
@@ -54,11 +56,11 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
         return QPixmap();
     }
 
-    // If this request comes from CoverDelegate (table view),
-    // it'll want to get a cropped cover which is ready to be drawn
-    // in the table view (cover art column).
-    // It's very important to keep the cropped covers in cache because it avoids
-    // having to rescale+crop it ALWAYS (which brings a lot of performance issues).
+    // If this request comes from CoverDelegate (table view), it'll want to get
+    // a cropped cover which is ready to be drawn in the table view (cover art
+    // column). It's very important to keep the cropped covers in cache because
+    // it avoids having to rescale+crop it ALWAYS (which brings a lot of
+    // performance issues).
     QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
                                                      desiredWidth);
 
