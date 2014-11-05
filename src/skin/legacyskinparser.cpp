@@ -457,7 +457,7 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     } else if (nodeName == "Spinny") {
         result = wrapWidget(parseSpinny(node));
     } else if (nodeName == "Time") {
-        result = wrapWidget(parseLabelWidget<WTime>(node));
+        result = wrapWidget(parseWTime(node));
     } else if (nodeName == "Splitter") {
         result = wrapWidget(parseSplitter(node));
     } else if (nodeName == "LibrarySidebar") {
@@ -748,6 +748,12 @@ QWidget* LegacySkinParser::parseStandardWidget(QDomElement element,
             m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
     return pWidget;
+}
+
+QWidget* LegacySkinParser::parseWTime(QDomElement element) {
+    WTime* pTime = new WTime(m_pConfig, m_pParent);
+    setupLabelWidget(element, pTime);
+    return pTime;
 }
 
 template <class T>
