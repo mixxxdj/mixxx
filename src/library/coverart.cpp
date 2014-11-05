@@ -11,6 +11,8 @@ QString sourceToString(CoverInfo::Source source) {
             return "GUESSED";
         case CoverInfo::USER_SELECTED:
             return "USER_SELECTED";
+        default:
+            return "INVALID INFO VALUE";
     }
 }
 
@@ -22,6 +24,8 @@ QString typeToString(CoverInfo::Type type) {
             return "METADATA";
         case CoverInfo::FILE:
             return "FILE";
+        default:
+            return "INVALID TYPE VALUE";
     }
 }
 
