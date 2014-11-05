@@ -537,14 +537,24 @@
 										<!--Search Input Field-->
 										<SearchBox></SearchBox>
 										<!--Library Tree View-->
+						 				<Splitter>
+										<Size>e,me</Size>
+										<Style></Style>
+										<SplitSizes>1,e</SplitSizes>
+										<Children>
 										<LibrarySidebar></LibrarySidebar>
 										<!--Cover Art-->
 										<CoverArt>
+											<MinimumSize>16,16</MinimumSize>
+											<SizePolicy>me,me</SizePolicy>
+
 											<Connection>
 												<ConfigKey>[Library],show_coverart</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</CoverArt>
+										</Children>
+										</Splitter>
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>
