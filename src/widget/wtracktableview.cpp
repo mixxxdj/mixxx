@@ -103,9 +103,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
 
-    m_pCOTGuiTick = new ControlObjectThread("[Master]", "guiTick50ms");
-    connect(m_pCOTGuiTick, SIGNAL(valueChanged(double)),
-            this, SLOT(slotGuiTick50ms(double)));
+    m_pCOTGuiTick = new ControlObjectSlave("[Master]", "guiTick50ms");
+    m_pCOTGuiTick->connectValueChanged(this, SLOT(slotGuiTick50ms(double)));
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));

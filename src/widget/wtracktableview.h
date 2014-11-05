@@ -5,6 +5,7 @@
 #include <QSortFilterProxyModel>
 
 #include "configobject.h"
+#include "controlobjectslave.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
@@ -167,7 +168,7 @@ class WTrackTableView : public WLibraryTableView {
     // Control the delay to load a cover art.
     qint64 m_lastUserActionNanos;
     bool m_loadCachedOnly;
-    ControlObjectThread* m_pCOTGuiTick;
+    ControlObjectSlave* m_pCOTGuiTick;
 };
 
 #endif
