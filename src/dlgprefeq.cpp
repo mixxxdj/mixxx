@@ -193,6 +193,8 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         box->setCurrentIndex(currentIndex); 
     }
 
+    availableFilterEffectNames.append(QPair<QString,QString>("", tr("None")));
+
     foreach (QComboBox* box, m_deckFilterEffectSelectors) {
         // Populate comboboxes with all available effects
         // Save current selection
