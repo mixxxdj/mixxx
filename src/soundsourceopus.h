@@ -22,7 +22,7 @@ class SoundSourceOpus : public Mixxx::SoundSource {
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
     Result parseHeader();
-    QImage parseCoverArt();
+    QImage parseCoverArt() { return QImage(); /* TODO */ }
     static QList<QString> supportedFileExtensions();
 	
   private:

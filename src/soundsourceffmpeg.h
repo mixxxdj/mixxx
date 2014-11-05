@@ -71,7 +71,7 @@ public:
     long seek(long);
     unsigned int read(unsigned long size, const SAMPLE*);
     Result parseHeader();
-    QImage parseCoverArt();
+    QImage parseCoverArt() { return QImage(); /* TODO */ }
     inline long unsigned length();
     bool readInput();
     static QList<QString> supportedFileExtensions();
