@@ -159,7 +159,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource) {
+bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::SoundSource* pSoundSource) {
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
@@ -303,8 +303,13 @@ void AnalyserQueue::run() {
         Trace trace("AnalyserQueue analyzing track");
 
         // Get the audio
-        SoundSourceProxy* pSoundSource = new SoundSourceProxy(nextTrack);
-        pSoundSource->open(); //Open the file for reading
+        SoundSourceProxy soundSourceProxy(nextTrack);
+        if (OK != soundSourceProxy.open()) {
+            qDebug() << "Failed to open file:" << nextTrack->getLocation();
+            continue;
+        }
+
+        Mixxx::SoundSource* pSoundSource = soundSourceProxy.getProxiedSoundSource();
         int iNumSamples = pSoundSource->length();
         int iSampleRate = pSoundSource->getSampleRate();
 
@@ -352,8 +357,6 @@ void AnalyserQueue::run() {
             emitUpdateProgress(nextTrack, 1000); // 100%
             qDebug() << "Skipping track analysis because no analyzer initialized.";
         }
-
-        delete pSoundSource;
 
         m_qm.lock();
         m_queue_size = m_tioq.size();
