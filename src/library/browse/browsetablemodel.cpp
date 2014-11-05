@@ -40,6 +40,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_LOCATION, tr("Location"));
     header_data.insert(COLUMN_ALBUMARTIST, tr("Album Artist"));
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));
+    header_data.insert(COLUMN_FILE_MODIFIED_TIME, tr("File Modified"));
+    header_data.insert(COLUMN_FILE_CREATION_TIME, tr("File Created"));
 
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
@@ -51,6 +53,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     addSearchColumn(COLUMN_COMMENT);
     addSearchColumn(COLUMN_ALBUMARTIST);
     addSearchColumn(COLUMN_GROUPING);
+    addSearchColumn(COLUMN_FILE_MODIFIED_TIME);
+    addSearchColumn(COLUMN_FILE_CREATION_TIME);
 
     setHorizontalHeaderLabels(header_data);
     // register the QList<T> as a metatype since we use QueuedConnection below
@@ -286,10 +290,12 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
     int column = index.column();
 
     if (isTrackInUse(track_location) ||
-       column == COLUMN_FILENAME ||
-       column == COLUMN_BITRATE ||
-       column == COLUMN_DURATION ||
-       column == COLUMN_TYPE) {
+            column == COLUMN_FILENAME ||
+            column == COLUMN_BITRATE ||
+            column == COLUMN_DURATION ||
+            column == COLUMN_TYPE ||
+            column == COLUMN_FILE_MODIFIED_TIME ||
+            column == COLUMN_FILE_CREATION_TIME) {
         return defaultFlags;
     } else {
         return defaultFlags | Qt::ItemIsEditable;
@@ -362,7 +368,6 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (col == COLUMN_GROUPING) {
         tagger.setGrouping(value.toString());
     }
-
 
     QStandardItem* item = itemFromIndex(index);
     if (tagger.save()) {

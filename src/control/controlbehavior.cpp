@@ -98,50 +98,38 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
 #define middlePosition ((maxPosition - minPosition) / 2.0)
 #define positionrange (maxPosition - minPosition)
 
-ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, false),
-          m_dB1(0.0),
-          m_dB2(0.0) {
-    if (dMaxValue == 1.0 || dMinValue != 0.0 ) {
-        m_bTwoState = false;
-        m_dB1 = log10((dMaxValue - dMinValue) + 1.0) / maxPosition;
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+    if (minDB >= 0) {
+        qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
+        m_minDB = -1;
     } else {
-        m_bTwoState = true;
-        m_dB1 = log10(2.0) / middlePosition;
-        m_dB2 = log10(dMaxValue) / (maxPosition - middlePosition);
+        m_minDB = minDB;
     }
+    m_minOffset = db2ratio(m_minDB);
 }
 
 ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
 }
 
 double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
+    if (m_dValueRange == 0.0) {
+        return 0;
+    }
     if (dValue > m_dMaxValue) {
         dValue = m_dMaxValue;
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
-    if (!m_bTwoState) {
-        return log10((dValue - m_dMinValue) + 1) / m_dB1;
-    } else {
-        if (dValue > 1.0) {
-            return log10(dValue) / m_dB2 + middlePosition;
-        } else {
-            return log10(dValue + 1.0) / m_dB1;
-        }
-    }
+    double linPrameter = (dValue - m_dMinValue) / m_dValueRange;
+    double dbParamter = ratio2db(linPrameter + m_minOffset * (1 - linPrameter));
+    return 1 - (dbParamter / m_minDB);
 }
 
 double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
-    if (!m_bTwoState) {
-        return pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
-    } else {
-        if (dParam <= middlePosition) {
-            return pow(10.0, m_dB1 * dParam) - 1;
-        } else {
-            return pow(10.0, m_dB2 * (dParam - middlePosition));
-        }
-    }
+    double dbParamter = (1 - dParam) * m_minDB;
+    double linPrameter = (db2ratio(dbParamter) - m_minOffset) / (1 - m_minOffset);
+    return m_dMinValue + (linPrameter * m_dValueRange);
 }
 
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,

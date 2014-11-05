@@ -149,6 +149,14 @@ class TrackInfoObject : public QObject {
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
 
+    // Returns file modified datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileModifiedTime() const;
+
+    // Returns file creation datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileCreationTime() const;
+
     // Getter/Setter methods for metadata
     // Return title
     QString getTitle() const;

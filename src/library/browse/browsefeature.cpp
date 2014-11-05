@@ -47,6 +47,9 @@ BrowseFeature::BrowseFeature(QObject* parent,
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
+    // of the item.
+    m_proxyModel.setSortRole(Qt::UserRole);
 
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
@@ -142,10 +145,10 @@ void BrowseFeature::slotAddToLibrary() {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     // strings are dupes from DlgPrefLibrary
-    msgBox.setWindowTitle(tr("Added Directory"));
-    msgBox.setText(tr(
-        "You added one or more library directories. These files won't be"
-        "available until you rescan. Would you like to rescan now?"));
+    msgBox.setWindowTitle(tr("Music Directory Added"));
+    msgBox.setText(tr("You added one or more music directories. The tracks in "
+                      "these directories won't be available until you rescan "
+                      "your library. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
         tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);

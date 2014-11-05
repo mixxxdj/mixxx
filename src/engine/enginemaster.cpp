@@ -137,14 +137,16 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
     // X-Fader Setup
-    m_pXFaderMode = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
+    m_pXFaderMode = new ControlPushButton(
+            ConfigKey("[Mixer Profile]", "xFaderMode"));
+    m_pXFaderMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pXFaderCurve = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
+            ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
     m_pXFaderCalibration = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
-    m_pXFaderReverse = new ControlPotmeter(
-        ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
+            ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+    m_pXFaderReverse = new ControlPushButton(
+            ConfigKey("[Mixer Profile]", "xFaderReverse"));
+    m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),
                                          true, false, true);
@@ -224,15 +226,13 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                                    int iBufferSize) {
     ScopedTimer timer("EngineMaster::processChannels");
 
-    QList<ChannelInfo*>::iterator it = m_channels.begin();
-
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
 
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
     m_activeChannels.clear();
     m_activeChannels.reserve(m_channels.size());
-    it = m_channels.begin();
+    QList<ChannelInfo*>::iterator it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
@@ -347,7 +347,7 @@ void EngineMaster::process(const int iBufferSize) {
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
                                 m_pXFaderMode->get() == MIXXX_XFADER_CONSTPWR,
-                                m_pXFaderReverse->get() == 1.0,
+                                m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain);
 
     // Channels with the talkover flag should be mixed with the master signal at

@@ -86,8 +86,6 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pPlay = new ControlObjectThread(group, "play");
     connect(m_pPlay, SIGNAL(valueChanged(double)),
             this, SLOT(slotPlayToggled(double)));
-    connect(m_pPlay, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotPlayToggled(double)));
 }
 
 BaseTrackPlayer::~BaseTrackPlayer()
