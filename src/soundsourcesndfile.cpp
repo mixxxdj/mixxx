@@ -35,9 +35,9 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
       channels(0),
       fh(NULL)
 {
+    // Must be set to 0 per the API for reading (non-RAW files)
+    memset(&info, 0, sizeof(info));
     m_bOpened = false;
-    info = new SF_INFO;
-    info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
     filelength = 0;
 }
 
@@ -63,10 +63,10 @@ Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
-    fh = sf_wchar_open(lpcwFilename, SFM_READ, info);
+    fh = sf_wchar_open(lpcwFilename, SFM_READ, &info);
 #else
     QByteArray qbaFilename = m_qFilename.toLocal8Bit();
-    fh = sf_open(qbaFilename.constData(), SFM_READ, info);
+    fh = sf_open(qbaFilename.constData(), SFM_READ, &info);
 #endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
@@ -194,8 +194,8 @@ Result SoundSourceSndFile::parseHeader()
                 open();
             }
 
-            if (info->samplerate > 0) {
-                setDuration(info->frames / info->samplerate);
+            if (info.samplerate > 0) {
+                setDuration(info.frames / info.samplerate);
             } else {
                 qDebug() << "WARNING: WAV file with invalid samplerate."
                          << "Can't get duration using libsndfile.";

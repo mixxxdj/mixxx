@@ -45,7 +45,7 @@ private:
     bool m_bOpened;
     int channels;
     SNDFILE *fh;
-    SF_INFO *info;
+    SF_INFO info;
     unsigned long filelength;
 };
 
