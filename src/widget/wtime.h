@@ -7,14 +7,13 @@
 
 #include <QTimer>
 
-#include "configobject.h"
 #include "widget/wlabel.h"
 #include "skin/skincontext.h"
 
 class WTime: public WLabel {
     Q_OBJECT
   public:
-    WTime(ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
+    WTime(QWidget *parent=0);
     virtual ~WTime();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -25,7 +24,6 @@ class WTime: public WLabel {
   private:
     void setTimeFormat(QDomNode node, const SkinContext& context);
 
-    ConfigObject<ConfigValue>* m_pConfig;
     QTimer* m_pTimer;
     QString m_sTimeFormat;
     // m_iInterval defines how often the time will be updated
