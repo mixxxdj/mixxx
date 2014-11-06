@@ -201,7 +201,7 @@
 						</Template>	
 					</Children>
 					<Connection>
-						<ConfigKey>[Samplers],show_samplers</ConfigKey>
+						<ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
 						<BindProperty>visible</BindProperty>
 					</Connection>
 				</WidgetGroup>
@@ -221,7 +221,7 @@
 						</Template>
 					</Children>
 					<Connection>
-						<ConfigKey>[EffectRack1],show</ConfigKey>
+						<ConfigKey persist="true">[EffectRack1],show</ConfigKey>
 						<BindProperty>visible</BindProperty>
 					</Connection>
 				</WidgetGroup>
@@ -530,7 +530,7 @@
 												</WidgetGroup>
 											</Children>
 											<Connection>
-												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+												<ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
@@ -548,7 +548,7 @@
 													<MinimumSize>16,16</MinimumSize>
 													<SizePolicy>me,me</SizePolicy>
 													<Connection>
-														<ConfigKey>[Library],show_coverart</ConfigKey>
+														<ConfigKey persist="true">[Library],show_coverart</ConfigKey>
 														<BindProperty>visible</BindProperty>
 													</Connection>
 												</CoverArt>
