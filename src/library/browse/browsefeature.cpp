@@ -203,6 +203,7 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
 void BrowseFeature::activate() {
     emit(switchToView("BROWSEHOME"));
     emit(restoreSearch(QString()));
+    emit(enableCoverArtDisplay(false));
 }
 
 // Note: This is executed whenever you single click on an child item
@@ -231,6 +232,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         m_browseModel.setPath(dir);
     }
     emit(showTrackModel(&m_proxyModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
