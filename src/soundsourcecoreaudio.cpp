@@ -18,6 +18,7 @@
 #include <taglib/mp4file.h>
 
 #include "soundsourcecoreaudio.h"
+#include "soundsourcetaglib.h"
 #include "util/math.h"
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
@@ -184,45 +185,55 @@ inline unsigned long SoundSourceCoreAudio::length() {
 }
 
 Result SoundSourceCoreAudio::parseHeader() {
-    if (getFilename().endsWith(".m4a"))
+    if (getFilename().endsWith(".m4a")) {
         setType("m4a");
-    else if (getFilename().endsWith(".mp3"))
-        setType("mp3");
-    else if (getFilename().endsWith(".mp2"))
-        setType("mp2");
-
-    bool result = false;
-
-    if (getType() == "m4a") {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-        result = processTaglibFile(f);
-        TagLib::MP4::Tag* tag = f.tag();
-        if (tag) {
-            processMP4Tag(tag);
+        if (!readFileHeader(this, f)) {
+            return ERR;
         }
-    } else if (getType() == "mp3") {
-        // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
+        TagLib::MP4::Tag *mp4(f.tag());
+        if (mp4) {
+            readMP4Tag(this, *mp4);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
+        }
+    } else if (getFilename().endsWith(".mp3")) {
+        setType("mp3");
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-
-        // Takes care of all the default metadata
-        result = processTaglibFile(f);
-
-        // Now look for MP3 specific metadata (e.g. BPM)
+        if (!readFileHeader(this, f)) {
+            return ERR;
+        }
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
-            processID3v2Tag(id3v2);
+            readID3v2Tag(this, *id3v2);
+        } else {
+            TagLib::APE::Tag *ape = f.APETag();
+            if (ape) {
+                readAPETag(this, *ape);
+            } else {
+                // fallback
+                const TagLib::Tag *tag(f.tag());
+                if (tag) {
+                    readTag(this, *tag);
+                } else {
+                    return ERR;
+                }
+            }
         }
-
-        TagLib::APE::Tag *ape = f.APETag();
-        if (ape) {
-            processAPETag(ape);
-        }
-    } else if (getType() == "mp2") {
+    } else if (getFilename().endsWith(".mp2")) {
+        setType("mp2");
         //TODO: MP2 metadata. Does anyone use mp2 files anymore?
         //      Feels like 1995 again...
+        return ERR;
     }
 
-    return result ? OK : ERR;
+    return OK;
 }
 
 QImage SoundSourceCoreAudio::parseCoverArt() {
@@ -230,14 +241,26 @@ QImage SoundSourceCoreAudio::parseCoverArt() {
     if (getFilename().endsWith(".m4a")) {
         setType("m4a");
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-        coverArt = getCoverInMP4Tag(f.tag());
+        TagLib::MP4::Tag *mp4(f.tag());
+        if (mp4) {
+            return Mixxx::getCoverInMP4Tag(*mp4);
+        } else {
+            return QImage();
+        }
     } else if (getFilename().endsWith(".mp3")) {
         setType("mp3");
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-        coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
-        if (coverArt.isNull()) {
-            coverArt = getCoverInAPETag(f.APETag());
+        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
         }
+        if (coverArt.isNull()) {
+            TagLib::APE::Tag *ape = f.APETag();
+            if (ape) {
+                coverArt = Mixxx::getCoverInAPETag(*ape);
+            }
+        }
+        return coverArt;
     }
     return coverArt;
 }

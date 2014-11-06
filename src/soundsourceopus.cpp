@@ -188,13 +188,21 @@ Result SoundSourceOpus::parseHeader() {
 #if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
+    if (!readFileHeader(this, f)) {
+        return ERR;
+    }
 
-    TagLib::Ogg::XiphComment *tag = f.tag();
-
-    if (tag) {
-        processXiphComment(tag);
+    TagLib::Ogg::XiphComment *xiph = f.tag();
+    if (xiph) {
+        readXiphComment(this, *xiph);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
     }
 #else
     // From Taglib 1.9.x Opus is supported
@@ -215,7 +223,7 @@ Result SoundSourceOpus::parseHeader() {
       } else if (!l_STag.compare("ALBUM")) {
             this->setAlbum(l_SPayload);
       } else if (!l_STag.compare("BPM")) {
-            this->setBPM(l_SPayload.toFloat());
+            this->setBpm(l_SPayload.toFloat());
       } else if (!l_STag.compare("YEAR") || !l_STag.compare("DATE")) {
             this->setYear(l_SPayload);
       } else if (!l_STag.compare("GENRE")) {
@@ -230,7 +238,7 @@ Result SoundSourceOpus::parseHeader() {
             this->setTitle(l_SPayload);
       } else if (!l_STag.compare("REPLAYGAIN_TRACK_PEAK")) {
       } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            this->parseReplayGainString (l_SPayload);
+            this->setReplayGainString (l_SPayload);
       } else if (!l_STag.compare("REPLAYGAIN_ALBUM_PEAK")) {
       } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
       }
@@ -241,14 +249,9 @@ Result SoundSourceOpus::parseHeader() {
     }
 
     op_free(l_ptrOpusFile);
+#endif
+
     return OK;
-#endif
-
-
-#if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
-    return result ? OK : ERR;
-#endif
-
 }
 
 /*

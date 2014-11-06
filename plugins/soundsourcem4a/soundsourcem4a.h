@@ -17,6 +17,12 @@
 #ifndef SOUNDSOURCEM4A_H
 #define SOUNDSOURCEM4A_H
 
+#include "soundsource.h"
+
+#include "m4a/ip.h"
+
+#include "defs_version.h"
+
 #ifdef __MP4V2__
     #include <mp4v2/mp4v2.h>
 #else
@@ -24,11 +30,9 @@
 #endif
 
 #include <neaacdec.h>
+
 #include <QString>
-#include "soundsource.h"
-#include "defs_version.h"
-#include "m4a/ip.h"
-#include "util/defs.h"
+#include <QDebug>
 
 //As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
 #ifdef Q_OS_WIN
@@ -36,6 +40,7 @@
 #else
 #define MY_EXPORT
 #endif
+
 
 namespace Mixxx {
 

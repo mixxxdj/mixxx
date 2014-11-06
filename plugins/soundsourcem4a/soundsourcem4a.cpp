@@ -14,7 +14,14 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "soundsourcem4a.h"
+#include "soundsourcetaglib.h"
+#include "sampleutil.h"
+
+#include "m4a/mp4-mixxx.cpp"
+
 #include <taglib/mp4file.h>
+
 #include <neaacdec.h>
 
 #ifdef __MP4V2__
@@ -29,9 +36,6 @@
 #endif
 
 #include <QtDebug>
-#include "soundsourcem4a.h"
-#include "sampleutil.h"
-#include "m4a/mp4-mixxx.cpp"
 
 namespace Mixxx {
 
@@ -42,6 +46,7 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
     , channels(0)
     , filelength(0)
 {
+    setType("m4a");
     memset(&ipd, 0, sizeof(ipd));
 }
 
@@ -176,26 +181,30 @@ inline long unsigned SoundSourceM4A::length(){
 }
 
 Result SoundSourceM4A::parseHeader(){
-    setType("m4a");
-
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
 
-    bool result = processTaglibFile(f);
-    TagLib::MP4::Tag* tag = f.tag();
-
-    if (tag) {
-        processMP4Tag(tag);
+    if (!readFileHeader(this, f)) {
+        return ERR;
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    TagLib::MP4::Tag *mp4(f.tag());
+    if (mp4) {
+        readMP4Tag(this, *mp4);
+    } else {
+        return ERR;
+    }
+
+    return OK;
 }
 
 QImage SoundSourceM4A::parseCoverArt() {
-    setType("m4a");
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-    return getCoverInMP4Tag(f.tag());
+    TagLib::MP4::Tag *mp4(f.tag());
+    if (mp4) {
+        return getCoverInMP4Tag(*mp4);
+    } else {
+        return QImage();
+    }
 }
 
 QList<QString> SoundSourceM4A::supportedFileExtensions()

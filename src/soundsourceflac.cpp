@@ -13,11 +13,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <cstring> // memcpy
-#include <QtDebug>
+#include "soundsourceflac.h"
+#include "soundsourcetaglib.h"
+
 #include <taglib/flacfile.h>
 
-#include "soundsourceflac.h"
+#include <QtDebug>
+
+#include <cstring> // memcpy
+
 
 SoundSourceFLAC::SoundSourceFLAC(QString filename)
     : Mixxx::SoundSource(filename)
@@ -155,34 +159,54 @@ Result SoundSourceFLAC::parseHeader() {
     setType("flac");
     QByteArray qBAFilename = getFilename().toLocal8Bit();
     TagLib::FLAC::File f(qBAFilename.constData());
-    bool result = processTaglibFile(f);
-    TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
-    TagLib::Ogg::XiphComment *xiph(f.xiphComment());
-    if (id3v2) {
-        processID3v2Tag(id3v2);
-    }
-    if (xiph) {
-        processXiphComment(xiph);
+
+    if (!readFileHeader(this, f)) {
+        return ERR;
     }
 
-    return result ? OK : ERR;
+    TagLib::Ogg::XiphComment *xiph(f.xiphComment());
+    if (xiph) {
+        readXiphComment(this, *xiph);
+    }
+    else {
+        TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
+        if (id3v2) {
+            readID3v2Tag(this, *id3v2);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
+        }
+    }
+
+    return OK;
 }
 
 QImage SoundSourceFLAC::parseCoverArt() {
     QImage coverArt;
     setType("flac");
     TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
-    coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
-    if (coverArt.isNull()) {
-        coverArt = getCoverInXiphComment(f.xiphComment());
+    TagLib::Ogg::XiphComment *xiph(f.xiphComment());
+    if (xiph) {
+        coverArt = Mixxx::getCoverInXiphComment(*xiph);
     }
     if (coverArt.isNull()) {
-        TagLib::List<TagLib::FLAC::Picture*> covers = f.pictureList();
-        if (!covers.isEmpty()) {
-            std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
-            TagLib::FLAC::Picture* cover = *it;
-            coverArt = QImage::fromData(
-                QByteArray(cover->data().data(), cover->data().size()));
+        TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
+        if (coverArt.isNull()) {
+            TagLib::List<TagLib::FLAC::Picture*> covers = f.pictureList();
+            if (!covers.isEmpty()) {
+                std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
+                TagLib::FLAC::Picture* cover = *it;
+                coverArt = QImage::fromData(
+                    QByteArray(cover->data().data(), cover->data().size()));
+            }
         }
     }
     return coverArt;

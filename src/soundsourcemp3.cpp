@@ -14,12 +14,14 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
+#include "soundsourcemp3.h"
+#include "soundsourcetaglib.h"
+#include "util/math.h"
 
 #include <taglib/mpegfile.h>
 
-#include "soundsourcemp3.h"
-#include "util/math.h"
+#include <QtDebug>
+
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename)
     : Mixxx::SoundSource(qFilename)
@@ -39,6 +41,7 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename)
     mad_stream_init(&madStream);
     mad_synth_init(&madSynth);
     mad_frame_init(&madFrame);
+    setType("mp3");
 }
 
 SoundSourceMp3::~SoundSourceMp3()
@@ -547,34 +550,47 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 }
 
 Result SoundSourceMp3::parseHeader() {
-    setType("mp3");
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
+    QByteArray qBAFilename(getFilename().toLocal8Bit());
     TagLib::MPEG::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
+    if (!readFileHeader(this, f)) {
+        return ERR;
+    }
 
     // Now look for MP3 specific metadata (e.g. BPM)
     TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
     if (id3v2) {
-        processID3v2Tag(id3v2);
+        readID3v2Tag(this, *id3v2);
+    } else {
+        TagLib::APE::Tag *ape = f.APETag();
+        if (ape) {
+            readAPETag(this, *ape);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
+        }
     }
 
-    TagLib::APE::Tag *ape = f.APETag();
-    if (ape) {
-        processAPETag(ape);
-    }
-
-    return result ? OK : ERR;
+    return OK;
 }
 
 QImage SoundSourceMp3::parseCoverArt() {
     QImage coverArt;
-    setType("mp3");
     TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-    coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+    TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+    if (id3v2) {
+        coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+    }
     if (coverArt.isNull()) {
-        coverArt = getCoverInAPETag(f.APETag());
+        TagLib::APE::Tag *ape = f.APETag();
+        if (ape) {
+            coverArt = Mixxx::getCoverInAPETag(*ape);
+        }
     }
     return coverArt;
 }

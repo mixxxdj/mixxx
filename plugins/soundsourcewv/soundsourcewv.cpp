@@ -5,10 +5,11 @@
 
 #include <QtDebug>
 
-#include <taglib/wavpackfile.h>
-
 #include "soundsourcewv.h"
+#include "soundsourcetaglib.h"
 #include "sampleutil.h"
+
+#include <taglib/wavpackfile.h>
 
 namespace Mixxx {
 
@@ -18,6 +19,7 @@ SoundSourceWV::SoundSourceWV(QString qFilename)
     , Bps(0)
     , channels(0)
     , filelength(0) {
+    setType("wv");
 }
 
 SoundSourceWV::~SoundSourceWV(){
@@ -124,29 +126,37 @@ inline long unsigned SoundSourceWV::length(){
 
 
 Result SoundSourceWV::parseHeader() {
-    setType("wv");
-
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
     TagLib::WavPack::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
+    if (!readFileHeader(this, f)) {
+        return ERR;
+    }
 
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
-        processAPETag(ape);
+        readAPETag(this, *ape);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    return OK;
 }
 
 QImage SoundSourceWV::parseCoverArt() {
-    setType("wv");
     TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
     TagLib::APE::Tag *ape = f.APETag();
-    return getCoverInAPETag(ape);
+    if (ape) {
+        return Mixxx::getCoverInAPETag(*ape);
+    } else {
+        return QImage();
+    }
 }
 
 void SoundSourceWV::format_samples(int Bps, char *dst, int32_t *src, uint32_t count)

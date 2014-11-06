@@ -30,6 +30,7 @@
 #include <propvarutil.h>
 
 #include "soundsourcemediafoundation.h"
+#include "soundsourcetaglib.h"
 
 const int kBitsPerSample = 16;
 const int kNumChannels = 2;
@@ -379,22 +380,23 @@ Result SoundSourceMediaFoundation::parseHeader()
 
     // Must be toLocal8Bit since Windows fopen does not do UTF-8
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-    bool result = processTaglibFile(f);
-    TagLib::MP4::Tag* tag = f.tag();
-
-    if (tag) {
-        processMP4Tag(tag);
+    if (!readFileHeader(this, f)) {
+        return ERR;
+    }
+    TagLib::MP4::Tag *mp4(f.tag());
+    if (mp4) {
+        readMP4Tag(this, *mp4);
+    } else {
+        return ERR;
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    return OK;
 }
 
 QImage SoundSourceMediaFoundation::parseCoverArt() {
     setType("m4a");
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-    return getCoverInMP4Tag(f.tag());
+    return Mixxx::getCoverInMP4Tag(f.tag());
 }
 
 // static

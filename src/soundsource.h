@@ -22,12 +22,6 @@
 #include <QString>
 #include <QSharedPointer>
 
-#include <taglib/tfile.h>
-#include <taglib/apetag.h>
-#include <taglib/id3v2tag.h>
-#include <taglib/xiphcomment.h>
-#include <taglib/mp4tag.h>
-
 #include "util/types.h"
 #include "util/defs.h"
 
@@ -117,7 +111,7 @@ public:
         return m_sKey;
     }
     float getBPM() const {
-        return m_fBPM;
+        return m_fBpm;
     }
     int getChannels() const {
         return m_iChannels;
@@ -162,22 +156,17 @@ public:
     void setTrackNumber(QString trackNumber) {
         m_sTrackNumber = trackNumber;
     }
-    void setReplayGain(float replayGain) {
-        m_fReplayGain = replayGain;
-    }
     void setKey(QString key){
         m_sKey = key;
     }
-    void setBPM(float bpm) {
-        m_fBPM = bpm;
+    void setBpm(float bpm) {
+        m_fBpm = bpm;
     }
-
-protected:
-    explicit SoundSource(QString qFilename);
-
-    void setType(QString type) {
-        m_sType = type;
+    void setBpmString(const QString& sBpm);
+    void setReplayGain(float replayGain) {
+        m_fReplayGain = replayGain;
     }
+    void setReplayGainString(QString sReplayGain);
 
     void setChannels(int channels) {
         m_iChannels = channels;
@@ -192,24 +181,12 @@ protected:
         m_iDuration = duration;
     }
 
-    // Automatically collects generic data from a TagLib File: title, artist,
-    // album, comment, genre, year, tracknumber, duration, bitrate, samplerate,
-    // and channels.
-    bool processTaglibFile(TagLib::File& f);
-    bool processID3v2Tag(TagLib::ID3v2::Tag* id3v2);
-    bool processAPETag(TagLib::APE::Tag* ape);
-    bool processXiphComment(TagLib::Ogg::XiphComment* xiph);
-    bool processMP4Tag(TagLib::MP4::Tag* mp4);
+protected:
+    explicit SoundSource(QString qFilename);
 
-    void processBpmString(QString tagName, QString sBpm);
-    void parseReplayGainString(QString sReplayGain);
-
-    // In order to avoid processing images when it's not
-    // needed (TIO building), we must process it separately.
-    QImage getCoverInID3v2Tag(TagLib::ID3v2::Tag* id3v2);
-    QImage getCoverInAPETag(TagLib::APE::Tag* ape);
-    QImage getCoverInXiphComment(TagLib::Ogg::XiphComment* xiph);
-    QImage getCoverInMP4Tag(TagLib::MP4::Tag* mp4);
+    void setType(QString type) {
+        m_sType = type;
+    }
 
 private:
     const QString m_qFilename;
@@ -229,7 +206,7 @@ private:
 
     //Dontcha be forgettin' to initialize these variables.... arr
     float m_fReplayGain;
-    float m_fBPM;
+    float m_fBpm;
     int m_iChannels;
     int m_iBitrate;
     unsigned int m_iSampleRate;

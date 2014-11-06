@@ -610,7 +610,7 @@ Result SoundSourceFFmpeg::parseHeader() {
             this->setTitle(strValue);
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_PEAK", 20)) {
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_GAIN", 20)) {
-            this->parseReplayGainString (strValue);
+            this->setReplayGainString (strValue);
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_PEAK", 20)) {
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_GAIN", 20)) {
         }

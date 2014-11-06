@@ -14,12 +14,16 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "soundsourceoggvorbis.h"
+#include "soundsourcetaglib.h"
+#include "sampleutil.h"
+
 #include <taglib/vorbisfile.h>
+
 #include <vorbis/codec.h>
 
-#include "soundsourceoggvorbis.h"
-#include "sampleutil.h"
 #include <QtDebug>
+
 #ifdef __WINDOWS__
 #include <io.h>
 #include <fcntl.h>
@@ -52,6 +56,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
     , filelength(0)
     , current_section(0) {
     memset(&vf, 0, sizeof(vf));
+    setType("ogg");
 }
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()
@@ -184,6 +189,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     unsigned int index=0,ret=0;
 
     // loop until requested number of samples has been retrieved
+    int current_section;
     while (needed > 0) {
         // read samples into buffer
         ret = ov_read(&vf, pRead+index, needed, getByteOrder(), 2, 1, &current_section);
@@ -216,27 +222,37 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
    Parse the the file to get metadata
  */
 Result SoundSourceOggVorbis::parseHeader() {
-    setType("ogg");
     QByteArray qBAFilename = getFilename().toLocal8Bit();
     TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
-
-
-    TagLib::Ogg::XiphComment *tag = f.tag();
-
-    if (tag) {
-        processXiphComment(tag);
+    if (!readFileHeader(this, f)) {
+        return ERR;
     }
 
-    return result ? OK : ERR;
+    TagLib::Ogg::XiphComment *xiph = f.tag();
+    if (xiph) {
+        readXiphComment(this, *xiph);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
+    }
+
+    return OK;
 }
 
 QImage SoundSourceOggVorbis::parseCoverArt() {
-    setType("ogg");
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
-    return getCoverInXiphComment(f.tag());
+    TagLib::Ogg::XiphComment *xiph = f.tag();
+    if (xiph) {
+        return Mixxx::getCoverInXiphComment(*xiph);
+    } else {
+        return QImage();
+    }
 }
 
 /*
