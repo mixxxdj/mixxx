@@ -5,7 +5,11 @@
 
 #include "trackinfoobject.h"
 
-class SoundSourceProxy;
+// forward declaration(s)
+namespace Mixxx
+{
+    class SoundSource;
+}
 
 class chromaprinter: public QObject {
   Q_OBJECT
@@ -16,7 +20,7 @@ class chromaprinter: public QObject {
 
   private:
 
-    QString calcFingerPrint(SoundSourceProxy& soundSource);
+    QString calcFingerPrint(Mixxx::SoundSource* pSoundSource);
     unsigned int m_NumSamples;
     unsigned int m_SampleRate;
 };

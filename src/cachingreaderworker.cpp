@@ -136,7 +136,6 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
     status.chunk = NULL;
     status.trackNumSamples = 0;
 
-    m_pCurrentSoundSource.reset();
     m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
@@ -152,13 +151,16 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
         return;
     }
 
-    m_pCurrentSoundSource.reset(new SoundSourceProxy(pTrack));
-    bool openSucceeded = (m_pCurrentSoundSource->open() == OK); //Open the song for reading
-    unsigned int trackSampleRate = m_pCurrentSoundSource->getSampleRate();
-    m_iTrackNumSamples = status.trackNumSamples =
-            m_pCurrentSoundSource->length();
-
-    if (!openSucceeded || m_iTrackNumSamples == 0 || trackSampleRate == 0) {
+    SoundSourceProxy soundSourceProxy(pTrack);
+    //Open the song for reading
+    bool openSucceeded = soundSourceProxy.open() == OK;
+    Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
+    unsigned int trackSampleRate = 0;
+    if (openSucceeded) {
+        trackSampleRate = pSoundSource->getSampleRate();
+        status.trackNumSamples = pSoundSource->length();
+    }
+    if (!openSucceeded || (status.trackNumSamples == 0) || (trackSampleRate == 0)) {
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_pGroup << "CachingReaderWorker::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";
@@ -168,6 +170,9 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
             pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
         return;
     }
+
+    m_pCurrentSoundSource = pSoundSource;
+    m_iTrackNumSamples = status.trackNumSamples;
 
     m_pReaderStatusFIFO->writeBlocking(&status, 1);
 

@@ -52,9 +52,9 @@ TEST_F(CoverArtCacheTest, loadCover) {
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
         QDir(kTrackLocationTest), true);
     SoundSourceProxy proxy(kTrackLocationTest, securityToken);
-    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    ASSERT_TRUE(pProxiedSoundSource != NULL);
-    img = proxy.parseCoverArt();
+    Mixxx::SoundSourcePointer pProxiedSoundSource(proxy.getSoundSource());
+    ASSERT_TRUE(pProxiedSoundSource);
+    img = pProxiedSoundSource->parseCoverArt();
 
     EXPECT_EQ(img, res.cover.image);
 }

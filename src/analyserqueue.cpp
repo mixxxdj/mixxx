@@ -160,7 +160,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::SoundSource* pSoundSource) {
+bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::SoundSourcePointer pSoundSource) {
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
@@ -308,10 +308,10 @@ void AnalyserQueue::run() {
             continue;
         }
 
-        Mixxx::SoundSource* pSoundSource = soundSourceProxy.getProxiedSoundSource();
+        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
+
         int iNumSamples = pSoundSource->length();
         int iSampleRate = pSoundSource->getSampleRate();
-
         if (iNumSamples == 0 || iSampleRate == 0) {
             qDebug() << "Skipping invalid file:" << nextTrack->getLocation();
             continue;

@@ -1625,9 +1625,9 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
 
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(trackInfo, true);
         SoundSourceProxy proxy(trackLocation, pToken);
-        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-        if (pProxiedSoundSource != NULL) {
-            QImage image = proxy.parseCoverArt();
+        Mixxx::SoundSourcePointer pProxiedSoundSource(proxy.getSoundSource());
+        if (pProxiedSoundSource) {
+            QImage image = pProxiedSoundSource->parseCoverArt();
             if (!image.isNull()) {
                 updateQuery.bindValue(":coverart_type",
                                       static_cast<int>(CoverInfo::METADATA));

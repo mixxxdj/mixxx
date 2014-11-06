@@ -41,11 +41,11 @@ class CoverArtUtils {
         SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
             QDir(trackLocation), true);
         SoundSourceProxy proxy(trackLocation, securityToken);
-        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
+        Mixxx::SoundSourcePointer pProxiedSoundSource(proxy.getSoundSource());
         if (pProxiedSoundSource == NULL) {
             return QImage();
         }
-        return proxy.parseCoverArt();
+        return pProxiedSoundSource->parseCoverArt();
     }
 
     static QImage loadCover(const CoverInfo& info) {

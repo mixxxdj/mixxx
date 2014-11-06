@@ -10,12 +10,8 @@
 #include "configobject.h"
 #include "analyser.h"
 #include "trackinfoobject.h"
+#include "soundsource.h"
 
-namespace Mixxx
-{
-    // forward declaration(s) from namespace Mixxx
-    class SoundSource;
-}
 class TrackCollection;
 
 class AnalyserQueue : public QThread {
@@ -62,7 +58,7 @@ class AnalyserQueue : public QThread {
 
     bool isLoadedTrackWaiting(TrackPointer tio);
     TrackPointer dequeueNextBlocking();
-    bool doAnalysis(TrackPointer tio, Mixxx::SoundSource* pSoundSource);
+    bool doAnalysis(TrackPointer tio, Mixxx::SoundSourcePointer pSoundSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
 
     bool m_exit;
