@@ -33,8 +33,10 @@ void WTime::setTimeFormat(QDomNode node, const SkinContext& context) {
         QLocale::FormatType format;
         if(secondsFormat == "true" || secondsFormat == "yes") {
             format = QLocale::LongFormat;
+            m_iInterval = s_iSecondInterval;
         } else {
             format = QLocale::ShortFormat;
+            m_iInterval = s_iMinuteInterval;
         }
         m_sTimeFormat = QLocale().timeFormat(format);
     } else {
