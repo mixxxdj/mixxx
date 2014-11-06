@@ -33,11 +33,11 @@
 				<Effect><Variable name="effectnum"/></Effect>
 				<EffectParameter><Variable name="effectparameternum"/></EffectParameter>
 			</EffectParameterName>
-	    		<WidgetGroup>
+			<WidgetGroup>
 				<Layout>vertical</Layout>
 				<Size>38,26</Size>
 				<Children>
-					<Knob>    			
+					<Knob>			
 						<TooltipId>master_volume</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
