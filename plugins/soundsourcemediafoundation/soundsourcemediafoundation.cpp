@@ -88,11 +88,11 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
 Result SoundSourceMediaFoundation::open()
 {
     if (sDebug) {
-        qDebug() << "open()" << m_qFilename;
+        qDebug() << "open()" << getFilename();
     }
 
-    QString qurlStr(m_qFilename);
-    int wcFilenameLength(m_qFilename.toWCharArray(m_wcFilename));
+    QString qurlStr(getFilename());
+    int wcFilenameLength(getFilename().toWCharArray(m_wcFilename));
     // toWCharArray does not append a null terminator to the string!
     m_wcFilename[wcFilenameLength] = '\0';
 
@@ -114,7 +114,7 @@ Result SoundSourceMediaFoundation::open()
     // Create the source reader to read the input file.
     hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
     if (FAILED(hr)) {
-        qWarning() << "SSMF: Error opening input file:" << m_qFilename;
+        qWarning() << "SSMF: Error opening input file:" << getFilename();
         return ERR;
     }
 

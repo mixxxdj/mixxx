@@ -83,9 +83,9 @@ private:
     /** current play position. */
     mad_timer_t pos;
     mad_timer_t filelength;
-    mad_stream *Stream;
-    mad_frame *Frame;
-    mad_synth *Synth;
+    mad_stream madStream;
+    mad_frame madFrame;
+    mad_synth madSynth;
     unsigned inputbuf_len;
     unsigned char *inputbuf;
 

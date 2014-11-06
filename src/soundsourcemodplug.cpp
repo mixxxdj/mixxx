@@ -15,33 +15,17 @@
 ModPlug::ModPlug_Settings SoundSourceModPlug::s_settings;
 int SoundSourceModPlug::s_bufferSizeLimit;
 
-SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
-    SoundSource(qFilename)
-{
-    m_opened = false;
-    m_fileLength = 0;
-    m_pModFile = 0;
-
-    qDebug() << "[ModPlug] Loading ModPlug module " << m_qFilename;
-
-    // read module file to byte array
-    QFile modFile(m_qFilename);
-    modFile.open(QIODevice::ReadOnly);
-    m_fileBuf = modFile.readAll();
-    modFile.close();
-    // get ModPlugFile descriptor for later access
-    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(), m_fileBuf.length());
-
-    if (m_pModFile==NULL) {
-        qDebug() << "[ModPlug] Error while ModPlug_Load";
-    }
+SoundSourceModPlug::SoundSourceModPlug(QString qFilename)
+    : SoundSource(qFilename)
+    , m_pModFile(NULL)
+    , m_fileLength(0)
+    , m_seekPos(0) {
 }
 
 SoundSourceModPlug::~SoundSourceModPlug()
 {
     if (m_pModFile) {
         ModPlug::ModPlug_Unload(m_pModFile);
-        m_pModFile = NULL;
     }
 }
 
@@ -72,11 +56,21 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 Result SoundSourceModPlug::open() {
     ScopedTimer t("SoundSourceModPlug::open()");
 
+    qDebug() << "[ModPlug] Loading ModPlug module " << getFilename();
+
+    // read module file to byte array
+    QFile modFile(getFilename());
+    modFile.open(QIODevice::ReadOnly);
+    m_fileBuf = modFile.readAll();
+    modFile.close();
+    // get ModPlugFile descriptor for later access
+    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(), m_fileBuf.length());
+
     if (m_pModFile == NULL) {
         // an error occured
         t.cancel();
         qDebug() << "[ModPlug] Could not load module file: "
-                 << m_qFilename;
+                 << getFilename();
         return ERR;
     }
 
@@ -122,8 +116,7 @@ Result SoundSourceModPlug::open() {
     // We count the number of samples by dividing number of
     // bytes in m_sampleBuf by 2 (bytes per sample).
     m_fileLength = m_sampleBuf.length() >> 1;
-    m_iSampleRate = 44100; // ModPlug always uses 44.1kHz
-    m_opened = true;
+    setSampleRate(44100); // ModPlug always uses 44.1kHz
     m_seekPos = 0;
     return OK;
 }
@@ -153,7 +146,7 @@ unsigned SoundSourceModPlug::read(unsigned long size,
 Result SoundSourceModPlug::parseHeader() {
     if (m_pModFile == NULL) {
         // an error occured
-        qDebug() << "Could not parse module header of " << m_qFilename;
+        qDebug() << "Could not parse module header of " << getFilename();
         return ERR;
     }
 

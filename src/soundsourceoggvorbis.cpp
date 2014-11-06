@@ -17,7 +17,6 @@
 #include <taglib/vorbisfile.h>
 #include <vorbis/codec.h>
 
-#include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
 #include "sampleutil.h"
 #include <QtDebug>
@@ -48,20 +47,20 @@ inline int getByteOrder() {
  */
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-: Mixxx::SoundSource(qFilename)
-{
-    filelength = 0;
+    : Mixxx::SoundSource(qFilename)
+    , channels(0)
+    , filelength(0)
+    , current_section(0) {
+    memset(&vf, 0, sizeof(vf));
 }
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()
 {
-    if (filelength > 0){
-        ov_clear(&vf);
-    }
+    ov_clear(&vf);
 }
 
 Result SoundSourceOggVorbis::open() {
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 #ifdef __WINDOWS__
     if(ov_fopen(qBAFilename.constData(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
@@ -72,7 +71,7 @@ Result SoundSourceOggVorbis::open() {
     FILE *vorbisfile =  fopen(qBAFilename.constData(), "r");
 
     if (!vorbisfile) {
-        qDebug() << "oggvorbis: cannot open" << m_qFilename;
+        qDebug() << "oggvorbis: cannot open" << getFilename();
         return ERR;
     }
 
@@ -87,7 +86,7 @@ Result SoundSourceOggVorbis::open() {
     vorbis_info * vi = ov_info(&vf, -1);
 
     channels = vi->channels;
-    m_iSampleRate = vi->rate;
+    setSampleRate(vi->rate);
 
     if(channels > 2){
         qDebug() << "oggvorbis: No support for more than 2 channels!";
@@ -111,7 +110,7 @@ Result SoundSourceOggVorbis::open() {
     {
       if (ret == OV_EINVAL) {
           //The file is not seekable. Not sure if any action is needed.
-          qDebug() << "oggvorbis: file is not seekable " << m_qFilename;
+          qDebug() << "oggvorbis: file is not seekable " << getFilename();
       }
     }
 
@@ -144,7 +143,7 @@ long SoundSourceOggVorbis::seek(long filepos)
         // frames and we pretend to the world that everything is stereo)
         return ov_pcm_tell(&vf) * 2;
     } else {
-        qDebug() << "ogg vorbis: Seek ERR at file " << m_qFilename;
+        qDebug() << "ogg vorbis: Seek ERR at file " << getFilename();
         return 0;
     }
 }
@@ -218,7 +217,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
  */
 Result SoundSourceOggVorbis::parseHeader() {
     setType("ogg");
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
     TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata
@@ -236,7 +235,7 @@ Result SoundSourceOggVorbis::parseHeader() {
 
 QImage SoundSourceOggVorbis::parseCoverArt() {
     setType("ogg");
-    TagLib::Ogg::Vorbis::File f(m_qFilename.toLocal8Bit().constData());
+    TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
     return getCoverInXiphComment(f.tag());
 }
 

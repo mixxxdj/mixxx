@@ -39,10 +39,9 @@ class SoundSourceModPlug : public Mixxx::SoundSource
     static int s_bufferSizeLimit; // max track buffer length (bytes)
     static ModPlug::ModPlug_Settings s_settings; // modplug decoder parameters
 
-    bool m_opened;
+    ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     unsigned long m_fileLength; // length of file in samples
     unsigned long m_seekPos; // current read position
-    ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     QByteArray m_fileBuf; // original module file data
     QByteArray m_sampleBuf; // 16bit stereo samples, 44.1kHz
 

@@ -24,29 +24,24 @@
 
 #include "soundsourcesndfile.h"
 #include "sampleutil.h"
-#include "trackinfoobject.h"
 #include "util/math.h"
 
 /*
    Class for reading files using libsndfile
  */
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
-    : Mixxx::SoundSource(qFilename),
-      channels(0),
-      fh(NULL)
+    : Mixxx::SoundSource(qFilename)
+    , fh(NULL)
+    , channels(0)
+    , filelength(0)
 {
     // Must be set to 0 per the API for reading (non-RAW files)
     memset(&info, 0, sizeof(info));
-    m_bOpened = false;
-    filelength = 0;
 }
 
 SoundSourceSndFile::~SoundSourceSndFile()
 {
-    if (m_bOpened) {
-        sf_close(fh);
-    }
-    delete info;
+    sf_close(fh);
 }
 
 QList<QString> SoundSourceSndFile::supportedFileExtensions()
@@ -62,30 +57,29 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions()
 Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
-    LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
+    LPCWSTR lpcwFilename = (LPCWSTR)getFilename().utf16();
     fh = sf_wchar_open(lpcwFilename, SFM_READ, &info);
 #else
-    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qbaFilename(getFilename().toLocal8Bit());
     fh = sf_open(qbaFilename.constData(), SFM_READ, &info);
 #endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
-        qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
     if (sf_error(fh)>0) {
-        qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
-    channels = info->channels;
+    channels = info.channels;
 
     // This is the 'virtual' filelength. No matter how many channels the file
     // actually has, we pretend it has 2.
-    filelength = 2*info->frames; // File length with two interleaved channels
-    m_iSampleRate =  info->samplerate;
-    m_bOpened = true;
+    filelength = 2*info.frames; // File length with two interleaved channels
+    setSampleRate(info.samplerate);
     return OK;
 }
 
@@ -149,7 +143,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
     }
 
     // The file has errors or is not open. Tell the truth and return 0.
-    qDebug() << "The file has errors or is not open: " << m_qFilename;
+    qDebug() << "The file has errors or is not open: " << getFilename();
     return 0;
 }
 
@@ -161,7 +155,7 @@ Result SoundSourceSndFile::parseHeader()
     bool result;
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     if (is_flac) {
         TagLib::FLAC::File f(qBAFilename.constData());
@@ -190,7 +184,7 @@ Result SoundSourceSndFile::parseHeader()
             // intelligent version of taglib, should happen in 11.10
 
             // Have to open the file for info to be valid.
-            if (!m_bOpened) {
+            if (fh == NULL) {
                 open();
             }
 
@@ -219,7 +213,7 @@ QImage SoundSourceSndFile::parseCoverArt() {
     QImage coverArt;
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     if (getType() == "flac") {
         TagLib::FLAC::File f(qBAFilename.constData());

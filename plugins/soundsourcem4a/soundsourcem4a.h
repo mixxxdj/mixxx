@@ -52,10 +52,11 @@ class SoundSourceM4A : public SoundSource {
         QImage parseCoverArt();
         static QList<QString> supportedFileExtensions();
     private:
-        int trackId;
-        unsigned long filelength;
         MP4FileHandle mp4file;
         input_plugin_data ipd;
+        int trackId;
+        int channels;
+        unsigned long filelength;
 };
 
 extern "C" MY_EXPORT const char* getMixxxVersion()

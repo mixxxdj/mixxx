@@ -36,23 +36,20 @@
 namespace Mixxx {
 
 SoundSourceM4A::SoundSourceM4A(QString qFileName)
-  : SoundSource(qFileName) {
-
-    // Initialize variables to invalid values in case loading fails.
-    mp4file = MP4_INVALID_FILE_HANDLE;
-    filelength = 0;
+    : SoundSource(qFileName)
+    , mp4file(MP4_INVALID_FILE_HANDLE)
+    , trackId(0)
+    , channels(0)
+    , filelength(0)
+{
     memset(&ipd, 0, sizeof(ipd));
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
-    if (ipd.filename) {
-        delete [] ipd.filename;
-        ipd.filename = NULL;
-    }
+    delete[] ipd.filename;
 
     if (mp4file != MP4_INVALID_FILE_HANDLE) {
         mp4_close(&ipd);
-        mp4file = MP4_INVALID_FILE_HANDLE;
     }
 }
 
@@ -70,8 +67,7 @@ Result SoundSourceM4A::open()
 int SoundSourceM4A::initializeDecoder()
 {
     // Copy QString to char[] buffer for mp4_open to read from later
-    QByteArray qbaFileName;
-    qbaFileName = m_qFilename.toLocal8Bit();
+    const QByteArray qbaFileName(getFilename().toLocal8Bit());
     int bytes = qbaFileName.length() + 1;
     ipd.filename = new char[bytes];
     strncpy(ipd.filename, qbaFileName.constData(), bytes);
@@ -84,7 +80,7 @@ int SoundSourceM4A::initializeDecoder()
     int mp4_open_status = mp4_open(&ipd);
     if (mp4_open_status != 0) {
         qWarning() << "SSM4A::initializeDecoder failed"
-                 << m_qFilename << " with status:" << mp4_open_status;
+                 << getFilename() << " with status:" << mp4_open_status;
         return ERR;
     }
 
@@ -93,8 +89,16 @@ int SoundSourceM4A::initializeDecoder()
     Q_ASSERT(mp);
     mp4file = mp->mp4.handle;
     filelength = mp4_total_samples(&ipd);
-    m_iSampleRate = mp->sample_rate;
-    m_iChannels = mp->channels;
+    setSampleRate(mp->sample_rate);
+    channels = mp->channels;
+    if (2 < channels) {
+        qWarning() << "SSM4A::initializeDecoder failed"
+                 << getFilename() << "unsupported number of channels" << channels;
+        return ERR;
+    } else {
+        // mono sources will internally be expanded to stereo
+        setChannels(2);
+    }
 
     return OK;
 }
@@ -125,7 +129,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
     // sample is 16-bits = 2 bytes here, so we multiply size by channels to
     // get the number of bytes we want to decode.
 
-    int total_bytes_to_decode = size * m_iChannels;
+    int total_bytes_to_decode = size * channels;
     int total_bytes_decoded = 0;
     int num_bytes_req = 4096;
     char* buffer = (char*)destination;
@@ -148,7 +152,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
     // At this point *destination should be filled. If mono : double all samples
     // (L => R)
-    if (1 == m_iChannels) {
+    if (1 == channels) {
         SampleUtil::inPlaceMonoToStereo(as_buffer, total_bytes_decoded / 2);
     }
 

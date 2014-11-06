@@ -81,9 +81,6 @@ public:
 
 
 protected:
-    void lock();
-    void unlock();
-
     bool readFramesToCache(unsigned int count, qint64 offset);
     bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
     quint64 getSizeofCache();
@@ -92,7 +89,6 @@ protected:
 private:
     int m_iAudioStream;
     quint64 filelength;
-    QString m_qFilename;
     AVFormatContext *m_pFormatCtx;
     AVInputFormat *m_pIformat;
     AVCodecContext *m_pCodecCtx;

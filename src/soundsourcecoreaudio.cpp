@@ -21,9 +21,9 @@
 #include "util/math.h"
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
-        : Mixxx::SoundSource(filename),
-          m_samples(0),
-          m_headerFrames(0) {
+        : Mixxx::SoundSource(filename)
+        , m_headerFrames(0)
+        , m_samples(0) {
 }
 
 SoundSourceCoreAudio::~SoundSourceCoreAudio() {
@@ -37,7 +37,7 @@ Result SoundSourceCoreAudio::open() {
 
     /** This code blocks works with OS X 10.5+ only. DO NOT DELETE IT for now. */
     CFStringRef urlStr = CFStringCreateWithCharacters(
-        0, reinterpret_cast<const UniChar *>(m_qFilename.unicode()), m_qFilename.size());
+        0, reinterpret_cast<const UniChar *>(getFilename().unicode()), getFilename().size());
     CFURLRef urlRef = CFURLCreateWithFileSystemPath(NULL, urlStr, kCFURLPOSIXPathStyle, false);
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
@@ -52,7 +52,7 @@ Result SoundSourceCoreAudio::open() {
     */
 
     if (err != noErr) {
-        qDebug() << "SSCA: Error opening file " << m_qFilename;
+        qDebug() << "SSCA: Error opening file " << getFilename();
         return ERR;
     }
 
@@ -62,7 +62,7 @@ Result SoundSourceCoreAudio::open() {
     m_inputFormat = inputFormat;
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
     if (err != noErr) {
-        qDebug() << "SSCA: Error getting file format (" << m_qFilename << ")";
+        qDebug() << "SSCA: Error getting file format (" << getFilename() << ")";
         return ERR;
     }
 
@@ -83,8 +83,7 @@ Result SoundSourceCoreAudio::open() {
         return ERR;
     }
 
-    // Set m_iChannels and m_samples.
-    m_iChannels = m_outputFormat.NumberChannels();
+    setChannels(m_outputFormat.NumberChannels());
 
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
     UInt32        dataSize;
@@ -114,10 +113,10 @@ Result SoundSourceCoreAudio::open() {
         m_headerFrames=primeInfo.leadingFrames;
     }
 
-    m_samples = (totalFrameCount/*-m_headerFrames*/)*m_iChannels;
-    m_iDuration = m_samples / (inputFormat.mSampleRate * m_iChannels);
-    m_iSampleRate = inputFormat.mSampleRate;
-    qDebug() << m_samples << totalFrameCount << m_iChannels;
+    m_samples = (totalFrameCount/*-m_headerFrames*/) * getChannels();
+    setDuration(m_samples / (inputFormat.mSampleRate * getChannels()));
+    setSampleRate(inputFormat.mSampleRate);
+    qDebug() << m_samples << totalFrameCount << getChannels();
 
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
@@ -141,7 +140,7 @@ long SoundSourceCoreAudio::seek(long filepos) {
 
     //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
     return filepos;
 }

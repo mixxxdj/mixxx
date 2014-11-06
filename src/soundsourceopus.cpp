@@ -3,7 +3,6 @@
 // Based on work 2003 by Svein Magne Bang
 
 
-#include "trackinfoobject.h"
 #include "soundsourceopus.h"
 #include <QtDebug>
 #ifdef __WINDOWS__
@@ -38,24 +37,23 @@ inline int getByteOrder() {
 //
 
 SoundSourceOpus::SoundSourceOpus(QString qFilename)
-    : Mixxx::SoundSource(qFilename) {
-    m_lFilelength = 0;
+    : Mixxx::SoundSource(qFilename)
+    , m_ptrOpusFile(NULL)
+    , m_iChannels(0)
+    , m_lFilelength(0) {
 }
 
 SoundSourceOpus::~SoundSourceOpus() {
-    if (m_lFilelength > 0) {
-        op_free(m_ptrOpusFile);
-    }
+    op_free(m_ptrOpusFile);
 }
 
 Result SoundSourceOpus::open() {
-    int error = 0;
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
+    int error = 0;
     m_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     if ( m_ptrOpusFile == NULL ) {
-        qDebug() << "opus: Input does not appear to be an Opus bitstream.";
-        m_lFilelength = 0;
+        qDebug() << "opus: Input does not appear to be an Opus bitstream:" << error;
         return ERR;
     }
 
@@ -69,7 +67,7 @@ Result SoundSourceOpus::open() {
     if (m_iChannels > 2) {
         qDebug() << "opus: No support for more than 2 m_iChannels!";
         op_free(m_ptrOpusFile);
-        m_lFilelength = 0;
+        m_ptrOpusFile = NULL;
         return ERR;
     }
 
@@ -80,7 +78,7 @@ Result SoundSourceOpus::open() {
     // 1440000 for op_pcm_total.
     qint64 ret = op_pcm_total(m_ptrOpusFile, -1) * 2;
 
-    // qDebug() << m_qFilename << "chan:" << m_iChannels << "sample:" << m_iSampleRate << "LEN:" << ret;
+    // qDebug() << getFilename() << "chan:" << m_iChannels << "sample:" << m_iSampleRate << "LEN:" << ret;
 
 
     if (ret >= 0) {
@@ -89,7 +87,7 @@ Result SoundSourceOpus::open() {
     } else { //error
         if (ret == OP_EINVAL) {
             //The file is not seekable. Not sure if any action is needed.
-            qDebug() << "opus: file is not seekable " << m_qFilename;
+            qDebug() << "opus: file is not seekable " << getFilename();
         }
     }
 
@@ -125,7 +123,7 @@ long SoundSourceOpus::seek(long filepos) {
         // We are here allways!
         return filepos;
     } else {
-        qDebug() << "opus: Seek ERR at file " << m_qFilename;
+        qDebug() << "opus: Seek ERR at file " << getFilename();
         return 0;
     }
     return filepos;
@@ -176,7 +174,7 @@ unsigned SoundSourceOpus::read(volatile unsigned long size, const SAMPLE * desti
 Result SoundSourceOpus::parseHeader() {
     int error = 0;
 
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);

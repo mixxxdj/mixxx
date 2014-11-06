@@ -26,9 +26,9 @@ class SoundSourceOpus : public Mixxx::SoundSource {
     static QList<QString> supportedFileExtensions();
 	
   private:
+    OggOpusFile *m_ptrOpusFile;
     int m_iChannels;
     quint64 m_lFilelength;
-    OggOpusFile *m_ptrOpusFile;
 };
 
 #endif

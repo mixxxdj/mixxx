@@ -35,9 +35,9 @@ class SoundSourceOggVorbis : public Mixxx::SoundSource {
   QImage parseCoverArt();
   static QList<QString> supportedFileExtensions();
  private:
+  OggVorbis_File vf;
   int channels;
   unsigned long filelength;
-  OggVorbis_File vf;
   int current_section;
 };
 

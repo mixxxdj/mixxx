@@ -53,11 +53,11 @@ public:
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 private:
-    unsigned int m_samples; // total number of samples
-    SInt64 m_headerFrames;
     ExtAudioFileRef m_audioFile;
     CAStreamBasicDescription m_inputFormat;
     CAStreamBasicDescription m_outputFormat;
+    SInt64 m_headerFrames;
+    unsigned int m_samples; // total number of samples
 };
 
 

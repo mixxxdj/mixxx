@@ -21,37 +21,32 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "trackinfoobject.h"
 #include "soundsourceffmpeg.h"
 
 #include <QtDebug>
 #include <QBuffer>
-
-static QMutex ffmpegmutex;
 
 #define SOUNDSOURCEFFMPEG_CACHESIZE 1000
 #define SOUNDSOURCEFFMPEG_POSDISTANCE ((1024 * 1000) / 8)
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
     : Mixxx::SoundSource(filename)
-    , m_qFilename(filename) {
-    m_iAudioStream = -1;
-    filelength = -1;
-    m_pFormatCtx = NULL;
-    m_pCodecCtx = NULL;
-    m_pCodec = NULL;
-    m_bIsSeeked = FALSE;
-    m_pResample = NULL;
-    m_iCurrentMixxTs = 0;
-    m_lCacheBytePos = 0;
-    m_lCacheStartByte = 0;
-    m_lCacheEndByte = 0;
-    m_lCacheLastPos = 0;
-    m_lLastStoredPos = 0;
-    m_lStoredSeekPoint = -1;
-    m_SCache.clear();
-
-    this->setType(filename.section(".",-1).toLower());
+    , m_iAudioStream(-1)
+    , filelength(-1)
+    , m_pFormatCtx(NULL)
+    , m_pIformat(NULL)
+    , m_pCodecCtx(NULL)
+    , m_pCodec(NULL)
+    , m_iCurrentMixxTs(0)
+    , m_pResample(NULL)
+    , m_bIsSeeked(false)
+    , m_lCacheBytePos(0)
+    , m_lCacheStartByte(0)
+    , m_lCacheEndByte(0)
+    , m_lCacheLastPos(0)
+    , m_lLastStoredPos(0)
+    , m_lStoredSeekPoint(-1) {
+    setType(filename.section(".",-1).toLower());
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
@@ -88,14 +83,6 @@ AVFormatContext *SoundSourceFFmpeg::getFormatContext() {
 
 int SoundSourceFFmpeg::getAudioStreamIndex() {
     return m_iAudioStream;
-}
-
-void SoundSourceFFmpeg::lock() {
-    ffmpegmutex.lock();
-}
-
-void SoundSourceFFmpeg::unlock() {
-    ffmpegmutex.unlock();
 }
 
 bool SoundSourceFFmpeg::clearCache() {
@@ -368,7 +355,7 @@ Result SoundSourceFFmpeg::open() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
 
@@ -532,8 +519,8 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 }
 
 Result SoundSourceFFmpeg::parseHeader() {
-    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << m_qFilename;
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << getFilename();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     AVFormatContext *FmtCtx = avformat_alloc_context();
     AVCodecContext *CodecCtx;
@@ -582,16 +569,25 @@ Result SoundSourceFFmpeg::parseHeader() {
                                  AV_DICT_IGNORE_SUFFIX))) {
         QString strValue (QString::fromUtf8 (FmtTag->value));
 
+        // TODO: More sophisticated metadata reading
         if (!strncmp(FmtTag->key, "artist", 7)) {
             this->setArtist(strValue);
+        } else if (!strncmp(FmtTag->key, "title", 5)) {
+            this->setTitle(strValue);
+        } else if (!strncmp(FmtTag->key, "album_artist", 12)) {
+            this->setAlbumArtist(strValue);
+        } else if (!strncmp(FmtTag->key, "albumartist", 11)) {
+            this->setAlbumArtist(strValue);
         } else if (!strncmp(FmtTag->key, "album", 5)) {
+            this->setAlbum(strValue);
+        } else if (!strncmp(FmtTag->key, "TOAL", 4)) {
             this->setAlbum(strValue);
         } else if (!strncmp(FmtTag->key, "date", 4)) {
             this->setYear(strValue);
         } else if (!strncmp(FmtTag->key, "genre", 5)) {
             this->setGenre(strValue);
-        } else if (!strncmp(FmtTag->key, "title", 5)) {
-            this->setTitle(strValue);
+        } else if (!strncmp(FmtTag->key, "comment", 7)) {
+            this->setComment(strValue);
         }
 
 
@@ -622,7 +618,7 @@ Result SoundSourceFFmpeg::parseHeader() {
 
     }
 
-    this->setType(m_qFilename.section(".",-1).toLower());
+    this->setType(getFilename().section(".",-1).toLower());
     this->setDuration(FmtCtx->duration / AV_TIME_BASE);
     this->setBitrate((int)(CodecCtx->bit_rate / 1000));
     this->setSampleRate(CodecCtx->sample_rate);

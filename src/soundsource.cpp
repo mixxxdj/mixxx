@@ -36,8 +36,28 @@
 namespace Mixxx
 {
 
-// static
-const bool SoundSource::s_bDebugMetadata = false;
+namespace
+{
+    const bool s_bDebugMetadata = false;
+
+    // Taglib strings can be NULL and using it could cause some segfaults,
+    // so in this case it will return a QString()
+    inline
+    QString toQString(TagLib::String tstring) {
+        if (tstring == TagLib::String::null) {
+            return QString();
+        }
+        return TStringToQString(tstring);
+    }
+
+    float str2bpm( QString sBpm ) {
+      float bpm = sBpm.toFloat();
+      if(bpm < 60) bpm = 0;
+      while( bpm > 300 ) bpm = bpm / 10.;
+      return bpm;
+    }
+
+}
 
 /*
    SoundSource is an Uber-class for the reading and decoding of audio-files.
@@ -55,181 +75,13 @@ SoundSource::SoundSource(QString qFilename)
         : m_qFilename(qFilename),
           m_fReplayGain(0.0f),
           m_fBPM(0.0f),
-          m_iDuration(0),
+          m_iChannels(0),
           m_iBitrate(0),
           m_iSampleRate(0),
-          m_iChannels(0) {
+          m_iDuration(0) {
 }
 
 SoundSource::~SoundSource() {
-}
-
-QList<long> *SoundSource::getCuePoints()
-{
-    return 0;
-}
-
-QString SoundSource::getFilename()
-{
-    return m_qFilename;
-}
-
-float SoundSource::str2bpm( QString sBpm ) {
-  float bpm = sBpm.toFloat();
-  if(bpm < 60) bpm = 0;
-  while( bpm > 300 ) bpm = bpm / 10.;
-  return bpm;
-}
-
-QString SoundSource::getArtist()
-{
-    return m_sArtist;
-}
-QString SoundSource::getTitle()
-{
-    return m_sTitle;
-}
-QString SoundSource::getAlbum()
-{
-    return m_sAlbum;
-}
-QString SoundSource::getAlbumArtist()
-{
-    return m_sAlbumArtist;
-}
-QString SoundSource::getType()
-{
-    return m_sType;
-}
-QString SoundSource::getComment()
-{
-    return m_sComment;
-}
-QString SoundSource::getYear()
-{
-    return m_sYear;
-}
-QString SoundSource::getGenre()
-{
-    return m_sGenre;
-}
-QString SoundSource::getComposer()
-{
-    return m_sComposer;
-}
-QString SoundSource::getGrouping()
-{
-    return m_sGrouping;
-}
-QString SoundSource::getTrackNumber()
-{
-    return m_sTrackNumber;
-}
-float SoundSource::getReplayGain()
-{
-    return m_fReplayGain;
-}
-float SoundSource::getBPM()
-{
-    return m_fBPM;
-}
-int SoundSource::getDuration()
-{
-    return m_iDuration;
-}
-int SoundSource::getBitrate()
-{
-    return m_iBitrate;
-}
-unsigned int SoundSource::getSampleRate()
-{
-    return m_iSampleRate;
-}
-int SoundSource::getChannels()
-{
-    return m_iChannels;
-}
-
-void SoundSource::setArtist(QString artist)
-{
-    m_sArtist = artist;
-}
-void SoundSource::setTitle(QString title)
-{
-    m_sTitle = title;
-}
-void SoundSource::setAlbumArtist(QString albumArtist)
-{
-    m_sAlbumArtist = albumArtist;
-}
-void SoundSource::setAlbum(QString album)
-{
-    m_sAlbum = album;
-}
-void SoundSource::setComment(QString comment)
-{
-    m_sComment = comment;
-}
-void SoundSource::setType(QString type)
-{
-    m_sType = type;
-}
-void SoundSource::setYear(QString year)
-{
-    m_sYear = year;
-}
-void SoundSource::setGenre(QString genre)
-{
-    m_sGenre = genre;
-}
-void SoundSource::setComposer(QString composer)
-{
-    m_sComposer = composer;
-}
-void SoundSource::setGrouping(QString grouping)
-{
-    m_sGrouping = grouping;
-}
-void SoundSource::setTrackNumber(QString trackNumber)
-{
-    m_sTrackNumber = trackNumber;
-}
-void SoundSource::setReplayGain(float replaygain)
-{
-    m_fReplayGain = replaygain;
-}
-void SoundSource::setBPM(float bpm)
-{
-    m_fBPM = bpm;
-}
-void SoundSource::setDuration(int duration)
-{
-    m_iDuration = duration;
-}
-void SoundSource::setBitrate(int bitrate)
-{
-    m_iBitrate = bitrate;
-}
-void SoundSource::setSampleRate(unsigned int samplerate)
-{
-    m_iSampleRate = samplerate;
-}
-void SoundSource::setChannels(int channels)
-{
-    m_iChannels = channels;
-}
-QString SoundSource::getKey(){
-    return m_sKey;
-}
-void SoundSource::setKey(QString key){
-    m_sKey = key;
-}
-
-QString SoundSource::toQString(TagLib::String tstring) const {
-    if (tstring == TagLib::String::null) {
-        return QString();
-    }
-    return TStringToQString(tstring);
 }
 
 bool SoundSource::processTaglibFile(TagLib::File& f) {

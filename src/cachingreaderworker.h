@@ -48,9 +48,10 @@ typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     Chunk* chunk;
     int trackNumSamples;
-    ReaderStatusUpdate() {
-        status = INVALID;
-        chunk = NULL;
+    ReaderStatusUpdate()
+        : status(INVALID)
+        , chunk(NULL)
+        , trackNumSamples(0) {
     }
 } ReaderStatusUpdate;
 
