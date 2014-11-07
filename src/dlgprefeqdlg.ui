@@ -17,42 +17,30 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QRadioButton" name="radioButton_bypass">
+      <widget class="QCheckBox" name="CheckBoxBypass">
        <property name="text">
         <string>Bypass</string>
        </property>
-       <property name="toolTip">
-        <string>Disable Mixxx`s internal equalizers if you prefer to use equalizers on connected hardware mixers, and to lower CPU utilization.</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_bessel4">
+      <widget class="QCheckBox" name="CheckBoxShowAllEffects">
        <property name="text">
-        <string>Bessel 4th order</string>
+        <string>Show All Effects</string>
        </property>
-       <property name="toolTip">
-        <string>Use this option if you prefer lower CPU utilization.</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_butterworth8">
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="text">
-        <string>Butterworth 8th order</string>
+        <string>Effect Rack Configuration</string>
        </property>
-       <property name="toolTip">
-        <string>Use this option if you prefer steep roll-off.</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
       </widget>
      </item>
     </layout>
@@ -348,7 +336,4 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>

@@ -49,7 +49,7 @@ class GroupEffectProcessor : public EffectProcessor {
     }
     virtual ~GroupEffectProcessor() {
         for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
-             it != m_groupState.end();) {
+                it != m_groupState.end();) {
             T* pState = it.value();
             it = m_groupState.erase(it);
             delete pState;

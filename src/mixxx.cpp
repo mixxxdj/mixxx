@@ -33,6 +33,7 @@
 #include "defs_urls.h"
 #include "dlgabout.h"
 #include "dlgpreferences.h"
+#include "dlgprefeq.h"
 #include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
@@ -148,7 +149,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    // Sets up the default EffectChains and EffectRack.
+    // Sets up the default EffectChains and EffectRacks
     m_pEffectsManager->setupDefaults();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
@@ -219,7 +220,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
-    // writing meta data may ruine your MP3 file if done simultaneously.
+    // writing meta data may ruin your MP3 file if done simultaneously.
     // see Bug #728197
     // For safety reasons, we deactivate this feature.
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
@@ -247,7 +248,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
-
     m_pPlayerManager->addConfiguredDecks();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();

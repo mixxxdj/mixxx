@@ -151,6 +151,14 @@ void ControlDoublePrivate::getControls(
     s_qCOHashMutex.unlock();
 }
 
+// static
+ConfigKey ControlDoublePrivate::getFirstAliasFor(QSharedPointer<ControlDoublePrivate> pControl) {
+    s_qCOAliasHashMutex.lock();
+    ConfigKey key = s_qCOAliasHash.key(pControl);
+    s_qCOAliasHashMutex.unlock();
+    return key;
+}
+
 void ControlDoublePrivate::reset() {
     double defaultValue = m_defaultValue.getValue();
     // NOTE: pSender = NULL is important. The originator of this action does

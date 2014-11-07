@@ -1,6 +1,5 @@
 #include "engine/enginefilterbutterworth8.h"
 
-
 EngineFilterButterworth8Low::EngineFilterButterworth8Low(int sampleRate, double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
@@ -22,7 +21,6 @@ void EngineFilterButterworth8Band::setFrequencyCorners(int sampleRate,
                                              double freqCorner2) {
     setCoefs("BpBu8", sampleRate, freqCorner1, freqCorner2);
 }
-
 
 EngineFilterButterworth8High::EngineFilterButterworth8High(int sampleRate, double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);

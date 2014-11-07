@@ -19,11 +19,10 @@
 #define DLGPREFEQ_H
 
 #include <QWidget>
+#include <QComboBox>
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
-#include "engine/enginefilterblock.h"
-#include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
@@ -40,7 +39,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     virtual ~DlgPrefEQ();
 
   public slots:
-    void slotEqChanged();
+    void slotEqEffectChangedOnDeck(int effectIndex);
+    void slotFilterEffectChangedOnDeck(int effectIndex);
+    void slotAddComboBox(double numDecks);
+    // Slot for toggling between advanced and basic views
+    void slotPopulateDeckEffectSelectors();
     // Update Hi EQ
     void slotUpdateHiEQ();
     // Update Lo EQ
@@ -49,11 +52,13 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void slotBypass(int state);
     // Update the Master EQ
     void slotUpdateFilter(int value);
 
   signals:
     void apply(const QString &);
+    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:
     void loadSettings();
@@ -64,16 +69,24 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void updateBandFilter(int index, double value);
     void setUpMasterEQ();
 
-    ControlObjectThread m_COTLoFreq;
-    ControlObjectThread m_COTHiFreq;
-    ControlObjectThread m_COTLoFi;
-    ControlObjectThread m_COTEnableEq;
+    ControlObjectSlave m_COLoFreq;
+    ControlObjectSlave m_COHiFreq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
+    // Members needed for changing the effects loaded on the EQ Effect Rack
+    EffectsManager* m_pEffectsManager;
+    EffectRack* m_pEQEffectRack;
+    QList<QComboBox*> m_deckEqEffectSelectors;
+    QList<QComboBox*> m_deckFilterEffectSelectors;
+    QList<ControlObject*> m_enableWaveformEqCOs;
+    ControlObjectSlave* m_pNumDecks;
+    QString m_eqRackGroup;
+
+    bool m_inSlotPopulateDeckEffectSelectors;
+
     // Members needed for the Master EQ
     QList<QSlider*> m_masterEQSliders;
-    EffectsManager* m_pEffectsManager;
     EngineEffect* m_pEngineEffectMasterEQ;
 };
 

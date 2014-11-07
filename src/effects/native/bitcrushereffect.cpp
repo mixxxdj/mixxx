@@ -14,6 +14,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription("TODO");
+    manifest.setIsForFilterKnob(true);
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* depth = manifest.addParameter();
