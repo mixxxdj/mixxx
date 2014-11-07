@@ -698,7 +698,7 @@ void MixxxMainWindow::initializeTranslations(QApplication* pApp) {
     }
 
     if (userLocale.isEmpty()) {
-        QLocale::setDefault(QLocale("en_US"));
+        QLocale::setDefault(QLocale(systemLocale));
     } else {
         QLocale::setDefault(QLocale(userLocale));
     }
