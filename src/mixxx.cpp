@@ -467,7 +467,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
-    if (rescan || hasChanged_MusicDir) {
+    if (rescan || hasChanged_MusicDir || upgrader.rescanLibrary()) {
         m_pLibraryScanner->scan(this);
     }
     slotNumDecksChanged(m_pNumDecks->get());
