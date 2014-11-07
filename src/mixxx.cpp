@@ -702,8 +702,14 @@ void MixxxMainWindow::initializeTranslations(QApplication* pApp) {
     QLocale systemLocale = QLocale::system();
 
     // Attempt to load user locale from config
-    if (userLocale == "") {
+    if (userLocale.isEmpty()) {
         userLocale = m_pConfig->getValueString(ConfigKey("[Config]","Locale"));
+    }
+
+    if (userLocale.isEmpty()) {
+        QLocale::setDefault(QLocale(systemLocale));
+    } else {
+        QLocale::setDefault(QLocale(userLocale));
     }
 
     // source language
