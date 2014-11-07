@@ -15,6 +15,7 @@
 #include "playermanager.h"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
+#include "util/time.h"
 
 // #include <QScriptSyntaxCheckResult>
 
@@ -169,7 +170,7 @@ void ControllerEngine::gracefulShutdown() {
         ConfigKey key = *it;
         ControlObjectThread *cot = m_controlCache.take(key);
         delete cot;
-        it++;
+        ++it;
     }
 
     delete m_pBaClass;
@@ -645,7 +646,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     if (cot != NULL) {
         ControlObject* pControl = ControlObject::getControl(cot->getKey());
-        if (pControl && !m_st.ignore(pControl, newValue)) {
+        if (pControl && !m_st.ignore(pControl, cot->getParameterForValue(newValue))) {
             cot->slotSet(newValue);
         }
     }
@@ -1289,7 +1290,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
-    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
+    m_lastMovement[deck] = Time::elapsedMsecs();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1316,7 +1317,7 @@ void ControllerEngine::scratchProcess(int timerId) {
     //  and the wheel hasn't been turned very recently (spinback after lift-off,)
     //  feed fixed data
     if (m_ramp[deck] &&
-        ((SoftTakeover::currentTimeMsecs() - m_lastMovement[deck]) > 0)) {
+        ((Time::elapsedMsecs() - m_lastMovement[deck]) > 0)) {
         filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
 //         m_lastMovement[deck] += 1000;
@@ -1349,18 +1350,20 @@ void ControllerEngine::scratchProcess(int timerId) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        // If in brake mode, we just set scratch2 to 0.0 (then wait until someone
-        //  calls scratchDisable().)
         if (m_brakeActive[deck]) {
+            // If in brake mode, set scratch2 rate to 0 and turn off the play button.
             cot->slotSet(0.0);
-        } else {
-            // Clear scratch2_enable to end scratching
-            cot = getControlObjectThread(group, "scratch2_enable");
-            if(cot == NULL) {
-                return; // abort and maybe it'll work on the next pass
+            cot = getControlObjectThread(group, "play");
+            if (cot != NULL) {
+                cot->slotSet(0.0);
             }
-            cot->slotSet(0);
         }
+        // Clear scratch2_enable to end scratching.
+        cot = getControlObjectThread(group, "scratch2_enable");
+        if(cot == NULL) {
+            return; // abort and maybe it'll work on the next pass
+        }
+        cot->slotSet(0);
 
         // Remove timer
         killTimer(timerId);
@@ -1426,7 +1429,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         }
     }
 
-    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
+    m_lastMovement[deck] = Time::elapsedMsecs();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 
@@ -1439,7 +1442,8 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
 bool ControllerEngine::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
-    return getValue(group, "scratch2_enable") > 0;
+    // Don't report that we are scratching if we're ramping.
+    return getValue(group, "scratch2_enable") > 0 && !m_ramp[deck];
 }
 
 /*  -------- ------------------------------------------------------
@@ -1498,7 +1502,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
     if (activate) {
         // store the new values for this spinback/brake effect
         m_rampFactor[deck] = rate * factor / 100000; // approx 1 second for a factor of 1
-        m_rampTo[deck] = -1.0;
+        m_rampTo[deck] = 0.0;
 
         // setup timer and send first scratch2 'tick'
         int timerId = startTimer(1);

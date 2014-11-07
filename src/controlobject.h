@@ -80,6 +80,11 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->get() : 0.0;
     }
 
+    // Returns the bool interpretation of the ControlObject
+    inline bool toBool() const {
+        return get() > 0.0;
+    }
+
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
 
@@ -120,6 +125,9 @@ class ControlObject : public QObject {
     // Returns the parameterized value of the object. Thread safe, non-blocking.
     virtual double getParameterForValue(double value) const;
 
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameterForMidiValue(double midiValue) const;
+
     // Sets the control parameterized value to v. Thread safe, non-blocking.
     virtual void setParameter(double v);
 
@@ -128,8 +136,13 @@ class ControlObject : public QObject {
 
     // Connects a Qt slot to a signal that is delivered when a new value change
     // request arrives for this control.
+    // Qt::AutoConnection: Qt ensures that the signal slot is called from the
+    // thread where the receiving object was created
+    // You need to use Qt::DirectConnection for the engine objects, since the
+    // audio thread has no Qt event queue. But be a ware of race conditions in this case.
+    // ref: http://qt-project.org/doc/qt-4.8/qt.html#ConnectionType-enum
     bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type);
+                                   const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
   signals:
     void valueChanged(double);

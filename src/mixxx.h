@@ -116,6 +116,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowVinylControl(bool);
     void slotViewShowMicrophone(bool);
     void slotViewShowPreviewDeck(bool);
+    void slotViewShowCoverArt(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
@@ -137,6 +138,8 @@ class MixxxMainWindow : public QMainWindow {
 
   signals:
     void newSkinLoaded();
+    void libraryScanStarted();
+    void libraryScanFinished();
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
@@ -228,6 +231,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewVinylControl;
     QAction* m_pViewShowMicrophone;
     QAction* m_pViewShowPreviewDeck;
+    QAction* m_pViewShowCoverArt;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;

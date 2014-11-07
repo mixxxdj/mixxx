@@ -27,9 +27,9 @@ class ControlDoublePrivate : public QObject {
 
     static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
 
-    // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
-    // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
-    // does not exist.
+    // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
+    // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
+    // one does not exist.
     static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key, bool warn = true,
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
@@ -75,6 +75,7 @@ class ControlDoublePrivate : public QObject {
     void setParameter(double dParam, QObject* pSender);
     double getParameter() const;
     double getParameterForValue(double value) const;
+    double getParameterForMidiValue(double midiValue) const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;
@@ -88,9 +89,7 @@ class ControlDoublePrivate : public QObject {
     }
 
     inline double defaultValue() const {
-        QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-        double default_value = m_defaultValue.getValue();
-        return !pBehavior.isNull() ? pBehavior->defaultValue(default_value) : default_value;
+        return m_defaultValue.getValue();
     }
 
     inline ControlObject* getCreatorCO() const {

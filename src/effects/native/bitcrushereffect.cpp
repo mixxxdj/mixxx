@@ -14,6 +14,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription("TODO");
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("bit_depth");
@@ -23,7 +24,8 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setLinkHint(EffectManifestParameter::LINK_INVERSE);
+    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setNeutralPointOnScale(1.0);
     depth->setDefault(16);
     // for values -1 0 +1
     // we do not allow a 1 bit version because this causes a distortion because of the missing sign bit
@@ -38,7 +40,8 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    frequency->setLinkHint(EffectManifestParameter::LINK_INVERSE);
+    frequency->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    frequency->setNeutralPointOnScale(1.0);
     frequency->setDefault(1.0);
     frequency->setMinimum(0.02);
     frequency->setMaximum(1.0);
@@ -61,11 +64,14 @@ void BitCrusherEffect::processGroup(const QString& group,
                                     BitCrusherGroupState* pState,
                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
                                     const unsigned int numSamples,
+                                    const unsigned int sampleRate,
+                                    const EffectProcessor::EnableState enableState,
                                     const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
-    // TODO(rryan) this is broken. it needs to take into account the sample
-    // rate.
+    Q_UNUSED(sampleRate); // we are normalized to 1
+    Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
+
     const CSAMPLE downsample = m_pDownsampleParameter ?
             m_pDownsampleParameter->value().toDouble() : 0.0;
 

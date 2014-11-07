@@ -78,9 +78,12 @@ void FlangerEffect::processGroup(const QString& group,
                                  FlangerGroupState* pState,
                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                                  const unsigned int numSamples,
+                                 const unsigned int sampleRate,
+                                 const EffectProcessor::EnableState enableState,
                                  const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
+    Q_UNUSED(sampleRate);
     CSAMPLE lfoPeriod = m_pPeriodParameter ?
             m_pPeriodParameter->value().toDouble() : 0.0f;
     CSAMPLE lfoDepth = m_pDepthParameter ?

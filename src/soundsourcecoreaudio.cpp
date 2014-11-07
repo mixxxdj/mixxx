@@ -226,6 +226,22 @@ Result SoundSourceCoreAudio::parseHeader() {
     return result ? OK : ERR;
 }
 
+QImage SoundSourceCoreAudio::parseCoverArt() {
+    QImage coverArt;
+    if (getFilename().endsWith(".m4a")) {
+        setType("m4a");
+        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+        coverArt = getCoverInMP4Tag(f.tag());
+    } else if (getFilename().endsWith(".mp3")) {
+        setType("mp3");
+        TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+        coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+        if (coverArt.isNull()) {
+            coverArt = getCoverInAPETag(f.APETag());
+        }
+    }
+    return coverArt;
+}
 
 // static
 QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {

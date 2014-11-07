@@ -42,7 +42,7 @@ EffectManifest EchoEffect::getManifest() {
     time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
-    time->setLinkHint(EffectManifestParameter::LINK_LINKED);
+    time->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     time->setMinimum(0.1);
     time->setDefault(0.25);
     time->setMaximum(2.0);
@@ -90,9 +90,8 @@ EchoEffect::~EchoEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-int EchoEffect::getDelaySamples(double delay_time) const {
-    // TODO(owilliams): Use real samplerate.
-    int delay_samples = delay_time * 44100;
+int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate) const {
+    int delay_samples = delay_time * sampleRate;
     if (delay_samples % 2 == 1) {
         --delay_samples;
     }
@@ -106,6 +105,8 @@ int EchoEffect::getDelaySamples(double delay_time) const {
 void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
+                              const unsigned int sampleRate,
+                              const EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
@@ -125,14 +126,14 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
 
     if (delay_time < gs.prev_delay_time) {
         // If the delay time has shrunk, we may need to wrap the write position.
-        delay_samples = getDelaySamples(delay_time);
+        delay_samples = getDelaySamples(delay_time, sampleRate);
         gs.write_position = gs.write_position % delay_samples;
     } else if (delay_time > gs.prev_delay_time) {
         // If the delay time has grown, we need to zero out the new portion
         // of the buffer we are using.
         SampleUtil::applyGain(gs.delay_buf + gs.prev_delay_samples, 0,
                               MAX_BUFFER_LEN - gs.prev_delay_samples);
-        delay_samples = getDelaySamples(delay_time);
+        delay_samples = getDelaySamples(delay_time, sampleRate);
     }
 
     int read_position = gs.write_position;

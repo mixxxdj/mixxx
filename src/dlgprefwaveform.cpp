@@ -180,9 +180,8 @@ void DlgPrefWaveform::slotSetNormalizeOverview( bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
 }
 
-void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int rtErrorCnt) {
+void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
     frameRateAverage->setText(
-            QString::number((double)frameRate, 'f', 2) +
-            " e" +
-            QString::number(rtErrorCnt));
+            QString::number((double)frameRate, 'f', 2) + " : " +
+            tr("dropped frames") + " " + QString::number(droppedFrames));
 }

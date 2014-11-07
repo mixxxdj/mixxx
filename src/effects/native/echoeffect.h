@@ -43,10 +43,12 @@ class EchoEffect : public GroupEffectProcessor<EchoGroupState> {
                       EchoGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
+                      const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatures);
 
   private:
-    int getDelaySamples(double delay_time) const;
+    int getDelaySamples(double delay_time, const unsigned int sampleRate) const;
 
     QString debugString() const {
         return getId();

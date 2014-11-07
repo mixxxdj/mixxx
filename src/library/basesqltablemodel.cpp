@@ -7,6 +7,7 @@
 
 #include "library/basesqltablemodel.h"
 
+#include "library/coverartdelegate.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
 #include "library/bpmdelegate.h"
@@ -91,6 +92,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("BPM Lock"));
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW),
                   Qt::Horizontal, tr("Preview"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART),
+                  Qt::Horizontal, tr("Cover Art"));
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -151,6 +154,9 @@ QString BaseSqlTableModel::orderByClause() const {
     QString sort_field = QString("%1.%2").arg(m_tableName, field);
     s.append(sort_field);
 
+#ifdef __SQLITE3__
+    s.append(" COLLATE localeAwareCompare");
+#endif
     s.append((m_eSortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
              QLatin1String(" DESC"));
     return s;
@@ -325,8 +331,15 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
+        // It's important that this not be a direct connection, or else the UI
+        // might try to update while a cache operation is in progress, and that
+        // will hit the cache again and cause dangerous reentry cycles
+        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // TODO: A better fix is to have cache and trackpointers defer saving
+        // and deleting, so those operations only take place at the top of
+        // the call stack.
         connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
-                this, SLOT(tracksChanged(QSet<int>)));
+                this, SLOT(tracksChanged(QSet<int>)), Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
@@ -637,7 +650,8 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         return defaultFlags;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
@@ -669,8 +683,10 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
 }
 
 const QLinkedList<int> BaseSqlTableModel::getTrackRows(int trackId) const {
-    if (m_trackIdToRows.contains(trackId)) {
-        return m_trackIdToRows[trackId];
+    QHash<int, QLinkedList<int> >::const_iterator it =
+            m_trackIdToRows.constFind(trackId);
+    if (it != m_trackIdToRows.constEnd()) {
+        return it.value();
     }
     return QLinkedList<int>();
 }
@@ -870,8 +886,18 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
         return new BPMDelegate(pParent, i, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pParent, i);
+    } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
+        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);
+        connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
+                this, SLOT(refreshCell(int, int)));
+        return pCoverDelegate;
     }
     return NULL;
+}
+
+void BaseSqlTableModel::refreshCell(int row, int column) {
+    QModelIndex coverIndex = index(row, column);
+    emit(dataChanged(coverIndex, coverIndex));
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {

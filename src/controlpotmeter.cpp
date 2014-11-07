@@ -27,10 +27,7 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
         : ControlObject(key, bIgnoreNops, bTrack, bPersist),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
-    setStep(m_dValueRange / 10.0);
-    setSmallStep(m_dValueRange / 100.0);
-
-    double default_value = m_dMinValue + 0.5 * m_dValueRange;
+    double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);
     setDefaultValue(default_value);
     if (!bPersist) {
         set(default_value);
@@ -41,27 +38,16 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
 ControlPotmeter::~ControlPotmeter() {
 }
 
-double ControlPotmeter::getMin() const {
-    return m_dMinValue;
+void ControlPotmeter::setStepCount(int count) {
+    m_controls.setStepCount(count);
 }
 
-double ControlPotmeter::getMax() const {
-    return m_dMaxValue;
-}
-
-void ControlPotmeter::setStep(double dValue) {
-    m_controls.setStep(dValue);
-}
-
-void ControlPotmeter::setSmallStep(double dValue) {
-    m_controls.setSmallStep(dValue);
+void ControlPotmeter::setSmallStepCount(int count) {
+    m_controls.setSmallStepCount(count);
 }
 
 void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
                                bool allowOutOfBounds) {
-    m_dMinValue = dMinValue;
-    m_dMaxValue = dMaxValue;
-    m_dValueRange = m_dMaxValue - m_dMinValue;
     m_bAllowOutOfBounds = allowOutOfBounds;
 
     if (m_pControl) {
@@ -72,8 +58,8 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
         : m_pControl(new ControlObjectThread(key)),
-          m_dStep(0),
-          m_dSmallStep(0) {
+          m_stepCount(10),
+          m_smallStepCount(100) {
     // These controls are deleted when the ControlPotmeter is since
     // PotmeterControls is a member variable of the associated ControlPotmeter
     // and the push-button controls are parented to the PotmeterControls.
@@ -145,33 +131,33 @@ PotmeterControls::~PotmeterControls() {
 
 void PotmeterControls::incValue(double v) {
     if (v > 0) {
-        double value = m_pControl->get();
-        value += m_dStep;
-        m_pControl->set(value);
+        double parameter = m_pControl->getParameter();
+        parameter += 1.0 / m_stepCount;
+        m_pControl->setParameter(parameter);
     }
 }
 
 void PotmeterControls::decValue(double v) {
     if (v > 0) {
-        double value = m_pControl->get();
-        value -= m_dStep;
-        m_pControl->set(value);
+        double parameter = m_pControl->getParameter();
+        parameter -= 1.0 / m_stepCount;
+        m_pControl->setParameter(parameter);
     }
 }
 
 void PotmeterControls::incSmallValue(double v) {
     if (v > 0) {
-        double value = m_pControl->get();
-        value += m_dSmallStep;
-        m_pControl->set(value);
+        double parameter = m_pControl->getParameter();
+        parameter += 1.0 / m_smallStepCount;
+        m_pControl->setParameter(parameter);
     }
 }
 
 void PotmeterControls::decSmallValue(double v) {
     if (v > 0) {
-        double value = m_pControl->get();
-        value -= m_dSmallStep;
-        m_pControl->set(value);
+        double parameter = m_pControl->getParameter();
+        parameter -= 1.0 / m_smallStepCount;
+        m_pControl->setParameter(parameter);
     }
 }
 

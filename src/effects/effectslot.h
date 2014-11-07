@@ -13,6 +13,7 @@
 #include "effects/effectbuttonparameterslot.h"
 
 class EffectSlot;
+class ControlObjectSlave;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 
 class EffectSlot : public QObject {
@@ -46,6 +47,10 @@ class EffectSlot : public QObject {
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
 
     void onChainParameterChanged(double parameter);
+
+    // ensures that Softtakover is bypassed for the following
+    // ChainParameterChange. Uses for testing only
+    void syncSofttakeover();
 
   public slots:
     // Request that this EffectSlot load the given Effect
@@ -110,6 +115,7 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     QList<EffectParameterSlotPointer> m_parameters;
+    ControlObjectSlave* m_pCoSuper;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);

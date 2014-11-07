@@ -49,18 +49,17 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
 
     // Font size
     if (context.hasNode(node, "FontSize")) {
-        int fontsize = 9;
-        fontsize = context.selectString(node, "FontSize").toInt();
+        int fontsize = context.selectString(node, "FontSize").toInt();
         setFont( QFont("Helvetica",fontsize,QFont::Normal) );
     }
 
     // Alignment
     if (context.hasNode(node, "Alignment")) {
-        if (context.selectString(node, "Alignment") == "right") {
+        if (context.selectString(node, "Alignment").toLower() == "right") {
             setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        } else if (context.selectString(node, "Alignment") == "center") {
+        } else if (context.selectString(node, "Alignment").toLower() == "center") {
             setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-        } else if (context.selectString(node, "Alignment") == "left") {
+        } else if (context.selectString(node, "Alignment").toLower() == "left") {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
     }

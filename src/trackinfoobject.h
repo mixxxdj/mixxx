@@ -19,20 +19,22 @@
 #define TRACKINFOOBJECT_H
 
 #include <QAtomicInt>
-#include <QList>
 #include <QDateTime>
-#include <QObject>
-#include <QFileInfo>
-#include <QMutex>
-#include <QSharedPointer>
-#include <QWeakPointer>
-#include <QString>
 #include <QDomNode>
+#include <QFileInfo>
+#include <QList>
+#include <QMutex>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
+#include <QWeakPointer>
+#include <taglib/tfile.h>
 
+#include "library/dao/cue.h"
+#include "library/coverart.h"
+#include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
-#include "proto/keys.pb.h"
-#include "library/dao/cue.h"
 #include "util/sandbox.h"
 
 class Cue;
@@ -48,18 +50,20 @@ class TrackInfoObject : public QObject {
     // Initialize a new track with the filename.
     TrackInfoObject(const QString& file="",
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true);
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Initialize track with a QFileInfo class
     TrackInfoObject(const QFileInfo& fileInfo,
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true);
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
-    void parse();
+    void parse(bool parseCoverArt);
 
     // Returns the duration in seconds
     int getDuration() const;
@@ -149,6 +153,14 @@ class TrackInfoObject : public QObject {
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
 
+    // Returns file modified datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileModifiedTime() const;
+
+    // Returns file creation datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileCreationTime() const;
+
     // Getter/Setter methods for metadata
     // Return title
     QString getTitle() const;
@@ -234,10 +246,6 @@ class TrackInfoObject : public QObject {
 
     bool isDirty();
 
-    // Signals to the creator of this TrackInfoObject to save the Track as it
-    // may be deleted.
-    void doSave();
-
     // Returns true if the track location has changed
     bool locationChanged();
 
@@ -260,12 +268,19 @@ class TrackInfoObject : public QObject {
     void setKeyText(QString key,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
+    void setCoverInfo(const CoverInfo& cover);
+    CoverInfo getCoverInfo() const;
+
+    void setCoverArt(const CoverArt& cover);
+    CoverArt getCoverArt() const;
+
   public slots:
     void slotCueUpdated();
 
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
+    void coverArtUpdated();
     void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
@@ -276,14 +291,16 @@ class TrackInfoObject : public QObject {
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
     void clean(TrackInfoObject* pTrack);
-    void save(TrackInfoObject* pTrack);
+    // The deleted signal is emitted in TIO's destructor.  Any connections
+    // to this signal *must* be Qt::DirectConnection or risk segfaults.
+    void deleted(TrackInfoObject* pTrack);
 
   private slots:
     void slotBeatsUpdated();
 
   private:
     // Common initialization function between all TIO constructors.
-    void initialize(bool parseHeader);
+    void initialize(bool parseHeader, bool parseCoverArt);
 
     // Methods for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
@@ -331,6 +348,7 @@ class TrackInfoObject : public QObject {
     QString m_sYear;
     // Track Number
     QString m_sTrackNumber;
+
 
     // File type
     QString m_sType;
@@ -382,6 +400,8 @@ class TrackInfoObject : public QObject {
     Waveform* const m_waveformSummary;
 
     QAtomicInt m_analyserProgress; // in 0.1%
+
+    CoverArt m_coverArt;
 
     friend class TrackDAO;
 };

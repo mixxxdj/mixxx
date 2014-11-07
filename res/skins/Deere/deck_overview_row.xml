@@ -1,0 +1,171 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck overview row (overview and option grid)
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>OverviewRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <MinimumSize>-1,40</MinimumSize>
+    <MaximumSize>-1,60</MaximumSize>
+    <Children>
+      <Overview>
+        <TooltipId>waveform_overview</TooltipId>
+        <Group><Variable name="group"/></Group>
+        <SizePolicy>me,me</SizePolicy>
+        <BgColor></BgColor>
+        <SignalHighColor></SignalHighColor>
+        <SignalMidColor></SignalMidColor>
+        <SignalLowColor></SignalLowColor>
+        <SignalColor>#3087BF</SignalColor>
+        <PlayPosColor>#00FF00</PlayPosColor>
+        <DefaultMark>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text> %1 </Text>
+        </DefaultMark>
+        <Connection>
+          <ConfigKey>
+            <Variable name="group"/>,playposition</ConfigKey>
+          <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
+      </Overview>
+      <WidgetGroup>
+        <ObjectName>OptionGrid</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <MinimumSize>60,40</MinimumSize>
+        <MaximumSize>90,60</MaximumSize>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>ObjectGridRow1</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>p,me</SizePolicy>
+            <MinimumSize>60,20</MinimumSize>
+            <MaximumSize>90,30</MaximumSize>
+            <Children>
+              <PushButton>
+                <ObjectName>ShowSpinny</ObjectName>
+                <MinimumSize>20,20</MinimumSize>
+                <MaximumSize>30,30</MaximumSize>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>S</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>S</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+              <PushButton>
+                <MinimumSize>20,20</MinimumSize>
+                <MaximumSize>30,30</MaximumSize>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>R</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>R</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
+                </Connection>
+              </PushButton>
+              <PushButton>
+                <NumberStates>1</NumberStates>
+                <MinimumSize>20,20</MinimumSize>
+                <MaximumSize>30,30</MaximumSize>
+                <State>
+                  <Number>0</Number>
+                  <Text>⏏</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>ObjectGridRow2</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>p,me</SizePolicy>
+            <MinimumSize>60,20</MinimumSize>
+            <MaximumSize>90,30</MaximumSize>
+            <Children>
+              <PushButton>
+                <MinimumSize>20,20</MinimumSize>
+                <MaximumSize>30,30</MaximumSize>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>T</Text>
+                </State>
+                <Connection>
+                  <ConfigKey>
+                    <Variable name="group"/>,beats_translate_curpos</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <NumberStates>2</NumberStates>
+                <MinimumSize>20,20</MinimumSize>
+                <MaximumSize>30,30</MaximumSize>
+                <State>
+                  <Number>0</Number>
+                  <Text>Q</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>Q</Text>
+                </State>
+                <Connection>
+                  <ConfigKey>
+                    <Variable name="group"/>,quantize</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <NumberStates>2</NumberStates>
+                <MinimumSize>20,20</MinimumSize>
+                <MaximumSize>30,30</MaximumSize>
+                <State>
+                  <Number>0</Number>
+                  <Text>K</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>K</Text>
+                </State>
+                <Connection>
+                  <ConfigKey>
+                    <Variable name="group"/>,keylock</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

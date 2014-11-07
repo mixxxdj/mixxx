@@ -140,6 +140,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Preview Deck")
             << tr("Show/hide the Preview deck.");
 
+    add("show_coverart")
+            << tr("Cover Art")
+            << tr("Show/hide Cover Art.");
+
     add("microphone_volume")
             << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")
@@ -219,6 +223,22 @@ void Tooltips::addStandardTooltips() {
     add("bpm_tap")
             << tr("BPM Tap")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+
+    add("beats_adjust_slower")
+            << tr("Adjust BPM Down")
+            << tr("When tapped, adjusts the average BPM down by a small amount.");
+
+    add("beats_adjust_faster")
+            << tr("Adjust BPM Up")
+            << tr("When tapped, adjusts the average BPM up by a small amount.");
+
+    add("beats_translate_earlier")
+            << tr("Adjust Beats Earlier")
+            << tr("When tapped, moves the beatgrid left by a small amount.");
+
+    add("beats_translate_later")
+            << tr("Adjust Beats Later")
+            << tr("When tapped, moves the beatgrid right by a small amount.");
 
     //this is a special case, in some skins (e.g. Deere) we display a transparent png for bpm_tap on top of visual_bpm
     add("bpm_tap_visual_bpm")
@@ -310,14 +330,14 @@ void Tooltips::addStandardTooltips() {
     // Awesome-Sync (TM)
     add("sync_enabled")
             << tr("Enable Master Sync")
-            << tr("Tap to sync the tempo to other playing tracks or the master clock")
+            << tr("Tap to sync the tempo to other playing tracks or the master clock.")
             << tr("Hold for at least a second to enable sync lock for this deck.")
             << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
-                  "quantize enabled will always have their beats lined up");
+                  "quantize enabled will always have their beats lined up.");
 
     add("sync_master")
             << tr("Enable Sync Clock Master")
-            << tr("When enabled, this device will serve as the master clock for all other decks");
+            << tr("When enabled, this device will serve as the master clock for all other decks.");
 
     add("rate")
             << tr("Speed Control")
@@ -468,5 +488,5 @@ void Tooltips::addStandardTooltips() {
 
     add("audio_latency_overload")
             << tr("Audio Latency Overload Indicator")
-            << tr("Indicates that the audio buffer is to small to do all audio processing.");
+            << tr("Indicates that the audio buffer is too small to do all audio processing.");
 }

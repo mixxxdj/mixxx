@@ -7,12 +7,12 @@ bool ControlNumericBehavior::setFilter(double* dValue) {
     return true;
 }
 
-double ControlNumericBehavior::defaultValue(double dDefault) const {
-    return dDefault;
-}
-
 double ControlNumericBehavior::valueToParameter(double dValue) {
     return dValue;
+}
+
+double ControlNumericBehavior::midiValueToParameter(double midiValue) {
+    return midiValue;
 }
 
 double ControlNumericBehavior::parameterToValue(double dParam) {
@@ -26,7 +26,8 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
 void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
                                                        ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    pControl->set(dParam, NULL);
+    double dNorm = midiValueToParameter(dParam);
+    pControl->set(parameterToValue(dNorm), NULL);
 }
 
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
@@ -34,7 +35,6 @@ ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxVa
         : m_dMinValue(dMinValue),
           m_dMaxValue(dMaxValue),
           m_dValueRange(m_dMaxValue - m_dMinValue),
-          m_dDefaultValue(m_dMinValue + 0.5 * m_dValueRange),
           m_bAllowOutOfBounds(allowOutOfBounds) {
 }
 
@@ -52,11 +52,6 @@ bool ControlPotmeterBehavior::setFilter(double* dValue) {
     return true;
 }
 
-double ControlPotmeterBehavior::defaultValue(double dDefault) const {
-    Q_UNUSED(dDefault);
-    return m_dDefaultValue;
-}
-
 double ControlPotmeterBehavior::valueToParameter(double dValue) {
     if (m_dValueRange == 0.0) {
         return 0;
@@ -69,91 +64,22 @@ double ControlPotmeterBehavior::valueToParameter(double dValue) {
     return (dValue - m_dMinValue) / m_dValueRange;
 }
 
+double ControlPotmeterBehavior::midiValueToParameter(double midiValue) {
+    double parameter;
+    if (midiValue > 64) {
+        parameter = (midiValue - 1) / 126.0;
+    } else {
+        // Hack for 0.5 at 64
+        parameter = midiValue / 128.0;
+    }
+    return parameter;
+}
+
 double ControlPotmeterBehavior::parameterToValue(double dParam) {
     return m_dMinValue + (dParam * m_dValueRange);
 }
 
 double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
-    // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
-    // center. The industry convention is that 64 is center. We fake things a
-    // little bit here to make that the case. This piece-wise function is linear
-    // from 0 to 64 with slope 128 and from 64 to 127 with slope 126.
-    double dNorm = valueToParameter(dValue);
-    return dNorm < 0.5 ? dNorm * 128.0 : dNorm * 126.0 + 1.0;
-}
-
-void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                        ControlDoublePrivate* pControl) {
-    Q_UNUSED(o);
-    double dNorm = dParam < 64 ? dParam / 128.0 : (dParam - 1.0) / 126.0;
-    pControl->set(parameterToValue(dNorm), NULL);
-}
-
-#define maxPosition 1.0
-#define minPosition 0.0
-#define middlePosition ((maxPosition - minPosition) / 2.0)
-#define positionrange (maxPosition - minPosition)
-
-ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, false),
-          m_dB1(0.0),
-          m_dB2(0.0) {
-    if (dMaxValue == 1.0 || dMinValue != 0.0 ) {
-        m_bTwoState = false;
-        m_dB1 = log10((dMaxValue - dMinValue) + 1.0) / maxPosition;
-    } else {
-        m_bTwoState = true;
-        m_dB1 = log10(2.0) / middlePosition;
-        m_dB2 = log10(dMaxValue) / (maxPosition - middlePosition);
-    }
-}
-
-ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
-}
-
-double ControlLogPotmeterBehavior::defaultValue(double dDefault) const {
-    Q_UNUSED(dDefault);
-    return 1.0;
-}
-
-double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
-    if (dValue > m_dMaxValue) {
-        dValue = m_dMaxValue;
-    } else if (dValue < m_dMinValue) {
-        dValue = m_dMinValue;
-    }
-    if (!m_bTwoState) {
-        return log10((dValue - m_dMinValue) + 1) / m_dB1;
-    } else {
-        if (dValue > 1.0) {
-            return log10(dValue) / m_dB2 + middlePosition;
-        } else {
-            return log10(dValue + 1.0) / m_dB1;
-        }
-    }
-}
-
-double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
-    if (!m_bTwoState) {
-        return pow(10.0, m_dB1 * dParam) - 1.0 + m_dMinValue;
-    } else {
-        if (dParam <= middlePosition) {
-            return pow(10.0, m_dB1 * dParam) - 1;
-        } else {
-            return pow(10.0, m_dB2 * (dParam - middlePosition));
-        }
-    }
-}
-
-ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
-                                                       bool allowOutOfBounds)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
-}
-
-ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
-}
-
-double ControlLinPotmeterBehavior::valueToMidiParameter(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center. We fake things a
     // little bit here to make that the case. This function is linear from [0,
@@ -167,17 +93,159 @@ double ControlLinPotmeterBehavior::valueToMidiParameter(double dValue) {
     }
 }
 
-void ControlLinPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
+#define maxPosition 1.0
+#define minPosition 0.0
+#define middlePosition ((maxPosition - minPosition) / 2.0)
+#define positionrange (maxPosition - minPosition)
+
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+    if (minDB >= 0) {
+        qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
+        m_minDB = -1;
+    } else {
+        m_minDB = minDB;
+    }
+    m_minOffset = db2ratio(m_minDB);
+}
+
+ControlLogPotmeterBehavior::~ControlLogPotmeterBehavior() {
+}
+
+double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
+    if (m_dValueRange == 0.0) {
+        return 0;
+    }
+    if (dValue > m_dMaxValue) {
+        dValue = m_dMaxValue;
+    } else if (dValue < m_dMinValue) {
+        dValue = m_dMinValue;
+    }
+    double linPrameter = (dValue - m_dMinValue) / m_dValueRange;
+    double dbParamter = ratio2db(linPrameter + m_minOffset * (1 - linPrameter));
+    return 1 - (dbParamter / m_minDB);
+}
+
+double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
+    double dbParamter = (1 - dParam) * m_minDB;
+    double linPrameter = (db2ratio(dbParamter) - m_minOffset) / (1 - m_minOffset);
+    return m_dMinValue + (linPrameter * m_dValueRange);
+}
+
+ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+                                                       bool allowOutOfBounds)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
+}
+
+ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
+}
+
+ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
+                             double minDB, double maxDB,
+                             double neutralParameter)
+        : ControlPotmeterBehavior(0.0, db2ratio(maxDB), false),
+          m_neutralParameter(neutralParameter),
+          m_minDB(minDB),
+          m_maxDB(maxDB),
+          m_offset(db2ratio(m_minDB)) {
+    m_midiCorrection = ceil(m_neutralParameter * 127) - (m_neutralParameter * 127);
+}
+
+ControlAudioTaperPotBehavior::~ControlAudioTaperPotBehavior() {
+}
+
+double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
+    double dParam = 1.0;
+    if (dValue <= 0.0) {
+        return 0;
+    } else if (dValue < 1.0) {
+        // db + linear overlay to reach
+        // m_minDB = 0
+        // 0 dB = m_neutralParame;
+        double overlay = m_offset * (1 - dValue);
+        if (m_minDB) {
+            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+        } else {
+            dParam = dValue * m_neutralParameter;
+        }
+    } else if (dValue == 1.0) {
+        dParam = m_neutralParameter;
+    } else if (dValue < m_dMaxValue) {
+        // m_maxDB = 1
+        // 0 dB = m_neutralParame;
+        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
+    }
+    //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
+    return dParam;
+}
+
+double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
+    double dValue = 1;
+    if (dParam <= 0.0) {
+        dValue = 0;
+    } else if (dParam < m_neutralParameter) {
+        // db + linear overlay to reach
+        // m_minDB = 0
+        // 0 dB = m_neutralParame;
+        if (m_minDB) {
+            double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
+            dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
+        } else {
+            dValue = dParam / m_neutralParameter;
+        }
+    } else if (dParam == m_neutralParameter) {
+        dValue = 1.0;
+    } else if (dParam <= 1.0) {
+        // m_maxDB = 1
+        // 0 dB = m_neutralParame;
+        dValue = db2ratio((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
+    }
+    //qDebug() << "ControlAudioTaperPotBehavior::parameterToValue" << "dValue =" << dValue << "dParam =" << dParam;
+    return dValue;
+}
+
+double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
+    double dParam;
+    if (m_neutralParameter && m_neutralParameter != 1.0) {
+        double neutralTest = (midiValue - m_midiCorrection) / 127.0;
+        if (neutralTest < m_neutralParameter) {
+            dParam = midiValue /
+                    (127.0 + m_midiCorrection / m_neutralParameter);
+        } else {
+            // m_midicorrection is allways < 1, so NaN check required
+            dParam = (midiValue - m_midiCorrection / m_neutralParameter) /
+                    (127.0 - m_midiCorrection / m_neutralParameter);
+        }
+    } else {
+        dParam = midiValue / 127.0;
+    }
+    return dParam;
+}
+
+double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
+    // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
+    // center. The industry convention is that 64 is center.
+    // We fake things a little bit here to hit the m_neutralParameter
+    // always on a full Midi integer
+    double dParam = valueToParameter(dValue);
+    double dMidiParam = dParam * 127.0;
+    if (m_neutralParameter && m_neutralParameter != 1.0) {
+        if (dParam < m_neutralParameter) {
+            dMidiParam += m_midiCorrection * dParam / m_neutralParameter;
+        } else {
+            dMidiParam += m_midiCorrection * (1 - dParam) / m_neutralParameter;
+        }
+    }
+    return dMidiParam;
+}
+
+void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o, double dMidiParam,
                                                            ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    double dNorm;
-    if (dParam > 64) {
-        dNorm = (dParam - 1) / 126.0;
-    } else {
-        dNorm = dParam / 128.0;
-    }
-    pControl->set(parameterToValue(dNorm), NULL);
+    double dParam = midiValueToParameter(dMidiParam);
+    pControl->set(parameterToValue(dParam), NULL);
 }
+
 
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
     return (dValue * 200.0 + 64) / 127.0;

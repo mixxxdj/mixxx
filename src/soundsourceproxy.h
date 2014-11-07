@@ -48,6 +48,10 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
     Result parseHeader();
+
+    // Returns the first cover art image embedded within the file (if any).
+    QImage parseCoverArt();
+
     unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();

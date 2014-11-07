@@ -1,11 +1,14 @@
 // dlgtrackinfo.cpp
 // Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QDesktopServices>
 #include <QtDebug>
 
 #include "dlgtrackinfo.h"
-#include "library/dao/cue.h"
 #include "trackinfoobject.h"
+#include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "library/dao/cue.h"
 
 const int kMinBPM = 30;
 const int kMaxBPM = 240;
@@ -17,7 +20,8 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
-              m_DlgTagFetcher(DlgTagFetcher) {
+              m_DlgTagFetcher(DlgTagFetcher),
+              m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
 }
 
@@ -30,6 +34,7 @@ void DlgTrackInfo::init(){
     setupUi(this);
 
     cueTable->hideColumn(0);
+    coverBox->insertWidget(1, m_pWCoverArtLabel);
 
     connect(btnNext, SIGNAL(clicked()),
             this, SLOT(slotNext()));
@@ -62,10 +67,22 @@ void DlgTrackInfo::init(){
             this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
+    connect(btnOpenFileBrowser, SIGNAL(clicked()),
+            this, SLOT(slotOpenInFileBrowser()));
     m_bpmTapTimer.start();
     for (int i = 0; i < kFilterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
     }
+
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        connect(pCache, SIGNAL(coverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)));
+    }
+    connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
+            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pWCoverArtLabel, SIGNAL(reloadCover()),
+            this, SLOT(slotReloadCoverArt()));
 }
 
 void DlgTrackInfo::OK() {
@@ -119,7 +136,7 @@ void DlgTrackInfo::cueDelete() {
 }
 
 void DlgTrackInfo::populateFields(TrackPointer pTrack) {
-    setWindowTitle(pTrack->getTitle());
+    setWindowTitle(pTrack->getArtist() % " - " % pTrack->getTitle());
 
     // Editable fields
     txtTrackName->setText(pTrack->getTitle());
@@ -135,7 +152,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
-    txtLocation->setText(pTrack->getLocation());
+    txtLocation->setPlainText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
@@ -149,17 +166,95 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmHalve->setEnabled(enableBpmEditing);
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
+
+    m_loadedCoverInfo = pTrack->getCoverInfo();
+    int reference = pTrack->getId();
+    m_loadedCoverInfo.trackLocation = pTrack->getLocation();
+    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCoverInfo, QPixmap());
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        pCache->requestCover(m_loadedCoverInfo, this, reference);
+    }
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     m_pLoadedTrack = pTrack;
     clear();
 
-    if (m_pLoadedTrack == NULL)
+    if (m_pLoadedTrack.isNull()) {
         return;
+    }
 
     populateFields(m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
+
+    disconnect(this, SLOT(updateTrackMetadata()));
+
+    // We already listen to changed() so we don't need to listen to individual
+    // signals such as cuesUpdates, coverArtUpdated(), etc.
+    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata()));
+}
+
+void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
+                                  int requestReference, const CoverInfo& info,
+                                  QPixmap pixmap, bool fromCache) {
+    Q_UNUSED(fromCache);
+    if (pRequestor == this && m_pLoadedTrack &&
+            m_pLoadedTrack->getId() == requestReference) {
+        qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
+                 << pixmap.size();
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+    }
+}
+
+void DlgTrackInfo::slotReloadCoverArt() {
+    if (m_pLoadedTrack) {
+        // TODO(rryan) move this out of the main thread. The issue is that
+        // CoverArtCache::requestGuessCover mutates the provided track whereas
+        // in DlgTrackInfo we delay changing the track until the user hits apply
+        // (or cancels the edit).
+        CoverArt art = CoverArtUtils::guessCoverArt(m_pLoadedTrack);
+        slotCoverArtSelected(art);
+    }
+}
+
+void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
+    qDebug() << "DlgTrackInfo::slotCoverArtSelected" << art;
+    m_loadedCoverInfo = art.info;
+    // TODO(rryan) don't use track ID as a reference
+    int reference = 0;
+    if (m_pLoadedTrack) {
+        reference = m_pLoadedTrack->getId();
+        m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
+    }
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        pCache->requestCover(m_loadedCoverInfo, this, reference);
+    }
+}
+
+void DlgTrackInfo::slotOpenInFileBrowser() {
+    if (m_pLoadedTrack.isNull()) {
+        return;
+    }
+
+    QDir dir;
+    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    do {
+        dir = QDir(splittedPath.join("/"));
+        splittedPath.removeLast();
+    } while (!dir.exists() && splittedPath.size());
+
+    // This function does not work for a non-existent directory!
+    // so it is essential that in the worst case it try opening
+    // a valid directory, in this case, 'QDir::home()'.
+    // Otherwise nothing would happen...
+    if (!dir.exists()) {
+        // it ensures a valid dir for any OS (Windows)
+        dir = QDir::home();
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
@@ -223,11 +318,17 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         row += 1;
     }
     cueTable->setSortingEnabled(true);
+    cueTable->horizontalHeader()->setStretchLastSection(true);
 }
 
 void DlgTrackInfo::saveTrack() {
     if (!m_pLoadedTrack)
         return;
+
+    // First, disconnect the track changed signal. Otherwise we signal ourselves
+    // and repopulate all these fields.
+    disconnect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+               this, SLOT(updateTrackMetadata()));
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
     m_pLoadedTrack->setArtist(txtArtist->text());
@@ -291,6 +392,12 @@ void DlgTrackInfo::saveTrack() {
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
         m_pLoadedTrack->removeCue(pCue);
     }
+
+    m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
+
+    // Reconnect changed signals now.
+    connect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata()));
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -302,6 +409,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
     }
 
     clear();
+    disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.clear();
 }
 
@@ -321,13 +429,16 @@ void DlgTrackInfo::clear() {
 
     txtDuration->setText("");
     txtType->setText("");
-    txtLocation->setText("");
+    txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
 
     m_cueMap.clear();
     cueTable->clearContents();
     cueTable->setRowCount(0);
+
+    m_loadedCoverInfo = CoverInfo();
+    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {
@@ -377,7 +488,13 @@ void DlgTrackInfo::reloadTrackMetadata() {
     }
 }
 
+void DlgTrackInfo::updateTrackMetadata() {
+    if (m_pLoadedTrack) {
+        populateFields(m_pLoadedTrack);
+    }
+}
+
 void DlgTrackInfo::fetchTag() {
-    m_DlgTagFetcher.init(m_pLoadedTrack);
+    m_DlgTagFetcher.loadTrack(m_pLoadedTrack);
     m_DlgTagFetcher.show();
 }

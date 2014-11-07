@@ -108,7 +108,7 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
         return effects.last();
     }
 
-    it--;
+    --it;
     return *it;
 }
 

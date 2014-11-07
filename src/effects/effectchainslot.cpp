@@ -20,15 +20,15 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
 
     m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
     m_pControlNumEffects->connectValueChangeRequest(
-        this, SLOT(slotControlNumEffects(double)), Qt::AutoConnection);
+        this, SLOT(slotControlNumEffects(double)));
 
     m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
     m_pControlNumEffectSlots->connectValueChangeRequest(
-        this, SLOT(slotControlNumEffectSlots(double)), Qt::AutoConnection);
+        this, SLOT(slotControlNumEffectSlots(double)));
 
     m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlChainLoaded->connectValueChangeRequest(
-        this, SLOT(slotControlChainLoaded(double)), Qt::AutoConnection);
+        this, SLOT(slotControlChainLoaded(double)));
 
     m_pControlChainEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlChainEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -41,7 +41,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
-    m_pControlChainMix->set(0.0);
+    m_pControlChainMix->set(1.0);
 
     m_pControlChainParameter = new ControlPotmeter(ConfigKey(m_group, "parameter"), 0.0, 1.0);
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),

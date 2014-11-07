@@ -1390,12 +1390,12 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient5695-6"
-       id="linearGradient7079"
-       x1="12.934231"
-       y1="23.299211"
-       x2="12.983614"
-       y2="23.299211"
-       gradientUnits="userSpaceOnUse" />
+       id="linearGradient5530"
+       gradientUnits="userSpaceOnUse"
+       x1="15"
+       y1="6"
+       x2="15"
+       y2="26" />
   </defs>
   <metadata
      id="metadata4">
@@ -1839,7 +1839,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer36"
      inkscape:label="ic_library_"
-     style="display:none"
+     style="display:inline"
      sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
@@ -2490,13 +2490,13 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer14"
      inkscape:label="ic_preferences_"
-     style="display:none"
-     sodipodi:insensitive="true">
+     style="display:inline">
     <g
        inkscape:groupmode="layer"
        id="layer16"
        inkscape:label="waveforms.png"
-       style="display:none">
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
          style="fill:url(#linearGradient7077);fill-opacity:1;stroke:none;filter:url(#filter6108)"
          sodipodi:nodetypes="ccccccccccsccccccccccccccsccccccccccccccccccscccscccccccccscccccccccccccccccccccccccccsccccccccccsccccccccccccccccccscccccccsccccccsccccccccccccccccccscccccccccsccccccsssccccccccccsccccsccccccccccsccccccccccccsccccsccssccccccccccccccccccccccccccccccccccccssccccccsccccccccscccccccccssccsccccccccccccccccccsccsccccccscccscccccccccccccccsccccccccccccccccccccccccsscccccccccccccccscccccccccccccccccccccccccccccccccccccccscccccccccccccccccccccccccccccccccccscccccccccccccc"
@@ -2879,6 +2879,24 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            style="color:#000000;fill:url(#linearGradient7231);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            sodipodi:nodetypes="sssssssssssssssssssssssssssssssssssssssssssss" />
       </g>
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer12"
+       inkscape:label="lv2.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         style="color:#000000;fill:url(#linearGradient5486);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter6108)"
+         d="M 3.3125,7 C 1.4747605,7 0,8.4216118 0,10.1875 l 0,11.625 C 0,23.578388 1.4747605,25 3.3125,25 l 23.375,0 C 28.525239,25 30,23.578388 30,21.8125 l 0,-11.625 C 30,8.4216118 28.525239,7 26.6875,7 z M 4,10.5 l 2.9375,0 0,8.25 4.65625,0 L 12.625,21.5 4,21.5 z m 5.875,0 3.03125,0 3.09375,8.25 3.09375,-8.25 3.03125,0 -4.125,11 -4,0 z m 13.612,0 c 1.786401,0 2.462692,0.794716 2.90625,1.5 0.571775,0.909155 0.550473,2.179188 -0.1875,3.0625 -1.035735,1.239715 -1.734928,1.376278 -2.46875,2.03125 l 2.9375,0 0,1.65625 -6.125,0 c 0.382717,-0.975337 0.647822,-1.501691 1.125,-2.03125 1.21386,-1.347108 3.583063,-2.222956 3.4375,-3.4375 -0.04088,-0.341066 -0.117274,-1.125 -1.65625,-1.125 l -0.59375,0 z"
+         id="rect2651-3"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="sssssssssccccccccccccccccssccccssscc" />
+      <path
+         style="color:#000000;fill:url(#linearGradient5530);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.5;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter6108)"
+         d="M 3.3125,6 C 1.4747604,6 0,7.5691518 0,9.53125 l 0,12.9375 C 0,24.430848 1.4747604,26 3.3125,26 l 23.375,0 C 28.52524,26 30,24.430848 30,22.46875 L 30,9.53125 C 30,7.5691518 28.52524,6 26.6875,6 L 3.3125,6 z M 4,10 l 2.90625,0 0,9 4.5625,0 L 12.5,22 4,22 4,10 z m 6,0 2.96875,0 L 16,19 19.03125,10 22,10 17.96875,22 14.03125,22 10,10 z m 13.71875,0 c 1.770034,0 2.466755,0.8556 2.90625,1.625 0.566536,0.991805 0.543712,2.380137 -0.1875,3.34375 C 25.411255,16.321167 24.727098,16.472985 24,17.1875 l 2.90625,0 0,1.8125 -6.09375,0 c 0.379211,-1.064004 0.652194,-1.64105 1.125,-2.21875 1.202738,-1.469573 3.550478,-2.425043 3.40625,-3.75 -0.0405,-0.372072 -0.131375,-1.21875 -1.65625,-1.21875 l -0.5625,0 L 23.71875,10 z"
+         id="rect2651"
+         inkscape:connector-curvature="0" />
     </g>
     <g
        inkscape:groupmode="layer"
@@ -3376,72 +3394,72 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.12+</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="5.93678"
+         y="5.9224563"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan4279">*48(16)px icons </tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="7.8567801"
+         y="7.8424563"
          style="font-size:1.60000002px;line-height:120.00000477%"
-         id="tspan4311">*see hidden layers</tspan><tspan
+         id="tspan4311">*see hidden layers (Shift+Ctrl+L)</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="9.7767801"
+         y="9.7624569"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan7798">*ic_preferences_</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="11.69678"
+         y="11.682457"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan4309"> =preference pane icons</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="13.61678"
+         y="13.602457"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan5786"> =export each layer to </tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="15.53678"
+         y="15.522457"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan4322">   `res/images/preferences` </tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="17.456779"
+         y="17.442457"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan7806">*ic_library_</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="19.37678"
+         y="19.362457"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan5778"> =library pane icons</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="21.296782"
+         y="21.282457"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan5788"> =export each layer to</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="23.216782"
+         y="23.202457"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan4334">  `res/images/library`</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="25.136782"
+         y="25.122458"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan5780">*style_</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="27.056782"
+         y="27.042458"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan5790"> =misc. skin style icons used</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="28.976782"
+         y="28.962458"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan4336">   in `res/skins` </tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
-         y="30.896782"
+         y="30.882458"
          style="font-size:1.60000002px;line-height:120.00000477%"
          id="tspan5883">*see document metadata </tspan></text>
   </g>

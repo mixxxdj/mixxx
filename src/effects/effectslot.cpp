@@ -1,6 +1,7 @@
 #include "effects/effectslot.h"
 
 #include "controlpushbutton.h"
+#include "controlobjectslave.h"
 
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 16;
@@ -17,23 +18,23 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
                                     m_iEffectNumber)) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
+        this, SLOT(slotLoaded(double)));
 
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
     m_pControlNumParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameters(double)));
 
     m_pControlNumParameterSlots = new ControlObject(ConfigKey(m_group, "num_parameterslots"));
     m_pControlNumParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameterSlots(double)));
 
     m_pControlNumButtonParameters = new ControlObject(ConfigKey(m_group, "num_button_parameters"));
     m_pControlNumButtonParameters->connectValueChangeRequest(
-        this, SLOT(slotNumParameters(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameters(double)));
 
     m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
     m_pControlNumButtonParameterSlots->connectValueChangeRequest(
-        this, SLOT(slotNumParameterSlots(double)), Qt::AutoConnection);
+        this, SLOT(slotNumParameterSlots(double)));
 
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -65,6 +66,11 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
         addEffectButtonParameterSlot();
     }
 
+    QString effectUnitGroup =  QString("[EffectRack%1_EffectUnit%2]").arg(
+        QString::number(iRackNumber+1), QString::number(iChainNumber+1));
+
+    m_pCoSuper = new ControlObjectSlave(ConfigKey(effectUnitGroup, "parameter"));
+
     clear();
 }
 
@@ -82,6 +88,7 @@ EffectSlot::~EffectSlot() {
     delete m_pControlEffectSelector;
     delete m_pControlClear;
     delete m_pControlEnabled;
+    delete m_pCoSuper;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
@@ -251,8 +258,10 @@ void EffectSlot::onChainParameterChanged(double parameter) {
     for (int i = 0; i < m_parameters.size(); ++i) {
         m_parameters[i]->onChainParameterChanged(parameter);
     }
+}
 
-    for (int i = 0; i < m_buttonParameters.size(); ++i) {
-        m_buttonParameters[i]->onChainParameterChanged(parameter);
+void EffectSlot::syncSofttakeover() {
+    for (int i = 0; i < m_parameters.size(); ++i) {
+        m_parameters[i]->syncSofttakeover();
     }
 }

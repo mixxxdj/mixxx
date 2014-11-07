@@ -31,6 +31,7 @@
 
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
+#include "widget/wcoverart.h"
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
@@ -64,6 +65,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidgetstack.h"
+#include "widget/wsizeawarestack.h"
 #include "widget/wwidgetgroup.h"
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
@@ -437,12 +439,16 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
     } else if (nodeName == "TableView") {
         result = wrapWidget(parseTableView(node));
+    } else if (nodeName == "CoverArt") {
+        result = wrapWidget(parseCoverArt(node));
     } else if (nodeName == "SearchBox") {
         result = wrapWidget(parseSearchBox(node));
     } else if (nodeName == "WidgetGroup") {
         result = wrapWidget(parseWidgetGroup(node));
     } else if (nodeName == "WidgetStack") {
         result = wrapWidget(parseWidgetStack(node));
+    } else if (nodeName == "SizeAwareStack") {
+        result = wrapWidget(parseSizeAwareStack(node));
     } else if (nodeName == "EffectChainName") {
         result = wrapWidget(parseEffectChainName(node));
     } else if (nodeName == "EffectName") {
@@ -634,6 +640,55 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     // Init the widget last now that all the children have been created,
     // so if the current page was saved we can switch to the correct page.
     pStack->Init();
+    m_pParent = pOldParent;
+    return pStack;
+}
+
+QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
+    WSizeAwareStack* pStack = new WSizeAwareStack(m_pParent);
+    pStack->setObjectName("SizeAwareStack");
+    pStack->setContentsMargins(0, 0, 0, 0);
+    setupConnections(node, pStack);
+    setupBaseWidget(node, pStack);
+    setupWidget(node, pStack);
+
+    QWidget* pOldParent = m_pParent;
+    m_pParent = pStack;
+
+    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
+    if (!childrenNode.isNull()) {
+        // Descend chilren
+        QDomNodeList children = childrenNode.childNodes();
+
+        for (int i = 0; i < children.count(); ++i) {
+            QDomNode node = children.at(i);
+
+            if (!node.isElement()) {
+                continue;
+            }
+            QDomElement element = node.toElement();
+
+            QList<QWidget*> children = parseNode(element);
+
+            if (children.empty()) {
+                qWarning() << "SizeAwareStack child produced no widget.";
+                continue;
+            }
+
+            if (children.size() > 1) {
+                qWarning() << "SizeAwareStack child produced multiple widgets."
+                           << "All but the first are ignored.";
+            }
+            QWidget* pChild = children[0];
+
+            if (pChild == NULL) {
+                continue;
+            }
+
+            pStack->addWidget(pChild);
+        }
+    }
+
     m_pParent = pOldParent;
     return pStack;
 }
@@ -957,6 +1012,40 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
     return pLineEditSearch;
 }
 
+QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
+    QString channel = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
+
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel);
+    setupConnections(node, pCoverArt);
+    setupBaseWidget(node, pCoverArt);
+    setupWidget(node, pCoverArt);
+    pCoverArt->setup(node, *m_pContext);
+
+    // If no group was provided, hook the widget up to the Library.
+    if (channel.isEmpty()) {
+        // Connect cover art signals to the library
+        connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
+                pCoverArt, SLOT(slotReset()));
+        connect(m_pLibrary, SIGNAL(enableCoverArtDisplay(bool)),
+                pCoverArt, SLOT(slotEnable(bool)));
+        connect(m_pLibrary, SIGNAL(trackSelected(TrackPointer)),
+                pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
+    } else if (pPlayer != NULL) {
+        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
+        connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+                pCoverArt, SLOT(slotReset()));
+        connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
+                m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
+        // just in case a track is already loaded
+        pCoverArt->slotLoadTrack(pPlayer->getLoadedTrack());
+    }
+
+    return pCoverArt;
+}
+
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
@@ -1019,10 +1108,13 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     QWidget* pLineEditSearch = parseSearchBox(node);
     m_pParent = oldParent;
 
+    QWidget* pCoverArt = parseCoverArt(node);
+
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
     vl->setContentsMargins(0,0,0,0); //Fill entire space
     vl->addWidget(pLineEditSearch);
     vl->addWidget(pLibrarySidebar);
+    vl->addWidget(pCoverArt);
     pLibrarySidebarPage->setLayout(vl);
 
     pSplitter->addWidget(pLibrarySidebarPage);
@@ -1067,10 +1159,8 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
 #undef ohyesithas
 #endif
 
-    QString styleHack = "";
-
     // Style the library preview button with a default image.
-    styleHack = (
+    QString styleHack = (
         "#LibraryPreviewButton { background: transparent; border: 0; }"
         "#LibraryPreviewButton:checked {"
         "  image: url(:/images/library/ic_library_preview_pause.png);"
@@ -1239,8 +1329,10 @@ QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     // will specify the channel as either 1 or 2.
     if (group.size() == 0) {
         int channel = m_pContext->selectInt(node, "Channel");
-        // groupForDeck is 0-indexed
-        group = PlayerManager::groupForDeck(channel - 1);
+        if (channel > 0) {
+            // groupForDeck is 0-indexed
+            group = PlayerManager::groupForDeck(channel - 1);
+        }
     }
 
     return group;

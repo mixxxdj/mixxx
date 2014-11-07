@@ -15,8 +15,8 @@ class ControlNumericBehavior {
     // be changed.
     virtual bool setFilter(double* dValue);
 
-    virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
+    virtual double midiValueToParameter(double midiValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
@@ -30,33 +30,29 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     virtual ~ControlPotmeterBehavior();
 
     virtual bool setFilter(double* dValue);
-    virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
+    virtual double midiValueToParameter(double midiValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
-    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
 
   protected:
     double m_dMinValue;
     double m_dMaxValue;
     double m_dValueRange;
-    double m_dDefaultValue;
     bool m_bAllowOutOfBounds;
 };
 
 class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue);
+    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
     virtual ~ControlLogPotmeterBehavior();
 
-    virtual double defaultValue(double dDefault) const;
     virtual double valueToParameter(double dValue);
     virtual double parameterToValue(double dParam);
 
   protected:
-    bool m_bTwoState;
-    double m_dB1, m_dB2;
+    double m_minDB;
+    double m_minOffset;
 };
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
@@ -64,10 +60,35 @@ class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
     ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
                                bool allowOutOfBounds);
     virtual ~ControlLinPotmeterBehavior();
+};
 
+class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
+  public:
+    ControlAudioTaperPotBehavior(double minDB, double maxDB,
+                                 double neutralParameter);
+    virtual ~ControlAudioTaperPotBehavior();
+
+    virtual double valueToParameter(double dValue);
+    virtual double parameterToValue(double dParam);
+    virtual double midiValueToParameter(double midiValue);
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
+
+  protected:
+    // a knob position between 0 and 1 where the gain is 1 (0dB)
+    double m_neutralParameter;
+    // the Start value of the pure db scale it cranked to -Infinity by the
+    // linear part of the AudioTaperPot
+    double m_minDB;
+    // maxDB is the upper gain Value
+    double m_maxDB;
+    // offset at knob position 0 (Parameter = 0) to reach -Infinity
+    double m_offset;
+    // ensures that the neutral position on a integer midi value
+    // This value is subtracted from the Midi value at neutral position
+    // and is allways < 1
+    double m_midiCorrection;
 };
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
