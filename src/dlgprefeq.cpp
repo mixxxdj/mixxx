@@ -432,16 +432,17 @@ void DlgPrefEQ::setUpMasterEQ() {
     if (masterEQEffect) {
         m_pEngineEffectMasterEQ = masterEQEffect->getEngineEffect();
     } else {
-        m_pEngineEffectMasterEQ = 0;
+        m_pEngineEffectMasterEQ = NULL;
     }
 
     // Create and set up Master EQ's sliders
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
         QSlider* slider = new QSlider(this);
         slider->setMinimum(0);
         slider->setMaximum(100);
         slider->setSingleStep(1);
-        slider->setValue(25);
+        slider->setValue(50);
+        slider->setMinimumHeight(90);
         // Set the index as a property because we need it inside slotUpdateFilter()
         slider->setProperty("index", QVariant(i));
         slidersGridLayout->addWidget(slider, 0, i);
@@ -450,9 +451,8 @@ void DlgPrefEQ::setUpMasterEQ() {
     }
 
     // Display center frequencies for each filter
-    float centerFrequencies[10] = {31.25, 62.5, 125, 250, 500, 1000,
-                                   2000, 4000, 8000, 16000};
-    for (int i = 0; i < 10; i++) {
+    float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500, 5500, 12000};
+    for (unsigned int i = 0; i < 8; i++) {
         QLabel* centerFreqLabel = new QLabel(this);
         QString labelText;
         if (centerFrequencies[i] < 1000) {
