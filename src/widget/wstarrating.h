@@ -1,30 +1,19 @@
-/***************************************************************************
-                          wstarrating.h  -  description
-                             -------------------
-    begin                : Wed Jan 5 2005
-    copyright            : (C) 2003 by Tue Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef WSTARRATING_H
 #define WSTARRATING_H
 
 #include <QEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMouseEvent>
+
+#include "configobject.h"
+#include "skin/skincontext.h"
+#include "trackinfoobject.h"
 
 #include "library/stardelegate.h"
-#include "widget/wbasewidget.h"
-#include "skin/skincontext.h"
+#include "widget/wwidget.h"
 
-class WStarRating : public WBaseWidget {
+class WStarRating : public WWidget {
     Q_OBJECT
   public:
     WStarRating(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget* pParent);
@@ -32,6 +21,12 @@ class WStarRating : public WBaseWidget {
     virtual ~WStarRating();
 
     virtual void setup(QDomNode node, const SkinContext& context);
+    
+    void render (
+		QPainter * painter,
+		const QPoint & targetOffset = QPoint(),
+		const QRegion & sourceRegion = QRegion(),
+		RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) );
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -48,8 +43,9 @@ class WStarRating : public WBaseWidget {
     QColor m_qBgColor;
     
     const char* m_pGroup;
+    ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
 };
 
-#endif
+#endif /* WSTARRATING_H */

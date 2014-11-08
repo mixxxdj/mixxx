@@ -18,11 +18,22 @@
 #include "widget/wstarrating.h"
 
 #include "library/starrating.h"
+
+
 // #include "widget/wskincolor.h"
 
-WStarRating::WStarRating(QWidget* pParent)
-        : WBaseWidget(this) {
+// WStarRating::WStarRating(QWidget* pParent)
+        // : WBaseWidget(this) {
+// }
+
+WStarRating::WStarRating(const char* group,
+                               ConfigObject<ConfigValue>* pConfig,
+                               QWidget* pParent)
+        : m_pGroup(group),
+          m_pConfig(pConfig) {
+    // setAcceptDrops(true);
 }
+
 
 WStarRating::~WStarRating() {
 }
@@ -33,12 +44,12 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
     m_property = context.selectString(node, "Property");
 	
 	// association du track
-	m_pCurrentTrack = track; // TrackPointer track
-	connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-			this, SLOT(updateRating(TrackInfoObject*)));
+	// m_pCurrentTrack = track; // TrackPointer track
+	// connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
+			// this, SLOT(updateRating(TrackInfoObject*)));
 	
 	// premier affichage de la valeur
-	updateRating(track.data());
+	// updateRating(track.data());
 	
     // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
     // cell.
@@ -84,12 +95,13 @@ bool WStarRating::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QLabel::event(pEvent);
+    // return QLabel::event(pEvent);
+    return true;
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
-    WBaseWidget::fillDebugTooltip(debug);
-    *debug << QString("Text: \"%1\"").arg(text());
+    // WBaseWidget::fillDebugTooltip(debug);
+    // *debug << QString("Text: \"%1\"").arg(text());
 }
 
 void WStarRating::slotTrackLoaded(TrackPointer track) {
@@ -112,7 +124,7 @@ void WStarRating::slotTrackUnloaded(TrackPointer track) {
 
 void WStarRating::updateRating(TrackInfoObject*) {
     if (m_pCurrentTrack) {
-        // QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
+        QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
         // if (property.isValid() && qVariantCanConvert<QString>(property)) {
             // setText(property.toString());
         // }
@@ -122,21 +134,23 @@ void WStarRating::updateRating(TrackInfoObject*) {
 			
 			StarRating starRating = qVariantValue<StarRating>(
 				m_pCurrentTrack->property(m_property.toAscii().constData()) );
-			pTrack->setRating(starRating.starCount());
+			// pTrack->setRating(starRating.starCount());
+			m_pCurrentTrack->setRating(starRating.starCount());
         }
     }
 }
 
 // void 	render ( QPainter * painter, const QPoint & targetOffset = QPoint(), const QRegion & sourceRegion = QRegion(), RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) )
+
 void WStarRating::render (
 		QPainter * painter,
-		const QPoint & targetOffset = QPoint(),
-		const QRegion & sourceRegion = QRegion(),
-		RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) ){
+		const QPoint & targetOffset /*= QPoint()*/,
+		const QRegion & sourceRegion /*= QRegion()*/,
+		RenderFlags renderFlags /*= RenderFlags( DrawWindowBackground | DrawChildren )*/ ){
 	
 	// todo : render the starrating
 	// void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &palette,
 							// EditMode mode, bool isSelected) const
-	WStarRating.paint( painter );
+	// WStarRating.paint( painter );
 	
 }

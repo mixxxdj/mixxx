@@ -922,7 +922,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
-
+ 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
