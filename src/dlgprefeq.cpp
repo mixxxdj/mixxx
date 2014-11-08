@@ -362,15 +362,14 @@ void DlgPrefEQ::slotUpdateFilter(int value) {
     if (m_pEngineEffectMasterEQ) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
-        double paramValue = value / 100.0 * 4;
         EffectsRequest* pRequest = new EffectsRequest();
         pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
         pRequest->pTargetEffect = m_pEngineEffectMasterEQ;
         pRequest->SetParameterParameters.iParameter = index;
-        pRequest->value = paramValue;
-        pRequest->minimum = 0;
-        pRequest->maximum = 4;
-        pRequest->default_value = 1;
+        pRequest->value = value;
+        pRequest->minimum = -12;
+        pRequest->maximum = 12;
+        pRequest->default_value = 0;
         m_pEffectsManager->writeRequest(pRequest);
     }
 }
@@ -426,8 +425,6 @@ void DlgPrefEQ::slotBypass(int state) {
 }
 
 void DlgPrefEQ::setUpMasterEQ() {
-    // Initialize the EngineEffect* used for writing an EffectRequest
-    int numberOfRacks = m_pEffectsManager->getEffectChainManager()->getEffectRacksSize();
     // The Master EQ is the only Effect on the last Effect Rack
     EffectPointer masterEQEffect = m_pEffectsManager->getMasterEQEffectRack()->
             getEffectChainSlot(0)->getEffectSlot(0)->getEffect();
@@ -440,10 +437,10 @@ void DlgPrefEQ::setUpMasterEQ() {
     // Create and set up Master EQ's sliders
     for (int i = 0; i < 8; i++) {
         QSlider* slider = new QSlider(this);
-        slider->setMinimum(0);
-        slider->setMaximum(100);
+        slider->setMinimum(-12);
+        slider->setMaximum(12);
         slider->setSingleStep(1);
-        slider->setValue(50);
+        slider->setValue(0);
         slider->setMinimumHeight(90);
         // Set the index as a property because we need it inside slotUpdateFilter()
         slider->setProperty("index", QVariant(i));
