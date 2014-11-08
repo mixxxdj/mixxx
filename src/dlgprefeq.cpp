@@ -44,7 +44,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_inSlotPopulateDeckEffectSelectors(false) {
 
     // Get the EQ Effect Rack
-    m_pEQEffectRack = m_pEffectsManager->getEQEffectRack().data();
+    m_pEQEffectRack = m_pEffectsManager->getEQEffectRack();
     m_eqRackGroup = QString("[EffectRack%1_EffectUnit%2_Effect1]").
             arg(m_pEffectsManager->getEQEffectRackNumber());
 
