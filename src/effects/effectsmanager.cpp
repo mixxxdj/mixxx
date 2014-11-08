@@ -200,9 +200,7 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
 }
 
 EffectRackPointer EffectsManager::getEQEffectRack() {
-    // The EQ Rack is the last one
-    int eqRackNumber = m_pEffectChainManager->getEffectRacksSize();
-    return m_pEffectChainManager->getEffectRack(eqRackNumber - 1);
+    return m_pEffectChainManager->getEffectRack(getEQEffectRackNumber() - 1);
 }
 
 int EffectsManager::getEQEffectRackNumber() {
@@ -212,21 +210,22 @@ int EffectsManager::getEQEffectRackNumber() {
 }
 
 void EffectsManager::addEqualizer(int channelNumber) {
-    int rackNum = getEffectChainManager()->getEffectRacksSize();
+    int rackNum = getEQEffectRackNumber();
     EffectRackPointer pRack = getEffectRack(rackNum - 1);
     pRack->addEffectChainSlotForEQ();
 
     // Set the EQ to be active on Deck 'channelNumber'
     ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").
-                arg(rackNum).arg(channelNumber),
-                QString("group_[Channel%1]_enable").arg(channelNumber)),
-            1.0);
+                                         arg(rackNum).arg(channelNumber),
+                                 QString("group_[Channel%1]_enable").
+                                         arg(channelNumber)),
+                       1.0);
 
     // Set the EQ to be fully wet
     ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").
-                arg(rackNum).arg(channelNumber),
-                QString("mix")),
-            1.0);
+                                 arg(rackNum).arg(channelNumber),
+                                 QString("mix")),
+                       1.0);
 
     // Create aliases
     ControlDoublePrivate::insertAlias(
