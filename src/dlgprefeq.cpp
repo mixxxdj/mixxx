@@ -44,9 +44,9 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_inSlotPopulateDeckEffectSelectors(false) {
 
     // Get the EQ Effect Rack
-    m_pEQEffectRack = m_pEffectsManager->getEQEffectRack();
+    m_pDeckEQEffectRack = m_pEffectsManager->getDeckEQEffectRack();
     m_eqRackGroup = QString("[EffectRack%1_EffectUnit%2_Effect1]").
-            arg(m_pEffectsManager->getEQEffectRackNumber());
+            arg(m_pEffectsManager->getDeckEQEffectRackNumber());
 
     setupUi(this);
 
@@ -284,7 +284,7 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckEqEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
-        m_pEQEffectRack->loadEffectToChainSlot(deckNumber, 0, effectId);
+        m_pDeckEQEffectRack->loadEffectToChainSlot(deckNumber, 0, effectId);
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
@@ -302,7 +302,7 @@ void DlgPrefEQ::slotFilterEffectChangedOnDeck(int effectIndex) {
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckFilterEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
-        m_pEQEffectRack->loadEffectToChainSlot(deckNumber, 1, effectId);
+        m_pDeckEQEffectRack->loadEffectToChainSlot(deckNumber, 1, effectId);
 
         // Update the configured effect for the current QComboBox
         //m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
@@ -359,18 +359,20 @@ void DlgPrefEQ::slotUpdateLoEQ() {
 }
 
 void DlgPrefEQ::slotUpdateFilter(int value) {
-    QSlider* slider = qobject_cast<QSlider*>(sender());
-    int index = slider->property("index").toInt();
-    double paramValue = value / 100.0 * 4;
-    EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
-    pRequest->pTargetEffect = m_pEngineEffectMasterEQ;
-    pRequest->SetParameterParameters.iParameter = index;
-    pRequest->value = paramValue;
-    pRequest->minimum = 0;
-    pRequest->maximum = 4;
-    pRequest->default_value = 1;
-    m_pEffectsManager->writeRequest(pRequest);
+    if (m_pEngineEffectMasterEQ) {
+        QSlider* slider = qobject_cast<QSlider*>(sender());
+        int index = slider->property("index").toInt();
+        double paramValue = value / 100.0 * 4;
+        EffectsRequest* pRequest = new EffectsRequest();
+        pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
+        pRequest->pTargetEffect = m_pEngineEffectMasterEQ;
+        pRequest->SetParameterParameters.iParameter = index;
+        pRequest->value = paramValue;
+        pRequest->minimum = 0;
+        pRequest->maximum = 4;
+        pRequest->default_value = 1;
+        m_pEffectsManager->writeRequest(pRequest);
+    }
 }
 
 int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue) {
@@ -427,7 +429,7 @@ void DlgPrefEQ::setUpMasterEQ() {
     // Initialize the EngineEffect* used for writing an EffectRequest
     int numberOfRacks = m_pEffectsManager->getEffectChainManager()->getEffectRacksSize();
     // The Master EQ is the only Effect on the last Effect Rack
-    EffectPointer masterEQEffect = m_pEffectsManager->getEffectRack(numberOfRacks - 1)->
+    EffectPointer masterEQEffect = m_pEffectsManager->getMasterEQEffectRack()->
             getEffectChainSlot(0)->getEffectSlot(0)->getEffect();
     if (masterEQEffect) {
         m_pEngineEffectMasterEQ = masterEQEffect->getEngineEffect();

@@ -45,8 +45,10 @@ class EffectsManager : public QObject {
 
     EffectRackPointer addEffectRack();
     EffectRackPointer getEffectRack(int rack);
-    EffectRackPointer getEQEffectRack();
-    int getEQEffectRackNumber();
+    EffectRackPointer getDeckEQEffectRack();
+    int getDeckEQEffectRackNumber();
+    EffectRackPointer getMasterEQEffectRack();
+    int getMasterEQEffectRackNumber();
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);

@@ -76,7 +76,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
-    EffectRackPointer m_pEQEffectRack;
+    EffectRackPointer m_pDeckEQEffectRack;
+    EffectRackPointer m_pMasterEQEffectRack;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckFilterEffectSelectors;
     QList<ControlObject*> m_enableWaveformEqCOs;

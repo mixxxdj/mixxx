@@ -7,6 +7,9 @@
 #include "controlobjectthread.h"
 #include "controlobjectslave.h"
 
+static int kDeckEQRackNumber = 2;
+static int kMasterEQRackNumber = 3;
+
 EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
         : QObject(pParent),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
@@ -199,19 +202,27 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
     return m_pEffectChainManager->getEffectRack(i);
 }
 
-EffectRackPointer EffectsManager::getEQEffectRack() {
-    return m_pEffectChainManager->getEffectRack(getEQEffectRackNumber() - 1);
+EffectRackPointer EffectsManager::getDeckEQEffectRack() {
+    return m_pEffectChainManager->getEffectRack(getDeckEQEffectRackNumber() - 1);
 }
 
-int EffectsManager::getEQEffectRackNumber() {
+int EffectsManager::getDeckEQEffectRackNumber() {
+    // The EQ Rack is the second last one
+    return kDeckEQRackNumber;
+}
+
+EffectRackPointer EffectsManager::getMasterEQEffectRack() {
+    return m_pEffectChainManager->getEffectRack(getMasterEQEffectRackNumber() - 1);
+}
+
+int EffectsManager::getMasterEQEffectRackNumber() {
     // The EQ Rack is the last one
-    int eqRackNumber = m_pEffectChainManager->getEffectRacksSize();
-    return eqRackNumber;
+    return kMasterEQRackNumber;
 }
 
 void EffectsManager::addEqualizer(int channelNumber) {
-    int rackNum = getEQEffectRackNumber();
-    EffectRackPointer pRack = getEffectRack(rackNum - 1);
+    int rackNum = getDeckEQEffectRackNumber();
+    EffectRackPointer pRack = getDeckEQEffectRack();
     pRack->addEffectChainSlotForEQ();
 
     // Set the EQ to be active on Deck 'channelNumber'
@@ -329,14 +340,14 @@ void EffectsManager::setupDefaults() {
     pRack = addEffectRack();
     pRack->addMasterEQEffectChainSlot();
     // Set the EQ to be active on Master
-    ControlObjectSlave cot(QString("[EffectRack%1_EffectUnit%2]").arg(2).arg(1),
-                           QString("group_[Master]_enable"));
-    cot.set(1.0);
+    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(kMasterEQRackNumber).arg(1),
+                                 QString("group_[Master]_enable")),
+                       1.0);
 
     // Set the Master EQ to be fully wet
-    ControlObjectSlave cotMix(QString("[EffectRack%1_EffectUnit%2]").arg(2).arg(1),
-                              QString("mix"));
-    cotMix.set(1.0);
+    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(kMasterEQRackNumber).arg(1),
+                                 QString("mix")),
+                       1.0);
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
