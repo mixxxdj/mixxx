@@ -50,7 +50,6 @@ class WStarRating : public WWidget {
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
-    // StarRating m_starRating;
 };
 
 #endif /* WSTARRATING_H */

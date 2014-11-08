@@ -44,9 +44,6 @@ WStarRating::~WStarRating() {
 
 void WStarRating::setup(QDomNode node, const SkinContext& context) {
 	
-	// lecture du noeud xml
-    m_property = context.selectString(node, "Property");
-        qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating setup prop" << m_property << "\n";
 	
     // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
     // cell.
@@ -174,9 +171,9 @@ void WStarRating::paintEvent(QPaintEvent *) {
     QStylePainter painter(this);
     painter.drawPrimitive(QStyle::PE_Widget, option);
     
-     painter.setPen(Qt::blue);
-     painter.setFont(QFont("Arial", 30));
-     painter.drawText(rect(), Qt::AlignCenter, "Qt");    
+     // painter.setPen(Qt::blue);
+     // painter.setFont(QFont("Arial", 30));
+     // painter.drawText(rect(), Qt::AlignCenter, "Qt");    
     
     if (m_pCurrentTrack) {
         qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating paintEvent track ok!!!!!!!!";
@@ -184,37 +181,35 @@ void WStarRating::paintEvent(QPaintEvent *) {
         // StarRating starRating = qVariantValue<StarRating>(
             // m_pCurrentTrack->property(m_property.toAscii().constData()) );
         
-        StarRating starRating(3,5);
+        StarRating starRating(m_pCurrentTrack->getRating(), 5);
         
         setFixedSize( starRating.sizeHint() );
-        qDebug() << "rect " << option.rect;
-        qDebug() << "state " << option.state;
-        qDebug() << "palette highlight " << option.palette.highlight();
-        qDebug() << "palette foreground " << option.palette.foreground();
-        
         painter.fillRect(option.rect, option.palette.base());
         painter.setBrush(option.palette.text());        
+        
         // StarRating starRating = qVariantValue<StarRating>(index.data());
         starRating.paint(&painter, option.rect, option.palette, StarRating::ReadOnly,
-                         true);
+                         option.state & QStyle::State_Selected);
                          // newOption.state & QStyle::State_Selected);
-        // starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly,
+        
+    } else {
+        
+        StarRating starRating(0,5);
+        setFixedSize( starRating.sizeHint() );
+        painter.fillRect(option.rect, option.palette.base());
+        painter.setBrush(option.palette.text());        
+        
+        // StarRating starRating = qVariantValue<StarRating>(index.data());
+        starRating.paint(&painter, option.rect, option.palette, StarRating::ReadOnly,
+                         option.state & QStyle::State_Selected);
                          // newOption.state & QStyle::State_Selected);
     }
     
-    // void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &palette,
-                        // EditMode mode, bool isSelected) const
-
+    qDebug() << "rect " << option.rect;
+    qDebug() << "state " << option.state;
+    qDebug() << "palette highlight " << option.palette.highlight();
+    qDebug() << "palette foreground " << option.palette.foreground();
     
-    // if (!m_pSlider.isNull() && !m_pSlider->isNull()) {
-        // m_pSlider->draw(0, 0, &p);
-    // }
-// 
-    // if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
-        // int posx = m_bHorizontal ? m_iPos : 0;
-        // int posy = m_bHorizontal ? 0 : m_iPos;
-        // m_pHandle->draw(posx, posy, &p);
-    // }
 }
 
 /*
