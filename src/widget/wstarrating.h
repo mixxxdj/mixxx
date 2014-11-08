@@ -22,11 +22,11 @@ class WStarRating : public WWidget {
 
     virtual void setup(QDomNode node, const SkinContext& context);
     
-    void render (
-		QPainter * painter,
-		const QPoint & targetOffset = QPoint(),
-		const QRegion & sourceRegion = QRegion(),
-		RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) );
+    // void render (
+		// QPainter * painter,
+		// const QPoint & targetOffset = QPoint(),
+		// const QRegion & sourceRegion = QRegion(),
+		// RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) );
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -38,6 +38,10 @@ class WStarRating : public WWidget {
   protected:
     bool event(QEvent* pEvent);
     void fillDebugTooltip(QStringList* debug);
+    
+    virtual void paintEvent(QPaintEvent* e);
+    // virtual void resizeEvent(QResizeEvent* e);
+    
     // Foreground and background colors.
     QColor m_qFgColor;
     QColor m_qBgColor;
@@ -46,6 +50,7 @@ class WStarRating : public WWidget {
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
+    // StarRating m_starRating;
 };
 
 #endif /* WSTARRATING_H */
