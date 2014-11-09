@@ -49,7 +49,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     registerTestEffect(manifest);
 
     // Check the controls reflect the state of their loaded effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+    Effect* pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
 
     // Enabled defaults to true in both effects and the slot.
     pEffect->setEnabled(false);

@@ -50,7 +50,7 @@ class EffectChainSlot : public QObject {
     // Indicates that the effect pEffect has been loaded into slotNumber of
     // EffectChainSlot chainNumber. pEffect may be an invalid pointer, which
     // indicates that a previously loaded effect was removed from the slot.
-    void effectLoaded(EffectPointer pEffect, unsigned int chainNumber,
+    void effectLoaded(Effect* pEffect, unsigned int chainNumber,
                       unsigned int slotNumber);
 
     // Indicates that the given EffectChain was loaded into this
@@ -75,13 +75,13 @@ class EffectChainSlot : public QObject {
     // next Effect into the specified EffectSlot.
     void nextEffect(unsigned int iChainSlotNumber,
                     unsigned int iEffectSlotNumber,
-                    EffectPointer pEffect);
+                    Effect* pEffect);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // previous Effect into the specified EffectSlot.
     void prevEffect(unsigned int iChainSlotNumber,
                     unsigned int iEffectSlotNumber,
-                    EffectPointer pEffect);
+                    Effect* pEffect);
 
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();
@@ -95,11 +95,11 @@ class EffectChainSlot : public QObject {
     void slotChainInsertionTypeChanged(EffectChain::InsertionType type);
     void slotChainGroupStatusChanged(const QString& group, bool enabled);
 
-    void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
+    void slotEffectLoaded(Effect* pEffect, unsigned int slotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iChainSlotNumber,
                          unsigned int iEffectSlotNumber,
-                         EffectPointer pEffect);
+                         Effect* pEffect);
 
     void slotControlClear(double v);
     void slotControlNumEffects(double v);

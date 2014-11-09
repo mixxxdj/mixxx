@@ -7,7 +7,7 @@
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
                                  int iParameterNumber, const EffectManifestParameter& parameter)
         : QObject(pEffect),
-          m_pEffect(pEffect),
+          m_pEngineEffect(pEffect->getEngineEffect()),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_parameter(parameter),
@@ -400,7 +400,7 @@ void EffectParameter::updateEngineState(int type) {
     }
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = static_cast<EffectsRequest::MessageType>(type);
-    pRequest->pTargetEffect = m_pEffect->getEngineEffect();
+    pRequest->pTargetEffect = m_pEngineEffect;
     pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_value;
     pRequest->minimum = m_minimum;

@@ -54,7 +54,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pControlLinkInverse;
 }
 
-void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
+void EffectParameterSlot::loadEffect(Effect* pEffect) {
     //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     clear();
     if (pEffect) {

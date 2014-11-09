@@ -108,10 +108,10 @@ EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
             this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
 
-    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, Effect*)),
+            this, SLOT(loadNextEffect(unsigned int, unsigned int, Effect*)));
+    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, Effect*)),
+            this, SLOT(loadPrevEffect(unsigned int, unsigned int, Effect*)));
 
     // Register all the existing channels with the new EffectChain
     const QSet<QString>& registeredGroups =
@@ -172,14 +172,14 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
 
 void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
                                 const unsigned int iEffectSlotNumber,
-                                EffectPointer pEffect) {
+                                Effect* pEffect) {
     if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
         return;
     }
 
     QString effectId = pEffect ? pEffect->getManifest().id() : QString();
     QString nextEffectId = m_pEffectsManager->getNextEffectId(effectId);
-    EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(nextEffectId);
+    Effect* pNextEffect = m_pEffectsManager->instantiateEffect(nextEffectId);
 
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();
@@ -195,14 +195,14 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
 
 void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
                                 const unsigned int iEffectSlotNumber,
-                                EffectPointer pEffect) {
+                                Effect* pEffect) {
     if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
         return;
     }
 
     QString effectId = pEffect ? pEffect->getManifest().id() : QString();
     QString prevEffectId = m_pEffectsManager->getPrevEffectId(effectId);
-    EffectPointer pPrevEffect = m_pEffectsManager->instantiateEffect(prevEffectId);
+    Effect* pPrevEffect = m_pEffectsManager->instantiateEffect(prevEffectId);
 
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();

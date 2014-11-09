@@ -65,7 +65,7 @@ void WEffect::effectUpdated() {
     QString name = tr("None");
     QString description = tr("No effect loaded.");
     if (m_pEffectSlot) {
-        EffectPointer pEffect = m_pEffectSlot->getEffect();
+        Effect* pEffect = m_pEffectSlot->getEffect();
         if (pEffect) {
             const EffectManifest& manifest = pEffect->getManifest();
             name = manifest.name();

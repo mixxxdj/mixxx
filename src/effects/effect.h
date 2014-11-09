@@ -15,7 +15,6 @@ class EngineEffect;
 class EffectsManager;
 
 class Effect;
-typedef QSharedPointer<Effect> EffectPointer;
 
 // The Effect class is the main-thread representation of an instantiation of an
 // effect. This class is NOT thread safe and must only be used by the main
@@ -48,7 +47,7 @@ class Effect : public QObject {
     void updateEngineState();
 
     QDomElement toXML(QDomDocument* doc) const;
-    static EffectPointer fromXML(EffectsManager* pEffectsManager,
+    static Effect* fromXML(EffectsManager* pEffectsManager,
                                  const QDomElement& element);
 
   signals:

@@ -55,7 +55,7 @@ class SuperLinkTest : public BaseEffectTest {
         registerTestEffect(manifest);
 
         // Check the controls reflect the state of their loaded effect.
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+        Effect* pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
 
         m_pEffectSlot->loadEffect(pEffect);
 

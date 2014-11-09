@@ -30,7 +30,7 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectButtonParameterSlot
-    void loadEffect(EffectPointer pEffect);
+    void loadEffect(Effect* pEffect);
 
   private slots:
     // Solely for handling control changes

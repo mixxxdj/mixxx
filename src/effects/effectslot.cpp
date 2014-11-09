@@ -15,7 +15,8 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iEffectNumber)) {
+                                    m_iEffectNumber)),
+          m_pEffect(NULL) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)));
@@ -111,7 +112,7 @@ EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
     return pParameter;
 }
 
-EffectPointer EffectSlot::getEffect() const {
+Effect* EffectSlot::getEffect() const {
     return m_pEffect;
 }
 
@@ -170,7 +171,7 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffect(EffectPointer pEffect) {
+void EffectSlot::loadEffect(Effect*pEffect) {
     // qDebug() << debugString() << "loadEffect"
     //          << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
@@ -183,7 +184,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         // effect. Propagate the current setting to the effect.
         m_pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
 
-        connect(m_pEffect.data(), SIGNAL(enabledChanged(bool)),
+        connect(m_pEffect, SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
 
         while (static_cast<unsigned int>(m_parameters.size()) < m_pEffect->numParameters()) {
@@ -214,16 +215,15 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
 void EffectSlot::clear() {
     if (m_pEffect) {
         m_pEffect->disconnect(this);
-        m_pEffect.clear();
     }
     m_pControlLoaded->setAndConfirm(0.0);
     m_pControlNumParameters->setAndConfirm(0.0);
     m_pControlNumButtonParameters->setAndConfirm(0.0);
     foreach (EffectParameterSlotPointer pParameter, m_parameters) {
-        pParameter->loadEffect(EffectPointer());
+        pParameter->loadEffect(NULL);
     }
     foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
-        pParameter->loadEffect(EffectPointer());
+        pParameter->loadEffect(NULL);
     }
     emit(updated());
 }

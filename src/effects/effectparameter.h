@@ -8,6 +8,7 @@
 #include "effects/effectmanifestparameter.h"
 
 class Effect;
+class EngineEffect;
 class EffectsManager;
 
 // An EffectParameter is an instance of an EffectManifestParameter, which is in
@@ -73,7 +74,7 @@ class EffectParameter : public QObject {
     bool clampRanges();
     bool checkType(const QVariant& value) const;
 
-    Effect* m_pEffect;
+    EngineEffect* m_pEngineEffect;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameter m_parameter;

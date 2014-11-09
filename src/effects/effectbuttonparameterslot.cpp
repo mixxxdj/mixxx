@@ -37,11 +37,10 @@ EffectButtonParameterSlot::~EffectButtonParameterSlot() {
     delete m_pControlValue;
 }
 
-void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
+void EffectButtonParameterSlot::loadEffect(Effect* pEffect) {
     //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     clear();
     if (pEffect) {
-        m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
         m_pEffectParameter = pEffect->getButtonParameter(m_iParameterNumber);
 
@@ -86,7 +85,6 @@ void EffectButtonParameterSlot::clear() {
         m_pEffectParameter = NULL;
     }
 
-    m_pEffect.clear();
     m_pControlLoaded->setAndConfirm(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);

@@ -33,6 +33,6 @@ TEST_F(EffectsManagerTest, CanInstantiateEffectsFromBackend) {
     EXPECT_QSTRING_EQ(effect_to_load.name(), manifest.name());
 
     // Check we can instantiate the effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
-    EXPECT_FALSE(pEffect.isNull());
+    Effect* pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+    EXPECT_FALSE(pEffect == NULL);
 }

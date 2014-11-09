@@ -22,7 +22,6 @@ EffectParameterSlotBase::EffectParameterSlotBase(const unsigned int iRackNumber,
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
     m_pEffectParameter = NULL;
-    m_pEffect.clear();
     delete m_pControlLoaded;
     delete m_pControlType;
 }

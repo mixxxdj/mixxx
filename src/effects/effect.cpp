@@ -7,6 +7,8 @@
 #include "engine/effects/engineeffect.h"
 #include "xmlparse.h"
 
+static int cnt = 0;
+
 Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
                EffectInstantiatorPointer pInstantiator)
@@ -20,7 +22,7 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
           m_bEnabled(true) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-            this, pEffectsManager, m_parameters.size(), parameter);
+                this, pEffectsManager, m_parameters.size(), parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
@@ -37,6 +39,8 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         }
         m_buttonParametersById[parameter.id()] = pParameter;
     }
+    cnt++;
+    qDebug() << "Effect::Effect()" << cnt << this;
 }
 
 Effect::~Effect() {
@@ -52,6 +56,8 @@ Effect::~Effect() {
         m_buttonParameters[i] = NULL;
         delete pParameter;
     }
+    cnt--;
+    qDebug() << "Effect::~Effect()" << cnt << this;
 }
 
 void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
@@ -208,10 +214,10 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
 }
 
 // static
-EffectPointer Effect::fromXML(EffectsManager* pEffectsManager,
+Effect* Effect::fromXML(EffectsManager* pEffectsManager,
                               const QDomElement& element) {
     QString effectId = XmlParse::selectNodeQString(element, "Id");
-    EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
+    Effect* pEffect = pEffectsManager->instantiateEffect(effectId);
     // TODO(rryan): Load parameter values / etc. from element.
     return pEffect;
 }
