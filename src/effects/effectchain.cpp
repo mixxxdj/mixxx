@@ -252,13 +252,6 @@ const QList<Effect*>& EffectChain::effects() const {
     return m_effects;
 }
 
-Effect* EffectChain::getEffect(unsigned int effectSlotNumber) const {
-    if (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
-        qWarning() << debugString() << "WARNING: list index out of bounds for getEffect";
-    }
-    return m_effects[effectSlotNumber];
-}
-
 EngineEffectChain* EffectChain::getEngineEffectChain() {
     return m_pEngineEffectChain;
 }
