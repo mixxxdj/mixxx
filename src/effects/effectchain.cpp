@@ -208,24 +208,24 @@ void EffectChain::addEffect(Effect* pEffect) {
     emit(effectAdded());
 }
 
-void EffectChain::replaceEffect(unsigned int iEffectNumber,
+void EffectChain::replaceEffect(unsigned int effectSlotNumber,
                                 Effect* pEffect) {
     //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
-    while (iEffectNumber >= static_cast<unsigned int>(m_effects.size())) {
+    while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
         m_effects.append(NULL);
     }
 
-    Effect* pOldEffect = m_effects[iEffectNumber];
+    Effect* pOldEffect = m_effects[effectSlotNumber];
     if (pOldEffect) {
         if (m_bAddedToEngine) {
-            pOldEffect->removeFromEngine(m_pEngineEffectChain, iEffectNumber);
+            pOldEffect->removeFromEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
-    m_effects.replace(iEffectNumber, pEffect);
+    m_effects.replace(effectSlotNumber, pEffect);
     if (pEffect) {
         if (m_bAddedToEngine) {
-            pEffect->addToEngine(m_pEngineEffectChain, iEffectNumber);
+            pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
@@ -252,11 +252,11 @@ const QList<Effect*>& EffectChain::effects() const {
     return m_effects;
 }
 
-Effect* EffectChain::getEffect(unsigned int effectNumber) const {
-    if (effectNumber >= static_cast<unsigned int>(m_effects.size())) {
+Effect* EffectChain::getEffect(unsigned int effectSlotNumber) const {
+    if (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
         qWarning() << debugString() << "WARNING: list index out of bounds for getEffect";
     }
-    return m_effects[effectNumber];
+    return m_effects[effectSlotNumber];
 }
 
 EngineEffectChain* EffectChain::getEngineEffectChain() {

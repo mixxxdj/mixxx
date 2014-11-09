@@ -86,8 +86,8 @@ class EffectChain : public QObject {
 
     void addEffect(Effect* pEffect);
     void removeEffect(Effect* pEffect);
-    void replaceEffect(unsigned int iEffectNumber, Effect* pEffect);
-    Effect* getEffect(unsigned int i) const;
+    void replaceEffect(unsigned int effectSlotNumber, Effect* pEffect);
+    Effect* getEffect(unsigned int effectSlotNumber) const;
     const QList<Effect*>& effects() const;
     unsigned int numEffects() const;
 
