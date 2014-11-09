@@ -22,7 +22,10 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
 }
 
 EffectChain::~EffectChain() {
-    //qDebug() << debugString() << "destroyed";
+    // Remove all effects.
+    for (int i = 0; i < m_effects.size(); ++i) {
+        replaceEffect(i, NULL);
+    }
 }
 
 void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
@@ -231,16 +234,9 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
 
     // TODO(rryan): Replaced signal?
     emit(effectAdded());
-}
 
-void EffectChain::removeEffect(Effect* pEffect) {
-    //qDebug() << debugString() << "removeEffect" << pEffect;
-    for (int i = 0; i < m_effects.size(); ++i) {
-        if (m_effects.at(i) == pEffect) {
-            pEffect->removeFromEngine(m_pEngineEffectChain, i);
-            m_effects.replace(i, NULL);
-            emit(effectRemoved());
-        }
+    if (pOldEffect) {
+        delete pOldEffect;
     }
 }
 

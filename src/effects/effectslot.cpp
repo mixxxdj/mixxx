@@ -171,7 +171,7 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffect(Effect*pEffect) {
+void EffectSlot::loadEffect(Effect* pEffect) {
     // qDebug() << debugString() << "loadEffect"
     //          << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
