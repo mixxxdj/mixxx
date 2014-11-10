@@ -7,18 +7,14 @@
 #include "engine/effects/engineeffect.h"
 #include "xmlparse.h"
 
-static int cnt = 0;
-
 Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
                EffectInstantiatorPointer pInstantiator)
         : QObject(pParent),
           m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
-          m_pEngineEffect(new EngineEffect(manifest,
-                                           pEffectsManager->registeredGroups(),
-                                           pInstantiator)),
-          m_bAddedToEngine(false),
+          m_pInstantiator(pInstantiator),
+          m_pEngineEffect(NULL),
           m_bEnabled(true) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
@@ -39,8 +35,6 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         }
         m_buttonParametersById[parameter.id()] = pParameter;
     }
-    cnt++;
-    qDebug() << "Effect::Effect()" << cnt << this;
 }
 
 Effect::~Effect() {
@@ -56,46 +50,38 @@ Effect::~Effect() {
         m_buttonParameters[i] = NULL;
         delete pParameter;
     }
-    cnt--;
-    qDebug() << "Effect::~Effect()" << cnt << this;
 }
 
 void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
+    if (m_pEngineEffect) {
+        return;
+    }
+    m_pEngineEffect = new EngineEffect(m_manifest,
+            m_pEffectsManager->registeredGroups(),
+            m_pInstantiator);
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
     request->pTargetChain = pChain;
     request->AddEffectToChain.pEffect = m_pEngineEffect;
     request->AddEffectToChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
-    m_bAddedToEngine = true;
-    foreach (EffectParameter* pParameter, m_parameters) {
-        pParameter->addToEngine();
-    }
-
-    foreach (EffectParameter* pParameter, m_buttonParameters) {
-        pParameter->addToEngine();
-    }
 }
 
 void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
+    if (!m_pEngineEffect) {
+        return;
+    }
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
     request->pTargetChain = pChain;
     request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
     request->RemoveEffectFromChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
-    m_bAddedToEngine = false;
-    foreach (EffectParameter* pParameter, m_parameters) {
-        pParameter->removeFromEngine();
-    }
-
-    foreach (EffectParameter* pParameter, m_buttonParameters) {
-        pParameter->removeFromEngine();
-    }
+    m_pEngineEffect = NULL;
 }
 
 void Effect::updateEngineState() {
-    if (!m_bAddedToEngine) {
+    if (!m_pEngineEffect) {
         return;
     }
     sendParameterUpdate();
@@ -129,7 +115,7 @@ bool Effect::enabled() const {
 }
 
 void Effect::sendParameterUpdate() {
-    if (!m_bAddedToEngine) {
+    if (!m_pEngineEffect) {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();

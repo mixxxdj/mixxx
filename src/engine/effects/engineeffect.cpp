@@ -1,6 +1,8 @@
 #include "engine/effects/engineeffect.h"
 #include "sampleutil.h"
 
+static int cnt = 0;
+
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)
@@ -31,6 +33,9 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     m_pProcessor = pInstantiator->instantiate(this, manifest);
     m_pProcessor->initialize(registeredGroups);
     m_effectRampsFromDry = manifest.effectRampsFromDry();
+
+    cnt++;
+    qDebug() << "Effect::EngineEffect()" << cnt << this;
 }
 
 EngineEffect::~EngineEffect() {
@@ -50,6 +55,8 @@ EngineEffect::~EngineEffect() {
         m_buttonParameters[i] = NULL;
         delete pParameter;
     }
+    cnt--;
+    qDebug() << "Effect::~EngineEffect()" << cnt << this;
 }
 
 bool EngineEffect::processEffectsRequest(const EffectsRequest& message,

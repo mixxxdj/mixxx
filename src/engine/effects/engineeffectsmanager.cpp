@@ -13,6 +13,7 @@ EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
 }
 
 EngineEffectsManager::~EngineEffectsManager() {
+    qDeleteAll(m_effects);
 }
 
 void EngineEffectsManager::onCallbackStart() {
@@ -85,6 +86,7 @@ void EngineEffectsManager::onCallbackStart() {
                             m_effects.append(request->AddEffectToChain.pEffect);
                         } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
                             m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
+                            delete request->RemoveEffectFromChain.pEffect;
                         }
                     } else {
                         if (!processed) {

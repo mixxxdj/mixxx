@@ -74,7 +74,7 @@ class EffectParameter : public QObject {
     bool clampRanges();
     bool checkType(const QVariant& value) const;
 
-    EngineEffect* m_pEngineEffect;
+    Effect* m_pEffect;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameter m_parameter;

@@ -62,6 +62,7 @@ class Effect : public QObject {
 
     EffectsManager* m_pEffectsManager;
     EffectManifest m_manifest;
+    EffectInstantiatorPointer m_pInstantiator;
     EngineEffect* m_pEngineEffect;
     bool m_bAddedToEngine;
     bool m_bEnabled;
