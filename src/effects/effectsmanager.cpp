@@ -149,8 +149,6 @@ void EffectsManager::setupDefaults() {
     pRack->addEffectChainSlot();
     pRack->addEffectChainSlot();
 
-    QSet<QString> effects = getAvailableEffects();
-
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));

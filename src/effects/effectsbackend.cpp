@@ -25,7 +25,7 @@ void EffectsBackend::registerEffect(const QString& id,
     }
 
     m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiatorPointer>(
-        manifest, pInstantiator);
+            manifest, pInstantiator);
     emit(effectRegistered());
 }
 
