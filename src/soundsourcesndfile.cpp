@@ -32,25 +32,18 @@
  */
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
     : Mixxx::SoundSource(qFilename),
+      fh(NULL),
       channels(0),
-      fh(NULL)
-{
-    m_bOpened = false;
-    info = new SF_INFO;
-    info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
-    filelength = 0;
+      filelength(0) {
+    // Must be set to 0 per the API for reading (non-RAW files)
+    memset(&info, 0, sizeof(info));
 }
 
-SoundSourceSndFile::~SoundSourceSndFile()
-{
-    if (m_bOpened) {
-        sf_close(fh);
-    }
-    delete info;
+SoundSourceSndFile::~SoundSourceSndFile() {
+    sf_close(fh);
 }
 
-QList<QString> SoundSourceSndFile::supportedFileExtensions()
-{
+QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("aiff");
     list.push_back("aif");
@@ -63,10 +56,10 @@ Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
-    fh = sf_wchar_open(lpcwFilename, SFM_READ, info);
+    fh = sf_wchar_open(lpcwFilename, SFM_READ, &info);
 #else
     QByteArray qbaFilename = m_qFilename.toLocal8Bit();
-    fh = sf_open(qbaFilename.constData(), SFM_READ, info);
+    fh = sf_open(qbaFilename.constData(), SFM_READ, &info);
 #endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
@@ -79,13 +72,12 @@ Result SoundSourceSndFile::open() {
         return ERR;
     }
 
-    channels = info->channels;
-
+    channels = info.channels;
+    m_iSampleRate =  info.samplerate;
     // This is the 'virtual' filelength. No matter how many channels the file
     // actually has, we pretend it has 2.
-    filelength = 2*info->frames; // File length with two interleaved channels
-    m_iSampleRate =  info->samplerate;
-    m_bOpened = true;
+    filelength = info.frames * 2; // File length with two interleaved channels
+
     return OK;
 }
 
@@ -189,12 +181,12 @@ Result SoundSourceSndFile::parseHeader()
             // intelligent version of taglib, should happen in 11.10
 
             // Have to open the file for info to be valid.
-            if (!m_bOpened) {
+            if (fh == NULL) {
                 open();
             }
 
-            if (info->samplerate > 0) {
-                setDuration(info->frames / info->samplerate);
+            if (info.samplerate > 0) {
+                setDuration(info.frames / info.samplerate);
             } else {
                 qDebug() << "WARNING: WAV file with invalid samplerate."
                          << "Can't get duration using libsndfile.";
