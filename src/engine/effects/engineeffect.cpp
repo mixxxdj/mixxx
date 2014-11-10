@@ -6,8 +6,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
           m_enableState(EffectProcessor::ENABLING),
-          m_parameters(manifest.parameters().size()),
-          m_buttonParameters(manifest.buttonParameters().size()) {
+          m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {
         const EffectManifestParameter& parameter = parameters.at(i);
@@ -15,16 +14,6 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
                 new EngineEffectParameter(parameter);
         m_parameters[i] = pParameter;
         m_parametersById[parameter.id()] = pParameter;
-    }
-
-    const QList<EffectManifestParameter>& buttonParameters =
-                                                m_manifest.buttonParameters();
-    for (int i = 0; i < buttonParameters.size(); ++i) {
-        const EffectManifestParameter& parameter = buttonParameters.at(i);
-        EngineEffectParameter* pParameter =
-                new EngineEffectParameter(parameter);
-        m_buttonParameters[i] = pParameter;
-        m_buttonParametersById[parameter.id()] = pParameter;
     }
 
     // Creating the processor must come last.
@@ -42,12 +31,6 @@ EngineEffect::~EngineEffect() {
     for (int i = 0; i < m_parameters.size(); ++i) {
         EngineEffectParameter* pParameter = m_parameters.at(i);
         m_parameters[i] = NULL;
-        delete pParameter;
-    }
-    m_buttonParametersById.clear();
-    for (int i = 0; i < m_buttonParameters.size(); ++i) {
-        EngineEffectParameter* pParameter = m_buttonParameters.at(i);
-        m_buttonParameters[i] = NULL;
         delete pParameter;
     }
 }
@@ -84,29 +67,6 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                          << "value" << message.value;
             }
             pParameter = m_parameters.value(
-                message.SetParameterParameters.iParameter, NULL);
-            if (pParameter) {
-                pParameter->setMinimum(message.minimum);
-                pParameter->setMaximum(message.maximum);
-                pParameter->setDefaultValue(message.default_value);
-                pParameter->setValue(message.value);
-                response.success = true;
-            } else {
-                response.success = false;
-                response.status = EffectsResponse::NO_SUCH_PARAMETER;
-            }
-            pResponsePipe->writeMessages(&response, 1);
-            return true;
-        case EffectsRequest::SET_PARAMETER_BUTTON_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_BUTTON_PARAMETER_PARAMETERS"
-                         << "parameter" << message.SetParameterParameters.iParameter
-                         << "minimum" << message.minimum
-                         << "maximum" << message.maximum
-                         << "default_value" << message.default_value
-                         << "value" << message.value;
-            }
-            pParameter = m_buttonParameters.value(
                 message.SetParameterParameters.iParameter, NULL);
             if (pParameter) {
                 pParameter->setMinimum(message.minimum);

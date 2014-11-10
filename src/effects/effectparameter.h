@@ -41,46 +41,45 @@ class EffectParameter : public QObject {
     EffectManifestParameter::LinkType getDefaultLinkType() const;
     double getNeutralPointOnScale() const;
 
-    QVariant getValue() const;
-    // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
-    void setValue(QVariant value, int type = 10);
+    double getValue() const;
 
-    QVariant getDefault() const;
-    void setDefault(QVariant defaultValue);
+    void setValue(double value);
 
-    QVariant getMinimum() const;
-    void setMinimum(QVariant minimum);
+    double getDefault() const;
+    void setDefault(double defaultValue);
 
-    QVariant getMaximum() const;
-    void setMaximum(QVariant maximum);
+    double getMinimum() const;
+    void setMinimum(double minimum);
+
+    double getMaximum() const;
+    void setMaximum(double maximum);
 
     EffectManifestParameter::ControlHint getControlHint() const;
 
-    // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
-    void updateEngineState(int type = 10);
+    void updateEngineState();
 
   signals:
-    void valueChanged(QVariant value);
+    void valueChanged(double value);
 
   private:
     QString debugString() const {
         return QString("EffectParameter(%1)").arg(m_parameter.name());
     }
 
-    static bool clampValue(EffectManifestParameter::ValueHint valueHint, QVariant* pValue,
-                           const QVariant& minimum, const QVariant& maximum);
-    bool clampValue(QVariant* pValue);
+    static bool clampValue(double* pValue,
+                           const double& minimum, const double& maximum);
+    bool clampValue();
+    bool clampDefault();
     bool clampRanges();
-    bool checkType(const QVariant& value) const;
 
     Effect* m_pEffect;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameter m_parameter;
-    QVariant m_minimum;
-    QVariant m_maximum;
-    QVariant m_default;
-    QVariant m_value;
+    double m_minimum;
+    double m_maximum;
+    double m_default;
+    double m_value;
     bool m_bAddedToEngine;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);

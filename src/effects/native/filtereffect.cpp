@@ -17,13 +17,13 @@ EffectManifest FilterEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Allows to fade a song out by sweeping a low or high pass filter"));
+    manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    lpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
@@ -37,7 +37,6 @@ EffectManifest FilterEffect::getManifest() {
     q->setName(QObject::tr("Q"));
     q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     q->setDefault(0.707106781); // 0.707106781 = Butterworth
@@ -49,7 +48,6 @@ EffectManifest FilterEffect::getManifest() {
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    hpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     hpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     hpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_RIGHT);
@@ -99,9 +97,18 @@ void FilterEffect::processGroup(const QString& group,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
-    double hpf = m_pHPF->value().toDouble();
-    double q = m_pQ->value().toDouble();
-    double lpf = m_pLPF->value().toDouble();
+    double hpf;
+    double lpf;
+    double q = m_pQ->value();
+
+    if (enableState == EffectProcessor::DISABLING) {
+        // Ramp to dry, when disabling, this will ramp from dry when enabling as well
+        hpf = kMinCorner;
+        lpf = kMaxCorner;
+    } else {
+        hpf = m_pHPF->value();
+        lpf = m_pLPF->value();
+    }
 
     if ((pState->m_loFreq != lpf) ||
             (pState->m_q != q) ||
