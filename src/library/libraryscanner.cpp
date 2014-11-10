@@ -464,8 +464,7 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             // this changes in the future you MUST check that the cover art is
             // not USER_SELECTED first.
             TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, pToken, true, true),
-                    &QObject::deleteLater);
+                new TrackInfoObject(filePath, pToken, true, true));
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
