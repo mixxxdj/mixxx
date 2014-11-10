@@ -23,7 +23,6 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     low->setNeutralPointOnScale(0.5);
@@ -31,12 +30,22 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     low->setMinimum(0);
     low->setMaximum(4.0);
 
+    EffectManifestParameter* killLow = manifest.addParameter();
+    killLow->setId("killLow");
+    killLow->setName(QObject::tr("Kill Low"));
+    killLow->setDescription(QObject::tr("Kill the Low Filter"));
+    killLow->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    killLow->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killLow->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killLow->setDefault(0);
+    killLow->setMinimum(0);
+    killLow->setMaximum(1);
+
     EffectManifestParameter* mid = manifest.addParameter();
     mid->setId("mid");
     mid->setName(QObject::tr("Mid"));
     mid->setDescription(QObject::tr("Gain for Band Filter"));
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     mid->setNeutralPointOnScale(0.5);
@@ -44,18 +53,39 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     mid->setMinimum(0);
     mid->setMaximum(4.0);
 
+    EffectManifestParameter* killMid = manifest.addParameter();
+    killMid->setId("killMid");
+    killMid->setName(QObject::tr("Kill Mid"));
+    killMid->setDescription(QObject::tr("Kill the Mid Filter"));
+    killMid->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    killMid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killMid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killMid->setDefault(0);
+    killMid->setMinimum(0);
+    killMid->setMaximum(1);
+
     EffectManifestParameter* high = manifest.addParameter();
     high->setId("high");
     high->setName(QObject::tr("High"));
     high->setDescription(QObject::tr("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     high->setNeutralPointOnScale(0.5);
     high->setDefault(1.0);
     high->setMinimum(0);
     high->setMaximum(4.0);
+
+    EffectManifestParameter* killHigh = manifest.addParameter();
+    killHigh->setId("killHigh");
+    killHigh->setName(QObject::tr("Kill High"));
+    killHigh->setDescription(QObject::tr("Kill the High Filter"));
+    killHigh->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    killHigh->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    killHigh->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    killHigh->setDefault(0);
+    killHigh->setMinimum(0);
+    killHigh->setMaximum(1);
 
     return manifest;
 }
@@ -64,7 +94,10 @@ Bessel4LVMixEQEffect::Bessel4LVMixEQEffect(EngineEffect* pEffect,
                                            const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")) {
+          m_pPotHigh(pEffect->getParameterById("high")),
+          m_pKillLow(pEffect->getParameterById("killLow")),
+          m_pKillMid(pEffect->getParameterById("killMid")),
+          m_pKillHigh(pEffect->getParameterById("killHigh")) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
@@ -94,9 +127,21 @@ void Bessel4LVMixEQEffect::processGroup(const QString& group,
         fMid = 1.0;
         fHigh = 1.0;
     } else {
-        fLow = m_pPotLow->value().toDouble();
-        fMid = m_pPotMid->value().toDouble();
-        fHigh = m_pPotHigh->value().toDouble();
+        if (!m_pKillLow->toBool()) {
+            fLow = m_pPotLow->value();
+        } else {
+            fLow = 0;
+        }
+        if (!m_pKillMid->toBool()) {
+            fMid = m_pPotMid->value();
+        } else {
+            fMid = 0;
+        }
+        if (!m_pKillHigh->toBool()) {
+            fHigh = m_pPotHigh->value();
+        } else {
+            fHigh = 0;
+        }
     }
 
     if (pState->m_oldSampleRate != sampleRate ||
