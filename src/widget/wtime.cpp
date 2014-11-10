@@ -1,7 +1,8 @@
-#include "widget/wtime.h"
-
 #include <QtDebug>
 #include <QTime>
+#include <QLocale>
+
+#include "widget/wtime.h"
 
 WTime::WTime(QWidget *parent)
         : WLabel(parent),
@@ -28,25 +29,16 @@ void WTime::setTimeFormat(QDomNode node, const SkinContext& context) {
     if (!context.hasNode(node, "CustomFormat")) {
         // check if seconds should be shown
         QString secondsFormat = context.selectString(node, "ShowSeconds");
-       if(secondsFormat == "true" || secondsFormat == "yes") {
-           m_sTimeFormat = "h:mm:ss";
-           m_iInterval = s_iSecondInterval;
-       } else {
-           m_sTimeFormat = "h:mm";
-           m_iInterval = s_iMinuteInterval;
-       }
-       // check if 24 hour format or 12 hour format is selected
-       QString clockFormat = context.selectString(node, "ClockFormat");
-       if (clockFormat == "24" || clockFormat == "24hrs") {
-       } else if (clockFormat == "12" ||
-                  clockFormat == "12hrs" ||
-                  clockFormat == "12ap") {
-           m_sTimeFormat += " ap";
-       } else if (clockFormat == "12AP") {
-           m_sTimeFormat += " AP";
-       } else {
-           qDebug() << "WTime: Unknown clock format: " << clockFormat;
-       }
+        // long format is equivalent to showing seconds
+        QLocale::FormatType format;
+        if(secondsFormat == "true" || secondsFormat == "yes") {
+            format = QLocale::LongFormat;
+            m_iInterval = s_iSecondInterval;
+        } else {
+            format = QLocale::ShortFormat;
+            m_iInterval = s_iMinuteInterval;
+        }
+        m_sTimeFormat = QLocale().timeFormat(format);
     } else {
         // set the time format to the custom format
         m_sTimeFormat = context.selectString(node, "CustomFormat");

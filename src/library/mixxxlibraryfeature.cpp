@@ -53,7 +53,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+            << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "library." + LIBRARYTABLE_COVERART_SOURCE
+            << "library." + LIBRARYTABLE_COVERART_TYPE
+            << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_HASH;
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
@@ -114,15 +118,20 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
-                    MixxxKeyboard* pKeyboard) {
+                                     MixxxKeyboard* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kHiddenTitle, m_pHiddenView);
+    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+
     m_pMissingView = new DlgMissing(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kMissingTitle, m_pMissingView);
+    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -152,11 +161,13 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
     emit(showTrackModel(m_pLibraryTableModel));
+    emit(enableCoverArtDisplay(true));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
     emit(switchToView(itemName));
+    emit(enableCoverArtDisplay(true));
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {

@@ -62,6 +62,7 @@ public:
     /** Return the length of the file in samples. */
     inline long unsigned length();
     Result parseHeader();
+    QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 
 private:

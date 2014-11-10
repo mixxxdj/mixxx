@@ -20,7 +20,6 @@
 
 #include <QtSql>
 #include <QList>
-#include <QRegExp>
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
@@ -102,7 +101,6 @@ class TrackCollection : public QObject
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
-    const QRegExp m_supportedFileExtensionsRegex;
 };
 
 #endif // TRACKCOLLECTION_H
