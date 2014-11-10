@@ -61,7 +61,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 
     connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
 
-    connect(CheckBoxShowAllEffects, SIGNAL(stateChanged(int)),
+    connect(CheckBoxHideEffects, SIGNAL(stateChanged(int)),
             this, SLOT(slotPopulateDeckEffectSelectors()));
 
     connect(this,
@@ -70,8 +70,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
             SLOT(slotLoadEffectOnChainSlot(const unsigned int, const unsigned int, QString)));
 
     // Set to basic view if a previous configuration is missing
-    CheckBoxShowAllEffects->setChecked(m_pConfig->getValueString(
-            ConfigKey(CONFIG_KEY, "AdvancedView"), QString("no")) == QString("yes"));
+    CheckBoxHideEffects->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, "AdvancedView"), QString("no")) == QString("no"));
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotAddComboBox
@@ -147,14 +147,14 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     m_deckEffectSelectorsSetup = true; // prevents a recursive call
     QList<QPair<QString, QString> > availableEQEffectNames; 
-    if (CheckBoxShowAllEffects->isChecked()) {
-        m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("yes"));
-        availableEQEffectNames =
-                m_pEffectsManager->getAvailableEffectNames().toList();
-    } else {
+    if (CheckBoxHideEffects->isChecked()) {
         m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("no"));
         availableEQEffectNames =
                 m_pEffectsManager->getAvailableEQEffectNames().toList();
+    } else {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "AdvancedView"), QString("yes"));
+        availableEQEffectNames =
+                m_pEffectsManager->getAvailableEffectNames().toList();
     }
 
     foreach (QComboBox* box, m_deckEffectSelectors) {

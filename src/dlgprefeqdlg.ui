@@ -24,9 +24,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="CheckBoxShowAllEffects">
+      <widget class="QCheckBox" name="CheckBoxHideEffects">
        <property name="text">
-        <string>Show All Effects</string>
+        <string>Fill menus with the best suited effects only</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

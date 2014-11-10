@@ -22,7 +22,8 @@
 class EffectManifest {
   public:
     EffectManifest()
-          : m_effectRampsFromDry(false) {
+          : m_isMixingEQ(false),
+            m_effectRampsFromDry(false) {
     }
 
     virtual ~EffectManifest() {
