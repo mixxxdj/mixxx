@@ -49,17 +49,17 @@ const QSet<QString>& EffectsManager::registeredGroups() const {
     return m_pEffectChainManager->registeredGroups();
 }
 
-const QSet<QString> EffectsManager::getAvailableEffects() const {
-    QSet<QString> availableEffects;
+const QList<QString> EffectsManager::getAvailableEffects() const {
+    QList<QString> availableEffects;
 
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
-        QSet<QString> backendEffects = pBackend->getEffectIds();
+        const QList<QString>& backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
             if (availableEffects.contains(effectId)) {
                 qWarning() << "WARNING: Duplicate effect ID" << effectId;
                 continue;
             }
-            availableEffects.insert(effectId);
+            availableEffects.append(effectId);
         }
     }
 
@@ -67,10 +67,8 @@ const QSet<QString> EffectsManager::getAvailableEffects() const {
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
-    // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
-    // STUPID
-    QList<QString> effects = getAvailableEffects().toList();
-    qSort(effects.begin(), effects.end());
+    const QList<QString> effects = getAvailableEffects();
+    //qSort(effects.begin(), effects.end()); For alphabetical order
 
     if (effects.isEmpty()) {
         return QString();
@@ -80,20 +78,16 @@ QString EffectsManager::getNextEffectId(const QString& effectId) {
         return effects.first();
     }
 
-    QList<QString>::const_iterator it =
-            qUpperBound(effects.constBegin(), effects.constEnd(), effectId);
-    if (it == effects.constEnd()) {
-        return effects.first();
+    int index = effects.indexOf(effectId);
+    if (++index >= effects.size()) {
+        index = 0;
     }
-
-    return *it;
+    return effects.at(index);
 }
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
-    // STUPID
-    QList<QString> effects = getAvailableEffects().toList();
-    qSort(effects.begin(), effects.end());
+    const QList<QString> effects = getAvailableEffects();
+    qSort(effects.begin(), effects.end());  For alphabetical order
 
     if (effects.isEmpty()) {
         return QString();
@@ -103,14 +97,12 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
         return effects.last();
     }
 
-    QList<QString>::const_iterator it =
-            qLowerBound(effects.constBegin(), effects.constEnd(), effectId);
-    if (it == effects.constBegin()) {
-        return effects.last();
+    int index = effects.indexOf(effectId);
+    if (--index < 0) {
+        index = effects.size() - 1;
     }
+    return effects.at(index);
 
-    --it;
-    return *it;
 }
 
 EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
