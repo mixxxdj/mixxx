@@ -16,18 +16,18 @@
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
-    registerEffect<FlangerEffect>();
-    registerEffect<BitCrusherEffect>();
+    registerEffect<Bessel4LVMixEQEffect>();
+    registerEffect<Bessel8LVMixEQEffect>();
+    registerEffect<LinkwitzRiley8EQEffect>();
+    registerEffect<GraphicEQEffect>();
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
+    registerEffect<BitCrusherEffect>();
+    registerEffect<FlangerEffect>();
+    registerEffect<EchoEffect>();
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
 #endif
-    registerEffect<EchoEffect>();
-    registerEffect<LinkwitzRiley8EQEffect>();
-    registerEffect<Bessel4LVMixEQEffect>();
-    registerEffect<Bessel8LVMixEQEffect>();
-    registerEffect<GraphicEQEffect>();
 }
 
 NativeBackend::~NativeBackend() {
