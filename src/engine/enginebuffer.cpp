@@ -867,7 +867,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             //          << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
-            memcpy(pOutput, output, sizeof(pOutput[0]) * iBufferSize);
+            SampleUtil::copy(pOutput, output, iBufferSize);
 
             if (m_bScalerOverride) {
                 // If testing, we don't have a real log so we fake the position.

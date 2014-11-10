@@ -8,6 +8,7 @@
 #include <taglib/wavpackfile.h>
 
 #include "soundsourcewv.h"
+#include "sampleutil.h"
 
 namespace Mixxx {
 
@@ -104,10 +105,7 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
     }
 
     if (m_iChannels==1) {       //if MONO : expand array to double it's size; see ssov.cpp
-        for(int i=(sampsread/2-1); i>=0; i--) { //algo courtesy of rryan !
-            dest[i*2]     = dest[i];    //go through array backwards, expanding and copying L -> R
-            dest[(i*2)+1] = dest[i];
-        }
+        SampleUtil::widenMonoToStereo(dest, sampsread / 2);
     }
 
     return sampsread;

@@ -196,7 +196,7 @@ void GraphicEQEffect::processGroup(const QString& group,
         bufIndex = 1 - bufIndex;
     } else {
         pState->m_low->pauseFilter();
-        memcpy(pState->m_pBufs[bufIndex], pInput, numSamples * sizeof(CSAMPLE));
+        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, numSamples);
     }
 
     for (int i = 0; i < 6; i++) {
@@ -214,7 +214,7 @@ void GraphicEQEffect::processGroup(const QString& group,
                                 pOutput, numSamples);
         bufIndex = 1 - bufIndex;
     } else {
-        memcpy(pOutput, pState->m_pBufs[bufIndex], numSamples * sizeof(CSAMPLE));
+        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], numSamples);
         pState->m_high->pauseFilter();
     }
 
