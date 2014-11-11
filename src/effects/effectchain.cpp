@@ -240,6 +240,10 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
     }
 }
 
+void EffectChain::removeEffect(unsigned int effectSlotNumber) {
+    replaceEffect(effectSlotNumber, NULL);
+}
+
 unsigned int EffectChain::numEffects() const {
     return m_effects.size();
 }
