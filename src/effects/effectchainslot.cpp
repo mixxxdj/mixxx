@@ -219,13 +219,11 @@ void EffectChainSlot::clear() {
     if (m_pEffectChain) {
         m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
                                          m_iChainNumber);
-        m_pEffectChain->disconnect(this);
-        m_pEffectChain.clear();
-
         foreach (EffectSlotPointer pSlot, m_slots) {
             pSlot->loadEffect(NULL);
         }
-
+        m_pEffectChain->disconnect(this);
+        m_pEffectChain.clear();
     }
     m_pControlNumEffects->setAndConfirm(0.0);
     m_pControlChainLoaded->setAndConfirm(0.0);
@@ -290,7 +288,7 @@ void EffectChainSlot::slotClearEffect(unsigned int iChainSlotNumber,
     }
 
     if (m_pEffectChain) {
-        m_pEffectChain->replaceEffect(iEffectSlotNumber, NULL);
+        m_pEffectChain->removeEffect(iEffectSlotNumber);
     }
 }
 

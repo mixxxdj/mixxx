@@ -24,7 +24,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
 EffectChain::~EffectChain() {
     // Remove all effects.
     for (int i = 0; i < m_effects.size(); ++i) {
-        replaceEffect(i, NULL);
+        removeEffect(i);
     }
 }
 

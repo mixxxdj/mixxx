@@ -1,5 +1,7 @@
 #include "effects/effectslot.h"
 
+#include <QDebug>
+
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
 
@@ -172,8 +174,8 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
 }
 
 void EffectSlot::loadEffect(Effect* pEffect) {
-    // qDebug() << debugString() << "loadEffect"
-    //          << (pEffect ? pEffect->getManifest().name() : "(null)");
+    //qDebug() << debugString() << "loadEffect"
+    //         << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
         m_pEffect = pEffect;
         m_pControlLoaded->setAndConfirm(1.0);
@@ -225,6 +227,7 @@ void EffectSlot::clear() {
     foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
         pParameter->loadEffect(NULL);
     }
+    m_pEffect = NULL;
     emit(updated());
 }
 
