@@ -16,26 +16,21 @@
 ***************************************************************************/
 #include <QStylePainter>
 #include <QStyleOption>
+#include <QSize>
 
 #include "widget/wstarrating.h"
-
-#include "library/starrating.h"
 
 
 // #include "widget/wskincolor.h"
 
-// WStarRating::WStarRating(QWidget* pParent)
-        // : WBaseWidget(this) {
-// }
 
-WStarRating::WStarRating(const char* group,
+WStarRating::WStarRating(QString group,
                                ConfigObject<ConfigValue>* pConfig,
                                QWidget* pParent)
-        : WWidget(pParent),
-          // m_starRating(0,5),
+        : WBaseWidget(pParent),
+          m_starRating(0,5),
           m_pGroup(group),
           m_pConfig(pConfig) {
-    // setAcceptDrops(true);
     
 }
 
@@ -44,60 +39,38 @@ WStarRating::~WStarRating() {
 
 void WStarRating::setup(QDomNode node, const SkinContext& context) {
 	
-	
     // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
     // cell.
     setMouseTracking(true);
 	
-    // setFixedSize(m_pSlider->size());
-    setFixedSize(100, 20);
-    // setFixedSize( m_starRating.sizeHint() );
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter painter(this);
+    painter.drawPrimitive(QStyle::PE_Widget, option);
     
-    autoFillBackground();
-    setForegroundRole(QPalette::NoRole);
+    // Computing the size of the widget including border,
+    // margin and padding sizes
+    QSize contentSize(m_starRating.sizeHint().width(), m_starRating.sizeHint().height());
+    QSize widgetSize = painter.style()->sizeFromContents(
+        QStyle::CT_PushButton, &option, contentSize, this);
+    
+    m_contentRect.setRect(
+        (widgetSize.width() - m_starRating.sizeHint().width() - 1)/2,
+        (widgetSize.height() - m_starRating.sizeHint().height())/2,
+        m_starRating.sizeHint().width(),
+        m_starRating.sizeHint().height()
+    );
+    
+    setFixedSize(widgetSize);
     
     update();
-	/** /
-    // Colors
-    QPalette pal = palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
-    if (context.hasNode(node, "BgColor")) {
-        m_qBgColor.setNamedColor(context.selectString(node, "BgColor"));
-        pal.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
-        setAutoFillBackground(true);
-    }
-    m_qFgColor.setNamedColor(context.selectString(node, "FgColor"));
-    pal.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
-    setPalette(pal);
-
-    // Text
-    if (context.hasNode(node, "Text"))
-        m_qsText = context.selectString(node, "Text");
-    setText(m_qsText);
-
-    // Font size
-    if (context.hasNode(node, "FontSize")) {
-        int fontsize = context.selectString(node, "FontSize").toInt();
-        setFont( QFont("Helvetica",fontsize,QFont::Normal) );
-    }
-
-    // Alignment
-    if (context.hasNode(node, "Alignment")) {
-        if (context.selectString(node, "Alignment").toLower() == "right") {
-            setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        } else if (context.selectString(node, "Alignment").toLower() == "center") {
-            setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-        } else if (context.selectString(node, "Alignment").toLower() == "left") {
-            setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        }
-    }
-	/**/
 }
 
 bool WStarRating::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return WWidget::event(pEvent);
+    return QWidget::event(pEvent);
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
@@ -111,113 +84,87 @@ void WStarRating::slotTrackLoaded(TrackPointer track) {
         m_pCurrentTrack = track;
         connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
                 this, SLOT(updateRating(TrackInfoObject*)));
-        updateRating(track.data());
+        updateRating();
     }
 }
 
 void WStarRating::slotTrackUnloaded(TrackPointer track) {
     Q_UNUSED(track);
     if (m_pCurrentTrack) {
-        qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating track déchargée!!!!!!!!";
         disconnect(m_pCurrentTrack.data(), 0, this, 0);
     }
     m_pCurrentTrack.clear();
-    // setText("");
+    updateRating();
 }
 
-void WStarRating::updateRating(TrackInfoObject*) {
+void WStarRating::updateRating() {
+    qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating updateRating";
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
-        qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating prop" << m_property << "\n";
-        // if (property.isValid() && qVariantCanConvert<QString>(property)) {
-            // setText(property.toString());
-        // }
-		// if (qVariantCanConvert<int>(value))
-			// value =  QString("(%1)").arg(value.toInt());
-        if (property.isValid()) {
-			
-			// StarRating starRating = qVariantValue<StarRating>(
-				// m_pCurrentTrack->property(m_property.toAscii().constData()) );
-			// pTrack->setRating(starRating.starCount());
-			// m_pCurrentTrack->setRating(starRating.starCount());
-        }
+        m_starRating.setStarCount(m_pCurrentTrack->getRating());
+    } else {
+        m_starRating.setStarCount(0);
     }
+    update();
 }
-
-// void 	render ( QPainter * painter, const QPoint & targetOffset = QPoint(), const QRegion & sourceRegion = QRegion(), RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) )
-/*
-void WStarRating::render (
-		QPainter * painter,
-		const QPoint & targetOffset /*= QPoint()* /,
-		const QRegion & sourceRegion /*= QRegion()* /,
-		RenderFlags renderFlags /*= RenderFlags( DrawWindowBackground | DrawChildren )* / ){
-	
-	// todo : render the starrating
-	// void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &palette,
-							// EditMode mode, bool isSelected) const
-	// WStarRating.paint( painter );
-    
-    // StarRating starRating = qVariantValue<StarRating>(index.data());
-    // starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly,
-                     // newOption.state & QStyle::State_Selected);
-	
-}
-*/
 
 void WStarRating::paintEvent(QPaintEvent *) {
-    qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating paintEvent!!!!!!!!";
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
     painter.drawPrimitive(QStyle::PE_Widget, option);
+    painter.setBrush(option.palette.text());
     
-     // painter.setPen(Qt::blue);
-     // painter.setFont(QFont("Arial", 30));
-     // painter.drawText(rect(), Qt::AlignCenter, "Qt");    
-    
-    if (m_pCurrentTrack) {
-        qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating paintEvent track ok!!!!!!!!";
-        qDebug() << "value " << m_pCurrentTrack->property(m_property.toAscii().constData());
-        // StarRating starRating = qVariantValue<StarRating>(
-            // m_pCurrentTrack->property(m_property.toAscii().constData()) );
-        
-        StarRating starRating(m_pCurrentTrack->getRating(), 5);
-        
-        setFixedSize( starRating.sizeHint() );
-        painter.fillRect(option.rect, option.palette.base());
-        painter.setBrush(option.palette.text());        
-        
-        // StarRating starRating = qVariantValue<StarRating>(index.data());
-        starRating.paint(&painter, option.rect, option.palette, StarRating::ReadOnly,
-                         option.state & QStyle::State_Selected);
-                         // newOption.state & QStyle::State_Selected);
-        
-    } else {
-        
-        StarRating starRating(0,5);
-        setFixedSize( starRating.sizeHint() );
-        painter.fillRect(option.rect, option.palette.base());
-        painter.setBrush(option.palette.text());        
-        
-        // StarRating starRating = qVariantValue<StarRating>(index.data());
-        starRating.paint(&painter, option.rect, option.palette, StarRating::ReadOnly,
-                         option.state & QStyle::State_Selected);
-                         // newOption.state & QStyle::State_Selected);
-    }
-    
-    qDebug() << "rect " << option.rect;
-    qDebug() << "state " << option.state;
-    qDebug() << "palette highlight " << option.palette.highlight();
-    qDebug() << "palette foreground " << option.palette.foreground();
-    
+    m_starRating.paint(&painter, m_contentRect, option.palette,
+                       StarRating::ReadOnly,
+                       option.state & QStyle::State_Selected);
 }
 
 /*
-void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
-    Q_UNUSED(pEvent);
-    m_dOldValue = -1;
-    m_iPos = -1;
-    // Re-calculate m_iPos based on our new width/height.
-    onConnectedControlChanged(getControlParameter(), 0);
+ * In the mouse event handler, we call setStarCount() on
+ * the private data member m_starRating to reflect the current cursor position,
+ * and we call QWidget::update() to force a repaint.
+ */
+ void WStarRating::mouseMoveEvent(QMouseEvent *event)
+ {
+    if (!m_pCurrentTrack)
+        return;
+    
+    m_focused = true;
+    int star = starAtPosition(event->x());
+
+    if (star != m_starRating.starCount() && star != -1) {
+       m_starRating.setStarCount(star);
+       update();
+    }
+ }
+
+ void WStarRating::leaveEvent(QEvent *){
+     m_focused = false;
+     updateRating();
+ }
+
+/*
+ * The method uses basic linear algebra to find out which star is under the cursor.
+ */
+ int WStarRating::starAtPosition(int x)
+ {
+     // If the mouse is very close to the left edge, set 0 stars.
+     if (x < m_starRating.sizeHint().width() * 0.05) {
+         return 0;
+     }
+     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+
+     if (star <= 0 || star > m_starRating.maxStarCount())
+         return 0;
+
+     return star;
+ }
+
+/*
+ * When the user releases a mouse button, we simply emit the editingFinished() signal.
+ */
+void WStarRating::mouseReleaseEvent(QMouseEvent * /* event */)
+{
+    m_pCurrentTrack->setRating(m_starRating.starCount());
 }
-*/
+
