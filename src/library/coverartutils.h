@@ -32,19 +32,14 @@ class CoverArtUtils {
     }
 
     // Extracts the first cover art image embedded within the file at
+    // trackLocation. You must provide a security token for accessing
     // trackLocation.
-    static QImage extractEmbeddedCover(const QString& trackLocation) {
+    static QImage extractEmbeddedCover(const QString& trackLocation,
+                                       SecurityTokenPointer pToken) {
         if (trackLocation.isEmpty()) {
             return QImage();
         }
-
-        SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-            QDir(trackLocation), true);
-        SoundSourceProxy proxy(trackLocation, securityToken);
-        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-        if (pProxiedSoundSource == NULL) {
-            return QImage();
-        }
+        SoundSourceProxy proxy(trackLocation, pToken);
         return proxy.parseCoverArt();
     }
 
@@ -54,7 +49,10 @@ class CoverArtUtils {
                 qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
                 return QImage();
             }
-            return CoverArtUtils::extractEmbeddedCover(info.trackLocation);
+            SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+                QFileInfo(info.trackLocation), true);
+            return CoverArtUtils::extractEmbeddedCover(info.trackLocation,
+                                                       pToken);
         } else if (info.type == CoverInfo::FILE) {
             if (info.trackLocation.isEmpty()) {
                 qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
@@ -136,7 +134,7 @@ class CoverArtUtils {
         const QFileInfo trackInfo = pTrack->getFileInfo();
         const QString trackLocation = trackInfo.absoluteFilePath();
 
-        art.image = extractEmbeddedCover(trackLocation);
+        art.image = extractEmbeddedCover(trackLocation, pTrack->getSecurityToken());
         if (!art.image.isNull()) {
             art.info.hash = calculateHash(art.image);
             art.info.coverLocation = QString();

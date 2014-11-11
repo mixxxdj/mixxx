@@ -23,8 +23,8 @@ class EffectManifest {
   public:
     EffectManifest()
           : m_effectRampsFromDry(false) {
-
     }
+
     virtual ~EffectManifest() {
         //qDebug() << debugString() << "deleted";
     }
@@ -68,19 +68,9 @@ class EffectManifest {
         return m_parameters;
     }
 
-
     virtual EffectManifestParameter* addParameter() {
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();
-    }
-
-    virtual const QList<EffectManifestParameter>& buttonParameters() const {
-        return m_buttonParameters;
-    }
-
-    virtual EffectManifestParameter* addButtonParameter() {
-        m_buttonParameters.append(EffectManifestParameter());
-        return &m_buttonParameters.last();
     }
 
     virtual bool effectRampsFromDry() const {
@@ -101,7 +91,6 @@ class EffectManifest {
     QString m_version;
     QString m_description;
     QList<EffectManifestParameter> m_parameters;
-    QList<EffectManifestParameter> m_buttonParameters;
     bool m_effectRampsFromDry;
 };
 

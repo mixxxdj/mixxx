@@ -177,7 +177,7 @@ void EffectSlot::loadEffect(Effect* pEffect) {
     if (pEffect) {
         m_pEffect = pEffect;
         m_pControlLoaded->setAndConfirm(1.0);
-        m_pControlNumParameters->setAndConfirm(m_pEffect->numParameters());
+        m_pControlNumParameters->setAndConfirm(m_pEffect->numKnobParameters());
         m_pControlNumButtonParameters->setAndConfirm(m_pEffect->numButtonParameters());
 
         // Enabled is a persistent property of the effect slot, not of the
@@ -187,7 +187,7 @@ void EffectSlot::loadEffect(Effect* pEffect) {
         connect(m_pEffect, SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
 
-        while (static_cast<unsigned int>(m_parameters.size()) < m_pEffect->numParameters()) {
+        while (static_cast<unsigned int>(m_parameters.size()) < m_pEffect->numKnobParameters()) {
             addEffectParameterSlot();
         }
 

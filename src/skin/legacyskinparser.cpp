@@ -37,6 +37,7 @@
 #include "widget/wknobcomposed.h"
 #include "widget/wslidercomposed.h"
 #include "widget/wpushbutton.h"
+#include "widget/weffectpushbutton.h"
 #include "widget/wdisplay.h"
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
@@ -406,6 +407,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseStandardWidget<WSliderComposed>(node));
     } else if (nodeName == "PushButton") {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
+    } else if (nodeName == "EffectPushButton") {
+        result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "ComboBox") {
         result = wrapWidget(parseStandardWidget<WComboBox>(node));
     } else if (nodeName == "Overview") {
@@ -1365,6 +1368,19 @@ QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
     WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
+}
+
+QWidget* LegacySkinParser::parseEffectPushButton(QDomElement element) {
+    WEffectPushButton* pWidget = new WEffectPushButton(m_pParent, m_pEffectsManager);
+    setupConnections(element, pWidget);
+    setupBaseWidget(element, pWidget);
+    setupWidget(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {

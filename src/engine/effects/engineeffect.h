@@ -30,10 +30,6 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
-    EngineEffectParameter* getButtonParameterById(const QString& id) {
-        return m_buttonParametersById.value(id, NULL);
-    }
-
     bool processEffectsRequest(
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
@@ -60,9 +56,7 @@ class EngineEffect : public EffectsRequestHandler {
     bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
-    QVector<EngineEffectParameter*> m_buttonParameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;
-    QMap<QString, EngineEffectParameter*> m_buttonParametersById;
 };
 
 #endif /* ENGINEEFFECT_H */

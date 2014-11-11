@@ -1625,25 +1625,22 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
 
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(trackInfo, true);
         SoundSourceProxy proxy(trackLocation, pToken);
-        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-        if (pProxiedSoundSource != NULL) {
-            QImage image = proxy.parseCoverArt();
-            if (!image.isNull()) {
-                updateQuery.bindValue(":coverart_type",
-                                      static_cast<int>(CoverInfo::METADATA));
-                updateQuery.bindValue(":coverart_source",
-                                      static_cast<int>(CoverInfo::GUESSED));
-                updateQuery.bindValue(":coverart_hash",
-                                      CoverArtUtils::calculateHash(image));
-                updateQuery.bindValue(":coverart_location", "");
-                updateQuery.bindValue(":track_id", trackId);
-                if (!updateQuery.exec()) {
-                    LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
-                } else {
-                    pTracksChanged->insert(trackId);
-                }
-                continue;
+        QImage image = proxy.parseCoverArt();
+        if (!image.isNull()) {
+            updateQuery.bindValue(":coverart_type",
+                                  static_cast<int>(CoverInfo::METADATA));
+            updateQuery.bindValue(":coverart_source",
+                                  static_cast<int>(CoverInfo::GUESSED));
+            updateQuery.bindValue(":coverart_hash",
+                                  CoverArtUtils::calculateHash(image));
+            updateQuery.bindValue(":coverart_location", "");
+            updateQuery.bindValue(":track_id", trackId);
+            if (!updateQuery.exec()) {
+                LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
+            } else {
+                pTracksChanged->insert(trackId);
             }
+            continue;
         }
 
         if (directoryPath != currentDirectoryPath) {

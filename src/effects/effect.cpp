@@ -25,16 +25,6 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         }
         m_parametersById[parameter.id()] = pParameter;
     }
-
-    foreach (const EffectManifestParameter& parameter, m_manifest.buttonParameters()) {
-        EffectParameter* pParameter = new EffectParameter(
-            this, pEffectsManager, m_buttonParameters.size(), parameter);
-        m_buttonParameters.append(pParameter);
-        if (m_buttonParametersById.contains(parameter.id())) {
-            qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
-        }
-        m_buttonParametersById[parameter.id()] = pParameter;
-    }
 }
 
 Effect::~Effect() {
@@ -43,11 +33,6 @@ Effect::~Effect() {
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
         m_parameters[i] = NULL;
-        delete pParameter;
-    }
-    for (int i = 0; i < m_buttonParameters.size(); ++i) {
-        EffectParameter* pParameter = m_buttonParameters.at(i);
-        m_buttonParameters[i] = NULL;
         delete pParameter;
     }
 }
@@ -88,10 +73,6 @@ void Effect::updateEngineState() {
     foreach (EffectParameter* pParameter, m_parameters) {
         pParameter->updateEngineState();
     }
-
-    foreach (EffectParameter* pParameter, m_buttonParameters) {
-        pParameter->updateEngineState();
-    }
 }
 
 EngineEffect* Effect::getEngineEffect() {
@@ -125,12 +106,24 @@ void Effect::sendParameterUpdate() {
     m_pEffectsManager->writeRequest(pRequest);
 }
 
-unsigned int Effect::numParameters() const {
-    return m_parameters.size();
+unsigned int Effect::numKnobParameters() const {
+    unsigned int num = 0;
+    foreach(const EffectParameter* parameter, m_parameters) {
+        if (parameter->manifest().controlHint() != EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+            ++num;
+        }
+    }
+    return num;
 }
 
 unsigned int Effect::numButtonParameters() const {
-    return m_buttonParameters.size();
+    unsigned int num = 0;
+    foreach(const EffectParameter* parameter, m_parameters) {
+        if (parameter->manifest().controlHint() == EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+            ++num;
+        }
+    }
+    return num;
 }
 
 EffectParameter* Effect::getParameterById(const QString& id) const {
@@ -142,25 +135,39 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
     return pParameter;
 }
 
-EffectParameter* Effect::getButtonParameterById(const QString& id) const {
-    EffectParameter* pParameter = m_buttonParametersById.value(id, NULL);
-    if (pParameter == NULL) {
-        qWarning() << debugString() << "getParameterById"
-                   << "WARNING: parameter for id does not exist:" << id;
+// static
+bool Effect::isButtonParameter(EffectParameter* parameter) {
+    return  parameter->manifest().controlHint() ==
+            EffectManifestParameter::CONTROL_TOGGLE_STEPPING;
+}
+
+// static
+bool Effect::isKnobParameter(EffectParameter* parameter) {
+    return !isButtonParameter(parameter);
+}
+
+EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFnc,
+                                                     unsigned int slotNumber) {
+    // It's normal to ask for a parameter that doesn't exist. Callers must check
+    // for NULL.
+    unsigned int num = 0;
+    foreach(EffectParameter* parameter, m_parameters) {
+        if (parameter->manifest().showInParameterSlot() && filterFnc(parameter)) {
+            if(num == slotNumber) {
+                return parameter;
+            }
+            ++num;
+        }
     }
-    return pParameter;
+    return NULL;
 }
 
-EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
-    // It's normal to ask for a parameter that doesn't exist. Callers must check
-    // for NULL.
-    return m_parameters.value(parameterNumber, NULL);
+EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {
+    return getFilteredParameterForSlot(isKnobParameter, slotNumber);
 }
 
-EffectParameter* Effect::getButtonParameter(unsigned int parameterNumber) {
-    // It's normal to ask for a parameter that doesn't exist. Callers must check
-    // for NULL.
-    return m_buttonParameters.value(parameterNumber, NULL);
+EffectParameter* Effect::getButtonParameterForSlot(unsigned int slotNumber) {
+    return getFilteredParameterForSlot(isButtonParameter, slotNumber);
 }
 
 QDomElement Effect::toXML(QDomDocument* doc) const {
@@ -175,26 +182,11 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
         QDomElement parameter = doc->createElement("Parameter");
         XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
         // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, parameter, "Value",
-                             pParameter->getValue().toString());
+        XmlParse::addElement(*doc, parameter, "Value", QString::number(pParameter->getValue()));
         // TODO(rryan): Output link state, etc.
         parameters.appendChild(parameter);
     }
     element.appendChild(parameters);
-
-    QDomElement buttonParameters = doc->createElement("ButtonParameters");
-    foreach (EffectParameter* pParameter, m_buttonParameters) {
-        const EffectManifestParameter& parameterManifest =
-                pParameter->manifest();
-        QDomElement parameter = doc->createElement("ButtonParameter");
-        XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
-        // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, parameter, "Value",
-                             pParameter->getValue().toString());
-        // TODO(rryan): Output link state, etc.
-        buttonParameters.appendChild(parameter);
-    }
-    element.appendChild(buttonParameters);
 
     return element;
 }
