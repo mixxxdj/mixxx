@@ -72,11 +72,6 @@ void WStarRating::paintEvent(QPaintEvent *) {
                        option.state & QStyle::State_Selected);
 }
 
-/*
- * In the mouse event handler, we call setStarCount() on
- * the private data member m_starRating to reflect the current cursor position,
- * and we call QWidget::update() to force a repaint.
- */
 void WStarRating::mouseMoveEvent(QMouseEvent *event)
 {
     if (!m_pCurrentTrack)
@@ -113,10 +108,7 @@ int WStarRating::starAtPosition(int x)
     return star;
 }
 
-/*
- * When the user releases a mouse button, we simply emit the editingFinished() signal.
- */
-void WStarRating::mouseReleaseEvent(QMouseEvent * /* event */)
+void WStarRating::mouseReleaseEvent(QMouseEvent * )
 {
     m_pCurrentTrack->setRating(m_starRating.starCount());
 }
