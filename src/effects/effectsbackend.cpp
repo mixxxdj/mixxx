@@ -54,6 +54,5 @@ Effect* EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
     QPair<EffectManifest, EffectInstantiatorPointer>& effectInfo =
             m_registeredEffects[effectId];
 
-    // The pointer is a child to the its EffectsBackend and deleted by the Qt Object tree
-    return new Effect(this, pEffectsManager, effectInfo.first, effectInfo.second);
+    return new Effect(pEffectsManager, effectInfo.first, effectInfo.second);
 }

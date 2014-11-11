@@ -25,7 +25,7 @@ class Effect : public QObject {
   public:
     typedef bool (*ParameterFilterFnc)(EffectParameter*);
 
-    Effect(QObject* pParent, EffectsManager* pEffectsManager,
+    Effect(EffectsManager* pEffectsManager,
            const EffectManifest& manifest,
            EffectInstantiatorPointer pInstantiator);
     virtual ~Effect();

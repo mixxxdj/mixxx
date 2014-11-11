@@ -7,10 +7,10 @@
 #include "engine/effects/engineeffect.h"
 #include "xmlparse.h"
 
-Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
+Effect::Effect(EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
                EffectInstantiatorPointer pInstantiator)
-        : QObject(pParent),
+        : QObject(),
           m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
           m_pInstantiator(pInstantiator),
