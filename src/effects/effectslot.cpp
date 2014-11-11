@@ -179,37 +179,37 @@ void EffectSlot::loadEffect(Effect* pEffect) {
     if (pEffect) {
         m_pEffect = pEffect;
         m_pControlLoaded->setAndConfirm(1.0);
-        m_pControlNumParameters->setAndConfirm(m_pEffect->numKnobParameters());
-        m_pControlNumButtonParameters->setAndConfirm(m_pEffect->numButtonParameters());
+        m_pControlNumParameters->setAndConfirm(pEffect->numKnobParameters());
+        m_pControlNumButtonParameters->setAndConfirm(pEffect->numButtonParameters());
 
         // Enabled is a persistent property of the effect slot, not of the
         // effect. Propagate the current setting to the effect.
-        m_pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
+        pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
 
-        connect(m_pEffect, SIGNAL(enabledChanged(bool)),
+        connect(pEffect, SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
 
-        while (static_cast<unsigned int>(m_parameters.size()) < m_pEffect->numKnobParameters()) {
+        while (static_cast<unsigned int>(m_parameters.size()) < pEffect->numKnobParameters()) {
             addEffectParameterSlot();
         }
 
-        while (static_cast<unsigned int>(m_buttonParameters.size()) < m_pEffect->numButtonParameters()) {
+        while (static_cast<unsigned int>(m_buttonParameters.size()) < pEffect->numButtonParameters()) {
             addEffectButtonParameterSlot();
         }
 
         foreach (EffectParameterSlotPointer pParameter, m_parameters) {
-            pParameter->loadEffect(m_pEffect);
+            pParameter->loadEffect(pEffect);
         }
 
         foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
-            pParameter->loadEffect(m_pEffect);
+            pParameter->loadEffect(pEffect);
         }
 
-        emit(effectLoaded(m_pEffect, m_iEffectNumber));
+        emit(effectLoaded(pEffect, m_iEffectNumber));
     } else {
         clear();
         // Broadcasts a null effect pointer
-        emit(effectLoaded(m_pEffect, m_iEffectNumber));
+        emit(effectLoaded(NULL, m_iEffectNumber));
     }
     emit(updated());
 }
@@ -253,7 +253,7 @@ void EffectSlot::slotEffectSelector(double v) {
 
 void EffectSlot::slotClear(double v) {
     if (v > 0) {
-        emit(clearEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+        emit(clearEffect(m_iEffectNumber));
     }
 }
 

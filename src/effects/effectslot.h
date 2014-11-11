@@ -85,8 +85,7 @@ class EffectSlot : public QObject {
 
     // Signal that whoever is in charge of this EffectSlot should clear this
     // EffectSlot (by deleting the effect from the underlying chain).
-    void clearEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
-                     Effect* pEffect);
+    void clearEffect(unsigned int iEffectNumber);
 
     void updated();
 

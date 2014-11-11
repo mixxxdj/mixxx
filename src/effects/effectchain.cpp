@@ -215,8 +215,12 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
                                 Effect* pEffect) {
     //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
     while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
+        if (!pEffect) {
+            return;
+        }
         m_effects.append(NULL);
     }
+
 
     Effect* pOldEffect = m_effects[effectSlotNumber];
     if (pOldEffect) {
