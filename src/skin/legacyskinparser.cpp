@@ -934,10 +934,8 @@ QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
     if (!pPlayer)
         return NULL;
 
-    WStarRating* p = new WStarRating(pSafeChannelStr, m_pConfig, m_pParent);
-    // setup(QDomNode node, const SkinContext& context)
+    WStarRating* p = new WStarRating(pSafeChannelStr, m_pParent);
     p->setup(node, *m_pContext);
-    // setupLabelWidget(node, p); // WLabel
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));

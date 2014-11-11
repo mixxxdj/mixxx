@@ -4,14 +4,10 @@
 
 #include "widget/wstarrating.h"
 
-WStarRating::WStarRating(QString group,
-                         ConfigObject<ConfigValue>* pConfig,
-                         QWidget* pParent)
+WStarRating::WStarRating(QString group, QWidget* pParent)
         : WBaseWidget(pParent),
           m_starRating(0,5),
-          m_pGroup(group),
-          m_pConfig(pConfig) {
-    
+          m_pGroup(group) {
 }
 
 WStarRating::~WStarRating() {
@@ -20,8 +16,6 @@ WStarRating::~WStarRating() {
 void WStarRating::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
-    // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
-    // cell.
     setMouseTracking(true);
     
     m_contentRect.setRect(0, 0, m_starRating.sizeHint().width(),
@@ -34,18 +28,6 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
 QSize WStarRating::sizeHint() const
 {
     return m_starRating.sizeHint();
-}
-
-bool WStarRating::event(QEvent* pEvent) {
-    if (pEvent->type() == QEvent::ToolTip) {
-        updateTooltip();
-    }
-    return QWidget::event(pEvent);
-}
-
-void WStarRating::fillDebugTooltip(QStringList* debug) {
-    WBaseWidget::fillDebugTooltip(debug);
-    // *debug << QString("Text: \"%1\"").arg(text());
 }
 
 void WStarRating::slotTrackLoaded(TrackPointer track) {
@@ -95,41 +77,41 @@ void WStarRating::paintEvent(QPaintEvent *) {
  * the private data member m_starRating to reflect the current cursor position,
  * and we call QWidget::update() to force a repaint.
  */
- void WStarRating::mouseMoveEvent(QMouseEvent *event)
- {
+void WStarRating::mouseMoveEvent(QMouseEvent *event)
+{
     if (!m_pCurrentTrack)
         return;
-    
+
     m_focused = true;
     int star = starAtPosition(event->x());
 
     if (star != m_starRating.starCount() && star != -1) {
-       m_starRating.setStarCount(star);
-       update();
+        m_starRating.setStarCount(star);
+        update();
     }
- }
+}
 
- void WStarRating::leaveEvent(QEvent *){
-     m_focused = false;
-     updateRating();
- }
+void WStarRating::leaveEvent(QEvent *){
+    m_focused = false;
+    updateRating();
+}
 
 /*
  * The method uses basic linear algebra to find out which star is under the cursor.
  */
- int WStarRating::starAtPosition(int x)
- {
-     // If the mouse is very close to the left edge, set 0 stars.
-     if (x < m_starRating.sizeHint().width() * 0.05) {
-         return 0;
-     }
-     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
-
-     if (star <= 0 || star > m_starRating.maxStarCount())
-         return 0;
-
-     return star;
- }
+int WStarRating::starAtPosition(int x)
+{
+    // If the mouse is very close to the left edge, set 0 stars.
+    if (x < m_starRating.sizeHint().width() * 0.05) {
+        return 0;
+    }
+    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+    
+    if (star <= 0 || star > m_starRating.maxStarCount())
+    return 0;
+    
+    return star;
+}
 
 /*
  * When the user releases a mouse button, we simply emit the editingFinished() signal.
