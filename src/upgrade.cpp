@@ -330,9 +330,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
-        ////////////
-        /// UPGRADE TO THE MULTI LIBRARY FOLDER SETTIGNS
-        ////////////
+        // UPGRADE TO THE MULTI LIBRARY FOLDER SETTIGNS
         QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
         // to migrate the DB just add the current directory to the new
         // directories table
@@ -355,10 +353,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Upgrade failed!\n";
         }
 
-        ////////////
-        /// ASK FOR LIBRARY RESCAN TO ACTIVATE COVER ART
-        ////////////
-
+        // ASK FOR LIBRARY RESCAN TO ACTIVATE COVER ART
         // we can later ask for this variable when the library scanner is
         // constructed.
         m_bRescanLibrary = askReScanLibrary();
@@ -383,11 +378,10 @@ bool Upgrade::askReScanLibrary() {
     QMessageBox msgBox;
     msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
     msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
-    msgBox.setText(QMessageBox::tr("Mixxx has support to show cover art now.\n"
-                      "We need to rescan your library for the cover art files "
-                      "to display them."));
+    msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
+                      "Do you want to scan your library for cover files now?"));
     QPushButton* rescanButton = msgBox.addButton(
-        QMessageBox::tr("Rescan Library Now"), QMessageBox::AcceptRole);
+        QMessageBox::tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
     msgBox.setDefaultButton(rescanButton);
     msgBox.exec();
