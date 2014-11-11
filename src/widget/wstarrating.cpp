@@ -43,27 +43,50 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
     // cell.
     setMouseTracking(true);
 	
+    /*
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
-    painter.drawPrimitive(QStyle::PE_Widget, option);
+    // painter.drawPrimitive(QStyle::PE_Widget, option);
+    // painter.drawPrimitive(QStyle::PE_FrameGroupBox, option);
+    // painter.drawPrimitive(QStyle::PE_PanelButtonCommand, option);
     
     // Computing the size of the widget including border,
     // margin and padding sizes
-    QSize contentSize(m_starRating.sizeHint().width(), m_starRating.sizeHint().height());
-    QSize widgetSize = painter.style()->sizeFromContents(
-        QStyle::CT_PushButton, &option, contentSize, this);
+    m_widgetSize = painter.style()->sizeFromContents(
+        QStyle::CT_ItemViewItem, &option, m_starRating.sizeHint());
+        // QStyle::CT_LineEdit, &option, m_starRating.sizeHint());
+        // QStyle::CT_PushButton, &option, m_starRating.sizeHint());
+        // QStyle::CT_GroupBox, &option, m_starRating.sizeHint(), this);
     
     m_contentRect.setRect(
-        (widgetSize.width() - m_starRating.sizeHint().width() - 1)/2,
-        (widgetSize.height() - m_starRating.sizeHint().height())/2,
+        (m_widgetSize.width() - m_starRating.sizeHint().width() ) / 2,
+        (m_widgetSize.height() - m_starRating.sizeHint().height() )/2,
         m_starRating.sizeHint().width(),
         m_starRating.sizeHint().height()
     );
     
-    setFixedSize(widgetSize);
+    qDebug() << "!!!!!!!!!!!!!!!! size " << m_widgetSize;
+    qDebug() << "!!!!!!!!!!!!!!!! content " << m_contentRect;
+    */
+    
+    // setFixedSize(m_widgetSize);
+    
+    
+    
+    m_contentRect.setRect(
+        0, 0,
+        m_starRating.sizeHint().width(),
+        m_starRating.sizeHint().height()
+    );
+    setFixedSize(m_starRating.sizeHint());
     
     update();
+}
+
+QSize WStarRating::sizeHint() const
+{
+    return m_starRating.sizeHint();
 }
 
 bool WStarRating::event(QEvent* pEvent) {
@@ -74,13 +97,12 @@ bool WStarRating::event(QEvent* pEvent) {
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
-    // WBaseWidget::fillDebugTooltip(debug);
+    WBaseWidget::fillDebugTooltip(debug);
     // *debug << QString("Text: \"%1\"").arg(text());
 }
 
 void WStarRating::slotTrackLoaded(TrackPointer track) {
     if (track) {
-        qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating track chargée!!!!!!!!";
         m_pCurrentTrack = track;
         connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
                 this, SLOT(updateRating(TrackInfoObject*)));
@@ -98,7 +120,6 @@ void WStarRating::slotTrackUnloaded(TrackPointer track) {
 }
 
 void WStarRating::updateRating() {
-    qDebug() << "!!!!!!!!!!!!!!!!!!! WStarRating updateRating";
     if (m_pCurrentTrack) {
         m_starRating.setStarCount(m_pCurrentTrack->getRating());
     } else {
@@ -107,16 +128,26 @@ void WStarRating::updateRating() {
     update();
 }
 
+void WStarRating::updateRating(TrackInfoObject*) {
+    updateRating();
+}
+
 void WStarRating::paintEvent(QPaintEvent *) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
-    painter.drawPrimitive(QStyle::PE_Widget, option);
     painter.setBrush(option.palette.text());
+    // painter.drawPrimitive(QStyle::PE_Widget, option);
+    // painter.drawPrimitive(QStyle::PE_FrameDefaultButton, option);
+    // painter.drawPrimitive(QStyle::PE_PanelButtonCommand, option);
+    // painter.drawPrimitive(QStyle::PE_FrameGroupBox, option);
     
+    // m_starRating.paint(&painter, m_contentRect, option.palette,
     m_starRating.paint(&painter, m_contentRect, option.palette,
                        StarRating::ReadOnly,
                        option.state & QStyle::State_Selected);
+    
+    // qDebug() << "!!!!!!!! paintEvent rect " << rect();
 }
 
 /*

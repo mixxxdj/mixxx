@@ -3,6 +3,7 @@
 
 #include <QEvent>
 #include <QMouseEvent>
+#include <QStylePainter>
 
 #include "configobject.h"
 #include "skin/skincontext.h"
@@ -19,14 +20,14 @@ class WStarRating : public QWidget, public WBaseWidget {
 
     virtual void setup(QDomNode node, const SkinContext& context);
     
+    QSize sizeHint() const;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
     void slotTrackUnloaded(TrackPointer track);
 
   private slots:
-    // void updateRating(TrackInfoObject*);
-    void updateRating();
+    void updateRating(TrackInfoObject*);
     
   protected:
     bool event(QEvent* pEvent);
@@ -43,12 +44,13 @@ class WStarRating : public QWidget, public WBaseWidget {
     QString m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
-    QString m_property;
     int m_focused;
     QRect m_contentRect;
     
     private:
+        void updateRating();
         int starAtPosition(int x);
+        // QSize m_widgetSize;
 };
 
 #endif /* WSTARRATING_H */
