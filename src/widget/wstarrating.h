@@ -30,7 +30,7 @@ class WStarRating : public QWidget, public WBaseWidget {
     void updateRating(TrackInfoObject*);
     
   protected:
-    bool event(QEvent* pEvent);
+    // bool event(QEvent* pEvent);
     void fillDebugTooltip(QStringList* debug);
     
     virtual void paintEvent(QPaintEvent* e);
@@ -44,7 +44,7 @@ class WStarRating : public QWidget, public WBaseWidget {
     QString m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
-    int m_focused;
+    bool m_focused;
     QRect m_contentRect;
     
     private:

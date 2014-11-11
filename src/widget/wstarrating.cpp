@@ -1,32 +1,12 @@
-/***************************************************************************
-                          wstarrating.cpp  -  description
-                             -------------------
-    begin                : Wed Jan 5 2005
-    copyright            : (C) 2003 by Tue Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 #include <QStylePainter>
 #include <QStyleOption>
 #include <QSize>
 
 #include "widget/wstarrating.h"
 
-
-// #include "widget/wskincolor.h"
-
-
 WStarRating::WStarRating(QString group,
-                               ConfigObject<ConfigValue>* pConfig,
-                               QWidget* pParent)
+                         ConfigObject<ConfigValue>* pConfig,
+                         QWidget* pParent)
         : WBaseWidget(pParent),
           m_starRating(0,5),
           m_pGroup(group),
@@ -38,47 +18,14 @@ WStarRating::~WStarRating() {
 }
 
 void WStarRating::setup(QDomNode node, const SkinContext& context) {
-	
+    Q_UNUSED(node);
+    Q_UNUSED(context);
     // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
     // cell.
     setMouseTracking(true);
-	
-    /*
-    QStyleOption option;
-    option.initFrom(this);
-    QStylePainter painter(this);
-    // painter.drawPrimitive(QStyle::PE_Widget, option);
-    // painter.drawPrimitive(QStyle::PE_FrameGroupBox, option);
-    // painter.drawPrimitive(QStyle::PE_PanelButtonCommand, option);
     
-    // Computing the size of the widget including border,
-    // margin and padding sizes
-    m_widgetSize = painter.style()->sizeFromContents(
-        QStyle::CT_ItemViewItem, &option, m_starRating.sizeHint());
-        // QStyle::CT_LineEdit, &option, m_starRating.sizeHint());
-        // QStyle::CT_PushButton, &option, m_starRating.sizeHint());
-        // QStyle::CT_GroupBox, &option, m_starRating.sizeHint(), this);
-    
-    m_contentRect.setRect(
-        (m_widgetSize.width() - m_starRating.sizeHint().width() ) / 2,
-        (m_widgetSize.height() - m_starRating.sizeHint().height() )/2,
-        m_starRating.sizeHint().width(),
-        m_starRating.sizeHint().height()
-    );
-    
-    qDebug() << "!!!!!!!!!!!!!!!! size " << m_widgetSize;
-    qDebug() << "!!!!!!!!!!!!!!!! content " << m_contentRect;
-    */
-    
-    // setFixedSize(m_widgetSize);
-    
-    
-    
-    m_contentRect.setRect(
-        0, 0,
-        m_starRating.sizeHint().width(),
-        m_starRating.sizeHint().height()
-    );
+    m_contentRect.setRect(0, 0, m_starRating.sizeHint().width(),
+                          m_starRating.sizeHint().height());
     setFixedSize(m_starRating.sizeHint());
     
     update();
@@ -137,17 +84,10 @@ void WStarRating::paintEvent(QPaintEvent *) {
     option.initFrom(this);
     QStylePainter painter(this);
     painter.setBrush(option.palette.text());
-    // painter.drawPrimitive(QStyle::PE_Widget, option);
-    // painter.drawPrimitive(QStyle::PE_FrameDefaultButton, option);
-    // painter.drawPrimitive(QStyle::PE_PanelButtonCommand, option);
-    // painter.drawPrimitive(QStyle::PE_FrameGroupBox, option);
     
-    // m_starRating.paint(&painter, m_contentRect, option.palette,
     m_starRating.paint(&painter, m_contentRect, option.palette,
                        StarRating::ReadOnly,
                        option.state & QStyle::State_Selected);
-    
-    // qDebug() << "!!!!!!!! paintEvent rect " << rect();
 }
 
 /*
