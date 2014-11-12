@@ -40,7 +40,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 m_directoryDao(m_database),
                 m_analysisDao(m_database, collection->getConfig()),
                 m_trackDao(m_database, m_cueDao, m_playlistDao,
-                           m_crateDao, m_analysisDao,m_directoryDao,
+                           m_crateDao, m_analysisDao, m_libraryHashDao,
                            collection->getConfig()),
                 // Don't initialize m_database here, we need to do it in run() so the DB
                 // conn is in the right thread.
@@ -59,53 +59,15 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
 }
 
 LibraryScanner::~LibraryScanner() {
-    // IMPORTANT NOTE: This code runs in the GUI thread, so it should _NOT_ use
-    //                the m_trackDao that lives inside this class. It should use
-    //                the DAOs that live in m_pTrackCollection.
-
     if (isRunning()) {
         // Cancel any running library scan...
         cancel();
         wait(); // Wait for thread to finish
     }
 
-    // Do housekeeping on the LibraryHashes table.
-    ScopedTransaction transaction(m_pCollection->getDatabase());
-
-    // Mark the corresponding file locations in the track_locations table as deleted
-    // if we find one or more deleted directories.
-    QStringList deletedDirs;
-    QSqlQuery query(m_pCollection->getDatabase());
-    query.prepare("SELECT directory_path FROM LibraryHashes "
-                  "WHERE directory_deleted=1");
-    if (query.exec()) {
-        const int directoryPathColumn = query.record().indexOf("directory_path");
-        while (query.next()) {
-            QString directory = query.value(directoryPathColumn).toString();
-            deletedDirs << directory;
-        }
-    } else {
-        LOG_FAILED_QUERY(query) << "Couldn't SELECT deleted directories.";
-    }
-
-    // Delete any directories that have been marked as deleted...
-    query.finish();
-    query.exec("DELETE FROM LibraryHashes "
-               "WHERE directory_deleted=1");
-
-    // Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    foreach (QString dir, deletedDirs) {
-        m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
-    }
-    transaction.commit();
-
-    // The above is an ASSERT because there should never be an outstanding
-    // transaction when this code is called. If there is, it means we probably
-    // aren't committing a transaction somewhere that should be.
+    // There should never be an outstanding transaction when this code is
+    // called. If there is, it means we probably aren't committing a transaction
+    // somewhere that should be.
     if (m_database.isOpen()) {
         qDebug() << "Closing database" << m_database.connectionName();
 
@@ -117,7 +79,6 @@ LibraryScanner::~LibraryScanner() {
         // Close our database connection
         m_database.close();
     }
-
     qDebug() << "LibraryScanner destroyed";
 }
 

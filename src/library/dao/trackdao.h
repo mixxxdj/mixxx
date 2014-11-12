@@ -69,7 +69,7 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class CrateDAO;
-class DirectoryDAO;
+class LibraryHashDAO;
 
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
@@ -78,7 +78,7 @@ class TrackDAO : public QObject, public virtual DAO {
     // synchronized on track metadata change
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
-             AnalysisDao& analysisDao, DirectoryDAO& directoryDao,
+             AnalysisDao& analysisDao, LibraryHashDAO& libraryHashDao,
              ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
@@ -170,7 +170,7 @@ class TrackDAO : public QObject, public virtual DAO {
     PlaylistDAO& m_playlistDao;
     CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
-    DirectoryDAO& m_directoryDAO;
+    LibraryHashDAO& m_libraryHashDao;
     ConfigObject<ConfigValue>* m_pConfig;
     static QHash<int, TrackWeakPointer> m_sTracks;
     static QMutex m_sTracksMutex;

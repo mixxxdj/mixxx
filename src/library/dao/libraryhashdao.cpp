@@ -18,7 +18,8 @@ LibraryHashDAO::~LibraryHashDAO()
 }
 
 void LibraryHashDAO::initialize() {
-    qDebug() << "LibraryHashDAO::initialize" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "LibraryHashDAO::initialize" << QThread::currentThread()
+             << m_database.connectionName();
 }
 
 int LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
@@ -53,14 +54,15 @@ void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, const int hash) {
     query.bindValue(":hash", hash);
     query.bindValue(":directory_deleted", 0);
 
-
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Creating new dirhash failed.";
     }
     //qDebug() << "created new hash" << hash;
 }
 
-void LibraryHashDAO::updateDirectoryHash(const QString& dirPath, const int newHash, const int dir_deleted) {
+void LibraryHashDAO::updateDirectoryHash(const QString& dirPath,
+                                         const int newHash,
+                                         const int dir_deleted) {
     //qDebug() << "LibraryHashDAO::updateDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
@@ -79,10 +81,13 @@ void LibraryHashDAO::updateDirectoryHash(const QString& dirPath, const int newHa
     //qDebug() << getDirectoryHash(dirPath);
 }
 
-void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, const bool deleted, const bool verified) {
+void LibraryHashDAO::updateDirectoryStatuses(const QStringList& dirPaths,
+                                             const bool deleted,
+                                             const bool verified) {
     //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
     FieldEscaper escaper(m_database);
-    QMutableStringListIterator it(dirPaths);
+    QStringList escapedDirPaths = dirPaths;
+    QMutableStringListIterator it(escapedDirPaths);
     while (it.hasNext()) {
         it.setValue(escaper.escapeString(it.next()));
     }
@@ -93,7 +98,7 @@ void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, const bool de
                 "SET directory_deleted=:directory_deleted, "
                 "needs_verification=:needs_verification "
                 "WHERE directory_path IN (%1)")
-        .arg(dirPaths.join(",")));
+        .arg(escapedDirPaths.join(",")));
     query.bindValue(":directory_deleted", deleted ? 1 : 0);
     query.bindValue(":needs_verification", !verified ? 1 : 0);
     if (!query.exec()) {
@@ -160,4 +165,20 @@ void LibraryHashDAO::removeDeletedDirectoryHashes() {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+}
+
+QStringList LibraryHashDAO::getDeletedDirectories() {
+    QStringList result;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT directory_path FROM LibraryHashes "
+                  "WHERE directory_deleted=1");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+    const int directoryPathColumn = query.record().indexOf("directory_path");
+    while (query.next()) {
+        QString directory = query.value(directoryPathColumn).toString();
+        result << directory;
+    }
+    return result;
 }

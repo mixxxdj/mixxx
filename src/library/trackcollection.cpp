@@ -20,8 +20,9 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_cueDao(m_db),
           m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
+          m_libraryHashDao(m_db),
           m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
-                     m_analysisDao, m_directoryDao, pConfig) {
+                     m_analysisDao, m_libraryHashDao, pConfig) {
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
@@ -111,6 +112,7 @@ bool TrackCollection::checkForTables() {
     m_crateDao.initialize();
     m_cueDao.initialize();
     m_directoryDao.initialize();
+    m_libraryHashDao.initialize();
 
     return true;
 }
