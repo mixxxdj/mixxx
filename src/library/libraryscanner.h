@@ -1,4 +1,3 @@
-
 /***************************************************************************
                           libraryscanner.h  -  scans library in a thread
                              -------------------
@@ -40,17 +39,14 @@
 #include "libraryscannerdlg.h"
 #include "trackcollection.h"
 #include "util/sandbox.h"
-
-class TrackInfoObject;
+#include "trackinfoobject.h"
 
 class LibraryScanner : public QThread {
     Q_OBJECT
   public:
-    LibraryScanner();
     LibraryScanner(TrackCollection* collection);
     virtual ~LibraryScanner();
 
-    void run();
     void scan(QWidget *parent);
 
   public slots:
@@ -62,6 +58,12 @@ class LibraryScanner : public QThread {
     void progressHashing(QString);
     void progressLoading(QString path);
     void progressCoverArt(QString file);
+    void trackAdded(TrackPointer pTrack);
+    void tracksMoved(QSet<int> oldTrackIds, QSet<int> newTrackIds);
+    void tracksChanged(QSet<int> changedTrackIds);
+
+  protected:
+    void run();
 
   private:
     // Recursively scan a music library. Doesn't import tracks for any

@@ -69,7 +69,7 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class CrateDAO;
-class DirectoryDAO;
+class LibraryHashDAO;
 
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
@@ -78,7 +78,7 @@ class TrackDAO : public QObject, public virtual DAO {
     // synchronized on track metadata change
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
-             AnalysisDao& analysisDao, DirectoryDAO& directoryDao,
+             AnalysisDao& analysisDao, LibraryHashDAO& libraryHashDao,
              ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
@@ -111,13 +111,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
     void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
-    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
-    void databaseTrackAdded(TrackPointer pTrack);
-    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
-    void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
-    void databaseTracksChanged(QSet<int> tracksChanged);
-
     bool verifyRemainingTracks(volatile bool* pCancel);
     void detectCoverArtForUnknownTracks(volatile bool* pCancel,
                                         QSet<int>* pTracksChanged);
@@ -145,6 +138,10 @@ class TrackDAO : public QObject, public virtual DAO {
     // the tables directly.)
     void clearCache();
 
+    void databaseTrackAdded(TrackPointer pTrack);
+    void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
+    void databaseTracksChanged(QSet<int> tracksChanged);
+
   private slots:
     void slotTrackDirty(TrackInfoObject* pTrack);
     void slotTrackChanged(TrackInfoObject* pTrack);
@@ -170,7 +167,7 @@ class TrackDAO : public QObject, public virtual DAO {
     PlaylistDAO& m_playlistDao;
     CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
-    DirectoryDAO& m_directoryDAO;
+    LibraryHashDAO& m_libraryHashDao;
     ConfigObject<ConfigValue>* m_pConfig;
     static QHash<int, TrackWeakPointer> m_sTracks;
     static QMutex m_sTracksMutex;

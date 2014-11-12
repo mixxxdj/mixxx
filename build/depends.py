@@ -912,6 +912,7 @@ class MixxxCore(Feature):
                    "util/sandbox.cpp",
                    "util/file.cpp",
                    "util/mac.cpp",
+                   "util/task.cpp",
 
                    '#res/mixxx.qrc'
                    ]
