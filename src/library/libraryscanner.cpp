@@ -25,7 +25,6 @@
 #include "libraryscannerdlg.h"
 #include "library/queryutil.h"
 #include "library/coverartutils.h"
-#include "trackinfoobject.h"
 #include "util/trace.h"
 #include "util/file.h"
 #include "library/scanner/scannerutil.h"
@@ -56,6 +55,12 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
     // files would then have the wrong track location.
     connect(this, SIGNAL(scanFinished()),
             &(collection->getTrackDAO()), SLOT(clearCache()));
+    connect(this, SIGNAL(trackAdded(TrackPointer)),
+            &(collection->getTrackDAO()), SLOT(databaseTrackAdded(TrackPointer)));
+    connect(this, SIGNAL(tracksMoved(QSet<int>, QSet<int>)),
+            &(collection->getTrackDAO()), SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
+    connect(this, SIGNAL(tracksChanged(QSet<int>)),
+            &(collection->getTrackDAO()), SLOT(databaseTracksChanged(QSet<int>)));
 }
 
 LibraryScanner::~LibraryScanner() {
@@ -87,7 +92,6 @@ void LibraryScanner::run() {
     unsigned static id = 0; // the id of this thread, for debugging purposes
     //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
-    //m_pProgress->slotStartTiming();
 
     if (!m_database.isValid()) {
         m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
@@ -131,8 +135,7 @@ void LibraryScanner::run() {
     if (!upgradefile.exists()) {
         LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
         connect(&libImport, SIGNAL(progress(QString)),
-                m_pProgress, SLOT(slotUpdate(QString)),
-                Qt::BlockingQueuedConnection);
+                this, SIGNAL(progressLoading(QString)));
         ScopedTransaction transaction(m_database);
         libImport.import();
         transaction.commit();
@@ -244,13 +247,11 @@ void LibraryScanner::run() {
 
     qDebug("Scan took: %d ms", t.elapsed());
 
-    //m_pProgress->slotStopTiming();
     m_database.close();
 
-    // Update BaseTrackCache via the main TrackDao.
-    // TODO(rryan): Not ok! We are in the library scanner thread. Use a signal instead.
-    m_pCollection->getTrackDAO().databaseTracksMoved(tracksMovedSetOld, tracksMovedSetNew);
-    m_pCollection->getTrackDAO().databaseTracksChanged(coverArtTracksChanged);
+    // Update BaseTrackCache via signals connected to the main TrackDAO.
+    emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
+    emit(tracksChanged(coverArtTracksChanged));
 
     emit(scanFinished());
 }
@@ -425,7 +426,7 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successfully added. Signal the main instance of TrackDAO,
                 // that there is a new track in the database.
-                m_pCollection->getTrackDAO().databaseTrackAdded(pTrack);
+                emit(trackAdded(pTrack));
             } else {
                 qDebug() << "Track ("+filePath+") could not be added";
             }

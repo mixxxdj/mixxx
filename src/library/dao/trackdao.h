@@ -111,13 +111,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
     void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
-    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
-    void databaseTrackAdded(TrackPointer pTrack);
-    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
-    void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    // WARNING: called on the main thread TrackDAO by the LibraryScanner thread
-    void databaseTracksChanged(QSet<int> tracksChanged);
-
     bool verifyRemainingTracks(volatile bool* pCancel);
     void detectCoverArtForUnknownTracks(volatile bool* pCancel,
                                         QSet<int>* pTracksChanged);
@@ -144,6 +137,10 @@ class TrackDAO : public QObject, public virtual DAO {
     // we might detect that a track has been moved and modify the update
     // the tables directly.)
     void clearCache();
+
+    void databaseTrackAdded(TrackPointer pTrack);
+    void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
+    void databaseTracksChanged(QSet<int> tracksChanged);
 
   private slots:
     void slotTrackDirty(TrackInfoObject* pTrack);
