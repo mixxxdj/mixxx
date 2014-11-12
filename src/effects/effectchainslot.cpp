@@ -170,9 +170,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                                     m_iChainNumber);
         m_pEffectChain->updateEngineState();
 
-        connect(m_pEffectChain.data(), SIGNAL(effectAdded()),
-                this, SLOT(slotChainEffectsChanged()));
-        connect(m_pEffectChain.data(), SIGNAL(effectRemoved()),
+        connect(m_pEffectChain.data(), SIGNAL(effectsChanged()),
                 this, SLOT(slotChainEffectsChanged()));
         connect(m_pEffectChain.data(), SIGNAL(nameChanged(const QString&)),
                 this, SLOT(slotChainNameChanged(const QString&)));

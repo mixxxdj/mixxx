@@ -208,7 +208,7 @@ void EffectChain::addEffect(Effect* pEffect) {
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
     }
-    emit(effectAdded());
+    emit(effectsChanged());
 }
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
@@ -236,8 +236,7 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
         }
     }
 
-    // TODO(rryan): Replaced signal?
-    emit(effectAdded());
+    emit(effectsChanged());
 
     if (pOldEffect) {
         delete pOldEffect;

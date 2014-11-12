@@ -99,8 +99,7 @@ class EffectChain : public QObject {
 
   signals:
     // Signal that indicates that an effect has been added or removed.
-    void effectAdded();
-    void effectRemoved();
+    void effectsChanged();
     void nameChanged(const QString& name);
     void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);
