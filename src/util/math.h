@@ -6,7 +6,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
-#include <QDebug>
+
+#include <QtDebug> // Q_ASSERT
 
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
@@ -18,19 +19,17 @@ using std::fabs;
 
 template <typename T>
 inline T math_clamp(T value, T min, T max) {
-    // XXX: If max < min, behavior is undefined, and has been causing problems.
-    // if debugging is on, assert when this happens.
-    if (max < min) {
-        qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
-                   << max << " " << min;
-    }
-    if (value > max) {
-        return max;
-    }
-    if (value < min) {
-        return min;
-    }
-    return value;
+    // NOTE(uklotzde): Exceptionally use Q_ASSERT here to detect
+    // programming errors early during development. This check should
+    // be avoided in the released version for maximum performance!
+    //
+    // Use two separate assertions for min < max:
+    // - min > max is a programming error
+    // - min == max is most likely a programming error and avoidable
+    //   performance burden
+    Q_ASSERT(min <= max); // programming error
+    Q_ASSERT(min != max); // potential programming error & performance warning
+    return math_max(min, math_min(max, value));
 }
 
 // NOTE(rryan): It is an error to call even() on a floating point number. Do not
