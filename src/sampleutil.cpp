@@ -180,9 +180,6 @@ void SampleUtil::add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
 // static
 void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
         CSAMPLE_GAIN gain, unsigned int iNumSamples) {
-    if (pDest == pSrc) {
-        return applyGain(pDest, gain, iNumSamples);
-    }
     if (gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
@@ -205,9 +202,6 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
         CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
         unsigned int iNumSamples) {
-    if (pDest == pSrc) {
-        return applyRampingGain(pDest, old_gain, new_gain, iNumSamples);
-    }
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;

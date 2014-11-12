@@ -45,10 +45,6 @@ public:
     // Frees a 16-byte aligned buffer allocated by SampleUtil::alloc()
     static void free(CSAMPLE* pBuffer);
 
-    // Multiply every sample in pBuffer by gain
-    static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
-            unsigned int iNumSamples);
-
     // Sets every sample in pBuffer to zero
     inline
     static void clear(CSAMPLE* pBuffer, unsigned int iNumSamples) {
@@ -107,6 +103,16 @@ public:
     static void copyNarrowMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int numFrames, unsigned int numChannels);
 
+    // Multiply every sample in pBuffer by gain
+    static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
+            unsigned int iNumSamples);
+
+    // Copy pSrc to pDest and multiply each sample by a factor of gain.
+    // For optimum performance use the in-place function applyGain()
+    // if pDest == pSrc!
+    static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            CSAMPLE_GAIN gain, unsigned int iNumSamples);
+
     // Apply a different gain to every other sample.
     static void applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain1,
             CSAMPLE_GAIN gain2, unsigned int iNumSamples);
@@ -116,6 +122,13 @@ public:
     // which can cause audible clicks and pops.
     static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
             CSAMPLE_GAIN new_gain, unsigned int iNumSamples);
+
+    // Copy pSrc to pDest and ramp gain
+    // For optimum performance use the in-place function applyRampingGain()
+    // if pDest == pSrc!
+    static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
+            unsigned int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
@@ -137,15 +150,6 @@ public:
     static void add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
             CSAMPLE_GAIN gain1, const CSAMPLE* pSrc2, CSAMPLE_GAIN gain2,
             const CSAMPLE* pSrc3, CSAMPLE_GAIN gain3, unsigned int iNumSamples);
-
-    // Copy pSrc to pDest and multiply each sample by a factor of gain.
-    static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            CSAMPLE_GAIN gain, unsigned int iNumSamples);
-
-    // Copy pSrc to pDest and ramp gain
-    static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-            unsigned int iNumSamples);
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
