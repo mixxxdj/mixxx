@@ -322,7 +322,7 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
             SAMPLE* s16 = new SAMPLE[size];
             FillBuffer(buffer, 1.0f, size);
             for (int j = 0; j < size; ++j) {
-                s16[j] = SHRT_MAX;
+                s16[j] = SAMPLE_MAX;
             }
             SampleUtil::convertS16ToFloat32(buffer, s16, size);
             for (int j = 0; j < size; ++j) {
@@ -338,7 +338,7 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
             }
             FillBuffer(buffer, -1.0f, size);
             for (int j = 0; j < size; ++j) {
-                s16[j] = -SHRT_MAX;
+                s16[j] = -SAMPLE_MAX;
             }
             SampleUtil::convertS16ToFloat32(buffer, s16, size);
             for (int j = 0; j < size; ++j) {

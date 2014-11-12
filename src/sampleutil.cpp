@@ -4,9 +4,8 @@
 #include "sampleutil.h"
 #include "util/math.h"
 
-#include <QtDebug>
-
 #include <functional>
+
 #ifdef __WINDOWS__
 #include <QtGlobal>
 typedef qint64 int64_t;
@@ -71,11 +70,11 @@ void SampleUtil::copyNarrowMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
+void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
         unsigned int iNumSamples) {
-    if (gain == CSAMPLE_PEAK)
+    if (gain == CSAMPLE_GAIN_ONE)
         return;
-    if (gain == CSAMPLE_ZERO) {
+    if (gain == CSAMPLE_GAIN_ZERO) {
         clear(pBuffer, iNumSamples);
         return;
     }
@@ -85,19 +84,19 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
 }
 
 // static
-void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE old_gain,
-        CSAMPLE new_gain, unsigned int iNumSamples) {
-    if (old_gain == CSAMPLE_PEAK && new_gain == CSAMPLE_PEAK) {
+void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
+        CSAMPLE_GAIN new_gain, unsigned int iNumSamples) {
+    if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         return;
     }
-    if (old_gain == CSAMPLE_ZERO && new_gain == CSAMPLE_ZERO) {
+    if (old_gain == CSAMPLE_GAIN_ZERO && new_gain == CSAMPLE_GAIN_ZERO) {
         clear(pBuffer, iNumSamples);
         return;
     }
 
-    const CSAMPLE gain_delta = (CSAMPLE_PEAK + CSAMPLE_PEAK) * (new_gain - old_gain)
-            / iNumSamples;
-    CSAMPLE gain = old_gain;
+    const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
+            / CSAMPLE_GAIN(iNumSamples / 2);
+    CSAMPLE_GAIN gain = old_gain;
     for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
         pBuffer[i] *= gain;
         pBuffer[i + 1] *= gain;
@@ -107,7 +106,7 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE old_gain,
 // static
 void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
         CSAMPLE gain2, unsigned int iNumSamples) {
-    // This handles gain1 == CSAMPLE_PEAK && gain2 == CSAMPLE_PEAK as well.
+    // This handles gain1 == CSAMPLE_GAIN_ONE && gain2 == CSAMPLE_GAIN_ONE as well.
     if (gain1 == gain2) {
         return applyGain(pBuffer, gain1, iNumSamples);
     }
@@ -119,9 +118,9 @@ void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
 }
 
 // static
-void SampleUtil::addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
-        unsigned int iNumSamples) {
-    if (gain == CSAMPLE_ZERO) {
+void SampleUtil::addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+        CSAMPLE_GAIN gain, unsigned int iNumSamples) {
+    if (gain == CSAMPLE_GAIN_ZERO) {
         return;
     }
 
@@ -131,14 +130,15 @@ void SampleUtil::addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
 }
 
 void SampleUtil::addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-        CSAMPLE old_gain, CSAMPLE new_gain, unsigned int iNumSamples) {
-    if (old_gain == CSAMPLE_ZERO && new_gain == CSAMPLE_ZERO) {
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
+        unsigned int iNumSamples) {
+    if (old_gain == CSAMPLE_GAIN_ZERO && new_gain == CSAMPLE_GAIN_ZERO) {
         return;
     }
 
-    const CSAMPLE gain_delta = (CSAMPLE_PEAK + CSAMPLE_PEAK) * (new_gain - old_gain)
-            / iNumSamples;
-    CSAMPLE gain = old_gain;
+    const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
+            / CSAMPLE_GAIN(iNumSamples / 2);
+    CSAMPLE_GAIN gain = old_gain;
     for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
         pDest[i] += pSrc[i] * gain;
         pDest[i + 1] += pSrc[i + 1] * gain;
@@ -147,10 +147,11 @@ void SampleUtil::addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 
 // static
 void SampleUtil::add2WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-        CSAMPLE gain1, const CSAMPLE* pSrc2, CSAMPLE gain2, unsigned int iNumSamples) {
-    if (gain1 == CSAMPLE_ZERO) {
+        CSAMPLE_GAIN gain1, const CSAMPLE* pSrc2, CSAMPLE_GAIN gain2,
+        unsigned int iNumSamples) {
+    if (gain1 == CSAMPLE_GAIN_ZERO) {
         return addWithGain(pDest, pSrc2, gain2, iNumSamples);
-    } else if (gain2 == CSAMPLE_ZERO) {
+    } else if (gain2 == CSAMPLE_GAIN_ZERO) {
         return addWithGain(pDest, pSrc1, gain1, iNumSamples);
     }
 
@@ -161,13 +162,13 @@ void SampleUtil::add2WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
 
 // static
 void SampleUtil::add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-        CSAMPLE gain1, const CSAMPLE* pSrc2, CSAMPLE gain2,
-        const CSAMPLE* pSrc3, CSAMPLE gain3, unsigned int iNumSamples) {
-    if (gain1 == CSAMPLE_ZERO) {
+        CSAMPLE_GAIN gain1, const CSAMPLE* pSrc2, CSAMPLE_GAIN gain2,
+        const CSAMPLE* pSrc3, CSAMPLE_GAIN gain3, unsigned int iNumSamples) {
+    if (gain1 == CSAMPLE_GAIN_ZERO) {
         return add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, iNumSamples);
-    } else if (gain2 == CSAMPLE_ZERO) {
+    } else if (gain2 == CSAMPLE_GAIN_ZERO) {
         return add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, iNumSamples);
-    } else if (gain3 == CSAMPLE_ZERO) {
+    } else if (gain3 == CSAMPLE_GAIN_ZERO) {
         return add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, iNumSamples);
     }
 
@@ -177,16 +178,16 @@ void SampleUtil::add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
 }
 
 // static
-void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
-        unsigned int iNumSamples) {
+void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+        CSAMPLE_GAIN gain, unsigned int iNumSamples) {
     if (pDest == pSrc) {
         return applyGain(pDest, gain, iNumSamples);
     }
-    if (gain == CSAMPLE_PEAK) {
+    if (gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
     }
-    if (gain == CSAMPLE_ZERO) {
+    if (gain == CSAMPLE_GAIN_ZERO) {
         clear(pDest, iNumSamples);
         return;
     }
@@ -202,23 +203,24 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-        CSAMPLE old_gain, CSAMPLE new_gain, unsigned int iNumSamples) {
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
+        unsigned int iNumSamples) {
     if (pDest == pSrc) {
         return applyRampingGain(pDest, old_gain, new_gain, iNumSamples);
     }
-    if (old_gain == CSAMPLE_PEAK && new_gain == CSAMPLE_PEAK) {
+    if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
     }
-    if (old_gain == CSAMPLE_ZERO && new_gain == CSAMPLE_ZERO) {
+    if (old_gain == CSAMPLE_GAIN_ZERO && new_gain == CSAMPLE_GAIN_ZERO) {
         clear(pDest, iNumSamples);
         return;
     }
 
-    const CSAMPLE delta = (CSAMPLE_PEAK + CSAMPLE_PEAK) * (new_gain - old_gain)
-            / iNumSamples;
-    CSAMPLE gain = old_gain;
-    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += delta) {
+    const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
+            / CSAMPLE_GAIN(iNumSamples / 2);
+    CSAMPLE_GAIN gain = old_gain;
+    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
         pDest[i] = pSrc[i] * gain;
         pDest[i + 1] = pSrc[i + 1] * gain;
     }
@@ -232,7 +234,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
         unsigned int iNumSamples) {
     for (unsigned int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = CSAMPLE(pSrc[i]) / CSAMPLE(SHRT_MAX);
+        pDest[i] = CSAMPLE(pSrc[i]) / CSAMPLE(SAMPLE_MAX);
     }
 }
 
@@ -240,7 +242,7 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
 void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
         unsigned int iNumSamples) {
     for (unsigned int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = SAMPLE(pSrc[i] * CSAMPLE(SHRT_MAX));
+        pDest[i] = SAMPLE(pSrc[i] * CSAMPLE(SAMPLE_MAX));
     }
 }
 
@@ -314,14 +316,14 @@ void SampleUtil::deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
 void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
         const CSAMPLE* pSrcFadeOut, const CSAMPLE* pSrcFadeIn,
         unsigned int iNumSamples) {
-    CSAMPLE cross_mix = CSAMPLE_ZERO;
-    CSAMPLE cross_inc = (CSAMPLE_PEAK + CSAMPLE_PEAK)
-            / static_cast<double>(iNumSamples);
+    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE
+            / CSAMPLE_GAIN(iNumSamples / 2);
+    CSAMPLE_GAIN cross_mix = CSAMPLE_GAIN_ZERO;
     for (unsigned int i = 0; i + 1 < iNumSamples; i += 2) {
         pDest[i] = pSrcFadeIn[i] * cross_mix
-                + pSrcFadeOut[i] * (CSAMPLE_PEAK - cross_mix);
+                + pSrcFadeOut[i] * (CSAMPLE_GAIN_ONE - cross_mix);
         pDest[i + 1] = pSrcFadeIn[i + 1] * cross_mix
-                + pSrcFadeOut[i + 1] * (CSAMPLE_PEAK - cross_mix);
+                + pSrcFadeOut[i + 1] * (CSAMPLE_GAIN_ONE - cross_mix);
         cross_mix += cross_inc;
     }
 }
@@ -329,7 +331,8 @@ void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
 // static
 void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
         unsigned int iNumSamples) {
-    const CSAMPLE mixScale = CSAMPLE_PEAK / (CSAMPLE_PEAK + CSAMPLE_PEAK);
+    const CSAMPLE_GAIN mixScale = CSAMPLE_GAIN_ONE
+            / (CSAMPLE_GAIN_ONE + CSAMPLE_GAIN_ONE);
     for (unsigned int i = 0; i + 1 < iNumSamples; i += 2) {
         pDest[i] = (pSrc[i] + pSrc[i + 1]) * mixScale;
         pDest[i + 1] = pDest[i];

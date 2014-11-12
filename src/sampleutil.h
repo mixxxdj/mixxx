@@ -5,7 +5,6 @@
 #define SAMPLEUTIL_H
 
 #include "util/types.h"
-#include "util/math.h"
 
 // NOTE(uklotzde): We assume that the STL algorithms are thoroughly optimized!
 #include <algorithm>
@@ -61,7 +60,8 @@ public:
 
     // Sets every sample in pBuffer to value
     inline
-    static void fill(CSAMPLE* pBuffer, CSAMPLE value, unsigned int iNumSamples) {
+    static void fill(CSAMPLE* pBuffer, CSAMPLE value,
+            unsigned int iNumSamples) {
         std::fill(pBuffer, pBuffer + iNumSamples, value);
     }
 
@@ -108,50 +108,52 @@ public:
             unsigned int numFrames, unsigned int numChannels);
 
     // Apply a different gain to every other sample.
-    static void applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
-            CSAMPLE gain2, unsigned int iNumSamples);
+    static void applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain1,
+            CSAMPLE_GAIN gain2, unsigned int iNumSamples);
 
     // Multiply every sample in pBuffer ramping from gain1 to gain2.
     // We use ramping as often as possible to prevent soundwave discontinuities
     // which can cause audible clicks and pops.
-    static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE old_gain,
-            CSAMPLE new_gain, unsigned int iNumSamples);
+    static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
+            CSAMPLE_GAIN new_gain, unsigned int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
-    static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
-            unsigned int iNumSamples);
+    static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            CSAMPLE_GAIN gain, unsigned int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            CSAMPLE old_gain, CSAMPLE new_gain, unsigned int iNumSamples);
+            CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
+            unsigned int iNumSamples);
 
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2
     static void add2WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-            CSAMPLE gain1, const CSAMPLE* pSrc2, CSAMPLE gain2,
+            CSAMPLE_GAIN gain1, const CSAMPLE* pSrc2, CSAMPLE_GAIN gain2,
             unsigned int iNumSamples);
 
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2 plus pSrc3 multiplied by gain3
     static void add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-            CSAMPLE gain1, const CSAMPLE* pSrc2, CSAMPLE gain2,
-            const CSAMPLE* pSrc3, CSAMPLE gain3, unsigned int iNumSamples);
+            CSAMPLE_GAIN gain1, const CSAMPLE* pSrc2, CSAMPLE_GAIN gain2,
+            const CSAMPLE* pSrc3, CSAMPLE_GAIN gain3, unsigned int iNumSamples);
 
     // Copy pSrc to pDest and multiply each sample by a factor of gain.
-    static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
-            unsigned int iNumSamples);
+    static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            CSAMPLE_GAIN gain, unsigned int iNumSamples);
 
     // Copy pSrc to pDest and ramp gain
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            CSAMPLE old_gain, CSAMPLE new_gain, unsigned int iNumSamples);
+            CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
+            unsigned int iNumSamples);
 
-    // Convert and normalize a buffer of SAMPLEs in the range [-SHRT_MAX, SHRT_MAX]
+    // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
     static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
             unsigned int iNumSamples);
 
     // Convert and normalize a buffer of CSAMPLEs in the range [CSAMPLE_MIN, CSAMPLE_MAX]
-    // to a buffer of SAMPLEs in the range [-SHRT_MAX, SHRT_MAX].
+    // to a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX].
     static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples);
 
@@ -167,16 +169,16 @@ public:
     static bool isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
             const CSAMPLE* pBuffer, unsigned int iNumSamples);
 
-    // Copied every sample in pSrc to pDest, limiting the values in pDest to the
-    // range [fMin, fMax]. If pDest and pSrc are aliases, will not copy -- will
-    // only clamp. Returns true if any samples in pSrc were outside the range
-    // [fMin, fMax].
+    // Copies every sample in pSrc to pDest, limiting the values in pDest
+    // to the valid range of CSAMPLE. If pDest and pSrc are aliases, will
+    // not copy will only clamp. Returns true if any samples in pSrc were
+    // outside the valid range of CSAMPLE.
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples);
 
-    // returns a SAMPLE that is between CSAMPLE_MIN and CSAMPLE_MAX
+    // Limits a CSAMPLE value to the valid range [-CSAMPLE_PEAK, CSAMPLE_PEAK]
     inline static CSAMPLE clampSample(CSAMPLE in) {
-        return math_clamp(in, CSAMPLE_MIN, CSAMPLE_MAX);
+        return CSAMPLE_clamp(in);
     }
 
     // Interleave the samples in pSrc1 and pSrc2 into pDest. iNumSamples must be
