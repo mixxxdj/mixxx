@@ -222,10 +222,10 @@ void EffectSlot::clear() {
     m_pControlNumParameters->setAndConfirm(0.0);
     m_pControlNumButtonParameters->setAndConfirm(0.0);
     foreach (EffectParameterSlotPointer pParameter, m_parameters) {
-        pParameter->loadEffect(NULL);
+        pParameter->clear();
     }
     foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
-        pParameter->loadEffect(NULL);
+        pParameter->clear();
     }
     m_pEffect = NULL;
     emit(updated());

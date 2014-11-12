@@ -218,7 +218,7 @@ void EffectChainSlot::clear() {
         m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
                                          m_iChainNumber);
         foreach (EffectSlotPointer pSlot, m_slots) {
-            pSlot->loadEffect(NULL);
+            pSlot->clear();
         }
         m_pEffectChain->disconnect(this);
         m_pEffectChain.clear();

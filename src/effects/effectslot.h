@@ -52,6 +52,10 @@ class EffectSlot : public QObject {
     // ChainParameterChange. Uses for testing only
     void syncSofttakeover();
 
+    // Unload the currently loaded effect
+    void clear();
+
+
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(Effect* pEffect);
@@ -93,9 +97,6 @@ class EffectSlot : public QObject {
     QString debugString() const {
         return QString("EffectSlot(%1,%2)").arg(m_iChainNumber).arg(m_iEffectNumber);
     }
-
-    // Unload the currently loaded effect
-    void clear();
 
     const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
