@@ -86,14 +86,12 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void WStarRating::leaveEvent(QEvent *){
+void WStarRating::leaveEvent(QEvent*){
     m_focused = false;
     updateRating();
 }
 
-/*
- * The method uses basic linear algebra to find out which star is under the cursor.
- */
+// The method uses basic linear algebra to find out which star is under the cursor.
 int WStarRating::starAtPosition(int x)
 {
     // If the mouse is very close to the left edge, set 0 stars.
@@ -102,8 +100,9 @@ int WStarRating::starAtPosition(int x)
     }
     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
     
-    if (star <= 0 || star > m_starRating.maxStarCount())
-    return 0;
+    if (star <= 0 || star > m_starRating.maxStarCount()){
+        return 0;
+    }
     
     return star;
 }
