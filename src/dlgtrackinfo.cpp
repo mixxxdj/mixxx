@@ -81,7 +81,7 @@ void DlgTrackInfo::init(){
     }
     connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
-    connect(m_pWCoverArtLabel, SIGNAL(reloadCover()),
+    connect(m_pWCoverArtLabel, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
 }
 

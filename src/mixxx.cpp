@@ -346,8 +346,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
     // test for at least one out device, if none, display another dlg that
     // says "mixxx will barely work with no outs"
-    while (setupDevices != OK || numDevices == 0)
-    {
+    while (setupDevices != OK || numDevices == 0) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if setupDevices != OK
         if (setupDevices != OK) {
@@ -420,37 +419,28 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
 
-    // If we were told to start in fullscreen mode on the command-line
-    // or if user chose always starts in fullscreen mode,
-    // then turn on fullscreen mode.
+    // If we were told to start in fullscreen mode on the command-line or if
+    // user chose always starts in fullscreen mode, then turn on fullscreen
+    // mode.
     bool fullscreenPref = m_pConfig->getValueString(
-                ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
+        ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
     emit(newSkinLoaded());
 
-    // Refresh the GUI (workaround for Qt 4.6 display bug)
-    /* // TODO(bkgood) delete this block if the moving of setCentralWidget
-     * //              totally fixes this first-wavefore-fubar issue for
-     * //              everyone
-    QString QtVersion = qVersion();
-    if (QtVersion>="4.6.0") {
-        qDebug() << "Qt v4.6.0 or higher detected. Using rebootMixxxView() "
-            "workaround.\n    (See bug https://bugs.launchpad.net/mixxx/"
-            "+bug/521509)";
-        rebootMixxxView();
-    } */
-
-    // Wait until all other ControlObjects are set up
-    //  before initializing controllers
+    // Wait until all other ControlObjects are set up before initializing
+    // controllers
     m_pControllerManager->setUpDevices();
 
     // Scan the library for new files and directories
-    bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
+    bool rescan = m_pConfig->getValueString(
+        ConfigKey("[Library]","RescanOnStartup")).toInt();
     // rescan the library if we get a new plugin
-    QSet<QString> prev_plugins = QSet<QString>::fromList(m_pConfig->getValueString(
-        ConfigKey("[Library]", "SupportedFileExtensions")).split(",", QString::SkipEmptyParts));
+    QSet<QString> prev_plugins = QSet<QString>::fromList(
+        m_pConfig->getValueString(
+            ConfigKey("[Library]", "SupportedFileExtensions")).split(
+                ",", QString::SkipEmptyParts));
     QSet<QString> curr_plugins = QSet<QString>::fromList(
         SoundSourceProxy::supportedFileExtensions());
     rescan = rescan || (prev_plugins != curr_plugins);
@@ -463,11 +453,11 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
-    //Refresh the library models when the library (re)scan is finished.
+    // Refresh the library models when the library (re)scan is finished.
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
-    if (rescan || hasChanged_MusicDir) {
+    if (rescan || hasChanged_MusicDir || upgrader.rescanLibrary()) {
         m_pLibraryScanner->scan(this);
     }
     slotNumDecksChanged(m_pNumDecks->get());
