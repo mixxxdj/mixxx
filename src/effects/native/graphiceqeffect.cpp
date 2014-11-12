@@ -17,6 +17,7 @@ EffectManifest GraphicEQEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
         "An 8 band Graphic EQ based on Biquad Filters"));
+    manifest.setEffectRampsFromDry(true);
 
     // Display rounded center frequencies for each filter
     float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500,
@@ -27,7 +28,6 @@ EffectManifest GraphicEQEffect::getManifest() {
     low->setName(QString("%1 Hz").arg(centerFrequencies[0]));
     low->setDescription(QString("Gain for Low Filter"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     low->setNeutralPointOnScale(0.5);
@@ -48,7 +48,6 @@ EffectManifest GraphicEQEffect::getManifest() {
         mid->setName(paramName);
         mid->setDescription(QString("Gain for Band Filter %1").arg(i));
         mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-        mid->setValueHint(EffectManifestParameter::VALUE_FLOAT);
         mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
         mid->setNeutralPointOnScale(0.5);
@@ -60,9 +59,8 @@ EffectManifest GraphicEQEffect::getManifest() {
     EffectManifestParameter* high = manifest.addParameter();
     high->setId(QString("high"));
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
-    high->setDescription(QString("Gain for Hight Filter"));
+    high->setDescription(QString("Gain for High Filter"));
     high->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    high->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     high->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     high->setDefault(0);
@@ -142,6 +140,7 @@ void GraphicEQEffect::processGroup(const QString& group,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
                                    const unsigned int numSamples,
                                    const unsigned int sampleRate,
+                                   const EffectProcessor::EnableState enableState,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
@@ -157,10 +156,19 @@ void GraphicEQEffect::processGroup(const QString& group,
     float fMid[6];
     float fHigh;
 
-    fLow = m_pPotLow->value().toDouble();
-    fHigh = m_pPotHigh->value().toDouble();
-    for (int i = 0; i < 6; i++) {
-        fMid[i] = m_pPotMid[i]->value().toDouble();
+    if (enableState == EffectProcessor::DISABLING) {
+         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
+        fLow = 1.0;
+        fHigh = 1.0;;
+        for (int i = 0; i < 6; i++) {
+            fMid[i] = 1.0;
+        }
+    } else {
+        fLow = m_pPotLow->value();
+        fHigh = m_pPotHigh->value();
+        for (int i = 0; i < 6; i++) {
+            fMid[i] = m_pPotMid[i]->value();
+        }
     }
 
 
@@ -215,5 +223,13 @@ void GraphicEQEffect::processGroup(const QString& group,
     pState->m_oldHigh = fHigh;
     for (int i = 0; i < 6; i++) {
         pState->m_oldMid[i] = fMid[i];
+    }
+
+    if (enableState == EffectProcessor::DISABLING) {
+        pState->m_low->pauseFilter();
+        pState->m_high->pauseFilter();
+        for (int i = 0; i < 6; i++) {
+            pState->m_bands[i]->pauseFilter();
+        }
     }
 }

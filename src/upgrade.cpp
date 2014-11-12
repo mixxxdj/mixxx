@@ -17,6 +17,7 @@
 
 #include <QPixmap>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QTranslator>
 
 #include "defs_version.h"
@@ -29,14 +30,12 @@
 
 
 Upgrade::Upgrade()
-{
-    m_bFirstRun = false;
-    m_bUpgraded = false;
+        : m_bFirstRun(false),
+          m_bUpgraded(false),
+          m_bRescanLibrary(false) {
 }
 
-Upgrade::~Upgrade()
-{
-
+Upgrade::~Upgrade() {
 }
 
 // We return the ConfigObject here because we have to make changes to the
@@ -331,6 +330,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
+        // UPGRADE TO THE MULTI LIBRARY FOLDER SETTIGNS
         QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
         // to migrate the DB just add the current directory to the new
         // directories table
@@ -352,6 +352,11 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         else {
             qDebug() << "Upgrade failed!\n";
         }
+
+        // ASK FOR LIBRARY RESCAN TO ACTIVATE COVER ART
+        // we can later ask for this variable when the library scanner is
+        // constructed.
+        m_bRescanLibrary = askReScanLibrary();
     }
 
     if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
@@ -367,6 +372,21 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     }
 
     return config;
+}
+
+bool Upgrade::askReScanLibrary() {
+    QMessageBox msgBox;
+    msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
+    msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
+    msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
+                      "Do you want to scan your library for cover files now?"));
+    QPushButton* rescanButton = msgBox.addButton(
+        QMessageBox::tr("Scan"), QMessageBox::AcceptRole);
+    msgBox.addButton(QMessageBox::Cancel);
+    msgBox.setDefaultButton(rescanButton);
+    msgBox.exec();
+
+    return msgBox.clickedButton() == rescanButton;
 }
 
 bool Upgrade::askReanalyzeBeats() {

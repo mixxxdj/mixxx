@@ -41,10 +41,10 @@ class EffectsBackend : public QObject {
     template <typename EffectProcessorImpl>
     void registerEffect() {
         registerEffect(
-            EffectProcessorImpl::getId(),
-            EffectProcessorImpl::getManifest(),
-            EffectInstantiatorPointer(
-                new EffectProcessorInstantiator<EffectProcessorImpl>()));
+                EffectProcessorImpl::getId(),
+                EffectProcessorImpl::getManifest(),
+                EffectInstantiatorPointer(
+                            new EffectProcessorInstantiator<EffectProcessorImpl>()));
     }
 
   private:

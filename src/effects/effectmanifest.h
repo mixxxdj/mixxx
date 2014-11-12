@@ -21,7 +21,10 @@
 // example, a database-backed manifest)
 class EffectManifest {
   public:
-    EffectManifest() { }
+    EffectManifest()
+          : m_effectRampsFromDry(false) {
+    }
+
     virtual ~EffectManifest() {
         //qDebug() << debugString() << "deleted";
     }
@@ -65,19 +68,16 @@ class EffectManifest {
         return m_parameters;
     }
 
-
     virtual EffectManifestParameter* addParameter() {
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();
     }
 
-    virtual const QList<EffectManifestParameter>& buttonParameters() const {
-        return m_buttonParameters;
+    virtual bool effectRampsFromDry() const {
+        return m_effectRampsFromDry;
     }
-
-    virtual EffectManifestParameter* addButtonParameter() {
-        m_buttonParameters.append(EffectManifestParameter());
-        return &m_buttonParameters.last();
+    virtual void setEffectRampsFromDry(bool effectFadesFromDry) {
+        m_effectRampsFromDry = effectFadesFromDry;
     }
 
   private:
@@ -91,7 +91,7 @@ class EffectManifest {
     QString m_version;
     QString m_description;
     QList<EffectManifestParameter> m_parameters;
-    QList<EffectManifestParameter> m_buttonParameters;
+    bool m_effectRampsFromDry;
 };
 
 #endif /* EFFECTMANIFEST_H */

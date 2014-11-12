@@ -532,6 +532,7 @@ class MixxxCore(Feature):
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
                    "dlgdevelopertools.cpp",
+                   "dlgcoverartfullsize.cpp",
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -559,6 +560,7 @@ class MixxxCore(Feature):
                    "effects/native/graphiceqeffect.cpp",
                    "effects/native/flangereffect.cpp",
                    "effects/native/filtereffect.cpp",
+                   "effects/native/moogladder4filtereffect.cpp",
                    "effects/native/reverbeffect.cpp",
                    "effects/native/echoeffect.cpp",
                    "effects/native/reverb/Reverb.cc",
@@ -581,6 +583,7 @@ class MixxxCore(Feature):
                    "engine/enginebufferscalelinear.cpp",
                    "engine/enginefilterblock.cpp",
                    "engine/enginefilterbiquad1.cpp",
+                   "engine/enginefiltermoogladder4.cpp",
                    "engine/enginefilterbessel4.cpp",
                    "engine/enginefilterbessel8.cpp",
                    "engine/enginefilterbutterworth4.cpp",
@@ -663,6 +666,7 @@ class MixxxCore(Feature):
                    "widget/wwidget.cpp",
                    "widget/wwidgetgroup.cpp",
                    "widget/wwidgetstack.cpp",
+                   "widget/wsizeawarestack.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
@@ -674,6 +678,7 @@ class MixxxCore(Feature):
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",
                    "widget/wpushbutton.cpp",
+                   "widget/weffectpushbutton.cpp",
                    "widget/wslidercomposed.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
@@ -696,6 +701,9 @@ class MixxxCore(Feature):
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
+                   "widget/wcoverart.cpp",
+                   "widget/wcoverartlabel.cpp",
+                   "widget/wcoverartmenu.cpp",
 
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -724,6 +732,8 @@ class MixxxCore(Feature):
                    "library/missingtablemodel.cpp",
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
+                   "library/coverart.cpp",
+                   "library/coverartcache.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -784,6 +794,7 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/bpmeditor.cpp",
                    "library/previewbuttondelegate.cpp",
+                   "library/coverartdelegate.cpp",
                    "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
@@ -901,6 +912,7 @@ class MixxxCore(Feature):
                    "util/sandbox.cpp",
                    "util/file.cpp",
                    "util/mac.cpp",
+                   "util/task.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -926,6 +938,7 @@ class MixxxCore(Feature):
             'dlgaboutdlg.ui',
             'dlganalysis.ui',
             'dlgautodj.ui',
+            'dlgcoverartfullsize.ui',
             'dlgdevelopertoolsdlg.ui',
             'dlghidden.ui',
             'dlgmissing.ui',

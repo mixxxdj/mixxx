@@ -30,10 +30,6 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
-    EngineEffectParameter* getButtonParameterById(const QString& id) {
-        return m_buttonParametersById.value(id, NULL);
-    }
-
     bool processEffectsRequest(
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
@@ -42,10 +38,11 @@ class EngineEffect : public EffectsRequestHandler {
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
+                 const EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);
 
     bool enabled() const {
-        return m_bEnabled;
+        return m_enableState != EffectProcessor::DISABLED;
     }
 
   private:
@@ -55,12 +52,11 @@ class EngineEffect : public EffectsRequestHandler {
 
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
-    bool m_bEnabled;
+    EffectProcessor::EnableState m_enableState;
+    bool m_effectRampsFromDry;
     // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
-    QVector<EngineEffectParameter*> m_buttonParameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;
-    QMap<QString, EngineEffectParameter*> m_buttonParametersById;
 };
 
 #endif /* ENGINEEFFECT_H */

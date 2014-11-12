@@ -13,12 +13,12 @@ WEffectParameterBase::~WEffectParameterBase() {
 }
 
 void WEffectParameterBase::setEffectParameterSlot(EffectParameterSlotBasePointer pEffectParameterSlot) {
-    if (pEffectParameterSlot) {
-        m_pEffectParameterSlot = pEffectParameterSlot;
-        connect(pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
-        parameterUpdated();
-    }
+	m_pEffectParameterSlot = pEffectParameterSlot;
+  if (m_pEffectParameterSlot) {
+      connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
+              this, SLOT(parameterUpdated()));
+  }
+  parameterUpdated();
 }
 
 void WEffectParameterBase::parameterUpdated() {

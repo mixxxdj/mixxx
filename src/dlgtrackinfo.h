@@ -9,7 +9,10 @@
 #include "ui_dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
+#include "library/coverart.h"
 #include "util/types.h"
+#include "widget/wcoverartlabel.h"
+#include "widget/wcoverartmenu.h"
 
 const int kFilterLength = 5;
 
@@ -49,8 +52,13 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmTap();
 
     void reloadTrackMetadata();
-    void slotOpenInFileBrowser();
     void updateTrackMetadata();
+    void slotOpenInFileBrowser();
+
+    void slotCoverFound(const QObject* pRequestor, int requestReference,
+                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
+    void slotCoverArtSelected(const CoverArt& art);
+    void slotReloadCoverArt();
 
   private:
     void populateFields(TrackPointer pTrack);
@@ -66,9 +74,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
 
-    QMutex m_mutex;
     DlgTagFetcher& m_DlgTagFetcher;
 
+    CoverInfo m_loadedCoverInfo;
+    WCoverArtLabel* m_pWCoverArtLabel;
 };
 
 #endif /* DLGTRACKINFO_H */

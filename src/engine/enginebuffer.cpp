@@ -472,7 +472,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     // Must hold the engineLock while using m_engineControls
     m_engineLock.lock();
     for (QList<EngineControl*>::iterator it = m_engineControls.begin();
-         it != m_engineControls.end(); it++) {
+         it != m_engineControls.end(); ++it) {
         EngineControl *pControl = *it;
         pControl->notifySeek(m_filepos_play);
     }
