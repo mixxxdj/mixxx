@@ -38,7 +38,6 @@
 // A group of utilities for working with samples.
 class SampleUtil {
 public:
-    static bool m_sOptimizationsOn;
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
