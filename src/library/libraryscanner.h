@@ -46,7 +46,6 @@ class TrackInfoObject;
 class LibraryScanner : public QThread {
     Q_OBJECT
   public:
-    LibraryScanner();
     LibraryScanner(TrackCollection* collection);
     virtual ~LibraryScanner();
 

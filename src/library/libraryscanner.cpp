@@ -28,6 +28,7 @@
 #include "trackinfoobject.h"
 #include "util/trace.h"
 #include "util/file.h"
+#include "library/scanner/scannerutil.h"
 
 LibraryScanner::LibraryScanner(TrackCollection* collection)
               : m_pCollection(collection),
@@ -45,7 +46,8 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 // conn is in the right thread.
                 m_extensionFilter(SoundSourceProxy::supportedFileExtensionsRegex(),
                                   Qt::CaseInsensitive),
-                m_bCancelLibraryScan(false) {
+                m_bCancelLibraryScan(false),
+                m_directoriesBlacklist(ScannerUtil::getDirectoryBlacklist()) {
     qDebug() << "Constructed LibraryScanner";
 
     // Force the GUI thread's TrackInfoObject cache to be cleared when a library
@@ -54,23 +56,6 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
     // files would then have the wrong track location.
     connect(this, SIGNAL(scanFinished()),
             &(collection->getTrackDAO()), SLOT(clearCache()));
-
-    // The "Album Artwork" folder within iTunes stores Album Arts.
-    // It has numerous hundreds of sub folders but no audio files
-    // We put this folder on a "black list"
-    // On Windows, the iTunes folder is contained within the standard music folder
-    // Hence, Mixxx will scan the "Album Arts folder" for standard users which is wasting time
-    QString iTunesArtFolder = QDir::toNativeSeparators(
-                QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork" );
-    m_directoriesBlacklist << iTunesArtFolder;
-    qDebug() << "iTunes Album Art path is:" << iTunesArtFolder;
-
-#ifdef __WINDOWS__
-    //Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
-    QString seratoDir = QDir::toNativeSeparators(
-                QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/_Serato_" );
-    m_directoriesBlacklist << seratoDir;
-#endif
 }
 
 LibraryScanner::~LibraryScanner() {
