@@ -17,7 +17,7 @@ using std::fabs;
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
 
 template <typename T>
-inline T math_clamp(const T& value, const T& min, const T& max) {
+inline T math_clamp(T value, T min, T max) {
     // XXX: If max < min, behavior is undefined, and has been causing problems.
     // if debugging is on, assert when this happens.
     if (max < min) {
@@ -37,7 +37,7 @@ inline T math_clamp(const T& value, const T& min, const T& max) {
 // hack this to support floating point values! The programmer should be required
 // to manually convert so they are aware of the conversion.
 template <typename T>
-inline bool even(const T& value) {
+inline bool even(T value) {
     return value % 2 == 0;
 }
 
