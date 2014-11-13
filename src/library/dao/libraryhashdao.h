@@ -18,7 +18,6 @@ class LibraryHashDAO : public DAO {
     void saveDirectoryHash(const QString& dirPath, const int hash);
     void updateDirectoryHash(const QString& dirPath, const int newHash, const int dir_deleted);
     void markAsExisting(const QString& dirPath);
-    void markAsVerified(const QString& dirPath);
     void invalidateAllDirectories();
     void markUnverifiedDirectoriesAsDeleted();
     void removeDeletedDirectoryHashes();

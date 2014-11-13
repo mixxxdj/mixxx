@@ -119,19 +119,6 @@ void LibraryHashDAO::markAsExisting(const QString& dirPath) {
     }
 }
 
-void LibraryHashDAO::markAsVerified(const QString& dirPath) {
-    //qDebug() << "LibraryHashDAO::markExisting" << QThread::currentThread() << m_database.connectionName();
-    QSqlQuery query(m_database);
-    query.prepare("UPDATE LibraryHashes "
-                  "SET needs_verification=0 "
-                  "WHERE directory_path=:directory_path");
-   // query.bindValue(":directory_deleted", 0);
-    query.bindValue(":directory_path", dirPath);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "Updating dirhash to mark as verified failed.";
-    }
-}
-
 void LibraryHashDAO::invalidateAllDirectories() {
     //qDebug() << "LibraryHashDAO::invalidateAllDirectories"
     //<< QThread::currentThread() << m_database.connectionName();
