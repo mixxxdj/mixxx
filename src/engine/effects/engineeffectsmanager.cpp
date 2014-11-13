@@ -13,6 +13,7 @@ EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
 }
 
 EngineEffectsManager::~EngineEffectsManager() {
+    qDeleteAll(m_effects);
 }
 
 void EngineEffectsManager::onCallbackStart() {
