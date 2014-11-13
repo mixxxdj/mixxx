@@ -1277,18 +1277,20 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
     }
 }
 
-void TrackDAO::markTrackLocationAsVerified(const QString& location) {
-    //qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
-    //qDebug() << "markTrackLocationAsVerified()" << location;
+void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) {
+    //qDebug() << "TrackDAO::markTrackLocationsAsVerified" << QThread::currentThread() << m_database.connectionName();
+
+    FieldEscaper escaper(m_database);
+    QStringList escapedLocations = escaper.escapeStrings(locations);
 
     QSqlQuery query(m_database);
-    query.prepare("UPDATE track_locations "
-                  "SET needs_verification=0, fs_deleted=0 "
-                  "WHERE location=:location");
-    query.bindValue(":location", location);
+    query.prepare(QString("UPDATE track_locations "
+                          "SET needs_verification=0, fs_deleted=0 "
+                          "WHERE location IN (%1)").arg(
+                              escapedLocations.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
-                << "Couldn't mark track" << location << " as verified.";
+                << "Couldn't mark track locations as verified.";
     }
 }
 
@@ -1541,15 +1543,15 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
+void TrackDAO::verifyRemainingTracks() {
     // This function is called from the LibraryScanner Thread, which also has a
     // transaction running, so we do NOT NEED to use one here
     QSqlQuery query(m_database);
     QSqlQuery query2(m_database);
-    QString trackLocation;
 
-    // Because all tracks were marked with needs_verification anything that is not
-    // inside one of the tracked library directories will still need that
+    // Because all tracks were marked with needs_verification anything that is
+    // not inside one of the tracked library directories will need an explicit
+    // check if it exists.
     // TODO(kain88) check if all others are marked with 0 again
     query.setForwardOnly(true);
     query.prepare("SELECT location "
@@ -1557,7 +1559,7 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
                   "WHERE needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return false;
+        return;
     }
 
     query2.prepare("UPDATE track_locations "
@@ -1565,20 +1567,16 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
                    "WHERE location=:location");
 
     const int locationColumn = query.record().indexOf("location");
+    QString trackLocation;
     while (query.next()) {
         trackLocation = query.value(locationColumn).toString();
-        query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));
+        query2.bindValue(":fs_deleted", QFile::exists(trackLocation) ? 0 : 1);
         query2.bindValue(":location", trackLocation);
         if (!query2.exec()) {
             LOG_FAILED_QUERY(query2);
         }
-        if (*pCancel) {
-            return false;
-        }
         emit(progressVerifyTracksOutside(trackLocation));
     }
-    qDebug() << "verifyTracksOutside finished";
-    return true;
 }
 
 void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,

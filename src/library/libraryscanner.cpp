@@ -16,24 +16,23 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QDesktopServices>
-#include <QLinkedList>
 
 #include "library/libraryscanner.h"
 
 #include "soundsourceproxy.h"
 #include "library/legacylibraryimporter.h"
+#include "library/scanner/recursivescandirectorytask.h"
 #include "libraryscannerdlg.h"
 #include "library/queryutil.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
 #include "util/trace.h"
 #include "util/file.h"
+#include "util/timer.h"
 #include "library/scanner/scannerutil.h"
 
-LibraryScanner::LibraryScanner(TrackCollection* collection)
+LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collection)
               : m_pCollection(collection),
-                m_pProgress(NULL),
                 m_libraryHashDao(m_database),
                 m_cueDao(m_database),
                 m_playlistDao(m_database),
@@ -42,14 +41,28 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 m_analysisDao(m_database, collection->getConfig()),
                 m_trackDao(m_database, m_cueDao, m_playlistDao,
                            m_crateDao, m_analysisDao, m_libraryHashDao,
-                           collection->getConfig()),
-                // Don't initialize m_database here, we need to do it in run() so the DB
-                // conn is in the right thread.
-                m_extensionFilter(SoundSourceProxy::supportedFileExtensionsRegex(),
-                                  Qt::CaseInsensitive),
-                m_bCancelLibraryScan(false),
-                m_directoriesBlacklist(ScannerUtil::getDirectoryBlacklist()) {
-    qDebug() << "Constructed LibraryScanner";
+                           collection->getConfig()) {
+    // Don't initialize m_database here, we need to do it in run() so the DB
+    // conn is in the right thread.
+    qDebug() << "Starting LibraryScanner thread.";
+
+    // Move LibraryScanner to its own thread so that our signals/slots will
+    // queue to our event loop.
+    moveToThread(this);
+    m_pool.moveToThread(this);
+
+    unsigned static id = 0; // the id of this LibraryScanner, for debugging purposes
+    setObjectName(QString("LibraryScanner %1").arg(++id));
+
+    // TODO(rryan) make configurable
+    m_pool.setMaxThreadCount(10);
+
+    // Listen to signals from our public methods (invoked by other threads) and
+    // connect them to our slots to run the command on the scanner thread.
+    connect(this, SIGNAL(startScan()),
+            this, SLOT(slotStartScan()));
+    connect(this, SIGNAL(shutdownScanner()),
+            this, SLOT(slotShutdownScanner()));
 
     // Force the GUI thread's TrackInfoObject cache to be cleared when a library
     // scan is finished, because we might have modified the database directly
@@ -63,13 +76,43 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
             &(collection->getTrackDAO()), SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
     connect(this, SIGNAL(tracksChanged(QSet<int>)),
             &(collection->getTrackDAO()), SLOT(databaseTracksChanged(QSet<int>)));
+
+    // Parented to pParentWidget so we don't need to delete it.
+    LibraryScannerDlg* pProgress = new LibraryScannerDlg(pParentWidget);
+    connect(this, SIGNAL(progressLoading(QString)),
+            pProgress, SLOT(slotUpdate(QString)));
+    connect(this, SIGNAL(progressHashing(QString)),
+            pProgress, SLOT(slotUpdate(QString)));
+    connect(this, SIGNAL(scanStarted()),
+            pProgress, SLOT(slotScanStarted()));
+    connect(this, SIGNAL(scanFinished()),
+            pProgress, SLOT(slotScanFinished()));
+    connect(pProgress, SIGNAL(scanCancelled()),
+            this, SLOT(cancel()));
+    connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
+            pProgress, SLOT(slotUpdate(QString)));
+    connect(&m_trackDao, SIGNAL(progressCoverArt(QString)),
+            pProgress, SLOT(slotUpdateCover(QString)));
+
+    start();
 }
 
 LibraryScanner::~LibraryScanner() {
-    if (isRunning()) {
-        // Cancel any running library scan...
+    // A scan is running.
+    if (m_scannerGlobal) {
+        // Cancel any running library scan.
         cancel();
-        wait(); // Wait for thread to finish
+
+        // Wait for the thread pool to empty. This is important because
+        // ScannerTasks have pointers to the LibraryScanner and can cause a
+        // segfault if they run after the LibraryScanner has been destroyed.
+        m_pool.waitForDone();
+
+        // Quit the event loop gracefully.
+        quit();
+
+        // Wait for thread to finish
+        wait();
     }
 
     // There should never be an outstanding transaction when this code is
@@ -91,9 +134,6 @@ LibraryScanner::~LibraryScanner() {
 
 void LibraryScanner::run() {
     Trace trace("LibraryScanner");
-    unsigned static id = 0; // the id of this thread, for debugging purposes
-    //XXX copypasta (should factor this out somehow), -kousu 2/2009
-    QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
 
     if (!m_database.isValid()) {
         m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
@@ -121,10 +161,30 @@ void LibraryScanner::run() {
     m_analysisDao.initialize();
     m_directoryDao.initialize();
 
-    resetCancel();
+    // Start the event loop.
+    qDebug() << "LibraryScanner event loop starting.";
+    exec();
+    qDebug() << "LibraryScanner event loop stopped.";
+}
 
-    QTime t2;
-    t2.start();
+void LibraryScanner::slotStartScan() {
+    qDebug() << "LibraryScanner::slotStartScan";
+    QSet<QString> trackLocations = m_trackDao.getTrackLocations();
+    QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
+    QRegExp extensionFilter =
+            QRegExp(SoundSourceProxy::supportedFileExtensionsRegex(),
+                    Qt::CaseInsensitive);
+    QRegExp coverExtensionFilter =
+            QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                    Qt::CaseInsensitive);
+    QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
+
+    m_scannerGlobal = ScannerGlobalPointer(
+        new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
+                          coverExtensionFilter, directoryBlacklist));
+    m_scannerGlobal->startTimer();
+
+    emit(scanStarted());
 
     // Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed. If the
     // upgrade_filename already exists, then do not try to upgrade since we have
@@ -135,6 +195,8 @@ void LibraryScanner::run() {
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
+        QTime t2;
+        t2.start();
         LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
         connect(&libImport, SIGNAL(progress(QString)),
                 this, SIGNAL(progressLoading(QString)));
@@ -144,24 +206,15 @@ void LibraryScanner::run() {
         qDebug("Legacy importer took %d ms", t2.elapsed());
     }
 
-    // Refresh the name filters in case we loaded new SoundSource plugins.
-    m_extensionFilter = QRegExp(SoundSourceProxy::supportedFileExtensionsRegex(),
-                                Qt::CaseInsensitive);
-    m_coverExtensionFilter = QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                                     Qt::CaseInsensitive);
-
-    // Time the library scanner.
-    QTime t;
-    t.start();
-
-    // First, we're going to mark all the directories that we've
-    // previously hashed as needing verification. As we search through the directory tree
-    // when we rescan, we'll mark any directory that does still exist as verified.
+    // First, we're going to mark all the directories that we've previously
+    // hashed as needing verification. As we search through the directory tree
+    // when we rescan, we'll mark any directory that does still exist as
+    // verified.
     m_libraryHashDao.invalidateAllDirectories();
 
-    // Mark all the tracks in the directory as needing verification of
-    // their existance... (ie. we want to check they're still on your hard
-    // drive where we think they are)
+    // Mark all the tracks in the library as needing verification of their
+    // existence. (ie. we want to check they're still on your hard drive where
+    // we think they are)
     m_trackDao.invalidateTrackLocationsInLibrary();
 
     qDebug() << "Recursively scanning library.";
@@ -170,10 +223,22 @@ void LibraryScanner::run() {
     // (must be called before calling addTracksAdd) and begins a transaction.
     m_trackDao.addTracksPrepare();
 
-    QStringList verifiedDirectories;
-    QStringList dirs = m_directoryDao.getDirs();
-    bool bScanFinishedCleanly = false;
     // Recursivly scan each directory in the directories table.
+    QStringList dirs = m_directoryDao.getDirs();
+
+    // If there are no directories then we have nothing to do. Cleanup and
+    // finish the scan immediately.
+    if (dirs.isEmpty()) {
+        slotFinishScan();
+        return;
+    }
+
+    // Queue up recursive scan tasks for every directory. When all tasks are
+    // done, TaskWatcher will signal slotFinishScan.
+    TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
+    connect(pWatcher, SIGNAL(allTasksDone()),
+            this, SLOT(slotFinishScan()));
+
     foreach (const QString& dirPath, dirs) {
         // Acquire a security bookmark for this directory if we are in a
         // sandbox. For speed we avoid opening security bookmarks when recursive
@@ -181,47 +246,66 @@ void LibraryScanner::run() {
         // directory.
         MDir dir(dirPath);
 
-        bScanFinishedCleanly = recursiveScan(dir.dir(), verifiedDirectories,
-                                             dir.token());
-        if (bScanFinishedCleanly) {
-            qDebug() << "Recursive scanning (" << dirPath << ") finished cleanly.";
-        } else {
-            qDebug() << "Recursive scanning (" << dirPath << ") interrupted.";
-        }
+        queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal, dir.dir(),
+                                                 dir.token()));
+    }
+}
+
+void LibraryScanner::slotFinishScan() {
+    qDebug() << "LibraryScanner::slotFinishScan";
+    if (m_scannerGlobal.isNull()) {
+        qWarning() << "No scanner global state exists in LibraryScanner::slotFinishScan";
+        return;
     }
 
-    // After the recursive scan of all watched library directories there are
-    // only a few songs left to check. Mainly the ones that are not inside one
-    // of the library directories or have been moved/renamed/... since the last
-    // scan.
+    bool bScanFinishedCleanly = m_scannerGlobal->scanFinishedCleanly();
+
     if (bScanFinishedCleanly) {
-        bScanFinishedCleanly = m_trackDao.verifyRemainingTracks(&m_bCancelLibraryScan);
+        qDebug() << "Recursive scanning finished cleanly.";
+    } else {
+        qDebug() << "Recursive scanning interrupted.";
     }
 
-    // Clean up and commit or rollback the transaction depending on
-    // bScanFinishedCleanly or if the scan was canceled..
-    m_trackDao.addTracksFinish(!(m_bCancelLibraryScan || bScanFinishedCleanly));
+    // Finish adding the tracks -- rollback the transaction if the scan did not
+    // finish cleanly and the user did not cancel the transaction.
+    m_trackDao.addTracksFinish(!m_scannerGlobal->shouldCancel() &&
+                               !bScanFinishedCleanly);
 
-    // At the end of a scan, mark all tracks and directories that
-    // weren't "verified" as "deleted" (as long as the scan wasn't canceled
-    // half way through. This condition is important because our rescanning
-    // algorithm starts by marking all tracks and dirs as unverified, so a
-    // canceled scan might leave half of your library as unverified. Don't
-    // want to mark those tracks/dirs as deleted in that case) :)
-    QSet<int> tracksMovedSetOld;
-    QSet<int> tracksMovedSetNew;
-    QSet<int> coverArtTracksChanged;
+    QStringList verifiedTracks = m_scannerGlobal->verifiedTracks();
+    QStringList verifiedDirectories = m_scannerGlobal->verifiedDirectories();
+
+    // At the end of a scan, mark all tracks and directories that weren't
+    // "verified" as "deleted" (as long as the scan wasn't canceled half way
+    // through). This condition is important because our rescanning algorithm
+    // starts by marking all tracks and dirs as unverified, so a canceled scan
+    // might leave half of your library as unverified. Don't want to mark those
+    // tracks/dirs as deleted in that case) :)
     if (bScanFinishedCleanly) {
-        // Start a transaction for all the library hashing (moved file detection)
-        // stuff.
+        QSet<int> tracksMovedSetOld;
+        QSet<int> tracksMovedSetNew;
+        QSet<int> coverArtTracksChanged;
+
+        // Start a transaction for all the library hashing (moved file
+        // detection) stuff.
         ScopedTransaction transaction(m_database);
+
+        qDebug() << "Marking tracks in changed directories as verified";
+        m_trackDao.markTrackLocationsAsVerified(verifiedTracks);
 
         qDebug() << "Marking unchanged directories and tracks as verified";
         m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
         m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
 
+        // After verifying tracks and directories via recursive scanning of the
+        // library directories the only unverified tracks will be files that are
+        // outside of the library directories and files that have been
+        // moved/deleted/renamed.
+        qDebug() << "Checking remaining unverified tracks.";
+        m_trackDao.verifyRemainingTracks();
+
         qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
+
         qDebug() << "Marking unverified directories as deleted.";
         m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
 
@@ -230,221 +314,144 @@ void LibraryScanner::run() {
         qDebug() << "Detecting moved files.";
         m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
 
-        // Remove the hashes for any directories that have been
-        // marked as deleted to clean up. We need to do this otherwise
-        // we can skip over songs if you move a set of songs from directory
-        // A to B, then back to A.
+        // Remove the hashes for any directories that have been marked as
+        // deleted to clean up. We need to do this otherwise we can skip over
+        // songs if you move a set of songs from directory A to B, then back to
+        // A.
         m_libraryHashDao.removeDeletedDirectoryHashes();
 
         transaction.commit();
 
         qDebug() << "Detecting cover art for unscanned files.";
-        m_trackDao.detectCoverArtForUnknownTracks(&m_bCancelLibraryScan,
-                                                  &coverArtTracksChanged);
+        m_trackDao.detectCoverArtForUnknownTracks(
+            m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
+
+        // Update BaseTrackCache via signals connected to the main TrackDAO.
+        emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
+        emit(tracksChanged(coverArtTracksChanged));
 
         qDebug() << "Scan finished cleanly";
     } else {
         qDebug() << "Scan cancelled";
     }
 
-    qDebug("Scan took: %d ms", t.elapsed());
-
-    m_database.close();
-
-    // Update BaseTrackCache via signals connected to the main TrackDAO.
-    emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
-    emit(tracksChanged(coverArtTracksChanged));
+    // TODO(XXX) doesn't take into account verifyRemainingTracks.
+    qDebug("Scan took: %lld ns. "
+           "%d unchanged directories. "
+           "%d changed/added directories. "
+           "%d tracks verified from changed/added directories. "
+           "%d new tracks.",
+           m_scannerGlobal->timerElapsed(),
+           verifiedDirectories.size(),
+           m_scannerGlobal->numScannedDirectories(),
+           verifiedTracks.size(),
+           m_scannerGlobal->numAddedTracks());
 
     emit(scanFinished());
+    m_scannerGlobal.clear();
 }
 
-void LibraryScanner::scan(QWidget* parent) {
-    m_pProgress = new LibraryScannerDlg(parent);
-    m_pProgress->setAttribute(Qt::WA_DeleteOnClose);
-
-    // The important part here is that we need to use
-    // Qt::BlockingQueuedConnection, because we're sending these signals across
-    // threads. Normally you'd use regular QueuedConnections for this, but since
-    // we don't have an event loop running and we need the signals to get
-    // processed immediately, we have to use
-    // BlockingQueuedConnection. (DirectConnection isn't an option for sending
-    // signals across threads.)
-    connect(this, SIGNAL(progressLoading(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)));
-            //Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(progressHashing(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)));
-            //Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(scanFinished()),
-            m_pProgress, SLOT(slotScanFinished()));
-    connect(m_pProgress, SIGNAL(scanCancelled()),
-            this, SLOT(cancel()));
-    connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)));
-    connect(&m_trackDao, SIGNAL(progressCoverArt(QString)),
-            m_pProgress, SLOT(slotUpdateCover(QString)));
-    start(QThread::LowPriority);
+void LibraryScanner::scan() {
+    if (m_scannerGlobal) {
+        qDebug() << "Scan already in progress.";
+        return;
+    }
+    emit(startScan());
 }
 
 void LibraryScanner::cancel() {
-    m_bCancelLibraryScan = true;
+    if (m_scannerGlobal) {
+        m_scannerGlobal->setShouldCancel(true);
+    }
 }
 
-void LibraryScanner::resetCancel() {
-    m_bCancelLibraryScan = false;
+void LibraryScanner::taskDone(bool success) {
+    //qDebug() << "LibraryScanner::taskDone" << success;
+    ScopedTimer timer("LibraryScanner::taskDone");
+    if (!success && m_scannerGlobal) {
+        m_scannerGlobal->setScanFinishedCleanly(false);
+    }
 }
 
-bool LibraryScanner::recursiveScan(QDir dir, QStringList& verifiedDirectories,
-                                   SecurityTokenPointer pToken) {
-    // Note, we save on filesystem operations (and random work) by initializing
-    // a QDirIterator with a QDir instead of a QString -- but it inherits its
-    // Filter from the QDir so we have to set it first. If the QDir has not done
-    // any FS operations yet then this should be lightweight.
-    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-    QDirIterator it(dir);
-    QString currentFile;
-    QFileInfo currentFileInfo;
-    QLinkedList<QFileInfo> filesToImport;
-    QLinkedList<QFileInfo> possibleCovers;
-    QLinkedList<QDir> dirsToScan;
-
-    QString newHashStr;
-    bool prevHashExists = false;
-    int newHash = -1;
-    int prevHash = -1;
-    // Note: A hash of "0" is a real hash if the directory contains no files!
-
-    while (it.hasNext()) {
-        currentFile = it.next();
-        currentFileInfo = it.fileInfo();
-
-        if (currentFileInfo.isFile()) {
-            if (m_extensionFilter.indexIn(currentFileInfo.fileName()) != -1) {
-                newHashStr += currentFile;
-                filesToImport.append(currentFileInfo);
-            } else if (m_coverExtensionFilter.indexIn(currentFileInfo.fileName()) != -1) {
-                possibleCovers.append(currentFileInfo);
-            }
-        } else {
-            // File is a directory. Add it to our list of directories to scan.
-            // Skip the iTunes Album Art Folder since it is probably a waste of
-            // time.
-            if (!m_directoriesBlacklist.contains(currentFile)) {
-                dirsToScan.append(QDir(currentFile));
-            }
-        }
+void LibraryScanner::queueTask(ScannerTask* pTask) {
+    //qDebug() << "LibraryScanner::queueTask" << pTask;
+    ScopedTimer timer("LibraryScanner::queueTask");
+    if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
+        return;
     }
+    m_scannerGlobal->getTaskWatcher().watchTask(pTask, SIGNAL(taskDone(bool)));
+    connect(pTask, SIGNAL(taskDone(bool)),
+            this, SLOT(taskDone(bool)));
+    connect(pTask, SIGNAL(queueTask(ScannerTask*)),
+            this, SLOT(queueTask(ScannerTask*)));
+    connect(pTask, SIGNAL(directoryHashed(QString, bool, int)),
+            this, SLOT(directoryHashed(QString, bool, int)));
+    connect(pTask, SIGNAL(directoryUnchanged(QString)),
+            this, SLOT(directoryUnchanged(QString)));
+    connect(pTask, SIGNAL(trackExists(QString)),
+            this, SLOT(trackExists(QString)));
+    connect(pTask, SIGNAL(addNewTrack(TrackPointer)),
+            this, SLOT(addNewTrack(TrackPointer)));
 
-    // Calculate a hash of the directory's file list.
-    newHash = qHash(newHashStr);
+    // Progress signals.
+    connect(pTask, SIGNAL(progressLoading(QString)),
+            this, SIGNAL(progressLoading(QString)));
+    connect(pTask, SIGNAL(progressHashing(QString)),
+            this, SIGNAL(progressHashing(QString)));
 
-    QString dirPath = dir.path();
-    // Try to retrieve a hash from the last time that directory was scanned.
-    prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
-    prevHashExists = prevHash != -1;
-
-    // Compare the hashes, and if they don't match, rescan the files in that directory!
-    if (prevHash != newHash) {
-        // Rescan that mofo! If importing fails then the scan was cancelled so
-        // we return immediately.
-        if (!importFiles(filesToImport, possibleCovers, pToken)) {
-            return false;
-        }
-
-        // If we didn't know about this directory before...
-        // save the hash after we imported everything in it
-        if (!prevHashExists) {
-            m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
-        } else {
-            // Contents of a known directory have changed. Just need to update
-            // the old hash in the database
-            qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
-            m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
-        }
-    } else { //prevHash == newHash
-        // Add the directory to the verifiedDirectories list, so that later they
-        // (and the tracks inside them) will be marked as verified
-        emit(progressHashing(dirPath));
-        verifiedDirectories.append(dirPath);
-    }
-
-    // Let us break out of library directory hashing (the actual file scanning
-    // stuff is in TrackCollection::importDirectory)
-    if (m_bCancelLibraryScan) {
-        return false;
-    }
-
-    // Process all of the sub-directories.
-    foreach (const QDir& nextDir, dirsToScan) {
-        if (!recursiveScan(nextDir, verifiedDirectories, pToken)) {
-            return false;
-        }
-    }
-    return true;
+    m_pool.start(pTask);
 }
 
-bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
-                                 const QLinkedList<QFileInfo>& possibleCovers,
-                                 SecurityTokenPointer pToken) {
-    foreach (const QFileInfo& file, files) {
-        // If a flag was raised telling us to cancel the library scan then stop.
-        if (m_bCancelLibraryScan) {
-            return false;
-        }
+void LibraryScanner::directoryHashed(const QString& directoryPath,
+                                     bool newDirectory, int hash) {
+    ScopedTimer timer("LibraryScanner::directoryHashed");
+    // qDebug() << "LibraryScanner::directoryHashed" << directoryPath
+    //          << newDirectory << hash;
 
-        QString filePath = file.filePath();
-        //qDebug() << "TrackCollection::importFiles" << filePath;
-
-        // If the track is in the database, mark it as existing. This code gets
-        // executed when other files in the same directory have changed (the
-        // directory hash has changed).
-        m_trackDao.markTrackLocationAsVerified(filePath);
-
-        // If the file does not exist in the database then add it. If it does
-        // then it is either in the user's library OR the user has "removed" the
-        // track via "Right-Click -> Remove". These tracks stay in the library,
-        // but their mixxx_deleted column is 1.
-        if (!m_trackDao.trackExistsInDatabase(filePath)) {
-            emit(progressLoading(file.fileName()));
-
-            // Parse the track including cover art from metadata. This is a new
-            // (never before seen) track so it is safe to parse cover art
-            // without checking if we have cover art that is USER_SELECTED. If
-            // this changes in the future you MUST check that the cover art is
-            // not USER_SELECTED first.
-            TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, pToken, true, true));
-
-            // If cover art is not found in the track metadata, populate from
-            // possibleCovers.
-            if (pTrack->getCoverArt().image.isNull()) {
-                CoverArt art = CoverArtUtils::selectCoverArtForTrack(
-                    pTrack.data(), possibleCovers);
-                if (!art.image.isNull()) {
-                    pTrack->setCoverArt(art);
-                }
-            }
-
-            if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
-                // Successfully added. Signal the main instance of TrackDAO,
-                // that there is a new track in the database.
-                emit(trackAdded(pTrack));
-            } else {
-                qDebug() << "Track ("+filePath+") could not be added";
-            }
-        }
+    // For statistics tracking -- if we hashed a directory then we scanned it
+    // (it was changed or new).
+    if (m_scannerGlobal) {
+        m_scannerGlobal->directoryScanned();
     }
 
-    return true;
+    if (newDirectory) {
+        m_libraryHashDao.saveDirectoryHash(directoryPath, hash);
+    } else {
+        m_libraryHashDao.updateDirectoryHash(directoryPath, hash, 0);
+    }
+    emit(progressHashing(directoryPath));
 }
 
-// Table: LibraryHashes
-// PRIMARY KEY string directory
-// string hash
+void LibraryScanner::directoryUnchanged(const QString& directoryPath) {
+    ScopedTimer timer("LibraryScanner::directoryUnchanged");
+    //qDebug() << "LibraryScanner::directoryUnchanged" << directoryPath;
+    if (m_scannerGlobal) {
+        m_scannerGlobal->addVerifiedDirectory(directoryPath);
+    }
+    emit(progressHashing(directoryPath));
+}
 
-// Recursive Algorithm:
-// 1) QDirIterator, iterate over all _files_ in a directory to construct a giant string.
-// 2) newHash = Hash that string.
-// 3) prevHash = SELECT from LibraryHashes * WHERE directory == strDirectory
-// 4) if (prevHash != newHash) scanDirectory(strDirectory); //Do a NON-RECURSIVE scan of the files in that dir.
-// 5) For each directory in strDirectory, execute this algorithm.
+void LibraryScanner::trackExists(const QString& trackPath) {
+    //qDebug() << "LibraryScanner::trackExists" << trackPath;
+    ScopedTimer timer("LibraryScanner::trackExists");
+    if (m_scannerGlobal) {
+        m_scannerGlobal->addVerifiedTrack(trackPath);
+    }
+}
+
+void LibraryScanner::addNewTrack(TrackPointer pTrack) {
+    //qDebug() << "LibraryScanner::addNewTrack" << pTrack;
+    ScopedTimer timer("LibraryScanner::addNewTrack");
+    // For statistics tracking.
+    if (m_scannerGlobal) {
+        m_scannerGlobal->trackAdded();
+    }
+    if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
+        // Successfully added. Signal the main instance of TrackDAO,
+        // that there is a new track in the database.
+        emit(trackAdded(pTrack));
+        emit(progressLoading(pTrack->getLocation()));
+    } else {
+        qDebug() << "Track ("+pTrack->getLocation()+") could not be added";
+    }
+}

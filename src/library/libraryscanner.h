@@ -19,6 +19,7 @@
 #define LIBRARYSCANNER_H
 
 #include <QThread>
+#include <QThreadPool>
 #include <QList>
 #include <QString>
 #include <QList>
@@ -36,7 +37,8 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
-#include "libraryscannerdlg.h"
+#include "library/scanner/scannerglobal.h"
+#include "library/scanner/scannertask.h"
 #include "util/sandbox.h"
 #include "trackinfoobject.h"
 
@@ -45,16 +47,19 @@ class TrackCollection;
 class LibraryScanner : public QThread {
     Q_OBJECT
   public:
-    LibraryScanner(TrackCollection* collection);
+    LibraryScanner(QWidget* pParent, TrackCollection* collection);
     virtual ~LibraryScanner();
 
-    void scan(QWidget *parent);
+    // Call from any thread to start a scan. Does nothing if a scan is already
+    // in progress.
+    void scan();
 
   public slots:
+    // Call from any thread to cancel the scan.
     void cancel();
-    void resetCancel();
 
   signals:
+    void scanStarted();
     void scanFinished();
     void progressHashing(QString);
     void progressLoading(QString path);
@@ -63,29 +68,40 @@ class LibraryScanner : public QThread {
     void tracksMoved(QSet<int> oldTrackIds, QSet<int> newTrackIds);
     void tracksChanged(QSet<int> changedTrackIds);
 
+    // Emitted by scan() to invoke slotStartScan in the scanner thread's event
+    // loop.
+    void startScan();
+
   protected:
     void run();
 
+  public slots:
+    void queueTask(ScannerTask* pTask);
+
+  private slots:
+    void slotStartScan();
+    void slotFinishScan();
+
+    // ScannerTask signal handlers.
+    void taskDone(bool success);
+    void directoryHashed(const QString& directoryPath, bool newDirectory,
+                         int hash);
+    void directoryUnchanged(const QString& directoryPath);
+    void trackExists(const QString& trackPath);
+    void addNewTrack(TrackPointer pTrack);
+
   private:
-    // Recursively scan a music library. Doesn't import tracks for any
-    // directories that have already been scanned and have not changed. Changes
-    // are tracked by performing a hash of the directory's file list, and those
-    // hashes are stored in the database.
-    bool recursiveScan(QDir dir, QStringList& verifiedDirectories,
-                       SecurityTokenPointer pToken);
-
-    // Import the provided files. Returns true if the scan completed without
-    // being cancelled. False if the scan was cancelled part-way through.
-    bool importFiles(const QLinkedList<QFileInfo>& files,
-                     const QLinkedList<QFileInfo>& possibleCovers,
-                     SecurityTokenPointer pToken);
-
-    // The library trackcollection
+    // The library trackcollection. Do not touch this from the library scanner
+    // thread.
     TrackCollection* m_pCollection;
-    // Hang on to a different DB connection since we run in a different thread
+
+    // The library scanner thread's database connection.
     QSqlDatabase m_database;
-    // The library scanning window
-    LibraryScannerDlg* m_pProgress;
+
+    // The pool of threads used for worker tasks.
+    QThreadPool m_pool;
+
+    // The library scanner thread's DAOs.
     LibraryHashDAO m_libraryHashDao;
     CueDAO m_cueDao;
     PlaylistDAO m_playlistDao;
@@ -93,10 +109,9 @@ class LibraryScanner : public QThread {
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
-    QRegExp m_extensionFilter;
-    QRegExp m_coverExtensionFilter;
-    volatile bool m_bCancelLibraryScan;
-    QStringList m_directoriesBlacklist;
+
+    // Global scanner state for scan currently in progress.
+    ScannerGlobalPointer m_scannerGlobal;
 };
 
 #endif

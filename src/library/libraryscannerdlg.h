@@ -35,6 +35,7 @@ class LibraryScannerDlg : public QWidget {
     void slotUpdateCover(QString path);
     void slotCancel();
     void slotScanFinished();
+    void slotScanStarted();
 
   signals:
     void scanCancelled();

@@ -48,12 +48,9 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
             pCurrent, SLOT(setText(QString)));
     pLayout->addWidget(pCurrent);
     setLayout(pLayout);
-
-    m_timer.start();
 }
 
 LibraryScannerDlg::~LibraryScannerDlg() {
-    emit(scanCancelled());
 }
 
 void LibraryScannerDlg::slotUpdate(QString path) {
@@ -85,19 +82,19 @@ void LibraryScannerDlg::slotUpdateCover(QString path) {
 void LibraryScannerDlg::slotCancel() {
     qDebug() << "Cancelling library scan...";
     m_bCancelled = true;
-
     emit(scanCancelled());
+    hide();
+}
 
-    // Need to use close() or else if you close the Mixxx window and then hit
-    // Cancel, Mixxx will not shutdown.
-    close();
+void LibraryScannerDlg::slotScanStarted() {
+    m_bCancelled = false;
+    m_timer.start();
 }
 
 void LibraryScannerDlg::slotScanFinished() {
-    m_bCancelled = true; //Raise this flag to prevent any
-                         //latent slotUpdates() from showing the dialog again.
+    // Raise this flag to prevent any latent slotUpdates() from showing the
+    // dialog again.
+    m_bCancelled = true;
 
-    // Need to use close() or else if you close the Mixxx window and then hit
-    // Cancel, Mixxx will not shutdown.
-    close();
+    hide();
 }
