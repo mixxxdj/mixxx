@@ -65,7 +65,7 @@ void WEffect::effectUpdated() {
     QString name;
     QString description;
     if (m_pEffectSlot) {
-        Effect* pEffect = m_pEffectSlot->getEffect();
+        EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect) {
             const EffectManifest& manifest = pEffect->getManifest();
             name = manifest.name();

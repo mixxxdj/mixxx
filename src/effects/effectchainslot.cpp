@@ -138,20 +138,19 @@ void EffectChainSlot::slotChainGroupStatusChanged(const QString& group,
 void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
     //qDebug() << debugString() << "slotChainEffectsChanged";
     if (m_pEffectChain) {
-        QList<Effect*> effects = m_pEffectChain->effects();
+        QList<EffectPointer> effects = m_pEffectChain->effects();
         while (effects.size() > m_slots.size()) {
             addEffectSlot();
         }
 
         for (int i = 0; i < m_slots.size(); ++i) {
             EffectSlotPointer pSlot = m_slots[i];
-            Effect* pEffect = NULL;
+            EffectPointer pEffect;
             if (i < effects.size()) {
                 pEffect = effects[i];
             }
-            if (pSlot) {
+            if (pSlot)
                 pSlot->loadEffect(pEffect);
-            }
         }
         m_pControlNumEffects->setAndConfirm(m_pEffectChain->numEffects());
         if (shouldEmit) {
@@ -240,14 +239,14 @@ EffectSlotPointer EffectChainSlot::addEffectSlot() {
     EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainNumber,
                                              m_slots.size());
     // Rebroadcast effectLoaded signals
-    connect(pEffectSlot, SIGNAL(effectLoaded(Effect*, unsigned int)),
-            this, SLOT(slotEffectLoaded(Effect*, unsigned int)));
+    connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
+            this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
     connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
             this, SLOT(slotClearEffect(unsigned int)));
-    connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, Effect*)),
-            this, SIGNAL(nextEffect(unsigned int, unsigned int, Effect*)));
-    connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, Effect*)),
-            this, SIGNAL(prevEffect(unsigned int, unsigned int, Effect*)));
+    connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
+            this, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)));
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
@@ -271,7 +270,7 @@ void EffectChainSlot::registerGroup(const QString& group) {
             &m_groupStatusMapper, SLOT(map()));
 }
 
-void EffectChainSlot::slotEffectLoaded(Effect* pEffect, unsigned int slotNumber) {
+void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
     // const int is a safe read... don't bother locking
     emit(effectLoaded(pEffect, m_iChainNumber, slotNumber));
 }

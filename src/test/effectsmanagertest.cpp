@@ -26,13 +26,13 @@ TEST_F(EffectsManagerTest, CanInstantiateEffectsFromBackend) {
     EffectManifest manifest;
     manifest.setId("org.mixxx.test.effect");
     manifest.setName("Test Effect");
-    registerTestEffect(manifest);
+    registerTestEffect(manifest, false);
 
     // Check we can get the same manifest that we registered back.
     EffectManifest effect_to_load = m_pEffectsManager->getEffectManifest(manifest.id());
     EXPECT_QSTRING_EQ(effect_to_load.name(), manifest.name());
 
     // Check we can instantiate the effect.
-    Effect* pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
-    EXPECT_FALSE(pEffect == NULL);
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+    EXPECT_FALSE(pEffect.isNull());
 }

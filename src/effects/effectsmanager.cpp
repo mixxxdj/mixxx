@@ -124,13 +124,13 @@ EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const 
     return EffectManifest();
 }
 
-Effect* EffectsManager::instantiateEffect(const QString& effectId) {
+EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
             return pBackend->instantiateEffect(this, effectId);
         }
     }
-    return NULL;
+    return EffectPointer();
 }
 
 EffectRackPointer EffectsManager::addEffectRack() {
@@ -155,7 +155,7 @@ void EffectsManager::setupDefaults() {
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
-    Effect* pEffect = instantiateEffect(
+    EffectPointer pEffect = instantiateEffect(
         "org.mixxx.effects.flanger");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);

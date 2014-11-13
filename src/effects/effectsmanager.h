@@ -49,7 +49,7 @@ class EffectsManager : public QObject {
 
     const QSet<QString> getAvailableEffects() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
-    Effect* instantiateEffect(const QString& effectId);
+    EffectPointer instantiateEffect(const QString& effectId);
 
     // Temporary, but for setting up all the default EffectChains and EffectRack
     void setupDefaults();

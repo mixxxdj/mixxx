@@ -200,7 +200,8 @@ void EffectParameter::updateEngineState() {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;    pRequest->pTargetEffect = pEngineEffect;
+    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;    
+    pRequest->pTargetEffect = pEngineEffect;
     pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_value;
     pRequest->minimum = m_minimum;

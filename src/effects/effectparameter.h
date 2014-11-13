@@ -8,7 +8,6 @@
 #include "effects/effectmanifestparameter.h"
 
 class Effect;
-class EngineEffect;
 class EffectsManager;
 
 // An EffectParameter is an instance of an EffectManifestParameter, which is in

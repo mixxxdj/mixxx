@@ -35,8 +35,8 @@ class EffectSlot : public QObject {
     }
 
     // Return the currently loaded effect, if any. If no effect is loaded,
-    // returns NULL
-    Effect* getEffect() const;
+    // returns a null EffectPointer.
+    EffectPointer getEffect() const;
 
     unsigned int numParameterSlots() const;
     EffectParameterSlotPointer addEffectParameterSlot();
@@ -58,7 +58,7 @@ class EffectSlot : public QObject {
 
   public slots:
     // Request that this EffectSlot load the given Effect
-    void loadEffect(Effect* pEffect);
+    void loadEffect(EffectPointer pEffect);
 
     void slotLoaded(double v);
     void slotNumParameters(double v);
@@ -75,17 +75,18 @@ class EffectSlot : public QObject {
     // EffectSlot. The effectSlotNumber is provided for the convenience of
     // listeners.  pEffect may be an invalid pointer, which indicates that a
     // previously loaded effect was removed from the slot.
-    void effectLoaded(Effect* pEffect, unsigned int effectSlotNumber);
+    void effectLoaded(EffectPointer pEffect, unsigned int effectSlotNumber);
 
     // Signal that whoever is in charge of this EffectSlot should load the next
     // Effect into it.
     void nextEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
-                    Effect* pEffect);
+                    EffectPointer pEffect);
 
     // Signal that whoever is in charge of this EffectSlot should load the
     // previous Effect into it.
     void prevEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
-                    Effect* pEffect);
+                    EffectPointer pEffect);
+
 
     // Signal that whoever is in charge of this EffectSlot should clear this
     // EffectSlot (by deleting the effect from the underlying chain).
@@ -102,7 +103,7 @@ class EffectSlot : public QObject {
     const unsigned int m_iChainNumber;
     const unsigned int m_iEffectNumber;
     const QString m_group;
-    Effect* m_pEffect;
+    EffectPointer m_pEffect;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;

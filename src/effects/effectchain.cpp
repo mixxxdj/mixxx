@@ -40,7 +40,7 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
     // Add all effects.
     for (int i = 0; i < m_effects.size(); ++i) {
         // Add the effect to the engine.
-        Effect* pEffect = m_effects[i];
+        EffectPointer pEffect = m_effects[i];
         if (pEffect) {
             pEffect->addToEngine(m_pEngineEffectChain, i);
         }
@@ -50,7 +50,7 @@ void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
 void EffectChain::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
-        Effect* pEffect = m_effects[i];
+        EffectPointer pEffect = m_effects[i];
         if (pEffect) {
             pEffect->removeFromEngine(m_pEngineEffectChain, i);
         }
@@ -72,7 +72,7 @@ void EffectChain::updateEngineState() {
     // Update chain parameters in the engine.
     sendParameterUpdate();
     for (int i = 0; i < m_effects.size(); ++i) {
-        Effect* pEffect = m_effects[i];
+        EffectPointer pEffect = m_effects[i];
         if (pEffect) {
             // Update effect parameters in the engine.
             pEffect->updateEngineState();
@@ -94,8 +94,8 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
     foreach (const QString& group, pChain->enabledGroups()) {
         pClone->enableForGroup(group);
     }
-    foreach (Effect* pEffect, pChain->effects()) {
-        Effect* pClonedEffect = pChain->m_pEffectsManager
+    foreach (EffectPointer pEffect, pChain->effects()) {
+        EffectPointer pClonedEffect = pChain->m_pEffectsManager
                 ->instantiateEffect(pEffect->getManifest().id());
         pClone->addEffect(pClonedEffect);
     }
@@ -192,7 +192,7 @@ void EffectChain::setInsertionType(InsertionType insertionType) {
     emit(insertionTypeChanged(insertionType));
 }
 
-void EffectChain::addEffect(Effect* pEffect) {
+void EffectChain::addEffect(EffectPointer pEffect) {
     //qDebug() << debugString() << "addEffect";
     if (!pEffect) {
         return;
@@ -212,46 +212,42 @@ void EffectChain::addEffect(Effect* pEffect) {
 }
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
-                                Effect* pEffect) {
+                                EffectPointer pEffect) {
     //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
     while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
-        if (!pEffect) {
+        if (pEffect.isNull()) {
             return;
         }
-        m_effects.append(NULL);
+        m_effects.append(EffectPointer());
     }
 
 
-    Effect* pOldEffect = m_effects[effectSlotNumber];
-    if (pOldEffect) {
+    EffectPointer pOldEffect = m_effects[effectSlotNumber];
+    if (!pOldEffect.isNull()) {
         if (m_bAddedToEngine) {
             pOldEffect->removeFromEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
     m_effects.replace(effectSlotNumber, pEffect);
-    if (pEffect) {
+    if (!pEffect.isNull()) {
         if (m_bAddedToEngine) {
             pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
     emit(effectsChanged());
-
-    if (pOldEffect) {
-        delete pOldEffect;
-    }
 }
 
 void EffectChain::removeEffect(unsigned int effectSlotNumber) {
-    replaceEffect(effectSlotNumber, NULL);
+    replaceEffect(effectSlotNumber, EffectPointer());
 }
 
 unsigned int EffectChain::numEffects() const {
     return m_effects.size();
 }
 
-const QList<Effect*>& EffectChain::effects() const {
+const QList<EffectPointer>& EffectChain::effects() const {
     return m_effects;
 }
 
@@ -282,7 +278,7 @@ QDomElement EffectChain::toXML(QDomDocument* doc) const {
                          insertionTypeToString(m_insertionType));
 
     QDomElement effectsNode = doc->createElement("Effects");
-    foreach (Effect* pEffect, m_effects) {
+    foreach (EffectPointer pEffect, m_effects) {
         if (pEffect) {
             QDomElement effectNode = pEffect->toXML(doc);
             effectsNode.appendChild(effectNode);
@@ -318,8 +314,8 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     for (int i = 0; i < effectChildren.count(); ++i) {
         QDomNode effect = effectChildren.at(i);
         if (effect.isElement()) {
-            Effect* pEffect = Effect::fromXML(
-                    pEffectsManager, effect.toElement());
+            EffectPointer pEffect = Effect::fromXML(
+                pEffectsManager, effect.toElement());
             if (pEffect) {
                 pChain->addEffect(pEffect);
             }

@@ -84,10 +84,10 @@ class EffectChain : public QObject {
     InsertionType insertionType() const;
     void setInsertionType(InsertionType type);
 
-    void addEffect(Effect* pEffect);
-    void replaceEffect(unsigned int effectSlotNumber, Effect* pEffect);
+    void addEffect(EffectPointer pEffect);
+    void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
-    const QList<Effect*>& effects() const;
+    const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
 
     EngineEffectChain* getEngineEffectChain();
@@ -125,7 +125,7 @@ class EffectChain : public QObject {
     double m_dMix;
 
     QSet<QString> m_enabledGroups;
-    QList<Effect*> m_effects;
+    QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
     bool m_bAddedToEngine;
 

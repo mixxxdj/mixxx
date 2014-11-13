@@ -52,6 +52,7 @@ class EffectParameterSlotBase : public QObject {
     const unsigned int m_iSlotNumber;
     const unsigned int m_iParameterSlotNumber;
     QString m_group;
+    EffectPointer m_pEffect;
     EffectParameter* m_pEffectParameter;
 
     // Controls exposed to the rest of Mixxx

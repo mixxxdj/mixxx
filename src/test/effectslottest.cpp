@@ -46,10 +46,10 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     manifest.setId("org.mixxx.test.effect");
     manifest.setName("Test Effect");
     manifest.addParameter();
-    registerTestEffect(manifest);
+    registerTestEffect(manifest, false);
 
     // Check the controls reflect the state of their loaded effect.
-    Effect* pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
 
     // Enabled defaults to true in both effects and the slot.
     pEffect->setEnabled(false);

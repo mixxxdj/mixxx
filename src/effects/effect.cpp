@@ -18,17 +18,18 @@ Effect::Effect(EffectsManager* pEffectsManager,
           m_bEnabled(true) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-                this, pEffectsManager, m_parameters.size(), parameter);
+            this, pEffectsManager, m_parameters.size(), parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[parameter.id()] = pParameter;
     }
+    //qDebug() << debugString() << "created" << this;
 }
 
 Effect::~Effect() {
-    //qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed" << this;
     m_parametersById.clear();
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
@@ -192,10 +193,10 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
 }
 
 // static
-Effect* Effect::fromXML(EffectsManager* pEffectsManager,
+EffectPointer Effect::fromXML(EffectsManager* pEffectsManager,
                               const QDomElement& element) {
     QString effectId = XmlParse::selectNodeQString(element, "Id");
-    Effect* pEffect = pEffectsManager->instantiateEffect(effectId);
+    EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
     // TODO(rryan): Load parameter values / etc. from element.
     return pEffect;
 }

@@ -17,8 +17,7 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iEffectNumber)),
-          m_pEffect(NULL) {
+                                    m_iEffectNumber)) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)));
@@ -114,7 +113,7 @@ EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
     return pParameter;
 }
 
-Effect* EffectSlot::getEffect() const {
+EffectPointer EffectSlot::getEffect() const {
     return m_pEffect;
 }
 
@@ -173,7 +172,7 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffect(Effect* pEffect) {
+void EffectSlot::loadEffect(EffectPointer pEffect) {
     //qDebug() << debugString() << "loadEffect"
     //         << (pEffect ? pEffect->getManifest().name() : "(null)");
     if (pEffect) {
@@ -186,7 +185,7 @@ void EffectSlot::loadEffect(Effect* pEffect) {
         // effect. Propagate the current setting to the effect.
         pEffect->setEnabled(m_pControlEnabled->get() > 0.0);
 
-        connect(pEffect, SIGNAL(enabledChanged(bool)),
+        connect(pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
 
         while (static_cast<unsigned int>(m_parameters.size()) < pEffect->numKnobParameters()) {
@@ -209,7 +208,7 @@ void EffectSlot::loadEffect(Effect* pEffect) {
     } else {
         clear();
         // Broadcasts a null effect pointer
-        emit(effectLoaded(NULL, m_iEffectNumber));
+        emit(effectLoaded(EffectPointer(), m_iEffectNumber));
     }
     emit(updated());
 }
@@ -227,7 +226,7 @@ void EffectSlot::clear() {
     foreach (EffectButtonParameterSlotPointer pParameter, m_buttonParameters) {
         pParameter->clear();
     }
-    m_pEffect = NULL;
+    m_pEffect.clear();
     emit(updated());
 }
 

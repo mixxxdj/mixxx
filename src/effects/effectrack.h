@@ -48,10 +48,10 @@ class EffectRack : public QObject {
 
     void loadNextEffect(const unsigned int iChainSlotNumber,
                         const unsigned int iEffectSlotNumber,
-                        Effect* pEffect);
+                        EffectPointer pEffect);
     void loadPrevEffect(const unsigned int iChainSlotNumber,
                         const unsigned int iEffectSlotNumber,
-                        Effect* pEffect);
+                        EffectPointer pEffect);
 
   private:
     inline QString debugString() const {
