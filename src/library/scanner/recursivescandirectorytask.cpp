@@ -38,6 +38,8 @@ void RecursiveScanDirectoryTask::run() {
     QLinkedList<QDir> dirsToScan;
     QStringList newHashStr;
 
+    // TODO(rryan) benchmark QRegExp copy versus QMutex/QRegExp in ScannerGlobal
+    // versus slicing the extension off and checking for set/list containment.
     QRegExp supportedExtensionsRegex =
             m_scannerGlobal->supportedExtensionsRegex();
     QRegExp supportedCoverExtensionsRegex =
@@ -49,11 +51,9 @@ void RecursiveScanDirectoryTask::run() {
 
         if (currentFileInfo.isFile()) {
             const QString& fileName = currentFileInfo.fileName();
-            //if (m_scannerGlobal->isAudioFileSupported(fileName)) {
             if (supportedExtensionsRegex.indexIn(fileName) != -1) {
                 newHashStr.append(currentFile);
                 filesToImport.append(currentFileInfo);
-                //} else if (m_scannerGlobal->isCoverFileSupported(fileName)) {
             } else if (supportedCoverExtensionsRegex.indexIn(fileName) != -1) {
                 possibleCovers.append(currentFileInfo);
             }
