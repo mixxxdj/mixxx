@@ -186,14 +186,6 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
-        unsigned int iNumSamples) {
-    for (unsigned int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = SAMPLE(pSrc[i] * CSAMPLE(SAMPLE_MAX));
-    }
-}
-
-// static
 bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         const CSAMPLE* pBuffer, unsigned int iNumSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;

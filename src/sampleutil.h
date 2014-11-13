@@ -118,12 +118,9 @@ public:
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
+    // NOTE(uklotzde): This conversion is deprecated and will be removed
+    // with the introduction of the new SoundSourceAPI.
     static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
-            unsigned int iNumSamples);
-
-    // Convert and normalize a buffer of CSAMPLEs in the range [CSAMPLE_MIN, CSAMPLE_MAX]
-    // to a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX].
-    static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples);
 
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
