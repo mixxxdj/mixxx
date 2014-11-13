@@ -109,7 +109,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(const QString& location);
-    void markTracksInDirectoriesAsVerified(QStringList& directories);
+    void markTracksInDirectoriesAsVerified(const QStringList& directories);
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);

@@ -1292,21 +1292,17 @@ void TrackDAO::markTrackLocationAsVerified(const QString& location) {
     }
 }
 
-void TrackDAO::markTracksInDirectoriesAsVerified(QStringList& directories) {
+void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
-    //qDebug() << "markTracksInDirectoryAsVerified()" << directory;
 
     FieldEscaper escaper(m_database);
-    QMutableStringListIterator it(directories);
-    while (it.hasNext()) {
-        it.setValue(escaper.escapeString(it.next()));
-    }
+    QStringList escapedDirectories = escaper.escapeStrings(directories);
 
     QSqlQuery query(m_database);
     query.prepare(
         QString("UPDATE track_locations "
                 "SET needs_verification=0 "
-                "WHERE directory IN (%1)").arg(directories.join(",")));
+                "WHERE directory IN (%1)").arg(escapedDirectories.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directories.size() << "directories as verified.";

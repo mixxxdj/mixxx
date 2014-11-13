@@ -107,11 +107,7 @@ void LibraryHashDAO::updateDirectoryStatuses(const QStringList& dirPaths,
                                              const bool verified) {
     //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
     FieldEscaper escaper(m_database);
-    QStringList escapedDirPaths = dirPaths;
-    QMutableStringListIterator it(escapedDirPaths);
-    while (it.hasNext()) {
-        it.setValue(escaper.escapeString(it.next()));
-    }
+    QStringList escapedDirPaths = escaper.escapeStrings(dirPaths);
 
     QSqlQuery query(m_database);
     query.prepare(
