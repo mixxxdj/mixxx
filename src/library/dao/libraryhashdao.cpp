@@ -65,8 +65,11 @@ void LibraryHashDAO::updateDirectoryHash(const QString& dirPath,
                                          const int dir_deleted) {
     //qDebug() << "LibraryHashDAO::updateDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
+    // By definition if we have calculated a new hash for a directory then it
+    // exists and no longer needs verification.
     query.prepare("UPDATE LibraryHashes "
-            "SET hash=:hash, directory_deleted=:directory_deleted "
+            "SET hash=:hash, directory_deleted=:directory_deleted, "
+            "needs_verification=0 "
             "WHERE directory_path=:directory_path");
     query.bindValue(":hash", newHash);
     query.bindValue(":directory_deleted", dir_deleted);
