@@ -775,6 +775,10 @@ class MixxxCore(Feature):
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
 
+                   "library/scanner/scannertask.cpp",
+                   "library/scanner/importfilestask.cpp",
+                   "library/scanner/recursivescandirectorytask.cpp",
+
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",
