@@ -2,6 +2,8 @@
 #define LIBRARYHASHDAO_H
 
 #include <QObject>
+#include <QHash>
+#include <QString>
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
@@ -14,6 +16,7 @@ class LibraryHashDAO : public DAO {
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     void initialize();
 
+    QHash<QString, int> getDirectoryHashes();
     int getDirectoryHash(const QString& dirPath);
     void saveDirectoryHash(const QString& dirPath, const int hash);
     void updateDirectoryHash(const QString& dirPath, const int newHash, const int dir_deleted);

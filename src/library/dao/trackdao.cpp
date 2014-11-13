@@ -166,6 +166,22 @@ QList<int> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
     return ids;
 }
 
+QSet<QString> TrackDAO::getTrackLocations() {
+    QSet<QString> locations;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_locations.location FROM track_locations "
+                  "INNER JOIN library on library.location = track_locations.id");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        locations.insert(query.value(locationColumn).toString());
+    }
+    return locations;
+}
+
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
 // not worth retrieving a whole TrackInfoObject.
 QString TrackDAO::getTrackLocation(const int trackId) {

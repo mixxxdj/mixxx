@@ -22,6 +22,24 @@ void LibraryHashDAO::initialize() {
              << m_database.connectionName();
 }
 
+QHash<QString, int> LibraryHashDAO::getDirectoryHashes() {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT hash, directory_path FROM LibraryHashes");
+    QHash<QString, int> hashes;
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    int hashColumn = query.record().indexOf("hash");
+    int directoryPathColumn = query.record().indexOf("directory_path");
+    while (query.next()) {
+        hashes[query.value(directoryPathColumn).toString()] =
+                query.value(hashColumn).toInt();
+    }
+
+    return hashes;
+}
+
 int LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
     //qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     int hash = -1;
