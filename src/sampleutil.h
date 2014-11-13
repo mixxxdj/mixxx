@@ -68,6 +68,16 @@ public:
         std::copy(pSrc, pSrc + iNumSamples, pDest);
     }
 
+    // Limits a CSAMPLE value to the valid range [-CSAMPLE_PEAK, CSAMPLE_PEAK]
+    inline static CSAMPLE clampSample(CSAMPLE in) {
+        return CSAMPLE_clamp(in);
+    }
+
+    // Limits a CSAMPLE_GAIN value to the valid range [CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX]
+    inline static CSAMPLE clampGain(CSAMPLE_GAIN in) {
+        return CSAMPLE_GAIN_clamp(in);
+    }
+
     // Multiply every sample in pBuffer by gain
     static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
             unsigned int iNumSamples);
@@ -141,11 +151,6 @@ public:
     // outside the valid range of CSAMPLE.
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples);
-
-    // Limits a CSAMPLE value to the valid range [-CSAMPLE_PEAK, CSAMPLE_PEAK]
-    inline static CSAMPLE clampSample(CSAMPLE in) {
-        return CSAMPLE_clamp(in);
-    }
 
     // Interleave the samples in pSrc1 and pSrc2 into pDest. iNumSamples must be
     // the number of samples in pSrc1 and pSrc2, and pDest must have at least
