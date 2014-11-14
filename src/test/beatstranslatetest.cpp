@@ -9,12 +9,12 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Set up BeatGrids for decks 1 and 2.
     const double bpm = 60.0;
     const double firstBeat = 0.0;
-    BeatGrid grid1(m_pTrack1.data());
+    BeatGrid grid1(m_pTrack1.data(), m_pTrack1->getSampleRate());
     grid1.setGrid(bpm, firstBeat);
     m_pTrack1->setBeats(QSharedPointer<Beats>(&grid1));
     ASSERT_DOUBLE_EQ(firstBeat, grid1.findClosestBeat(0));
 
-    BeatGrid grid2(m_pTrack2.data());
+    BeatGrid grid2(m_pTrack2.data(), m_pTrack2->getSampleRate());
     grid2.setGrid(bpm, firstBeat);
     m_pTrack2->setBeats(QSharedPointer<Beats>(&grid2));
     ASSERT_DOUBLE_EQ(firstBeat, grid2.findClosestBeat(0));
