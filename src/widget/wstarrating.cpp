@@ -20,8 +20,7 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
     setMouseTracking(true);
 }
 
-QSize WStarRating::sizeHint() const
-{
+QSize WStarRating::sizeHint() const {
     QStyleOption option;
     option.initFrom(this);
     QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
@@ -82,8 +81,7 @@ void WStarRating::paintEvent(QPaintEvent *) {
                        option.state & QStyle::State_Selected);
 }
 
-void WStarRating::mouseMoveEvent(QMouseEvent *event)
-{
+void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     if (!m_pCurrentTrack)
         return;
 
@@ -96,14 +94,13 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void WStarRating::leaveEvent(QEvent*){
+void WStarRating::leaveEvent(QEvent*) {
     m_focused = false;
     updateRating();
 }
 
 // The method uses basic linear algebra to find out which star is under the cursor.
-int WStarRating::starAtPosition(int x)
-{
+int WStarRating::starAtPosition(int x) {
     // If the mouse is very close to the left edge, set 0 stars.
     if (x < m_starRating.sizeHint().width() * 0.05) {
         return 0;
@@ -117,8 +114,7 @@ int WStarRating::starAtPosition(int x)
     return star;
 }
 
-void WStarRating::mouseReleaseEvent(QMouseEvent*)
-{
+void WStarRating::mouseReleaseEvent(QMouseEvent*) {
     if (!m_pCurrentTrack)
         return;
     
