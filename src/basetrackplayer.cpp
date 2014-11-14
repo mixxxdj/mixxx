@@ -28,12 +28,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
           m_pConfig(pConfig),
           m_pLoadedTrack(),
           m_replaygainPending(false) {
-    // Need to strdup the string because EngineChannel will save the pointer,
-    // but we might get deleted before the EngineChannel. TODO(XXX)
-    // pSafeGroupName is leaked. It's like 5 bytes so whatever.
-    const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
-
-    m_pChannel = new EngineDeck(pSafeGroupName, pConfig, pMixingEngine,
+    m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
@@ -92,6 +87,9 @@ BaseTrackPlayer::~BaseTrackPlayer()
 {
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
         m_pLoadedTrack.clear();
     }
 
