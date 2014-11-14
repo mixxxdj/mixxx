@@ -19,12 +19,14 @@
 #include <QDesktopServices>
 #include <QLinkedList>
 
+#include "library/libraryscanner.h"
+
 #include "soundsourceproxy.h"
 #include "library/legacylibraryimporter.h"
-#include "libraryscanner.h"
 #include "libraryscannerdlg.h"
 #include "library/queryutil.h"
 #include "library/coverartutils.h"
+#include "library/trackcollection.h"
 #include "util/trace.h"
 #include "util/file.h"
 #include "library/scanner/scannerutil.h"

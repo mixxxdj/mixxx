@@ -37,9 +37,10 @@
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
 #include "libraryscannerdlg.h"
-#include "trackcollection.h"
 #include "util/sandbox.h"
 #include "trackinfoobject.h"
+
+class TrackCollection;
 
 class LibraryScanner : public QThread {
     Q_OBJECT

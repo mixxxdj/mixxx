@@ -10,6 +10,7 @@
 #include <QSharedPointer>
 #include <QWeakPointer>
 #include <QCache>
+#include <QString>
 
 #include "configobject.h"
 #include "library/dao/dao.h"
@@ -89,6 +90,8 @@ class TrackDAO : public QObject, public virtual DAO {
     int getTrackId(const QString& absoluteFilePath);
     QList<int> getTrackIds(const QList<QFileInfo>& files);
     bool trackExistsInDatabase(const QString& absoluteFilePath);
+    // Returns a set of all track locations in the library.
+    QSet<QString> getTrackLocations();
     QString getTrackLocation(const int id);
     int addTrack(const QString& file, bool unremove);
     int addTrack(const QFileInfo& fileInfo, bool unremove);
@@ -106,13 +109,13 @@ class TrackDAO : public QObject, public virtual DAO {
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(const QString& location);
-    void markTracksInDirectoriesAsVerified(QStringList& directories);
+    void markTracksInDirectoriesAsVerified(const QStringList& directories);
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
     void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
     bool verifyRemainingTracks(volatile bool* pCancel);
-    void detectCoverArtForUnknownTracks(volatile bool* pCancel,
+    void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                         QSet<int>* pTracksChanged);
 
   signals:

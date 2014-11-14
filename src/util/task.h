@@ -9,7 +9,7 @@
 class TaskWatcher : public QObject {
     Q_OBJECT
   public:
-    TaskWatcher(QObject* pParent);
+    TaskWatcher(QObject* pParent=NULL);
     virtual ~TaskWatcher();
 
     // Increment the number of active tasks by one and watch pTask for
