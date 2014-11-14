@@ -176,8 +176,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         // We don't know if something downstream expects the string to persist,
         // so dupe it (probably leaking it).
         EngineMicrophone* pMicrophone =
-                new EngineMicrophone(strdup(group.toStdString().c_str()),
-                                     m_pEffectsManager);
+                new EngineMicrophone(group, m_pEffectsManager);
         // What should channelbase be?
         AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, i);
         m_pEngine->addChannel(pMicrophone);

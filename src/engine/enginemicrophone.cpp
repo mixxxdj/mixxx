@@ -12,7 +12,7 @@
 #include "controlaudiotaperpot.h"
 
 
-EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsManager)
+EngineMicrophone::EngineMicrophone(QString pGroup, EffectsManager* pEffectsManager)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(pGroup),

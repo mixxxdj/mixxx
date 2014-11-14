@@ -1,4 +1,3 @@
-
 // bpmcontrol.h
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
@@ -21,7 +20,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    BpmControl(QString group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
 
     double getBpm() const;

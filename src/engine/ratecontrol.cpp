@@ -30,9 +30,9 @@ const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
-RateControl::RateControl(const char* _group,
+RateControl::RateControl(QString group,
                          ConfigObject<ConfigValue>* _config)
-    : EngineControl(_group, _config),
+    : EngineControl(group, _config),
       m_pBpmControl(NULL),
       m_ePbCurrent(0),
       m_ePbPressed(0),
@@ -41,43 +41,43 @@ RateControl::RateControl(const char* _group,
       m_dRateTemp(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
       m_dRateTempRampbackChange(0.0) {
-    m_pScratchController = new PositionScratchController(_group);
+    m_pScratchController = new PositionScratchController(group);
 
-    m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
-    m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
+    m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
+    m_pRateRange = new ControlObject(ConfigKey(group, "rateRange"));
     // Allow rate slider to go out of bounds so that master sync rate
     // adjustments are not capped.
-    m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"),
+    m_pRateSlider = new ControlPotmeter(ConfigKey(group, "rate"),
                                         -1.0, 1.0, true);
 
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
-    m_pRateSearch = new ControlPotmeter(ConfigKey(_group, "rateSearch"), -300., 300.);
+    m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300., 300.);
 
     // Reverse button
-    m_pReverseButton = new ControlPushButton(ConfigKey(_group, "reverse"));
+    m_pReverseButton = new ControlPushButton(ConfigKey(group, "reverse"));
     m_pReverseButton->set(0);
 
     // Forward button
-    m_pForwardButton = new ControlPushButton(ConfigKey(_group, "fwd"));
+    m_pForwardButton = new ControlPushButton(ConfigKey(group, "fwd"));
     connect(m_pForwardButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlFastForward(double)),
             Qt::DirectConnection);
     m_pForwardButton->set(0);
 
     // Back button
-    m_pBackButton = new ControlPushButton(ConfigKey(_group, "back"));
+    m_pBackButton = new ControlPushButton(ConfigKey(group, "back"));
     connect(m_pBackButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlFastBack(double)),
             Qt::DirectConnection);
     m_pBackButton->set(0);
 
-    m_pReverseRollButton = new ControlPushButton(ConfigKey(_group, "reverseroll"));
+    m_pReverseRollButton = new ControlPushButton(ConfigKey(group, "reverseroll"));
     connect(m_pReverseRollButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotReverseRollActivate(double)),
             Qt::DirectConnection);
 
-    m_pSlipEnabled = new ControlObjectSlave(_group, "slip_enabled", this);
+    m_pSlipEnabled = new ControlObjectSlave(group, "slip_enabled", this);
 
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
@@ -86,50 +86,50 @@ RateControl::RateControl(const char* _group,
 
     // Permanent rate-change buttons
     buttonRatePermDown =
-        new ControlPushButton(ConfigKey(_group,"rate_perm_down"));
+        new ControlPushButton(ConfigKey(group,"rate_perm_down"));
     connect(buttonRatePermDown, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermDown(double)),
             Qt::DirectConnection);
 
     buttonRatePermDownSmall =
-        new ControlPushButton(ConfigKey(_group,"rate_perm_down_small"));
+        new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
     connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermDownSmall(double)),
             Qt::DirectConnection);
 
     buttonRatePermUp =
-        new ControlPushButton(ConfigKey(_group,"rate_perm_up"));
+        new ControlPushButton(ConfigKey(group,"rate_perm_up"));
     connect(buttonRatePermUp, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermUp(double)),
             Qt::DirectConnection);
 
     buttonRatePermUpSmall =
-        new ControlPushButton(ConfigKey(_group,"rate_perm_up_small"));
+        new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
     connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermUpSmall(double)),
             Qt::DirectConnection);
 
     // Temporary rate-change buttons
     buttonRateTempDown =
-        new ControlPushButton(ConfigKey(_group,"rate_temp_down"));
+        new ControlPushButton(ConfigKey(group,"rate_temp_down"));
     connect(buttonRateTempDown, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempDown(double)),
             Qt::DirectConnection);
 
     buttonRateTempDownSmall =
-        new ControlPushButton(ConfigKey(_group,"rate_temp_down_small"));
+        new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
     connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempDownSmall(double)),
             Qt::DirectConnection);
 
     buttonRateTempUp =
-        new ControlPushButton(ConfigKey(_group,"rate_temp_up"));
+        new ControlPushButton(ConfigKey(group,"rate_temp_up"));
     connect(buttonRateTempUp, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempUp(double)),
             Qt::DirectConnection);
 
     buttonRateTempUpSmall =
-        new ControlPushButton(ConfigKey(_group,"rate_temp_up_small"));
+        new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
     connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempUpSmall(double)),
             Qt::DirectConnection);
@@ -139,24 +139,24 @@ RateControl::RateControl(const char* _group,
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     // Wheel to control playback position/speed
-    m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
+    m_pWheel = new ControlTTRotary(ConfigKey(group, "wheel"));
 
     // Scratch controller, this is an accumulator which is useful for
     // controllers that return individiual +1 or -1s, these get added up and
     // cleared when we read
-    m_pScratch2 = new ControlObject(ConfigKey(_group, "scratch2"));
+    m_pScratch2 = new ControlObject(ConfigKey(group, "scratch2"));
 
     // Scratch enable toggle
-    m_pScratch2Enable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
+    m_pScratch2Enable = new ControlPushButton(ConfigKey(group, "scratch2_enable"));
     m_pScratch2Enable->set(0);
 
-    m_pScratch2Scratching = new ControlPushButton(ConfigKey(_group,
+    m_pScratch2Scratching = new ControlPushButton(ConfigKey(group,
                                                             "scratch2_indicates_scratching"));
     // Enable by default, because it was always scratching befor introducing this control.
     m_pScratch2Scratching->set(1.0);
 
 
-    m_pJog = new ControlObject(ConfigKey(_group, "jog"));
+    m_pJog = new ControlObject(ConfigKey(group, "jog"));
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
     m_pJogFilter->setFilterLength(25);
@@ -170,7 +170,7 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
-    m_pSyncMode = new ControlObjectSlave(_group, "sync_mode", this);
+    m_pSyncMode = new ControlObjectSlave(group, "sync_mode", this);
 }
 
 RateControl::~RateControl() {
