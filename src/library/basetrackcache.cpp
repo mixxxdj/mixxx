@@ -326,15 +326,7 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
         return result;
     }
 
-    // TODO(rryan): allow as an argument
-    TrackPointer pTrack;
-
-    // The caller can optionally provide a pTrack if they already looked it
-    // up. This is just an optimization to help reduce the # of calls to
-    // lookupCachedTrack. If they didn't provide it, look it up.
-    if (!pTrack) {
-        pTrack = lookupCachedTrack(trackId);
-    }
+    TrackPointer pTrack = lookupCachedTrack(trackId);
     if (pTrack) {
         getTrackValueForColumn(pTrack, column, result);
     }
