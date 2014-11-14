@@ -20,6 +20,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotUpdate();
     void slotApply();
     void slotResetToDefaults();
+    void slotSetWaveformEndRender(int endTime);
 
   private slots:
     void slotSetFrameRate(int frameRate);
