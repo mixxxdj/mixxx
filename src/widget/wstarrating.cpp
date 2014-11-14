@@ -17,11 +17,11 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
-    
+
     m_contentRect.setRect(0, 0, m_starRating.sizeHint().width(),
                           m_starRating.sizeHint().height());
     setFixedSize(m_starRating.sizeHint());
-    
+
     update();
 }
 
@@ -66,14 +66,13 @@ void WStarRating::paintEvent(QPaintEvent *) {
     option.initFrom(this);
     QStylePainter painter(this);
     painter.setBrush(option.palette.text());
-    
+
     m_starRating.paint(&painter, m_contentRect, option.palette,
                        StarRating::ReadOnly,
                        option.state & QStyle::State_Selected);
 }
 
-void WStarRating::mouseMoveEvent(QMouseEvent *event)
-{
+void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     if (!m_pCurrentTrack)
         return;
 
@@ -92,23 +91,22 @@ void WStarRating::leaveEvent(QEvent*){
 }
 
 // The method uses basic linear algebra to find out which star is under the cursor.
-int WStarRating::starAtPosition(int x)
-{
+int WStarRating::starAtPosition(int x) {
     // If the mouse is very close to the left edge, set 0 stars.
     if (x < m_starRating.sizeHint().width() * 0.05) {
         return 0;
     }
     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
-    
+
     if (star <= 0 || star > m_starRating.maxStarCount()){
         return 0;
     }
-    
+
     return star;
 }
 
-void WStarRating::mouseReleaseEvent(QMouseEvent * )
-{
-    m_pCurrentTrack->setRating(m_starRating.starCount());
+void WStarRating::mouseReleaseEvent(QMouseEvent*) {
+    if (m_pCurrentTrack) {
+        m_pCurrentTrack->setRating(m_starRating.starCount());
+    }
 }
-
