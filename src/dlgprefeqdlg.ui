@@ -17,6 +17,16 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
+      <widget class="QCheckBox" name="bEqAutoReset">
+       <property name="toolTip">
+        <string>Resets the equalizers to their default values when loading a track.</string>
+       </property>
+       <property name="text">
+        <string>Reset equalizers on track load</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="CheckBoxBypass">
        <property name="text">
         <string>Bypass</string>

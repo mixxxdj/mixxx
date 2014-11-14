@@ -41,7 +41,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
-          m_deckEffectSelectorsSetup(false) {
+          m_deckEffectSelectorsSetup(false),
+          m_bEqAutoReset(false) {
 
     // Get the EQ Effect Rack
     m_pEQEffectRack = m_pEffectsManager->getEQEffectRack().data();
@@ -49,7 +50,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
             arg(m_pEffectsManager->getEQEffectRackNumber());
 
     setupUi(this);
-
     // Connection
     connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
     connect(SliderHiEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));
@@ -59,6 +59,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
+    connect(bEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotEqAutoReset(int)));
     connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
 
     connect(CheckBoxHideEffects, SIGNAL(stateChanged(int)),
@@ -190,6 +191,7 @@ void DlgPrefEQ::loadSettings() {
     QString highEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"));
     QString lowEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency"));
     QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"));
+    m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "EqAutoReset")).toInt());
 
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
@@ -230,6 +232,7 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
+    m_bEqAutoReset = false;    
     setDefaultShelves();
     loadSettings();
     slotUpdate();
@@ -315,11 +318,19 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
 void DlgPrefEQ::slotApply() {
     m_COLoFreq.set(m_lowEqFreq);
     m_COHiFreq.set(m_highEqFreq);
+    m_pConfig->set(ConfigKey(CONFIG_KEY,"EqAutoReset"),
+            ConfigValue(m_bEqAutoReset ? 1 : 0));
 }
 
 void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
+    bEqAutoReset->setChecked(m_bEqAutoReset);
+}
+
+void DlgPrefEQ::slotEqAutoReset(int i) {
+    m_bEqAutoReset = static_cast<bool>(i);
+    slotUpdate();
 }
 
 void DlgPrefEQ::slotBypass(int state) {
