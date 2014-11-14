@@ -41,7 +41,7 @@ class ControlPushButton;
 class EngineFilterBlock : public EngineObject {
     Q_OBJECT
   public:
-    EngineFilterBlock(const char* group);
+    EngineFilterBlock(QString group);
     virtual ~EngineFilterBlock();
 
     void process(CSAMPLE* pInOut, const int iBufferSize);

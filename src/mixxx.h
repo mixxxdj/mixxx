@@ -124,6 +124,8 @@ class MixxxMainWindow : public QMainWindow {
     // Open the developer tools dialog.
     void slotDeveloperTools();
     void slotDeveloperToolsClosed();
+    void slotDeveloperStatsExperiment();
+    void slotDeveloperStatsBase();
     // toogle the script debugger
     void slotDeveloperDebugger(bool toggle);
 
@@ -243,9 +245,11 @@ class MixxxMainWindow : public QMainWindow {
 
     QAction* m_pDeveloperReloadSkin;
     QAction* m_pDeveloperTools;
+    QAction* m_pDeveloperStatsExperiment;
+    QAction* m_pDeveloperStatsBase;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
-    
+
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */

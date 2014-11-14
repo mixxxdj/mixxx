@@ -11,17 +11,17 @@
 #include "engine/quantizecontrol.h"
 #include "engine/enginecontrol.h"
 
-QuantizeControl::QuantizeControl(const char* pGroup,
+QuantizeControl::QuantizeControl(QString group,
                                  ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(pGroup, pConfig) {
+        : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
-    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize"));
+    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"));
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pCONextBeat = new ControlObject(ConfigKey(pGroup, "beat_next"));
+    m_pCONextBeat = new ControlObject(ConfigKey(group, "beat_next"));
     m_pCONextBeat->set(-1);
-    m_pCOPrevBeat = new ControlObject(ConfigKey(pGroup, "beat_prev"));
+    m_pCOPrevBeat = new ControlObject(ConfigKey(group, "beat_prev"));
     m_pCOPrevBeat->set(-1);
-    m_pCOClosestBeat = new ControlObject(ConfigKey(pGroup, "beat_closest"));
+    m_pCOClosestBeat = new ControlObject(ConfigKey(group, "beat_closest"));
     m_pCOClosestBeat->set(-1);
 }
 

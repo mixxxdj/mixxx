@@ -16,7 +16,6 @@
 *                                                                         *
 ***************************************************************************/
 
-
 #ifndef LIBRARYSCANNERDLG_H
 #define LIBRARYSCANNERDLG_H
 
@@ -28,8 +27,8 @@
 class LibraryScannerDlg : public QWidget {
     Q_OBJECT
   public:
-    LibraryScannerDlg(QWidget * parent = 0, Qt::WindowFlags f = Qt::Dialog);
-    ~LibraryScannerDlg();
+    LibraryScannerDlg(QWidget* parent = NULL, Qt::WindowFlags f = Qt::Dialog);
+    virtual ~LibraryScannerDlg();
 
   public slots:
     void slotUpdate(QString path);
@@ -42,8 +41,6 @@ class LibraryScannerDlg : public QWidget {
     void progress(QString);
 
   private:
-    // The path to the library on disk
-    QString m_qLibraryPath;
     QTime m_timer;
     bool m_bCancelled;
 };

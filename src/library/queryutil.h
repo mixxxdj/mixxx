@@ -81,6 +81,19 @@ class FieldEscaper {
         return m_database.driver()->formatValue(m_stringField);
     }
 
+    QStringList escapeStrings(const QStringList& escapeStrings) const {
+        QStringList result = escapeStrings;
+        escapeStringsInPlace(&result);
+        return result;
+    }
+
+    void escapeStringsInPlace(QStringList* pEscapeStrings) const {
+        QMutableStringListIterator it(*pEscapeStrings);
+        while (it.hasNext()) {
+            it.setValue(escapeString(it.next()));
+        }
+    }
+
     // Escapes a string for use in a LIKE operation by prefixing instances of
     // LIKE wildcard characters (% and _) with escapeCharacter. This allows the
     // caller to then attach wildcard characters to the string. This does NOT

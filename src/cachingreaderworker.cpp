@@ -26,11 +26,11 @@ const int CachingReaderWorker::kChunkLength = CHUNK_LENGTH;
 const int CachingReaderWorker::kSamplesPerChunk = CHUNK_LENGTH / sizeof(CSAMPLE);
 
 
-CachingReaderWorker::CachingReaderWorker(const char* group,
+CachingReaderWorker::CachingReaderWorker(QString group,
         FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
-        : m_pGroup(group),
-          m_tag(QString("CachingReaderWorker %1").arg(m_pGroup)),
+        : m_group(group),
+          m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
           m_pCurrentSoundSource(NULL),
@@ -132,7 +132,7 @@ void CachingReaderWorker::run() {
 }
 
 void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
-    //qDebug() << m_pGroup << "CachingReaderWorker::loadTrack() lock acquired for load.";
+    //qDebug() << m_group << "CachingReaderWorker::loadTrack() lock acquired for load.";
 
     // Emit that a new track is loading, stops the current track
     emit(trackLoading());
@@ -152,7 +152,7 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
 
     if (filename.isEmpty() || !pTrack->exists()) {
         // Must unlock before emitting to avoid deadlock
-        qDebug() << m_pGroup << "CachingReaderWorker::loadTrack() load failed for\""
+        qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
                  << filename << "\", unlocked reader lock";
         status.status = TRACK_NOT_LOADED;
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
@@ -169,7 +169,7 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
 
     if (!openSucceeded || m_iTrackNumSamples == 0 || trackSampleRate == 0) {
         // Must unlock before emitting to avoid deadlock
-        qDebug() << m_pGroup << "CachingReaderWorker::loadTrack() load failed for\""
+        qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";
         status.status = TRACK_NOT_LOADED;
         m_pReaderStatusFIFO->writeBlocking(&status, 1);

@@ -21,7 +21,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
-#include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -40,14 +40,14 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    PlaylistDAO& playlistDao,
                    CrateDAO& crateDao,
                    AnalysisDao& analysisDao,
-                   DirectoryDAO& directoryDao,
+                   LibraryHashDAO& libraryHashDao,
                    ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_crateDao(crateDao),
           m_analysisDao(analysisDao),
-          m_directoryDAO(directoryDao),
+          m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE),
           m_pQueryTrackLocationInsert(NULL),
@@ -96,6 +96,22 @@ void TrackDAO::finish() {
         LOG_FAILED_QUERY(query)
                 << "Error clearing played value";
     }
+
+    // Do housekeeping on the LibraryHashes/track_locations tables.
+    qDebug() << "Cleaning LibraryHashes/track_locations tables.";
+    ScopedTransaction transaction(m_database);
+    QStringList deletedHashDirs = m_libraryHashDao.getDeletedDirectories();
+
+    // Delete any LibraryHashes directories that have been marked as deleted.
+    m_libraryHashDao.removeDeletedDirectoryHashes();
+
+    // And mark the corresponding tracks in track_locations in the deleted
+    // directories as deleted.
+    // TODO(XXX) This doesn't handle sub-directories of deleted directories.
+    foreach (QString dir, deletedHashDirs) {
+        markTrackLocationsAsDeleted(dir);
+    }
+    transaction.commit();
 }
 
 void TrackDAO::initialize() {
@@ -148,6 +164,22 @@ QList<int> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
     }
 
     return ids;
+}
+
+QSet<QString> TrackDAO::getTrackLocations() {
+    QSet<QString> locations;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_locations.location FROM track_locations "
+                  "INNER JOIN library on library.location = track_locations.id");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        locations.insert(query.value(locationColumn).toString());
+    }
+    return locations;
 }
 
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
@@ -1260,21 +1292,17 @@ void TrackDAO::markTrackLocationAsVerified(const QString& location) {
     }
 }
 
-void TrackDAO::markTracksInDirectoriesAsVerified(QStringList& directories) {
+void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
-    //qDebug() << "markTracksInDirectoryAsVerified()" << directory;
 
     FieldEscaper escaper(m_database);
-    QMutableStringListIterator it(directories);
-    while (it.hasNext()) {
-        it.setValue(escaper.escapeString(it.next()));
-    }
+    QStringList escapedDirectories = escaper.escapeStrings(directories);
 
     QSqlQuery query(m_database);
     query.prepare(
         QString("UPDATE track_locations "
                 "SET needs_verification=0 "
-                "WHERE directory IN (%1)").arg(directories.join(",")));
+                "WHERE directory IN (%1)").arg(escapedDirectories.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
@@ -1553,7 +1581,7 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     return true;
 }
 
-void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
+void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                               QSet<int>* pTracksChanged) {
     // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
     // The library contains user selected cover art. There is nothing worse than
