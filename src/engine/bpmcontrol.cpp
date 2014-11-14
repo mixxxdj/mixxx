@@ -102,6 +102,11 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotBeatsTranslate(double)),
             Qt::DirectConnection);
 
+    m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(_group, "beats_translate_match_alignment"));
+    connect(m_pBeatsTranslateMatchAlignment, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatsTranslateMatchAlignment(double)),
+            Qt::DirectConnection);
+
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
             Qt::DirectConnection);
@@ -738,6 +743,17 @@ void BpmControl::slotBeatsTranslate(double v) {
             delta--;
         }
         m_pBeats->translate(delta);
+    }
+}
+
+void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        // Must reset the user offset *before* calling getPhaseOffset(),
+        // otherwise it will always return 0 if master sync is active.
+        m_dUserOffset = 0.0;
+
+        double offset = getPhaseOffset(getCurrentSample());
+        m_pBeats->translate(-offset);
     }
 }
 
