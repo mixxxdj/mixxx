@@ -37,7 +37,7 @@ class WStarRating : public QWidget, public WBaseWidget {
     QString m_pGroup;
     TrackPointer m_pCurrentTrack;
     bool m_focused;
-    QRect m_contentRect;
+    mutable QRect m_contentRect;
     
     private:
         void updateRating();

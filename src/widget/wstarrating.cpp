@@ -1,6 +1,7 @@
 #include <QStylePainter>
 #include <QStyleOption>
 #include <QSize>
+#include <QApplication>
 
 #include "widget/wstarrating.h"
 
@@ -17,17 +18,24 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
-    
-    m_contentRect.setRect(0, 0, m_starRating.sizeHint().width(),
-                          m_starRating.sizeHint().height());
-    setFixedSize(m_starRating.sizeHint());
-    
-    update();
 }
 
 QSize WStarRating::sizeHint() const
 {
-    return m_starRating.sizeHint();
+    QStyleOption option;
+    option.initFrom(this);
+    QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
+                                                 m_starRating.sizeHint(), this);
+    widgetSize.expandedTo(QApplication::globalStrut());
+    
+    m_contentRect.setRect(
+        (widgetSize.width() - m_starRating.sizeHint().width() ) / 2,
+        (widgetSize.height() - m_starRating.sizeHint().height() ) / 2,
+        m_starRating.sizeHint().width(),
+        m_starRating.sizeHint().height()
+    );
+    
+    return widgetSize;
 }
 
 void WStarRating::slotTrackLoaded(TrackPointer track) {
@@ -65,7 +73,9 @@ void WStarRating::paintEvent(QPaintEvent *) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
+    
     painter.setBrush(option.palette.text());
+    painter.drawPrimitive(QStyle::PE_Widget, option);
     
     m_starRating.paint(&painter, m_contentRect, option.palette,
                        StarRating::ReadOnly,
@@ -107,8 +117,10 @@ int WStarRating::starAtPosition(int x)
     return star;
 }
 
-void WStarRating::mouseReleaseEvent(QMouseEvent * )
+void WStarRating::mouseReleaseEvent(QMouseEvent*)
 {
+    if (!m_pCurrentTrack)
+        return;
+    
     m_pCurrentTrack->setRating(m_starRating.starCount());
 }
-
