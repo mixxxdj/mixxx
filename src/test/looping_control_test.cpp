@@ -13,7 +13,7 @@
 class LoopingControlTest : public MockedEngineBackendTest {
   public:
     LoopingControlTest()
-            : kTrackLengthSamples(1000) {
+            : kTrackLengthSamples(3000) {
     }
 
   protected:
@@ -196,58 +196,58 @@ TEST_F(LoopingControlTest, LoopInButton_QuantizeEnabledClosestBeat) {
 
 TEST_F(LoopingControlTest, LoopOutButton_QuantizeDisabled) {
     m_pQuantizeEnabled->set(0);
-    m_pClosestBeat->set(100);
-    m_pNextBeat->set(100);
-    seekToSampleAndProcess(50);
+    m_pClosestBeat->set(1000);
+    m_pNextBeat->set(1000);
+    seekToSampleAndProcess(500);
     m_pLoopStartPoint->slotSet(0);
     m_pButtonLoopOut->slotSet(1);
     m_pButtonLoopOut->slotSet(0);
-    EXPECT_EQ(50, m_pLoopEndPoint->get());
+    EXPECT_EQ(500, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledNoBeats) {
     m_pQuantizeEnabled->set(1);
     m_pClosestBeat->set(-1);
     m_pNextBeat->set(-1);
-    seekToSampleAndProcess(50);
+    seekToSampleAndProcess(500);
     m_pLoopStartPoint->slotSet(0);
     m_pButtonLoopOut->slotSet(1);
     m_pButtonLoopOut->slotSet(0);
-    EXPECT_EQ(50, m_pLoopEndPoint->get());
+    EXPECT_EQ(500, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledClosestBeat) {
     m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(100);
-    m_pNextBeat->set(110);
-    seekToSampleAndProcess(50);
+    m_pClosestBeat->set(1000);
+    m_pNextBeat->set(1100);
+    seekToSampleAndProcess(500);
     m_pLoopStartPoint->slotSet(0);
     m_pButtonLoopOut->slotSet(1);
     m_pButtonLoopOut->slotSet(0);
-    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    EXPECT_EQ(1000, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, ReloopExitButton_TogglesLoop) {
     m_pQuantizeEnabled->set(0);
     m_pClosestBeat->set(-1);
     m_pNextBeat->set(-1);
-    seekToSampleAndProcess(50);
+    seekToSampleAndProcess(500);
     m_pLoopStartPoint->slotSet(0);
     m_pButtonLoopOut->slotSet(1);
     m_pButtonLoopOut->slotSet(0);
     EXPECT_TRUE(isLoopEnabled());
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(50, m_pLoopEndPoint->get());
+    EXPECT_EQ(500, m_pLoopEndPoint->get());
     m_pButtonReloopExit->slotSet(1);
     m_pButtonReloopExit->slotSet(0);
     EXPECT_FALSE(isLoopEnabled());
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(50, m_pLoopEndPoint->get());
+    EXPECT_EQ(500, m_pLoopEndPoint->get());
     m_pButtonReloopExit->slotSet(1);
     m_pButtonReloopExit->slotSet(0);
     EXPECT_TRUE(isLoopEnabled());
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(50, m_pLoopEndPoint->get());
+    EXPECT_EQ(500, m_pLoopEndPoint->get());
     // Ensure that the Loop Exit button works, and that it doesn't act as a
     // toggle.
     m_pButtonLoopExit->slotSet(1);
@@ -261,52 +261,52 @@ TEST_F(LoopingControlTest, ReloopExitButton_TogglesLoop) {
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesLoop) {
     seekToSampleAndProcess(50);
     m_pLoopStartPoint->slotSet(0);
-    m_pLoopEndPoint->slotSet(50);
+    m_pLoopEndPoint->slotSet(500);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(50, m_pLoopEndPoint->get());
+    EXPECT_EQ(500, m_pLoopEndPoint->get());
     m_pButtonLoopDouble->slotSet(1);
     m_pButtonLoopDouble->slotSet(0);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    EXPECT_EQ(1000, m_pLoopEndPoint->get());
     m_pButtonLoopDouble->slotSet(1);
     m_pButtonLoopDouble->slotSet(0);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(200, m_pLoopEndPoint->get());
+    EXPECT_EQ(2000, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
     seekToSampleAndProcess(50);
     m_pLoopStartPoint->slotSet(0);
-    m_pLoopEndPoint->slotSet(600);
+    m_pLoopEndPoint->slotSet(1600);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(600, m_pLoopEndPoint->get());
+    EXPECT_EQ(1600, m_pLoopEndPoint->get());
     m_pButtonLoopDouble->slotSet(1);
     m_pButtonLoopDouble->slotSet(0);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(600, m_pLoopEndPoint->get());
+    EXPECT_EQ(1600, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_HalvesLoop) {
     m_pLoopStartPoint->slotSet(0);
-    m_pLoopEndPoint->slotSet(200);
-    seekToSampleAndProcess(180);
+    m_pLoopEndPoint->slotSet(2000);
+    seekToSampleAndProcess(1800);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(200, m_pLoopEndPoint->get());
-    EXPECT_EQ(180, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(2000, m_pLoopEndPoint->get());
+    EXPECT_EQ(1800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
     m_pButtonLoopHalve->slotSet(1);
     m_pButtonLoopHalve->slotSet(0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    EXPECT_EQ(1000, m_pLoopEndPoint->get());
     // Since the current sample was out of range of the new loop,
     // the current sample should reseek based on the new loop size.
-    EXPECT_EQ(80, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
     m_pButtonLoopHalve->slotSet(1);
     m_pButtonLoopHalve->slotSet(0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
-    EXPECT_EQ(50, m_pLoopEndPoint->get());
-    EXPECT_EQ(30, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(500, m_pLoopEndPoint->get());
+    EXPECT_EQ(300, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_IgnoresTooSmall) {

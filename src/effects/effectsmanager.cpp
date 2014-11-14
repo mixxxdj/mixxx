@@ -4,8 +4,7 @@
 #include <QtAlgorithms>
 
 #include "engine/effects/engineeffectsmanager.h"
-#include "controlobjectthread.h"
-#include "controlobjectslave.h"
+#include "engine/effects/engineeffect.h"
 
 EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
         : QObject(pParent),
@@ -36,6 +35,8 @@ EffectsManager::~EffectsManager() {
 
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
+    // Safe because the Engine is deleted before EffectsManager.
+    delete m_pEngineEffectsManager;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -333,6 +334,14 @@ void EffectsManager::processEffectsResponses() {
             if (!response.success) {
                 qWarning() << debugString() << "WARNING: Failed EffectsRequest"
                            << "type" << pRequest->type;
+            } else {
+                //qDebug() << debugString() << "EffectsRequest Success"
+                //           << "type" << pRequest->type;
+
+                if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                    //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+                    delete pRequest->RemoveEffectFromChain.pEffect;
+                }
             }
 
             delete pRequest;
