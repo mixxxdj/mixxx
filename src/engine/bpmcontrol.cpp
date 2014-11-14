@@ -102,7 +102,7 @@ BpmControl::BpmControl(QString group,
             this, SLOT(slotBeatsTranslate(double)),
             Qt::DirectConnection);
 
-    m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(_group, "beats_translate_match_alignment"));
+    m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(group, "beats_translate_match_alignment"));
     connect(m_pBeatsTranslateMatchAlignment, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatsTranslateMatchAlignment(double)),
             Qt::DirectConnection);

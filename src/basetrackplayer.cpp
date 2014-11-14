@@ -87,6 +87,9 @@ BaseTrackPlayer::~BaseTrackPlayer()
 {
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
         m_pLoadedTrack.clear();
     }
 
