@@ -119,9 +119,22 @@ ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
     QString name = m_pContext->nodeToString(keyElement);
     ConfigKey key = ConfigKey::parseCommaSeparated(name);
 
+    QString default_val = m_pContext->selectAttributeString(keyElement, "default", "0");
     bool bPersist = m_pContext->selectAttributeBool(keyElement, "persist", false);
 
-    return controlFromConfigKey(key, bPersist, created);
+    ControlObject* co = controlFromConfigKey(key, bPersist, created);
+    if (*created) {
+        bool success = false;
+        double d = default_val.toDouble(&success);
+        if (success) {
+            co->set(static_cast<double>(d));
+        } else if (default_val.toLower() == "true") {
+            co->set(1.0);
+        } else if (default_val.toLower() == "false") {
+            co->set(0.0);
+        }
+    }
+    return co;
 }
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
