@@ -265,6 +265,8 @@ void PlayerManager::addDeckInner() {
 
     // Setup EQ for this deck
     m_pEffectsManager->addEqualizer(number);
+
+    pDeck->setupEqControlls();
 }
 
 void PlayerManager::addSampler() {

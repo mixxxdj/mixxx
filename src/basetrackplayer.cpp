@@ -27,7 +27,13 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
           m_pLoadedTrack(),
-          m_replaygainPending(false) {
+          m_replaygainPending(false),
+          m_pLowFilter(NULL),
+          m_pMidFilter(NULL),
+          m_pHighFilter(NULL),
+          m_pLowFilterKill(NULL),
+          m_pMidFilterKill(NULL),
+          m_pHighFilterKill(NULL) {
     m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
@@ -73,9 +79,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
-    m_pLowFilter = new ControlObjectSlave(group,"filterLow");
-    m_pMidFilter = new ControlObjectSlave(group,"filterMid");
-    m_pHighFilter = new ControlObjectSlave(group,"filterHigh");
+
     m_pPreGain = new ControlObjectSlave(ConfigKey(group, "pregain"));
     //BPM of the current song
     m_pBPM = new ControlObjectThread(group, "file_bpm");
@@ -108,6 +112,9 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pLowFilter;
     delete m_pMidFilter;
     delete m_pHighFilter;
+    delete m_pLowFilterKill;
+    delete m_pMidFilterKill;
+    delete m_pHighFilterKill;
     delete m_pPreGain;
 }
 
@@ -256,6 +263,9 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
         m_pLowFilter->set(1.0);
         m_pMidFilter->set(1.0);
         m_pHighFilter->set(1.0);
+        m_pLowFilterKill->set(0.0);
+        m_pMidFilterKill->set(0.0);
+        m_pHighFilterKill->set(0.0);
         m_pPreGain->set(1.0);
     }
 
@@ -285,4 +295,14 @@ void BaseTrackPlayer::slotPlayToggled(double v) {
 
 EngineDeck* BaseTrackPlayer::getEngineDeck() const {
     return m_pChannel;
+}
+
+void BaseTrackPlayer::setupEqControlls() {
+    const QString group = getGroup();
+    m_pLowFilter = new ControlObjectSlave(group,"filterLow");
+    m_pMidFilter = new ControlObjectSlave(group,"filterMid");
+    m_pHighFilter = new ControlObjectSlave(group,"filterHigh");
+    m_pLowFilterKill = new ControlObjectSlave(group,"filterLowKill");
+    m_pMidFilterKill = new ControlObjectSlave(group,"filterMidKill");
+    m_pHighFilterKill = new ControlObjectSlave(group,"filterHighKill");
 }

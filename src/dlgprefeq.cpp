@@ -59,7 +59,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-    connect(bEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotEqAutoReset(int)));
+    connect(bEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdateEqAutoReset(int)));
     connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
 
     connect(CheckBoxHideEffects, SIGNAL(stateChanged(int)),
@@ -79,15 +79,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotAddComboBox(double)));
     slotAddComboBox(m_pNumDecks->get());
-
-    // Restore the state of Bypass check box
-    CheckBoxBypass->setChecked(m_pConfig->getValueString(
-            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no")) == QString("no"));
-    if (CheckBoxBypass->isChecked()) {
-        slotBypass(Qt::Checked);
-    } else {
-        slotBypass(Qt::Unchecked);
-    }
 
     loadSettings();
     slotUpdate();
@@ -191,7 +182,11 @@ void DlgPrefEQ::loadSettings() {
     QString highEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"));
     QString lowEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency"));
     QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"));
-    m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "EqAutoReset")).toInt());
+    m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, "EqAutoReset")).toInt());
+    bEqAutoReset->setChecked(m_bEqAutoReset);
+    CheckBoxBypass->setChecked(m_pConfig->getValueString(
+            ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no")) == QString("no"));
 
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
@@ -232,7 +227,8 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
-    m_bEqAutoReset = false;    
+    m_bEqAutoReset = false;
+    bEqAutoReset->setChecked(m_bEqAutoReset);
     setDefaultShelves();
     loadSettings();
     slotUpdate();
@@ -325,12 +321,16 @@ void DlgPrefEQ::slotApply() {
 void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
-    bEqAutoReset->setChecked(m_bEqAutoReset);
+    if (CheckBoxBypass->isChecked()) {
+        slotBypass(Qt::Checked);
+    } else {
+        slotBypass(Qt::Unchecked);
+    }
+    m_bEqAutoReset = static_cast<bool>(bEqAutoReset->checkState());
 }
 
-void DlgPrefEQ::slotEqAutoReset(int i) {
+void DlgPrefEQ::slotUpdateEqAutoReset(int i) {
     m_bEqAutoReset = static_cast<bool>(i);
-    slotUpdate();
 }
 
 void DlgPrefEQ::slotBypass(int state) {

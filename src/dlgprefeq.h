@@ -50,7 +50,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
-    void slotEqAutoReset(int);
+    void slotUpdateEqAutoReset(int);
     void slotBypass(int state);
 
   signals:
