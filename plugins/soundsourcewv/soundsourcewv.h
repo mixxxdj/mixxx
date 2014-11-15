@@ -25,7 +25,7 @@ namespace Mixxx {
 
 class SoundSourceWV : public SoundSource {
  public:
-  SoundSourceWV(QString qFilename);
+  explicit SoundSourceWV(QString qFilename);
   ~SoundSourceWV();
   Result open();
   long seek(long);

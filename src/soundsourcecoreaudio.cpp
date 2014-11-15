@@ -141,7 +141,7 @@ long SoundSourceCoreAudio::seek(long filepos) {
 
     //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
     return filepos;
 }

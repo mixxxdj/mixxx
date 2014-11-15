@@ -132,7 +132,7 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
     status.chunk = NULL;
     status.trackNumSamples = 0;
 
-    m_pCurrentSoundSource.reset();
+    m_pCurrentSoundSource.clear();
     m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
@@ -147,14 +147,12 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
             pTrack, QString("The file '%1' could not be found.").arg(filename)));
         return;
     }
+    SoundSourceProxy soundSourceProxy(pTrack);
+    Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
+    bool openSucceeded = (pSoundSource->open() == OK); //Open the song for reading
+    m_iTrackNumSamples = status.trackNumSamples = pSoundSource->length();
 
-    m_pCurrentSoundSource.reset(new SoundSourceProxy(pTrack));
-    bool openSucceeded = (m_pCurrentSoundSource->open() == OK); //Open the song for reading
-    unsigned int trackSampleRate = m_pCurrentSoundSource->getSampleRate();
-    m_iTrackNumSamples = status.trackNumSamples =
-            m_pCurrentSoundSource->length();
-
-    if (!openSucceeded || m_iTrackNumSamples == 0 || trackSampleRate == 0) {
+    if (!openSucceeded || m_iTrackNumSamples == 0 || pSoundSource->getSampleRate() == 0) {
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";
@@ -164,6 +162,8 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
             pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
         return;
     }
+
+    m_pCurrentSoundSource = pSoundSource;
 
     m_pReaderStatusFIFO->writeBlocking(&status, 1);
 
@@ -176,8 +176,8 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
     }
 
-    // Emit that the track is loaded.
-    emit(trackLoaded(pTrack, trackSampleRate, m_iTrackNumSamples));
+    // Emit that the track has been loaded
+    emit(trackLoaded(pTrack, m_pCurrentSoundSource->getSampleRate(), m_iTrackNumSamples));
 }
 
 void CachingReaderWorker::quitWait() {

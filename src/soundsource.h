@@ -18,9 +18,6 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
-#include <QImage>
-#include <QString>
-
 #include <taglib/tfile.h>
 #include <taglib/apetag.h>
 #include <taglib/id3v2tag.h>
@@ -29,6 +26,10 @@
 
 #include "util/types.h"
 #include "util/defs.h"
+
+#include <QImage>
+#include <QString>
+#include <QSharedPointer>
 
 #define MIXXX_SOUNDSOURCE_API_VERSION 6
 /** @note SoundSource API Version history:
@@ -165,6 +166,9 @@ protected:
 
     static const bool s_bDebugMetadata;
 };
+
+typedef QSharedPointer<SoundSource> SoundSourcePointer;
+
 } //namespace Mixxx
 
 #endif

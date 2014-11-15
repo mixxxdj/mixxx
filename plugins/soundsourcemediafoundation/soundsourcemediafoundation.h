@@ -39,7 +39,7 @@ class IMFMediaSource;
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSource {
   public:
-    SoundSourceMediaFoundation(QString filename);
+    explicit SoundSourceMediaFoundation(QString filename);
     ~SoundSourceMediaFoundation();
     Result open();
     long seek(long filepos);

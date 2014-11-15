@@ -1589,6 +1589,20 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     return true;
 }
 
+namespace
+{
+    QImage parseCoverArt(const QFileInfo fileInfo) {
+        SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
+        SoundSourceProxy proxy(fileInfo.filePath(), pToken);
+        Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
+        if (pSoundSource) {
+            return pSoundSource->parseCoverArt();
+        } else {
+            return QImage();
+        }
+    }
+}
+
 void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                               QSet<int>* pTracksChanged) {
     // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
@@ -1659,9 +1673,7 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
             continue;
         }
 
-        SecurityTokenPointer pToken = Sandbox::openSecurityToken(trackInfo, true);
-        SoundSourceProxy proxy(trackLocation, pToken);
-        QImage image = proxy.parseCoverArt();
+        QImage image(parseCoverArt(trackInfo));
         if (!image.isNull()) {
             updateQuery.bindValue(":coverart_type",
                                   static_cast<int>(CoverInfo::METADATA));

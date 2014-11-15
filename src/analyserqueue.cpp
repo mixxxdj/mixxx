@@ -160,7 +160,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource) {
+bool AnalyserQueue::doAnalysis(TrackPointer tio, const Mixxx::SoundSourcePointer& pSoundSource) {
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
@@ -300,13 +300,18 @@ void AnalyserQueue::run() {
         Trace trace("AnalyserQueue analyzing track");
 
         // Get the audio
-        SoundSourceProxy soundSource(nextTrack);
-        soundSource.open(); //Open the file for reading
-        int iNumSamples = soundSource.length();
-        int iSampleRate = soundSource.getSampleRate();
+        SoundSourceProxy soundSourceProxy(nextTrack);
+        if (OK != soundSourceProxy.open()) { //Open the file for reading
+            qWarning() << "Failed to open file for analyzing:" << soundSourceProxy.getFilename();
+            continue;
+        }
+
+        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
+        int iNumSamples = pSoundSource->length();
+        int iSampleRate = pSoundSource->getSampleRate();
 
         if (iNumSamples == 0 || iSampleRate == 0) {
-            qDebug() << "Skipping invalid file:" << nextTrack->getLocation();
+            qWarning() << "Skipping invalid file:" << nextTrack->getLocation();
             continue;
         }
 
@@ -325,7 +330,7 @@ void AnalyserQueue::run() {
 
         if (processTrack) {
             emitUpdateProgress(nextTrack, 0);
-            bool completed = doAnalysis(nextTrack, &soundSource);
+            bool completed = doAnalysis(nextTrack, pSoundSource);
             if (!completed) {
                 //This track was cancelled
                 QListIterator<Analyser*> itf(m_aq);

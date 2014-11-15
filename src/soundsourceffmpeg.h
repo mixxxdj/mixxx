@@ -65,7 +65,7 @@ struct ffmpegCacheObject {
 
 class SoundSourceFFmpeg : public Mixxx::SoundSource {
 public:
-    SoundSourceFFmpeg(QString qFilename);
+    explicit SoundSourceFFmpeg(QString qFilename);
     ~SoundSourceFFmpeg();
     Result open();
     long seek(long);

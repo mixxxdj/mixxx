@@ -43,7 +43,7 @@
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
-    SoundSourceCoreAudio(QString filename);
+    explicit SoundSourceCoreAudio(QString filename);
     ~SoundSourceCoreAudio();
     Result open();
     long seek(long filepos);

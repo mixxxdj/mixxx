@@ -14,7 +14,7 @@
 
 class SoundSourceOpus : public Mixxx::SoundSource {
   public:
-    SoundSourceOpus(QString qFilename);
+    explicit SoundSourceOpus(QString qFilename);
     virtual ~SoundSourceOpus();
 	
     Result open();

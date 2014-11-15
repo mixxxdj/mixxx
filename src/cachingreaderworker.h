@@ -8,15 +8,12 @@
 #include <QString>
 #include <QScopedPointer>
 
+#include "soundsource.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 #include "util/fifo.h"
 #include "util/types.h"
 
-
-namespace Mixxx {
-    class SoundSource;
-}
 
 // A Chunk is a section of audio that is being cached. The chunk_number can be
 // used to figure out the sample number of the first sample in data by using
@@ -112,7 +109,7 @@ class CachingReaderWorker : public EngineWorker {
                                  ReaderStatusUpdate* update);
 
     // The current sound source of the track loaded
-    QScopedPointer<Mixxx::SoundSource> m_pCurrentSoundSource;
+    Mixxx::SoundSourcePointer m_pCurrentSoundSource;
     int m_iTrackNumSamples;
 
     // Temporary buffer for reading from SoundSources
