@@ -1015,7 +1015,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 
             if (keys.isValid()) {
                 pTrack->setKeys(keys);
-            } else {
+            } else if (keyText.size() > 0) {
                 // Typically this happens if we are upgrading from an older
                 // (<1.12.0) version of Mixxx that didn't support Keys. We treat
                 // all legacy data as user-generated because that way it will be
