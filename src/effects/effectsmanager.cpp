@@ -78,10 +78,6 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableEffectNames() c
         QSet<QString> backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
             currentEffectName = pBackend->getManifest(effectId).name();
-            if (availableEffectNames.contains(qMakePair(effectId, currentEffectName))) {
-                qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
-                continue;
-            }
             availableEffectNames.insert(qMakePair(effectId, currentEffectName));
         }
     }
@@ -97,10 +93,6 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableEQEffectNames()
         foreach (QString effectId, backendEffects) {
             if (pBackend->getManifest(effectId).isEQ()) {
                 currentEffectName = pBackend->getManifest(effectId).name();
-                if (availableEQEffectNames.contains(qMakePair(effectId, currentEffectName))) {
-                    qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
-                    continue;
-                }
                 availableEQEffectNames.insert(qMakePair(effectId, currentEffectName));
             }
         }
