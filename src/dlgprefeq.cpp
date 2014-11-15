@@ -227,10 +227,16 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
-    m_bEqAutoReset = false;
-    bEqAutoReset->setChecked(m_bEqAutoReset);
     setDefaultShelves();
+    foreach(QComboBox* pCombo, m_deckEffectSelectors) {
+        pCombo->setCurrentIndex(
+               pCombo->findData("org.mixxx.effects.bessel8lvmixeq"));
+    }
     loadSettings();
+    CheckBoxBypass->setChecked(Qt::Unchecked);
+    CheckBoxHideEffects->setChecked(Qt::Checked);
+    m_bEqAutoReset = false;
+    bEqAutoReset->setChecked(Qt::Unchecked);
     slotUpdate();
     slotApply();
 }
@@ -321,6 +327,7 @@ void DlgPrefEQ::slotApply() {
 void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
+    slotPopulateDeckEffectSelectors();
     if (CheckBoxBypass->isChecked()) {
         slotBypass(Qt::Checked);
     } else {
