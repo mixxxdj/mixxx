@@ -21,13 +21,13 @@
 #include <QPixmap>
 #include <QString>
 #include <QPaintEvent>
-#include <QTime>
 #include <QWidget>
 #include <QDomNode>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
+#include "util/performancetimer.h"
 
 class WVuMeter : public WWidget  {
    Q_OBJECT
@@ -42,7 +42,7 @@ class WVuMeter : public WWidget  {
     void onConnectedControlChanged(double dParameter, double dValue);
 
   protected slots:
-    void updateState(int msecsElapsed);
+    void updateState(double msecsElapsed);
     void maybeUpdate();
 
   private:
@@ -76,7 +76,7 @@ class WVuMeter : public WWidget  {
     int m_iLastPos;
     int m_iLastPeakPos;
 
-    QTime m_lastUpdate;
+    PerformanceTimer m_timer;
 };
 
 #endif

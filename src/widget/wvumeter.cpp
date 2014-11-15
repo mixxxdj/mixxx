@@ -47,6 +47,7 @@ WVuMeter::WVuMeter(QWidget* parent)
           m_iPeakHoldCountdown(0),
           m_iLastPos(0),
           m_iLastPeakPos(0) {
+    m_timer.start();
 }
 
 WVuMeter::~WVuMeter() {
@@ -130,10 +131,7 @@ void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
         m_dPeakParameter = 0;
     }
 
-    // TODO: use something much more lightweight than currentTime.
-    QTime currentTime = QTime::currentTime();
-    int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
-    m_lastUpdate = currentTime;
+    double msecsElapsed = m_timer.restart() / 1000000.0;
     updateState(msecsElapsed);
 }
 
@@ -145,7 +143,7 @@ void WVuMeter::setPeak(int pos, double parameter) {
     }
 }
 
-void WVuMeter::updateState(int msecsElapsed) {
+void WVuMeter::updateState(double msecsElapsed) {
     // If we're holding at a peak then don't update anything
     m_iPeakHoldCountdown -= msecsElapsed;
     if (m_iPeakHoldCountdown > 0) {
@@ -158,7 +156,7 @@ void WVuMeter::updateState(int msecsElapsed) {
     // milliseconds elapsed over the fall time multiplier. The peak will fall
     // FallStep times (out of 128 steps) every FallTime milliseconds.
     m_dPeakParameter -= static_cast<double>(m_iPeakFallStep) *
-            static_cast<double>(msecsElapsed) /
+            msecsElapsed /
             static_cast<double>(m_iPeakFallTime * m_iNoPos);
     m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
     m_iPeakPos = math_clamp(static_cast<int>(m_dPeakParameter * m_iNoPos),
