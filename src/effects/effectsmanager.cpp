@@ -242,6 +242,36 @@ void EffectsManager::addEqualizer(int channelNumber) {
                 ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHighKill"),
                 ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
                                   arg(rackNum).arg(channelNumber), "button_parameter3"));
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterLow_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter1_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterMid_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter2_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHigh_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter3_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterLowKill_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter1_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterMidKill_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter2_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHighKill_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter3_loaded"));
+
 
 }
 

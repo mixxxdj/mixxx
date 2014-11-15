@@ -427,7 +427,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit1_Effect1],button_parameter3_loaded</ConfigKey>
+						        <ConfigKey>[Channel1],filterHighKill_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</PushButton>
@@ -452,7 +452,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit1_Effect1],button_parameter2_loaded</ConfigKey>
+						        <ConfigKey>[Channel1],filterMidKill_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</PushButton>
@@ -477,7 +477,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit1_Effect1],button_parameter1_loaded</ConfigKey>
+						        <ConfigKey>[Channel1],filterLowKill_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</PushButton>
@@ -503,7 +503,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit2_Effect1],button_parameter3_loaded</ConfigKey>
+						        <ConfigKey>[Channel2],filterHighKill_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</PushButton>
@@ -528,7 +528,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit2_Effect1],button_parameter2_loaded</ConfigKey>
+						        <ConfigKey>[Channel2],filterMidKill_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</PushButton>
@@ -553,7 +553,7 @@
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit2_Effect1],button_parameter1_loaded</ConfigKey>
+						        <ConfigKey>[Channel2],filterLowKill_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</PushButton>
@@ -693,7 +693,7 @@
 								<ConfigKey>[Channel1],filterHigh</ConfigKey>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit1_Effect1],parameter3_loaded</ConfigKey>
+						        <ConfigKey>[Channel1],filterHigh_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</Knob>
@@ -707,7 +707,7 @@
 								<ConfigKey>[Channel1],filterMid</ConfigKey>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit1_Effect1],parameter2_loaded</ConfigKey>
+						        <ConfigKey>[Channel1],filterMid_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</Knob>
@@ -721,7 +721,7 @@
 								<ConfigKey>[Channel1],filterLow</ConfigKey>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit1_Effect1],parameter1_loaded</ConfigKey>
+						        <ConfigKey>[Channel1],filterLow_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</Knob>
@@ -746,7 +746,7 @@
 								<ConfigKey>[Channel2],filterHigh</ConfigKey>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit2_Effect1],parameter3_loaded</ConfigKey>
+						        <ConfigKey>[Channel2],filterHigh_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</Knob>
@@ -760,7 +760,7 @@
 								<ConfigKey>[Channel2],filterMid</ConfigKey>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit2_Effect1],parameter2_loaded</ConfigKey>
+						        <ConfigKey>[Channel2],filterMid_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</Knob>
@@ -774,7 +774,7 @@
 								<ConfigKey>[Channel2],filterLow</ConfigKey>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[EffectRack2_EffectUnit2_Effect1],parameter1_loaded</ConfigKey>
+						        <ConfigKey>[Channel2],filterLow_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
 						</Knob>
