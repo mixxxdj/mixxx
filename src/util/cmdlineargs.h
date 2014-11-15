@@ -8,7 +8,7 @@
 // A structure to store the parsed command-line arguments
 class CmdlineArgs {
   public:
-    static CmdlineArgs& Instance() {
+    static inline CmdlineArgs& Instance() {
         static CmdlineArgs cla;
         return cla;
     }

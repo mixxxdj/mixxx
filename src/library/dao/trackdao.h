@@ -119,7 +119,7 @@ class TrackDAO : public QObject, public virtual DAO {
                                         QSet<int>* pTracksChanged);
 
   signals:
-    void trackDirty(int trackId);
+    void trackDirty(int trackId) const;
     void trackClean(int trackId);
     void trackChanged(int trackId);
     void tracksAdded(QSet<int> trackIds);

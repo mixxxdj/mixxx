@@ -37,9 +37,9 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
           m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
-          m_highEqFreq(0.0) {
+          m_highEqFreq(0.0),
+          m_bEqAutoReset(false) {
     setupUi(this);
-
     // Connection
     connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
     connect(SliderHiEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));
@@ -52,6 +52,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
     connect(radioButton_bypass, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_bessel4, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
     connect(radioButton_butterworth8, SIGNAL(clicked()), this, SLOT(slotEqChanged()));
+    connect(bEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotEqAutoReset(int)));
 
     loadSettings();
     slotUpdate();
@@ -66,6 +67,7 @@ void DlgPrefEQ::loadSettings() {
     QString highEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"));
     QString lowEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency"));
     QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"));
+    m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "EqAutoReset")).toInt());
 
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
@@ -121,6 +123,7 @@ void DlgPrefEQ::slotResetToDefaults() {
     radioButton_bypass->setChecked(false);
     radioButton_butterworth8->setChecked(false);
     radioButton_bessel4->setChecked(true);
+    m_bEqAutoReset = false;
     slotEqChanged();
     setDefaultShelves();
     loadSettings();
@@ -208,6 +211,8 @@ void DlgPrefEQ::slotApply() {
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
 
+    m_pConfig->set(ConfigKey(CONFIG_KEY,"EqAutoReset"),
+            ConfigValue(m_bEqAutoReset ? 1 : 0));
     m_COTLoFi.slotSet((m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")));
     m_COTEnableEq.slotSet((m_pConfig->getValueString(
@@ -218,6 +223,12 @@ void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
     slotEqChanged();
+    bEqAutoReset->setChecked(m_bEqAutoReset);
+}
+
+void DlgPrefEQ::slotEqAutoReset(int i) {
+    m_bEqAutoReset = static_cast<bool>(i);
+    slotUpdate();
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {

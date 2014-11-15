@@ -618,7 +618,7 @@
             <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
            </property>
            <property name="backgroundVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>

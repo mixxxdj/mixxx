@@ -2,6 +2,7 @@
 
 #include "engine/enginebufferscale.h"
 #include "engine/readaheadmanager.h"
+#include "sampleutil.h"
 
 
 EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager)
@@ -30,7 +31,7 @@ CSAMPLE* EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
     double rate = m_dBaseRate * m_dSpeedAdjust;
     if (rate == 0.0) {
-        memset(m_buffer, 0, sizeof(CSAMPLE) * buf_size);
+        SampleUtil::clear(m_buffer, buf_size);
         return m_buffer;
     }
     int samples_remaining = buf_size;
