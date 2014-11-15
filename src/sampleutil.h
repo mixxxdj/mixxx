@@ -6,9 +6,7 @@
 
 #include "util/types.h"
 
-// NOTE(uklotzde): We assume that the STL algorithms are thoroughly optimized!
 #include <algorithm>
-
 #include <cstring> // memset
 
 // MSVC does this
@@ -36,8 +34,7 @@
 
 // A group of utilities for working with samples.
 class SampleUtil {
-public:
-
+  public:
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
     static CSAMPLE* alloc(unsigned int size);
@@ -65,6 +62,7 @@ public:
     inline
     static void copy(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples) {
+        // Roughly equivalent to memcpy in a benchmark test.
         std::copy(pSrc, pSrc + iNumSamples, pDest);
     }
 

@@ -4,8 +4,6 @@
 #include "sampleutil.h"
 #include "util/math.h"
 
-#include <functional>
-
 #ifdef __WINDOWS__
 #include <QtGlobal>
 typedef qint64 int64_t;
@@ -31,9 +29,9 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
         clear(pBuffer, iNumSamples);
         return;
     }
-
-    std::transform(pBuffer, pBuffer + iNumSamples, pBuffer,
-            std::bind2nd(std::multiplies<CSAMPLE>(), gain));
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+        pBuffer[i] *= gain;
+    }
 }
 
 // static

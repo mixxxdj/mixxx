@@ -7,7 +7,9 @@
 #include <cmath>
 #include <algorithm>
 
-#include <QtDebug> // Q_ASSERT
+#include <QtDebug>
+
+#include "util/cmdlineargs.h"
 
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
@@ -19,16 +21,12 @@ using std::fabs;
 
 template <typename T>
 inline T math_clamp(T value, T min, T max) {
-    // NOTE(uklotzde): Exceptionally use Q_ASSERT here to detect
-    // programming errors early during development. This check should
-    // be avoided in the released version for maximum performance!
-    //
-    // Use two separate assertions for min < max:
-    // - min > max is a programming error
-    // - min == max is most likely a programming error and avoidable
-    //   performance burden
-    Q_ASSERT(min <= max); // programming error
-    Q_ASSERT(min != max); // potential programming error & performance warning
+    // XXX: If max < min, behavior is undefined, and has been causing problems.
+    // if debugging is on, assert when this happens.
+    if (CmdlineArgs::Instance().getDeveloper() && max < min) {
+        qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
+                   << max << " " << min;
+    }
     return math_max(min, math_min(max, value));
 }
 

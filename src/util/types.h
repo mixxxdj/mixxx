@@ -21,7 +21,6 @@ SAMPLE SAMPLE_clamp(SAMPLE in) {
 // Limits the range of a SAMPLE value to [-SAMPLE_MAX, SAMPLE_MAX].
 inline
 SAMPLE SAMPLE_clampSymmetric(SAMPLE in) {
-    Q_ASSERT(SAMPLE_MIN <= SAMPLE_MAX); // just to be sure
     return math_clamp(in, static_cast<SAMPLE>(-SAMPLE_MAX), SAMPLE_MAX);
 }
 
