@@ -27,13 +27,14 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
           m_pLoadedTrack(),
-          m_replaygainPending(false) {
-    // Need to strdup the string because EngineChannel will save the pointer,
-    // but we might get deleted before the EngineChannel. TODO(XXX)
-    // pSafeGroupName is leaked. It's like 5 bytes so whatever.
-    const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
-
-    m_pChannel = new EngineDeck(pSafeGroupName, pConfig, pMixingEngine,
+          m_replaygainPending(false),
+          m_pLowFilter(NULL),
+          m_pMidFilter(NULL),
+          m_pHighFilter(NULL),
+          m_pLowFilterKill(NULL),
+          m_pMidFilterKill(NULL),
+          m_pHighFilterKill(NULL) {
+    m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
@@ -79,6 +80,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
 
+    m_pPreGain = new ControlObjectSlave(ConfigKey(group, "pregain"));
     //BPM of the current song
     m_pBPM = new ControlObjectThread(group, "file_bpm");
     m_pKey = new ControlObjectThread(group, "file_key");
@@ -92,6 +94,9 @@ BaseTrackPlayer::~BaseTrackPlayer()
 {
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
         m_pLoadedTrack.clear();
     }
 
@@ -104,6 +109,13 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pKey;
     delete m_pReplayGain;
     delete m_pPlay;
+    delete m_pLowFilter;
+    delete m_pMidFilter;
+    delete m_pHighFilter;
+    delete m_pLowFilterKill;
+    delete m_pMidFilterKill;
+    delete m_pHighFilterKill;
+    delete m_pPreGain;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -214,7 +226,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     m_replaygainPending = false;
     // Read the tags if required
     if (!m_pLoadedTrack->getHeaderParsed()) {
-        m_pLoadedTrack->parse();
+        m_pLoadedTrack->parse(false);
     }
 
     // m_pLoadedTrack->setPlayedAndUpdatePlaycount(true); // Actually the song is loaded but not played
@@ -247,6 +259,15 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
             }
         }
     }
+    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset"), 0).toInt()) {
+        m_pLowFilter->set(1.0);
+        m_pMidFilter->set(1.0);
+        m_pHighFilter->set(1.0);
+        m_pLowFilterKill->set(0.0);
+        m_pMidFilterKill->set(0.0);
+        m_pHighFilterKill->set(0.0);
+        m_pPreGain->set(1.0);
+    }
 
     emit(newTrackLoaded(m_pLoadedTrack));
 }
@@ -274,4 +295,14 @@ void BaseTrackPlayer::slotPlayToggled(double v) {
 
 EngineDeck* BaseTrackPlayer::getEngineDeck() const {
     return m_pChannel;
+}
+
+void BaseTrackPlayer::setupEqControlls() {
+    const QString group = getGroup();
+    m_pLowFilter = new ControlObjectSlave(group,"filterLow");
+    m_pMidFilter = new ControlObjectSlave(group,"filterMid");
+    m_pHighFilter = new ControlObjectSlave(group,"filterHigh");
+    m_pLowFilterKill = new ControlObjectSlave(group,"filterLowKill");
+    m_pMidFilterKill = new ControlObjectSlave(group,"filterMidKill");
+    m_pHighFilterKill = new ControlObjectSlave(group,"filterHighKill");
 }

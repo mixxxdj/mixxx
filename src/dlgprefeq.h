@@ -30,7 +30,6 @@
 /**
   *@author John Sully
   */
-
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
@@ -52,6 +51,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void slotUpdateEqAutoReset(int);
     void slotBypass(int state);
 
   signals:
@@ -80,6 +80,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QString m_eqRackGroup;
 
     bool m_inSlotPopulateDeckEffectSelectors;
+
+    bool m_bEqAutoReset;
 };
 
 #endif

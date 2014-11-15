@@ -20,7 +20,6 @@
 
 #include <QtSql>
 #include <QList>
-#include <QRegExp>
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
@@ -32,6 +31,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 
 #ifdef __SQLITE3__
 typedef struct sqlite3_context sqlite3_context;
@@ -52,7 +52,7 @@ class TrackCollection : public QObject
     Q_OBJECT
   public:
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
-    ~TrackCollection();
+    virtual ~TrackCollection();
     bool checkForTables();
 
     void resetLibaryCancellation();
@@ -101,8 +101,8 @@ class TrackCollection : public QObject
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
+    LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
-    const QRegExp m_supportedFileExtensionsRegex;
 };
 
 #endif // TRACKCOLLECTION_H

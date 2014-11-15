@@ -169,9 +169,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
                                     m_iChainNumber);
         m_pEffectChain->updateEngineState();
 
-        connect(m_pEffectChain.data(), SIGNAL(effectAdded()),
-                this, SLOT(slotChainEffectsChanged()));
-        connect(m_pEffectChain.data(), SIGNAL(effectRemoved()),
+        connect(m_pEffectChain.data(), SIGNAL(effectsChanged()),
                 this, SLOT(slotChainEffectsChanged()));
         connect(m_pEffectChain.data(), SIGNAL(nameChanged(const QString&)),
                 this, SLOT(slotChainNameChanged(const QString&)));
@@ -218,13 +216,11 @@ void EffectChainSlot::clear() {
     if (m_pEffectChain) {
         m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
                                          m_iChainNumber);
+        foreach (EffectSlotPointer pSlot, m_slots) {
+            pSlot->clear();
+        }
         m_pEffectChain->disconnect(this);
         m_pEffectChain.clear();
-
-        foreach (EffectSlotPointer pSlot, m_slots) {
-            pSlot->loadEffect(EffectPointer());
-        }
-
     }
     m_pControlNumEffects->setAndConfirm(0.0);
     m_pControlChainLoaded->setAndConfirm(0.0);
@@ -245,8 +241,8 @@ EffectSlotPointer EffectChainSlot::addEffectSlot() {
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
-    connect(pEffectSlot, SIGNAL(clearEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(slotClearEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
+            this, SLOT(slotClearEffect(unsigned int)));
     connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
             this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
     connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
@@ -279,17 +275,9 @@ void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotN
     emit(effectLoaded(pEffect, m_iChainNumber, slotNumber));
 }
 
-void EffectChainSlot::slotClearEffect(unsigned int iChainSlotNumber,
-                                      unsigned int iEffectSlotNumber,
-                                      EffectPointer pEffect) {
-    Q_UNUSED(iChainSlotNumber);
-    Q_UNUSED(pEffect);
-    if (iEffectSlotNumber >= static_cast<unsigned int>(m_slots.size())) {
-        return;
-    }
-
+void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
     if (m_pEffectChain) {
-        m_pEffectChain->replaceEffect(iEffectSlotNumber, EffectPointer());
+        m_pEffectChain->removeEffect(iEffectSlotNumber);
     }
 }
 

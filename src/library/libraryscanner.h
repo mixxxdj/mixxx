@@ -1,4 +1,3 @@
-
 /***************************************************************************
                           libraryscanner.h  -  scans library in a thread
                              -------------------
@@ -38,19 +37,17 @@
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
 #include "libraryscannerdlg.h"
-#include "trackcollection.h"
 #include "util/sandbox.h"
+#include "trackinfoobject.h"
 
-class TrackInfoObject;
+class TrackCollection;
 
 class LibraryScanner : public QThread {
     Q_OBJECT
   public:
-    LibraryScanner();
     LibraryScanner(TrackCollection* collection);
     virtual ~LibraryScanner();
 
-    void run();
     void scan(QWidget *parent);
 
   public slots:
@@ -61,6 +58,13 @@ class LibraryScanner : public QThread {
     void scanFinished();
     void progressHashing(QString);
     void progressLoading(QString path);
+    void progressCoverArt(QString file);
+    void trackAdded(TrackPointer pTrack);
+    void tracksMoved(QSet<int> oldTrackIds, QSet<int> newTrackIds);
+    void tracksChanged(QSet<int> changedTrackIds);
+
+  protected:
+    void run();
 
   private:
     // Recursively scan a music library. Doesn't import tracks for any
@@ -73,6 +77,7 @@ class LibraryScanner : public QThread {
     // Import the provided files. Returns true if the scan completed without
     // being cancelled. False if the scan was cancelled part-way through.
     bool importFiles(const QLinkedList<QFileInfo>& files,
+                     const QLinkedList<QFileInfo>& possibleCovers,
                      SecurityTokenPointer pToken);
 
     // The library trackcollection
@@ -89,6 +94,7 @@ class LibraryScanner : public QThread {
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     QRegExp m_extensionFilter;
+    QRegExp m_coverExtensionFilter;
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
 };

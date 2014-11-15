@@ -116,6 +116,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowVinylControl(bool);
     void slotViewShowMicrophone(bool);
     void slotViewShowPreviewDeck(bool);
+    void slotViewShowCoverArt(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
@@ -123,6 +124,8 @@ class MixxxMainWindow : public QMainWindow {
     // Open the developer tools dialog.
     void slotDeveloperTools();
     void slotDeveloperToolsClosed();
+    void slotDeveloperStatsExperiment();
+    void slotDeveloperStatsBase();
 
     void slotToCenterOfPrimaryScreen();
 
@@ -230,6 +233,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewVinylControl;
     QAction* m_pViewShowMicrophone;
     QAction* m_pViewShowPreviewDeck;
+    QAction* m_pViewShowCoverArt;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;
@@ -239,6 +243,8 @@ class MixxxMainWindow : public QMainWindow {
 
     QAction* m_pDeveloperReloadSkin;
     QAction* m_pDeveloperTools;
+    QAction* m_pDeveloperStatsExperiment;
+    QAction* m_pDeveloperStatsBase;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
     int m_iNoPlaylists;

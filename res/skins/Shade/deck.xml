@@ -176,7 +176,7 @@
 												</Spinny>
 											</Children>
 											<Connection>
-												<ConfigKey>[Spinny1],show_spinny</ConfigKey>
+												<ConfigKey persist="true">[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
@@ -282,7 +282,7 @@
 												</PushButton>
 											</Children>
 											<Connection>
-												<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_enabled</ConfigKey>
+												<ConfigKey persist="true">[Channel<Variable name="channum"/>],vinylcontrol_enabled</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
@@ -591,7 +591,7 @@
 							</State>
 							<Pos>253,161</Pos>
 							<Connection>
-								<ConfigKey>[Spinny1],show_spinny</ConfigKey>
+								<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>

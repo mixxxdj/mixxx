@@ -86,19 +86,9 @@ class EffectManifest {
         return m_parameters;
     }
 
-
     virtual EffectManifestParameter* addParameter() {
         m_parameters.append(EffectManifestParameter());
         return &m_parameters.last();
-    }
-
-    virtual const QList<EffectManifestParameter>& buttonParameters() const {
-        return m_buttonParameters;
-    }
-
-    virtual EffectManifestParameter* addButtonParameter() {
-        m_buttonParameters.append(EffectManifestParameter());
-        return &m_buttonParameters.last();
     }
 
     virtual bool effectRampsFromDry() const {
@@ -123,7 +113,6 @@ class EffectManifest {
     // This helps us at DlgPrefEQ's basic selection of Filter knob effects
     bool m_isForFilterKnob;
     QList<EffectManifestParameter> m_parameters;
-    QList<EffectManifestParameter> m_buttonParameters;
     bool m_effectRampsFromDry;
 };
 

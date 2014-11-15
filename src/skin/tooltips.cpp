@@ -140,6 +140,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Preview Deck")
             << tr("Show/hide the Preview deck.");
 
+    add("show_coverart")
+            << tr("Cover Art")
+            << tr("Show/hide Cover Art.");
+
     add("microphone_volume")
             << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")
@@ -248,7 +252,8 @@ void Tooltips::addStandardTooltips() {
 
     add("beats_translate_curpos")
             << tr("Adjust Beatgrid")
-            << tr("Adjust beatgrid so the closest beat is aligned with the current play position.");
+            << QString("%1: %2").arg(leftClick, tr("Adjust beatgrid so the closest beat is aligned with the current play position."))
+            << QString("%1: %2").arg(rightClick, tr("Adjust beatgrid to match another playing deck."));
 
     add("keylock")
             << tr("Key-Lock")

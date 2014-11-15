@@ -69,6 +69,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupLabelWidget(QDomElement element, WLabel* pLabel);
     QWidget* parseText(QDomElement node);
     QWidget* parseTrackProperty(QDomElement node);
+    QWidget* parseStarRating(QDomElement node);
     QWidget* parseNumberRate(QDomElement node);
     QWidget* parseNumberPos(QDomElement node);
     QWidget* parseEngineKey(QDomElement node);
@@ -76,6 +77,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectName(QDomElement node);
     QWidget* parseEffectParameterName(QDomElement node);
     QWidget* parseEffectButtonParameterName(QDomElement node);
+    QWidget* parseEffectPushButton(QDomElement node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget, QWidget* pInnerWidget);
@@ -96,6 +98,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseSearchBox(QDomElement node);
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
+    QWidget* parseCoverArt(QDomElement node);
 
     // Renders a template.
     QList<QWidget*> parseTemplate(QDomElement node);

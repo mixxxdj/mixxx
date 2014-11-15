@@ -124,8 +124,9 @@ void BaseTrackCache::ensureCached(QSet<int> trackIds) {
 }
 
 TrackPointer BaseTrackCache::lookupCachedTrack(int trackId) const {
-    // Only get the Track from the TrackDAO if it's in the cache
-    if (m_bIsCaching) {
+    // Only get the track from the TrackDAO if it's in the cache and marked as
+    // dirty.
+    if (m_bIsCaching && m_dirtyTracks.contains(trackId)) {
         return m_trackDAO.getTrack(trackId, true);
     }
     return TrackPointer();
@@ -303,6 +304,17 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->hasBpmLock());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
+        trackValue.setValue(pTrack->getCoverInfo().coverLocation);
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
+               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+        // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
+        // the cover hash.
+        trackValue.setValue(pTrack->getCoverInfo().hash);
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
+        trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
+        trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().type));
     }
 }
 
@@ -314,15 +326,7 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
         return result;
     }
 
-    // TODO(rryan): allow as an argument
-    TrackPointer pTrack;
-
-    // The caller can optionally provide a pTrack if they already looked it
-    // up. This is just an optimization to help reduce the # of calls to
-    // lookupCachedTrack. If they didn't provide it, look it up.
-    if (!pTrack) {
-        pTrack = lookupCachedTrack(trackId);
-    }
+    TrackPointer pTrack = lookupCachedTrack(trackId);
     if (pTrack) {
         getTrackValueForColumn(pTrack, column, result);
     }

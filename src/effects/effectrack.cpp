@@ -206,7 +206,7 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
     }
 
     EffectChainPointer pNextChain = m_pEffectChainManager->getNextEffectChain(
-        pLoadedChain);
+            pLoadedChain);
 
     pNextChain = EffectChain::clone(pNextChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);

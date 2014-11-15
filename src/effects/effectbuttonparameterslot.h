@@ -21,27 +21,28 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     EffectButtonParameterSlot(const unsigned int iRackNumber,
                         const unsigned int iChainNumber,
                         const unsigned int iSlotNumber,
-                        const unsigned int iParameterNumber);
+                        const unsigned int iParameterSlotNumber);
     virtual ~EffectButtonParameterSlot();
 
-    static QString formatItemPrefix(const unsigned int iParameterNumber) {
-        return QString("button_parameter%1").arg(iParameterNumber + 1);
+    static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
+        return QString("button_parameter%1").arg(iParameterSlotNumber + 1);
     }
 
     // Load the parameter of the given effect into this EffectButtonParameterSlot
     void loadEffect(EffectPointer pEffect);
 
+    // Clear the currently loaded effect
+    void clear();
+
   private slots:
     // Solely for handling control changes
-    void slotParameterValueChanged(QVariant value);
+    void slotParameterValueChanged(double value);
+    void slotValueChanged(double v);
 
   private:
     QString debugString() const {
-        return QString("EffectButtonParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
+        return QString("EffectButtonParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
     }
-
-    // Clear the currently loaded effect
-    void clear();
 
     // Control exposed to the rest of Mixxx
     ControlPushButton* m_pControlValue;

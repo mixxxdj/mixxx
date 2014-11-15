@@ -77,6 +77,9 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
 
+    connect(m_pAnalysisView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));
     connect(this, SIGNAL(trackAnalysisStarted(int)),
@@ -107,6 +110,7 @@ void AnalysisFeature::activate() {
     if (m_pAnalysisView) {
         emit(restoreSearch(m_pAnalysisView->currentSearch()));
     }
+    emit(enableCoverArtDisplay(true));
 }
 
 void AnalysisFeature::analyzeTracks(QList<int> trackIds) {

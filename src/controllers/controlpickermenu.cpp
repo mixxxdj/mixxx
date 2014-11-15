@@ -89,6 +89,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("beats_translate_later", tr("Move Beatgrid Later"), tr("Adjust the beatgrid to the right"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust Beatgrid"),
                    tr("Align beatgrid to current position"), bpmMenu);
+    addDeckControl("beats_translate_match_alignment", tr("Adjust Beatgrid - Match Alignment"),
+                   tr("Adjust beatgrid to match another playing deck."), bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), bpmMenu);
 
     QMenu* syncMenu = addSubmenu(tr("Sync"));
@@ -670,6 +672,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
+    addControl("[Library]", "show_coverart",
+               tr("Cover Art Show/Hide"),
+               tr("Show/hide cover art"), guiMenu);
 
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");

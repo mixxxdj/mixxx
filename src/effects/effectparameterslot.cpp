@@ -9,10 +9,10 @@
 EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
-                                         const unsigned int iParameterNumber)
+                                         const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(iRackNumber, iChainNumber, iSlotNumber,
-                                  iParameterNumber) {
-    QString itemPrefix = formatItemPrefix(iParameterNumber);
+                                  iParameterSlotNumber) {
+    QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
@@ -28,7 +28,7 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
             ConfigKey(m_group, itemPrefix + QString("_type")));
 
     m_pControlLinkType->connectValueChangeRequest(
-            this, SLOT(slotLinkTypeChanged(double)));
+            this, SLOT(slotLinkTypeChanging(double)));
     connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
             this, SLOT(slotLinkInverseChanged(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
@@ -59,16 +59,16 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     clear();
     if (pEffect) {
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
+        m_pEffectParameter = pEffect->getKnobParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
-            double dValue = m_pEffectParameter->getValue().toDouble();
-            double dMinimum = m_pEffectParameter->getMinimum().toDouble();
+            double dValue = m_pEffectParameter->getValue();
+            double dMinimum = m_pEffectParameter->getMinimum();
             double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = m_pEffectParameter->getMaximum().toDouble();
+            double dMaximum = m_pEffectParameter->getMaximum();
             double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = m_pEffectParameter->getDefault().toDouble();
+            double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
                 dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
@@ -97,8 +97,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
                 m_pControlLinkInverse->set(0);
             }
 
-            connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
-                    this, SLOT(slotParameterValueChanged(QVariant)));
+            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
+                    this, SLOT(slotParameterValueChanged(double)));
         }
     }
     emit(updated());
@@ -120,12 +120,12 @@ void EffectParameterSlot::clear() {
     emit(updated());
 }
 
-void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
+void EffectParameterSlot::slotParameterValueChanged(double value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
-    m_pControlValue->set(value.toDouble());
+    m_pControlValue->set(value);
 }
 
-void EffectParameterSlot::slotLinkTypeChanged(double v) {
+void EffectParameterSlot::slotLinkTypeChanging(double v) {
     Q_UNUSED(v);
     m_pSoftTakeover->ignoreNext();
     if (v > EffectManifestParameter::LINK_LINKED) {
@@ -235,3 +235,10 @@ void EffectParameterSlot::syncSofttakeover() {
 double EffectParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
 }
+
+void EffectParameterSlot::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setValue(v);
+    }
+}
+

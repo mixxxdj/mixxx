@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -159,34 +158,35 @@ Result SoundSourceModPlug::parseHeader() {
     }
 
     switch (ModPlug::ModPlug_GetModuleType(m_pModFile)) {
-    case NONE:
-        setType(QString("None"));
-        break;
-    case MOD:
-        setType(QString("Protracker"));
-        break;
-    case S3M:
-        setType(QString("Scream Tracker 3"));
-        break;
-    case XM:
-        setType(QString("FastTracker2"));
-        break;
-    case MED:
-        setType(QString("OctaMed"));
-        break;
-    case IT:
-        setType(QString("Impulse Tracker"));
-        break;
-    case STM:
-        setType(QString("Scream Tracker"));
-        break;
-    case OKT:
-        setType(QString("Oktalyzer"));
-        break;
-    default:
-        setType(QString("Module"));
-        break;
+        case NONE:
+            setType(QString("None"));
+            break;
+        case MOD:
+            setType(QString("Protracker"));
+            break;
+        case S3M:
+            setType(QString("Scream Tracker 3"));
+            break;
+        case XM:
+            setType(QString("FastTracker2"));
+            break;
+        case MED:
+            setType(QString("OctaMed"));
+            break;
+        case IT:
+            setType(QString("Impulse Tracker"));
+            break;
+        case STM:
+            setType(QString("Scream Tracker"));
+            break;
+        case OKT:
+            setType(QString("Oktalyzer"));
+            break;
+        default:
+            setType(QString("Module"));
+            break;
     }
+
     setComment(QString(ModPlug::ModPlug_GetMessage(m_pModFile)));
     setTitle(QString(ModPlug::ModPlug_GetName(m_pModFile)));
     setDuration(ModPlug::ModPlug_GetLength(m_pModFile) / 1000);
@@ -194,6 +194,12 @@ Result SoundSourceModPlug::parseHeader() {
     setSampleRate(44100);
     setChannels(2);
     return OK;
+}
+
+QImage SoundSourceModPlug::parseCoverArt() {
+    // The modplug library currently does not support reading cover-art from
+    // modplug files -- kain88 (Oct 2014)
+    return QImage();
 }
 
 inline long unsigned SoundSourceModPlug::length()

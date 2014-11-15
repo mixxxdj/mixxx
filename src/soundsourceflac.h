@@ -36,6 +36,7 @@ public:
     unsigned read(unsigned long size, const SAMPLE *buffer);
     inline long unsigned length();
     Result parseHeader();
+    QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);

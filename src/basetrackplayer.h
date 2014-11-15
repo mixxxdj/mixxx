@@ -11,6 +11,7 @@ class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlObjectThread;
+class ControlObjectSlave;
 class AnalyserQueue;
 class EffectsManager;
 
@@ -32,6 +33,8 @@ class BaseTrackPlayer : public BasePlayer {
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
+
+    void setupEqControlls();
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay=false);
@@ -62,6 +65,13 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThread* m_pKey;
     ControlObjectThread* m_pReplayGain;
     ControlObjectThread* m_pPlay;
+    ControlObjectSlave* m_pLowFilter;
+    ControlObjectSlave* m_pMidFilter;
+    ControlObjectSlave* m_pHighFilter;
+    ControlObjectSlave* m_pLowFilterKill;
+    ControlObjectSlave* m_pMidFilterKill;
+    ControlObjectSlave* m_pHighFilterKill;
+    ControlObjectSlave* m_pPreGain;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

@@ -43,6 +43,9 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 
     loadVScrollBarPosState();
 
+    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
+            this, SIGNAL(scrollValueChanged(int)));
+
     setTabKeyNavigation(false);
 }
 

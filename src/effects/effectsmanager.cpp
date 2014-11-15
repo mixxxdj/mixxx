@@ -4,13 +4,14 @@
 #include <QtAlgorithms>
 
 #include "engine/effects/engineeffectsmanager.h"
-#include "controlobjectthread.h"
-#include "controlobjectslave.h"
+#include "engine/effects/engineeffect.h"
 
 EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
         : QObject(pParent),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
-          m_nextRequestId(0) {
+          m_nextRequestId(0),
+          m_pLoEqFreq(NULL),
+          m_pHiEqFreq(NULL) {
     qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
@@ -36,6 +37,8 @@ EffectsManager::~EffectsManager() {
 
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
+    // Safe because the Engine is deleted before EffectsManager.
+    delete m_pEngineEffectsManager;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -77,10 +80,6 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableEffectNames() c
         QSet<QString> backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
             currentEffectName = pBackend->getManifest(effectId).name();
-            if (availableEffectNames.contains(qMakePair(effectId, currentEffectName))) {
-                qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
-                continue;
-            }
             availableEffectNames.insert(qMakePair(effectId, currentEffectName));
         }
     }
@@ -95,10 +94,6 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableMixingEqEffectN
         foreach (QString effectId, backendEffects) {
             if (pBackend->getManifest(effectId).isMixingEQ()) {
                 currentEffectName = pBackend->getManifest(effectId).name();
-                if (availableEQEffectNames.contains(qMakePair(effectId, currentEffectName))) {
-                    qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
-                    continue;
-                }
                 availableEQEffectNames.insert(qMakePair(effectId, currentEffectName));
             }
         }
@@ -123,6 +118,10 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableFilterEffectNam
         }
     }
     return availableFilterEffectNames;
+}
+
+bool EffectsManager::isEQ(const QString& effectId) const {
+    return getEffectManifest(effectId).isMixingEQ();
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
@@ -258,6 +257,36 @@ void EffectsManager::addEqualizer(int channelNumber) {
                 ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHighKill"),
                 ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
                                   arg(rackNum).arg(channelNumber), "button_parameter3"));
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterLow_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter1_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterMid_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter2_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHigh_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "parameter3_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterLowKill_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter1_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterMidKill_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter2_loaded"));
+
+    ControlDoublePrivate::insertAlias(
+                ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterHighKill_loaded"),
+                ConfigKey(QString("[EffectRack%1_EffectUnit%2_Effect1]").
+                                  arg(rackNum).arg(channelNumber), "button_parameter3_loaded"));
+
 
     ControlDoublePrivate::insertAlias(
                 ConfigKey(QString("[Channel%1]").arg(channelNumber), "filterDepth"),
@@ -359,6 +388,14 @@ void EffectsManager::processEffectsResponses() {
             if (!response.success) {
                 qWarning() << debugString() << "WARNING: Failed EffectsRequest"
                            << "type" << pRequest->type;
+            } else {
+                //qDebug() << debugString() << "EffectsRequest Success"
+                //           << "type" << pRequest->type;
+
+                if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                    //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+                    delete pRequest->RemoveEffectFromChain.pEffect;
+                }
             }
 
             delete pRequest;

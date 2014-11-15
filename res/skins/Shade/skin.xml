@@ -68,6 +68,7 @@
 			<attribute config_key="[EffectRack1],show">0</attribute>
 			<attribute config_key="[Microphone],show_microphone">0</attribute>
 			<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
+			<attribute config_key="[Library],show_coverart">0</attribute>
 		</attributes>
 	</manifest>
 
@@ -131,10 +132,10 @@
 	
 	<Children>
 		<WidgetGroup>
-    		<ObjectName>DecksAndMixer</ObjectName>
-    		<MinimumSize>1024,265</MinimumSize>
+			<ObjectName>DecksAndMixer</ObjectName>
+			<MinimumSize>1024,265</MinimumSize>
   			<SizePolicy>e,f</SizePolicy>
-        	<Layout>horizontal</Layout>
+			<Layout>horizontal</Layout>
   			<Children>
   				<WidgetGroup>
   					<Size>378,265</Size>
@@ -162,8 +163,8 @@
 						</Template>	
 					</Children>
 				</WidgetGroup>
-        	</Children>
-    	</WidgetGroup>  	
+			</Children>
+		</WidgetGroup>  	
 	
 		<!--
 		############################################################################################
@@ -200,7 +201,7 @@
 						</Template>	
 					</Children>
 					<Connection>
-						<ConfigKey>[Samplers],show_samplers</ConfigKey>
+						<ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
 						<BindProperty>visible</BindProperty>
 					</Connection>
 				</WidgetGroup>
@@ -220,7 +221,7 @@
 						</Template>
 					</Children>
 					<Connection>
-						<ConfigKey>[EffectRack1],show</ConfigKey>
+						<ConfigKey persist="true">[EffectRack1],show</ConfigKey>
 						<BindProperty>visible</BindProperty>
 					</Connection>
 				</WidgetGroup>
@@ -277,7 +278,14 @@
 						color: #ACACAC; 
 					}
 					WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,50); color: #D6D6D6;}
-	
+
+					<!--Cover Art-->
+					WCoverArt { 
+						font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+						background: transparent; 	
+						color: #ACACAC; 
+					}
+
 					<!--splitter between treeview and library-->
 					QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
 					QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
@@ -332,7 +340,7 @@
 												<Children>
 												<WidgetGroup>
 													<Style> QGroupBox {
-                                                        margin: 0px;
+														margin: 0px;
 														padding: 0px 0px 0px 0px;
 														border-left: 0px solid #656565;
 														border-right: 0px solid #2B2B2B;
@@ -522,14 +530,30 @@
 												</WidgetGroup>
 											</Children>
 											<Connection>
-												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+												<ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
 										<!--Search Input Field-->
 										<SearchBox></SearchBox>
 										<!--Library Tree View-->
-										<LibrarySidebar></LibrarySidebar>
+						 				<Splitter>
+											<Size>e,me</Size>
+											<Style></Style>
+											<SplitSizes>1,e</SplitSizes>
+											<Children>
+												<LibrarySidebar></LibrarySidebar>
+												<!--Cover Art-->
+												<CoverArt>
+													<MinimumSize>16,16</MinimumSize>
+													<SizePolicy>me,me</SizePolicy>
+													<Connection>
+														<ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+														<BindProperty>visible</BindProperty>
+													</Connection>
+												</CoverArt>
+											</Children>
+										</Splitter>
 									</Children>
 								</WidgetGroup>
 								<WidgetGroup>

@@ -44,7 +44,6 @@ class SuperLinkTest : public BaseEffectTest {
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
         low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-        low->setValueHint(EffectManifestParameter::VALUE_FLOAT);
         low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
         low->setNeutralPointOnScale(0.25);
@@ -52,7 +51,7 @@ class SuperLinkTest : public BaseEffectTest {
         low->setMinimum(0);
         low->setMaximum(1.0);
 
-        registerTestEffect(manifest);
+        registerTestEffect(manifest, false);
 
         // Check the controls reflect the state of their loaded effect.
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());

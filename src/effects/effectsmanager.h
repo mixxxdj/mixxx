@@ -58,6 +58,7 @@ class EffectsManager : public QObject {
     const QSet<QPair<QString, QString> > getAvailableMixingEqEffectNames() const;
     // Same as above but only Filter like fading effects
     const QSet<QPair<QString, QString> > getAvailableFilterEffectNames() const;
+        bool isEQ(const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
