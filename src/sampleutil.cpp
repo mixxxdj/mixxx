@@ -23,53 +23,6 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
 }
 
 // static
-void SampleUtil::widenMonoToStereo(SAMPLE* pBuffer, unsigned int numFrames) {
-    // backward loop
-    unsigned int sampleOffset = numFrames;
-    while (0 < sampleOffset--) {
-        pBuffer[sampleOffset * 2] = pBuffer[sampleOffset];
-        pBuffer[sampleOffset * 2 + 1] = pBuffer[sampleOffset];
-    }
-}
-
-// static
-void SampleUtil::widenMonoToStereo(CSAMPLE* pBuffer, unsigned int numFrames) {
-    // backward loop
-    unsigned int sampleOffset = numFrames;
-    while (0 < sampleOffset--) {
-        pBuffer[sampleOffset * 2] = pBuffer[sampleOffset];
-        pBuffer[sampleOffset * 2 + 1] = pBuffer[sampleOffset];
-    }
-}
-
-// static
-void SampleUtil::copyWidenMonoToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
-        unsigned int numFrames) {
-    // forward loop
-    for (unsigned int i = 0; i < numFrames; ++i) {
-        pDest[i * 2] = pSrc[i];
-        pDest[i * 2 + 1] = pSrc[i];
-    }
-}
-
-// static
-void SampleUtil::narrowMultiToStereo(CSAMPLE* pBuffer, unsigned int numFrames,
-        unsigned int numChannels) {
-    // the copying implementation can be reused here
-    copyNarrowMultiToStereo(pBuffer, pBuffer, numFrames, numChannels);
-}
-
-// static
-void SampleUtil::copyNarrowMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
-        unsigned int numFrames, unsigned int numChannels) {
-    // forward loop
-    for (unsigned int i = 0; i < numFrames; ++i) {
-        pDest[i * 2] = pSrc[i * numChannels];
-        pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
-    }
-}
-
-// static
 void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
         unsigned int iNumSamples) {
     if (gain == CSAMPLE_GAIN_ONE)
@@ -333,3 +286,49 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
     }
 }
 
+// static
+void SampleUtil::doubleMonoToDualMono(SAMPLE* pBuffer, unsigned int numFrames) {
+    // backward loop
+    unsigned int i = numFrames;
+    while (0 < i--) {
+        pBuffer[i * 2] = pBuffer[i];
+        pBuffer[i * 2 + 1] = pBuffer[i];
+    }
+}
+
+// static
+void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, unsigned int numFrames) {
+    // backward loop
+    unsigned int i = numFrames;
+    while (0 < i--) {
+        pBuffer[i * 2] = pBuffer[i];
+        pBuffer[i * 2 + 1] = pBuffer[i];
+    }
+}
+
+// static
+void SampleUtil::copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+        unsigned int numFrames) {
+    // forward loop
+    for (unsigned int i = 0; i < numFrames; ++i) {
+        pDest[i * 2] = pSrc[i];
+        pDest[i * 2 + 1] = pSrc[i];
+    }
+}
+
+// static
+void SampleUtil::stripMultiToStereo(CSAMPLE* pBuffer, unsigned int numFrames,
+        unsigned int numChannels) {
+    // the copying implementation can safely be reused for this in-place operation
+    copyMultiToStereo(pBuffer, pBuffer, numFrames, numChannels);
+}
+
+// static
+void SampleUtil::copyMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
+        unsigned int numFrames, unsigned int numChannels) {
+    // forward loop
+    for (unsigned int i = 0; i < numFrames; ++i) {
+        pDest[i * 2] = pSrc[i * numChannels];
+        pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
+    }
+}

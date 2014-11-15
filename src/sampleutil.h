@@ -68,41 +68,6 @@ public:
         std::copy(pSrc, pSrc + iNumSamples, pDest);
     }
 
-    // In-place widens the mono samples in pBuffer to stereo
-    // samples.
-    // (numFrames) samples will be read from pBuffer
-    // (numFrames * 2) samples will be written to pBuffer
-    static void widenMonoToStereo(SAMPLE* pBuffer, unsigned int numFrames);
-
-    // In-place widens the mono samples in pBuffer to stereo
-    // samples.
-    // (numFrames) samples will be read from pBuffer
-    // (numFrames * 2) samples will be written into pBuffer
-    static void widenMonoToStereo(CSAMPLE* pBuffer, unsigned int numFrames);
-
-    // Copies and widens the mono samples in pSrc to stereo
-    // samples into pDest.
-    // (numFrames) samples will be read from pSrc
-    // (numFrames * 2) samples will be written into pDest
-    static void copyWidenMonoToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            unsigned int numFrames);
-
-    // In-place narrows interleaved multi-channel samples in
-    // pBuffer with numChannels >= 2 to stereo samples.
-    // Only samples from the first two channels are used.
-    // pBuffer must contain (numFrames * numChannels) samples
-    // (numFrames * 2) samples will be written into pBuffer
-    static void narrowMultiToStereo(CSAMPLE* pBuffer, unsigned int numFrames,
-            unsigned int numChannels);
-
-    // Copies and narrows interleaved multi-channel sample data
-    // in pSrc with numChannels >= 2 to stereo samples into pDest.
-    // Only samples from the first two channels are used.
-    // pSrc must contain (numFrames * numChannels) samples
-    // (numFrames * 2) samples will be written into pDest
-    static void copyNarrowMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            unsigned int numFrames, unsigned int numChannels);
-
     // Multiply every sample in pBuffer by gain
     static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
             unsigned int iNumSamples);
@@ -212,6 +177,41 @@ public:
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples);
+
+    // In-place doubles the mono samples in pBuffer to dual mono samples.
+    // (numFrames) samples will be read from pBuffer
+    // (numFrames * 2) samples will be written into pBuffer
+    static void doubleMonoToDualMono(SAMPLE* pBuffer, unsigned int numFrames);
+
+    // In-place doubles the mono samples in pBuffer to dual mono samples.
+    // (numFrames) samples will be read from pBuffer
+    // (numFrames * 2) samples will be written into pBuffer
+    static void doubleMonoToDualMono(CSAMPLE* pBuffer, unsigned int numFrames);
+
+    // Copies and doubles the mono samples in pSrc to dual mono samples
+    // into pDest.
+    // (numFrames) samples will be read from pSrc
+    // (numFrames * 2) samples will be written into pDest
+    static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            unsigned int numFrames);
+
+    // In-place strips interleaved multi-channel samples in pBuffer with
+    // numChannels >= 2 down to stereo samples. Only samples from the first
+    // two channels will be read and written. Samples from all other
+    // channels are discarded.
+    // pBuffer must contain (numFrames * numChannels) samples
+    // (numFrames * 2) samples will be written into pBuffer
+    static void stripMultiToStereo(CSAMPLE* pBuffer, unsigned int numFrames,
+            unsigned int numChannels);
+
+    // Copies and strips interleaved multi-channel sample data in pSrc with
+    // numChannels >= 2 down to stereo samples into pDest. Only samples from
+    // the first two channels will be read and written. Samples from all other
+    // channels will be ignored.
+    // pSrc must contain (numFrames * numChannels) samples
+    // (numFrames * 2) samples will be written into pDest
+    static void copyMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            unsigned int numFrames, unsigned int numChannels);
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)

@@ -149,7 +149,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
     // At this point *destination should be filled. If mono : double all samples
     // (L => R)
     if (m_iChannels == 1) {
-        SampleUtil::widenMonoToStereo(as_buffer, total_bytes_decoded / 2);
+        SampleUtil::doubleMonoToDualMono(as_buffer, total_bytes_decoded / 2);
     }
 
     // Tell us about it only if we end up decoding a different value

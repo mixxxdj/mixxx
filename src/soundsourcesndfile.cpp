@@ -129,7 +129,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
             int readNo = sf_read_short(fh, dest, size/2);
 
             // dest has enough capacity for (readNo * 2) samples
-            SampleUtil::widenMonoToStereo(dest, readNo);
+            SampleUtil::doubleMonoToDualMono(dest, readNo);
 
             // We doubled the readNo bytes we read into stereo.
             return readNo * 2;

@@ -205,7 +205,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 
     // convert into stereo if file is mono
     if (channels == 1) {
-        SampleUtil::widenMonoToStereo(dest, index / 2);
+        SampleUtil::doubleMonoToDualMono(dest, index / 2);
         // Pretend we read twice as many bytes as we did, since we just repeated
         // each pair of bytes.
         index *= 2;

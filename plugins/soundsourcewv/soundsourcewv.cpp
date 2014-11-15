@@ -105,7 +105,7 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
     }
 
     if (m_iChannels==1) {       //if MONO : expand array to double it's size; see ssov.cpp
-        SampleUtil::widenMonoToStereo(dest, sampsread / 2);
+        SampleUtil::doubleMonoToDualMono(dest, sampsread / 2);
     }
 
     return sampsread;
