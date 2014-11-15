@@ -7,6 +7,11 @@
 #include "util/types.h"
 #include "util/math.h"
 
+// NOTE(uklotzde): We assume that the STL algorithms are thoroughly optimized!
+#include <algorithm>
+
+#include <cstring> // memset
+
 // MSVC does this
 // __declspec(align(16))
 // while GCC does
@@ -47,14 +52,26 @@ public:
             unsigned int iNumSamples);
 
     // Sets every sample in pBuffer to zero
-    static void clear(CSAMPLE* pBuffer, unsigned int iNumSamples);
+    inline
+    static void clear(CSAMPLE* pBuffer, unsigned int iNumSamples) {
+        // Special case: This works, because the binary representation
+        // of 0.0f is 0!
+        memset(pBuffer, 0, sizeof(*pBuffer) * iNumSamples);
+        //fill(pBuffer, CSAMPLE_ZERO, iNumSamples);
+    }
 
     // Sets every sample in pBuffer to value
-    static void fill(CSAMPLE* pBuffer, CSAMPLE value, unsigned int iNumSamples);
+    inline
+    static void fill(CSAMPLE* pBuffer, CSAMPLE value, unsigned int iNumSamples) {
+        std::fill(pBuffer, pBuffer + iNumSamples, value);
+    }
 
     // Copies every sample from pSrc to pDest
+    inline
     static void copy(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            unsigned int iNumSamples);
+            unsigned int iNumSamples) {
+        std::copy(pSrc, pSrc + iNumSamples, pDest);
+    }
 
     // In-place widens the mono samples in pBuffer to stereo
     // samples.

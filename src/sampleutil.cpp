@@ -1,18 +1,17 @@
 // sampleutil.cpp
 // Created 10/5/2009 by RJ Ryan (rryan@mit.edu)
 
+#include "sampleutil.h"
+#include "util/math.h"
+
+#include <QtDebug>
+
+#include <functional>
 #ifdef __WINDOWS__
 #include <QtGlobal>
 typedef qint64 int64_t;
 typedef qint32 int32_t;
 #endif
-
-#include <QtDebug>
-
-#include "sampleutil.h"
-#include "util/math.h"
-
-#include <algorithm>
 
 // static
 CSAMPLE* SampleUtil::alloc(unsigned int size) {
@@ -22,26 +21,6 @@ CSAMPLE* SampleUtil::alloc(unsigned int size) {
 
 void SampleUtil::free(CSAMPLE* pBuffer) {
     delete[] pBuffer;
-}
-
-// static
-void SampleUtil::clear(CSAMPLE* pBuffer, unsigned int iNumSamples) {
-    // this works, because (float)0 == (int)0
-    memset(pBuffer, 0, sizeof(*pBuffer) * iNumSamples);
-    //fill(pBuffer, CSAMPLE_ZERO, iNumSamples);
-}
-
-// static
-void SampleUtil::fill(CSAMPLE* pBuffer, CSAMPLE value,
-        unsigned int iNumSamples) {
-    std::fill(pBuffer, pBuffer + iNumSamples, value);
-}
-
-// static
-void SampleUtil::copy(CSAMPLE* pDest, const CSAMPLE* pSrc,
-        unsigned int iNumSamples) {
-    memcpy(pDest, pSrc, sizeof(*pDest) * iNumSamples);
-    //std::copy(pSrc, pSrc + iNumSamples, pDest);
 }
 
 // static
