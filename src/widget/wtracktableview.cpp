@@ -864,21 +864,24 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
     }
 
-    // We load a single track to get the necessary context for the cover (we use
-    // last to be consistent with selectionChanged above).
-    QModelIndex last = indices.last();
-    CoverInfo info;
-    info.source = static_cast<CoverInfo::Source>(
-        last.sibling(last.row(), m_iCoverSourceColumn).data().toInt());
-    info.type = static_cast<CoverInfo::Type>(
-        last.sibling(last.row(), m_iCoverTypeColumn).data().toInt());
-    info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toUInt();
-    info.trackLocation = last.sibling(
-        last.row(), m_iTrackLocationColumn).data().toString();
-    info.coverLocation = last.sibling(
-        last.row(), m_iCoverLocationColumn).data().toString();
-    m_pCoverMenu->setCoverArt(TrackPointer(), info);
-    m_pMenu->addMenu(m_pCoverMenu);
+    // Cover art menu only applies if at least one track is selected.
+    if (indices.size()) {
+        // We load a single track to get the necessary context for the cover (we use
+        // last to be consistent with selectionChanged above).
+        QModelIndex last = indices.last();
+        CoverInfo info;
+        info.source = static_cast<CoverInfo::Source>(
+            last.sibling(last.row(), m_iCoverSourceColumn).data().toInt());
+        info.type = static_cast<CoverInfo::Type>(
+            last.sibling(last.row(), m_iCoverTypeColumn).data().toInt());
+        info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toUInt();
+        info.trackLocation = last.sibling(
+            last.row(), m_iTrackLocationColumn).data().toString();
+        info.coverLocation = last.sibling(
+            last.row(), m_iCoverLocationColumn).data().toString();
+        m_pCoverMenu->setCoverArt(TrackPointer(), info);
+        m_pMenu->addMenu(m_pCoverMenu);
+    }
 
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
