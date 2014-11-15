@@ -101,6 +101,12 @@ const QSet<QPair<QString, QString> > EffectsManager::getAvailableEQEffectNames()
     return availableEQEffectNames;
 }
 
+bool EffectsManager::isEQ(const QString& effectId) const {
+    return getEffectManifest(effectId).isEQ();
+}
+
+
+
 QString EffectsManager::getNextEffectId(const QString& effectId) {
     // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
     // STUPID

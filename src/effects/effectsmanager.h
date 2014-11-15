@@ -56,6 +56,7 @@ class EffectsManager : public QObject {
     const QSet<QPair<QString, QString> > getAvailableEffectNames() const;
     // Each entry of the set is a pair containing the effect id and its name
     const QSet<QPair<QString, QString> > getAvailableEQEffectNames() const;
+    bool isEQ(const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 

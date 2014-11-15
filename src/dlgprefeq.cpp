@@ -132,7 +132,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             selectedEffectIndex = m_deckEffectSelectors[i]->findData("org.mixxx.effects.bessel8lvmixeq");
         }
         m_deckEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
-        m_enableWaveformEqCOs[i]->set(1.0);
+        m_enableWaveformEqCOs[i]->set(m_pEffectsManager->isEQ("org.mixxx.effects.bessel8lvmixeq"));
     }	
 }
 
@@ -252,6 +252,8 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
                        arg(deckNumber + 1)), ConfigValue(effectId));
+
+        m_enableWaveformEqCOs[deckNumber]->set(m_pEffectsManager->isEQ(effectId));
 
         // This is required to remove a previous selected effect that does not
         // fit to the current ShowAllEffects checkbox
