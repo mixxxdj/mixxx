@@ -109,70 +109,70 @@ public:
 
     // Apply a different gain to every other sample.
     static void applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
-            CSAMPLE gain2, int iNumSamples);
+            CSAMPLE gain2, unsigned int iNumSamples);
 
     // Multiply every sample in pBuffer ramping from gain1 to gain2.
     // We use ramping as often as possible to prevent soundwave discontinuities
     // which can cause audible clicks and pops.
     static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE old_gain,
-            CSAMPLE new_gain, int iNumSamples);
+            CSAMPLE new_gain, unsigned int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples);
+            CSAMPLE old_gain, CSAMPLE new_gain, unsigned int iNumSamples);
 
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2
     static void add2WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
             CSAMPLE gain1, const CSAMPLE* pSrc2, CSAMPLE gain2,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2 plus pSrc3 multiplied by gain3
     static void add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
             CSAMPLE gain1, const CSAMPLE* pSrc2, CSAMPLE gain2,
-            const CSAMPLE* pSrc3, CSAMPLE gain3, int iNumSamples);
+            const CSAMPLE* pSrc3, CSAMPLE gain3, unsigned int iNumSamples);
 
     // Copy pSrc to pDest and multiply each sample by a factor of gain.
     static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc, CSAMPLE gain,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // Copy pSrc to pDest and ramp gain
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples);
+            CSAMPLE old_gain, CSAMPLE new_gain, unsigned int iNumSamples);
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SHRT_MAX, SHRT_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
     static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // Convert and normalize a buffer of CSAMPLEs in the range [CSAMPLE_MIN, CSAMPLE_MAX]
     // to a buffer of SAMPLEs in the range [-SHRT_MAX, SHRT_MAX].
     static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
     // returns true in case of clipping > +-1
     static bool sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
-            const CSAMPLE* pBuffer, int iNumSamples);
+            const CSAMPLE* pBuffer, unsigned int iNumSamples);
 
     // Returns true if the buffer contains any samples outside of the range
     // [fMin,fMax].
     static bool isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
-            const CSAMPLE* pBuffer, int iNumSamples);
+            const CSAMPLE* pBuffer, unsigned int iNumSamples);
 
     // Copied every sample in pSrc to pDest, limiting the values in pDest to the
     // range [fMin, fMax]. If pDest and pSrc are aliases, will not copy -- will
     // only clamp. Returns true if any samples in pSrc were outside the range
     // [fMin, fMax].
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // returns a SAMPLE that is between CSAMPLE_MIN and CSAMPLE_MAX
     inline static CSAMPLE clampSample(CSAMPLE in) {
@@ -184,14 +184,14 @@ public:
     // space for iNumSamples*2 samples. pDest must not be an alias of pSrc1 or
     // pSrc2.
     static void interleaveBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-            const CSAMPLE* pSrc2, int iNumSamples);
+            const CSAMPLE* pSrc2, unsigned int iNumSamples);
 
     // Deinterleave the samples in pSrc alternately into pDest1 and
     // pDest2. iNumSamples must be the number of samples in pDest1 and pDest2,
     // and pSrc must have at least iNumSamples*2 samples. Neither pDest1 or
     // pDest2 can be aliases of pSrc.
     static void deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
-            const CSAMPLE* pSrc, int iNumSamples);
+            const CSAMPLE* pSrc, unsigned int iNumSamples);
 
     // Crossfade two buffers together and put the result in pDest.  All the
     // buffers must be the same length.  pDest may be an alias of the source
@@ -199,13 +199,13 @@ public:
     // sometimes this function is necessary.
     static void linearCrossfadeBuffers(CSAMPLE* pDest,
             const CSAMPLE* pSrcFadeOut, const CSAMPLE* pSrcFadeIn,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // Mix a buffer down to mono, putting the result in both of the channels.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
-            int iNumSamples);
+            unsigned int iNumSamples);
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)
