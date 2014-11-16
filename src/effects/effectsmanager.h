@@ -64,7 +64,7 @@ class EffectsManager : public QObject {
     void setupDefaults();
 
     // Add an Equalizer for the specified channel
-    void addEqualizer(int channelNumber);
+    void addEqualizer(const QString& group);
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
