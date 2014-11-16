@@ -122,9 +122,6 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_group = group;
     
-    
-    // todo (jclaveau) : parse svg with svgParser here
-    
     // Set images
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(
                         context.selectNode(node, "PathBackground")));
