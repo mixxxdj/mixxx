@@ -89,10 +89,8 @@ DlgPrefEQ::~DlgPrefEQ() {
     qDeleteAll(m_deckEffectSelectors);
     m_deckEffectSelectors.clear();
 
-    int iNum = m_enableWaveformEqCOs.count();
-    for (int i=0; i < iNum; i++) {
-        delete (m_enableWaveformEqCOs.takeAt(0)); // Always delete element 0
-    }
+    qDeleteAll(m_enableWaveformEqCOs);
+    m_enableWaveformEqCOs.clear();
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
