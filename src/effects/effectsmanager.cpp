@@ -68,7 +68,6 @@ const QList<QString> EffectsManager::getAvailableEffects() const {
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
     const QList<QString> effects = getAvailableEffects();
-    //qSort(effects.begin(), effects.end()); For alphabetical order
 
     if (effects.isEmpty()) {
         return QString();
