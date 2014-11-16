@@ -6,14 +6,14 @@
 class PixmapSource {
   public:
     PixmapSource();
-    PixmapSource(const QString filepath);
+    PixmapSource(const QString &filepath);
     virtual ~PixmapSource();
 
     bool isEmpty() const;
     bool isSVG() const;
     bool isBitmap() const;
-    void setSVG(const QByteArray content);
-    void setPath(const QString newPath);
+    void setSVG(const QByteArray &content);
+    void setPath(const QString &newPath);
     QString getPath() const;
     QByteArray getData() const;
     QString getId() const;
