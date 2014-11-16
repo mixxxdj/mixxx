@@ -43,8 +43,7 @@ bool PixmapSource::isBitmap() const {
 }
 
 void PixmapSource::setSVG(const QByteArray content) {
-    m_baData.truncate(0);
-    m_baData += content;
+    m_baData = content;
     m_eType = SVG;
 }
 

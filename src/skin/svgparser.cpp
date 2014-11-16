@@ -16,14 +16,14 @@ SvgParser::~SvgParser() {
 
 QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     m_currentFile = svgFileName;
-    QFile* file = new QFile(svgFileName);
+    QFile file(svgFileName);
     QDomNode svgNode;
-    if (file->open(QIODevice::ReadOnly|QIODevice::Text)) {
+    if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
         QDomDocument document;
-        document.setContent(file);
+        document.setContent(&file);
         svgNode = document.elementsByTagName("svg").item(0);
         scanTree(svgNode);
-        file->close();
+        file.close();
     }
     return svgNode;
 }

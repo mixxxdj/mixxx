@@ -258,7 +258,6 @@ QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
 }
 
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
-    QString pixmapPath, pixmapName;
     PixmapSource source;
     
     const SvgParser svgParser(*this);
@@ -272,7 +271,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
             source.setSVG( rslt );
         } else {
             // filename
-            pixmapName = nodeToString(pixmapNode);
+            QString pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
                 source.setPath( getSkinPath(pixmapName) );
                 if (source.isSVG()) {
