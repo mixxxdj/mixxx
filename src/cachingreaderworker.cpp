@@ -130,7 +130,8 @@ namespace
             qWarning() << "Unsupported file:" << pTrack->getLocation();
             return Mixxx::SoundSourcePointer();
         }
-        if (OK != pSoundSource->open()) {
+        // Open the SoundSource through SoundSourceProxy!
+        if (OK != soundSourceProxy.open()) {
             qWarning() << "Failed to open file:" << pTrack->getLocation();
             return Mixxx::SoundSourcePointer();
         }
