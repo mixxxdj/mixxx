@@ -90,8 +90,8 @@ DlgPrefEQ::~DlgPrefEQ() {
     qDeleteAll(m_deckEffectSelectors);
     m_deckEffectSelectors.clear();
 
-    qDeleteAll(m_enableWaveformEqCOs);
-    m_enableWaveformEqCOs.clear();
+    qDeleteAll(m_fliterWaveformEnableCOs);
+    m_fliterWaveformEnableCOs.clear();
 }
 
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
@@ -104,8 +104,8 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         QString group = PlayerManager::groupForDeck(
                 m_deckEffectSelectors.size());
 
-        m_enableWaveformEqCOs.append(
-                new ControlObject(ConfigKey(group, "enableWaveformEq")));
+        m_fliterWaveformEnableCOs.append(
+                new ControlObject(ConfigKey(group, "fliterWaveformEnable")));
 
         // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
@@ -134,7 +134,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             configuredEffect = kDefaultEqId;
         }
         m_deckEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
-        m_enableWaveformEqCOs[i]->set(m_pEffectsManager->isEQ(configuredEffect));
+        m_fliterWaveformEnableCOs[i]->set(m_pEffectsManager->isEQ(configuredEffect));
     }	
 }
 
@@ -257,7 +257,7 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
         m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                 ConfigValue(effectId));
 
-        m_enableWaveformEqCOs[deckNumber]->set(m_pEffectsManager->isEQ(effectId));
+        m_fliterWaveformEnableCOs[deckNumber]->set(m_pEffectsManager->isEQ(effectId));
 
         // This is required to remove a previous selected effect that does not
         // fit to the current ShowAllEffects checkbox
@@ -350,7 +350,7 @@ void DlgPrefEQ::slotBypass(int state) {
         int deck = 1;
         foreach(QComboBox* box, m_deckEffectSelectors) {
             ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 0);
-            m_enableWaveformEqCOs[deck - 1]->set(0);
+            m_fliterWaveformEnableCOs[deck - 1]->set(0);
             deck++;
             box->setEnabled(false);
         }
@@ -362,7 +362,7 @@ void DlgPrefEQ::slotBypass(int state) {
         ControlObjectSlave enableControl;
         foreach(QComboBox* box, m_deckEffectSelectors) {
             ControlObject::set(ConfigKey(m_eqRackGroup.arg(deck), "enabled"), 1);
-            m_enableWaveformEqCOs[deck - 1]->set(1);
+            m_fliterWaveformEnableCOs[deck - 1]->set(1);
             deck++;
             box->setEnabled(true);
         }
