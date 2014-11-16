@@ -24,17 +24,25 @@ typedef QSharedPointer<Effect> EffectPointer;
 class Effect : public QObject {
     Q_OBJECT
   public:
-    Effect(QObject* pParent, EffectsManager* pEffectsManager,
+    typedef bool (*ParameterFilterFnc)(EffectParameter*);
+
+    Effect(EffectsManager* pEffectsManager,
            const EffectManifest& manifest,
            EffectInstantiatorPointer pInstantiator);
     virtual ~Effect();
 
     const EffectManifest& getManifest() const;
 
-    unsigned int numParameters() const;
+    unsigned int numKnobParameters() const;
     unsigned int numButtonParameters() const;
-    EffectParameter* getParameter(unsigned int parameterNumber);
-    EffectParameter* getButtonParameter(unsigned int parameterNumber);
+
+    static bool isButtonParameter(EffectParameter* parameter);
+    static bool isKnobParameter(EffectParameter* parameter);
+
+    EffectParameter* getFilteredParameterForSlot(ParameterFilterFnc filterFnc, unsigned int slotNumber);
+    EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
+    EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
+
     EffectParameter* getParameterById(const QString& id) const;
     EffectParameter* getButtonParameterById(const QString& id) const;
 
@@ -63,13 +71,12 @@ class Effect : public QObject {
 
     EffectsManager* m_pEffectsManager;
     EffectManifest m_manifest;
+    EffectInstantiatorPointer m_pInstantiator;
     EngineEffect* m_pEngineEffect;
     bool m_bAddedToEngine;
     bool m_bEnabled;
     QList<EffectParameter*> m_parameters;
     QMap<QString, EffectParameter*> m_parametersById;
-    QList<EffectParameter*> m_buttonParameters;
-    QMap<QString, EffectParameter*> m_buttonParametersById;
 
     DISALLOW_COPY_AND_ASSIGN(Effect);
 };

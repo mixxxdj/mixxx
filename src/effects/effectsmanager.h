@@ -25,6 +25,8 @@ class EngineEffectsManager;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
+    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
+
     EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
     virtual ~EffectsManager();
 
@@ -53,13 +55,10 @@ class EffectsManager : public QObject {
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
-    const QSet<QString> getAvailableEffects() const;
+    const QList<QString> getAvailableEffects() const;
     // Each entry of the set is a pair containing the effect id and its name
-    const QSet<QPair<QString, QString> > getAvailableEffectNames() const;
-    // Same as above but only Deck Eqs
-    const QSet<QPair<QString, QString> > getAvailableMixingEqEffectNames() const;
-    // Same as above but only Filter like fading effects
-    const QSet<QPair<QString, QString> > getAvailableFilterEffectNames() const;
+    const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
+    bool isEQ(const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
@@ -67,7 +66,7 @@ class EffectsManager : public QObject {
     void setupDefaults();
 
     // Add an Equalizer for the specified channel
-    void addEqualizer(int channelNumber);
+    void addEqualizer(const QString& group);
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.

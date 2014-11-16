@@ -35,7 +35,7 @@ const double kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(const char* _group,
+    EngineControl(QString group,
                   ConfigObject<ConfigValue>* _config);
     virtual ~EngineControl();
 
@@ -70,7 +70,7 @@ class EngineControl : public QObject {
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
-    const char* getGroup() const;
+    QString getGroup() const;
 
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
@@ -95,7 +95,7 @@ class EngineControl : public QObject {
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-    const char* m_pGroup;
+    QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
 
   private:

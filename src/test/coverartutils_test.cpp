@@ -42,21 +42,36 @@ const QString kTrackLocationTest(QDir::currentPath() %
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
+    // We never need to acquire security tokens for tests since we don't run
+    // them in a sandboxed environment.
+    SecurityTokenPointer pToken;
     // aiff
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // flac
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // mp3
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // ogg
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // wav
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
+
+#ifdef __OPUS__
+    // opus
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.opus",
+                                                pToken);
+    EXPECT_TRUE(!cover.isNull());
+#endif
 }
 
 TEST_F(CoverArtUtilTest, searchImage) {
@@ -106,7 +121,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // 4. front.jpg
     // 5. album.jpg
     // 6. folder.jpg
-    // 7. anything else found in the folder (get the lighter one)
+    // 7. if just one file exists take that otherwise none.
 
     // All the following expect the same image/hash to be selected.
     expected.image = img;

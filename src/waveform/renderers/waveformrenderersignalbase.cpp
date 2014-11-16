@@ -65,7 +65,7 @@ bool WaveformRendererSignalBase::init() {
 
     //create controls
     m_pEQEnabled = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "enableWaveformEq");
+            m_waveformRenderer->getGroup(), "fliterWaveformEnable");
     m_pLowFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "filterLow");
     m_pLowFilterControlObject = new ControlObjectSlave(

@@ -20,7 +20,7 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
-EngineChannel::EngineChannel(const char* pGroup,
+EngineChannel::EngineChannel(QString pGroup,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : m_group(pGroup) {
     m_pPFL = new ControlPushButton(ConfigKey(m_group, "pfl"));

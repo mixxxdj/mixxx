@@ -37,6 +37,7 @@
 #include "widget/wknobcomposed.h"
 #include "widget/wslidercomposed.h"
 #include "widget/wpushbutton.h"
+#include "widget/weffectpushbutton.h"
 #include "widget/wdisplay.h"
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
@@ -44,6 +45,7 @@
 #include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
+#include "widget/wstarrating.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
@@ -406,6 +408,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseStandardWidget<WSliderComposed>(node));
     } else if (nodeName == "PushButton") {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
+    } else if (nodeName == "EffectPushButton") {
+        result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "ComboBox") {
         result = wrapWidget(parseStandardWidget<WComboBox>(node));
     } else if (nodeName == "Overview") {
@@ -416,6 +420,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseText(node));
     } else if (nodeName == "TrackProperty") {
         result = wrapWidget(parseTrackProperty(node));
+    } else if (nodeName == "StarRating") {
+        result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
         result = wrapWidget(parseStandardWidget<WVuMeter>(node, true));
     } else if (nodeName == "StatusLight") {
@@ -919,6 +925,33 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     return p;
 }
 
+QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
+ 
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
+
+    if (!pPlayer)
+        return NULL;
+
+    WStarRating* p = new WStarRating(pSafeChannelStr, m_pParent);
+    p->setup(node, *m_pContext);
+
+    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+            p, SLOT(slotTrackLoaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+            p, SLOT(slotTrackUnloaded(TrackPointer)));
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
+
+    return p;
+}
+
+
+
 QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
 
@@ -1365,6 +1398,19 @@ QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
     WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
+}
+
+QWidget* LegacySkinParser::parseEffectPushButton(QDomElement element) {
+    WEffectPushButton* pWidget = new WEffectPushButton(m_pParent, m_pEffectsManager);
+    setupConnections(element, pWidget);
+    setupBaseWidget(element, pWidget);
+    setupWidget(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(QDomElement node) {

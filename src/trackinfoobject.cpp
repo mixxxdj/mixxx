@@ -200,15 +200,19 @@ void TrackInfoObject::parse(bool parseCoverArt) {
         if (replayGain != 0) {
             setReplayGain(replayGain);
         }
+        setDuration(pProxiedSoundSource->getDuration());
+        setBitrate(pProxiedSoundSource->getBitrate());
+        setSampleRate(pProxiedSoundSource->getSampleRate());
+        setChannels(pProxiedSoundSource->getChannels());
+
+        // Need to set BPM after sample rate since beat grid creation depends on
+        // knowing the sample rate. Bug #1020438.
         float bpm = pProxiedSoundSource->getBPM();
         if (bpm > 0) {
             // do not delete beat grid if bpm is not set in file
             setBpm(bpm);
         }
-        setDuration(pProxiedSoundSource->getDuration());
-        setBitrate(pProxiedSoundSource->getBitrate());
-        setSampleRate(pProxiedSoundSource->getSampleRate());
-        setChannels(pProxiedSoundSource->getChannels());
+
         QString key = pProxiedSoundSource->getKey();
         if (!key.isEmpty()) {
             setKeyText(key, mixxx::track::io::key::FILE_METADATA);

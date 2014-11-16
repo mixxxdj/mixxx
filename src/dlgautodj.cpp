@@ -12,7 +12,7 @@
 #include "widget/wwidget.h"
 #include "util/math.h"
 
-#define CONFIG_KEY "[Auto DJ]"
+#define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
 const int kTransitionPreferenceDefault = 10;
 
@@ -123,7 +123,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
+        ConfigKey(kConfigKey, kTransitionPreferenceName));
     if (str_autoDjTransition.isEmpty()) {
         spinBoxTransition->setValue(kTransitionPreferenceDefault);
     } else {
@@ -611,7 +611,7 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
     // Re-queue if configured
-    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
+    if (m_pConfig->getValueString(ConfigKey(kConfigKey, "Requeue")).toInt()) {
         m_pAutoDJTableModel->appendTrack(loadedId);
     }
     return true;
@@ -690,7 +690,7 @@ void DlgAutoDJ::transitionValueChanged(int value) {
             player2PlayChanged(1.0);
         }
     }
-    m_pConfig->set(ConfigKey(CONFIG_KEY, kTransitionPreferenceName),
+    m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
                    ConfigValue(value));
     m_backUpTransition = value;
 }

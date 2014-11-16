@@ -21,7 +21,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
-#include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -40,14 +40,14 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    PlaylistDAO& playlistDao,
                    CrateDAO& crateDao,
                    AnalysisDao& analysisDao,
-                   DirectoryDAO& directoryDao,
+                   LibraryHashDAO& libraryHashDao,
                    ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_crateDao(crateDao),
           m_analysisDao(analysisDao),
-          m_directoryDAO(directoryDao),
+          m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE),
           m_pQueryTrackLocationInsert(NULL),
@@ -96,6 +96,22 @@ void TrackDAO::finish() {
         LOG_FAILED_QUERY(query)
                 << "Error clearing played value";
     }
+
+    // Do housekeeping on the LibraryHashes/track_locations tables.
+    qDebug() << "Cleaning LibraryHashes/track_locations tables.";
+    ScopedTransaction transaction(m_database);
+    QStringList deletedHashDirs = m_libraryHashDao.getDeletedDirectories();
+
+    // Delete any LibraryHashes directories that have been marked as deleted.
+    m_libraryHashDao.removeDeletedDirectoryHashes();
+
+    // And mark the corresponding tracks in track_locations in the deleted
+    // directories as deleted.
+    // TODO(XXX) This doesn't handle sub-directories of deleted directories.
+    foreach (QString dir, deletedHashDirs) {
+        markTrackLocationsAsDeleted(dir);
+    }
+    transaction.commit();
 }
 
 void TrackDAO::initialize() {
@@ -148,6 +164,22 @@ QList<int> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
     }
 
     return ids;
+}
+
+QSet<QString> TrackDAO::getTrackLocations() {
+    QSet<QString> locations;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_locations.location FROM track_locations "
+                  "INNER JOIN library on library.location = track_locations.id");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        locations.insert(query.value(locationColumn).toString());
+    }
+    return locations;
 }
 
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
@@ -983,7 +1015,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 
             if (keys.isValid()) {
                 pTrack->setKeys(keys);
-            } else {
+            } else if (keyText.size() > 0) {
                 // Typically this happens if we are upgrading from an older
                 // (<1.12.0) version of Mixxx that didn't support Keys. We treat
                 // all legacy data as user-generated because that way it will be
@@ -1029,6 +1061,14 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             qDebug() << "m_sTracks.count() =" << m_sTracks.count();
             m_sTracksMutex.unlock();
             m_trackCache.insert(id, new TrackPointer(pTrack));
+
+            // If the track is dirty send dirty notifications after we inserted
+            // it in the cache. BaseTrackCache cares about dirty notifications
+            // and the setDirty call above happens before we connect to the
+            // track's signals.
+            if (shouldDirty) {
+                emit(trackDirty(id));
+            }
 
             // If the header hasn't been parsed, parse it but only after we set the
             // track clean and hooked it up to the track cache, because this will
@@ -1260,21 +1300,17 @@ void TrackDAO::markTrackLocationAsVerified(const QString& location) {
     }
 }
 
-void TrackDAO::markTracksInDirectoriesAsVerified(QStringList& directories) {
+void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
-    //qDebug() << "markTracksInDirectoryAsVerified()" << directory;
 
     FieldEscaper escaper(m_database);
-    QMutableStringListIterator it(directories);
-    while (it.hasNext()) {
-        it.setValue(escaper.escapeString(it.next()));
-    }
+    QStringList escapedDirectories = escaper.escapeStrings(directories);
 
     QSqlQuery query(m_database);
     query.prepare(
         QString("UPDATE track_locations "
                 "SET needs_verification=0 "
-                "WHERE directory IN (%1)").arg(directories.join(",")));
+                "WHERE directory IN (%1)").arg(escapedDirectories.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
@@ -1553,7 +1589,7 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     return true;
 }
 
-void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
+void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                               QSet<int>* pTracksChanged) {
     // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
     // The library contains user selected cover art. There is nothing worse than
@@ -1625,25 +1661,22 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile bool* pCancel,
 
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(trackInfo, true);
         SoundSourceProxy proxy(trackLocation, pToken);
-        Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-        if (pProxiedSoundSource != NULL) {
-            QImage image = proxy.parseCoverArt();
-            if (!image.isNull()) {
-                updateQuery.bindValue(":coverart_type",
-                                      static_cast<int>(CoverInfo::METADATA));
-                updateQuery.bindValue(":coverart_source",
-                                      static_cast<int>(CoverInfo::GUESSED));
-                updateQuery.bindValue(":coverart_hash",
-                                      CoverArtUtils::calculateHash(image));
-                updateQuery.bindValue(":coverart_location", "");
-                updateQuery.bindValue(":track_id", trackId);
-                if (!updateQuery.exec()) {
-                    LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
-                } else {
-                    pTracksChanged->insert(trackId);
-                }
-                continue;
+        QImage image = proxy.parseCoverArt();
+        if (!image.isNull()) {
+            updateQuery.bindValue(":coverart_type",
+                                  static_cast<int>(CoverInfo::METADATA));
+            updateQuery.bindValue(":coverart_source",
+                                  static_cast<int>(CoverInfo::GUESSED));
+            updateQuery.bindValue(":coverart_hash",
+                                  CoverArtUtils::calculateHash(image));
+            updateQuery.bindValue(":coverart_location", "");
+            updateQuery.bindValue(":track_id", trackId);
+            if (!updateQuery.exec()) {
+                LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
+            } else {
+                pTracksChanged->insert(trackId);
             }
+            continue;
         }
 
         if (directoryPath != currentDirectoryPath) {

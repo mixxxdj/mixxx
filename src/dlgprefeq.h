@@ -30,7 +30,6 @@
 /**
   *@author John Sully
   */
-
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
@@ -52,6 +51,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void slotUpdateEqAutoReset(int);
     void slotBypass(int state);
     // Update the Master EQ
     void slotUpdateFilter(int value);
@@ -80,7 +80,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     EffectRackPointer m_pMasterEQEffectRack;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckFilterEffectSelectors;
-    QList<ControlObject*> m_enableWaveformEqCOs;
+    QList<ControlObject*> m_fliterWaveformEnableCOs;
     ControlObjectSlave* m_pNumDecks;
     QString m_eqRackGroup;
 
@@ -89,6 +89,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Members needed for the Master EQ
     QList<QSlider*> m_masterEQSliders;
     EngineEffect* m_pEngineEffectMasterEQ;
+
+    bool m_bEqAutoReset;
 };
 
 #endif

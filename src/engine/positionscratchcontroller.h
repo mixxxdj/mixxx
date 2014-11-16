@@ -11,7 +11,7 @@ class RateIIFilter;
 
 class PositionScratchController : public QObject {
   public:
-    PositionScratchController(const char* pGroup);
+    PositionScratchController(QString group);
     virtual ~PositionScratchController();
 
     void process(double currentSample, double releaseRate,

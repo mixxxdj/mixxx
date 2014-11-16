@@ -9,7 +9,7 @@
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
         : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
+          m_iChainSlotNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(formatGroupString(iRackNumber, iChainNumber)),
@@ -166,12 +166,10 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
         m_pEffectChain->addToEngine(m_pEffectRack->getEngineEffectRack(),
-                                    m_iChainNumber);
+                                    m_iChainSlotNumber);
         m_pEffectChain->updateEngineState();
 
-        connect(m_pEffectChain.data(), SIGNAL(effectAdded()),
-                this, SLOT(slotChainEffectsChanged()));
-        connect(m_pEffectChain.data(), SIGNAL(effectRemoved()),
+        connect(m_pEffectChain.data(), SIGNAL(effectsChanged()),
                 this, SLOT(slotChainEffectsChanged()));
         connect(m_pEffectChain.data(), SIGNAL(nameChanged(const QString&)),
                 this, SLOT(slotChainNameChanged(const QString&)));
@@ -217,14 +215,12 @@ void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
         m_pEffectChain->removeFromEngine(m_pEffectRack->getEngineEffectRack(),
-                                         m_iChainNumber);
+                                         m_iChainSlotNumber);
+        foreach (EffectSlotPointer pSlot, m_slots) {
+            pSlot->clear();
+        }
         m_pEffectChain->disconnect(this);
         m_pEffectChain.clear();
-
-        foreach (EffectSlotPointer pSlot, m_slots) {
-            pSlot->loadEffect(EffectPointer());
-        }
-
     }
     m_pControlNumEffects->setAndConfirm(0.0);
     m_pControlChainLoaded->setAndConfirm(0.0);
@@ -240,13 +236,13 @@ unsigned int EffectChainSlot::numSlots() const {
 EffectSlotPointer EffectChainSlot::addEffectSlot() {
     //qDebug() << debugString() << "addEffectSlot";
 
-    EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainNumber,
+    EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainSlotNumber,
                                              m_slots.size());
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
-    connect(pEffectSlot, SIGNAL(clearEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(slotClearEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
+            this, SLOT(slotClearEffect(unsigned int)));
     connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
             this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
     connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
@@ -276,20 +272,12 @@ void EffectChainSlot::registerGroup(const QString& group) {
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
     // const int is a safe read... don't bother locking
-    emit(effectLoaded(pEffect, m_iChainNumber, slotNumber));
+    emit(effectLoaded(pEffect, m_iChainSlotNumber, slotNumber));
 }
 
-void EffectChainSlot::slotClearEffect(unsigned int iChainSlotNumber,
-                                      unsigned int iEffectSlotNumber,
-                                      EffectPointer pEffect) {
-    Q_UNUSED(iChainSlotNumber);
-    Q_UNUSED(pEffect);
-    if (iEffectSlotNumber >= static_cast<unsigned int>(m_slots.size())) {
-        return;
-    }
-
+void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
     if (m_pEffectChain) {
-        m_pEffectChain->replaceEffect(iEffectSlotNumber, EffectPointer());
+        m_pEffectChain->removeEffect(iEffectSlotNumber);
     }
 }
 
@@ -377,9 +365,9 @@ void EffectChainSlot::slotControlChainInsertionType(double v) {
 void EffectChainSlot::slotControlChainSelector(double v) {
     //qDebug() << debugString() << "slotControlChainSelector" << v;
     if (v > 0) {
-        emit(nextChain(m_iChainNumber, m_pEffectChain));
+        emit(nextChain(m_iChainSlotNumber, m_pEffectChain));
     } else if (v < 0) {
-        emit(prevChain(m_iChainNumber, m_pEffectChain));
+        emit(prevChain(m_iChainSlotNumber, m_pEffectChain));
     }
 }
 
@@ -409,4 +397,8 @@ void EffectChainSlot::slotGroupStatusChanged(const QString& group) {
             }
         }
     }
+}
+
+unsigned int EffectChainSlot::getChainSlotNumber() const {
+    return m_iChainSlotNumber;
 }

@@ -21,7 +21,7 @@ class ControlIndicator;
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
-    HotcueControl(const char* pGroup, int hotcueNumber);
+    HotcueControl(QString group, int hotcueNumber);
     virtual ~HotcueControl();
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
@@ -60,7 +60,7 @@ class HotcueControl : public QObject {
   private:
     ConfigKey keyForControl(int hotcue, QString name);
 
-    const char* m_pGroup;
+    QString m_group;
     int m_iHotcueNumber;
     Cue* m_pCue;
 
@@ -83,7 +83,7 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(const char* _group,
+    CueControl(QString group,
                ConfigObject<ConfigValue>* _config);
     virtual ~CueControl();
 

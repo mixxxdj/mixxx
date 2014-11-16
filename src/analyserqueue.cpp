@@ -8,6 +8,7 @@
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 #include "playerinfo.h"
+#include "sampleutil.h"
 #include "util/timer.h"
 #include "library/trackcollection.h"
 #include "analyserwaveform.h"
@@ -197,11 +198,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
             dieflag = true;
         }
 
-        // Normalize the samples from [SHRT_MIN, SHRT_MAX] to [-1.0, 1.0].
-        // TODO(rryan): Change the SoundSource API to do this for us.
-        for (int i = 0; i < read; ++i) {
-            m_pSamples[i] = static_cast<CSAMPLE>(m_pSamplesPCM[i]) / SHRT_MAX;
-        }
+        SampleUtil::convertS16ToFloat32(m_pSamples, m_pSamplesPCM, read);
 
         QListIterator<Analyser*> it(m_aq);
 
@@ -303,10 +300,10 @@ void AnalyserQueue::run() {
         Trace trace("AnalyserQueue analyzing track");
 
         // Get the audio
-        SoundSourceProxy* pSoundSource = new SoundSourceProxy(nextTrack);
-        pSoundSource->open(); //Open the file for reading
-        int iNumSamples = pSoundSource->length();
-        int iSampleRate = pSoundSource->getSampleRate();
+        SoundSourceProxy soundSource(nextTrack);
+        soundSource.open(); //Open the file for reading
+        int iNumSamples = soundSource.length();
+        int iSampleRate = soundSource.getSampleRate();
 
         if (iNumSamples == 0 || iSampleRate == 0) {
             qDebug() << "Skipping invalid file:" << nextTrack->getLocation();
@@ -328,7 +325,7 @@ void AnalyserQueue::run() {
 
         if (processTrack) {
             emitUpdateProgress(nextTrack, 0);
-            bool completed = doAnalysis(nextTrack, pSoundSource);
+            bool completed = doAnalysis(nextTrack, &soundSource);
             if (!completed) {
                 //This track was cancelled
                 QListIterator<Analyser*> itf(m_aq);
@@ -352,8 +349,6 @@ void AnalyserQueue::run() {
             emitUpdateProgress(nextTrack, 1000); // 100%
             qDebug() << "Skipping track analysis because no analyzer initialized.";
         }
-
-        delete pSoundSource;
 
         m_qm.lock();
         m_queue_size = m_tioq.size();

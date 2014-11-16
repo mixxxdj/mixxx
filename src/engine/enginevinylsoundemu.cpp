@@ -27,17 +27,17 @@
  *   these slow speeds.
  */
 
-EngineVinylSoundEmu::EngineVinylSoundEmu(const char* group)
+EngineVinylSoundEmu::EngineVinylSoundEmu(QString group)
         : m_dSpeed(0.0),
           m_dOldSpeed(0.0),
           m_iNoisePos(0) {
     Q_UNUSED(group);
-    // Generate dither values. When engine samples used to be within [SHRT_MIN,
-    // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
-    // normalize engine samples to the range [-1.0, 1.0] we divide by SHRT_MAX
+    // Generate dither values. When engine samples used to be within [SAMPLE_MIN,
+    // SAMPLE_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
+    // normalize engine samples to the range [-1.0, 1.0] we divide by SAMPLE_MAX
     // to preserve the previous behavior.
     for (int i = 0; i < NOISE_BUFFER_SIZE; ++i) {
-        m_fNoise[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SHRT_MAX;
+        m_fNoise[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SAMPLE_MAX;
     }
     SampleUtil::applyGain(m_crossfadeBuffer, 0, MAX_BUFFER_LEN);
 }
