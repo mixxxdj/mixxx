@@ -59,7 +59,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-    connect(bEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdateEqAutoReset(int)));
+    connect(CheckBoxEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdateEqAutoReset(int)));
     connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
 
     connect(CheckBoxHideEffects, SIGNAL(stateChanged(int)),
@@ -96,13 +96,13 @@ DlgPrefEQ::~DlgPrefEQ() {
 void DlgPrefEQ::slotAddComboBox(double numDecks) {
     int oldDecks = m_deckEqEffectSelectors.size();     
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
-        QHBoxLayout* innerHLayout = new QHBoxLayout();
+        int deckNo = m_deckEqEffectSelectors.size() + 1;
         QLabel* label = new QLabel(QObject::tr("Deck %1").
-                            arg(m_deckEqEffectSelectors.size() + 1), this);
+                            arg(deckNo), this);
 
         m_enableWaveformEqCOs.append(
                 new ControlObject(ConfigKey(PlayerManager::groupForDeck(
-                        m_deckEqEffectSelectors.size()), "enableWaveformEq")));
+                        deckNo - 1), "enableWaveformEq")));
 
         // Create the drop down list for EQs
         QComboBox* eqComboBox = new QComboBox(this);
@@ -117,11 +117,12 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
                 this, SLOT(slotFilterEffectChangedOnDeck(int)));
 
         // Setup the GUI
-        innerHLayout->addWidget(label);
-        innerHLayout->addWidget(eqComboBox);
-        innerHLayout->addWidget(filterComboBox);
-        innerHLayout->addStretch();
-        verticalLayout_2->addLayout(innerHLayout);
+        gridLayout_3->addWidget(label, deckNo, 0);
+        gridLayout_3->addWidget(eqComboBox, deckNo, 1);
+        gridLayout_3->addWidget(filterComboBox, deckNo, 2);
+        gridLayout_3->addItem(new QSpacerItem(
+                    40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum),
+                deckNo, 3, 1, 1);
     }
     slotPopulateDeckEffectSelectors(); 
     for (int i = oldDecks; i < static_cast<int>(numDecks); ++i) {
@@ -224,7 +225,7 @@ void DlgPrefEQ::loadSettings() {
     QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"));
     m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, "EqAutoReset")).toInt());
-    bEqAutoReset->setChecked(m_bEqAutoReset);
+    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
     CheckBoxBypass->setChecked(m_pConfig->getValueString(
             ConfigKey(CONFIG_KEY, ENABLE_INTERNAL_EQ), QString("no")) == QString("no"));
 
@@ -276,7 +277,7 @@ void DlgPrefEQ::slotResetToDefaults() {
     CheckBoxBypass->setChecked(Qt::Unchecked);
     CheckBoxHideEffects->setChecked(Qt::Checked);
     m_bEqAutoReset = false;
-    bEqAutoReset->setChecked(Qt::Unchecked);
+    CheckBoxEqAutoReset->setChecked(Qt::Unchecked);
     slotUpdate();
     slotApply();
 }
@@ -393,7 +394,7 @@ void DlgPrefEQ::slotUpdate() {
     } else {
         slotBypass(Qt::Unchecked);
     }
-    m_bEqAutoReset = static_cast<bool>(bEqAutoReset->checkState());
+    m_bEqAutoReset = static_cast<bool>(CheckBoxEqAutoReset->checkState());
 }
 
 void DlgPrefEQ::slotUpdateEqAutoReset(int i) {
