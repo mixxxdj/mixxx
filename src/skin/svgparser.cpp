@@ -47,7 +47,6 @@ void SvgParser::scanTree(QDomNode& node) const {
     }
 }
 
-// replaces Variables nodes in an svg dom tree
 void SvgParser::parseElement(QDomNode& node) const {
     QDomElement element = node.toElement();
     
@@ -77,7 +76,7 @@ void SvgParser::parseElement(QDomNode& node) const {
             value = evaluateTemplateExpression(
                 expression, node.lineNumber() ).toString();
         } else if (element.hasAttribute("name")){
-            /* TODO (jclaveau) : Getting the variable fro the context or the
+            /* TODO (jclaveau) : Getting the variable from the context or the
              * script engine have the same result here (in the skin context two)
              * Isn't it useless?
              * m_context.variable(name) <=> m_scriptEngine.evaluate(name)
@@ -170,10 +169,8 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
     // TODO (jclaveau) : a way to look the svg after the parsing would be nice!
     QByteArray out;
     QTextStream textStream(&out);
-    // TODO (jclaveau) : saving crashes if there are comments before 
-    // the svg root node. Need help :D
-    svgNode.save(textStream, 2);
-    
+    // cloning avoid segfault during save()
+    svgNode.cloneNode().save(textStream, 2);
     return out;
 }
 
