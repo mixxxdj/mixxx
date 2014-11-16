@@ -3,9 +3,8 @@
 
 #include <QObject>
 
+#include "soundsource.h"
 #include "trackinfoobject.h"
-
-class SoundSourceProxy;
 
 class ChromaPrinter: public QObject {
   Q_OBJECT
@@ -16,9 +15,7 @@ class ChromaPrinter: public QObject {
 
   private:
 
-    QString calcFingerPrint(SoundSourceProxy& soundSource);
-    unsigned int m_NumSamples;
-    unsigned int m_SampleRate;
+    QString calcFingerPrint(const Mixxx::SoundSourcePointer& pSoundSource);
 };
 
 #endif //CHROMAPRINTER_H
