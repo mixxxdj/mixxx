@@ -167,27 +167,6 @@ void SvgParser::parseAttributes(QDomNode& node) const {
     }
 }
 
-QString SvgParser::saveToTempFile(const QDomNode& svgNode) const {
-    // TODO (jclaveau) : this method could be removed if the Spinny widget
-    // didn't require it. 
-    
-    // Save the new svg in a temp file to use it with setPixmap
-    QTemporaryFile svgFile;
-    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
-    // the file will be removed before being parsed in skin if set to true
-    svgFile.setAutoRemove(false);
-    
-    if (svgFile.open()) {
-        QTextStream out(&svgFile);
-        svgNode.save(out, 2);
-        svgFile.close();
-    } else {
-        qDebug() << "Unable to open temp file for inline svg \n";
-    }
-    
-    return svgFile.fileName();
-}
-
 QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
     // TODO (jclaveau) : a way to look the svg after the parsing would be nice!
     QByteArray out;

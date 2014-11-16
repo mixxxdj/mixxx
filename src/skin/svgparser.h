@@ -18,7 +18,6 @@ class SvgParser {
     QDomNode parseSvgTree(const QDomNode& svgSkinNode,
                           const QString& sourcePath) const;
     QDomNode parseSvgFile(const QString& svgFileName) const;
-    QString saveToTempFile(const QDomNode& svgNode) const;
     QByteArray saveToQByteArray(const QDomNode& svgNode) const;
 
   private:
