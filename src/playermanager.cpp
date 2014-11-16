@@ -256,12 +256,17 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
-        AudioOutput(AudioOutput::DECK, 0, 0, number-1), m_pEngine);
+        AudioOutput(AudioOutput::DECK, 0, 0, number - 1), m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
-        AudioInput(AudioInput::VINYLCONTROL, 0, 0, number-1), pEngineDeck);
+        AudioInput(AudioInput::VINYLCONTROL, 0, 0, number - 1), pEngineDeck);
+
+    // Setup EQ for this deck
+    m_pEffectsManager->addEqualizer(group);
+
+    pDeck->setupEqControlls();
 }
 
 void PlayerManager::addSampler() {
