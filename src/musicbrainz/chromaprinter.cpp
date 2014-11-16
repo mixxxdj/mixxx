@@ -6,41 +6,38 @@
 #include "soundsourceproxy.h"
 
 ChromaPrinter::ChromaPrinter(QObject* parent)
-             : QObject(parent),
-               m_NumSamples(0),
-               m_SampleRate(0) {
+             : QObject(parent) {
 }
 
 QString ChromaPrinter::getFingerPrint(TrackPointer pTrack){
-    SoundSourceProxy soundSource(pTrack);
-    return calcFingerPrint(soundSource);
-}
-
-QString ChromaPrinter::calcFingerPrint(SoundSourceProxy& soundSource){
-    soundSource.open();
-    m_SampleRate = soundSource.getSampleRate();
-    unsigned int length = soundSource.length();
-    if (m_SampleRate == 0 ){
-        qDebug() << "Skipping invalid file:" << soundSource.getFilename();
+    SoundSourceProxy soundSourceProxy(pTrack);
+    Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
+    if (pSoundSource.isNull()) {
+        qDebug() << "Skipping invalid file:" << pTrack->getLocation();
         return QString();
     }
+    if (0 >= pSoundSource->length()) {
+        qDebug() << "Skipping empty file:" << pTrack->getLocation();
+        return QString();
+    }
+    return calcFingerPrint(pSoundSource);
+}
+
+QString ChromaPrinter::calcFingerPrint(const Mixxx::SoundSourcePointer& pSoundSource) {
 
     // this is worth 2min of audio, multiply by 2 because we have 2 channels
     // AcoustID only stores a fingerprint for the first two minutes of a song
     // on their server so we need only a fingerprint of the first two minutes
     // --kain88 July 2012
-    m_NumSamples = 120*2*m_SampleRate;
-    // check that the song is actually longer then the amount of audio we use
-    if (m_NumSamples > length) {
-        m_NumSamples = length;
-    }
+    unsigned long maxFingerprintSamples = 120 * 2 * pSoundSource->getSampleRate();
+    unsigned long numFingerprintSamples = math_min(pSoundSource->length(), maxFingerprintSamples);
 
-    SAMPLE *pData = new SAMPLE[m_NumSamples];
+    SAMPLE *pData = new SAMPLE[numFingerprintSamples];
     QTime timerReadingFile;
     timerReadingFile.start();
-    unsigned int read = soundSource.read(m_NumSamples, pData);
+    unsigned int read = pSoundSource->read(numFingerprintSamples, pData);
 
-    if (read!=m_NumSamples) {
+    if (read!=numFingerprintSamples) {
         qDebug() << "oh that's embarrasing I couldn't read the track";
         return QString();
     }
@@ -48,11 +45,11 @@ QString ChromaPrinter::calcFingerPrint(SoundSourceProxy& soundSource){
 
     ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
     // we have 2 channels in mixxx always
-    chromaprint_start(ctx, m_SampleRate, 2);
+    chromaprint_start(ctx, pSoundSource->getSampleRate(), 2);
 
     QTime timerGeneratingFingerPrint;
     timerGeneratingFingerPrint.start();
-    int success = chromaprint_feed(ctx, pData, m_NumSamples);
+    int success = chromaprint_feed(ctx, pData, numFingerprintSamples);
     if (!success) {
         qDebug() << "could not generate fingerprint";
         delete [] pData;
