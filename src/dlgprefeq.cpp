@@ -154,7 +154,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         filter = NULL; // take all;
     }
     availableEQEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(filter).toList();
+            m_pEffectsManager->getEffectNamesFiltered(filter);
 
     foreach (QComboBox* box, m_deckEffectSelectors) {
         // Populate comboboxes with all available effects

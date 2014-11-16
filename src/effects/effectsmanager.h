@@ -53,7 +53,7 @@ class EffectsManager : public QObject {
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
-    const QSet<QString> getAvailableEffects() const;
+    const QList<QString> getAvailableEffects() const;
     // Each entry of the set is a pair containing the effect id and its name
     const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;

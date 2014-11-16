@@ -30,6 +30,8 @@
 #include "m4a/ip.h"
 #include "util/defs.h"
 
+#include <QtDebug>
+
 //As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
 #ifdef Q_OS_WIN
 #define MY_EXPORT __declspec(dllexport)

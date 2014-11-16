@@ -3,7 +3,6 @@
 // Based on work 2003 by Svein Magne Bang
 
 
-#include "trackinfoobject.h"
 #include "soundsourceopus.h"
 #include <QtDebug>
 #ifdef __WINDOWS__
