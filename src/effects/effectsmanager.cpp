@@ -185,32 +185,32 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
 
 EffectRackPointer EffectsManager::getEQEffectRack() {
     // The EQ Rack is the last one
-    int eqRackNumber = m_pEffectChainManager->getEffectRacksSize();
-    return m_pEffectChainManager->getEffectRack(eqRackNumber - 1);
+    int eqRackNumber = getEQEffectRackNumber();
+    return m_pEffectChainManager->getEffectRack(eqRackNumber);
 }
 
 int EffectsManager::getEQEffectRackNumber() {
     // The EQ Rack is the last one
-    int eqRackNumber = m_pEffectChainManager->getEffectRacksSize();
+    int eqRackNumber = m_pEffectChainManager->getEffectRacksSize() - 1;
     return eqRackNumber;
 }
 
 void EffectsManager::addEqualizer(const QString& group) {
-    int rackNum = getEffectChainManager()->getEffectRacksSize();
-    EffectRackPointer pRack = getEffectRack(rackNum - 1);
+    int rackNumExt = getEQEffectRackNumber() + 1;
+    EffectRackPointer pRack = getEQEffectRack();
     EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlotForEQ();
     const unsigned int chainSlotNumberExt = pChainSlot->getChainSlotNumber() + 1;
 
     // Set the EQ to be active on group
     ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(
-            QString::number(rackNum),
+            QString::number(rackNumExt),
             QString::number(chainSlotNumberExt)),
                 "group_" + group + "_enable"),
             1.0);
 
     // Set the EQ to be fully wet
     ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(
-            QString::number(rackNum),
+            QString::number(rackNumExt),
             QString::number(chainSlotNumberExt)),
                 "mix"),
             1.0);
@@ -219,80 +219,80 @@ void EffectsManager::addEqualizer(const QString& group) {
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)), "parameter1"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)), "parameter2"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)), "parameter3"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "button_parameter1"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "button_parameter2"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "button_parameter3"));
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow_loaded"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "parameter1_loaded"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid_loaded"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "parameter2_loaded"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh_loaded"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "parameter3_loaded"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill_loaded"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "button_parameter1_loaded"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill_loaded"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "button_parameter2_loaded"));
 
     ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill_loaded"),
             ConfigKey(
                     QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-                            QString::number(rackNum),
+                            QString::number(rackNumExt),
                             QString::number(chainSlotNumberExt)),
                     "button_parameter3_loaded"));
 

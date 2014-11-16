@@ -48,7 +48,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     // Get the EQ Effect Rack
     m_pEQEffectRack = m_pEffectsManager->getEQEffectRack().data();
     m_eqRackGroup = QString("[EffectRack%1_EffectUnit%2_Effect1]").
-            arg(m_pEffectsManager->getEQEffectRackNumber());
+            arg(m_pEffectsManager->getEQEffectRackNumber() + 1);
 
     setupUi(this);
     // Connection
