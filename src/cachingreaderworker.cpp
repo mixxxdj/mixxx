@@ -125,17 +125,12 @@ namespace
 {
     Mixxx::SoundSourcePointer openSoundSourceForReading(const TrackPointer& pTrack) {
         SoundSourceProxy soundSourceProxy(pTrack);
-        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
+        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
         if (pSoundSource.isNull()) {
-            qWarning() << "Unsupported file:" << pTrack->getLocation();
-            return Mixxx::SoundSourcePointer();
-        }
-        // Open the SoundSource through SoundSourceProxy!
-        if (OK != soundSourceProxy.open()) {
             qWarning() << "Failed to open file:" << pTrack->getLocation();
             return Mixxx::SoundSourcePointer();
         }
-        if ((pSoundSource->length() > 0) && (pSoundSource->getSampleRate() > 0)) {
+        if (pSoundSource->length() > 0) {
             // successfully opened and readable
             return pSoundSource;
         } else {

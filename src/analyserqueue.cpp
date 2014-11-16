@@ -301,14 +301,9 @@ void AnalyserQueue::run() {
 
         // Get the audio
         SoundSourceProxy soundSourceProxy(nextTrack);
-        if (OK != soundSourceProxy.open()) { //Open the file for reading
-            qWarning() << "Failed to open file for analyzing:" << soundSourceProxy.getFilename();
-            continue;
-        }
-
-        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
+        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
         if (pSoundSource.isNull()) {
-            qWarning() << "Skipping unsupported file:" << nextTrack->getLocation();
+            qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             continue;
         }
 

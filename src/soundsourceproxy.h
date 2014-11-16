@@ -50,18 +50,14 @@ public:
     SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
     explicit SoundSourceProxy(TrackPointer pTrack);
 
-    const QString& getFilename() const {
-        return m_qFilename;
-    }
-    const TrackPointer& getTrack() const {
-        return m_pTrack;
-    }
     const Mixxx::SoundSourcePointer& getSoundSource() const {
         return m_pSoundSource;
     }
 
-    // Opening the audio data through the proxy will update the some metadata of the track object.
-    Result open();
+    // Opens the audio data through the proxy will
+    // update the some metadata of the track object.
+    // Returns a null pointer on failure.
+    Mixxx::SoundSourcePointer open() const;
 
 private:
     static QRegExp m_supportedFileRegex;
@@ -71,11 +67,9 @@ private:
 
     static QLibrary* getPlugin(QString lib_filename);
 
-    static Mixxx::SoundSourcePointer initialize(QString qFilename);
+    static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
 
-    const QString m_qFilename;
     const TrackPointer m_pTrack;
-
     const SecurityTokenPointer m_pSecurityToken;
 
     const Mixxx::SoundSourcePointer m_pSoundSource;

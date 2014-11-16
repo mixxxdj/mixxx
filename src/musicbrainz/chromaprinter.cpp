@@ -11,15 +11,16 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 
 QString ChromaPrinter::getFingerPrint(TrackPointer pTrack){
     SoundSourceProxy soundSourceProxy(pTrack);
-    if (OK == soundSourceProxy.open()) {
-        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
-        if (pSoundSource && (0 < pSoundSource->length()) && (0 < pSoundSource->getSampleRate())) {
-            return calcFingerPrint(pSoundSource);
-        }
+    Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
+    if (pSoundSource.isNull()) {
+        qDebug() << "Skipping invalid file:" << pTrack->getLocation();
+        return QString();
     }
-    qDebug() << "Skipping invalid file:" << soundSourceProxy.getFilename();
-    return QString();
-
+    if (0 >= pSoundSource->length()) {
+        qDebug() << "Skipping empty file:" << pTrack->getLocation();
+        return QString();
+    }
+    return calcFingerPrint(pSoundSource);
 }
 
 QString ChromaPrinter::calcFingerPrint(const Mixxx::SoundSourcePointer& pSoundSource) {

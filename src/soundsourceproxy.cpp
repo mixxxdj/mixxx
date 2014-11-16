@@ -71,17 +71,15 @@ namespace
 
 //Constructor
 SoundSourceProxy::SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken)
-    : m_qFilename(qFilename)
-    , m_pSecurityToken(openSecurityToken(m_qFilename, pToken))
-    , m_pSoundSource(initialize(m_qFilename)) {
+    : m_pSecurityToken(openSecurityToken(qFilename, pToken))
+    , m_pSoundSource(initialize(qFilename)) {
 }
 
 //Other constructor
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
-    : m_qFilename(pTrack->getLocation())
-    , m_pTrack(pTrack)
-    , m_pSecurityToken(openSecurityToken(m_qFilename, pTrack->getSecurityToken()))
-    , m_pSoundSource(initialize(m_qFilename)) {
+    : m_pTrack(pTrack)
+    , m_pSecurityToken(openSecurityToken(pTrack->getLocation(), pTrack->getSecurityToken()))
+    , m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 
 // static
@@ -165,10 +163,9 @@ void SoundSourceProxy::loadPlugins() {
 }
 
 // static
-Mixxx::SoundSourcePointer SoundSourceProxy::initialize(QString qFilename) {
-    QString extension = qFilename;
-    extension.remove(0, (qFilename.lastIndexOf(".")+1));
-    extension = extension.toLower();
+Mixxx::SoundSourcePointer SoundSourceProxy::initialize(const QString& qFilename) {
+    QString extension(qFilename);
+    extension.remove(0, (qFilename.lastIndexOf(".") + 1)).toLower();
 
 #ifdef __FFMPEGFILE__
     return Mixxx::SoundSourcePointer(new SoundSourceFFmpeg(qFilename));
@@ -302,24 +299,24 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 }
 
 
-Result SoundSourceProxy::open() {
+Mixxx::SoundSourcePointer SoundSourceProxy::open() const {
     if (!m_pSoundSource) {
-        return ERR;
+        return Mixxx::SoundSourcePointer();
     }
 
     Result retVal = m_pSoundSource->open();
     if (OK != retVal) {
         qWarning() << "Failed to open SoundSource";
-        return retVal;
+        return Mixxx::SoundSourcePointer();
     }
 
     if (0 >= m_pSoundSource->getChannels()) {
-        qWarning() << "Invalid number of channels" << m_pSoundSource->getChannels();
-        return ERR;
+        qWarning() << "Invalid number of channels:" << m_pSoundSource->getChannels();
+        return Mixxx::SoundSourcePointer();
     }
     if (0 >= m_pSoundSource->getSampleRate()) {
-        qWarning() << "Invalid sample rate" << m_pSoundSource->getSampleRate();
-        return ERR;
+        qWarning() << "Invalid sample rate:" << m_pSoundSource->getSampleRate();
+        return Mixxx::SoundSourcePointer();
     }
 
     //Update some metadata (currently only the duration)
@@ -337,7 +334,7 @@ Result SoundSourceProxy::open() {
         m_pTrack->setDuration(m_pSoundSource->getDuration());
     }
 
-    return retVal;
+    return m_pSoundSource;
 }
 
 // static
