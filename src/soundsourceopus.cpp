@@ -17,7 +17,7 @@
 #endif
 
 // Include this if taglib if new enough (version 1.9.1 have opusfile)
-#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 #include <taglib/opusfile.h>
 #endif
 
@@ -187,7 +187,7 @@ Result SoundSourceOpus::parseHeader() {
     this->setDuration(l_lLength / (getSampleRate() * getChannels()));
 
 // If we don't have new enough Taglib we use libopusfile parser!
-#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
     if (!readFileHeader(this, f)) {
@@ -271,7 +271,7 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
 }
 
 QImage SoundSourceOpus::parseCoverArt() {
-#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
     TagLib::Ogg::Opus::File f(getFilename().toLocal8Bit().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
