@@ -330,16 +330,12 @@ void DlgPrefEQ::slotApply() {
             ConfigValue(m_bEqAutoReset ? 1 : 0));
 }
 
+// supposed to set the widgets to match internal state
 void DlgPrefEQ::slotUpdate() {
     slotUpdateLoEQ();
     slotUpdateHiEQ();
     slotPopulateDeckEffectSelectors();
-    if (CheckBoxBypass->isChecked()) {
-        slotBypass(Qt::Checked);
-    } else {
-        slotBypass(Qt::Unchecked);
-    }
-    m_bEqAutoReset = static_cast<bool>(bEqAutoReset->checkState());
+    bEqAutoReset->setChecked(m_bEqAutoReset);
 }
 
 void DlgPrefEQ::slotUpdateEqAutoReset(int i) {
