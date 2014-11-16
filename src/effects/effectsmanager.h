@@ -25,6 +25,8 @@ class EngineEffectsManager;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
+    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
+
     EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
     virtual ~EffectsManager();
 
@@ -53,9 +55,7 @@ class EffectsManager : public QObject {
 
     const QSet<QString> getAvailableEffects() const;
     // Each entry of the set is a pair containing the effect id and its name
-    const QSet<QPair<QString, QString> > getAvailableEffectNames() const;
-    // Each entry of the set is a pair containing the effect id and its name
-    const QSet<QPair<QString, QString> > getAvailableEQEffectNames() const;
+    const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);

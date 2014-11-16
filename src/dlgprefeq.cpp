@@ -138,18 +138,23 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
     }	
 }
 
+static bool isEQ(EffectManifest* pManifest) {
+    return pManifest->isEQ();
+}
+
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     m_deckEffectSelectorsSetup = true; // prevents a recursive call
     QList<QPair<QString, QString> > availableEQEffectNames; 
+    EffectsManager::EffectManifestFilterFnc filter;
     if (CheckBoxHideEffects->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, "AdvancedView"), QString("no"));
-        availableEQEffectNames =
-                m_pEffectsManager->getAvailableEQEffectNames().toList();
+        filter = isEQ;
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, "AdvancedView"), QString("yes"));
-        availableEQEffectNames =
-                m_pEffectsManager->getAvailableEffectNames().toList();
+        filter = NULL; // take all;
     }
+    availableEQEffectNames =
+            m_pEffectsManager->getEffectNamesFiltered(filter).toList();
 
     foreach (QComboBox* box, m_deckEffectSelectors) {
         // Populate comboboxes with all available effects

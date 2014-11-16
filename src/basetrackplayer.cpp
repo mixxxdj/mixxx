@@ -27,13 +27,13 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
           m_pLoadedTrack(),
-          m_replaygainPending(false),
           m_pLowFilter(NULL),
           m_pMidFilter(NULL),
           m_pHighFilter(NULL),
           m_pLowFilterKill(NULL),
           m_pMidFilterKill(NULL),
-          m_pHighFilterKill(NULL) {
+          m_pHighFilterKill(NULL),
+          m_replaygainPending(false) {
     m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 

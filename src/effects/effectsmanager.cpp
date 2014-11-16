@@ -73,41 +73,27 @@ const QSet<QString> EffectsManager::getAvailableEffects() const {
     return availableEffects;
 }
 
-const QSet<QPair<QString, QString> > EffectsManager::getAvailableEffectNames() const {
-    QSet<QPair<QString, QString> > availableEffectNames;
+const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(EffectManifestFilterFnc filter) const {
+    QList<QPair<QString, QString> > filteredEQEffectNames;
     QString currentEffectName;
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         QSet<QString> backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
-            currentEffectName = pBackend->getManifest(effectId).name();
-            availableEffectNames.insert(qMakePair(effectId, currentEffectName));
-        }
-    }
-
-    return availableEffectNames;
-}
-
-const QSet<QPair<QString, QString> > EffectsManager::getAvailableEQEffectNames() const {
-    QSet<QPair<QString, QString> > availableEQEffectNames;
-    QString currentEffectName;
-    foreach (EffectsBackend* pBackend, m_effectsBackends) {
-        QSet<QString> backendEffects = pBackend->getEffectIds();
-        foreach (QString effectId, backendEffects) {
-            if (pBackend->getManifest(effectId).isEQ()) {
-                currentEffectName = pBackend->getManifest(effectId).name();
-                availableEQEffectNames.insert(qMakePair(effectId, currentEffectName));
+            EffectManifest manifest = pBackend->getManifest(effectId);
+            if (filter && !filter(&manifest)) {
+                continue;
             }
+            currentEffectName = manifest.name();
+            filteredEQEffectNames.append(qMakePair(effectId, currentEffectName));
         }
     }
 
-    return availableEQEffectNames;
+    return filteredEQEffectNames;
 }
 
 bool EffectsManager::isEQ(const QString& effectId) const {
     return getEffectManifest(effectId).isEQ();
 }
-
-
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
     // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
