@@ -127,13 +127,14 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         int selectedEffectIndex;
         QString group = PlayerManager::groupForDeck(i);
         configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
-                "EffectForGroup_" + group), kDefaultEqId);        selectedEffectIndex = m_deckEffectSelectors[i]->findData(configuredEffect);
+                "EffectForGroup_" + group), kDefaultEqId);
         selectedEffectIndex = m_deckEffectSelectors[i]->findData(configuredEffect);
         if (selectedEffectIndex < 0) {
             selectedEffectIndex = m_deckEffectSelectors[i]->findData(kDefaultEqId);
+            configuredEffect = kDefaultEqId;
         }
         m_deckEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
-        m_enableWaveformEqCOs[i]->set(m_pEffectsManager->isEQ(kDefaultEqId));
+        m_enableWaveformEqCOs[i]->set(m_pEffectsManager->isEQ(configuredEffect));
     }	
 }
 
