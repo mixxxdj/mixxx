@@ -1,7 +1,6 @@
 #ifndef SVGPARSER_H
 #define SVGPARSER_H
 
-#include <QHash>
 #include <QString>
 #include <QDomNode>
 #include <QDomElement>

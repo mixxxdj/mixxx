@@ -1,7 +1,6 @@
 #include <QtDebug>
 #include <QStringList>
 #include <QScriptValue>
-#include <QTemporaryFile>
 
 #include "skin/svgparser.h"
 
