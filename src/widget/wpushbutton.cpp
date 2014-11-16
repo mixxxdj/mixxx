@@ -75,7 +75,6 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             
             int iState = stateContext.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                QString pixmapPath;
                 PixmapSource pixmapSource;
                 
                 pixmapSource = stateContext.getPixmapSource(stateContext.selectNode(state, "Unpressed"));
