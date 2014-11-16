@@ -163,30 +163,26 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
     return m_pEffectChainManager->getEffectRack(i);
 }
 
-EffectRackPointer EffectsManager::getDeckEQEffectRack() {
+EffectRackPointer EffectsManager::getEqEffectRack() {
     // The EQ Rack is the last one
-    int eqRackNumber = getDeckEQEffectRackNumber();
+    int eqRackNumber = getEqEffectRackNumber();
     return m_pEffectChainManager->getEffectRack(eqRackNumber);
 }
 
-int EffectsManager::getDeckEQEffectRackNumber() {
+int EffectsManager::getEqEffectRackNumber() {
     // The EQ Rack is the last one
     int eqRackNumber = kDeckEQRackNumber;
     return eqRackNumber;
 }
 
-EffectRackPointer EffectsManager::getMasterEQEffectRack() {
-    return m_pEffectChainManager->getEffectRack(getMasterEQEffectRackNumber() - 1);
-}
-
-int EffectsManager::getMasterEQEffectRackNumber() {
-    // The EQ Rack is the last one
-    return kMasterEQRackNumber;
+EffectChainSlotPointer EffectsManager::getMasterEQEffectChainSlot() {
+    return m_pEffectChainManager->getEffectRack(kMasterEQRackNumber - 1)->
+            getEffectChainSlot(0);
 }
 
 void EffectsManager::addEqualizer(const QString& group) {
-    int rackNumExt = getDeckEQEffectRackNumber() + 1;
-    EffectRackPointer pRack = getDeckEQEffectRack();
+    int rackNumExt = getEqEffectRackNumber() + 1;
+    EffectRackPointer pRack = getEqEffectRack();
     EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlotForEQ();
     const unsigned int chainSlotNumberExt = pChainSlot->getChainSlotNumber() + 1;
 

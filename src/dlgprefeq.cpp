@@ -46,9 +46,9 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_bEqAutoReset(false) {
 
     // Get the EQ Effect Rack
-    m_pDeckEQEffectRack = m_pEffectsManager->getDeckEQEffectRack();
+    m_pDeckEQEffectRack = m_pEffectsManager->getEqEffectRack();
     m_eqRackGroup = QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
-            m_pEffectsManager->getDeckEQEffectRackNumber() + 1);
+            m_pEffectsManager->getEqEffectRackNumber() + 1);
 
     setupUi(this);
     // Connection
@@ -457,9 +457,9 @@ void DlgPrefEQ::slotBypass(int state) {
 }
 
 void DlgPrefEQ::setUpMasterEQ() {
-    // The Master EQ is the only Effect on the last Effect Rack
-    EffectPointer masterEQEffect = m_pEffectsManager->getMasterEQEffectRack()->
-            getEffectChainSlot(0)->getEffectSlot(0)->getEffect();
+    // The Master EQ is the only Effect in the MasterEQEffectChainSlot
+    EffectPointer masterEQEffect = m_pEffectsManager->
+            getMasterEQEffectChainSlot()->getEffectSlot(0)->getEffect();
     if (masterEQEffect) {
         m_pEngineEffectMasterEQ = masterEQEffect->getEngineEffect();
     } else {
