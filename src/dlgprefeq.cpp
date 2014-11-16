@@ -188,7 +188,7 @@ void DlgPrefEQ::loadSettings() {
             ConfigKey(kConfigKey, "EqAutoReset")).toInt());
     bEqAutoReset->setChecked(m_bEqAutoReset);
     CheckBoxBypass->setChecked(m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kEnableEqs), QString("no")) == QString("no"));
+            ConfigKey(kConfigKey, kEnableEqs), QString("yes")) == QString("no"));
 
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
