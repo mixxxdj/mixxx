@@ -111,7 +111,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    fGain = fGain * math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
+    fGain = fGain * math_clamp_fast(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(fGain);
 

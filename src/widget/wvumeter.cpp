@@ -161,7 +161,7 @@ void WVuMeter::updateState(double msecsElapsed) {
     m_dPeakParameter -= static_cast<double>(m_iPeakFallStep) *
             msecsElapsed /
             static_cast<double>(m_iPeakFallTime * m_iNoPos);
-    m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
+    m_dPeakParameter = math_clamp_fast(m_dPeakParameter, 0.0, 1.0);
     m_iPeakPos = math_clamp(static_cast<int>(m_dPeakParameter * m_iNoPos),
                             0, m_iNoPos);
 }

@@ -138,7 +138,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     if (!m_bDrag) {
         // Calculate handle position. Clamp the value within 0-1 because that's
         // all we represent with this widget.
-        dParameter = math_clamp(dParameter, 0.0, 1.0);
+        dParameter = math_clamp_fast(dParameter, 0.0, 1.0);
 
         int iPos = valueToPosition(dParameter);
         if (iPos != m_iPos) {
