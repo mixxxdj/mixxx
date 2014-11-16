@@ -144,7 +144,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
     }	
 }
 
-static bool isEQ(EffectManifest* pManifest) {
+static bool isMixingEQ(EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
 }
 
@@ -156,7 +156,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     EffectsManager::EffectManifestFilterFnc filter;
     if (CheckBoxHideEffects->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, "AdvancedView"), QString("no"));
-        filter = isEQ;
+        filter = isMixingEQ;
         availableFilterEffectNames = availableEQEffectNames;
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, "AdvancedView"), QString("yes"));
