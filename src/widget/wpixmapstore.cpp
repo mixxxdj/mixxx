@@ -71,7 +71,7 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
 Paintable::Paintable(PixmapSource source, DrawMode mode)
         : m_draw_mode(mode) {
     if (source.isSVG()) {
-        QSvgRenderer* pSvgRenderer = new QSvgRenderer();
+        QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
         if( source.getData().isEmpty() ){
             pSvgRenderer->load(source.getPath());
         } else {
@@ -79,7 +79,7 @@ Paintable::Paintable(PixmapSource source, DrawMode mode)
         }
         
         if (mode == STRETCH) {
-            m_pSvg.reset(pSvgRenderer);
+            m_pSvg.reset(pSvgRenderer.take());
         } else if (mode == TILE) {
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
