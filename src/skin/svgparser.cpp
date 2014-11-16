@@ -29,7 +29,7 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
 }
 
 QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode,
-                                 const QString sourcePath) const {
+                                 const QString& sourcePath) const {
     m_currentFile = sourcePath;
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
@@ -199,7 +199,7 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
     return out;
 }
 
-QScriptValue SvgParser::evaluateTemplateExpression(const QString expression,
+QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
                                                    int lineNumber) const {
     QScriptValue out = m_context.evaluateScript(
         expression, m_currentFile, lineNumber);
