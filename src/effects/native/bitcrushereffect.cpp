@@ -92,8 +92,8 @@ void BitCrusherEffect::processGroup(const QString& group,
             pState->accumulator -= 1.0;
             if (bit_depth < 16) {
 
-                pState->hold_l = floorf(math_clamp(pInput[i] * gainCorrection, -1.0f, 1.0f) * scale + 0.5f) / scale / gainCorrection;
-                pState->hold_r = floorf(math_clamp(pInput[i+1] * gainCorrection, -1.0f, 1.0f) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_l = floorf(CSAMPLE_clamp(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_r = floorf(CSAMPLE_clamp(pInput[i+1] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
             } else {
                 // Mixxx float has 24 bit depth, Audio CDs are 16 bit
                 // here we do not change the depth
