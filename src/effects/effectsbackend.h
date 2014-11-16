@@ -24,6 +24,7 @@ class EffectsBackend : public QObject {
 
     virtual const QString getName() const;
 
+    // returns a list sorted like it should be displayed in the GUI 
     virtual const QList<QString>& getEffectIds() const;
     virtual EffectManifest getManifest(const QString& effectId) const;
     virtual bool canInstantiateEffect(const QString& effectId) const;
