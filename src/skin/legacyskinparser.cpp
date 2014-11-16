@@ -325,7 +325,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // created parent so MixxxMainWindow can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
-    m_pContext = new SkinContext();
+    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
     m_pContext->setSkinBasePath(skinPath.append("/"));
     QList<QWidget*> widgets = parseNode(skinDocument);
 
@@ -1338,7 +1338,8 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
     // Take any <SetVariable> elements from this node and update the context
     // with them.
     m_pContext->updateVariables(node);
-
+    m_pContext->setXmlPath(path);
+    
     QList<QWidget*> widgets;
 
     QDomNode child = templateNode.firstChild();
