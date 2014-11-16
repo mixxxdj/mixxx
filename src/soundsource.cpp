@@ -27,17 +27,12 @@ namespace Mixxx
 namespace
 {
     const float BPM_ZERO = 0.0f;
-    const float BPM_MIN = 60.0f;
     const float BPM_MAX = 300.0f;
 
     float parseBpmString(const QString& sBpm) {
         float bpm = sBpm.toFloat();
-        if (bpm < BPM_MIN) {
-            bpm = BPM_ZERO;
-        } else {
-            while(bpm > BPM_MAX) {
-                bpm /= 10.0f;
-            }
+        while(bpm > BPM_MAX) {
+            bpm /= 10.0f;
         }
         return bpm;
     }
@@ -60,7 +55,7 @@ SoundSource::SoundSource(QString qFilename)
           m_iChannels(0),
           m_iSampleRate(0),
           m_fReplayGain(0.0f),
-          m_fBpm(0.0f),
+          m_fBpm(BPM_ZERO),
           m_iBitrate(0),
           m_iDuration(0) {
 }

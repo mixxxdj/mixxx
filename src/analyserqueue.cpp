@@ -307,6 +307,11 @@ void AnalyserQueue::run() {
         }
 
         Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.getSoundSource());
+        if (pSoundSource.isNull()) {
+            qWarning() << "Skipping unsupported file:" << nextTrack->getLocation();
+            continue;
+        }
+
         int iNumSamples = pSoundSource->length();
         int iSampleRate = pSoundSource->getSampleRate();
 

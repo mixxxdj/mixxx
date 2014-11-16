@@ -443,10 +443,6 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
         return 0;
     }
 
-    // TODO(uklotzde): This implicit assumption will be dropped
-    // with the introduction of the new SoundSource API!
-    Q_ASSERT(2 == getChannels());
-
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
     if (samples_wanted % 2 != 0) {

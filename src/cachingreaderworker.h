@@ -61,7 +61,7 @@ class CachingReaderWorker : public EngineWorker {
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
     virtual ~CachingReaderWorker();
 
-    // Request to load a new track. wake() must be called afer wards.
+    // Request to load a new track. wake() must be called afterwards.
     virtual void newTrack(TrackPointer pTrack);
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
@@ -101,7 +101,7 @@ class CachingReaderWorker : public EngineWorker {
     TrackPointer m_newTrack;
 
     // Internal method to load a track. Emits trackLoaded when finished.
-    void loadTrack(TrackPointer pTrack);
+    void loadTrack(const TrackPointer& pTrack);
 
     // Read the given chunk_number from the file into pChunk's data
     // buffer. Fills length/sample information about Chunk* as well.

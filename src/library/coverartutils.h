@@ -41,7 +41,7 @@ class CoverArtUtils {
         }
         SoundSourceProxy proxy(trackLocation, pToken);
         Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
-        if (pSoundSource == NULL) {
+        if (pSoundSource.isNull()) {
             return QImage();
         }
         return pSoundSource->parseCoverArt();

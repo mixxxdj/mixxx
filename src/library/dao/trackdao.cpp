@@ -1591,7 +1591,7 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
 
 namespace
 {
-    QImage parseCoverArt(const QFileInfo fileInfo) {
+    QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
         SoundSourceProxy proxy(fileInfo.filePath(), pToken);
         Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
