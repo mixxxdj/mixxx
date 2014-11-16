@@ -100,9 +100,11 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         QLabel* label = new QLabel(QObject::tr("Deck %1").
                             arg(m_deckEffectSelectors.size() + 1), this);
 
+        QString group = PlayerManager::groupForDeck(
+                m_deckEffectSelectors.size());
+
         m_enableWaveformEqCOs.append(
-                new ControlObject(ConfigKey(PlayerManager::groupForDeck(
-                        m_deckEffectSelectors.size()), "enableWaveformEq")));
+                new ControlObject(ConfigKey(group, "enableWaveformEq")));
 
         // Create the drop down list and populate it with the available effects
         QComboBox* box = new QComboBox(this);
@@ -122,8 +124,9 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         // if none is configured
         QString configuredEffect;
         int selectedEffectIndex;
+        QString group = PlayerManager::groupForDeck(i);
         configuredEffect = m_pConfig->getValueString(ConfigKey(CONFIG_KEY,
-                QString("EffectForDeck%1").arg(i + 1)),
+                "EffectForGroup_" + group),
                 QString("org.mixxx.effects.bessel8lvmixeq"));
         selectedEffectIndex = m_deckEffectSelectors[i]->findData(configuredEffect);
         if (selectedEffectIndex < 0) {
@@ -247,9 +250,11 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
         QString effectId = c->itemData(effectIndex).toString();
         emit(effectOnChainSlot(deckNumber, 0, effectId));
 
+        QString group = PlayerManager::groupForDeck(deckNumber);
+
         // Update the configured effect for the current QComboBox
-        m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
-                       arg(deckNumber + 1)), ConfigValue(effectId));
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "EffectForGroup_" + group),
+                ConfigValue(effectId));
 
         m_enableWaveformEqCOs[deckNumber]->set(m_pEffectsManager->isEQ(effectId));
 
