@@ -25,19 +25,20 @@ namespace Mixxx {
 
 class SoundSourceWV : public SoundSource {
  public:
-  SoundSourceWV(QString qFilename);
+  explicit SoundSourceWV(QString qFilename);
   ~SoundSourceWV();
   Result open();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  inline long unsigned length();
   Result parseHeader();
   QImage parseCoverArt();
   static QList<QString> supportedFileExtensions();
+
+  diff_type seekFrame(diff_type frameIndex);
+
+ protected:
+  unsigned read(unsigned long size, SAMPLE*);
  private:
+  WavpackContext * filewvc; //works as a file handle to access the wv file.
   int Bps;
-  unsigned long filelength;
-  WavpackContext * filewvc;	//works as a file handle to access the wv file.
   int32_t tempbuffer[WV_BUF_LENGTH];	//hax ! legacy from cmus. this is 64k*4bytes.
   void format_samples(int, char *, int32_t *, uint32_t);
 };

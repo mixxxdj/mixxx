@@ -658,7 +658,9 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
+                   "audiosource.cpp",
                    "soundsource.cpp",
+                   "soundsourcetaglib.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",

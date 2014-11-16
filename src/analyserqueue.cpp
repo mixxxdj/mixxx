@@ -35,8 +35,7 @@ AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection)
         : m_aq(),
           m_exit(false),
           m_aiCheckPriorities(false),
-          m_pSamplesPCM(new SAMPLE[kAnalysisBlockSize]),
-          m_pSamples(new CSAMPLE[kAnalysisBlockSize]),
+          m_pStereoSamples(new Mixxx::AudioSource::sample_type[kAnalysisBlockSize]),
           m_tioq(),
           m_qm(),
           m_qwait(),
@@ -60,8 +59,7 @@ AnalyserQueue::~AnalyserQueue() {
     }
     //qDebug() << "AnalyserQueue::~AnalyserQueue()";
 
-    delete [] m_pSamplesPCM;
-    delete [] m_pSamples;
+    delete [] m_pStereoSamples;
 }
 
 void AnalyserQueue::addAnalyser(Analyser* an) {
@@ -160,61 +158,61 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource) {
-    int totalSamples = pSoundSource->length();
-    //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
-    int processedSamples = 0;
+bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource) {
+    const Mixxx::AudioSource::size_type totalFrames = pAudioSource->getFrameCount();
+    const Mixxx::AudioSource::size_type frameCount = kAnalysisBlockSize / 2; // stereo
+    Mixxx::AudioSource::size_type processedFrames = 0;
+    Mixxx::AudioSource::size_type readFrames = 0;
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
-    int read = 0;
     bool dieflag = false;
     bool cancelled = false;
     int progress; // progress in 0 ... 100
 
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
-        read = pSoundSource->read(kAnalysisBlockSize, m_pSamplesPCM);
+
+        readFrames = pAudioSource->readStereoFrameSamplesInterleaved(frameCount, m_pStereoSamples);
+        const Mixxx::AudioSource::size_type readStereoFrameSamplesInterleaved = readFrames * 2;
 
         // To compare apples to apples, let's only look at blocks that are the
         // full block size.
-        if (read != kAnalysisBlockSize) {
+        if (readFrames != frameCount) {
             t.cancel();
         }
 
         // Safety net in case something later barfs on 0 sample input
-        if (read == 0) {
+        if (frameCount == 0) {
             t.cancel();
             break;
         }
 
         // If we get more samples than length, ask the analysers to process
         // up to the number we promised, then stop reading - AD
-        if (read + processedSamples > totalSamples) {
-            qDebug() << "While processing track of length " << totalSamples << " actually got "
-                     << read + processedSamples << " samples, truncating analysis at expected length";
-            read = totalSamples - processedSamples;
+        if (readFrames + processedFrames > totalFrames) {
+            qDebug() << "While processing track of length " << totalFrames << " actually got "
+                     << (readFrames + processedFrames) << " frames, truncating analysis at expected length";
+            readFrames = totalFrames - processedFrames;
             dieflag = true;
         }
-
-        SampleUtil::convertS16ToFloat32(m_pSamples, m_pSamplesPCM, read);
 
         QListIterator<Analyser*> it(m_aq);
 
         while (it.hasNext()) {
             Analyser* an =  it.next();
             //qDebug() << typeid(*an).name() << ".process()";
-            an->process(m_pSamples, read);
+            an->process(m_pStereoSamples, readStereoFrameSamplesInterleaved);
             //qDebug() << "Done " << typeid(*an).name() << ".process()";
         }
 
         // emit progress updates
         // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalise functions will take also some time
-        processedSamples += read;
+        processedFrames += readFrames;
         //fp div here prevents insane signed overflow
-        progress = (int)(((float)processedSamples)/totalSamples *
+        progress = (int)(((float)processedFrames)/totalFrames *
                          (1000 - FINALIZE_PERCENT));
 
         if (m_progressInfo.track_progress != progress) {
@@ -251,7 +249,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         if (dieflag || cancelled) {
             t.cancel();
         }
-    } while(read == kAnalysisBlockSize && !dieflag);
+    } while(!dieflag && (frameCount == readFrames));
 
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }
@@ -300,13 +298,18 @@ void AnalyserQueue::run() {
         Trace trace("AnalyserQueue analyzing track");
 
         // Get the audio
-        SoundSourceProxy soundSource(nextTrack);
-        soundSource.open(); //Open the file for reading
-        int iNumSamples = soundSource.length();
-        int iSampleRate = soundSource.getSampleRate();
+        SoundSourceProxy soundSourceProxy(nextTrack);
+        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.open());
+        if (pAudioSource.isNull()) {
+            qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
+            continue;
+        }
+
+        int iNumSamples = pAudioSource->frames2samples(pAudioSource->getFrameCount());
+        int iSampleRate = pAudioSource->getSampleRate();
 
         if (iNumSamples == 0 || iSampleRate == 0) {
-            qDebug() << "Skipping invalid file:" << nextTrack->getLocation();
+            qWarning() << "Skipping invalid file:" << nextTrack->getLocation();
             continue;
         }
 
@@ -325,7 +328,7 @@ void AnalyserQueue::run() {
 
         if (processTrack) {
             emitUpdateProgress(nextTrack, 0);
-            bool completed = doAnalysis(nextTrack, &soundSource);
+            bool completed = doAnalysis(nextTrack, pAudioSource);
             if (!completed) {
                 //This track was cancelled
                 QListIterator<Analyser*> itf(m_aq);

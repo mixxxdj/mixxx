@@ -15,6 +15,7 @@
 ***************************************************************************/
 
 #include "soundsourcesndfile.h"
+#include "soundsourcetaglib.h"
 #include "sampleutil.h"
 #include "util/math.h"
 
@@ -32,9 +33,7 @@
  */
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
     : Mixxx::SoundSource(qFilename),
-      fh(NULL),
-      channels(0),
-      filelength(0) {
+      fh(NULL) {
     // Must be set to 0 per the API for reading (non-RAW files)
     memset(&info, 0, sizeof(info));
 }
@@ -55,45 +54,37 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
-    LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
+    LPCWSTR lpcwFilename = (LPCWSTR)getFilename().utf16();
     fh = sf_wchar_open(lpcwFilename, SFM_READ, &info);
 #else
-    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qbaFilename(getFilename().toLocal8Bit());
     fh = sf_open(qbaFilename.constData(), SFM_READ, &info);
 #endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
-        qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
     if (sf_error(fh)>0) {
-        qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
-    channels = info.channels;
-    m_iSampleRate =  info.samplerate;
-    // This is the 'virtual' filelength. No matter how many channels the file
-    // actually has, we pretend it has 2.
-    filelength = info.frames * 2; // File length with two interleaved channels
+    setChannelCount(info.channels);
+    setSampleRate(info.samplerate);
+    setFrameCount(info.frames);
 
     return OK;
 }
 
-long SoundSourceSndFile::seek(long filepos)
-{
-    unsigned long filepos2 = (unsigned long)filepos;
-    if (filelength>0)
-    {
-        filepos2 = math_min(filepos2,filelength);
-        sf_seek(fh, (sf_count_t)filepos2/2, SEEK_SET);
-        //Note that we don't error check sf_seek because it reports
-        //benign errors under normal usage (ie. we sometimes seek past the end
-        //of a song, and it will stop us.)
-        return filepos2;
-    }
-    return 0;
+Mixxx::AudioSource::diff_type SoundSourceSndFile::seekFrame(diff_type frameIndex) {
+    diff_type framePos = math_min(frameIndex, diff_type(getFrameCount()));
+    sf_seek(fh, framePos, SEEK_SET);
+    //Note that we don't error check sf_seek because it reports
+    //benign errors under normal usage (ie. we sometimes seek past the end
+    //of a song, and it will stop us.)
+    return framePos;
 }
 
 /*
@@ -103,45 +94,37 @@ long SoundSourceSndFile::seek(long filepos)
    then size/2 samples are read from the mono file, and they are
    doubled into stereo.
  */
-unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination)
-{
+unsigned SoundSourceSndFile::read(unsigned long size, SAMPLE* destination) {
     SAMPLE * dest = (SAMPLE *)destination;
-    if (filelength > 0)
+    if (isChannelCountStereo())
     {
-        if (channels==2)
-        {
-            unsigned long no = sf_read_short(fh, dest, size);
+        unsigned long no = sf_read_short(fh, dest, size);
 
-            // rryan 2/2009 This code used to lie and say we read
-            // 'size' samples no matter what. I left this array
-            // zeroing code here in case the Reader doesn't check
-            // against this.
-            for (unsigned long i=no; i<size; ++i)
-                dest[i] = 0;
+        // rryan 2/2009 This code used to lie and say we read
+        // 'size' samples no matter what. I left this array
+        // zeroing code here in case the Reader doesn't check
+        // against this.
+        for (unsigned long i=no; i<size; ++i)
+            dest[i] = 0;
 
-            return no;
-        }
-        else if(channels==1)
-        {
-            // We are not dealing with a stereo file. Read fewer
-            // samples than requested and double them because we
-            // pretend to every reader that all files are in stereo.
-            int readNo = sf_read_short(fh, dest, size/2);
-
-            // dest has enough capacity for (readNo * 2) samples
-            SampleUtil::doubleMonoToDualMono(dest, readNo);
-
-            // We doubled the readNo bytes we read into stereo.
-            return readNo * 2;
-        } else {
-            // We do not support music with more than 2 channels.
-            return 0;
-        }
+        return no;
     }
+    else if (isChannelCountMono())
+    {
+        // We are not dealing with a stereo file. Read fewer
+        // samples than requested and double them because we
+        // pretend to every reader that all files are in stereo.
+        int readNo = sf_read_short(fh, dest, size/2);
 
-    // The file has errors or is not open. Tell the truth and return 0.
-    qDebug() << "The file has errors or is not open: " << m_qFilename;
-    return 0;
+        // dest has enough capacity for (readNo * 2) samples
+        SampleUtil::doubleMonoToDualMono(dest, readNo);
+
+        // We doubled the readNo bytes we read into stereo.
+        return readNo * 2;
+    } else {
+        // We do not support music with more than 2 channels.
+        return 0;
+    }
 }
 
 Result SoundSourceSndFile::parseHeader()
@@ -149,29 +132,49 @@ Result SoundSourceSndFile::parseHeader()
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
 
-    bool result;
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     if (is_flac) {
         TagLib::FLAC::File f(qBAFilename.constData());
-        result = processTaglibFile(f);
-        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
-        TagLib::Ogg::XiphComment* xiph = f.xiphComment();
-        if (id3v2) {
-            processID3v2Tag(id3v2);
+        if (!readFileHeader(this, f)) {
+            return ERR;
         }
+        TagLib::Ogg::XiphComment* xiph = f.xiphComment();
         if (xiph) {
-            processXiphComment(xiph);
+            readXiphComment(this, *xiph);
+        }
+        else {
+            TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
+            if (id3v2) {
+                readID3v2Tag(this, *id3v2);
+            } else {
+                // fallback
+                const TagLib::Tag *tag(f.tag());
+                if (tag) {
+                    readTag(this, *tag);
+                } else {
+                    return ERR;
+                }
+            }
         }
     } else if (is_wav) {
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
-        result = processTaglibFile(f);
-
-        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (!readFileHeader(this, f)) {
+            return ERR;
+        }
+        TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
         if (id3v2) {
-            processID3v2Tag(id3v2);
+            readID3v2Tag(this, *id3v2);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
         }
 
         if (getDuration() <= 0) {
@@ -195,28 +198,37 @@ Result SoundSourceSndFile::parseHeader()
     } else {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
-        result = processTaglibFile(f);
-
-        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (!readFileHeader(this, f)) {
+            return ERR;
+        }
+        TagLib::ID3v2::Tag *id3v2(f.tag());
         if (id3v2) {
-            processID3v2Tag(id3v2);
+            readID3v2Tag(this, *id3v2);
+        } else {
+            return ERR;
         }
     }
 
-    return result ? OK : ERR;
+    return OK;
 }
 
 QImage SoundSourceSndFile::parseCoverArt() {
     QImage coverArt;
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     if (getType() == "flac") {
         TagLib::FLAC::File f(qBAFilename.constData());
-        coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
         if (coverArt.isNull()) {
-            coverArt = getCoverInXiphComment(f.xiphComment());
+            TagLib::Ogg::XiphComment *xiph = f.xiphComment();
+            if (xiph) {
+                coverArt = Mixxx::getCoverInXiphComment(*xiph);
+            }
         }
         if (coverArt.isNull()) {
             TagLib::List<TagLib::FLAC::Picture*> covers = f.pictureList();
@@ -229,19 +241,17 @@ QImage SoundSourceSndFile::parseCoverArt() {
         }
     } else if (getType() == "wav") {
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
-        coverArt = getCoverInID3v2Tag(f.tag());
+        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
     } else {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
-        coverArt = getCoverInID3v2Tag(f.tag());
+        TagLib::ID3v2::Tag* id3v2 = f.tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
     }
     return coverArt;
-}
-
-/*
-   Return the length of the file in samples.
- */
-inline long unsigned SoundSourceSndFile::length()
-{
-    return filelength;
 }

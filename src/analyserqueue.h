@@ -10,8 +10,8 @@
 #include "configobject.h"
 #include "analyser.h"
 #include "trackinfoobject.h"
+#include "audiosource.h"
 
-class SoundSourceProxy;
 class TrackCollection;
 
 class AnalyserQueue : public QThread {
@@ -58,13 +58,12 @@ class AnalyserQueue : public QThread {
 
     bool isLoadedTrackWaiting(TrackPointer tio);
     TrackPointer dequeueNextBlocking();
-    bool doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource);
+    bool doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
-    SAMPLE* m_pSamplesPCM;
-    CSAMPLE* m_pSamples;
+    Mixxx::AudioSource::sample_type* m_pStereoSamples;
 
     // The processing queue and associated mutex
     QQueue<TrackPointer> m_tioq;

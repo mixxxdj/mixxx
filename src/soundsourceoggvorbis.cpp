@@ -15,6 +15,7 @@
 ***************************************************************************/
 
 #include "soundsourceoggvorbis.h"
+#include "soundsourcetaglib.h"
 #include "sampleutil.h"
 
 #include <taglib/vorbisfile.h>
@@ -50,20 +51,20 @@ inline int getByteOrder() {
  */
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-: Mixxx::SoundSource(qFilename)
-{
-    filelength = 0;
+    : Mixxx::SoundSource(qFilename)
+    , filelength(0)
+    , current_section(0) {
+    memset(&vf, 0, sizeof(vf));
+    setType("ogg");
 }
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()
 {
-    if (filelength > 0){
-        ov_clear(&vf);
-    }
+    ov_clear(&vf);
 }
 
 Result SoundSourceOggVorbis::open() {
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 #ifdef __WINDOWS__
     if(ov_fopen(qBAFilename.constData(), &vf) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
@@ -74,7 +75,7 @@ Result SoundSourceOggVorbis::open() {
     FILE *vorbisfile =  fopen(qBAFilename.constData(), "r");
 
     if (!vorbisfile) {
-        qDebug() << "oggvorbis: cannot open" << m_qFilename;
+        qDebug() << "oggvorbis: cannot open" << getFilename();
         return ERR;
     }
 
@@ -88,10 +89,10 @@ Result SoundSourceOggVorbis::open() {
     // lookup the ogg's channels and samplerate
     vorbis_info * vi = ov_info(&vf, -1);
 
-    channels = vi->channels;
-    m_iSampleRate = vi->rate;
+    setChannelCount(vi->channels);
+    setSampleRate(vi->rate);
 
-    if(channels > 2){
+    if(getChannelCount() > 2){
         qDebug() << "oggvorbis: No support for more than 2 channels!";
         ov_clear(&vf);
         filelength = 0;
@@ -108,12 +109,12 @@ Result SoundSourceOggVorbis::open() {
     if (ret >= 0) {
         // We pretend that the file is stereo to the rest of the world.
         filelength = ret * 2;
-    }
-    else //error
+        setFrameCount(ret);
+    } else //error
     {
       if (ret == OV_EINVAL) {
           //The file is not seekable. Not sure if any action is needed.
-          qDebug() << "oggvorbis: file is not seekable " << m_qFilename;
+          qDebug() << "oggvorbis: file is not seekable " << getFilename();
       }
     }
 
@@ -124,17 +125,9 @@ Result SoundSourceOggVorbis::open() {
    seek to <filepos>
  */
 
-long SoundSourceOggVorbis::seek(long filepos)
-{
-    // In our speak, filepos is a sample in the file abstraction (i.e. it's
-    // stereo no matter what). filepos/2 is the frame we want to seek to.
-    if (filepos % 2 != 0) {
-        qDebug() << "SoundSourceOggVorbis got non-even seek target.";
-        filepos--;
-    }
-
+Mixxx::AudioSource::diff_type SoundSourceOggVorbis::seekFrame(diff_type frameIndex) {
     if (ov_seekable(&vf)) {
-        if (ov_pcm_seek(&vf, filepos/2) != 0) {
+        if (ov_pcm_seek(&vf, frameIndex) != 0) {
             // This is totally common (i.e. you're at EOF). Let's not leave this
             // qDebug on.
 
@@ -144,9 +137,9 @@ long SoundSourceOggVorbis::seek(long filepos)
         // Even if an error occured, return them the current position because
         // that's what we promised. (Double it because ov_pcm_tell returns
         // frames and we pretend to the world that everything is stereo)
-        return ov_pcm_tell(&vf) * 2;
+        return ov_pcm_tell(&vf);
     } else {
-        qDebug() << "ogg vorbis: Seek ERR at file " << m_qFilename;
+        qDebug() << "ogg vorbis: Seek ERR at file " << getFilename();
         return 0;
     }
 }
@@ -157,7 +150,7 @@ long SoundSourceOggVorbis::seek(long filepos)
    samples actually read.
  */
 
-unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination) {
+unsigned SoundSourceOggVorbis::read(volatile unsigned long size, SAMPLE* destination) {
     if (size % 2 != 0) {
         qDebug() << "SoundSourceOggVorbis got non-even size in read.";
         size--;
@@ -182,11 +175,12 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // destination. For stereo files, read the full buffer (size*2
     // bytes). For mono files, only read half the buffer (size bytes),
     // and we will double the buffer to be in stereo later.
-    unsigned int needed = size * channels;
+    unsigned int needed = size * getChannelCount();
 
     unsigned int index=0,ret=0;
 
     // loop until requested number of samples has been retrieved
+    int current_section;
     while (needed > 0) {
         // read samples into buffer
         ret = ov_read(&vf, pRead+index, needed, getByteOrder(), 2, 1, &current_section);
@@ -204,7 +198,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // total frames read.
 
     // convert into stereo if file is mono
-    if (channels == 1) {
+    if (isChannelCountMono()) {
         SampleUtil::doubleMonoToDualMono(dest, index / 2);
         // Pretend we read twice as many bytes as we did, since we just repeated
         // each pair of bytes.
@@ -219,37 +213,42 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
    Parse the the file to get metadata
  */
 Result SoundSourceOggVorbis::parseHeader() {
-    setType("ogg");
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
     TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
-
-
-    TagLib::Ogg::XiphComment *tag = f.tag();
-
-    if (tag) {
-        processXiphComment(tag);
+    if (!readFileHeader(this, f)) {
+        return ERR;
     }
 
-    return result ? OK : ERR;
+    TagLib::Ogg::XiphComment *xiph = f.tag();
+    if (xiph) {
+        readXiphComment(this, *xiph);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
+    }
+
+    return OK;
 }
 
 QImage SoundSourceOggVorbis::parseCoverArt() {
-    setType("ogg");
-    TagLib::Ogg::Vorbis::File f(m_qFilename.toLocal8Bit().constData());
-    return getCoverInXiphComment(f.tag());
+    TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+    TagLib::Ogg::XiphComment *xiph = f.tag();
+    if (xiph) {
+        return Mixxx::getCoverInXiphComment(*xiph);
+    } else {
+        return QImage();
+    }
 }
 
 /*
    Return the length of the file in samples.
  */
-
-inline long unsigned SoundSourceOggVorbis::length()
-{
-    return filelength;
-}
 
 QList<QString> SoundSourceOggVorbis::supportedFileExtensions()
 {

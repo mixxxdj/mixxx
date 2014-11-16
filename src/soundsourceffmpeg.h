@@ -65,42 +65,37 @@ struct ffmpegCacheObject {
 
 class SoundSourceFFmpeg : public Mixxx::SoundSource {
 public:
-    SoundSourceFFmpeg(QString qFilename);
+    explicit SoundSourceFFmpeg(QString qFilename);
     ~SoundSourceFFmpeg();
     Result open();
-    long seek(long);
-    unsigned int read(unsigned long size, const SAMPLE*);
     Result parseHeader();
-    QImage parseCoverArt();
-    inline long unsigned length();
+    QImage parseCoverArt() { return QImage(); } // TODO(uklotzde): Fix missing implementation
     bool readInput();
     static QList<QString> supportedFileExtensions();
     AVCodecContext *getCodecContext();
     AVFormatContext *getFormatContext();
     int getAudioStreamIndex();
 
+    diff_type seekFrame(diff_type frameIndex);
 
 protected:
-    void lock();
-    void unlock();
-
     bool readFramesToCache(unsigned int count, qint64 offset);
     bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
     quint64 getSizeofCache();
     bool clearCache();
 
+    unsigned int read(unsigned long size, SAMPLE*);
+
 private:
     int m_iAudioStream;
-    quint64 filelength;
-    QString m_qFilename;
     AVFormatContext *m_pFormatCtx;
     AVInputFormat *m_pIformat;
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 
-    qint64 m_iCurrentMixxTs;
-
     EncoderFfmpegResample *m_pResample;
+
+    qint64 m_iCurrentMixxTs;
 
     bool m_bIsSeeked;
 

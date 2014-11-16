@@ -160,8 +160,8 @@ void TrackInfoObject::parse(bool parseCoverArt) {
 
     // Parse the information stored in the sound file.
     SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
-    Mixxx::SoundSource* pProxiedSoundSource = proxy.getProxiedSoundSource();
-    if (pProxiedSoundSource != NULL && proxy.parseHeader() == OK) {
+    Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
+    if (pSoundSource && pSoundSource->parseHeader() == OK) {
 
         // Dump the metadata extracted from the file into the track.
 
@@ -172,54 +172,55 @@ void TrackInfoObject::parse(bool parseCoverArt) {
         // If Artist, Title and Type fields are not blank, modify them.
         // Otherwise, keep their current values.
         // TODO(rryan): Should we re-visit this decision?
-        if (!(pProxiedSoundSource->getArtist().isEmpty())) {
-            setArtist(pProxiedSoundSource->getArtist());
+        if (!(pSoundSource->getArtist().isEmpty())) {
+            setArtist(pSoundSource->getArtist());
         } else {
             parseArtist();
         }
 
-        if (!(pProxiedSoundSource->getTitle().isEmpty())) {
-            setTitle(pProxiedSoundSource->getTitle());
+        if (!(pSoundSource->getTitle().isEmpty())) {
+            setTitle(pSoundSource->getTitle());
         } else {
             parseTitle();
         }
 
-        if (!(pProxiedSoundSource->getType().isEmpty())) {
-            setType(pProxiedSoundSource->getType());
+        if (!(pSoundSource->getType().isEmpty())) {
+            setType(pSoundSource->getType());
         }
 
-        setAlbum(pProxiedSoundSource->getAlbum());
-        setAlbumArtist(pProxiedSoundSource->getAlbumArtist());
-        setYear(pProxiedSoundSource->getYear());
-        setGenre(pProxiedSoundSource->getGenre());
-        setComposer(pProxiedSoundSource->getComposer());
-        setGrouping(pProxiedSoundSource->getGrouping());
-        setComment(pProxiedSoundSource->getComment());
-        setTrackNumber(pProxiedSoundSource->getTrackNumber());
-        float replayGain = pProxiedSoundSource->getReplayGain();
-        if (replayGain != 0) {
+        setAlbum(pSoundSource->getAlbum());
+        setAlbumArtist(pSoundSource->getAlbumArtist());
+        setYear(pSoundSource->getYear());
+        setGenre(pSoundSource->getGenre());
+        setComposer(pSoundSource->getComposer());
+        setGrouping(pSoundSource->getGrouping());
+        setComment(pSoundSource->getComment());
+        setTrackNumber(pSoundSource->getTrackNumber());
+        setChannels(pSoundSource->getChannelCount());
+        setSampleRate(pSoundSource->getSampleRate());
+        setDuration(pSoundSource->getDuration());
+        setBitrate(pSoundSource->getBitrate());
+
+        float replayGain = pSoundSource->getReplayGain();
+        if (replayGain != 0.0f) {
             setReplayGain(replayGain);
         }
-        setDuration(pProxiedSoundSource->getDuration());
-        setBitrate(pProxiedSoundSource->getBitrate());
-        setSampleRate(pProxiedSoundSource->getSampleRate());
-        setChannels(pProxiedSoundSource->getChannels());
 
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
-        float bpm = pProxiedSoundSource->getBPM();
+        float bpm = pSoundSource->getBPM();
         if (bpm > 0) {
             // do not delete beat grid if bpm is not set in file
             setBpm(bpm);
         }
 
-        QString key = pProxiedSoundSource->getKey();
+        QString key = pSoundSource->getKey();
         if (!key.isEmpty()) {
             setKeyText(key, mixxx::track::io::key::FILE_METADATA);
         }
 
         if (parseCoverArt) {
-            m_coverArt.image = proxy.parseCoverArt();
+            m_coverArt.image = pSoundSource->parseCoverArt();
             if (!m_coverArt.image.isNull()) {
                 m_coverArt.info.hash = CoverArtUtils::calculateHash(
                     m_coverArt.image);

@@ -17,6 +17,12 @@
 #ifndef SOUNDSOURCEM4A_H
 #define SOUNDSOURCEM4A_H
 
+#include "soundsource.h"
+
+#include "m4a/ip.h"
+
+#include "defs_version.h"
+
 #ifdef __MP4V2__
     #include <mp4v2/mp4v2.h>
 #else
@@ -24,11 +30,9 @@
 #endif
 
 #include <neaacdec.h>
+
 #include <QString>
-#include "soundsource.h"
-#include "defs_version.h"
-#include "m4a/ip.h"
-#include "util/defs.h"
+#include <QDebug>
 
 #include <QtDebug>
 
@@ -39,25 +43,35 @@
 #define MY_EXPORT
 #endif
 
+
 namespace Mixxx {
 
 class SoundSourceM4A : public SoundSource {
+    typedef SoundSource Super;
+
     public:
-        SoundSourceM4A(QString qFileName);
-        ~SoundSourceM4A();
-        Result open();
-        long seek(long);
-        int initializeDecoder();
-        unsigned read(unsigned long size, const SAMPLE*);
-        unsigned long length();
-        Result parseHeader();
-        QImage parseCoverArt();
         static QList<QString> supportedFileExtensions();
+
+        explicit SoundSourceM4A(QString qFileName);
+        ~SoundSourceM4A();
+
+        Result parseHeader() /*override*/;
+
+        QImage parseCoverArt() /*override*/;
+
+        Result open() /*override*/;
+        void close() /*override*/;
+
+        diff_type seekFrame(diff_type frameIndex) /*override*/;
+        size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
+
     private:
-        int trackId;
-        unsigned long filelength;
-        MP4FileHandle mp4file;
+        Result initializeDecoder();
+
+        /*non-virtual*/ void closeThis();
+
         input_plugin_data ipd;
+        int trackId;
 };
 
 extern "C" MY_EXPORT const char* getMixxxVersion()

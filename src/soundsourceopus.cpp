@@ -4,6 +4,8 @@
 
 
 #include "soundsourceopus.h"
+#include "soundsourcetaglib.h"
+
 #include <QtDebug>
 #ifdef __WINDOWS__
 #include <io.h>
@@ -15,7 +17,7 @@
 #endif
 
 // Include this if taglib if new enough (version 1.9.1 have opusfile)
-#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 #include <taglib/opusfile.h>
 #endif
 
@@ -32,63 +34,54 @@ inline int getByteOrder() {
 
 }
 
+namespace
+{
+    // All Opus audio is encoded at 48 kHz
+    Mixxx::AudioSource::size_type kOpusSampleRate = 48000;
+}
+
 //
 //   Class for reading Xiph Opus
 //
 
 SoundSourceOpus::SoundSourceOpus(QString qFilename)
-    : Mixxx::SoundSource(qFilename) {
-    m_lFilelength = 0;
+    : Mixxx::SoundSource(qFilename)
+    , m_ptrOpusFile(NULL) {
+    this->setType("opus");
 }
 
 SoundSourceOpus::~SoundSourceOpus() {
-    if (m_lFilelength > 0) {
+    if (m_ptrOpusFile) {
         op_free(m_ptrOpusFile);
     }
 }
 
 Result SoundSourceOpus::open() {
-    int error = 0;
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
+    int error = 0;
     m_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     if ( m_ptrOpusFile == NULL ) {
-        qDebug() << "opus: Input does not appear to be an Opus bitstream.";
-        m_lFilelength = 0;
+        qDebug() << "opus: Input does not appear to be an Opus bitstream:" << error;
         return ERR;
     }
 
-    // opusfile lib all ways gives you 48000 samplerate and stereo 16 bit sample
-    m_iChannels = 2;
-    this->setBitrate((int)op_bitrate_instant(m_ptrOpusFile));
-    this->setSampleRate(48000);
-    this->setChannels(m_iChannels);
-
-
-    if (m_iChannels > 2) {
-        qDebug() << "opus: No support for more than 2 m_iChannels!";
-        op_free(m_ptrOpusFile);
-        m_lFilelength = 0;
-        return ERR;
-    }
+    setChannelCount(op_channel_count(m_ptrOpusFile, -1));
+    setSampleRate(kOpusSampleRate);
+    setBitrate(op_bitrate_instant(m_ptrOpusFile));
 
     // op_pcm_total returns the total number of frames in the ogg file. The
     // frame is the channel-independent measure of samples. The total samples in
-    // the file is m_iChannels * ov_pcm_total. rryan 7/2009 I verified this by
+    // the file is getChannelCount() * ov_pcm_total. rryan 7/2009 I verified this by
     // hand. a 30 second long 48khz mono ogg and a 48khz stereo ogg both report
     // 1440000 for op_pcm_total.
-    qint64 ret = op_pcm_total(m_ptrOpusFile, -1) * 2;
-
-    // qDebug() << m_qFilename << "chan:" << m_iChannels << "sample:" << m_iSampleRate << "LEN:" << ret;
-
-
-    if (ret >= 0) {
-        // We pretend that the file is stereo to the rest of the world.
-        m_lFilelength = ret;
+    qint64 frameCount = op_pcm_total(m_ptrOpusFile, -1);
+    if (frameCount >= 0) {
+        setFrameCount(frameCount);
     } else { //error
-        if (ret == OP_EINVAL) {
+        if (frameCount == OP_EINVAL) {
             //The file is not seekable. Not sure if any action is needed.
-            qDebug() << "opus: file is not seekable " << m_qFilename;
+            qDebug() << "opus: file is not seekable " << getFilename();
         }
     }
 
@@ -99,18 +92,11 @@ Result SoundSourceOpus::open() {
    seek to <filepos>
  */
 
-long SoundSourceOpus::seek(long filepos) {
-    // In our speak, filepos is a sample in the file abstraction (i.e. it's
-    // stereo no matter what). filepos/2 is the frame we want to seek to.
-    if (filepos % 2 != 0) {
-        qDebug() << "SoundSourceOpus got non-even seek target.";
-        filepos--;
-    }
-
+Mixxx::AudioSource::diff_type SoundSourceOpus::seekFrame(diff_type frameIndex) {
     if (op_seekable(m_ptrOpusFile)) {
         // I can't say why filepos have to divide by two
         // Have no idea.. probably seek point is mono..
-        if (op_pcm_seek(m_ptrOpusFile, filepos / 2) != 0) {
+        if (op_pcm_seek(m_ptrOpusFile, frameIndex) != 0) {
             // This is totally common (i.e. you're at EOF). Let's not leave this
             // qDebug on.
 
@@ -122,12 +108,11 @@ long SoundSourceOpus::seek(long filepos) {
 
         //return op_pcm_tell(m_ptrOpusFile);
         // We are here allways!
-        return filepos;
+        return frameIndex;
     } else {
-        qDebug() << "opus: Seek ERR at file " << m_qFilename;
+        qDebug() << "opus: Seek ERR at file " << getFilename();
         return 0;
     }
-    return filepos;
 }
 
 
@@ -136,7 +121,7 @@ long SoundSourceOpus::seek(long filepos) {
    samples actually read.
  */
 
-unsigned SoundSourceOpus::read(volatile unsigned long size, const SAMPLE * destination) {
+unsigned SoundSourceOpus::read(volatile unsigned long size, SAMPLE* destination) {
     if (size % 2 != 0) {
         qDebug() << "SoundSourceOpus got non-even size in read.";
         size--;
@@ -175,27 +160,35 @@ unsigned SoundSourceOpus::read(volatile unsigned long size, const SAMPLE * desti
 Result SoundSourceOpus::parseHeader() {
     int error = 0;
 
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
-    this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
-    this->setSampleRate(48000);
-    this->setChannels(2);
-    qint64 l_lLength = op_pcm_total(l_ptrOpusFile, -1) * 2;
-    this->setDuration(l_lLength / (48000 * 2));
-    this->setType("opus");
+
+    setChannelCount(op_channel_count(l_ptrOpusFile, -1));
+    setSampleRate(kOpusSampleRate);
+    setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
+    qint64 l_lLength = op_pcm_total(l_ptrOpusFile, -1) * getChannelCount();
+    setDuration(l_lLength / (getSampleRate() * getChannelCount()));
 
 // If we don't have new enough Taglib we use libopusfile parser!
-#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
+    if (!readFileHeader(this, f)) {
+        return ERR;
+    }
 
-    TagLib::Ogg::XiphComment *tag = f.tag();
-
-    if (tag) {
-        processXiphComment(tag);
+    TagLib::Ogg::XiphComment *xiph = f.tag();
+    if (xiph) {
+        readXiphComment(this, *xiph);
+    } else {
+        // fallback
+        const TagLib::Tag *tag(f.tag());
+        if (tag) {
+            readTag(this, *tag);
+        } else {
+            return ERR;
+        }
     }
 #else
     // From Taglib 1.9.x Opus is supported
@@ -216,7 +209,7 @@ Result SoundSourceOpus::parseHeader() {
       } else if (!l_STag.compare("ALBUM")) {
             this->setAlbum(l_SPayload);
       } else if (!l_STag.compare("BPM")) {
-            this->setBPM(l_SPayload.toFloat());
+            this->setBpm(l_SPayload.toFloat());
       } else if (!l_STag.compare("YEAR") || !l_STag.compare("DATE")) {
             this->setYear(l_SPayload);
       } else if (!l_STag.compare("GENRE")) {
@@ -231,7 +224,7 @@ Result SoundSourceOpus::parseHeader() {
             this->setTitle(l_SPayload);
       } else if (!l_STag.compare("REPLAYGAIN_TRACK_PEAK")) {
       } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            this->parseReplayGainString (l_SPayload);
+            this->setReplayGainString (l_SPayload);
       } else if (!l_STag.compare("REPLAYGAIN_ALBUM_PEAK")) {
       } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
       }
@@ -242,23 +235,14 @@ Result SoundSourceOpus::parseHeader() {
     }
 
     op_free(l_ptrOpusFile);
+#endif
+
     return OK;
-#endif
-
-
-#if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
-    return result ? OK : ERR;
-#endif
-
 }
 
 /*
    Return the length of the file in samples.
  */
-
-inline long unsigned SoundSourceOpus::length() {
-    return m_lFilelength;
-}
 
 QList<QString> SoundSourceOpus::supportedFileExtensions() {
     QList<QString> list;
@@ -267,11 +251,12 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
 }
 
 QImage SoundSourceOpus::parseCoverArt() {
-#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
-    setType("ogg");
-    TagLib::Ogg::Opus::File f(m_qFilename.toLocal8Bit().constData());
-    return getCoverInXiphComment(f.tag());
-#else
-    return QImage();
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+    TagLib::Ogg::Opus::File f(getFilename().toLocal8Bit().constData());
+    TagLib::Ogg::XiphComment *xiph = f.tag();
+    if (xiph) {
+        return Mixxx::getCoverInXiphComment(*xiph);
+    }
 #endif
+    return QImage();
 }
