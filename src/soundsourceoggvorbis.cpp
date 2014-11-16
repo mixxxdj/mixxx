@@ -51,17 +51,16 @@ inline int getByteOrder() {
  */
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-: Mixxx::SoundSource(qFilename)
-{
-    filelength = 0;
+    : Mixxx::SoundSource(qFilename)
+    , filelength(0)
+    , current_section(0) {
+    memset(&vf, 0, sizeof(vf));
     setType("ogg");
 }
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()
 {
-    if (filelength > 0){
-        ov_clear(&vf);
-    }
+    ov_clear(&vf);
 }
 
 Result SoundSourceOggVorbis::open() {
@@ -90,10 +89,10 @@ Result SoundSourceOggVorbis::open() {
     // lookup the ogg's channels and samplerate
     vorbis_info * vi = ov_info(&vf, -1);
 
-    channels = vi->channels;
+    setChannelCount(vi->channels);
     setSampleRate(vi->rate);
 
-    if(channels > 2){
+    if(getChannelCount() > 2){
         qDebug() << "oggvorbis: No support for more than 2 channels!";
         ov_clear(&vf);
         filelength = 0;
@@ -110,8 +109,8 @@ Result SoundSourceOggVorbis::open() {
     if (ret >= 0) {
         // We pretend that the file is stereo to the rest of the world.
         filelength = ret * 2;
-    }
-    else //error
+        setFrameCount(ret);
+    } else //error
     {
       if (ret == OV_EINVAL) {
           //The file is not seekable. Not sure if any action is needed.
@@ -126,17 +125,9 @@ Result SoundSourceOggVorbis::open() {
    seek to <filepos>
  */
 
-long SoundSourceOggVorbis::seek(long filepos)
-{
-    // In our speak, filepos is a sample in the file abstraction (i.e. it's
-    // stereo no matter what). filepos/2 is the frame we want to seek to.
-    if (filepos % 2 != 0) {
-        qDebug() << "SoundSourceOggVorbis got non-even seek target.";
-        filepos--;
-    }
-
+Mixxx::AudioSource::diff_type SoundSourceOggVorbis::seekFrame(diff_type frameIndex) {
     if (ov_seekable(&vf)) {
-        if (ov_pcm_seek(&vf, filepos/2) != 0) {
+        if (ov_pcm_seek(&vf, frameIndex) != 0) {
             // This is totally common (i.e. you're at EOF). Let's not leave this
             // qDebug on.
 
@@ -146,7 +137,7 @@ long SoundSourceOggVorbis::seek(long filepos)
         // Even if an error occured, return them the current position because
         // that's what we promised. (Double it because ov_pcm_tell returns
         // frames and we pretend to the world that everything is stereo)
-        return ov_pcm_tell(&vf) * 2;
+        return ov_pcm_tell(&vf);
     } else {
         qDebug() << "ogg vorbis: Seek ERR at file " << getFilename();
         return 0;
@@ -159,7 +150,7 @@ long SoundSourceOggVorbis::seek(long filepos)
    samples actually read.
  */
 
-unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination) {
+unsigned SoundSourceOggVorbis::read(volatile unsigned long size, SAMPLE* destination) {
     if (size % 2 != 0) {
         qDebug() << "SoundSourceOggVorbis got non-even size in read.";
         size--;
@@ -184,11 +175,12 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // destination. For stereo files, read the full buffer (size*2
     // bytes). For mono files, only read half the buffer (size bytes),
     // and we will double the buffer to be in stereo later.
-    unsigned int needed = size * channels;
+    unsigned int needed = size * getChannelCount();
 
     unsigned int index=0,ret=0;
 
     // loop until requested number of samples has been retrieved
+    int current_section;
     while (needed > 0) {
         // read samples into buffer
         ret = ov_read(&vf, pRead+index, needed, getByteOrder(), 2, 1, &current_section);
@@ -206,7 +198,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // total frames read.
 
     // convert into stereo if file is mono
-    if (channels == 1) {
+    if (isChannelCountMono()) {
         SampleUtil::doubleMonoToDualMono(dest, index / 2);
         // Pretend we read twice as many bytes as we did, since we just repeated
         // each pair of bytes.
@@ -257,11 +249,6 @@ QImage SoundSourceOggVorbis::parseCoverArt() {
 /*
    Return the length of the file in samples.
  */
-
-inline long unsigned SoundSourceOggVorbis::length()
-{
-    return filelength;
-}
 
 QList<QString> SoundSourceOggVorbis::supportedFileExtensions()
 {

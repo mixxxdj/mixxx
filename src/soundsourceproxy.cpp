@@ -310,11 +310,11 @@ Mixxx::SoundSourcePointer SoundSourceProxy::open() const {
         return Mixxx::SoundSourcePointer();
     }
 
-    if (0 >= m_pSoundSource->getChannels()) {
-        qWarning() << "Invalid number of channels:" << m_pSoundSource->getChannels();
-        return Mixxx::SoundSourcePointer();
+    if (!m_pSoundSource->isChannelCountValid()) {
+        qWarning() << "Invalid number of channels" << m_pSoundSource->getChannelCount();
+        return ERR;
     }
-    if (0 >= m_pSoundSource->getSampleRate()) {
+    if (!m_pSoundSource->isSampleRateValid()) {
         qWarning() << "Invalid sample rate:" << m_pSoundSource->getSampleRate();
         return Mixxx::SoundSourcePointer();
     }

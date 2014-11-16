@@ -42,12 +42,14 @@ class SoundSourceMediaFoundation : public Mixxx::SoundSource {
     explicit SoundSourceMediaFoundation(QString filename);
     ~SoundSourceMediaFoundation();
     Result open();
-    long seek(long filepos);
-    unsigned read(unsigned long size, const SAMPLE *buffer);
-    inline long unsigned length();
     Result parseHeader();
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
+
+    diff_type seekFrame(diff_type frameIndex);
+
+  protected:
+    unsigned read(unsigned long size, SAMPLE* buffer);
 
   private:
     bool configureAudioStream();

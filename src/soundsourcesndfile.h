@@ -34,18 +34,18 @@ public:
     explicit SoundSourceSndFile(QString qFilename);
     ~SoundSourceSndFile();
     Result open();
-    long seek(long);
-    unsigned read(unsigned long size, const SAMPLE*);
-    inline long unsigned length();
     Result parseHeader();
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 
+    diff_type seekFrame(diff_type frameIndex);
+
+protected:
+    unsigned read(unsigned long size, SAMPLE*);
+
 private:
     SNDFILE *fh;
     SF_INFO info;
-    int channels;
-    unsigned long filelength;
 };
 
 #endif

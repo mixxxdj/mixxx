@@ -17,9 +17,11 @@
 
 #include <QtDebug>
 
-
 #include "soundsource.h"
+#include "sampleutil.h"
 #include "util/math.h"
+
+#include <cassert>
 
 namespace Mixxx
 {
@@ -52,8 +54,6 @@ namespace
 
 SoundSource::SoundSource(QString qFilename)
         : m_qFilename(qFilename),
-          m_iChannels(0),
-          m_iSampleRate(0),
           m_fReplayGain(0.0f),
           m_fBpm(BPM_ZERO),
           m_iBitrate(0),
@@ -75,5 +75,27 @@ void SoundSource::setBpmString(QString sBpm) {
 void SoundSource::setReplayGainString(QString sReplayGain) {
     setReplayGain(parseReplayGainString(sReplayGain));
 }
+
+void SoundSource::close() {
+}
+
+
+/**
+ * FIXME(uklotzde): This implementation is inefficient and deprecated.
+ * It will be removed after all decoders have been migrated to the new
+ * AudioSource API.
+ */
+AudioSource::size_type SoundSource::readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) {
+    size_type sampleCount = frames2samples(frameCount);
+    SAMPLE* s16Buffer = new SAMPLE[sampleCount];
+    size_type readSampleCount = read(sampleCount, s16Buffer);
+    for (size_type i = 0; i < readSampleCount; ++i) {
+        sampleBuffer[i] = SAMPLE_clampSymmetric(s16Buffer[i]) / sample_type(SAMPLE_MAX);
+    }
+    delete[] s16Buffer;
+    size_type readFrameCount = samples2frames(readSampleCount);
+    return readFrameCount;
+}
+
 
 } //namespace Mixxx

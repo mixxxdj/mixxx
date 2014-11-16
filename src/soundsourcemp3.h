@@ -36,8 +36,6 @@
 #include <QObject>
 #include <QFile>
 
-#define READLENGTH 5000
-
 /** Struct used to store mad frames for seeking */
 typedef struct MadSeekFrameType {
     unsigned char *m_pStreamPos;
@@ -50,47 +48,52 @@ typedef struct MadSeekFrameType {
   */
 
 class SoundSourceMp3 : public Mixxx::SoundSource {
+    typedef SoundSource Super;
+
 public:
-    ~SoundSourceMp3();
-    Result open();
-    long seek(long);
-    unsigned read(unsigned long size, const SAMPLE*);
-    unsigned long discard(unsigned long size);
-    /** Return the length of the file in samples. */
-    inline long unsigned length();
-    Result parseHeader();
-    QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 
     explicit SoundSourceMp3(QString qFilename);
+    ~SoundSourceMp3();
+
+    Result parseHeader() /*override*/;
+
+    QImage parseCoverArt() /*override*/;
+
+    Result open() /*override*/;
+    void close() /*override*/;
+
+    diff_type seekFrame(diff_type frameIndex) /*override*/;
+    size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
+    size_type readStereoFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
+
 private:
+    /*non-virtual*/ void closeThis();
+
+    size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer, bool readStereoSamples);
+
     /** Returns the position of the frame which was found. The found frame is set to
       * the current element in m_qSeekList */
     int findFrame(int pos);
-    /** Scale the mad sample to be in 16 bit range. */
-    inline signed int madScale (mad_fixed_t sample);
+    size_type discardFrames(size_type frameCount);
     MadSeekFrameType* getSeekFrame(long frameIndex) const;
 
-    // Returns true if the loaded file is valid and usable to read audio.
-    bool isValid() const;
-
     QFile m_file;
-    int bitrate;
+
+    unsigned char *inputbuf;
+    unsigned inputbuf_len;
+
     int framecount;
     int currentframe;
     /** current play position. */
     mad_timer_t pos;
     mad_timer_t filelength;
-    mad_stream *Stream;
-    mad_frame *Frame;
-    mad_synth *Synth;
-    unsigned inputbuf_len;
-    unsigned char *inputbuf;
+    enum mad_units units;
+    mad_stream madStream;
+    mad_frame madFrame;
 
-    /** Start index in Synth buffer of samples left over from previous call to read */
-    int rest;
-    /** Number of channels in file */
-    int m_iChannels;
+    mad_synth m_madSynth;
+    unsigned short m_madSynthOffset; // left overs from the previous read
 
     /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
       * To have precise seek within a limited range from the current decode position, we keep track

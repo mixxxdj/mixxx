@@ -15,33 +15,17 @@
 ModPlug::ModPlug_Settings SoundSourceModPlug::s_settings;
 int SoundSourceModPlug::s_bufferSizeLimit;
 
-SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
-    SoundSource(qFilename)
-{
-    m_opened = false;
-    m_fileLength = 0;
-    m_pModFile = 0;
-
-    qDebug() << "[ModPlug] Loading ModPlug module " << getFilename();
-
-    // read module file to byte array
-    QFile modFile(getFilename());
-    modFile.open(QIODevice::ReadOnly);
-    m_fileBuf = modFile.readAll();
-    modFile.close();
-    // get ModPlugFile descriptor for later access
-    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(), m_fileBuf.length());
-
-    if (m_pModFile==NULL) {
-        qDebug() << "[ModPlug] Error while ModPlug_Load";
-    }
+SoundSourceModPlug::SoundSourceModPlug(QString qFilename)
+    : SoundSource(qFilename)
+    , m_pModFile(NULL)
+    , m_fileLength(0)
+    , m_seekPos(0) {
 }
 
 SoundSourceModPlug::~SoundSourceModPlug()
 {
     if (m_pModFile) {
         ModPlug::ModPlug_Unload(m_pModFile);
-        m_pModFile = NULL;
     }
 }
 
@@ -71,6 +55,16 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 
 Result SoundSourceModPlug::open() {
     ScopedTimer t("SoundSourceModPlug::open()");
+
+    qDebug() << "[ModPlug] Loading ModPlug module " << getFilename();
+
+    // read module file to byte array
+    QFile modFile(getFilename());
+    modFile.open(QIODevice::ReadOnly);
+    m_fileBuf = modFile.readAll();
+    modFile.close();
+    // get ModPlugFile descriptor for later access
+    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(), m_fileBuf.length());
 
     if (m_pModFile == NULL) {
         // an error occured
@@ -121,24 +115,20 @@ Result SoundSourceModPlug::open() {
     // The sample buffer holds 44.1kHz 16bit integer stereo samples.
     // We count the number of samples by dividing number of
     // bytes in m_sampleBuf by 2 (bytes per sample).
-    m_fileLength = m_sampleBuf.length() >> 1;
+    int numSamples = m_sampleBuf.length() / 2;
+    setFrameCount(samples2frames(numSamples));
     setSampleRate(44100); // ModPlug always uses 44.1kHz
-    m_opened = true;
     m_seekPos = 0;
     return OK;
 }
 
-long SoundSourceModPlug::seek(long filePos)
-{
-    if (m_fileLength > 0) {
-        m_seekPos = math_min((unsigned long)filePos, m_fileLength);
-        return m_seekPos;
-    }
-    return 0;
+Mixxx::AudioSource::diff_type SoundSourceModPlug::seekFrame(diff_type frameIndex) {
+    diff_type framePos = math_min(frameIndex, diff_type(getFrameCount()));
+    m_seekPos = frames2samples(framePos);
+    return framePos;
 }
 
-unsigned SoundSourceModPlug::read(unsigned long size,
-                                  const SAMPLE* pDestination)
+unsigned SoundSourceModPlug::read(unsigned long size, SAMPLE* pDestination)
 {
     unsigned maxLength = m_sampleBuf.length() >> 1;
     unsigned copySamples = math_min(maxLength - m_seekPos, size);
@@ -192,7 +182,7 @@ Result SoundSourceModPlug::parseHeader() {
     setDuration(ModPlug::ModPlug_GetLength(m_pModFile) / 1000);
     setBitrate(8); // not really, but fill in something...
     setSampleRate(44100);
-    setChannels(2);
+    setChannelCount(2);
     return OK;
 }
 
@@ -200,9 +190,4 @@ QImage SoundSourceModPlug::parseCoverArt() {
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
     return QImage();
-}
-
-inline long unsigned SoundSourceModPlug::length()
-{
-    return m_fileLength;
 }

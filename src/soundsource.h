@@ -18,14 +18,7 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
-#include "util/types.h"
-#include "util/defs.h"
-
-#include <QImage>
-#include <QString>
-#include <QSharedPointer>
-
-#define MIXXX_SOUNDSOURCE_API_VERSION 6
+#define MIXXX_SOUNDSOURCE_API_VERSION 7
 /** @note SoundSource API Version history:
            1 - Mixxx 1.8.0 Beta 2
            2 - Mixxx 1.9.0 Pre (added key code)
@@ -33,7 +26,15 @@
            4 - Mixxx 1.11.0 Pre (added composer field to SoundSource)
            5 - Mixxx 1.12.0 Pre (added album artist and grouping fields to SoundSource)
            6 - Mixxx 1.13.0 (added cover art suppport)
-  */
+           7 - Mixxx 1.13:0 New AudioSource API
+*/
+
+#include "audiosource.h"
+#include "util/defs.h"
+
+#include <QImage>
+#include <QString>
+#include <QSharedPointer>
 
 /** Getter function to be declared by all SoundSource plugins */
 namespace Mixxx {
@@ -51,15 +52,17 @@ typedef void (*freeFileExtensionsFunc)(char** exts);
 */
 namespace Mixxx
 {
-class SoundSource
+class SoundSource: public AudioSource
 {
 public:
     virtual ~SoundSource();
 
-    virtual Result open() = 0;
-    virtual long seek(long) = 0;
-    virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
-    virtual long unsigned length() = 0;
+    // Parses metadata before opening the SoundSource for reading.
+    //
+    // Only metadata that is quickly readable should be read.
+    // The implementation is free to set inaccurate estimated
+    // values here that are overwritten when the AudioSource is
+    // actually opened for reading.
     virtual Result parseHeader() = 0;
 
     // Returns the first cover art image embedded within the file (if any).
@@ -159,12 +162,6 @@ public:
     }
     void setReplayGainString(QString sReplayGain);
 
-    inline void setChannels(int channels) {
-        m_iChannels = channels;
-    }
-    inline void setSampleRate(unsigned int sampleRate) {
-        m_iSampleRate = sampleRate;
-    }
     inline void setBitrate(int bitrate) {
         m_iBitrate = bitrate;
     }
@@ -172,12 +169,23 @@ public:
         m_iDuration = duration;
     }
 
-    inline int getChannels() const {
-        return m_iChannels;
-    }
-    inline unsigned int getSampleRate() const {
-        return m_iSampleRate;
-    }
+    /**
+     * Opens the SoundSource for reading.
+     *
+     * At this point the AudioSource must be completely
+     * initialized.
+     */
+    virtual Result open() = 0;
+
+    /**
+     * Closes the SoundSource.
+     */
+    virtual void close();
+
+    // Preliminary (and inefficient) bridge implementation of the
+    // new AudioSource API. Will be removed if all derived SoundSources
+    // have been migrated to the new API.
+    /*virtual*/ size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer);
 
 protected:
     explicit SoundSource(QString qFilename);
@@ -185,6 +193,9 @@ protected:
     inline void setType(QString type) {
         m_sType = type;
     }
+
+    // DEPRECATED: Legacy SoundSource API
+    virtual unsigned read(unsigned long, SAMPLE*) { return 0; }
 
 private:
     const QString m_qFilename;
@@ -205,8 +216,6 @@ private:
     // The following members need to be initialized
     // explicitly in the constructor! Otherwise their
     // value is undefined.
-    int m_iChannels;
-    unsigned int m_iSampleRate;
     float m_fReplayGain;
     float m_fBpm;
     int m_iBitrate;

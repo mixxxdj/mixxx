@@ -132,13 +132,12 @@ Result SoundSourceMediaFoundation::open()
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seek(0);
+    seekFrame(0);
 
     return OK;
 }
 
-long SoundSourceMediaFoundation::seek(long filepos)
-{
+AudioSource::diff_type SoundSourceMediaFoundation::seekFrame(diff_type frameIndex) {
     if (sDebug) { qDebug() << "seek()" << filepos; }
     PROPVARIANT prop;
     HRESULT hr(S_OK);
@@ -183,8 +182,7 @@ long SoundSourceMediaFoundation::seek(long filepos)
     return result;
 }
 
-unsigned int SoundSourceMediaFoundation::read(unsigned long size,
-    const SAMPLE *destination)
+unsigned int SoundSourceMediaFoundation::read(unsigned long size, SAMPLE*destination)
 {
     if (sDebug) { qDebug() << "read()" << size; }
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
@@ -400,7 +398,6 @@ Result SoundSourceMediaFoundation::parseHeader()
 }
 
 QImage SoundSourceMediaFoundation::parseCoverArt() {
-    setType("m4a");
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {

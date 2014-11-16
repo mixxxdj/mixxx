@@ -46,18 +46,19 @@ public:
     explicit SoundSourceCoreAudio(QString filename);
     ~SoundSourceCoreAudio();
     Result open();
-    long seek(long filepos);
-    unsigned read(unsigned long size, const SAMPLE *buffer);
-    inline long unsigned length();
     Result parseHeader();
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
+
+    diff_type seekFrame(diff_type frameIndex);
+
+protected:
+    unsigned read(unsigned long size, SAMPLE* buffer);
 private:
-    unsigned int m_samples; // total number of samples
-    SInt64 m_headerFrames;
     ExtAudioFileRef m_audioFile;
     CAStreamBasicDescription m_inputFormat;
     CAStreamBasicDescription m_outputFormat;
+    SInt64 m_headerFrames;
 };
 
 

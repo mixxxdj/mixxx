@@ -196,14 +196,15 @@ void TrackInfoObject::parse(bool parseCoverArt) {
         setGrouping(pSoundSource->getGrouping());
         setComment(pSoundSource->getComment());
         setTrackNumber(pSoundSource->getTrackNumber());
-        float replayGain = pSoundSource->getReplayGain();
-        if (replayGain != 0) {
-            setReplayGain(replayGain);
-        }
+        setChannels(pSoundSource->getChannelCount());
+        setSampleRate(pSoundSource->getSampleRate());
         setDuration(pSoundSource->getDuration());
         setBitrate(pSoundSource->getBitrate());
-        setSampleRate(pSoundSource->getSampleRate());
-        setChannels(pSoundSource->getChannels());
+
+        float replayGain = pSoundSource->getReplayGain();
+        if (replayGain != 0.0f) {
+            setReplayGain(replayGain);
+        }
 
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.

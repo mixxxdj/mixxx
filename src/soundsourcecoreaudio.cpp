@@ -22,9 +22,8 @@
 #include "util/math.h"
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
-        : SoundSource(filename),
-          m_samples(0),
-          m_headerFrames(0) {
+        : Mixxx::SoundSource(filename)
+        , m_headerFrames(0) {
 }
 
 SoundSourceCoreAudio::~SoundSourceCoreAudio() {
@@ -84,7 +83,7 @@ Result SoundSourceCoreAudio::open() {
         return ERR;
     }
 
-    setChannels(m_outputFormat.NumberChannels());
+    setChannelCount(m_outputFormat.NumberChannels());
 
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
     UInt32        dataSize;
@@ -114,39 +113,31 @@ Result SoundSourceCoreAudio::open() {
         m_headerFrames=primeInfo.leadingFrames;
     }
 
-    m_samples = (totalFrameCount/* - m_headerFrames*/) * getChannels();
-    setDuration(m_samples / (inputFormat.mSampleRate * getChannels()));
     setSampleRate(inputFormat.mSampleRate);
-    qDebug() << m_samples << totalFrameCount << getChannels();
+    setFrameCount(totalFrameCount/* - m_headerFrames*/);
+    qDebug() << "totalFrameCount" << totalFrameCount;
+
+    setDuration(getFrameCount() / getSampleRate());
 
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seek(0);
+    seekFrame(0);
 
     return OK;
 }
 
-long SoundSourceCoreAudio::seek(long filepos) {
-    // important division here, filepos is in audio samples (i.e. shorts)
-    // but libflac expects a number in time samples. I _think_ this should
-    // be hard-coded at two because *2 is the assumption the caller makes
-    // -- bkgood
-    OSStatus err = noErr;
-    SInt64 segmentStart = filepos / 2;
-
-    err = ExtAudioFileSeek(m_audioFile, (SInt64)segmentStart+m_headerFrames);
+AudioSource::diff_type SoundSourceCoreAudio::seekFrame(diff_type frameIndex) {
+    OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex + m_headerFrames);
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
-    //qDebug() << "SSCA: Seeking to" << segmentStart;
-
-    //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
+    //qDebug() << "SSCA: Seeking to" << frameIndex;
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" << frameIndex << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
-    return filepos;
+    return frameIndex;
 }
 
-unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destination) {
+unsigned int SoundSourceCoreAudio::read(unsigned long size, SAMPLE* destination) {
     //if (!m_decoder) return 0;
     OSStatus err;
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
@@ -178,10 +169,6 @@ unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destin
         numFramesRead += numFrames;
     }
     return numFramesRead*2;
-}
-
-inline unsigned long SoundSourceCoreAudio::length() {
-    return m_samples;
 }
 
 Result SoundSourceCoreAudio::parseHeader() {

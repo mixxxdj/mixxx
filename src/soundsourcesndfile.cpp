@@ -16,7 +16,6 @@
 
 #include "soundsourcesndfile.h"
 #include "soundsourcetaglib.h"
-
 #include "sampleutil.h"
 #include "util/math.h"
 
@@ -34,9 +33,7 @@
  */
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
     : Mixxx::SoundSource(qFilename),
-      fh(NULL),
-      channels(0),
-      filelength(0) {
+      fh(NULL) {
     // Must be set to 0 per the API for reading (non-RAW files)
     memset(&info, 0, sizeof(info));
 }
@@ -74,28 +71,20 @@ Result SoundSourceSndFile::open() {
         return ERR;
     }
 
-    channels = info.channels;
+    setChannelCount(info.channels);
     setSampleRate(info.samplerate);
-    // This is the 'virtual' filelength. No matter how many channels the file
-    // actually has, we pretend it has 2.
-    filelength = info.frames * 2; // File length with two interleaved channels
+    setFrameCount(info.frames);
 
     return OK;
 }
 
-long SoundSourceSndFile::seek(long filepos)
-{
-    unsigned long filepos2 = (unsigned long)filepos;
-    if (filelength>0)
-    {
-        filepos2 = math_min(filepos2,filelength);
-        sf_seek(fh, (sf_count_t)filepos2/2, SEEK_SET);
-        //Note that we don't error check sf_seek because it reports
-        //benign errors under normal usage (ie. we sometimes seek past the end
-        //of a song, and it will stop us.)
-        return filepos2;
-    }
-    return 0;
+Mixxx::AudioSource::diff_type SoundSourceSndFile::seekFrame(diff_type frameIndex) {
+    diff_type framePos = math_min(frameIndex, diff_type(getFrameCount()));
+    sf_seek(fh, framePos, SEEK_SET);
+    //Note that we don't error check sf_seek because it reports
+    //benign errors under normal usage (ie. we sometimes seek past the end
+    //of a song, and it will stop us.)
+    return framePos;
 }
 
 /*
@@ -105,45 +94,37 @@ long SoundSourceSndFile::seek(long filepos)
    then size/2 samples are read from the mono file, and they are
    doubled into stereo.
  */
-unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination)
-{
+unsigned SoundSourceSndFile::read(unsigned long size, SAMPLE* destination) {
     SAMPLE * dest = (SAMPLE *)destination;
-    if (filelength > 0)
+    if (isChannelCountStereo())
     {
-        if (channels==2)
-        {
-            unsigned long no = sf_read_short(fh, dest, size);
+        unsigned long no = sf_read_short(fh, dest, size);
 
-            // rryan 2/2009 This code used to lie and say we read
-            // 'size' samples no matter what. I left this array
-            // zeroing code here in case the Reader doesn't check
-            // against this.
-            for (unsigned long i=no; i<size; ++i)
-                dest[i] = 0;
+        // rryan 2/2009 This code used to lie and say we read
+        // 'size' samples no matter what. I left this array
+        // zeroing code here in case the Reader doesn't check
+        // against this.
+        for (unsigned long i=no; i<size; ++i)
+            dest[i] = 0;
 
-            return no;
-        }
-        else if(channels==1)
-        {
-            // We are not dealing with a stereo file. Read fewer
-            // samples than requested and double them because we
-            // pretend to every reader that all files are in stereo.
-            int readNo = sf_read_short(fh, dest, size/2);
-
-            // dest has enough capacity for (readNo * 2) samples
-            SampleUtil::doubleMonoToDualMono(dest, readNo);
-
-            // We doubled the readNo bytes we read into stereo.
-            return readNo * 2;
-        } else {
-            // We do not support music with more than 2 channels.
-            return 0;
-        }
+        return no;
     }
+    else if (isChannelCountMono())
+    {
+        // We are not dealing with a stereo file. Read fewer
+        // samples than requested and double them because we
+        // pretend to every reader that all files are in stereo.
+        int readNo = sf_read_short(fh, dest, size/2);
 
-    // The file has errors or is not open. Tell the truth and return 0.
-    qDebug() << "The file has errors or is not open: " << getFilename();
-    return 0;
+        // dest has enough capacity for (readNo * 2) samples
+        SampleUtil::doubleMonoToDualMono(dest, readNo);
+
+        // We doubled the readNo bytes we read into stereo.
+        return readNo * 2;
+    } else {
+        // We do not support music with more than 2 channels.
+        return 0;
+    }
 }
 
 Result SoundSourceSndFile::parseHeader()
@@ -273,12 +254,4 @@ QImage SoundSourceSndFile::parseCoverArt() {
         }
     }
     return coverArt;
-}
-
-/*
-   Return the length of the file in samples.
- */
-inline long unsigned SoundSourceSndFile::length()
-{
-    return filelength;
 }

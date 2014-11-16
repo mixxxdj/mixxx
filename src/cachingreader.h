@@ -54,7 +54,7 @@ class CachingReader : public QObject {
 
     // Read num_samples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer.
-    virtual int read(int sample, int num_samples, CSAMPLE* buffer);
+    virtual int read(int sample, int num_samples, Mixxx::AudioSource::sample_type* buffer);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
@@ -86,8 +86,8 @@ class CachingReader : public QObject {
     static Chunk* insertIntoLRUList(Chunk* chunk, Chunk* head);
 
     // Given a sample number, return the chunk number corresponding to it.
-    inline static int chunkForSample(int sample_number) {
-        return sample_number / CachingReaderWorker::kSamplesPerChunk;
+    inline static int chunkForFrame(int frame_number) {
+        return frame_number / CachingReaderWorker::kFramesPerChunk;
     }
 
     const ConfigObject<ConfigValue>* m_pConfig;
@@ -131,9 +131,9 @@ class CachingReader : public QObject {
     Chunk* m_lruChunk;
 
     // The raw memory buffer which is divided up into chunks.
-    CSAMPLE* m_pRawMemoryBuffer;
+    Mixxx::AudioSource::sample_type* m_pRawMemoryBuffer;
 
-    int m_iTrackNumSamplesCallbackSafe;
+    int m_iTrackNumFramesCallbackSafe;
 
     CachingReaderWorker* m_pWorker;
 };

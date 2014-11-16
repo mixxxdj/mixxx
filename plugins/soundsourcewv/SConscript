@@ -14,6 +14,7 @@ wv_sources = [
     "soundsourcewv.cpp",  # Wavpack support
     "soundsourcetaglib.cpp", # TagLib dependencies
     "soundsource.cpp", # required to subclass SoundSource
+    "audiosource.cpp", # required to subclass AudioSource
     "sampleutil.cpp", # utility functions
 ]
 

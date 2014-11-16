@@ -10,22 +10,18 @@
 #include "sampleutil.h"
 
 #include <taglib/wavpackfile.h>
+
 namespace Mixxx {
 
 SoundSourceWV::SoundSourceWV(QString qFilename)
-    : SoundSource(qFilename),
-    filewvc(NULL),
-    Bps(0),
-    filelength(0) {
+    : SoundSource(qFilename)
+    , filewvc(NULL)
+    , Bps(0) {
     setType("wv");
 }
 
-
 SoundSourceWV::~SoundSourceWV(){
-   if (filewvc) {
-    WavpackCloseFile(filewvc);
-    filewvc=NULL;
-   }
+   filewvc = WavpackCloseFile(filewvc);
 }
 
 QList<QString> SoundSourceWV::supportedFileExtensions()
@@ -53,29 +49,34 @@ Result SoundSourceWV::open()
         return ERR;
     }
     // wavpack_open succeeded -> populate variables
-    filelength = WavpackGetNumSamples(filewvc);
-    setSampleRate(WavpackGetSampleRate(filewvc));
-    setChannels(WavpackGetReducedChannels(filewvc));
-    Bps=WavpackGetBytesPerSample(filewvc);
-    qDebug () << "SSWV::open: opened filewvc with filelength: "<<filelength<<" SampleRate: " << getSampleRate()
-        << " channels: " << getChannels() << " bytes per samp: "<<Bps;
-    if (Bps>2) {
+    setChannelCount(WavpackGetReducedChannels(filewvc));
+    if (2 < getChannelCount()) {
+        qDebug () << "SSWV::open: Unsupported number of channels" << getChannelCount();
+        return ERR;
+    }
+    Bps = WavpackGetBytesPerSample(filewvc);
+    if (2 < Bps) {
         qDebug() << "SSWV::open: warning: input file has > 2 bytes per sample, will be truncated to 16bits";
     }
+    setSampleRate(WavpackGetSampleRate(filewvc));
+    uint32_t numSamples = WavpackGetNumSamples(filewvc);
+    setFrameCount(samples2frames(numSamples));
+    qDebug () << "SSWV::open: opened filewvc with filelength: "<<numSamples<<" SampleRate: " << getSampleRate()
+        << " channels: " << getChannelCount() << " bytes per samp: "<<Bps;
     return OK;
 }
 
 
-long SoundSourceWV::seek(long filepos){
-    if (WavpackSeekSample(filewvc,filepos>>1) != true) {
-        qDebug() << "SSWV::seek : could not seek to sample #" << (filepos>>1);
+AudioSource::diff_type SoundSourceWV::seekFrame(diff_type frameIndex) {
+    if (WavpackSeekSample(filewvc, frameIndex) != true) {
+        qDebug() << "SSWV::seek : could not seek to frame #" << frameIndex;
         return 0;
     }
-    return filepos;
+    return frameIndex;
 }
 
 
-unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destination){
+unsigned SoundSourceWV::read(unsigned long size, SAMPLE* destination) {
     //SAMPLE is "short int" => 16bits. [size] is timesamps*2 (because L+R)
     SAMPLE * dest = (SAMPLE*) destination;
     unsigned long sampsread=0;
@@ -84,15 +85,15 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
     //tempbuffer is fixed size : WV_BUF_LENGTH of uint32
     while (sampsread != size) {
         timesamps=(size-sampsread)>>1;      //timesamps still remaining
-        if (timesamps > (WV_BUF_LENGTH / getChannels())) {  //if requested size requires more than one buffer filling
-            timesamps=(WV_BUF_LENGTH / getChannels());      //tempbuffer must hold (timesamps * channels) samples
+        if (timesamps > (WV_BUF_LENGTH/getChannelCount())) {  //if requested size requires more than one buffer filling
+            timesamps=(WV_BUF_LENGTH/getChannelCount());      //tempbuffer must hold (timesamps * channels) samples
             qDebug() << "SSWV::read : performance warning, size requested > buffer size !";
         }
 
         tsdone=WavpackUnpackSamples(filewvc, tempbuffer, timesamps);    //fill temp buffer with timesamps*4bytes*channels
                 //data is right justified, format_samples() fixes that.
 
-        SoundSourceWV::format_samples(Bps, (char *) (dest + (sampsread>>1) * getChannels()), tempbuffer, tsdone*getChannels());
+        SoundSourceWV::format_samples(Bps, (char *) (dest + (sampsread>>1)*getChannelCount()), tempbuffer, tsdone*getChannelCount());
                                 //this will unpack the 4byte/sample
                                 //output of wUnpackSamples(), sign-extending or truncating to output 16bit / sample.
                                 //specifying dest+sampsread should resume the conversion where it was left if size requested
@@ -106,17 +107,11 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
 
     }
 
-    if (getChannels() == 1) { //if MONO : expand array to double it's size; see ssov.cpp
+    if (isChannelCountMono()) {
         SampleUtil::doubleMonoToDualMono(dest, sampsread / 2);
     }
 
     return sampsread;
-}
-
-
-inline long unsigned SoundSourceWV::length(){
-    //filelength is # of timesamps.
-    return filelength<<1;
 }
 
 

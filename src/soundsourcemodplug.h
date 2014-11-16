@@ -24,9 +24,6 @@ class SoundSourceModPlug : public Mixxx::SoundSource
     explicit SoundSourceModPlug(QString qFilename);
     ~SoundSourceModPlug();
     Result open();
-    long seek(long);
-    unsigned read(unsigned long size, const SAMPLE*);
-    inline long unsigned length();
     Result parseHeader();
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
@@ -35,14 +32,17 @@ class SoundSourceModPlug : public Mixxx::SoundSource
     static void configure(unsigned int bufferSizeLimit,
                           const ModPlug::ModPlug_Settings &settings);
 
+    diff_type seekFrame(diff_type frameIndex);
+
+  protected:
+    unsigned read(unsigned long size, SAMPLE*);
   private:
     static int s_bufferSizeLimit; // max track buffer length (bytes)
     static ModPlug::ModPlug_Settings s_settings; // modplug decoder parameters
 
-    bool m_opened;
+    ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     unsigned long m_fileLength; // length of file in samples
     unsigned long m_seekPos; // current read position
-    ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     QByteArray m_fileBuf; // original module file data
     QByteArray m_sampleBuf; // 16bit stereo samples, 44.1kHz
 

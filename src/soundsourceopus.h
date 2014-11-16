@@ -18,13 +18,15 @@ class SoundSourceOpus : public Mixxx::SoundSource {
     virtual ~SoundSourceOpus();
 	
     Result open();
-    long seek(long);
-    unsigned read(unsigned long size, const SAMPLE*);
-    inline long unsigned length();
     Result parseHeader();
     QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
-	
+
+    diff_type seekFrame(diff_type frameIndex);
+
+  protected:
+    unsigned read(unsigned long size, SAMPLE*);
+
   private:
     OggOpusFile *m_ptrOpusFile;
     quint64 m_lFilelength;

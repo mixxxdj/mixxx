@@ -6,7 +6,6 @@
 
 #include "cachingreader.h"
 #include "trackinfoobject.h"
-#include "soundsourceproxy.h"
 #include "sampleutil.h"
 #include "util/counter.h"
 #include "util/math.h"
@@ -25,7 +24,7 @@ CachingReader::CachingReader(QString group,
           m_mruChunk(NULL),
           m_lruChunk(NULL),
           m_pRawMemoryBuffer(NULL),
-          m_iTrackNumSamplesCallbackSafe(0) {
+          m_iTrackNumFramesCallbackSafe(0) {
     int rawMemoryBufferLength = CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory;
     m_pRawMemoryBuffer = new CSAMPLE[rawMemoryBufferLength];
 
@@ -39,8 +38,8 @@ CachingReader::CachingReader(QString group,
     for (int i=0; i < maximumChunksInMemory; i++) {
         Chunk* c = new Chunk;
         c->chunk_number = -1;
-        c->length = 0;
-        c->data = bufferStart;
+        c->frameCount = 0;
+        c->stereoSamples = bufferStart;
         c->next_lru = NULL;
         c->prev_lru = NULL;
 
@@ -154,7 +153,7 @@ void CachingReader::freeChunk(Chunk* pChunk) {
     m_mruChunk = removeFromLRUList(pChunk, m_mruChunk);
 
     pChunk->chunk_number = -1;
-    pChunk->length = 0;
+    pChunk->frameCount = 0;
     m_freeChunks.push_back(pChunk);
 }
 
@@ -171,7 +170,7 @@ void CachingReader::freeAllChunks() {
         }
         if (!m_freeChunks.contains(c)) {
             c->chunk_number = -1;
-            c->length = 0;
+            c->frameCount = 0;
             c->next_lru = NULL;
             c->prev_lru = NULL;
             m_freeChunks.push_back(c);
@@ -239,7 +238,7 @@ void CachingReader::process() {
         } else if (status.status == TRACK_LOADED) {
             freeAllChunks();
             m_readerStatus = status.status;
-            m_iTrackNumSamplesCallbackSafe = status.trackNumSamples;
+            m_iTrackNumFramesCallbackSafe = status.trackFrameCount;
         } else if (status.status == CHUNK_READ_SUCCESS) {
             Chunk* pChunk = status.chunk;
             if (pChunk == NULL) {
@@ -299,7 +298,7 @@ void CachingReader::process() {
 
 int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Check for bad inputs
-    if (sample % 2 != 0 || num_samples < 0 || !buffer) {
+    if (sample % CachingReaderWorker::kChunkChannels != 0 || num_samples % CachingReaderWorker::kChunkChannels != 0 || num_samples < 0 || !buffer) {
         QString temp = QString("Sample = %1").arg(sample);
         qDebug() << "CachingReader::read() invalid arguments sample:" << sample
                  << "num_samples:" << num_samples << "buffer:" << buffer;
@@ -316,37 +315,37 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // Process messages from the reader thread.
     process();
 
+    int samples_remaining = num_samples;
+
+
     // TODO: is it possible to move this code out of caching reader
     // and into enginebuffer?  It doesn't quite make sense here, although
     // it makes preroll completely transparent to the rest of the code
-
     //if we're in preroll...
-    int zerosWritten = 0;
     if (sample < 0) {
-        if (sample + num_samples <= 0) {
-            //everything is zeros, easy
-            memset(buffer, 0, sizeof(*buffer) * num_samples);
-            return num_samples;
-        } else {
-            //some of the buffer is zeros, some is from the file
-            memset(buffer, 0, sizeof(*buffer) * (0 - sample));
-            buffer += (0 - sample);
-            num_samples = sample + num_samples;
-            zerosWritten = (0 - sample);
-            sample = 0;
-            //continue processing the rest of the chunks normally
+        int zero_samples = math_min(-sample, samples_remaining);
+        Q_ASSERT(0 <= zero_samples);
+        Q_ASSERT(zero_samples <= samples_remaining);
+        SampleUtil::clear(buffer, zero_samples);
+        samples_remaining -= zero_samples;
+        if (samples_remaining == 0) {
+            return 0;
         }
+        buffer += zero_samples;
+        sample += zero_samples;
+        Q_ASSERT(0 <= sample);
     }
 
-    int start_sample = math_min(m_iTrackNumSamplesCallbackSafe,
-                                sample);
-    int start_chunk = chunkForSample(start_sample);
-    int end_sample = math_min(m_iTrackNumSamplesCallbackSafe,
-                              sample + num_samples - 1);
-    int end_chunk = chunkForSample(end_sample);
+    Q_ASSERT(0 == (sample % CachingReaderWorker::kChunkChannels));
+    const int frame = sample / CachingReaderWorker::kChunkChannels;
+    Q_ASSERT(0 == (samples_remaining % CachingReaderWorker::kChunkChannels));
+    int frames_remaining = samples_remaining / CachingReaderWorker::kChunkChannels;
+    const int start_frame = math_min(m_iTrackNumFramesCallbackSafe, frame);
+    const int start_chunk = chunkForFrame(start_frame);
+    const int end_frame = math_min(m_iTrackNumFramesCallbackSafe, frame + (frames_remaining - 1));
+    const int end_chunk = chunkForFrame(end_frame);
 
-    int samples_remaining = num_samples;
-    int current_sample = sample;
+    int current_frame = frame;
 
     // Sanity checks
     if (start_chunk > end_chunk) {
@@ -361,7 +360,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // If the chunk is not in cache, then we must return an error.
         if (current == NULL) {
             // qDebug() << "Couldn't get chunk " << chunk_num
-            //          << " in read() of [" << sample << "," << sample + num_samples
+            //          << " in read() of [" << sample << "," << (sample + samples_remaining)
             //          << "] chunks " << start_chunk << "-" << end_chunk;
 
             // Something is wrong. Break out of the loop, that should fill the
@@ -370,83 +369,75 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             break;
         }
 
-        int chunk_start_sample = CachingReaderWorker::sampleForChunk(chunk_num);
-        int chunk_offset = current_sample - chunk_start_sample;
-        int chunk_remaining_samples = current->length - chunk_offset;
+        int chunk_start_frame = CachingReaderWorker::frameForChunk(chunk_num);
+        const int chunk_frame_offset = current_frame - chunk_start_frame;
+        int chunk_remaining_frames = current->frameCount - chunk_frame_offset;
 
         // More sanity checks
-        if (current_sample < chunk_start_sample || current_sample % 2 != 0) {
+        if (current_frame < chunk_start_frame) {
             qDebug() << "CachingReader::read() bad chunk parameters"
-                     << "chunk_start_sample" << chunk_start_sample
-                     << "current_sample" << current_sample;
+                     << "chunk_start_frame" << chunk_start_frame
+                     << "current_frame" << current_frame;
             break;
         }
 
         // If we're past the start_chunk then current_sample should be
         // chunk_start_sample.
-        if (start_chunk != chunk_num && chunk_start_sample != current_sample) {
+        if (start_chunk != chunk_num && chunk_start_frame != current_frame) {
             qDebug() << "CachingReader::read() bad chunk parameters"
                      << "chunk_num" << chunk_num
                      << "start_chunk" << start_chunk
-                     << "chunk_start_sample" << chunk_start_sample
-                     << "current_sample" << current_sample;
+                     << "chunk_start_sample" << chunk_start_frame
+                     << "current_sample" << current_frame;
             break;
         }
 
-        if (samples_remaining < 0) {
+        if (frames_remaining < 0) {
             qDebug() << "CachingReader::read() bad samples remaining"
-                     << samples_remaining;
+                     << frames_remaining;
             break;
         }
 
         // It is completely possible that chunk_remaining_samples is less than
         // zero. If the caller is trying to read from beyond the end of the
         // file, then this can happen. We should tolerate it.
-        if (chunk_remaining_samples < 0) {
-            chunk_remaining_samples = 0;
+        if (chunk_remaining_frames < 0) {
+            chunk_remaining_frames = 0;
         }
-        int samples_to_read = math_clamp(samples_remaining, 0,
-                                         chunk_remaining_samples);
+        const int frames_to_read = math_clamp(frames_remaining, 0, chunk_remaining_frames);
 
         // If we did not decide to read any samples from this chunk then that
         // means we have exhausted all the samples in the song.
-        if (samples_to_read == 0) {
+        if (frames_to_read == 0) {
             break;
         }
 
         // samples_to_read should be non-negative and even
-        if (samples_to_read < 0 || samples_to_read % 2 != 0) {
-            qDebug() << "CachingReader::read() samples_to_read invalid"
-                     << samples_to_read;
+        if (frames_to_read < 0) {
+            qDebug() << "CachingReader::read() frames_to_read invalid"
+                     << frames_to_read;
             break;
         }
 
-        // TODO(rryan) do a test and see if using memcpy is faster than gcc
-        // optimizing the for loop
-        CSAMPLE *data = current->data + chunk_offset;
-        memcpy(buffer, data, sizeof(*buffer) * samples_to_read);
-        // for (int i=0; i < samples_to_read; i++) {
-        //     buffer[i] = data[i];
-        // }
-
+        const int chunk_sample_offset = chunk_frame_offset * CachingReaderWorker::kChunkChannels;
+        const int samples_to_read = frames_to_read * CachingReaderWorker::kChunkChannels;
+        SampleUtil::copy(buffer, current->stereoSamples + chunk_sample_offset, samples_to_read);
         buffer += samples_to_read;
-        current_sample += samples_to_read;
         samples_remaining -= samples_to_read;
+        current_frame += frames_to_read;
+        frames_remaining -= frames_to_read;
     }
 
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
-    // TODO(XXX) memset
-    for (int i=0; i<samples_remaining; i++) {
-        buffer[i] = 0.0f;
-    }
-    samples_remaining = 0;
+    SampleUtil::clear(buffer, samples_remaining);
+    buffer += samples_remaining;
+    samples_remaining -= samples_remaining;
+    current_frame += frames_remaining;
+    frames_remaining -= frames_remaining;
 
-    // if (samples_remaining != 0) {
-    //     qDebug() << "CachingReader::read() did read all requested samples.";
-    // }
-    return zerosWritten + num_samples - samples_remaining;
+    return num_samples - samples_remaining;
 }
 
 void CachingReader::hintAndMaybeWake(const QVector<Hint>& hintList) {
@@ -465,7 +456,7 @@ void CachingReader::hintAndMaybeWake(const QVector<Hint>& hintList) {
     // constant. 2048 is a pretty good number of samples because 25ms
     // latency corresponds to 1102.5 mono samples and we need double
     // that for stereo samples.
-    const int default_samples = 2048;
+    const int default_samples = 1024 * CachingReaderWorker::kChunkChannels;
 
     QSet<int> chunksToFreshen;
     while (iterator.hasNext()) {
@@ -486,12 +477,16 @@ void CachingReader::hintAndMaybeWake(const QVector<Hint>& hintList) {
             qDebug() << "ERROR: Negative hint length. Ignoring.";
             continue;
         }
-        int start_sample = math_clamp(hint.sample, 0,
-                                      m_iTrackNumSamplesCallbackSafe);
-        int start_chunk = chunkForSample(start_sample);
-        int end_sample = math_clamp(hint.sample + hint.length - 1, 0,
-                                    m_iTrackNumSamplesCallbackSafe);
-        int end_chunk = chunkForSample(end_sample);
+        Q_ASSERT(0 == (hint.sample % CachingReaderWorker::kChunkChannels));
+        const int frame = hint.sample / CachingReaderWorker::kChunkChannels;
+        Q_ASSERT(0 == (hint.length % CachingReaderWorker::kChunkChannels));
+        const int frame_count = hint.length / CachingReaderWorker::kChunkChannels;
+        const int start_frame = math_clamp(frame, 0,
+                                      m_iTrackNumFramesCallbackSafe);
+        const int start_chunk = chunkForFrame(start_frame);
+        int end_frame = math_clamp(frame + (frame_count - 1), 0,
+                m_iTrackNumFramesCallbackSafe);
+        const int end_chunk = chunkForFrame(end_frame);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {
             chunksToFreshen.insert(current);

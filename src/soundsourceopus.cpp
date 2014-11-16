@@ -34,14 +34,19 @@ inline int getByteOrder() {
 
 }
 
+namespace
+{
+    // All Opus audio is encoded at 48 kHz
+    Mixxx::AudioSource::size_type kOpusSampleRate = 48000;
+}
+
 //
 //   Class for reading Xiph Opus
 //
 
 SoundSourceOpus::SoundSourceOpus(QString qFilename)
-    : Mixxx::SoundSource(qFilename),
-    m_ptrOpusFile(NULL),
-    m_lFilelength(0) {
+    : Mixxx::SoundSource(qFilename)
+    , m_ptrOpusFile(NULL) {
     this->setType("opus");
 }
 
@@ -52,43 +57,29 @@ SoundSourceOpus::~SoundSourceOpus() {
 }
 
 Result SoundSourceOpus::open() {
-    int error = 0;
     const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
+    int error = 0;
     m_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     if ( m_ptrOpusFile == NULL ) {
-        qDebug() << "opus: Input does not appear to be an Opus bitstream.";
-        m_lFilelength = 0;
+        qDebug() << "opus: Input does not appear to be an Opus bitstream:" << error;
         return ERR;
     }
 
-    // opusfile lib all ways gives you 48000 samplerate and stereo 16 bit sample
-    this->setBitrate(op_bitrate_instant(m_ptrOpusFile));
-    this->setSampleRate(48000);
-    this->setChannels(2);
-
-    if (getChannels() > 2) {
-        qDebug() << "opus: No support for more than 2 channels!";
-        op_free(m_ptrOpusFile);
-        m_lFilelength = 0;
-        return ERR;
-    }
+    setChannelCount(op_channel_count(m_ptrOpusFile, -1));
+    setSampleRate(kOpusSampleRate);
+    setBitrate(op_bitrate_instant(m_ptrOpusFile));
 
     // op_pcm_total returns the total number of frames in the ogg file. The
     // frame is the channel-independent measure of samples. The total samples in
-    // the file is m_iChannels * ov_pcm_total. rryan 7/2009 I verified this by
+    // the file is getChannelCount() * ov_pcm_total. rryan 7/2009 I verified this by
     // hand. a 30 second long 48khz mono ogg and a 48khz stereo ogg both report
     // 1440000 for op_pcm_total.
-    qint64 ret = op_pcm_total(m_ptrOpusFile, -1) * 2;
-
-    // qDebug() << getFilename() << "chan:" << m_iChannels << "sample:" << m_iSampleRate << "LEN:" << ret;
-
-
-    if (ret >= 0) {
-        // We pretend that the file is stereo to the rest of the world.
-        m_lFilelength = ret;
+    qint64 frameCount = op_pcm_total(m_ptrOpusFile, -1);
+    if (frameCount >= 0) {
+        setFrameCount(frameCount);
     } else { //error
-        if (ret == OP_EINVAL) {
+        if (frameCount == OP_EINVAL) {
             //The file is not seekable. Not sure if any action is needed.
             qDebug() << "opus: file is not seekable " << getFilename();
         }
@@ -101,18 +92,11 @@ Result SoundSourceOpus::open() {
    seek to <filepos>
  */
 
-long SoundSourceOpus::seek(long filepos) {
-    // In our speak, filepos is a sample in the file abstraction (i.e. it's
-    // stereo no matter what). filepos/2 is the frame we want to seek to.
-    if (filepos % 2 != 0) {
-        qDebug() << "SoundSourceOpus got non-even seek target.";
-        filepos--;
-    }
-
+Mixxx::AudioSource::diff_type SoundSourceOpus::seekFrame(diff_type frameIndex) {
     if (op_seekable(m_ptrOpusFile)) {
         // I can't say why filepos have to divide by two
         // Have no idea.. probably seek point is mono..
-        if (op_pcm_seek(m_ptrOpusFile, filepos / 2) != 0) {
+        if (op_pcm_seek(m_ptrOpusFile, frameIndex) != 0) {
             // This is totally common (i.e. you're at EOF). Let's not leave this
             // qDebug on.
 
@@ -124,12 +108,11 @@ long SoundSourceOpus::seek(long filepos) {
 
         //return op_pcm_tell(m_ptrOpusFile);
         // We are here allways!
-        return filepos;
+        return frameIndex;
     } else {
         qDebug() << "opus: Seek ERR at file " << getFilename();
         return 0;
     }
-    return filepos;
 }
 
 
@@ -138,7 +121,7 @@ long SoundSourceOpus::seek(long filepos) {
    samples actually read.
  */
 
-unsigned SoundSourceOpus::read(volatile unsigned long size, const SAMPLE * destination) {
+unsigned SoundSourceOpus::read(volatile unsigned long size, SAMPLE* destination) {
     if (size % 2 != 0) {
         qDebug() << "SoundSourceOpus got non-even size in read.";
         size--;
@@ -180,11 +163,12 @@ Result SoundSourceOpus::parseHeader() {
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
-    this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
-    this->setSampleRate(48000);
-    this->setChannels(2);
-    qint64 l_lLength = op_pcm_total(l_ptrOpusFile, -1) * getChannels();
-    this->setDuration(l_lLength / (getSampleRate() * getChannels()));
+
+    setChannelCount(op_channel_count(l_ptrOpusFile, -1));
+    setSampleRate(kOpusSampleRate);
+    setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
+    qint64 l_lLength = op_pcm_total(l_ptrOpusFile, -1) * getChannelCount();
+    setDuration(l_lLength / (getSampleRate() * getChannelCount()));
 
 // If we don't have new enough Taglib we use libopusfile parser!
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
@@ -259,10 +243,6 @@ Result SoundSourceOpus::parseHeader() {
 /*
    Return the length of the file in samples.
  */
-
-inline long unsigned SoundSourceOpus::length() {
-    return m_lFilelength;
-}
 
 QList<QString> SoundSourceOpus::supportedFileExtensions() {
     QList<QString> list;
