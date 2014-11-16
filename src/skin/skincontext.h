@@ -66,7 +66,6 @@ class SkinContext {
                                   const QString& attributeName,
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
-    QString getPixmapPath(const QDomNode& pixmapNode) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
 
     QScriptValue evaluateScript(const QString& expression,

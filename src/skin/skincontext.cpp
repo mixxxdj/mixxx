@@ -227,36 +227,6 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
     return result.join("");
 }
 
-
-
-QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
-    QString pixmapPath, pixmapName;
-    const SvgParser svgParser(*this);
-    
-    if (!pixmapNode.isNull()) {
-        QDomNode svgNode = selectNode(pixmapNode, "svg");
-        if (!svgNode.isNull()) {
-            // inline svg
-            pixmapPath = svgParser.saveToTempFile(
-                svgParser.parseSvgTree(svgNode, m_xmlPath) );
-        } else {
-            // filename
-            pixmapName = nodeToString(pixmapNode);
-            if (!pixmapName.isEmpty()) {
-                pixmapName = getSkinPath(pixmapName);
-                if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
-                    pixmapPath = svgParser.saveToTempFile(
-                        svgParser.parseSvgFile(pixmapName) );
-                } else {
-                    pixmapPath = pixmapName;
-                }
-            }
-        }
-    }
-    
-    return pixmapPath;
-}
-
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     PixmapSource source;
     
