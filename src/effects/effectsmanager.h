@@ -57,8 +57,6 @@ class EffectsManager : public QObject {
     // Each entry of the set is a pair containing the effect id and its name
     const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
-        // Same as above but only Filter like fading effects
-    const QSet<QPair<QString, QString> > getAvailableFilterEffectNames() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 

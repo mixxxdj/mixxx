@@ -148,24 +148,30 @@ static bool isMixingEQ(EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
 }
 
+static bool isForFilterKnob(EffectManifest* pManifest) {
+    return pManifest->isForFilterKnob();
+}
+
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     m_inSlotPopulateDeckEffectSelectors = true; // prevents a recursive call
 
     QList<QPair<QString, QString> > availableEQEffectNames; 
     QList<QPair<QString, QString> > availableFilterEffectNames;
-    EffectsManager::EffectManifestFilterFnc filter;
+    EffectsManager::EffectManifestFilterFnc filterEQ;
+    EffectsManager::EffectManifestFilterFnc filterFilter;
     if (CheckBoxHideEffects->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, "AdvancedView"), QString("no"));
-        filter = isMixingEQ;
-        availableFilterEffectNames = availableEQEffectNames;
+        filterEQ = isMixingEQ;
+        filterFilter = isForFilterKnob;
     } else {
         m_pConfig->set(ConfigKey(kConfigKey, "AdvancedView"), QString("yes"));
-        filter = NULL; // take all;
-        availableFilterEffectNames =
-                m_pEffectsManager->getAvailableFilterEffectNames().toList();
+        filterEQ = NULL; // take all;
+        filterFilter = NULL;
     }
     availableEQEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(filter);
+            m_pEffectsManager->getEffectNamesFiltered(filterEQ);
+    availableFilterEffectNames =
+            m_pEffectsManager->getEffectNamesFiltered(filterFilter);
 
     foreach (QComboBox* box, m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects

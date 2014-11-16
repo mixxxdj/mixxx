@@ -91,25 +91,6 @@ const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(Eff
     return filteredEQEffectNames;
 }
 
-const QSet<QPair<QString, QString> > EffectsManager::getAvailableFilterEffectNames() const {
-    QSet<QPair<QString, QString> > availableFilterEffectNames;
-    QString currentEffectName;
-    foreach (EffectsBackend* pBackend, m_effectsBackends) {
-        QList<QString> backendEffects = pBackend->getEffectIds();
-        foreach (QString effectId, backendEffects) {
-            if (pBackend->getManifest(effectId).isForFilterKnob()) {
-                currentEffectName = pBackend->getManifest(effectId).name();
-                if (availableFilterEffectNames.contains(qMakePair(effectId, currentEffectName))) {
-                    qWarning() << "WARNING: Duplicate effect name" << currentEffectName;
-                    continue;
-                }
-                availableFilterEffectNames.insert(qMakePair(effectId, currentEffectName));
-            }
-        }
-    }
-    return availableFilterEffectNames;
-}
-
 bool EffectsManager::isEQ(const QString& effectId) const {
     return getEffectManifest(effectId).isMixingEQ();
 }
@@ -409,5 +390,4 @@ void EffectsManager::processEffectsResponses() {
             it = m_activeRequests.erase(it);
         }
     }
-
 }
