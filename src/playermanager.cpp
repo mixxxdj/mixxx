@@ -264,7 +264,7 @@ void PlayerManager::addDeckInner() {
         AudioInput(AudioInput::VINYLCONTROL, 0, 0, number - 1), pEngineDeck);
 
     // Setup EQ for this deck
-    m_pEffectsManager->addEqualizer(number);
+    m_pEffectsManager->addEqualizer(group);
 
     pDeck->setupEqControlls();
 }

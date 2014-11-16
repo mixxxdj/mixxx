@@ -413,7 +413,7 @@ void SoundDevicePortAudio::readProcess() {
                         (void)m_inputFifo->aquireWriteRegions(m_inputParams.channelCount,
                                 &dataPtr1, &size1, &dataPtr2, &size2);
                         if (size1) {
-                            memcpy(dataPtr1, lastFrame, size1 * sizeof(CSAMPLE));
+                            SampleUtil::copy(dataPtr1, lastFrame, size1);
                             m_inputFifo->releaseWriteRegions(size1);
                         }
                     } else {
@@ -663,9 +663,9 @@ int SoundDevicePortAudio::callbackProcessDrift(const unsigned int framesPerBuffe
             if (m_outputDrift) {
                 // Risk of underflow, duplicate one frame
                 m_outputFifo->read(out, outChunkSize - m_outputParams.channelCount);
-                memcpy(&out[outChunkSize - m_outputParams.channelCount],
+                SampleUtil::copy(&out[outChunkSize - m_outputParams.channelCount],
                        &out[outChunkSize - (2 * m_outputParams.channelCount)],
-                        m_outputParams.channelCount * sizeof(CSAMPLE));
+                        m_outputParams.channelCount);
                 //qDebug() << "callbackProcessDrift read:" << (float)readAvailable / outChunkSize << "Save";
             } else {
                 m_outputFifo->read(out, outChunkSize);

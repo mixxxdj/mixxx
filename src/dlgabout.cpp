@@ -67,7 +67,6 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
 
     QStringList thisReleaseContributors;
     thisReleaseContributors
-            << "Mark Hills"
             << "Andre Roth"
             << "Robin Sheat"
             << "Mark Glines"
@@ -148,12 +147,19 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
             << "Nino MP"
             << "Ryan Kramer"
             << "Zak Reynolds"
-            << "Alex Barker"
             << "Dennis Rohner"
-            << "Juha Pitk&auml;nen";
+            << "Juha Pitk&auml;nen"
+            << "Kevin Wern"
+            << "Varun Jewalikar"
+            << "Dennis Wallace"
+            << "Keith Salisbury"
+            << "Irina Grosu"
+            << "Callum Styan"
+            << "Rahul Behl";
 
     QStringList specialThanks;
     specialThanks
+            << "Mark Hills"
             << "Vestax"
             << "Stanton"
             << "Hercules"
@@ -224,8 +230,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
             << "Claudio Bantaloukas"
             << "Pavol Rusnak"
             << "Bruno Buccolo"
-            << "Ryan Baker"
-            << "Dennis Wallace";
+            << "Ryan Baker";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");

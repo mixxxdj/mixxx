@@ -1015,7 +1015,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 
             if (keys.isValid()) {
                 pTrack->setKeys(keys);
-            } else {
+            } else if (keyText.size() > 0) {
                 // Typically this happens if we are upgrading from an older
                 // (<1.12.0) version of Mixxx that didn't support Keys. We treat
                 // all legacy data as user-generated because that way it will be
@@ -1061,6 +1061,14 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             qDebug() << "m_sTracks.count() =" << m_sTracks.count();
             m_sTracksMutex.unlock();
             m_trackCache.insert(id, new TrackPointer(pTrack));
+
+            // If the track is dirty send dirty notifications after we inserted
+            // it in the cache. BaseTrackCache cares about dirty notifications
+            // and the setDirty call above happens before we connect to the
+            // track's signals.
+            if (shouldDirty) {
+                emit(trackDirty(id));
+            }
 
             // If the header hasn't been parsed, parse it but only after we set the
             // track clean and hooked it up to the track cache, because this will

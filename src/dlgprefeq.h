@@ -75,7 +75,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     EffectRack* m_pEQEffectRack;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckFilterEffectSelectors;
-    QList<ControlObject*> m_enableWaveformEqCOs;
+    QList<ControlObject*> m_fliterWaveformEnableCOs;
     ControlObjectSlave* m_pNumDecks;
     QString m_eqRackGroup;
 
