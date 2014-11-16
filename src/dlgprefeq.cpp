@@ -303,9 +303,9 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckEqEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
-        m_pDeckEQEffectRack->loadEffectToChainSlot(deckNumber, 0, effectId);
-
         QString group = PlayerManager::groupForDeck(deckNumber);
+        int slotNr = m_pEffectsManager->getEqChainSlotNumberForGroup(group);
+        m_pDeckEQEffectRack->loadEffectToChainSlot(slotNr, 0, effectId);
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
@@ -325,7 +325,9 @@ void DlgPrefEQ::slotFilterEffectChangedOnDeck(int effectIndex) {
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckFilterEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
-        m_pDeckEQEffectRack->loadEffectToChainSlot(deckNumber, 1, effectId);
+        QString group = PlayerManager::groupForDeck(deckNumber);
+        int slotNr = m_pEffectsManager->getEqChainSlotNumberForGroup(group);
+        m_pDeckEQEffectRack->loadEffectToChainSlot(slotNr, 1, effectId);
 
         // Update the configured effect for the current QComboBox
         //m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").

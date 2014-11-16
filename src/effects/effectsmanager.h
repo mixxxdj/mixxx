@@ -50,6 +50,7 @@ class EffectsManager : public QObject {
     EffectRackPointer getEqEffectRack();
     int getEqEffectRackNumber();
     EffectChainSlotPointer getMasterEQEffectChainSlot();
+    int getEqChainSlotNumberForGroup(const QString& group);
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
@@ -93,6 +94,8 @@ class EffectsManager : public QObject {
     // We need to create Control Objects for Equalizers' frequencies
     ControlPotmeter* m_pLoEqFreq;
     ControlPotmeter* m_pHiEqFreq;
+
+    QHash<QString, int> m_eqChainSlotNumberForGroup;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

@@ -187,37 +187,6 @@ EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     return pChainSlotPointer;
 }
 
-EffectChainSlotPointer EffectRack::addMasterEQEffectChainSlot() {
-    int iChainSlotNumber = m_effectChainSlots.size();
-    EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
-
-    pChainSlot->addEffectSlot();
-
-    // Register all the existing channels with the new EffectChain
-    const QSet<QString>& registeredGroups =
-            m_pEffectChainManager->registeredGroups();
-    foreach (const QString& group, registeredGroups) {
-        pChainSlot->registerGroup(group);
-    }
-
-    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
-    m_effectChainSlots.append(pChainSlotPointer);
-    m_controlNumEffectChainSlots.setAndConfirm(
-            m_controlNumEffectChainSlots.get() + 1);
-
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
-    EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect("org.mixxx.effects.graphiceq");
-    pChain->setName("Empty Chain");
-    pChainSlotPointer->loadEffectChain(pChain);
-    pChain->replaceEffect(0, pNextEffect);
-
-    return pChainSlotPointer;
-}
-
 EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
     if (i < 0 || i >= m_effectChainSlots.size()) {
         qWarning() << "WARNING: Invalid index for getEffectChainSlot";

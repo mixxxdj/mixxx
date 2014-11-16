@@ -7,7 +7,6 @@
 #include "engine/effects/engineeffect.h"
 
 static int kDeckEQRackNumber = 1;
-static int kMasterEQRackNumber = 3;
 
 EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
         : QObject(pParent),
@@ -176,8 +175,11 @@ int EffectsManager::getEqEffectRackNumber() {
 }
 
 EffectChainSlotPointer EffectsManager::getMasterEQEffectChainSlot() {
-    return m_pEffectChainManager->getEffectRack(kMasterEQRackNumber - 1)->
-            getEffectChainSlot(0);
+    return getEqEffectRack()->getEffectChainSlot(getEqChainSlotNumberForGroup("[Master]"));
+}
+
+int EffectsManager::getEqChainSlotNumberForGroup(const QString& group) {
+    return m_eqChainSlotNumberForGroup[group];
 }
 
 void EffectsManager::addEqualizer(const QString& group) {
@@ -185,6 +187,7 @@ void EffectsManager::addEqualizer(const QString& group) {
     EffectRackPointer pRack = getEqEffectRack();
     EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlotForEQ();
     const unsigned int chainSlotNumberExt = pChainSlot->getChainSlotNumber() + 1;
+    m_eqChainSlotNumberForGroup[group] = chainSlotNumberExt - 1;
 
     // Set the EQ to be active on group
     ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(
@@ -307,22 +310,22 @@ void EffectsManager::setupDefaults() {
     pRack->addEffectChainSlot();
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.flanger"));
+           this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
     EffectPointer pEffect = instantiateEffect(
-        "org.mixxx.effects.flanger");
+           "org.mixxx.effects.flanger");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.bitcrusher"));
+            this, "org.mixxx.effectchain.bitcrusher"));
     pChain->setName(tr("BitCrusher"));
     pEffect = instantiateEffect("org.mixxx.effects.bitcrusher");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.filter"));
+            this, "org.mixxx.effectchain.filter"));
     pChain->setName(tr("Filter"));
     pEffect = instantiateEffect("org.mixxx.effects.filter");
     pChain->addEffect(pEffect);
@@ -330,7 +333,7 @@ void EffectsManager::setupDefaults() {
 
 #ifndef __MACAPPSTORE__
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.reverb"));
+            this, "org.mixxx.effectchain.reverb"));
     pChain->setName(tr("Reverb"));
     pEffect = instantiateEffect("org.mixxx.effects.reverb");
     pChain->addEffect(pEffect);
@@ -338,7 +341,7 @@ void EffectsManager::setupDefaults() {
 #endif
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.echo"));
+            this, "org.mixxx.effectchain.echo"));
     pChain->setName(tr("Echo"));
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
@@ -351,18 +354,18 @@ void EffectsManager::setupDefaults() {
     m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
     m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 
-    // Add another effect rack for the Master EQ
-    pRack = addEffectRack();
-    pRack->addMasterEQEffectChainSlot();
-    // Set the EQ to be active on Master
-    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(kMasterEQRackNumber).arg(1),
-                                 QString("group_[Master]_enable")),
-                       1.0);
+    addEqualizer("[Master]");
 
-    // Set the Master EQ to be fully wet
-    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(kMasterEQRackNumber).arg(1),
-                                 QString("mix")),
-                       1.0);
+
+    pChain = EffectChainPointer(new EffectChain(
+            this, QString()));
+    EffectPointer pNextEffect = instantiateEffect("org.mixxx.effects.graphiceq");
+    pChain->setName("Empty Chain");
+
+    pRack = getEqEffectRack();
+    EffectChainSlotPointer pChainSlot = getMasterEQEffectChainSlot();
+    pChainSlot->loadEffectChain(pChain);
+    pChain->replaceEffect(0, pNextEffect);
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
