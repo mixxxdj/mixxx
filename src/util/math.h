@@ -20,14 +20,24 @@ using std::fabs;
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
 
 template <typename T>
-inline T math_clamp(T value, T min, T max) {
+inline T math_clamp_fast(T value, T min, T max) {
+    return math_max(min, math_min(max, value));
+}
+
+template <typename T>
+inline T math_clamp_safe(T value, T min, T max) {
     // XXX: If max < min, behavior is undefined, and has been causing problems.
     // if debugging is on, assert when this happens.
     if (CmdlineArgs::Instance().getDeveloper() && max < min) {
         qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
                    << max << " " << min;
     }
-    return math_max(min, math_min(max, value));
+    return math_clamp_fast(value, min, max);
+}
+
+template <typename T>
+inline T math_clamp(T value, T min, T max) {
+    return math_clamp_safe(value, min, max);
 }
 
 // NOTE(rryan): It is an error to call even() on a floating point number. Do not
