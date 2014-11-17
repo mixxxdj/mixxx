@@ -11,8 +11,10 @@ Import('build')
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
 m4a_sources = [
-    "soundsource.cpp", # required to subclass soundsource
     "soundsourcem4a.cpp",  # MP4/M4A Support through FAAD/libmp4v2
+    "soundsourcetaglib.cpp", # TagLib dependencies
+    "soundsource.cpp", # required to subclass SoundSource
+    "sampleutil.cpp", # utility functions
 ]
 
 #Tell SCons to build the SoundSourceM4A plugin

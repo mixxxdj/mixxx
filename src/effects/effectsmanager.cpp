@@ -3,13 +3,15 @@
 #include <QMetaType>
 #include <QtAlgorithms>
 
-#include "effects/effectchainmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "engine/effects/engineeffect.h"
 
 EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
         : QObject(pParent),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
-          m_nextRequestId(0) {
+          m_nextRequestId(0),
+          m_pLoEqFreq(NULL),
+          m_pHiEqFreq(NULL) {
     qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
@@ -32,6 +34,11 @@ EffectsManager::~EffectsManager() {
         delete it.value();
         it = m_activeRequests.erase(it);
     }
+
+    delete m_pHiEqFreq;
+    delete m_pLoEqFreq;
+    // Safe because the Engine is deleted before EffectsManager.
+    delete m_pEngineEffectsManager;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -49,28 +56,47 @@ const QSet<QString>& EffectsManager::registeredGroups() const {
     return m_pEffectChainManager->registeredGroups();
 }
 
-const QSet<QString> EffectsManager::getAvailableEffects() const {
-    QSet<QString> availableEffects;
+const QList<QString> EffectsManager::getAvailableEffects() const {
+    QList<QString> availableEffects;
 
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
-        QSet<QString> backendEffects = pBackend->getEffectIds();
+        const QList<QString>& backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
             if (availableEffects.contains(effectId)) {
                 qWarning() << "WARNING: Duplicate effect ID" << effectId;
                 continue;
             }
-            availableEffects.insert(effectId);
+            availableEffects.append(effectId);
         }
     }
 
     return availableEffects;
 }
 
+const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(EffectManifestFilterFnc filter) const {
+    QList<QPair<QString, QString> > filteredEQEffectNames;
+    QString currentEffectName;
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        QList<QString> backendEffects = pBackend->getEffectIds();
+        foreach (QString effectId, backendEffects) {
+            EffectManifest manifest = pBackend->getManifest(effectId);
+            if (filter && !filter(&manifest)) {
+                continue;
+            }
+            currentEffectName = manifest.name();
+            filteredEQEffectNames.append(qMakePair(effectId, currentEffectName));
+        }
+    }
+
+    return filteredEQEffectNames;
+}
+
+bool EffectsManager::isEQ(const QString& effectId) const {
+    return getEffectManifest(effectId).isEQ();
+}
+
 QString EffectsManager::getNextEffectId(const QString& effectId) {
-    // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
-    // STUPID
-    QList<QString> effects = getAvailableEffects().toList();
-    qSort(effects.begin(), effects.end());
+    const QList<QString> effects = getAvailableEffects();
 
     if (effects.isEmpty()) {
         return QString();
@@ -80,20 +106,16 @@ QString EffectsManager::getNextEffectId(const QString& effectId) {
         return effects.first();
     }
 
-    QList<QString>::const_iterator it =
-            qUpperBound(effects.constBegin(), effects.constEnd(), effectId);
-    if (it == effects.constEnd()) {
-        return effects.first();
+    int index = effects.indexOf(effectId);
+    if (++index >= effects.size()) {
+        index = 0;
     }
-
-    return *it;
+    return effects.at(index);
 }
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    // TODO(rryan): HACK SUPER JANK ALERT. REPLACE THIS WITH SOMETHING NOT
-    // STUPID
-    QList<QString> effects = getAvailableEffects().toList();
-    qSort(effects.begin(), effects.end());
+    const QList<QString> effects = getAvailableEffects();
+    //qSort(effects.begin(), effects.end());  For alphabetical order
 
     if (effects.isEmpty()) {
         return QString();
@@ -103,14 +125,12 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
         return effects.last();
     }
 
-    QList<QString>::const_iterator it =
-            qLowerBound(effects.constBegin(), effects.constEnd(), effectId);
-    if (it == effects.constBegin()) {
-        return effects.last();
+    int index = effects.indexOf(effectId);
+    if (--index < 0) {
+        index = effects.size() - 1;
     }
+    return effects.at(index);
 
-    --it;
-    return *it;
 }
 
 EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
@@ -140,6 +160,122 @@ EffectRackPointer EffectsManager::getEffectRack(int i) {
     return m_pEffectChainManager->getEffectRack(i);
 }
 
+EffectRackPointer EffectsManager::getEQEffectRack() {
+    // The EQ Rack is the last one
+    int eqRackNumber = getEQEffectRackNumber();
+    return m_pEffectChainManager->getEffectRack(eqRackNumber);
+}
+
+int EffectsManager::getEQEffectRackNumber() {
+    // The EQ Rack is the last one
+    int eqRackNumber = m_pEffectChainManager->getEffectRacksSize() - 1;
+    return eqRackNumber;
+}
+
+void EffectsManager::addEqualizer(const QString& group) {
+    int rackNumExt = getEQEffectRackNumber() + 1;
+    EffectRackPointer pRack = getEQEffectRack();
+    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlotForEQ();
+    const unsigned int chainSlotNumberExt = pChainSlot->getChainSlotNumber() + 1;
+
+    // Set the EQ to be active on group
+    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(
+            QString::number(rackNumExt),
+            QString::number(chainSlotNumberExt)),
+                "group_" + group + "_enable"),
+            1.0);
+
+    // Set the EQ to be fully wet
+    ControlObject::set(ConfigKey(QString("[EffectRack%1_EffectUnit%2]").arg(
+            QString::number(rackNumExt),
+            QString::number(chainSlotNumberExt)),
+                "mix"),
+            1.0);
+
+    // Create aliases
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)), "parameter1"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)), "parameter2"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)), "parameter3"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "button_parameter1"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "button_parameter2"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "button_parameter3"));
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow_loaded"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "parameter1_loaded"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid_loaded"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "parameter2_loaded"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh_loaded"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "parameter3_loaded"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill_loaded"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "button_parameter1_loaded"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill_loaded"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "button_parameter2_loaded"));
+
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill_loaded"),
+            ConfigKey(
+                    QString("[EffectRack%1_EffectUnit%2_Effect1]").arg(
+                            QString::number(rackNumExt),
+                            QString::number(chainSlotNumberExt)),
+                    "button_parameter3_loaded"));
+
+
+}
+
 void EffectsManager::setupDefaults() {
     //m_pEffectChainManager->loadEffectChains();
 
@@ -148,8 +284,6 @@ void EffectsManager::setupDefaults() {
     pRack->addEffectChainSlot();
     pRack->addEffectChainSlot();
     pRack->addEffectChainSlot();
-
-    QSet<QString> effects = getAvailableEffects();
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.flanger"));
@@ -188,6 +322,13 @@ void EffectsManager::setupDefaults() {
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
+
+    // Add a new EffectRack for Equalizers
+    addEffectRack();
+
+    // These controls are used inside EQ Effects
+    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
+    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
@@ -222,6 +363,14 @@ void EffectsManager::processEffectsResponses() {
             if (!response.success) {
                 qWarning() << debugString() << "WARNING: Failed EffectsRequest"
                            << "type" << pRequest->type;
+            } else {
+                //qDebug() << debugString() << "EffectsRequest Success"
+                //           << "type" << pRequest->type;
+
+                if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                    //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+                    delete pRequest->RemoveEffectFromChain.pEffect;
+                }
             }
 
             delete pRequest;

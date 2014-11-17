@@ -22,13 +22,12 @@
 #include "engine/enginevinylsoundemu.h"
 #include "engine/enginedeck.h"
 #include "engine/enginepregain.h"
-#include "engine/enginefilterblock.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginefilterbessel4.h"
 
 #include "sampleutil.h"
 
-EngineDeck::EngineDeck(const char* group,
+EngineDeck::EngineDeck(QString group,
                        ConfigObject<ConfigValue>* pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
@@ -58,7 +57,6 @@ EngineDeck::EngineDeck(const char* group,
 
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
-    m_pFilter = new EngineFilterBlock(group);
     m_pVUMeter = new EngineVuMeter(group);
     m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(group);
@@ -68,7 +66,6 @@ EngineDeck::~EngineDeck() {
     delete m_pPassing;
 
     delete m_pBuffer;
-    delete m_pFilter;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVUMeter;
@@ -79,7 +76,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     // Feed the incoming audio through if passthrough is active
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     if (isPassthroughActive() && sampleBuffer) {
-        memcpy(pOut, sampleBuffer, iBufferSize * sizeof(pOut[0]));
+        SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
         m_sampleBuffer = NULL;
     } else {
@@ -101,8 +98,6 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
     // Apply pregain
     m_pPregain->process(pOut, iBufferSize);
-    // Filter the channel with EQs
-    m_pFilter->process(pOut, iBufferSize);
     // Process effects enabled for this channel
     if (m_pEngineEffectsManager != NULL) {
         // This is out of date by a callback but some effects will want the RMS

@@ -45,6 +45,7 @@
 #include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
+#include "widget/wstarrating.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
@@ -324,7 +325,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // created parent so MixxxMainWindow can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
-    m_pContext = new SkinContext();
+    m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
     m_pContext->setSkinBasePath(skinPath.append("/"));
     QList<QWidget*> widgets = parseNode(skinDocument);
 
@@ -419,6 +420,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         result = wrapWidget(parseText(node));
     } else if (nodeName == "TrackProperty") {
         result = wrapWidget(parseTrackProperty(node));
+    } else if (nodeName == "StarRating") {
+        result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
         result = wrapWidget(parseStandardWidget<WVuMeter>(node, true));
     } else if (nodeName == "StatusLight") {
@@ -922,6 +925,33 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     return p;
 }
 
+QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
+ 
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
+
+    if (!pPlayer)
+        return NULL;
+
+    WStarRating* p = new WStarRating(pSafeChannelStr, m_pParent);
+    p->setup(node, *m_pContext);
+
+    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+            p, SLOT(slotTrackLoaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+            p, SLOT(slotTrackUnloaded(TrackPointer)));
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
+
+    return p;
+}
+
+
+
 QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
 
@@ -1308,7 +1338,8 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
     // Take any <SetVariable> elements from this node and update the context
     // with them.
     m_pContext->updateVariables(node);
-
+    m_pContext->setXmlPath(path);
+    
     QList<QWidget*> widgets;
 
     QDomNode child = templateNode.firstChild();

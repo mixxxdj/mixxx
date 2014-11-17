@@ -33,6 +33,7 @@
 #include "defs_urls.h"
 #include "dlgabout.h"
 #include "dlgpreferences.h"
+#include "dlgprefeq.h"
 #include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
@@ -73,6 +74,7 @@
 #include "playerinfo.h"
 #include "waveform/guitick.h"
 #include "util/math.h"
+#include "util/experiment.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -148,7 +150,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    // Sets up the default EffectChains and EffectRack.
+    // Sets up the default EffectChains and EffectRacks
     m_pEffectsManager->setupDefaults();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
@@ -172,11 +174,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         if (i > 0) {
             group = QString("[Microphone%1]").arg(i + 1);
         }
-        // We don't know if something downstream expects the string to persist,
-        // so dupe it (probably leaking it).
         EngineMicrophone* pMicrophone =
-                new EngineMicrophone(strdup(group.toStdString().c_str()),
-                                     m_pEffectsManager);
+                new EngineMicrophone(group, m_pEffectsManager);
         // What should channelbase be?
         AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, i);
         m_pEngine->addChannel(pMicrophone);
@@ -219,7 +218,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
-    // writing meta data may ruine your MP3 file if done simultaneously.
+    // writing meta data may ruin your MP3 file if done simultaneously.
     // see Bug #728197
     // For safety reasons, we deactivate this feature.
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
@@ -247,7 +246,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
-
     m_pPlayerManager->addConfiguredDecks();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
@@ -335,7 +333,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, m_pConfig, m_pLibrary);
+                                    m_pControllerManager, m_pVCManager, m_pEffectsManager,
+                                    m_pConfig, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -537,10 +536,11 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDeleteAll(m_pPassthroughEnabled);
     qDeleteAll(m_micTalkoverControls);
 
-    // EngineMaster depends on Config
+    // EngineMaster depends on Config and m_pEffectsManager.
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
 
+    // Must delete after EngineMaster.
     qDebug() << "deleting effects manager, " << qTime.elapsed();
     delete m_pEffectsManager;
 
@@ -1321,12 +1321,69 @@ void MixxxMainWindow::initActions()
     m_pDeveloperTools->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "OptionsMenu_DeveloperTools"),
-                                                  tr("Ctrl+Shift+D"))));
+                                                  tr("Ctrl+Shift+T"))));
     m_pDeveloperTools->setShortcutContext(Qt::ApplicationShortcut);
     m_pDeveloperTools->setStatusTip(developerToolsText);
     m_pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
     connect(m_pDeveloperTools, SIGNAL(triggered()),
             this, SLOT(slotDeveloperTools()));
+
+    QString enableExperimentTitle = tr("Stats: Experiment Bucket");
+    QString enableExperimentToolsText = tr(
+        "Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.");
+    m_pDeveloperStatsExperiment = new QAction(enableExperimentTitle, this);
+    m_pDeveloperStatsExperiment->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                            "OptionsMenu_DeveloperStatsExperiment"),
+                                                  tr("Ctrl+Shift+E"))));
+    m_pDeveloperStatsExperiment->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperStatsExperiment->setStatusTip(enableExperimentToolsText);
+    m_pDeveloperStatsExperiment->setWhatsThis(buildWhatsThis(
+        enableExperimentTitle, enableExperimentToolsText));
+    m_pDeveloperStatsExperiment->setCheckable(true);
+    m_pDeveloperStatsExperiment->setChecked(Experiment::isExperiment());
+    connect(m_pDeveloperStatsExperiment, SIGNAL(triggered()),
+            this, SLOT(slotDeveloperStatsExperiment()));
+
+    QString enableBaseTitle = tr("Stats: Base Bucket");
+    QString enableBaseToolsText = tr(
+        "Enables base mode. Collects stats in the BASE tracking bucket.");
+    m_pDeveloperStatsBase = new QAction(enableBaseTitle, this);
+    m_pDeveloperStatsBase->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                            "OptionsMenu_DeveloperStatsBase"),
+                                                  tr("Ctrl+Shift+B"))));
+    m_pDeveloperStatsBase->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperStatsBase->setStatusTip(enableBaseToolsText);
+    m_pDeveloperStatsBase->setWhatsThis(buildWhatsThis(
+        enableBaseTitle, enableBaseToolsText));
+    m_pDeveloperStatsBase->setCheckable(true);
+    m_pDeveloperStatsBase->setChecked(Experiment::isBase());
+    connect(m_pDeveloperStatsBase, SIGNAL(triggered()),
+            this, SLOT(slotDeveloperStatsBase()));
+
+
+
+
+    QString scriptDebuggerTitle = tr("Debugger Enabled");
+    QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
+    bool scriptDebuggerEnabled = m_pConfig->getValueString(
+        ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
+    m_pDeveloperDebugger = new QAction(scriptDebuggerTitle, this);
+    
+    m_pDeveloperDebugger->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "DeveloperMenu_EnableDebugger"),
+                                                  tr("Ctrl+Shift+D"))));
+    m_pDeveloperDebugger->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperDebugger->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
+    m_pDeveloperDebugger->setCheckable(true);
+    m_pDeveloperDebugger->setStatusTip(scriptDebuggerText);
+    m_pDeveloperDebugger->setChecked(scriptDebuggerEnabled);
+    connect(m_pDeveloperDebugger, SIGNAL(toggled(bool)),
+            this, SLOT(slotDeveloperDebugger(bool)));
+    
+
 
     // TODO: This code should live in a separate class.
     m_TalkoverMapper = new QSignalMapper(this);
@@ -1403,6 +1460,9 @@ void MixxxMainWindow::initMenuBar()
     // Developer Menu
     m_pDeveloperMenu->addAction(m_pDeveloperReloadSkin);
     m_pDeveloperMenu->addAction(m_pDeveloperTools);
+    m_pDeveloperMenu->addAction(m_pDeveloperStatsExperiment);
+    m_pDeveloperMenu->addAction(m_pDeveloperStatsBase);
+    m_pDeveloperMenu->addAction(m_pDeveloperDebugger);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -1509,9 +1569,34 @@ void MixxxMainWindow::slotDeveloperTools() {
     m_pDeveloperToolsDlg->activateWindow();
 }
 
+void MixxxMainWindow::slotDeveloperDebugger(bool toggle) {
+    m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
+                   ConfigValue(toggle ? 1 : 0));
+}
+
 void MixxxMainWindow::slotDeveloperToolsClosed() {
     m_pDeveloperToolsDlg = NULL;
 }
+
+void MixxxMainWindow::slotDeveloperStatsExperiment() {
+    if (m_pDeveloperStatsExperiment->isChecked()) {
+        m_pDeveloperStatsBase->setChecked(false);
+        Experiment::setExperiment();
+    } else {
+        Experiment::disable();
+    }
+}
+
+void MixxxMainWindow::slotDeveloperStatsBase() {
+    if (m_pDeveloperStatsBase->isChecked()) {
+        m_pDeveloperStatsExperiment->setChecked(false);
+        Experiment::setBase();
+    } else {
+        Experiment::disable();
+    }
+}
+
+
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle)
 {

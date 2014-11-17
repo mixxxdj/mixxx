@@ -426,6 +426,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterHighKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>filterMidKill</TooltipId>
@@ -447,6 +451,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterMidKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>filterLowKill</TooltipId>
@@ -468,6 +476,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterLowKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 
 						<PushButton>
@@ -490,6 +502,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel2],filterHighKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>filterMidKill</TooltipId>
@@ -511,6 +527,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel2],filterMidKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 						<PushButton>
 							<TooltipId>filterLowKill</TooltipId>
@@ -532,6 +552,10 @@
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel2],filterLowKill_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</PushButton>
 
 						<!--
@@ -668,6 +692,10 @@
 							<Connection>
 								<ConfigKey>[Channel1],filterHigh</ConfigKey>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterHigh_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterMid</TooltipId>
@@ -678,6 +706,10 @@
 							<Connection>
 								<ConfigKey>[Channel1],filterMid</ConfigKey>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterMid_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterLow</TooltipId>
@@ -688,6 +720,10 @@
 							<Connection>
 								<ConfigKey>[Channel1],filterLow</ConfigKey>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel1],filterLow_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</Knob>
 
 						<Knob>
@@ -709,6 +745,10 @@
 							<Connection>
 								<ConfigKey>[Channel2],filterHigh</ConfigKey>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel2],filterHigh_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterMid</TooltipId>
@@ -719,6 +759,10 @@
 							<Connection>
 								<ConfigKey>[Channel2],filterMid</ConfigKey>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel2],filterMid_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</Knob>
 						<Knob>
 							<TooltipId>filterLow</TooltipId>
@@ -729,6 +773,10 @@
 							<Connection>
 								<ConfigKey>[Channel2],filterLow</ConfigKey>
 							</Connection>
+							<Connection>
+						        <ConfigKey>[Channel2],filterLow_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+					        </Connection>
 						</Knob>
 
 						<!--

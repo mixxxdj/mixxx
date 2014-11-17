@@ -43,6 +43,9 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // used during test
     void syncSofttakeover();
 
+    // Clear the currently loaded effect
+    void clear();
+
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(double value);
@@ -55,9 +58,6 @@ class EffectParameterSlot : public EffectParameterSlotBase {
         return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
     }
 
-    // Clear the currently loaded effect
-    void clear();
-
     SoftTakeover* m_pSoftTakeover;
 
     // Control exposed to the rest of Mixxx
@@ -68,4 +68,4 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };
 
-#endif /* EFFECTPARAMETERSLOT_H */
+#endif // EFFECTPARAMETERSLOT_H

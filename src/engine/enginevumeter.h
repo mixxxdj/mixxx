@@ -34,7 +34,7 @@ class ControlObjectSlave;
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
   public:
-    EngineVuMeter(const char*);
+    EngineVuMeter(QString group);
     virtual ~EngineVuMeter();
 
     virtual void process(CSAMPLE* pInOut, const int iBufferSize);

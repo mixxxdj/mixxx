@@ -38,7 +38,6 @@
 				<Size>38,26</Size>
 				<Children>
 					<Knob>			
-						<TooltipId>master_volume</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>

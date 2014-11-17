@@ -43,9 +43,31 @@ StatsManager::~StatsManager() {
     wait();
     qDebug() << "StatsManager shutdown report:";
     qDebug() << "=====================================";
+    qDebug() << "ALL STATS";
+    qDebug() << "=====================================";
     for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
          it != m_stats.end(); ++it) {
         qDebug() << it.value();
+    }
+
+    if (!m_baseStats.isEmpty()) {
+        qDebug() << "=====================================";
+        qDebug() << "BASE STATS";
+        qDebug() << "=====================================";
+        for (QMap<QString, Stat>::const_iterator it = m_baseStats.begin();
+             it != m_baseStats.end(); ++it) {
+            qDebug() << it.value();
+        }
+    }
+
+    if (!m_experimentStats.isEmpty()) {
+        qDebug() << "=====================================";
+        qDebug() << "EXPERIMENT STATS";
+        qDebug() << "=====================================";
+        for (QMap<QString, Stat>::const_iterator it = m_experimentStats.begin();
+             it != m_experimentStats.end(); ++it) {
+            qDebug() << it.value();
+        }
     }
     qDebug() << "=====================================";
 
@@ -179,6 +201,20 @@ void StatsManager::processIncomingStatReports() {
             info.m_compute = report.compute;
             info.processReport(report);
             emit(statUpdated(info));
+
+            if (report.compute & Stat::STATS_EXPERIMENT) {
+                Stat& experiment = m_experimentStats[tag];
+                experiment.m_tag = tag;
+                experiment.m_type = report.type;
+                experiment.m_compute = report.compute;
+                experiment.processReport(report);
+            } else if (report.compute & Stat::STATS_BASE) {
+                Stat& base = m_baseStats[tag];
+                base.m_tag = tag;
+                base.m_type = report.type;
+                base.m_compute = report.compute;
+                base.processReport(report);
+            }
 
             if (CmdlineArgs::Instance().getTimelineEnabled() &&
                     (report.type == Stat::EVENT ||

@@ -11,8 +11,10 @@ Import('build')
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
 wv_sources = [
-    "soundsource.cpp", # required to subclass soundsource
     "soundsourcewv.cpp",  # Wavpack support
+    "soundsourcetaglib.cpp", # TagLib dependencies
+    "soundsource.cpp", # required to subclass SoundSource
+    "sampleutil.cpp", # utility functions
 ]
 
 

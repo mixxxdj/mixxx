@@ -194,7 +194,7 @@ class Qt(Dependence):
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
             'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
-            'QtTest'
+            'QtTest', 'QtScriptTools'
         ]
         if qt5:
             qt_modules.extend(['QtWidgets', 'QtConcurrent'])
@@ -581,7 +581,6 @@ class MixxxCore(Feature):
                    "engine/enginebufferscale.cpp",
                    "engine/enginebufferscaledummy.cpp",
                    "engine/enginebufferscalelinear.cpp",
-                   "engine/enginefilterblock.cpp",
                    "engine/enginefilterbiquad1.cpp",
                    "engine/enginefiltermoogladder4.cpp",
                    "engine/enginefilterbessel4.cpp",
@@ -659,6 +658,7 @@ class MixxxCore(Feature):
                    "upgrade.cpp",
 
                    "soundsource.cpp",
+                   "soundsourcetaglib.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
@@ -692,6 +692,7 @@ class MixxxCore(Feature):
                    "widget/wimagestore.cpp",
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
+                   "widget/wstarrating.cpp",
                    "widget/weffectchain.cpp",
                    "widget/weffect.cpp",
                    "widget/weffectparameter.cpp",
@@ -865,6 +866,8 @@ class MixxxCore(Feature):
                    "skin/colorschemeparser.cpp",
                    "skin/tooltips.cpp",
                    "skin/skincontext.cpp",
+                   "skin/svgparser.cpp",
+                   "skin/pixmapsource.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
@@ -913,6 +916,7 @@ class MixxxCore(Feature):
                    "util/file.cpp",
                    "util/mac.cpp",
                    "util/task.cpp",
+                   "util/experiment.cpp",
 
                    '#res/mixxx.qrc'
                    ]

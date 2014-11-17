@@ -8,6 +8,7 @@
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 #include "playerinfo.h"
+#include "sampleutil.h"
 #include "util/timer.h"
 #include "library/trackcollection.h"
 #include "analyserwaveform.h"
@@ -159,7 +160,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource) {
+bool AnalyserQueue::doAnalysis(TrackPointer tio, const Mixxx::SoundSourcePointer& pSoundSource) {
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
@@ -197,11 +198,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
             dieflag = true;
         }
 
-        // Normalize the samples from [SHRT_MIN, SHRT_MAX] to [-1.0, 1.0].
-        // TODO(rryan): Change the SoundSource API to do this for us.
-        for (int i = 0; i < read; ++i) {
-            m_pSamples[i] = static_cast<CSAMPLE>(m_pSamplesPCM[i]) / SHRT_MAX;
-        }
+        SampleUtil::convertS16ToFloat32(m_pSamples, m_pSamplesPCM, read);
 
         QListIterator<Analyser*> it(m_aq);
 
@@ -303,13 +300,18 @@ void AnalyserQueue::run() {
         Trace trace("AnalyserQueue analyzing track");
 
         // Get the audio
-        SoundSourceProxy soundSource(nextTrack);
-        soundSource.open(); //Open the file for reading
-        int iNumSamples = soundSource.length();
-        int iSampleRate = soundSource.getSampleRate();
+        SoundSourceProxy soundSourceProxy(nextTrack);
+        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
+        if (pSoundSource.isNull()) {
+            qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
+            continue;
+        }
+
+        int iNumSamples = pSoundSource->length();
+        int iSampleRate = pSoundSource->getSampleRate();
 
         if (iNumSamples == 0 || iSampleRate == 0) {
-            qDebug() << "Skipping invalid file:" << nextTrack->getLocation();
+            qWarning() << "Skipping invalid file:" << nextTrack->getLocation();
             continue;
         }
 
@@ -328,7 +330,7 @@ void AnalyserQueue::run() {
 
         if (processTrack) {
             emitUpdateProgress(nextTrack, 0);
-            bool completed = doAnalysis(nextTrack, &soundSource);
+            bool completed = doAnalysis(nextTrack, pSoundSource);
             if (!completed) {
                 //This track was cancelled
                 QListIterator<Analyser*> itf(m_aq);
