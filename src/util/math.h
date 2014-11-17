@@ -9,8 +9,6 @@
 
 #include <QtDebug>
 
-#include "util/cmdlineargs.h"
-
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
 using std::fabs;
@@ -28,7 +26,7 @@ template <typename T>
 inline T math_clamp_safe(T value, T min, T max) {
     // XXX: If max < min, behavior is undefined, and has been causing problems.
     // if debugging is on, assert when this happens.
-    if (CmdlineArgs::Instance().getDeveloper() && max < min) {
+    if (max < min) {
         qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
                    << max << " " << min;
     }
