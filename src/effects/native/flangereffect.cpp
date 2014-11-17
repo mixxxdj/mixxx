@@ -39,7 +39,7 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
-    delay->setDescription("Sets the initial value for the delay length.");
+    delay->setDescription("Sets the value for the delay length.");
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
