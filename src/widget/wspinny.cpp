@@ -3,16 +3,17 @@
 #include <QUrl>
 #include <QMimeData>
 
-#include "wimagestore.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "library/coverartcache.h"
 #include "sharedglcontext.h"
-#include "visualplayposition.h"
-#include "widget/wspinny.h"
-#include "vinylcontrol/vinylcontrolmanager.h"
-#include "vinylcontrol/vinylcontrol.h"
 #include "util/dnd.h"
 #include "util/math.h"
+#include "visualplayposition.h"
+#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
+#include "widget/wspinny.h"
+#include "wimagestore.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -60,6 +61,15 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
     qDebug() << "WSpinny(): Created QGLWidget, Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
+
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)));
+    }
+
 }
 
 WSpinny::~WSpinny() {
@@ -209,12 +219,74 @@ void WSpinny::maybeUpdate() {
     }
 }
 
+void WSpinny::slotLoadTrack(TrackPointer pTrack) {
+    if (m_loadedTrack) {
+        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+                   this, SLOT(slotTrackCoverArtUpdated()));
+    }
+    m_lastRequestedCover = CoverInfo();
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
+    m_loadedTrack = pTrack;
+    if (m_loadedTrack) {
+        connect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+                this, SLOT(slotTrackCoverArtUpdated()));
+    }
+
+    slotTrackCoverArtUpdated();
+}
+
+void WSpinny::slotReset() {
+    if (m_loadedTrack) {
+        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+                   this, SLOT(slotTrackCoverArtUpdated()));
+    }
+    m_loadedTrack = TrackPointer();
+    m_lastRequestedCover = CoverInfo();
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
+    update();
+}
+
+void WSpinny::slotTrackCoverArtUpdated() {
+    if (m_loadedTrack) {
+        m_lastRequestedCover = m_loadedTrack->getCoverInfo();
+        m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache != NULL) {
+            // TODO(rryan): Don't use track id.
+            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId());
+        }
+    }
+}
+
+void WSpinny::slotCoverFound(const QObject* pRequestor, int requestReference,
+                             const CoverInfo& info, QPixmap pixmap,
+                             bool fromCache) {
+    Q_UNUSED(info);
+    Q_UNUSED(fromCache);
+
+    if (pRequestor == this && m_loadedTrack &&
+            m_loadedTrack->getId() == requestReference) {
+        qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
+                 << pixmap.size();
+        m_loadedCover = pixmap;
+        m_loadedCoverScaled = scaledCoverArt(pixmap);
+        update();
+    }
+}
+
+
 void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e); //ditch unused param warning
     m_bWidgetDirty = false;
 
     QPainter p(this);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
+
+    if (!m_loadedCoverScaled.isNull()) {
+        p.drawPixmap(0, 0, m_loadedCoverScaled);
+    }
 
     if (m_pBgImage) {
         p.drawImage(0, 0, *m_pBgImage);
@@ -268,6 +340,17 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         //and draw the beat marks from there.
         p.restore();
     }
+}
+
+QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
+    if (normal.isNull()) {
+        return QPixmap();
+    }
+    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+void WSpinny::resizeEvent(QResizeEvent*) {
+    m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
 }
 
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle
