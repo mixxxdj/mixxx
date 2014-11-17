@@ -26,11 +26,16 @@ template <typename T>
 inline T math_clamp_safe(T value, T min, T max) {
     // XXX: If max < min, behavior is undefined, and has been causing problems.
     // if debugging is on, assert when this happens.
-    if (max < min) {
-        qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
-                   << max << " " << min;
+    if (min <= max) {
+        // valid bounds
+        return math_clamp_unsafe(value, min, max);
+    } else {
+        // invalid bounds
+        qWarning() << "PROGRAMMING ERROR: math_clamp_safe() called with min > max!"
+                   << min << ">" << max;
+        // simply return the value unchanged
+        return value;
     }
-    return math_clamp_unsafe(value, min, max);
 }
 
 template <typename T>
