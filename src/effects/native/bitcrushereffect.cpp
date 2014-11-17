@@ -1,5 +1,5 @@
 #include "effects/native/bitcrushereffect.h"
-#include "util/math.h"
+#include "sampleutil.h"
 
 // static
 QString BitCrusherEffect::getId() {
@@ -92,8 +92,8 @@ void BitCrusherEffect::processGroup(const QString& group,
             pState->accumulator -= 1.0;
             if (bit_depth < 16) {
 
-                pState->hold_l = floorf(CSAMPLE_clamp(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
-                pState->hold_r = floorf(CSAMPLE_clamp(pInput[i+1] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_r = floorf(SampleUtil::clampSample(pInput[i+1] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
             } else {
                 // Mixxx float has 24 bit depth, Audio CDs are 16 bit
                 // here we do not change the depth
