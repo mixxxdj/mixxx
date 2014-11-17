@@ -17,15 +17,17 @@ using std::fabs;
 #define math_min std::min
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
 
+// Restrict value to the range [min, max]. Undefined behavior
+// if min > max.
 template <typename T>
 inline T math_clamp_unsafe(T value, T min, T max) {
     return math_max(min, math_min(max, value));
 }
 
+// Clamp with bounds checking to avoid undefined behavior
+// on invalid min/max parameters.
 template <typename T>
 inline T math_clamp_safe(T value, T min, T max) {
-    // XXX: If max < min, behavior is undefined, and has been causing problems.
-    // if debugging is on, assert when this happens.
     if (min <= max) {
         // valid bounds
         return math_clamp_unsafe(value, min, max);
