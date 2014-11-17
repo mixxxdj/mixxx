@@ -330,7 +330,7 @@ void EffectChainSlot::slotControlChainMix(double v) {
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
         qWarning() << debugString() << "value out of limits";
-        v = math_clamp_fast(v, 0.0, 1.0);
+        v = math_clamp_unsafe(v, 0.0, 1.0);
         m_pControlChainMix->set(v);
     }
     if (m_pEffectChain) {
@@ -344,7 +344,7 @@ void EffectChainSlot::slotControlChainParameter(double v) {
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
         qWarning() << debugString() << "value out of limits";
-        v = math_clamp_fast(v, 0.0, 1.0);
+        v = math_clamp_unsafe(v, 0.0, 1.0);
         m_pControlChainParameter->set(v);
     }
     for (int i = 0; i < m_slots.size(); ++i) {

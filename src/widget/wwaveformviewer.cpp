@@ -110,7 +110,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         // where this value is handled.
         double v = 0.5 + (diff.x() / 1270.0);
         // clamp to [0.0, 1.0]
-        v = math_clamp_fast(v, 0.0, 1.0);
+        v = math_clamp_unsafe(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
     }
 }

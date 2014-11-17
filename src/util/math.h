@@ -18,7 +18,7 @@ using std::fabs;
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
 
 template <typename T>
-inline T math_clamp_fast(T value, T min, T max) {
+inline T math_clamp_unsafe(T value, T min, T max) {
     return math_max(min, math_min(max, value));
 }
 
@@ -30,7 +30,7 @@ inline T math_clamp_safe(T value, T min, T max) {
         qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
                    << max << " " << min;
     }
-    return math_clamp_fast(value, min, max);
+    return math_clamp_unsafe(value, min, max);
 }
 
 template <typename T>
