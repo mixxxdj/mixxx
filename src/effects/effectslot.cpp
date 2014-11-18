@@ -8,16 +8,14 @@
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 8;
 
-EffectSlot::EffectSlot(const unsigned int iRackNumber,
+EffectSlot::EffectSlot(const QString& effectUnitGroup,
                        const unsigned int iChainNumber,
                        const unsigned int iEffectnumber)
-        : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
+        : m_iChainNumber(iChainNumber),
           m_iEffectNumber(iEffectnumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
-          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iEffectNumber)) {
+          m_group(formatGroupString(effectUnitGroup, m_iEffectNumber)) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)));
@@ -67,9 +65,6 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
         addEffectParameterSlot();
         addEffectButtonParameterSlot();
     }
-
-    QString effectUnitGroup =  QString("[EffectRack%1_EffectUnit%2]").arg(
-        QString::number(iRackNumber+1), QString::number(iChainNumber+1));
 
     m_pCoSuper = new ControlObjectSlave(ConfigKey(effectUnitGroup, "parameter"));
 

@@ -236,7 +236,7 @@ unsigned int EffectChainSlot::numSlots() const {
 EffectSlotPointer EffectChainSlot::addEffectSlot() {
     //qDebug() << debugString() << "addEffectSlot";
 
-    EffectSlot* pEffectSlot = new EffectSlot(m_iRackNumber, m_iChainSlotNumber,
+    EffectSlot* pEffectSlot = new EffectSlot(m_group, m_iChainSlotNumber,
                                              m_slots.size());
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
