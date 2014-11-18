@@ -85,6 +85,26 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
+
+          <PushButton>
+            <ObjectName>HeadSplit</ObjectName>
+            <Size>50f,20f</Size>
+            <TooltipId>headsplit</TooltipId>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>STEREO</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>MONO SPLIT</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],headSplit</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            </Connection>
+          </PushButton>
+
           <Template src="skin:knob.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headVolume</SetVariable>
