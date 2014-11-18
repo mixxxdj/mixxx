@@ -43,6 +43,22 @@
       </PushButton>
 
       <PushButton>
+        <Size>50f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>+EFFECTS</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>-EFFECTS</Text>
+          </State>
+        <Connection>
+          <ConfigKey persist="true">[Effects],show_effects</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -119,7 +135,7 @@
 
         </Children>
       </WidgetGroup>
-      
+
       <WidgetGroup>
           <ObjectName>MasterVumeter</ObjectName>
           <SizePolicy>min,min</SizePolicy>

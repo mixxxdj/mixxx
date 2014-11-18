@@ -17,6 +17,7 @@
       <attribute config_key="[Spinny3],show_spinny">1</attribute>
       <attribute config_key="[Spinny4],show_spinny">1</attribute>
       <attribute config_key="[Samplers],show_samplers">0</attribute>
+      <attribute config_key="[Effects],show_effects">0</attribute>
       <attribute config_key="[Microphone],show_microphone">0</attribute>
       <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
