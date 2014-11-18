@@ -58,10 +58,6 @@
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
         </Connection>
       </PushButton>
-      <Time>
-      </Time>
-      <Battery>
-      </Battery>
 
       <Template src="skin:microphone.xml"/>
 
@@ -104,9 +100,14 @@
         </Children>
       </WidgetGroup>
 
+      <Time>
+        <ObjectName>Time</ObjectName>
+        <Size>60f,20f</Size>
+        <TooltipId>time</TooltipId>
+        <ShowSeconds>false</ShowSeconds>
+      </Time>
+
     </Children>
   </WidgetGroup>
-
-
 
 </Template>
