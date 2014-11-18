@@ -8,8 +8,7 @@
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
                                  unsigned int iChainNumber)
-        : m_iRackNumber(iRackNumber),
-          m_iChainSlotNumber(iChainNumber),
+        : m_iChainSlotNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(formatGroupString(iRackNumber, iChainNumber)),

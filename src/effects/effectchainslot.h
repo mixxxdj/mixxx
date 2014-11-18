@@ -120,7 +120,6 @@ class EffectChainSlot : public QObject {
         return QString("EffectChainSlot(%1)").arg(m_iChainSlotNumber);
     }
 
-    const unsigned int m_iRackNumber;
     const unsigned int m_iChainSlotNumber;
     const QString m_group;
     EffectRack* m_pEffectRack;
