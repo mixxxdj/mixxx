@@ -27,6 +27,9 @@
 
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
+#ifdef __FFMPEGFILE__
+#include "soundsourceffmpeg.h"
+#else
 #ifdef __MAD__
 #include "soundsourcemp3.h"
 #endif
@@ -40,11 +43,9 @@
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
 #endif
-#ifdef __FFMPEGFILE__
-#include "soundsourceffmpeg.h"
-#endif
 #ifdef __MODPLUG__
 #include "soundsourcemodplug.h"
+#endif
 #endif
 #include "soundsourceflac.h"
 #include "util/cmdlineargs.h"
@@ -169,7 +170,7 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(const QString& qFilename)
 
 #ifdef __FFMPEGFILE__
     return Mixxx::SoundSourcePointer(new SoundSourceFFmpeg(qFilename));
-#endif
+#else
     if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
         return Mixxx::SoundSourcePointer(new SoundSourceOggVorbis(qFilename));
 #ifdef __OPUS__
@@ -209,6 +210,7 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(const QString& qFilename)
     } else { //Unsupported filetype
         return Mixxx::SoundSourcePointer();
     }
+#endif
 }
 
 // static
@@ -344,7 +346,7 @@ QStringList SoundSourceProxy::supportedFileExtensions()
     QList<QString> supportedFileExtensions;
 #ifdef __FFMPEGFILE__
     supportedFileExtensions.append(SoundSourceFFmpeg::supportedFileExtensions());
-#endif
+#else
 #ifdef __MAD__
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
 #endif
@@ -361,8 +363,8 @@ QStringList SoundSourceProxy::supportedFileExtensions()
 #ifdef __MODPLUG__
     supportedFileExtensions.append(SoundSourceModPlug::supportedFileExtensions());
 #endif
+#endif
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
-
     return supportedFileExtensions;
 }
 
