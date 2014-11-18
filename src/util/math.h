@@ -9,8 +9,6 @@
 
 #include <QtDebug>
 
-#include "util/cmdlineargs.h"
-
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
 using std::fabs;
@@ -19,15 +17,32 @@ using std::fabs;
 #define math_min std::min
 #define math_max3(a, b, c) math_max(math_max((a), (b)), (c))
 
+// Restrict value to the range [min, max]. Undefined behavior
+// if min > max.
+template <typename T>
+inline T math_clamp_unsafe(T value, T min, T max) {
+    return math_max(min, math_min(max, value));
+}
+
+// Clamp with bounds checking to avoid undefined behavior
+// on invalid min/max parameters.
+template <typename T>
+inline T math_clamp_safe(T value, T min, T max) {
+    if (min <= max) {
+        // valid bounds
+        return math_clamp_unsafe(value, min, max);
+    } else {
+        // invalid bounds
+        qWarning() << "PROGRAMMING ERROR: math_clamp_safe() called with min > max!"
+                   << min << ">" << max;
+        // simply return the value unchanged
+        return value;
+    }
+}
+
 template <typename T>
 inline T math_clamp(T value, T min, T max) {
-    // XXX: If max < min, behavior is undefined, and has been causing problems.
-    // if debugging is on, assert when this happens.
-    if (CmdlineArgs::Instance().getDeveloper() && max < min) {
-        qWarning() << "PROGRAMMING ERROR: math_clamp called with max < min! "
-                   << max << " " << min;
-    }
-    return math_max(min, math_min(max, value));
+    return math_clamp_safe(value, min, max);
 }
 
 // NOTE(rryan): It is an error to call even() on a floating point number. Do not
