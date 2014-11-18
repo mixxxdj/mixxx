@@ -11,7 +11,7 @@ DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
             : m_database(database) {
 }
 
-DirectoryDAO::~DirectoryDAO(){
+DirectoryDAO::~DirectoryDAO() {
 }
 
 void DirectoryDAO::initialize() {
@@ -58,7 +58,7 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     return ALL_FINE;
 }
 
-bool DirectoryDAO::isChildDir(QString testDir, QString dirStr){
+bool DirectoryDAO::isChildDir(QString testDir, QString dirStr) {
     QDir test = QDir(testDir);
     QDir dir = QDir(dirStr);
     bool child = dir == test;

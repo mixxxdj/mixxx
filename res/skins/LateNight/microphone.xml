@@ -104,7 +104,7 @@
 			</WidgetGroup>
 		</Children>
 		<Connection>
-            <ConfigKey>[Microphone],configured</ConfigKey>
+            <ConfigKey>[Microphone],enabled</ConfigKey>
             <BindProperty>visible</BindProperty>
         </Connection>
 	</WidgetGroup>

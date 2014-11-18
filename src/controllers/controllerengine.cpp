@@ -821,9 +821,8 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
 
             ControllerEngineConnection conn = i.value();
             return m_pEngine->newQObject(
-                        new ControllerEngineConnectionScriptValue(conn),
-                        QScriptEngine::ScriptOwnership
-                    );
+                new ControllerEngineConnectionScriptValue(conn),
+                QScriptEngine::ScriptOwnership);
         }
     }
     else if (callback.isFunction()) {

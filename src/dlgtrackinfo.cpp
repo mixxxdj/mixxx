@@ -30,7 +30,7 @@ DlgTrackInfo::~DlgTrackInfo() {
     qDebug() << "~DlgTrackInfo()";
 }
 
-void DlgTrackInfo::init(){
+void DlgTrackInfo::init() {
     setupUi(this);
 
     cueTable->hideColumn(0);

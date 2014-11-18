@@ -93,12 +93,12 @@ void ConfigValueKbd::valCopy(const ConfigValueKbd& v)
     QTextStream(&value) << m_qKey.toString();
 }
 
-bool operator==(const ConfigValue & s1, const ConfigValue & s2)
+bool operator==(const ConfigValue& s1, const ConfigValue& s2)
 {
     return (s1.value.toUpper() == s2.value.toUpper());
 }
 
-bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2)
+bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2)
 {
     return (s1.value.toUpper() == s2.value.toUpper());
 }
@@ -192,7 +192,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     while (iterator.hasNext())
     {
         it = iterator.next();
-        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0){
+        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0) {
             //qDebug() << "ConfigObject #534: QString::compare match for " << it->key->group << it->key->item;
             return it->key;
         }

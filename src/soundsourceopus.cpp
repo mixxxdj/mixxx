@@ -56,7 +56,7 @@ Result SoundSourceOpus::open() {
     const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     m_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
-    if ( m_ptrOpusFile == NULL ) {
+    if (m_ptrOpusFile == NULL) {
         qDebug() << "opus: Input does not appear to be an Opus bitstream.";
         m_lFilelength = 0;
         return ERR;
@@ -215,12 +215,12 @@ Result SoundSourceOpus::parseHeader() {
 
     // This is left for debug reasons !!
     // qDebug() << "opus: We have " << l_ptrOpusTags->comments;
-    for( i = 0; i < l_ptrOpusTags->comments; i ++){
+    for (i = 0; i < l_ptrOpusTags->comments; ++i) {
       QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
       QString l_STag = l_SWholeTag.left(l_SWholeTag.indexOf("="));
       QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
 
-      if (!l_STag.compare("ARTIST") ) {
+      if (!l_STag.compare("ARTIST")) {
             this->setArtist(l_SPayload);
       } else if (!l_STag.compare("ALBUM")) {
             this->setAlbum(l_SPayload);

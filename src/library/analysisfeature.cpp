@@ -1,4 +1,4 @@
-// preparefeature.cpp
+// analysisfeature.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
@@ -36,23 +36,18 @@ AnalysisFeature::~AnalysisFeature() {
     cleanupAnalyser();
 }
 
-// Sets the title of this feature to the default name, given by m_sAnalysisTitleName
+
 void AnalysisFeature::setTitleDefault() {
-	m_Title = m_analysisTitleName;
-	emit(featureIsLoading(this, false));	// Signals a change in title
+    m_Title = m_analysisTitleName;
+    emit(featureIsLoading(this, false));
 }
 
-// Sets the title of this feature to the default name followed by (x / y)
-// where x is the current track being analyzed and y is the total number of tracks in the job
 void AnalysisFeature::setTitleProgress(int trackNum, int totalNum) {
-	QString title = m_analysisTitleName;
-	title.append(" (");
-	title.append(QString::number(trackNum));
-	title.append(" / ");
-	title.append(QString::number(totalNum));
-	title.append(")");
-	m_Title = title;
-	emit(featureIsLoading(this, false));	// Signals a change in title
+    m_Title = QString("%1 (%2 / %3)")
+            .arg(m_analysisTitleName)
+            .arg(QString::number(trackNum))
+            .arg(QString::number(totalNum));
+    emit(featureIsLoading(this, false));
 }
 
 QVariant AnalysisFeature::title() {

@@ -276,7 +276,7 @@ void EncoderMp3::flush() {
     int rc = 0;
     /**Flush also writes ID3 tags **/
     rc = lame_encode_flush(m_lameFlags, m_bufferOut, m_bufferOutSize);
-    if (rc < 0 ){
+    if (rc < 0) {
         return;
     }
     //end encoded audio to shoutcast or file
@@ -303,7 +303,7 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
 
     rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1],
                                   size/2, m_bufferOut, m_bufferOutSize);
-    if (rc < 0 ){
+    if (rc < 0) {
         return;
     }
     //write encoded audio to shoutcast stream or file
@@ -362,7 +362,7 @@ int EncoderMp3::initEncoder(int bitrate, int samplerate) {
     return 0;
 }
 
-void EncoderMp3::updateMetaData(char* artist, char* title, char* album){
+void EncoderMp3::updateMetaData(char* artist, char* title, char* album) {
     m_metaDataTitle = title;
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;

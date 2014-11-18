@@ -101,7 +101,7 @@ void VampAnalyser::initializePluginPaths() {
 #endif
 }
 
-VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig)
+VampAnalyser::VampAnalyser()
     : m_iSampleCount(0),
       m_iOUT(0),
       m_iRemainingSamples(0),
@@ -113,8 +113,7 @@ VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig)
       m_plugin(NULL),
       m_bDoNotAnalyseMoreSamples(false),
       m_FastAnalysisEnabled(false),
-      m_iMaxSamplesToAnalyse(0),
-      m_pConfig(pconfig) {
+      m_iMaxSamplesToAnalyse(0) {
 }
 
 VampAnalyser::~VampAnalyser() {
