@@ -38,10 +38,10 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     virtual ~DlgPrefEQ();
 
   public slots:
-    void slotEffectChangedOnDeck(int effectIndex);
-    void slotAddComboBox(double numDecks);
+    void slotEqEffectChanged(int effectIndex);
+    void slotNumDecksChanged(double numDecks);
     // Slot for toggling between advanced and basic views
-    void slotPopulateDeckEffectSelectors();
+    void slotPopulateDeckEffectSelector();
     // Update Hi EQ
     void slotUpdateHiEQ();
     // Update Lo EQ
@@ -58,6 +58,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:
+    void setupSelectors();
     void loadSettings();
     void setDefaultShelves();
     double getEqFreq(int value, int minimum, int maximum);
@@ -72,8 +73,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
     EffectRack* m_pEQEffectRack;
-    QList<QComboBox*> m_deckEffectSelectors;
-    QList<ControlObject*> m_fliterWaveformEnableCOs;
+    QComboBox* m_deckEffectSelector;
+    ControlObject* m_filterWaveformEnableCO;
     ControlObjectSlave* m_pNumDecks;
     QString m_eqRackGroup;
 
