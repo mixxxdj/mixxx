@@ -134,8 +134,7 @@ QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) c
     return product;
 }
 
-PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig) {
+PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig) {
     controllerDirPaths.append(localPresetsPath(pConfig));
     controllerDirPaths.append(resourcePresetsPath(pConfig));
 

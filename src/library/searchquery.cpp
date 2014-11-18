@@ -239,7 +239,7 @@ DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
     init(argument);
 }
 
-double DurationFilterNode::parse(const QString& arg, bool* ok){
+double DurationFilterNode::parse(const QString& arg, bool* ok) {
     QRegExp regex("^(\\d*)(m|:)?([0-6]?\\d)?s?$");
     if (regex.indexIn(arg) == -1) {
         *ok = false;

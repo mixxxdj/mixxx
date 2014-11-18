@@ -21,7 +21,7 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
         QDomDocument document;
         document.setContent(&file);
         svgNode = document.elementsByTagName("svg").item(0);
-        scanTree(svgNode);
+        scanTree(&svgNode);
         file.close();
     }
     return svgNode;
@@ -32,50 +32,50 @@ QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode,
     m_currentFile = sourcePath;
     // clone svg to don't alter xml input
     QDomNode svgNode = svgSkinNode.cloneNode(true);
-    scanTree(svgNode);
+    scanTree(&svgNode);
     return svgNode;
 }
 
-void SvgParser::scanTree(QDomNode& node) const {
+void SvgParser::scanTree(QDomNode* node) const {
     parseElement(node);
-    QDomNodeList children = node.childNodes();
-    for (uint i=0; i<children.length(); i++) {
+    QDomNodeList children = node->childNodes();
+    for (uint i = 0; i < children.length(); ++i) {
         QDomNode child = children.at(i);
         if (child.isElement()) {
-            scanTree(child);
+            scanTree(&child);
         }
     }
 }
 
-void SvgParser::parseElement(QDomNode& node) const {
-    QDomElement element = node.toElement();
-    
-    parseAttributes(node);
-    
-    if (element.tagName() == "text"){
-        if (element.hasAttribute("value")){
+void SvgParser::parseElement(QDomNode* node) const {
+    QDomElement element = node->toElement();
+
+    parseAttributes(*node);
+
+    if (element.tagName() == "text") {
+        if (element.hasAttribute("value")) {
             QString expression = element.attribute("value");
             QString result = evaluateTemplateExpression(
-                expression, node.lineNumber() ).toString();
-            
-            if (!result.isNull()){
-                QDomNodeList children = node.childNodes();
-                for (uint i=0; i<children.length(); i++) {
-                    node.removeChild(children.at(i));
+                expression, node->lineNumber()).toString();
+
+            if (!result.isNull()) {
+                QDomNodeList children = node->childNodes();
+                for (uint i = 0; i < children.length(); ++i) {
+                    node->removeChild(children.at(i));
                 }
-                
-                QDomNode newChild = node.ownerDocument().createTextNode(result);
-                node.appendChild(newChild);
+
+                QDomNode newChild = node->ownerDocument().createTextNode(result);
+                node->appendChild(newChild);
             }
         }
-        
-    } else if (element.tagName() == "Variable"){
+
+    } else if (element.tagName() == "Variable") {
         QString value;
-        if (element.hasAttribute("expression")){
+        if (element.hasAttribute("expression")) {
             QString expression = element.attribute("expression");
             value = evaluateTemplateExpression(
-                expression, node.lineNumber() ).toString();
-        } else if (element.hasAttribute("name")){
+                expression, node->lineNumber()).toString();
+        } else if (element.hasAttribute("name")) {
             /* TODO (jclaveau) : Getting the variable from the context or the
              * script engine have the same result here (in the skin context two)
              * Isn't it useless?
@@ -83,22 +83,22 @@ void SvgParser::parseElement(QDomNode& node) const {
              */
             value = m_context.variable(element.attribute("name"));
         }
-        
-        if (!value.isNull()){
+
+        if (!value.isNull()) {
             // replace node by its value
-            QDomNode varParentNode = node.parentNode();
-            QDomNode varValueNode = node.ownerDocument().createTextNode(value);
-            QDomNode oldChild = varParentNode.replaceChild(varValueNode, node);
-            
+            QDomNode varParentNode = node->parentNode();
+            QDomNode varValueNode = node->ownerDocument().createTextNode(value);
+            QDomNode oldChild = varParentNode.replaceChild(varValueNode, *node);
+
             if (oldChild.isNull()) {
                 // replaceChild has a really weird behaviour so I add this check
                 qDebug() << "SVG : unable to replace dom node changed. \n";
             }
         }
-        
-    } else if (element.tagName() == "script"){
+
+    } else if (element.tagName() == "script") {
         // Look for a filepath in the "src" attribute
-        QString scriptPath = node.toElement().attribute("src");
+        QString scriptPath = node->toElement().attribute("src");
         if (!scriptPath.isNull()) {
             QFile scriptFile(m_context.getSkinPath(scriptPath));
             scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
@@ -107,18 +107,17 @@ void SvgParser::parseElement(QDomNode& node) const {
                                                            scriptPath);
         }
         // Evaluates the content of the script element
-        QString expression = m_context.nodeToString(node);
+        QString expression = m_context.nodeToString(*node);
         QScriptValue result = m_context.evaluateScript(
-            expression, m_currentFile, node.lineNumber());
+            expression, m_currentFile, node->lineNumber());
     }
 }
 
 
-void SvgParser::parseAttributes(QDomNode& node) const {
-    
+void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomNamedNodeMap attributes = node.attributes();
     QDomElement element = node.toElement();
-    
+
     // Retrieving hooks pattern from script extension
     QScriptValue global = m_context.getScriptEngine().globalObject();
     QScriptValue hooksPattern = global.property("svg")
@@ -126,16 +125,16 @@ void SvgParser::parseAttributes(QDomNode& node) const {
     QRegExp hookRx;
     if (!hooksPattern.isNull())
         hookRx.setPattern(hooksPattern.toString());
-    
+
     // expr-attribute_name="var_name";
     QRegExp nameRx("^expr-([^=\\s]+)$");
     // TODO (jclaveau) : move this pattern definition to the script extension?
     for (uint i=0; i < attributes.length(); i++) {
-        
+
         QDomAttr attribute = attributes.item(i).toAttr();
         QString attributeValue = attribute.value();
         QString attributeName = attribute.name();
-        
+
         // searching variable attributes :
         // expr-attribute_name="variable_name|expression"
         if (nameRx.indexIn(attributeName) != -1) {
@@ -146,7 +145,7 @@ void SvgParser::parseAttributes(QDomNode& node) const {
             }
             continue;
         }
-        
+
         if (!hookRx.isEmpty()) {
             // searching hooks in the attribute value
             int pos = 0;
@@ -160,7 +159,7 @@ void SvgParser::parseAttributes(QDomNode& node) const {
                 pos += replacement.length();
             }
         }
-        
+
         attribute.setValue(attributeValue);
     }
 }
@@ -180,8 +179,7 @@ QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
         expression, m_currentFile, lineNumber);
     if (m_context.getScriptEngine().hasUncaughtException()) {
         // return an empty string as replacement for the in-attribute expression
-        QScriptValue nullValue;
-        return nullValue;
+        return QScriptValue();
     } else {
         return out;
     }

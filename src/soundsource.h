@@ -147,7 +147,7 @@ public:
     inline void setTrackNumber(QString trackNumber) {
         m_sTrackNumber = trackNumber;
     }
-    inline void setKey(QString key){
+    inline void setKey(QString key) {
         m_sKey = key;
     }
     inline void setBpm(float bpm) {

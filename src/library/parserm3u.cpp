@@ -107,12 +107,13 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 
     textline = stream->readLine();
 
-    while(!textline.isEmpty()){
+    while (!textline.isEmpty()) {
         //qDebug() << "Untransofrmed text: " << textline;
-        if(textline.isNull())
+        if (textline.isNull()) {
             break;
+        }
 
-        if(!textline.contains("#")){
+        if (!textline.contains("#")) {
             filename = textline;
             filename.remove("file://");
             QByteArray strlocbytes = filename.toUtf8();

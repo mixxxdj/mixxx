@@ -18,11 +18,10 @@ QStringList ControlValueDelegate::m_flangerControlValues;
 QStringList ControlValueDelegate::m_microphoneControlValues;
 
 
-ControlValueDelegate::ControlValueDelegate(QObject *parent)
-         : QItemDelegate(parent)
-{
-    if (m_channelControlValues.isEmpty()) //List is static/shared across all objects, so only fill once.
-    {
+ControlValueDelegate::ControlValueDelegate(QObject* parent)
+         : QItemDelegate(parent) {
+    // List is static/shared across all objects, so only fill once.
+    if (m_channelControlValues.isEmpty()) {
         m_channelControlValues.append("beatsync");
         m_channelControlValues.append("cue_default");
         m_channelControlValues.append("filterHigh");
@@ -170,9 +169,8 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
     }
 }
 
-void ControlValueDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-                         const QModelIndex &index) const
-{
+void ControlValueDelegate::paint(QPainter *painter, const QStyleOptionViewItem& option,
+                                 const QModelIndex& index) const {
     if (index.data().canConvert<QString>()) {
         QString value = index.data().value<QString>();
 
@@ -192,10 +190,9 @@ void ControlValueDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     }
 }
 
-QWidget *ControlValueDelegate::createEditor(QWidget *parent,
-        const QStyleOptionViewItem &/* option */,
-        const QModelIndex &index ) const
-{
+QWidget* ControlValueDelegate::createEditor(QWidget* parent,
+                                            const QStyleOptionViewItem& /* option */,
+                                            const QModelIndex& index) const {
     //TODO: Use index to grab the value of the ControlGroup column next to
     //      this item. We want to do this because some of the possible
     //      ControlValues only apply to Channel1/2, and not Master (for example).
@@ -238,18 +235,16 @@ QWidget *ControlValueDelegate::createEditor(QWidget *parent,
     return editor;
 }
 
-void ControlValueDelegate::setEditorData(QWidget *editor,
-                                    const QModelIndex &index) const
-{
+void ControlValueDelegate::setEditorData(QWidget* editor,
+                                         const QModelIndex& index) const {
     QString value = index.model()->data(index, Qt::EditRole).toString();
 
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
     comboBox->setCurrentIndex(comboBox->findText(value));
 }
 
-void ControlValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
-                                    const QModelIndex &index) const
-{
+void ControlValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
+                                        const QModelIndex& index) const {
     QString midiType = 0;
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
     //comboBox->interpretText();
@@ -260,10 +255,9 @@ void ControlValueDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
     model->setData(index, text, Qt::EditRole);
 }
 
-void ControlValueDelegate::updateEditorGeometry(QWidget *editor,
-                                           const QStyleOptionViewItem &option,
-                                           const QModelIndex &/* index */) const
-{
+void ControlValueDelegate::updateEditorGeometry(QWidget* editor,
+                                                const QStyleOptionViewItem& option,
+                                                const QModelIndex& /* index */) const {
     editor->setGeometry(option.rect);
 }
 
@@ -273,9 +267,9 @@ void ControlValueDelegate::updateEditorGeometry(QWidget *editor,
     @param controlGroup The group that has just been selected and should be verified against.
     @param index The model index of the ControlValue.
 */
-bool ControlValueDelegate::verifyControlValueValidity(QString controlGroup, QAbstractItemModel *model,
-                                                      const QModelIndex& index)
-{
+bool ControlValueDelegate::verifyControlValueValidity(QString controlGroup,
+                                                      QAbstractItemModel* model,
+                                                      const QModelIndex& index) {
     QString value = index.data().value<QString>();
 
     if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||

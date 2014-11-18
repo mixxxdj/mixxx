@@ -43,7 +43,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent)
     m_initSuccess = init();
 }
 
-GLSLWaveformWidget::~GLSLWaveformWidget(){
+GLSLWaveformWidget::~GLSLWaveformWidget() {
     makeCurrent();
 }
 

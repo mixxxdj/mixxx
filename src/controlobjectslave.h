@@ -31,7 +31,7 @@ class ControlObjectSlave : public QObject {
     bool connectValueChanged(const QObject* receiver,
             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
     bool connectValueChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection );
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
     // Called from update();
     inline void emitValueChanged() {

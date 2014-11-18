@@ -33,7 +33,7 @@ StarDelegate::StarDelegate(QObject *pParent)
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     //let the editor to the painting if this is true
-    if(index==m_currentEditedCellIndex){
+    if (index == m_currentEditedCellIndex) {
         return;
     }
 

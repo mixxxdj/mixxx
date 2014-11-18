@@ -882,8 +882,7 @@ int MixxxMainWindow::noSoundDlg(void)
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog")
-            );
+                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -943,7 +942,7 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
-            if ( m_pPrefDlg->result() == QDialog::Accepted) {
+            if (m_pPrefDlg->result() == QDialog::Accepted) {
                 m_pSoundManager->queryDevices();
                 return 0;
             }
@@ -1370,7 +1369,7 @@ void MixxxMainWindow::initActions()
     bool scriptDebuggerEnabled = m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
     m_pDeveloperDebugger = new QAction(scriptDebuggerTitle, this);
-    
+
     m_pDeveloperDebugger->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "DeveloperMenu_EnableDebugger"),
@@ -1382,7 +1381,7 @@ void MixxxMainWindow::initActions()
     m_pDeveloperDebugger->setChecked(scriptDebuggerEnabled);
     connect(m_pDeveloperDebugger, SIGNAL(toggled(bool)),
             this, SLOT(slotDeveloperDebugger(bool)));
-    
+
 
 
     // TODO: This code should live in a separate class.

@@ -39,7 +39,7 @@ GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
     qDebug() << "GLVSyncTestWidget.isSharing() =" << isSharing();
 }
 
-GLVSyncTestWidget::~GLVSyncTestWidget(){
+GLVSyncTestWidget::~GLVSyncTestWidget() {
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
