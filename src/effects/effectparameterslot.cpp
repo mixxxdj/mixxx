@@ -6,12 +6,8 @@
 #include "controlpushbutton.h"
 #include "controllers/softtakeover.h"
 
-EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
-                                         const unsigned int iChainNumber,
-                                         const unsigned int iSlotNumber,
-                                         const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(iRackNumber, iChainNumber, iSlotNumber,
-                                  iParameterSlotNumber) {
+EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
+        : EffectParameterSlotBase(group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));

@@ -21,10 +21,7 @@ typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
 class EffectParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectParameterSlot(const unsigned int iRackNumber,
-                        const unsigned int iChainNumber,
-                        const unsigned int iSlotNumber,
-                        const unsigned int iParameterSlotNumber);
+    EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {

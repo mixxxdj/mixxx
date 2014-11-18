@@ -95,8 +95,7 @@ EffectSlot::~EffectSlot() {
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
     EffectParameterSlotPointer pParameter = EffectParameterSlotPointer(
-        new EffectParameterSlot(m_iRackNumber, m_iChainNumber, m_iEffectNumber,
-                                m_parameters.size()));
+            new EffectParameterSlot(m_group, m_parameters.size()));
     m_parameters.append(pParameter);
     m_pControlNumParameterSlots->setAndConfirm(
             m_pControlNumParameterSlots->get() + 1);
@@ -105,8 +104,7 @@ EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
 
 EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
     EffectButtonParameterSlotPointer pParameter = EffectButtonParameterSlotPointer(
-        new EffectButtonParameterSlot(m_iRackNumber, m_iChainNumber, m_iEffectNumber,
-                                m_buttonParameters.size()));
+            new EffectButtonParameterSlot(m_group, m_buttonParameters.size()));
     m_buttonParameters.append(pParameter);
     m_pControlNumButtonParameterSlots->setAndConfirm(
             m_pControlNumButtonParameterSlots->get() + 1);
